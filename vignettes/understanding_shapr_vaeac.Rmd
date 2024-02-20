@@ -533,7 +533,7 @@ vaeac_plot_imputed_ggpairs(explanation = expl_little_training, which_vaeac_model
 # Make a copy of the explanation object and continue to train the vaeac model some more epochs
 expl_train_more <- expl_little_training
 expl_train_more$internal$parameters$vaeac <-
-  vaeac_continue_train_model(explanation = expl_train_more, epochs_new = 5, x_train = x_train, verbose = 0)
+  vaeac_train_model_continue(explanation = expl_train_more, epochs_new = 5, x_train = x_train, verbose = 0)
 
 # Compute the Shapley values again but this time using the extra trained vaeac model
 expl_train_more_vaeac <- explain(
@@ -561,7 +561,7 @@ vaeac_plot_evaluation_criteria(list("Original" = expl_little_training, "More epo
 # Continue to train the vaeac model some more epochs
 expl_train_even_more <- expl_train_more
 expl_train_even_more$internal$parameters$vaeac <-
-  vaeac_continue_train_model(
+  vaeac_train_model_continue(
     explanation = expl_train_even_more,
     epochs_new = 10,
     x_train = x_train,
@@ -662,7 +662,7 @@ expl_early_stopping_train_more <- expl_early_stopping
 
 # Continue to train the vaeac model some more epochs
 expl_early_stopping_train_more$internal$parameters$vaeac <-
-  vaeac_continue_train_model(
+  vaeac_train_model_continue(
     explanation = expl_early_stopping_train_more,
     epochs_new = 15,
     x_train = x_train,
@@ -671,7 +671,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
 
 # Can even do it twice if desired
 expl_early_stopping_train_more$internal$parameters$vaeac <-
-  vaeac_continue_train_model(
+  vaeac_train_model_continue(
     explanation = expl_early_stopping_train_more,
     epochs_new = 10,
     x_train = x_train,

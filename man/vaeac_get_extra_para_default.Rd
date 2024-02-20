@@ -132,7 +132,7 @@ from the inferred generative distributions. If \code{FALSE}, the function use th
 class with highest probability for continuous and categorical, respectively.}
 
 \item{vaeac.save_data}{Logical (default is \code{FALSE}). If \code{TRUE}, then the data is stored together with
-the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_continue_train_model]{vaeac_continue_train_model()}}.}
+the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_train_model_continue]{vaeac_train_model_continue()}}.}
 
 \item{vaeac.log_exp_cont_feat}{Logical (default is \code{FALSE}). If we are to \eqn{\log} transform all
 continuous features before sending the data to \code{\link[=vaeac]{vaeac()}}. The \code{vaeac} model creates unbounded Monte Carlo

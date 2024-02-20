@@ -232,7 +232,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 }
 
 
-# Train vaeac model ====================================================================================================
+# Train functions ======================================================================================================
 #' Train the Vaeac Model
 #'
 #' @description Function that fits a vaeac model to the given dataset based on the provided parameters,
@@ -329,7 +329,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' used in the masked encoder, see Section 3.3.1 in
 #' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #' @param save_data Logical (default is `FALSE`). If `TRUE`, then the data is stored together with
-#' the model. Useful if one are to continue to train the model later using [shapr::vaeac_continue_train_model()].
+#' the model. Useful if one are to continue to train the model later using [shapr::vaeac_train_model_continue()].
 #' @param log_exp_cont_feat Logical (default is `FALSE`). If we are to \eqn{\log} transform all
 #' continuous features before sending the data to [shapr::vaeac()]. The `vaeac` model creates unbounded Monte Carlo
 #' sample values. Thus, if the continuous features are strictly positive (as for, e.g., the Burr distribution and
@@ -548,6 +548,262 @@ vaeac_train_model <- function(x_train,
   return(return_list)
 }
 
+#' Function used to train a `vaeac` model
+#'
+#' @description
+#' This function can be applied both in the initialization phase when, we train several initiated `vaeac` models, and
+#' to keep training the best performing `vaeac` model for the remaining number of epochs. We are in the former setting
+#' when `initialization_idx` is provided and the latter when it is `NULL`. When it is `NULL`, we save the `vaeac` models
+#' with lowest VLB, IWAE, running IWAE, and the epochs according to `save_every_nth_epoch` to disk.
+#'
+#' @inheritParams vaeac_train_model
+#' @param vaeac_model A [shapr::vaeac()] object. The `vaeac` model this function is to train.
+#' @param optimizer A [torch::optimizer()] object. See [shapr::vaeac_get_optimizer()].
+#' @param train_dataloader A [torch::dataloader()] containing the training data for the `vaeac` model.
+#' @param val_dataloader A [torch::dataloader()] containing the validation data for the `vaeac` model.
+#' @param train_vlb A [torch::torch_tensor()] (default is `NULL`)
+#' of one dimension containing previous values for the training VLB.
+#' @param val_iwae A [torch::torch_tensor()] (default is `NULL`)
+#' of one dimension containing previous values for the validation IWAE.
+#' @param val_iwae_running A [torch::torch_tensor()] (default is `NULL`)
+#' of one dimension containing previous values for the running validation IWAE.
+#' @param progressr_bar A [progressr::progressor()] object (default is `NULL`) to keep track of progress.
+#' @param epochs_start Positive integer (default is `1`). At which epoch the training is starting at.
+#' @param vaeac_save_file_names Array of strings containing the save file names for the `vaeac` model.
+#' @param state_list Named list containing the objects returned from [shapr::vaeac_get_full_state_list()].
+#' @param initialization_idx Positive integer (default is `NULL`). The index
+#' of the current `vaeac` model in the initialization phase.
+#'
+#' @return Depending on if we are in the initialization phase or not. Then either the trained `vaeac` model, or
+#' a list of where the `vaeac` models are stored on disk and the parameters of the model.
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_train_model_auxiliary <- function(vaeac_model,
+                                        optimizer,
+                                        train_dataloader,
+                                        val_dataloader,
+                                        val_iwae_n_samples,
+                                        running_avg_n_values,
+                                        verbose,
+                                        cuda,
+                                        epochs,
+                                        save_every_nth_epoch,
+                                        epochs_early_stopping,
+                                        epochs_start = 1,
+                                        progressr_bar = NULL,
+                                        vaeac_save_file_names = NULL,
+                                        state_list = NULL,
+                                        initialization_idx = NULL,
+                                        n_vaeacs_initialize = NULL,
+                                        train_vlb = NULL,
+                                        val_iwae = NULL,
+                                        val_iwae_running = NULL) {
+  # Check for valid input
+  if (xor(is.null(initialization_idx), is.null(n_vaeacs_initialize))) {
+    stop("Either none or both of `initialization_idx` and `n_vaeacs_initialize` must be given.")
+  }
+
+  if (is.null(state_list) && is.null(initialization_idx)) {
+    stop("`state_list` must be provide when `initialization_idx = NULL` to properly save the `vaeac` model.")
+  }
+
+  if (is.null(vaeac_save_file_names) && is.null(initialization_idx)) {
+    stop(paste0(
+      "`vaeac_save_file_names` must be provide when `initialization_idx = NULL` ",
+      "to know where to save the vaeac model."
+    ))
+  }
+
+  if (!((is.null(train_vlb) && is.null(val_iwae) && is.null(val_iwae_running)) ||
+        (!is.null(train_vlb) && !is.null(val_iwae) && !is.null(val_iwae_running)))) {
+    stop("Either none or all of `train_vlb`, `val_iwae`, and `val_iwae_running` must be given.")
+  }
+
+  # Variable that we change to `TRUE` if early stopping is applied
+  if (!is.null(state_list)) state_list$early_stopping_applied <- FALSE
+
+  # Variables to stores the epochs of the `vaeac` at the best epoch according to IWAE and IWAE_running
+  if (is.null(initialization_idx)) best_epoch <- best_epoch_running <- NULL
+
+  # Get the batch size
+  batch_size <- train_dataloader$batch_size
+
+  # Extract the mask generator and the variational lower bound scale factor from the vaeac model object.
+  mask_generator <- vaeac_model$mask_generator
+  vlb_scale_factor <- vaeac_model$vlb_scale_factor
+
+  # Start the training loop
+  for (epoch in seq(from = epochs_start, to = epochs)) {
+    avg_vlb <- 0 # Set average variational lower bound to 0 for this epoch
+    batch_index <- 1 # Index to keep track of which batch we are working on
+
+    # Iterate over the training data
+    coro::loop(for (batch in train_dataloader) {
+      # If batch size is less than batch_size, extend it with objects from the beginning of the dataset
+      if (batch$shape[1] < batch_size) {
+        batch <- vaeac_extend_batch(batch = batch, dataloader = train_dataloader, batch_size = batch_size)
+      }
+
+      # Generate mask and do an optimizer step over the mask and the batch
+      mask <- mask_generator(batch)
+
+      # Send the batch and mask to GPU if we have access to it and user wants to
+      if (cuda) {
+        batch <- batch$cuda()
+        mask <- mask$cuda()
+      }
+
+      # Set all previous gradients to zero.
+      optimizer$zero_grad()
+
+      # Compute the variational lower bound for the batch given the mask
+      vlb <- vaeac_model$batch_vlb(batch, mask)$mean()
+
+      # Backpropagation: minimize the negative vlb.
+      vlb_loss <- (-vlb / vlb_scale_factor)
+      vlb_loss$backward()
+
+      # Update the vaeac_model parameters by using the optimizer
+      optimizer$step()
+
+      # Update running variational lower bound average using the recursive average formula/update.
+      # a + (new - a)/(i+1) = {(i+1)a + new - a}/(i+1) = { a(i) + new}/(i+1) = a *i/(i+1) + new/(i+1)
+      avg_vlb <- avg_vlb + (vlb$to(dtype = torch::torch_float())$clone()$detach() - avg_vlb) / batch_index
+
+      # Update the batch index.
+      batch_index <- batch_index + 1
+    }) # Done with one new epoch
+
+    ## Time to evaluate the vaeac_model on the validation data, potentially save it, and check for early stopping.
+
+    # Store the VLB
+    train_vlb <- torch::torch_cat(c(train_vlb, avg_vlb), -1)
+
+    # Compute the validation IWAE
+    val_iwae_now <- vaeac_get_val_iwae(
+      val_dataloader = val_dataloader,
+      mask_generator = mask_generator,
+      batch_size = batch_size,
+      vaeac_model = vaeac_model,
+      val_iwae_n_samples = val_iwae_n_samples
+    )
+    val_iwae <- torch::torch_cat(c(val_iwae, val_iwae_now), -1)
+
+    # Compute the running validation IWAE
+    val_iwae_running_now <-
+      val_iwae[
+        (-min(length(val_iwae), running_avg_n_values) +
+           length(val_iwae) + 1):(-1 + length(val_iwae) + 1),
+        drop = FALSE
+      ]$mean()$view(1)
+    val_iwae_running <- torch::torch_cat(c(val_iwae_running, val_iwae_running_now), -1)
+
+    # Check if we are to save the models
+    if (is.null(initialization_idx)) {
+      # Save if current vaeac model has the lowest validation IWAE error
+      if ((max(val_iwae) <= val_iwae_now)$item() || is.null(best_epoch)) {
+        best_epoch <- epoch
+        if (verbose == 2) message("Saving `best` vaeac model at epoch ", epoch, ".")
+        vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[1])
+      }
+
+      # Save if current vaeac model has the lowest running validation IWAE error
+      if ((max(val_iwae_running) <= val_iwae_running_now)$item() || is.null(best_epoch_running)) {
+        best_epoch_running <- epoch
+        if (verbose == 2) message("Saving `best_running` vaeac model at epoch ", epoch, ".")
+        vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[2])
+      }
+
+      # Save if we are in an n'th epoch and are to save every n'th epoch
+      if (is.numeric(save_every_nth_epoch) && epoch %% save_every_nth_epoch == 0) {
+        if (verbose == 2) message("Saving `nth_epoch` vaeac model at epoch ", epoch, ".")
+        vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
+      }
+    }
+
+    # Handle the message to the progress bar based on if we are doing initialization or final training
+    if (!is.null(progressr_bar)) {
+      update_message <- if (!is.null(initialization_idx)) {
+        paste0(
+          "Training vaeac (init. ", initialization_idx, " of ", n_vaeacs_initialize, "): Epoch: ", epoch,
+          " | VLB: ", vaeac_get_n_decimals(avg_vlb$item()), " | IWAE: ", vaeac_get_n_decimals(val_iwae_now$item()), " |"
+        )
+      } else {
+        paste0(
+          "Training vaeac (final model): Epoch: ", epoch, " | best epoch: ", best_epoch,
+          " | VLB: ", vaeac_get_n_decimals(avg_vlb$item()), " | IWAE: ", vaeac_get_n_decimals(val_iwae_now$item()), " |"
+        )
+      }
+      progressr_bar(message = update_message)
+    }
+
+    # Check if we are to apply early stopping, i.e., no improvement in the IWAE for `epochs_early_stopping` epochs.
+    if (is.numeric(epochs_early_stopping)) {
+      if (epoch - best_epoch >= epochs_early_stopping) {
+        if (verbose == 2) {
+          message(paste0(
+            "No IWAE improvment in ", epochs_early_stopping, " epochs. Apply early stopping at epoch ",
+            epoch, "."
+          ))
+        }
+        if (!is.null(progressr_bar)) progressr_bar("Training vaeac (early stopping)", amount = epochs - epoch)
+        state_list$early_stopping_applied <- TRUE # Add that we did early stopping to the state list
+        state_list$epochs <- epoch # Update the number of used epochs.
+        break # Stop the training loop
+      }
+    }
+  } # Done with all epochs in training phase
+
+  # Find out what to return
+  if (!is.null(initialization_idx)) {
+    # Here we return the models and the optimizer which we will train further if this was the best initialization
+    return_list <- list(
+      vaeac_model = vaeac_model,
+      optimizer = optimizer,
+      train_vlb = train_vlb,
+      val_iwae = val_iwae,
+      val_iwae_running = val_iwae_running,
+      avg_vlb = avg_vlb,
+      initialization_idx = initialization_idx,
+      state_list = state_list
+    )
+  } else {
+    # Save the vaeac model at the last epoch
+    if (verbose == 2) message("Saving `last` vaeac model at epoch ", epoch, ".")
+    last_state <- vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3], return_state = TRUE)
+
+    # Summary printout
+    if (verbose == 2) vaeac_print_train_summary(best_epoch, best_epoch_running, last_state)
+
+    # Create a return list
+    return_list <- list(
+      best = vaeac_save_file_names[1],
+      best_running = vaeac_save_file_names[2],
+      last = vaeac_save_file_names[3],
+      train_vlb = as.array(train_vlb$cpu()),
+      val_iwae = as.array(val_iwae$cpu()),
+      val_iwae_running = as.array(val_iwae_running$cpu()),
+      parameters = last_state
+    )
+
+    # Add the potentially additional save names
+    if (!is.null(vaeac_save_file_names) && length(vaeac_save_file_names) > 3) {
+      return_list <- append(
+        return_list,
+        setNames(
+          as.list(vaeac_save_file_names[-(1:3)]),
+          paste0("epoch_", save_every_nth_epoch * seq(length(vaeac_save_file_names) - 3))
+        ),
+        3
+      )
+    }
+
+    # Update the class of the returned object
+    attr(return_list, "class") <- c("vaeac", class(return_list))
+  }
+  return(return_list)
+}
+
 #' Continue to Train the vaeac Model
 #'
 #' @description Function that loads a previously trained vaeac model and continue the training, either
@@ -562,7 +818,7 @@ vaeac_train_model <- function(x_train,
 #' @return A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_continue_train_model <- function(explanation,
+vaeac_train_model_continue <- function(explanation,
                                        epochs_new,
                                        lr_new = NULL,
                                        x_train = NULL,
@@ -716,7 +972,7 @@ vaeac_continue_train_model <- function(explanation,
 }
 
 
-# Compute Imputations ==================================================================================================
+# Imputation functions =================================================================================================
 #' Impute Missing Values Using Vaeac
 #'
 #' @details  Function that imputes the missing values in 2D matrix where each row constitute an individual.
@@ -1410,7 +1666,7 @@ vaeac_check_parameters <- function(x_train,
 #' used in the masked encoder, see Section 3.3.1 in
 #' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #' @param vaeac.save_data Logical (default is `FALSE`). If `TRUE`, then the data is stored together with
-#' the model. Useful if one are to continue to train the model later using [shapr::vaeac_continue_train_model()].
+#' the model. Useful if one are to continue to train the model later using [shapr::vaeac_train_model_continue()].
 #' @param vaeac.log_exp_cont_feat Logical (default is `FALSE`). If we are to \eqn{\log} transform all
 #' continuous features before sending the data to [shapr::vaeac()]. The `vaeac` model creates unbounded Monte Carlo
 #' sample values. Thus, if the continuous features are strictly positive (as for, e.g., the Burr distribution and
@@ -1883,262 +2139,215 @@ vaeac_get_data_objects <- function(x_train,
 #' @author Lars Henry Berge Olsen
 vaeac_get_n_decimals <- function(value, n_decimals = 3) trimws(format(round(value, n_decimals), nsmall = n_decimals))
 
-
-# Train functions ======================================================================================================
-#' Function used to train a `vaeac` model
+# Update functions =====================================================================================================
+#' Move `vaeac` parameters to correct location
 #'
 #' @description
-#' This function can be applied both in the initialization phase when, we train several initiated `vaeac` models, and
-#' to keep training the best performing `vaeac` model for the remaining number of epochs. We are in the former setting
-#' when `initialization_idx` is provided and the latter when it is `NULL`. When it is `NULL`, we save the `vaeac` models
-#' with lowest VLB, IWAE, running IWAE, and the epochs according to `save_every_nth_epoch` to disk.
+#' This function ensures that the main and extra parameters for the `vaeac`
+#' approach is located at their right locations.
 #'
-#' @inheritParams vaeac_train_model
-#' @param vaeac_model A [shapr::vaeac()] object. The `vaeac` model this function is to train.
-#' @param optimizer A [torch::optimizer()] object. See [shapr::vaeac_get_optimizer()].
-#' @param train_dataloader A [torch::dataloader()] containing the training data for the `vaeac` model.
-#' @param val_dataloader A [torch::dataloader()] containing the validation data for the `vaeac` model.
-#' @param train_vlb A [torch::torch_tensor()] (default is `NULL`)
-#' of one dimension containing previous values for the training VLB.
-#' @param val_iwae A [torch::torch_tensor()] (default is `NULL`)
-#' of one dimension containing previous values for the validation IWAE.
-#' @param val_iwae_running A [torch::torch_tensor()] (default is `NULL`)
-#' of one dimension containing previous values for the running validation IWAE.
-#' @param progressr_bar A [progressr::progressor()] object (default is `NULL`) to keep track of progress.
-#' @param epochs_start Positive integer (default is `1`). At which epoch the training is starting at.
-#' @param vaeac_save_file_names Array of strings containing the save file names for the `vaeac` model.
-#' @param state_list Named list containing the objects returned from [shapr::vaeac_get_full_state_list()].
-#' @param initialization_idx Positive integer (default is `NULL`). The index
-#' of the current `vaeac` model in the initialization phase.
+#' @param parameters List. The `internal$parameters` list created inside the [shapr::explain()] function.
 #'
-#' @return Depending on if we are in the initialization phase or not. Then either the trained `vaeac` model, or
-#' a list of where the `vaeac` models are stored on disk and the parameters of the model.
+#' @return Updated version of `parameters` where all `vaeac` parameters are located at the correct location.
+#'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_train_model_auxiliary <- function(vaeac_model,
-                                        optimizer,
-                                        train_dataloader,
-                                        val_dataloader,
-                                        val_iwae_n_samples,
-                                        running_avg_n_values,
-                                        verbose,
-                                        cuda,
-                                        epochs,
-                                        save_every_nth_epoch,
-                                        epochs_early_stopping,
-                                        epochs_start = 1,
-                                        progressr_bar = NULL,
-                                        vaeac_save_file_names = NULL,
-                                        state_list = NULL,
-                                        initialization_idx = NULL,
-                                        n_vaeacs_initialize = NULL,
-                                        train_vlb = NULL,
-                                        val_iwae = NULL,
-                                        val_iwae_running = NULL) {
-  # Check for valid input
-  if (xor(is.null(initialization_idx), is.null(n_vaeacs_initialize))) {
-    stop("Either none or both of `initialization_idx` and `n_vaeacs_initialize` must be given.")
-  }
+vaeac_update_para_locations <- function(parameters) {
+  # Get the name of the main parameters for the `vaeac` approach
+  vaeac.main_para_default_names <- methods::formalArgs(setup_approach.vaeac)
+  vaeac.main_para_default_names <-
+    vaeac.main_para_default_names[!vaeac.main_para_default_names %in% c("internal", "vaeac.extra_parameters", "...")]
 
-  if (is.null(state_list) && is.null(initialization_idx)) {
-    stop("`state_list` must be provide when `initialization_idx = NULL` to properly save the `vaeac` model.")
-  }
+  # Get the default values for vaeac's main parameters defined above into a named list
+  vaeac.main_para_default <- as.list(formals(sys.function(sys.parent())))
+  vaeac.main_para_default <- vaeac.main_para_default[vaeac.main_para_default %in% vaeac.main_para_default_names]
 
-  if (is.null(vaeac_save_file_names) && is.null(initialization_idx)) {
-    stop(paste0(
-      "`vaeac_save_file_names` must be provide when `initialization_idx = NULL` ",
-      "to know where to save the vaeac model."
+  # Get the names of the vaeac's main parameters provided by the user
+  vaeac.main_para_user_names <- names(parameters)
+  vaeac.main_para_user_names <- vaeac.main_para_user_names[grepl("vaeac.", vaeac.main_para_user_names)]
+  vaeac.main_para_user_names <- vaeac.main_para_user_names[!vaeac.main_para_user_names %in% "vaeac.extra_parameters"]
+
+  # Get the default values for vaeac's extra parameters into a named list
+  vaeac.extra_para_default <- vaeac_get_extra_para_default()
+  vaeac.extra_para_default_names <- names(vaeac.extra_para_default)
+
+  # Get the names of the extra parameters provided by the user
+  vaeac.extra_para_user_names <- names(parameters$vaeac.extra_parameters)
+
+  # Get the names of all parameters and the user specified parameters
+  vaeav.all_para_default_names <- c(vaeac.main_para_default_names, vaeac.extra_para_default_names)
+
+  # Check if any of the main parameters with the "vaeac." prefix is unknown (i.e., not main or extra parameter)
+  not_extra_para_in_main_para <-
+    vaeac.main_para_user_names[!vaeac.main_para_user_names %in% vaeav.all_para_default_names]
+  if (length(not_extra_para_in_main_para) > 0) {
+    # Give a message to the user about the unknown extra parameters
+    warning(paste0(
+      "The following vaeac main parameters are not recognized (`shapr` removes them): ",
+      paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
+                     ",(?=[^,]+$)",
+                     perl = TRUE
+      )[[1]], collapse = " and"), ".\n"
     ))
+
+    # Delete the unknown extra parameters
+    parameters[not_extra_para_in_main_para] <- NULL
   }
 
-  if (!((is.null(train_vlb) && is.null(val_iwae) && is.null(val_iwae_running)) ||
-    (!is.null(train_vlb) && !is.null(val_iwae) && !is.null(val_iwae_running)))) {
-    stop("Either none or all of `train_vlb`, `val_iwae`, and `val_iwae_running` must be given.")
+  # Check if any of the extra parameters with the "vaeac." prefix is unknown (i.e., not main or extra parameter)
+  not_main_para_in_extra_para <-
+    vaeac.extra_para_user_names[!vaeac.extra_para_user_names %in% vaeav.all_para_default_names]
+  if (length(not_main_para_in_extra_para) > 0) {
+    # Give a message to the user about the unknown extra parameters
+    warning(paste0(
+      "The following vaeac extra parameters are not recognized (`shapr` removes them): ",
+      paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
+                     ",(?=[^,]+$)",
+                     perl = TRUE
+      )[[1]], collapse = " and"), ".\n"
+    ))
+
+    # Delete the unknown extra parameters
+    parameters$vaeac.extra_parameters[not_main_para_in_extra_para] <- NULL
   }
 
-  # Variable that we change to `TRUE` if early stopping is applied
-  if (!is.null(state_list)) state_list$early_stopping_applied <- FALSE
-
-  # Variables to stores the epochs of the `vaeac` at the best epoch according to IWAE and IWAE_running
-  if (is.null(initialization_idx)) best_epoch <- best_epoch_running <- NULL
-
-  # Get the batch size
-  batch_size <- train_dataloader$batch_size
-
-  # Extract the mask generator and the variational lower bound scale factor from the vaeac model object.
-  mask_generator <- vaeac_model$mask_generator
-  vlb_scale_factor <- vaeac_model$vlb_scale_factor
-
-  # Start the training loop
-  for (epoch in seq(from = epochs_start, to = epochs)) {
-    avg_vlb <- 0 # Set average variational lower bound to 0 for this epoch
-    batch_index <- 1 # Index to keep track of which batch we are working on
-
-    # Iterate over the training data
-    coro::loop(for (batch in train_dataloader) {
-      # If batch size is less than batch_size, extend it with objects from the beginning of the dataset
-      if (batch$shape[1] < batch_size) {
-        batch <- vaeac_extend_batch(batch = batch, dataloader = train_dataloader, batch_size = batch_size)
-      }
-
-      # Generate mask and do an optimizer step over the mask and the batch
-      mask <- mask_generator(batch)
-
-      # Send the batch and mask to GPU if we have access to it and user wants to
-      if (cuda) {
-        batch <- batch$cuda()
-        mask <- mask$cuda()
-      }
-
-      # Set all previous gradients to zero.
-      optimizer$zero_grad()
-
-      # Compute the variational lower bound for the batch given the mask
-      vlb <- vaeac_model$batch_vlb(batch, mask)$mean()
-
-      # Backpropagation: minimize the negative vlb.
-      vlb_loss <- (-vlb / vlb_scale_factor)
-      vlb_loss$backward()
-
-      # Update the vaeac_model parameters by using the optimizer
-      optimizer$step()
-
-      # Update running variational lower bound average using the recursive average formula/update.
-      # a + (new - a)/(i+1) = {(i+1)a + new - a}/(i+1) = { a(i) + new}/(i+1) = a *i/(i+1) + new/(i+1)
-      avg_vlb <- avg_vlb + (vlb$to(dtype = torch::torch_float())$clone()$detach() - avg_vlb) / batch_index
-
-      # Update the batch index.
-      batch_index <- batch_index + 1
-    }) # Done with one new epoch
-
-    ## Time to evaluate the vaeac_model on the validation data, potentially save it, and check for early stopping.
-
-    # Store the VLB
-    train_vlb <- torch::torch_cat(c(train_vlb, avg_vlb), -1)
-
-    # Compute the validation IWAE
-    val_iwae_now <- vaeac_get_val_iwae(
-      val_dataloader = val_dataloader,
-      mask_generator = mask_generator,
-      batch_size = batch_size,
-      vaeac_model = vaeac_model,
-      val_iwae_n_samples = val_iwae_n_samples
-    )
-    val_iwae <- torch::torch_cat(c(val_iwae, val_iwae_now), -1)
-
-    # Compute the running validation IWAE
-    val_iwae_running_now <-
-      val_iwae[
-        (-min(length(val_iwae), running_avg_n_values) +
-          length(val_iwae) + 1):(-1 + length(val_iwae) + 1),
-        drop = FALSE
-      ]$mean()$view(1)
-    val_iwae_running <- torch::torch_cat(c(val_iwae_running, val_iwae_running_now), -1)
-
-    # Check if we are to save the models
-    if (is.null(initialization_idx)) {
-      # Save if current vaeac model has the lowest validation IWAE error
-      if ((max(val_iwae) <= val_iwae_now)$item() || is.null(best_epoch)) {
-        best_epoch <- epoch
-        if (verbose == 2) message("Saving `best` vaeac model at epoch ", epoch, ".")
-        vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[1])
-      }
-
-      # Save if current vaeac model has the lowest running validation IWAE error
-      if ((max(val_iwae_running) <= val_iwae_running_now)$item() || is.null(best_epoch_running)) {
-        best_epoch_running <- epoch
-        if (verbose == 2) message("Saving `best_running` vaeac model at epoch ", epoch, ".")
-        vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[2])
-      }
-
-      # Save if we are in an n'th epoch and are to save every n'th epoch
-      if (is.numeric(save_every_nth_epoch) && epoch %% save_every_nth_epoch == 0) {
-        if (verbose == 2) message("Saving `nth_epoch` vaeac model at epoch ", epoch, ".")
-        vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
-      }
-    }
-
-    # Handle the message to the progress bar based on if we are doing initialization or final training
-    if (!is.null(progressr_bar)) {
-      update_message <- if (!is.null(initialization_idx)) {
-        paste0(
-          "Training vaeac (init. ", initialization_idx, " of ", n_vaeacs_initialize, "): Epoch: ", epoch,
-          " | VLB: ", vaeac_get_n_decimals(avg_vlb$item()), " | IWAE: ", vaeac_get_n_decimals(val_iwae_now$item()), " |"
-        )
-      } else {
-        paste0(
-          "Training vaeac (final model): Epoch: ", epoch, " | best epoch: ", best_epoch,
-          " | VLB: ", vaeac_get_n_decimals(avg_vlb$item()), " | IWAE: ", vaeac_get_n_decimals(val_iwae_now$item()), " |"
-        )
-      }
-      progressr_bar(message = update_message)
-    }
-
-    # Check if we are to apply early stopping, i.e., no improvement in the IWAE for `epochs_early_stopping` epochs.
-    if (is.numeric(epochs_early_stopping)) {
-      if (epoch - best_epoch >= epochs_early_stopping) {
-        if (verbose == 2) {
-          message(paste0(
-            "No IWAE improvment in ", epochs_early_stopping, " epochs. Apply early stopping at epoch ",
-            epoch, "."
-          ))
-        }
-        if (!is.null(progressr_bar)) progressr_bar("Training vaeac (early stopping)", amount = epochs - epoch)
-        state_list$early_stopping_applied <- TRUE # Add that we did early stopping to the state list
-        state_list$epochs <- epoch # Update the number of used epochs.
-        break # Stop the training loop
-      }
-    }
-  } # Done with all epochs in training phase
-
-  # Find out what to return
-  if (!is.null(initialization_idx)) {
-    # Here we return the models and the optimizer which we will train further if this was the best initialization
-    return_list <- list(
-      vaeac_model = vaeac_model,
-      optimizer = optimizer,
-      train_vlb = train_vlb,
-      val_iwae = val_iwae,
-      val_iwae_running = val_iwae_running,
-      avg_vlb = avg_vlb,
-      initialization_idx = initialization_idx,
-      state_list = state_list
-    )
-  } else {
-    # Save the vaeac model at the last epoch
-    if (verbose == 2) message("Saving `last` vaeac model at epoch ", epoch, ".")
-    last_state <- vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3], return_state = TRUE)
-
-    # Summary printout
-    if (verbose == 2) vaeac_print_train_summary(best_epoch, best_epoch_running, last_state)
-
-    # Create a return list
-    return_list <- list(
-      best = vaeac_save_file_names[1],
-      best_running = vaeac_save_file_names[2],
-      last = vaeac_save_file_names[3],
-      train_vlb = as.array(train_vlb$cpu()),
-      val_iwae = as.array(val_iwae$cpu()),
-      val_iwae_running = as.array(val_iwae_running$cpu()),
-      parameters = last_state
-    )
-
-    # Add the potentially additional save names
-    if (!is.null(vaeac_save_file_names) && length(vaeac_save_file_names) > 3) {
-      return_list <- append(
-        return_list,
-        setNames(
-          as.list(vaeac_save_file_names[-(1:3)]),
-          paste0("epoch_", save_every_nth_epoch * seq(length(vaeac_save_file_names) - 3))
-        ),
-        3
-      )
-    }
-
-    # Update the class of the returned object
-    attr(return_list, "class") <- c("vaeac", class(return_list))
+  # Check for parameters that have been provided as both main and extra parameter
+  both_main_and_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_user_names]
+  if (length(both_main_and_extra_para > 0)) {
+    # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
+    warning(paste0(
+      "The following vaeac parameters were given as both main and extra parameters (`shapr` uses the ",
+      "values at the correct location ): ",
+      paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
+                     ",(?=[^,]+$)",
+                     perl = TRUE
+      )[[1]], collapse = " and"), ".\n"
+    ))
+    # Note that we do not move it here as the moving will be fixed in the next two if-clauses
   }
-  return(return_list)
+
+  # Check if any any extra parameters have been given as main parameters
+  extra_para_in_main_para <- vaeac.main_para_user_names[vaeac.main_para_user_names %in% vaeac.extra_para_default_names]
+  if (length(extra_para_in_main_para) > 0) {
+    warning(paste0(
+      "The following vaeac parameters were given as main parameters but should have been extra ",
+      "parameters (`shapr` fixes this): ",
+      paste(strsplit(paste(paste0("`", extra_para_in_main_para, "`"), collapse = ", "),
+                     ",(?=[^,]+$)",
+                     perl = TRUE
+      )[[1]], collapse = " and"), ".\n"
+    ))
+
+    # Move extra parameter from the main parameters to extra_parameters list if they have NOT been specified already
+    parameters$vaeac.extra_parameters[extra_para_in_main_para[!extra_para_in_main_para %in%
+                                                                vaeac.extra_para_user_names]] <-
+      parameters[extra_para_in_main_para[!extra_para_in_main_para %in% vaeac.extra_para_user_names]]
+
+    # Remove the extra parameter from the main parameters
+    parameters[extra_para_in_main_para] <- NULL
+  }
+
+  # Check if any any main parameters have been given as extra parameters
+  main_para_in_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_default_names]
+  if (length(main_para_in_extra_para) > 0) {
+    # Give a message to the user about the misplaced main parameters in the extra list
+    warning(paste0(
+      "The following vaeac parameters were given as extra parameters but should have been main ",
+      "parameters (`shapr` fixes this): ",
+      paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
+                     ",(?=[^,]+$)",
+                     perl = TRUE
+      )[[1]], collapse = " and"), ".\n"
+    ))
+
+    # Move main parameters from the extra_parameters list to main parameters if they have NOT been specified already
+    parameters[main_para_in_extra_para[!main_para_in_extra_para %in% vaeac.main_para_user_names]] <-
+      parameters$vaeac.extra_parameters[main_para_in_extra_para[!main_para_in_extra_para
+                                                                %in% vaeac.main_para_user_names]]
+
+    # Remove the main parameter from the extra list
+    parameters$vaeac.extra_parameters[main_para_in_extra_para] <- NULL
+  }
+
+  # Return the fixed parameters list
+  return(parameters)
+}
+
+#' Function that checks and adds a pre-trained `vaeac` model
+#'
+#' @param parameters List containing the parameters used within [shapr::explain()].
+#'
+#' @return This function adds a valid pre-trained vaeac model to the `parameter`.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_update_pretrained_model <- function(parameters) {
+  # Extract the provided pre-trained vaeac model
+  vaeac_object <- parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model
+
+  # Check that it is either a list or string
+  if (!(is.list(vaeac_object) || is.character(vaeac_object))) {
+    stop("The `vaeac.pretrained_vaeac_model` parameter must be either a list or a string. Read the documentation.")
+  }
+
+  # Check if we are given a list
+  if (is.list(vaeac_object)) {
+    # Check for list of type vaeac
+    if (!("vaeac" %in% class(vaeac_object))) stop("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
+    vaeac_check_x_train_names(
+      feature_names_vaeac = vaeac_object$parameters$feature_list$labels,
+      feature_names_new = parameters$feature_names
+    )
+
+    # Add the pre-trained valid vaeac model to the parameters list
+    parameters$vaeac <- parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model
+
+    # Remove the pre-trained vaeac model as it has been approved as a vaeac model
+    parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model <- NULL
+  }
+
+  # Check if we are given a string
+  if (is.character(vaeac_object)) {
+    # Check that the file exists
+    if (!file.exists(vaeac_object)) {
+      stop(paste0("The `vaeac.pretrained_vaeac_model` file ('", vaeac_object, "') does not exist."))
+    }
+
+    # Read in the vaeac model from the disk
+    vaeac_model <- torch::torch_load(vaeac_object)
+
+    # Some very small check that we have read in a vaeac model
+    if (is.null(vaeac_model$model_state_dict)) {
+      stop("The provided file is not a vaeac model as it is missing, e.g., the `model_state_dict` entry.")
+    }
+    if (is.null(vaeac_model$optimizer_state_dict)) {
+      stop("The provided file is not a vaeac model as it is missing, e.g., the `optimizer_state_dict` entry.")
+    }
+
+    # Check that the provided vaeac model is trained on a dataset with the same feature names
+    vaeac_check_x_train_names(
+      feature_names_vaeac = vaeac_model$feature_list$labels,
+      feature_names_new = parameters$feature_names
+    )
+
+    # Extract the training/validation results
+    evaluation_criterions <- c("train_vlb", "val_iwae", "val_iwae_running")
+    vaeac_model_results <- lapply(vaeac_model[evaluation_criterions], as.array)
+
+    # Save path to the vaeac approach to use to generate the MC samples.
+    parameters$vaeac <- list(
+      models = list(best = vaeac_object),
+      results = vaeac_model_results,
+      parameters = vaeac_model[!names(vaeac_model) %in% evaluation_criterions]
+    )
+
+    # Add `vaeac` as a class to the object. We use this to validate the input when
+    # `vaeac.pretrained_vaeac_model` is given to the `shapr::explain()` function.
+    class(parameters$vaeac) <- c(class(parameters$vaeac), "vaeac")
+  }
+
+  # Return the updated parameters list
+  return(parameters)
 }
 
 # Save functions =======================================================================================================
@@ -2193,220 +2402,6 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     last_state$val_iwae_running[-1]$cpu()
   ))
 }
-
-# Update functions =====================================================================================================
-#' Move `vaeac` parameters to correct location
-#'
-#' @description
-#' This function ensures that the main and extra parameters for the `vaeac`
-#' approach is located at their right locations.
-#'
-#' @param parameters List. The `internal$parameters` list created inside the [shapr::explain()] function.
-#'
-#' @return Updated version of `parameters` where all `vaeac` parameters are located at the correct location.
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-vaeac_update_para_locations <- function(parameters) {
-  # Get the name of the main parameters for the `vaeac` approach
-  vaeac.main_para_default_names <- methods::formalArgs(setup_approach.vaeac)
-  vaeac.main_para_default_names <-
-    vaeac.main_para_default_names[!vaeac.main_para_default_names %in% c("internal", "vaeac.extra_parameters", "...")]
-
-  # Get the default values for vaeac's main parameters defined above into a named list
-  vaeac.main_para_default <- as.list(formals(sys.function(sys.parent())))
-  vaeac.main_para_default <- vaeac.main_para_default[vaeac.main_para_default %in% vaeac.main_para_default_names]
-
-  # Get the names of the vaeac's main parameters provided by the user
-  vaeac.main_para_user_names <- names(parameters)
-  vaeac.main_para_user_names <- vaeac.main_para_user_names[grepl("vaeac.", vaeac.main_para_user_names)]
-  vaeac.main_para_user_names <- vaeac.main_para_user_names[!vaeac.main_para_user_names %in% "vaeac.extra_parameters"]
-
-  # Get the default values for vaeac's extra parameters into a named list
-  vaeac.extra_para_default <- vaeac_get_extra_para_default()
-  vaeac.extra_para_default_names <- names(vaeac.extra_para_default)
-
-  # Get the names of the extra parameters provided by the user
-  vaeac.extra_para_user_names <- names(parameters$vaeac.extra_parameters)
-
-  # Get the names of all parameters and the user specified parameters
-  vaeav.all_para_default_names <- c(vaeac.main_para_default_names, vaeac.extra_para_default_names)
-
-  # Check if any of the main parameters with the "vaeac." prefix is unknown (i.e., not main or extra parameter)
-  not_extra_para_in_main_para <-
-    vaeac.main_para_user_names[!vaeac.main_para_user_names %in% vaeav.all_para_default_names]
-  if (length(not_extra_para_in_main_para) > 0) {
-    # Give a message to the user about the unknown extra parameters
-    warning(paste0(
-      "The following vaeac main parameters are not recognized (`shapr` removes them): ",
-      paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
-
-    # Delete the unknown extra parameters
-    parameters[not_extra_para_in_main_para] <- NULL
-  }
-
-  # Check if any of the extra parameters with the "vaeac." prefix is unknown (i.e., not main or extra parameter)
-  not_main_para_in_extra_para <-
-    vaeac.extra_para_user_names[!vaeac.extra_para_user_names %in% vaeav.all_para_default_names]
-  if (length(not_main_para_in_extra_para) > 0) {
-    # Give a message to the user about the unknown extra parameters
-    warning(paste0(
-      "The following vaeac extra parameters are not recognized (`shapr` removes them): ",
-      paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
-
-    # Delete the unknown extra parameters
-    parameters$vaeac.extra_parameters[not_main_para_in_extra_para] <- NULL
-  }
-
-  # Check for parameters that have been provided as both main and extra parameter
-  both_main_and_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_user_names]
-  if (length(both_main_and_extra_para > 0)) {
-    # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
-    warning(paste0(
-      "The following vaeac parameters were given as both main and extra parameters (`shapr` uses the ",
-      "values at the correct location ): ",
-      paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
-
-    # Note that we do not move it here as the moving will be fixed in the next two if-clauses
-  }
-
-  # Check if any any extra parameters have been given as main parameters
-  extra_para_in_main_para <- vaeac.main_para_user_names[vaeac.main_para_user_names %in% vaeac.extra_para_default_names]
-  if (length(extra_para_in_main_para) > 0) {
-    warning(paste0(
-      "The following vaeac parameters were given as main parameters but should have been extra ",
-      "parameters (`shapr` fixes this): ",
-      paste(strsplit(paste(paste0("`", extra_para_in_main_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
-
-    # Move extra parameter from the main parameters to extra_parameters list if they have NOT been specified already
-    parameters$vaeac.extra_parameters[extra_para_in_main_para[!extra_para_in_main_para %in%
-      vaeac.extra_para_user_names]] <-
-      parameters[extra_para_in_main_para[!extra_para_in_main_para %in% vaeac.extra_para_user_names]]
-
-    # Remove the extra parameter from the main parameters
-    parameters[extra_para_in_main_para] <- NULL
-  }
-
-  # Check if any any main parameters have been given as extra parameters
-  main_para_in_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_default_names]
-  if (length(main_para_in_extra_para) > 0) {
-    # Give a message to the user about the misplaced main parameters in the extra list
-    warning(paste0(
-      "The following vaeac parameters were given as extra parameters but should have been main ",
-      "parameters (`shapr` fixes this): ",
-      paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
-
-    # Move main parameters from the extra_parameters list to main parameters if they have NOT been specified already
-    parameters[main_para_in_extra_para[!main_para_in_extra_para %in% vaeac.main_para_user_names]] <-
-      parameters$vaeac.extra_parameters[main_para_in_extra_para[!main_para_in_extra_para
-      %in% vaeac.main_para_user_names]]
-
-    # Remove the main parameter from the extra list
-    parameters$vaeac.extra_parameters[main_para_in_extra_para] <- NULL
-  }
-
-  # Return the fixed parameters list
-  return(parameters)
-}
-
-#' Function that checks and adds a pre-trained `vaeac` model
-#'
-#' @param parameters List containing the parameters used within [shapr::explain()].
-#'
-#' @return This function adds a valid pre-trained vaeac model to the `parameter`.
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-vaeac_update_pretrained_model <- function(parameters) {
-  # Extract the provided pre-trained vaeac model
-  vaeac_object <- parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model
-
-  # Check that it is either a list or string
-  if (!(is.list(vaeac_object) || is.character(vaeac_object))) {
-    stop("The `vaeac.pretrained_vaeac_model` parameter must be either a list or a string. Read the documentation.")
-  }
-
-  # Check if we are given a list
-  if (is.list(vaeac_object)) {
-    # Check for list of type vaeac
-    if (!("vaeac" %in% class(vaeac_object))) stop("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
-    vaeac_check_x_train_names(
-      feature_names_vaeac = vaeac_object$parameters$feature_list$labels,
-      feature_names_new = parameters$feature_names
-    )
-
-    # Add the pre-trained valid vaeac model to the parameters list
-    parameters$vaeac <- parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model
-
-    # Remove the pre-trained vaeac model as it has been approved as a vaeac model
-    parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model <- NULL
-  }
-
-
-  # Check if we are given a string
-  if (is.character(vaeac_object)) {
-    # Check that the file exists
-    if (!file.exists(vaeac_object)) {
-      stop(paste0("The `vaeac.pretrained_vaeac_model` file ('", vaeac_object, "') does not exist."))
-    }
-
-    # Read in the vaeac model from the disk
-    vaeac_model <- torch::torch_load(vaeac_object)
-
-    # Some very small check that we have read in a vaeac model
-    if (is.null(vaeac_model$model_state_dict)) {
-      stop("The provided file is not a vaeac model as it is missing, e.g., the `model_state_dict` entry.")
-    }
-    if (is.null(vaeac_model$optimizer_state_dict)) {
-      stop("The provided file is not a vaeac model as it is missing, e.g., the `optimizer_state_dict` entry.")
-    }
-
-    # Check that the provided vaeac model is trained on a dataset with the same feature names
-    vaeac_check_x_train_names(
-      feature_names_vaeac = vaeac_model$feature_list$labels,
-      feature_names_new = parameters$feature_names
-    )
-
-    # Extract the training/validation results
-    evaluation_criterions <- c("train_vlb", "val_iwae", "val_iwae_running")
-    vaeac_model_results <- lapply(vaeac_model[evaluation_criterions], as.array)
-
-    # Save path to the vaeac approach to use to generate the MC samples.
-    parameters$vaeac <- list(
-      models = list(best = vaeac_object),
-      results = vaeac_model_results,
-      parameters = vaeac_model[!names(vaeac_model) %in% evaluation_criterions]
-    )
-
-    # Add `vaeac` as a class to the object. We use this to validate the input when
-    # `vaeac.pretrained_vaeac_model` is given to the `shapr::explain()` function.
-    class(parameters$vaeac) <- c(class(parameters$vaeac), "vaeac")
-  }
-
-  # Return the updated parameters list
-  return(parameters)
-}
-
 
 # Plot functions =======================================================================================================
 #' Plot the training VLB and validation IWAE for `vaeac` models

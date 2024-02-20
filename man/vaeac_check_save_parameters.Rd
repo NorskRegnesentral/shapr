@@ -13,7 +13,7 @@ vaeac_check_save_parameters(
 }
 \arguments{
 \item{save_data}{Logical (default is \code{FALSE}). If \code{TRUE}, then the data is stored together with
-the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_continue_train_model]{vaeac_continue_train_model()}}.}
+the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_train_model_continue]{vaeac_train_model_continue()}}.}
 
 \item{epochs}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
 This includes \code{epochs_initiation_phase}, where the default is \code{2}.}

@@ -147,7 +147,7 @@ used in the masked encoder, see Section 3.3.1 in
 \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
 
 \item{save_data}{Logical (default is \code{FALSE}). If \code{TRUE}, then the data is stored together with
-the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_continue_train_model]{vaeac_continue_train_model()}}.}
+the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_train_model_continue]{vaeac_train_model_continue()}}.}
 
 \item{log_exp_cont_feat}{Logical (default is \code{FALSE}). If we are to \eqn{\log} transform all
 continuous features before sending the data to \code{\link[=vaeac]{vaeac()}}. The \code{vaeac} model creates unbounded Monte Carlo
