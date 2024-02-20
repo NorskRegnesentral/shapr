@@ -49,9 +49,9 @@ from an earlier call to the \code{\link[=explain]{explain()}} function. 2) A str
 model is stored on disk, for example, \code{explanation$internal$parameters$vaeac$models$best}.}
 
 \item{vaeac.cuda}{Logical (default is \code{FALSE}). If \code{TRUE}, then the \code{vaeac} model will be trained using cuda/GPU.
-If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, the we fall back to use CPU. If \code{FALSE}, we use the CPU. Often this is
-faster for tabular data sets. Note, cuda is not not supported in the current version of the \code{shapr} package.
-TODO: Update this when this is done.}
+If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, the we fall back to use CPU. If \code{FALSE}, we use the CPU. Using a GPU
+for smaller tabular dataset often do not improve the efficiency.
+See \code{vignette("installation", package = "torch")} fo help to enable running on the GPU (only Linux and Windows).}
 
 \item{vaeac.epochs_initiation_phase}{Positive integer (default is \code{2}). The number of epochs to run each of the
 \code{vaeac.n_vaeacs_initialize} \code{vaeac} models before continuing to train only the best performing model.}
@@ -127,7 +127,7 @@ used in the masked encoder, see Section 3.3.1 in
 used in the masked encoder, see Section 3.3.1 in
 \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
 
-\item{vaeac.sample_random}{Logcial (default is \code{TRUE}). If \code{TRUE}, the function generates random Monte Carlo samples
+\item{vaeac.sample_random}{Logical (default is \code{TRUE}). If \code{TRUE}, the function generates random Monte Carlo samples
 from the inferred generative distributions. If \code{FALSE}, the function use the most likely values, i.e., the mean and
 class with highest probability for continuous and categorical, respectively.}
 

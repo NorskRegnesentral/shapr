@@ -109,7 +109,10 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Check if user provided a pre-trained vaeac model, otherwise, we train one from scratch.
   if (is.null(parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model)) {
     # We train a vaeac model with the parameters in `parameters`, as user did not provide pre-trained vaeac model
-    if (parameters$verbose == 2) message("Training a `vaeac` model with the provided parameters from scratch.")
+    if (parameters$verbose == 2) {
+      message(paste0("Training a vaeac model with the provided parameters from scratch on the ",
+                     ifelse(parameters$vaeac.extra_parameter$vaeac.cuda, "GPU", "CPU"), "."))
+    }
 
     # Specify that a vaeac model was NOT provided
     parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- FALSE
@@ -147,6 +150,12 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
     # Check some aspects of the pre-trained vaeac model and add it to the parameters list if it passes the checks
     parameters <- vaeac_update_pretrained_model(parameters = parameters)
+
+    # Small prinout informing about the location of the model
+    if (parameters$verbose == 2) {
+      message(paste0("The provided vaeac model is located on the ",
+                     ifelse(parameters$vaeac.extra_parameter$vaeac.cuda, "GPU", "CPU"), "."))
+    }
   }
 
   # Get which vaeac model we are to use, load it and then store the checkpoint
@@ -271,10 +280,10 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' @param folder_to_save_model String (default is [base::tempdir()]). String specifying a path to a folder where
 #' the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
 #' [shapr::explain()] object if `vaeac.save_model = FALSE`.
-#' @param cuda cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
-#' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Often this is
-#' faster for tabular data sets. Note, cuda is not not supported in the current version of the `shapr` package.
-#' TODO: Update this when this is done.
+#' @param cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
+#' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Using a GPU
+#' for smaller tabular dataset often do not improve the efficiency.
+#' See \code{vignette("installation", package = "torch")} fo help to enable running on the GPU (only Linux and Windows).
 #' @param epochs_initiation_phase Positive integer (default is `2`). The number of epochs to run each of the
 #' `n_vaeacs_initialize` `vaeac` models before continuing to train only the best performing model.
 #' @param epochs_early_stopping Positive integer (default is `NULL`). The training stops if there has been no
@@ -1605,9 +1614,9 @@ vaeac_check_parameters <- function(x_train,
 #' from an earlier call to the [shapr::explain()] function. 2) A string containing the path to where the `vaeac`
 #' model is stored on disk, for example, `explanation$internal$parameters$vaeac$models$best`.
 #' @param vaeac.cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
-#' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Often this is
-#' faster for tabular data sets. Note, cuda is not not supported in the current version of the `shapr` package.
-#' TODO: Update this when this is done.
+#' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Using a GPU
+#' for smaller tabular dataset often do not improve the efficiency.
+#' See \code{vignette("installation", package = "torch")} fo help to enable running on the GPU (only Linux and Windows).
 #' @param vaeac.epochs_initiation_phase Positive integer (default is `2`). The number of epochs to run each of the
 #' `vaeac.n_vaeacs_initialize` `vaeac` models before continuing to train only the best performing model.
 #' @param vaeac.epochs_early_stopping Positive integer (default is `NULL`). The training stops if there has been no
@@ -1673,7 +1682,7 @@ vaeac_check_parameters <- function(x_train,
 #' Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using `vaeac`.
 #' If `TRUE`, then [shapr::vaeac_postprocess_data()] will take the \eqn{\exp} of the results to get back to strictly
 #' positive values when using the `vaeac` model to impute missing values/generate the Monte Carlo samples.
-#' @param vaeac.sample_random Logcial (default is `TRUE`). If `TRUE`, the function generates random Monte Carlo samples
+#' @param vaeac.sample_random Logical (default is `TRUE`). If `TRUE`, the function generates random Monte Carlo samples
 #' from the inferred generative distributions. If `FALSE`, the function use the most likely values, i.e., the mean and
 #' class with highest probability for continuous and categorical, respectively.
 #' @param vaeac.which_vaeac_model String (default is `best`). The name of the `vaeac` model (snapshots from different
