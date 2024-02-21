@@ -4,36 +4,89 @@ devtools::load_all()
 
 library(xgboost)
 
-data("airquality")
-data <- data.table::as.data.table(airquality)
-data <- data[complete.cases(data), ]
-data[,newvar1:=rnorm(.N)]
-data[,newvar2:=rnorm(.N)]
-data[,newvar3:=rnorm(.N)]
-data[,newvar4:=rnorm(.N)]
-data[,newvar5:=rnorm(.N)]
+library(data.table)
+library(corrplot)
 
-x_var <- c("Solar.R", "Wind", "Temp", "Month","Day",paste0("newvar",1:5))
-y_var <- "Ozone"
 
-ind_x_explain <- 1:6
-x_train <- data[-ind_x_explain, ..x_var]
-y_train <- data[-ind_x_explain, get(y_var)]
-x_explain <- data[ind_x_explain, ..x_var]
+
+library(xgboost)
+library(data.table)
+
+
+#datafolder <- "/Documents and Settings/jullum/Dropbox/Local_work/Div/NHANES-data/"
+datafolder <- "M:/BigInsight/Projects/Explanations/EffektivShapley/NHANES-data/"
+
+
+x_explain <- fread(file.path(datafolder,"newdata/Xtest_imp.csv"))
+x_train <- fread(file.path(datafolder,"newdata/Xtrain_imp.csv"))
+y_train <- fread(file.path(datafolder,"newdata/ytrain.csv"))$V1
+
+x_explain <- head(x_explain,2)
+
+model <- xgboost::xgb.load(file.path(datafolder,"newdata/xgb_model_imp.json"))
+
+log(predict(model,as.matrix(x_explain)))
+aa=predict(model,as.matrix(x_explain),predcontrib = TRUE)
+rowSums(aa)
+
+
+# ### OK, try to build the model from scracth instead
+#
+# x_strain <- fread(file.path(datafolder,"newdata/Xstrain_imp.csv"))
+# x_valid <- fread(file.path(datafolder,"newdata/Xvalid_imp.csv"))
+#
+# y_train <- fread(file.path(datafolder,"newdata/ytrain.csv"))$V1
+# y_strain <- fread(file.path(datafolder,"newdata/ystrain.csv"))$V1
+# y_valid <- fread(file.path(datafolder,"newdata/yvalid.csv"))$V1
+#
+#
+# x_train_XgbDM <- xgb.DMatrix(data = as.matrix(x_train), label = y_train)
+# x_strain_XgbDM <- xgb.DMatrix(data = as.matrix(x_strain), label = y_strain)
+# x_valid_XgbDM <- xgb.DMatrix(data = as.matrix(x_valid), label = y_valid)
+#
+# params <- list("learning_rate"= 0.001,
+#                "nrounds"= 6765,
+#                "max_depth"= 4,
+#                "subsample"= 0.5,
+#                "reg_lambda"= 5.5,
+#                "reg_alpha"= 0,
+#                "colsample_bytree"= 1)
+#
+# model_R = xgb.train(params=params,
+#                         data = x_strain_XgbDM,
+#                         watchlist = list(valid = x_valid_XgbDM),
+#                         n_jobs=16,
+#                         random_state=1,
+#                         objective="survival:cox",
+# #                        base_score=1,
+# #                        early_stopping_rounds = 1000,
+#                         nrounds = 500,#6765,
+#                         print_every_n = 500)
+#
+# log(predict(model_R,as.matrix(x_explain[1:5])))
+# aa=predict(model_R,as.matrix(x_explain[1:5]),predcontrib = TRUE)
+# exp(rowSums(aa))
+#
+# xgb.train()
+#
+#
 
 # Looking at the dependence between the features
-cor(x_train)
 
-# Fitting a basic xgboost model to the training data
-model <- xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
-  nround = 20,
-  verbose = FALSE
-)
+M <- cor(x_train)
+corrplot(M)
+
+class(model) = "tmp"
+
+
+predict_model <- function(model,newdata){
+  class(model) = "xgb.Booster"
+  predict(model,as.matrix(newdata),outputmargin=TRUE)
+}
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(y_train)
+p0 <- mean(predict_model(model,x_train))
+
 
 #### Set parameters
 
@@ -49,14 +102,15 @@ n_samples = 1e3
 n_batches = NULL
 seed = 1
 keep_samp_for_vS = FALSE
-predict_model = NULL
+#predict_model = NULL
 get_model_specs = NULL
 MSEv_uniform_comb_weights = TRUE
 timing = TRUE
 
+head(predict_model(model,x_explain))
 
 # Gets and check feature specs from the model
-feature_specs <- get_feature_specs(get_model_specs, model)
+feature_specs <- get_feature_specs(get_model_specs, NULL)
 
 
 # Sets up and organizes input parameters
@@ -82,27 +136,30 @@ internal <- shapr:::setup(
 )
 
 #### here I first call treeshap to get the initial scores
-predict(model,as.matrix(x_explain))
-predict(model,as.matrix(x_explain),predcontrib = TRUE)
+predict_model(model,head(as.matrix(x_explain)))
+model_org <- model
+class(model_org) = "xgb.Booster"
+predict(model_org,head(as.matrix(x_explain)),predcontrib = TRUE)
 
 # Here I run an alternative initial, very approximative estimation of the shapley values
 # using the permutation approach with just one or two permutations in total
 
- kernel_exact <-explain(model = model,
-                        x_explain = x_explain,
-                        x_train = x_train,
-                        approach = "ctree",
-                        shap_approach = "kernel",
-                        prediction_zero = p0)
+#kernel_exact <-explain(model = model,
+#                       x_explain = x_explain,
+#                       x_train = x_train,
+#                       approach = "ctree",
+#                       shap_approach = "kernel",
+#                       prediction_zero = p0)
 
 
-initial_permute <-explain(model = model,
-                          x_explain = x_explain,
-                          x_train = x_train,
-                          approach = "ctree",
-                          shap_approach = "permutation",
-                          prediction_zero = p0,
-                          n_permutations = 2)
+#initial_permute <-explain(model = model,
+#                          x_explain = x_explain,
+#                          x_train = x_train,
+#                          approach = "ctree",
+#                          shap_approach = "permutation",
+#                          prediction_zero = p0,
+#                          n_permutations = 2,
+#                          predict_model=predict_model)
 
 ### Here I will run a for loop, where I
 # 1. Decide which feature to update the estimate of (based on either size of absolute shapley value
@@ -119,8 +176,9 @@ initial_permute <-explain(model = model,
 # entirely from the remaining computations.
 
 # Maximum number of features to compute Shapley values for properly
+x_var <- colnames(x_train)
 top_k <- 3
-m <- length(x_var)
+m <- ncol(x_train)
 current_ranks_list <- list()
 n_explain <- nrow(x_explain)
 
@@ -131,7 +189,8 @@ n_explain <- nrow(x_explain)
 
 
 
-update_these_features <- names(sort(colMeans(abs(initial_permute$shapley_values[,-1])),decreasing = TRUE))[1:top_k]
+#update_these_features <- names(sort(colMeans(abs(initial_permute$shapley_values[,-1])),decreasing = TRUE))[1:top_k]
+
 
 no_computed_S <- 0
 current_updates_per_features <- rep(0,m)
@@ -145,33 +204,24 @@ shapley_dt0_sd <- data.table(matrix(0,nrow = n_explain,ncol = m))
 names(shapley_dt0) <- names(shapley_dt0_sd) <- x_var
 
 
-current_feats <- list(integer(0),seq(m))
+current_feats <- NULL#list(integer(0),seq(m))
 vS_all <- NULL
-predict_model <- get_predict_model(
-  predict_model = NULL,
-  model = model
-)
+#predict_model <- get_predict_model(
+#  predict_model = NULL,
+#  model = model
+#)
 
-X0 <- data.table(features = current_feats)
 
 internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
 next_feature_update <- 1
-t_convergence_threshold <- 0.001
-min_updates_per_feature <- 3
-max_unique_S <- Inf
-max_perms <- 5*10^4
-
+t_convergence_threshold <- 0.01
+min_updates_per_feature <- 5
 
 set.seed(123)
 #for(j in seq_len(m)){
 converged <- FALSE
 counter <- 0
-res_list <- list(shapley_perm=list(),
-                 shapley_perm_sd=list(),
-                 shapley_kernel=list())
-
-
 while (converged == FALSE){
   j <- next_feature_update
 
@@ -187,15 +237,9 @@ while (converged == FALSE){
                        sort(perm[seq(pos_j,m)]),sort(perm[seq(pos_j+1,m)]))
   }
 
-  X0new <- data.table(features = feats_perm)
+  current_feats <- unique(c(current_feats,feats_perm))
 
-  X0 <- rbind(X0,X0new,fill=TRUE)
-  X0[,features_str:=sapply(features, paste, collapse = " ")]
-  X0[,reps:=.N,by=features_str]
-
-  X <- unique(X0,by="features_str")
-  current_feats <- X[["features"]]
-
+  X <- data.table(features = current_feats)
   S <- feature_matrix_cpp(
     features = c(list(integer(0)),X[["features"]]),
     m = m
@@ -247,26 +291,9 @@ while (converged == FALSE){
 
   shapley_dt_with_sd <- as.data.table(matrix(paste(matrix1, " (", matrix2, ")", sep = ""), nrow = n_explain))
   names(shapley_dt_with_sd) <- x_var
+  #print(shapley_dt_with_sd)
 
-  ### KernelSHAP ####
-
-  X <- X[seq(vS_all[,.N])]
-  X[,n_features:=unlist(lapply(features,length))]
-  X[,shapley_weight:=reps]
-  X[n_features %in% c(0,m),shapley_weight:=10^6]
-  X[,orgorder:=.I]
-  setorder(X,n_features)
-
-  W <- weight_matrix(
-    X = X,
-    normalize_W_weights = TRUE,
-    is_groupwise = FALSE
-  )
-
-  kshap <- t(W %*% as.matrix(vS_all[X[,orgorder],]))
-  dt_kshap <- data.table::as.data.table(kshap)
-  colnames(dt_kshap) <- c("none", x_var)
-
+  #print(shapley_dt)
 
   current_updates_per_features[j] <- current_updates_per_features[j]+1
 
@@ -276,14 +303,14 @@ while (converged == FALSE){
     avg_sd <- colMeans(shapley_dt0_sd)
     avg_sd_scaled <- colMeans(shapley_dt0_sd_scaled)
     next_feature_update <- unname(which.max(avg_sd_scaled))
-#    print(avg_sd_scaled)
-#    Sys.sleep(1)
+    #    print(avg_sd_scaled)
+    #    Sys.sleep(1)
 
     range_per_obs <- apply(shapley_dt0,1,function(x)diff(range(x)))
     max_range <- max(range_per_obs)
 
     estimated_total_samples_per_feature <- (avg_sd/(t_convergence_threshold*max_range))^2
-#    print(paste0("Estimated number of samples for highest variance variable: ",max(estimated_total_samples_per_feature)))
+    #    print(paste0("Estimated number of samples for highest variance variable: ",max(estimated_total_samples_per_feature)))
 
     #print(current_updates_per_features)
 
@@ -291,11 +318,7 @@ while (converged == FALSE){
       converged <- TRUE
     }
 
-    if(no_computed_S > max_unique_S){
-      converged <- TRUE
-    }
-
-    if(counter > max_perms){
+    if(no_computed_S > 1000){
       converged <- TRUE
     }
 
@@ -303,56 +326,64 @@ while (converged == FALSE){
   }
   counter <- counter + 1
 
-  if (counter %% 100 == 0) {
+  if (counter %% 10 == 0) {
     print(counter)
     print(shapley_dt_with_sd)
   }
-
-  res_list$shapley_perm[[counter]] <- copy(shapley_dt0)
-  res_list$shapley_perm_sd[[counter]] <- copy(shapley_dt0_sd_scaled)
-  res_list$shapley_kernel[[counter]] <- copy(dt_kshap[,-1])
-
+  print(counter)
 
 }
 
+# Manual kernelSHAP down here
 
-X[-c(1,1024),shapley_weight_norm:=shapley_weight/sum(shapley_weight)]
-X[c(1,1024),shapley_weight_norm:=shapley_weight]
+dt <- feature_not_exact(m = m,
+                        n_combinations = 88,
+                        weight_zero_m =10^6,
+                        unique_sampling = TRUE,
+                        paired_shap_sampling = paired_shap_sampling)
 
-m
-n_features <- seq(m - 1)
-n <- sapply(n_features, choose, n = m)
-w <- shapley_weights(m = m, N = n, n_features) * n
-real_shapley_weights=data.table(shapley_weight_real=w,n_features)
-real_shapley_weights <- rbind(real_shapley_weights,t(c(10^6,0)),t(c(10^6,10)),use.names=FALSE)
+#setorder(X,orgorder)
+X <- X[seq(vS_all[,.N])]
+X[,n_features:=unlist(lapply(features,length))]
+X[,shapley_weight:=1]
+X[n_features %in% c(0,m),shapley_weight:=10^6]
+X[,orgorder:=.I]
+setorder(X,n_features)
 
-XX <- merge(X,real_shapley_weights,by="n_features")
+W <- weight_matrix(
+  X = X,
+  normalize_W_weights = TRUE,
+  is_groupwise = FALSE
+)
 
-XX[-c(1,1024),shapley_weight_real_norm:=shapley_weight_real/sum(shapley_weight_real)]
-XX[c(1,1024),shapley_weight_real_norm:=shapley_weight_real]
+kshap <- t(W %*% as.matrix(vS_all[X[,orgorder],]))
+dt_kshap <- data.table::as.data.table(kshap)
+colnames(dt_kshap) <- c("none", x_var)
 
-XX[,mean(shapley_weight_norm),by=n_features]
-XX[,mean(shapley_weight_real_norm),by=n_features]
+aa[,1:8]
+dt_kshap[,2:9]
+shapley_dt_with_sd[,1:8]
 
-plot(XX[-c(1,1024),shapley_weight_norm])
-lines(XX[-c(1,1024),shapley_weight_real_norm],col=2)
+vS_all
 
-# Vektene er ikke helt som de skal være pga samplingsformen. Må si fall justeres noe
 
-RMSE_mat_perm <- RMSE_mat_kernel <- matrix(0,nrow = counter,ncol = m)
-for(i in seq_len(counter)){
-  RMSE_mat_perm[i,] <- sqrt(colMeans((kernel_exact$shapley_values[,-1]-res_list$shapley_perm[[i]])^2))
-  RMSE_mat_kernel[i,] <- sqrt(colMeans((kernel_exact$shapley_values[,-1]-res_list$shapley_kernel[[i]])^2))
-}
+X <- feature_combinations(
+  m = m,
+  exact = FALSE,
+  n_combinations = 88,
+  weight_zero_m = 10^6,
+  group_num = NULL,
+  paired_shap_sampling = paired_shap_sampling
+)
 
-head(MSE_mat_perm)
-head(MSE_mat_kernel)
 
-plot(MSE_mat_perm[,1],type="l")
-lines(MSE_mat_kernel[,1],col=2)
 
-plot(MSE_mat_perm[,4],type="l")
-lines(MSE_mat_kernel[,4],col=2)
+
+
+
+
+
+
 
 
 internal <- setup_computation(internal, model, predict_model)
