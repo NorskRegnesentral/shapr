@@ -103,8 +103,12 @@ a more detailed description of the parameters.
 
 There are additional extra parameters which can be set by including a named list in the call to
 the `explain()` function. For example, we can the change the batch size to 32 by including
-`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
-extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
+`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function.
+See `?shapr::vaeac_get_extra_para_default` for a description of the possible extra parameters to the `vaeac` approach.
+We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place
+in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function,
+while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach
+will try to correct for misplaced and duplicated parameters and give warnings to the user.
 
 # Code Examples {#code}
 We now demonstrate the `vaeac` approach on several different use cases.
@@ -148,14 +152,13 @@ prediction_zero <- mean(y_train)
 
 We are now going to explain predictions made by the model using the `vaeac` approach.
 
-
 ```{r first-vaeac, cache = TRUE}
 n_samples <- 25 # Low number of MC samples to make the vignette build faster
 n_batches <- 1 # Do all coalitions in one batch
 vaeac.save_every_nth_epoch <- 3 # Save every 3th epoch + best and last epoch
 vaeac.n_vaeacs_initialize <- 2 # Initialize several vaeacs to counteract bad initialization values
 vaeac.epochs <- 4 # The number of training epochs
-vaeac.cuda <- FALSE # We run everything on CPU, but all code below works on GPU to
+vaeac.cuda <- FALSE # We run everything on CPU, but all code below works on GPU too
 
 explanation <- explain(
   model = model,
@@ -173,7 +176,6 @@ explanation <- explain(
   )
 )
 ```
-
 We can look at the Shapley values.
 
 ```{r first-vaeac-plots, cache = TRUE}
@@ -183,11 +185,11 @@ print(explanation$shapley_values)
 plot(explanation)
 ```
 
-
 ## Pre-trained vaeac {#pretrained_vaeac}
 If the user has a pre-trained `vaeac` model (from a previous run), the user can send that to the `explain()` function
 and `shapr` will skip the training of a new `vaeac` model and rather use the provided `vaeac` model. The `vaeac` model
-is accessible via `explanation$internal$parameters$vaeac`. Note that if we set `verbose = 2` in `explain()`, then `shapr` will give a message that it loads a pretrained `vaeac` model instead of training it from scratch.
+is accessible via `explanation$internal$parameters$vaeac`. Note that if we set `verbose = 2` in `explain()`, then
+`shapr` will give a message that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 In this example, we extract the trained `vaeac` model from the previous example and send it to `explain()`.
 
@@ -212,7 +214,9 @@ all.equal(explanation$shapley_values, expl_pretrained_vaeac$shapley_values)
 
 ## Pre-trained vaeac (path) {#pretrained_vaeac_path}
 We can also just provide a path to the stored `vaeac` model. This is beneficial if we have only stored the `vaeac`
-model on the computer but not the whole `explanation` object. The possible save paths are stored in `explanation$internal$parameters$vaeac$model`. Note that if we set `verbose = 2` in `explain()`, then `shapr` will give a message that it loads a pretrained `vaeac` model instead of training it from scratch.
+model on the computer but not the whole `explanation` object. The possible save paths are stored in
+`explanation$internal$parameters$vaeac$model`. Note that if we set `verbose = 2` in `explain()`, then `shapr` will give
+a message that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 ```{r pretrained-vaeac-path, cache = TRUE}
 # Call `explanation$internal$parameters$vaeac$model` to see possible vaeac models. We use `best` below.
@@ -701,7 +705,8 @@ plot(expl_group)
 
 
 ## Mixed Data {#mixed_data}
-Here we look at a setup with mixed data, i.e., the data contains both categorical and continuous features. First we set up the data and the model.
+Here we look at a setup with mixed data, i.e., the data contains both categorical and continuous features.
+First we set up the data and the model.
 ```{r ctree-mixed-data, cache = TRUE}
 library(ranger)
 data <- data.table::as.data.table(airquality)
@@ -809,6 +814,9 @@ there are often no benefit of using a GPU. However, this depends on what kind of
 Furthermore, the times depends on several factors, e.g., the number of training observations, explicands, features, and
 batches.
 
+Futhermore, note that if the user specifies `vaeac.cuda = TRUE`, but there is no available GPU, then `vaeac` provides
+a warning and falls back to use CPU instead.
+
 ```{r}
 # Load necessary library
 library(mvtnorm)
@@ -907,7 +915,3 @@ plot_SV_several_approaches(
   facet_ncol = 3
 )
 ```
-
-
-
-
