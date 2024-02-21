@@ -8,7 +8,7 @@ linters: linters_with_defaults(
     )
 exclusions: list(
         "inst/scripts",
-        "vignettes/understanding_shapr.R",
+        "vignettes",
         "R/RcppExports.R",
         "R/zzz.R"
     )
