@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
   fig.path = "figure_main/", # Ensure that figures are saved in the right folder (this vignette will be built manually)
   cache.path = "cache_main/", # Ensure that cached objects are saved in the right folder
   warning = FALSE,
-  message = FALSE
+  message = TRUE
 )
 ```
 

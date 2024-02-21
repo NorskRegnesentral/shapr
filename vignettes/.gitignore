@@ -1,3 +1,4 @@
 *.html
 *.R
-cache/*
+cache_main/*
+cache_vaeac/*

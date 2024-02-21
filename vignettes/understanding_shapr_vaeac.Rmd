@@ -40,14 +40,13 @@ editor_options:
 
 > [Mixed data](#mixed_data)
 
-> [Future Updates](#FutureUpdates)
+> [Comparing CPU and GPU](#cpu_vs_gpu)
 
 <a id="intro"></a>
 
 In this vignette, we elaborate and illustrate the `vaeac` approach in more depth than in the main vignette.
 In the main vignette, only a few basic examples of using `vaeac` is included, while we here showcase more
 advanced usage. See the overview above for what topics that are covered in this vignette.
-
 
 
 
@@ -137,12 +136,14 @@ prediction_zero <- mean(y_train)
 We are now going to explain predictions made by the model using the `vaeac` approach.
 
 
+
 ```r
 n_samples <- 25 # Low number of MC samples to make the vignette build faster
 n_batches <- 1 # Do all coalitions in one batch
-vaeac.save_every_nth_epoch <- 3 # Save the vaeac model every 3th epoch + best and last epoch
-vaeac.n_vaeacs_initialize <- 2 # Number of vaeacs to initialize to counteract bad initialization values (extra para)
-vaeac.epochs <- 4 # The number of epochs
+vaeac.save_every_nth_epoch <- 3 # Save every 3th epoch + best and last epoch
+vaeac.n_vaeacs_initialize <- 2 # Initialize several vaeacs to counteract bad initialization values
+vaeac.epochs <- 4 # The number of training epochs
+vaeac.cuda <- FALSE # We run everything on CPU, but all code below works on GPU to
 
 explanation <- explain(
   model = model,
@@ -154,24 +155,30 @@ explanation <- explain(
   n_batches = n_batches,
   vaeac.epochs = vaeac.epochs,
   vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize,
-  vaeac.extra_parameters = list(vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch)
+  vaeac.extra_parameters = list(
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
+    vaeac.cuda = vaeac.cuda
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 We can look at the Shapley values.
 
 
 ```r
-# Printing and ploting the Shapley values. See ?shapr::explain for interpretation of the values.
+# Printing and ploting the Shapley values.
+# See ?shapr::explain for interpretation of the values.
 print(explanation$shapley_values)
-#>        none   Solar.R      Wind       Temp      Month
-#>       <num>     <num>     <num>      <num>      <num>
-#> 1: 43.08571  6.120728  3.143015 -18.677950 -2.8861381
-#> 2: 43.08572 -2.077884 -2.554779 -20.118234  0.6956914
-#> 3: 43.08572  3.038485 -5.512098 -18.257521 -2.5587136
-#> 4: 43.08571  3.000938 -4.722036  -8.945166 -3.9248570
-#> 5: 43.08572 -1.102200 -4.431948 -13.545894 -5.2956652
-#> 6: 43.08571  3.932041 -9.844483 -11.948902 -3.5601849
+#>      none Solar.R    Wind     Temp    Month
+#>     <num>   <num>   <num>    <num>    <num>
+#> 1: 43.086  6.1207  3.1430 -18.6779 -2.88614
+#> 2: 43.086 -2.0779 -2.5548 -20.1182  0.69569
+#> 3: 43.086  3.0385 -5.5121 -18.2575 -2.55871
+#> 4: 43.086  3.0009 -4.7220  -8.9452 -3.92486
+#> 5: 43.086 -1.1022 -4.4319 -13.5459 -5.29567
+#> 6: 43.086  3.9320 -9.8445 -11.9489 -3.56018
 plot(explanation)
 ```
 
@@ -196,8 +203,12 @@ expl_pretrained_vaeac <- explain(
   prediction_zero = prediction_zero,
   n_batches = n_batches,
   n_samples = n_samples,
-  vaeac.extra_parameters = list(vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac)
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Check that this version provides the same Shapley values
 all.equal(explanation$shapley_values, expl_pretrained_vaeac$shapley_values)
@@ -220,8 +231,12 @@ expl_pretrained_vaeac_path <- explain(
   prediction_zero = prediction_zero,
   n_batches = n_batches,
   n_samples = n_samples,
-  vaeac.extra_parameters = list(vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac$models$best)
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac$models$best
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Check that this version provides the same Shapley values
 all.equal(explanation$shapley_values, expl_pretrained_vaeac_path$shapley_values)
@@ -254,11 +269,13 @@ expl_batches_combinations <- explain(
   n_combinations = 10,
   n_batches = 5,
   n_samples = n_samples,
-  verbose = 2,
   vaeac.extra_parameters = list(
-    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
+    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac,
+    vaeac.cuda = vaeac.cuda
   )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Gives different Shapley values as the latter one are only based on a subset of coalitions
 plot_SV_several_approaches(list("Original" = explanation, "Other combi." = expl_batches_combinations))
@@ -327,8 +344,30 @@ expl_batches_combinations_2 <- explain(
   n_samples = n_samples,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.epochs = 3,
-  verbose = 2
+  verbose = 2,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Starting 'setup_approach.vaeac'.
+#> Training a vaeac model with the provided parameters from scratch on the CPU.
+#> Using 'Specified_masks_mask_generator' with '8' coalitions.
+#> The vaeac model contains 17032 trainable parameters.
+#> Initializing vaeac number 1 of 1.
+#> Best vaeac inititalization was number 1 (of 1) with a training VLB = -6.451 after 2 epochs. Continue to train this inititalization.
+#> Saving `best` vaeac model at epoch 3.
+#> Saving `best_running` vaeac model at epoch 3.
+#> Saving `last` vaeac model at epoch 3.
+#> 
+#> Results of the `vaeac` training process:
+#> Best epoch:             3. 	VLB = -4.824 	IWAE = -3.252 	IWAE_running = -3.540
+#> Best running avg epoch: 3. 	VLB = -4.824 	IWAE = -3.252 	IWAE_running = -3.540
+#> Last epoch:             3. 	VLB = -4.824 	IWAE = -3.252 	IWAE_running = -3.540
+#> Done with 'setup_approach.vaeac'.
+#> Working on batch 1 of 1 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
 ```
 
 
@@ -354,8 +393,13 @@ expl_paired_sampling_TRUE <- explain(
   n_batches = n_batches,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
-  vaeac.extra_parameters = list(vaeac.paired_sampling = TRUE)
+  vaeac.extra_parameters = list(
+    vaeac.paired_sampling = TRUE,
+    vaeac.cuda = vaeac.cuda
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 expl_paired_sampling_FALSE <- explain(
   model = model,
@@ -367,14 +411,20 @@ expl_paired_sampling_FALSE <- explain(
   n_batches = n_batches,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
-  vaeac.extra_parameters = list(vaeac.paired_sampling = FALSE)
+  vaeac.extra_parameters = list(
+    vaeac.paired_sampling = FALSE,
+    vaeac.cuda = vaeac.cuda
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
 
 ```r
-explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE, "Paired samp." = expl_paired_sampling_TRUE)
+explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE,
+                         "Paired samp." = expl_paired_sampling_TRUE)
 vaeac_plot_evaluation_criteria(explanation_list, plot_type = "criterion")
 ```
 
@@ -391,11 +441,12 @@ phase, that is, in the training phase.
 
 ```r
 rbind(
-  "Paired" = expl_paired_sampling_TRUE$timing$timing_secs, "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
+  "Paired" = expl_paired_sampling_TRUE$timing$timing_secs,
+  "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
 )
-#>              setup test_prediction setup_computation compute_vS shapley_computation
-#> Paired  0.05959797      0.04166913          10.23135   0.431824         0.006705999
-#> Regular 0.05183983      0.04031301          10.10933   0.437362         0.008903980
+#>            setup test_prediction setup_computation compute_vS shapley_computation
+#> Paired  0.060336        0.044753            7.2318    0.30695           0.0045791
+#> Regular 0.058398        0.042936            6.5810    0.30968           0.0047970
 ```
 
 
@@ -422,8 +473,11 @@ expl_without_messages <- explain(
   n_batches = 5,
   verbose = 0,
   vaeac.epochs = 5,
-  vaeac.n_vaeacs_initialize = 2
+  vaeac.n_vaeacs_initialize = 2,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 By setting `verbose = 2`, we will get messages about the progress.
@@ -440,8 +494,50 @@ expl_with_messages <- explain(
   n_batches = 5,
   verbose = 2,
   vaeac.epochs = 5,
-  vaeac.n_vaeacs_initialize = 2
+  vaeac.n_vaeacs_initialize = 2,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Starting 'setup_approach.vaeac'.
+#> Training a vaeac model with the provided parameters from scratch on the CPU.
+#> Using 'MCAR_mask_generator' with 'masking_ratio = 0.5'.
+#> The vaeac model contains 17032 trainable parameters.
+#> Initializing vaeac number 1 of 2.
+#> Initializing vaeac number 2 of 2.
+#> Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.566 after 2 epochs. Continue to train this inititalization.
+#> Saving `best` vaeac model at epoch 3.
+#> Saving `best_running` vaeac model at epoch 3.
+#> Saving `best_running` vaeac model at epoch 4.
+#> Saving `best` vaeac model at epoch 5.
+#> Saving `best_running` vaeac model at epoch 5.
+#> Saving `last` vaeac model at epoch 5.
+#> 
+#> Results of the `vaeac` training process:
+#> Best epoch:             5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
+#> Best running avg epoch: 5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
+#> Last epoch:             5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
+#> Done with 'setup_approach.vaeac'.
+#> Working on batch 1 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Working on batch 2 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Working on batch 3 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Working on batch 4 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Working on batch 5 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
 all.equal(expl_without_messages$shapley_values, expl_with_messages$shapley_values)
 #> [1] TRUE
 ```
@@ -481,9 +577,51 @@ progressr::with_progress({
     n_batches = 5,
     verbose = 2,
     vaeac.epochs = 5,
-    vaeac.n_vaeacs_initialize = 2
+    vaeac.n_vaeacs_initialize = 2,
+    vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
   )
 })
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Starting 'setup_approach.vaeac'.
+#> Training a vaeac model with the provided parameters from scratch on the CPU.
+#> Using 'MCAR_mask_generator' with 'masking_ratio = 0.5'.
+#> The vaeac model contains 17032 trainable parameters.
+#> Initializing vaeac number 1 of 2.
+#> Initializing vaeac number 2 of 2.
+#> Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.566 after 2 epochs. Continue to train this inititalization.
+#> Saving `best` vaeac model at epoch 3.
+#> Saving `best_running` vaeac model at epoch 3.
+#> Saving `best_running` vaeac model at epoch 4.
+#> Saving `best` vaeac model at epoch 5.
+#> Saving `best_running` vaeac model at epoch 5.
+#> Saving `last` vaeac model at epoch 5.
+#> 
+#> Results of the `vaeac` training process:
+#> Best epoch:             5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
+#> Best running avg epoch: 5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
+#> Last epoch:             5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
+#> Done with 'setup_approach.vaeac'.
+#> Working on batch 1 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Working on batch 2 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Working on batch 3 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Working on batch 4 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Working on batch 5 of 5 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
 all.equal(expl_without_messages$shapley_values, expl_with_progressr$shapley_values)
 #> [1] TRUE
 ```
@@ -511,8 +649,13 @@ expl_little_training <- explain(
   n_batches = n_batches,
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch)
+  vaeac.extra_parameters = list(
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
+    vaeac.cuda = vaeac.cuda
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Look at the training and validation errors. Not happy and want to train more.
 vaeac_plot_evaluation_criteria(list("Original" = expl_little_training), plot_type = "method")
@@ -523,7 +666,30 @@ vaeac_plot_evaluation_criteria(list("Original" = expl_little_training), plot_typ
 ```r
 
 # Can also see how well vaeac generates data from the full joint distribution. Quite good.
-vaeac_plot_imputed_ggpairs(explanation = expl_little_training, which_vaeac_model = "best", x_true = x_train)
+vaeac_plot_imputed_ggpairs(
+  explanation = expl_little_training,
+  which_vaeac_model = "best",
+  x_true = x_train
+)
+#> Registered S3 method overwritten by 'GGally':
+#>   method from   
+#>   +.gg   ggplot2
+#> plot: [1, 1] [======>-----------------------------------------------------------------------------------------------------------] 6% est: 0s
+#> plot: [1, 2] [=============>----------------------------------------------------------------------------------------------------] 12% est: 1s
+#> plot: [1, 3] [====================>---------------------------------------------------------------------------------------------] 19% est: 1s
+#> plot: [1, 4] [===========================>--------------------------------------------------------------------------------------] 25% est: 1s
+#> plot: [2, 1] [===================================>------------------------------------------------------------------------------] 31% est: 1s
+#> plot: [2, 2] [==========================================>-----------------------------------------------------------------------] 38% est: 1s
+#> plot: [2, 3] [=================================================>----------------------------------------------------------------] 44% est: 1s
+#> plot: [2, 4] [========================================================>---------------------------------------------------------] 50% est: 1s
+#> plot: [3, 1] [===============================================================>--------------------------------------------------] 56% est: 0s
+#> plot: [3, 2] [======================================================================>-------------------------------------------] 62% est: 0s
+#> plot: [3, 3] [=============================================================================>------------------------------------] 69% est: 0s
+#> plot: [3, 4] [=====================================================================================>----------------------------] 75% est: 0s
+#> plot: [4, 1] [============================================================================================>---------------------] 81% est: 0s
+#> plot: [4, 2] [===================================================================================================>--------------] 88% est: 0s
+#> plot: [4, 3] [==========================================================================================================>-------] 94% est: 0s
+#> plot: [4, 4] [==================================================================================================================]100% est: 0s
 ```
 
 ![](figure_vaeac/continue-training-2.png)
@@ -533,7 +699,11 @@ vaeac_plot_imputed_ggpairs(explanation = expl_little_training, which_vaeac_model
 # Make a copy of the explanation object and continue to train the vaeac model some more epochs
 expl_train_more <- expl_little_training
 expl_train_more$internal$parameters$vaeac <-
-  vaeac_train_model_continue(explanation = expl_train_more, epochs_new = 5, x_train = x_train, verbose = 0)
+  vaeac_train_model_continue(
+    explanation = expl_train_more,
+    epochs_new = 5,
+    x_train = x_train
+  )
 
 # Compute the Shapley values again but this time using the extra trained vaeac model
 expl_train_more_vaeac <- explain(
@@ -544,12 +714,16 @@ expl_train_more_vaeac <- explain(
   prediction_zero = prediction_zero,
   n_batches = n_batches,
   n_samples = 250,
-  verbose = 0,
-  vaeac.extra_parameters = list(vaeac.pretrained_vaeac_model = expl_train_more$internal$parameters$vaeac)
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = expl_train_more$internal$parameters$vaeac
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Look at the training and validation errors and conclude that we want to train some more
-vaeac_plot_evaluation_criteria(list("Original" = expl_little_training, "More epochs" = expl_train_more),
+vaeac_plot_evaluation_criteria(
+  list("Original" = expl_little_training, "More epochs" = expl_train_more),
   plot_type = "method"
 )
 ```
@@ -564,8 +738,7 @@ expl_train_even_more$internal$parameters$vaeac <-
   vaeac_train_model_continue(
     explanation = expl_train_even_more,
     epochs_new = 10,
-    x_train = x_train,
-    verbose = 0
+    x_train = x_train
   )
 
 # Compute the Shapley values again but this time using the even more trained vaeac model
@@ -577,16 +750,22 @@ expl_train_even_more_vaeac <- explain(
   prediction_zero = prediction_zero,
   n_batches = n_batches,
   n_samples = 250,
-  verbose = 0,
-  vaeac.extra_parameters = list(vaeac.pretrained_vaeac_model = expl_train_even_more$internal$parameters$vaeac)
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = expl_train_even_more$internal$parameters$vaeac
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criteria(list(
-  "Original" = expl_little_training,
-  "More epochs" = expl_train_more,
-  "Even more epochs" = expl_train_even_more
-), plot_type = "method")
+vaeac_plot_evaluation_criteria(
+  list(
+    "Original" = expl_little_training,
+    "More epochs" = expl_train_more,
+    "Even more epochs" = expl_train_even_more
+  ),
+  plot_type = "method"
+)
 ```
 
 ![](figure_vaeac/continue-training-4.png)
@@ -594,7 +773,27 @@ vaeac_plot_evaluation_criteria(list(
 ```r
 
 # Can also see how well vaeac generates data from the full joint distribution
-vaeac_plot_imputed_ggpairs(explanation = expl_train_even_more, which_vaeac_model = "best", x_true = x_train)
+vaeac_plot_imputed_ggpairs(
+  explanation = expl_train_even_more,
+  which_vaeac_model = "best",
+  x_true = x_train
+)
+#> plot: [1, 1] [======>-----------------------------------------------------------------------------------------------------------] 6% est: 0s
+#> plot: [1, 2] [=============>----------------------------------------------------------------------------------------------------] 12% est: 1s
+#> plot: [1, 3] [====================>---------------------------------------------------------------------------------------------] 19% est: 1s
+#> plot: [1, 4] [===========================>--------------------------------------------------------------------------------------] 25% est: 1s
+#> plot: [2, 1] [===================================>------------------------------------------------------------------------------] 31% est: 1s
+#> plot: [2, 2] [==========================================>-----------------------------------------------------------------------] 38% est: 1s
+#> plot: [2, 3] [=================================================>----------------------------------------------------------------] 44% est: 1s
+#> plot: [2, 4] [========================================================>---------------------------------------------------------] 50% est: 1s
+#> plot: [3, 1] [===============================================================>--------------------------------------------------] 56% est: 0s
+#> plot: [3, 2] [======================================================================>-------------------------------------------] 62% est: 0s
+#> plot: [3, 3] [=============================================================================>------------------------------------] 69% est: 0s
+#> plot: [3, 4] [=====================================================================================>----------------------------] 75% est: 0s
+#> plot: [4, 1] [============================================================================================>---------------------] 81% est: 0s
+#> plot: [4, 2] [===================================================================================================>--------------] 88% est: 0s
+#> plot: [4, 3] [==========================================================================================================>-------] 94% est: 0s
+#> plot: [4, 4] [==================================================================================================================]100% est: 0s
 ```
 
 ![](figure_vaeac/continue-training-5.png)
@@ -643,11 +842,54 @@ expl_early_stopping <- explain(
   verbose = 2,
   vaeac.epochs = 1000, # Set it to a big number
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2) # Low value here for faster building of the vignette
+  vaeac.extra_parameters = list(
+    vaeac.epochs_early_stopping = 2, # Low value here for faster building of the vignette
+    vaeac.cuda = vaeac.cuda
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Starting 'setup_approach.vaeac'.
+#> Training a vaeac model with the provided parameters from scratch on the CPU.
+#> Using 'MCAR_mask_generator' with 'masking_ratio = 0.5'.
+#> The vaeac model contains 17032 trainable parameters.
+#> Initializing vaeac number 1 of 2.
+#> Initializing vaeac number 2 of 2.
+#> Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.566 after 2 epochs. Continue to train this inititalization.
+#> Saving `best` vaeac model at epoch 3.
+#> Saving `best_running` vaeac model at epoch 3.
+#> Saving `best_running` vaeac model at epoch 4.
+#> Saving `best` vaeac model at epoch 5.
+#> Saving `best_running` vaeac model at epoch 5.
+#> Saving `best_running` vaeac model at epoch 6.
+#> Saving `best` vaeac model at epoch 7.
+#> Saving `best_running` vaeac model at epoch 7.
+#> Saving `best` vaeac model at epoch 8.
+#> Saving `best_running` vaeac model at epoch 8.
+#> Saving `best_running` vaeac model at epoch 9.
+#> Saving `best` vaeac model at epoch 10.
+#> Saving `best_running` vaeac model at epoch 10.
+#> Saving `best_running` vaeac model at epoch 11.
+#> Saving `best` vaeac model at epoch 12.
+#> Saving `best_running` vaeac model at epoch 12.
+#> No IWAE improvment in 2 epochs. Apply early stopping at epoch 14.
+#> Saving `last` vaeac model at epoch 14.
+#> 
+#> Results of the `vaeac` training process:
+#> Best epoch:             12. 	VLB = -2.958 	IWAE = -2.930 	IWAE_running = -2.991
+#> Best running avg epoch: 12. 	VLB = -2.958 	IWAE = -2.930 	IWAE_running = -2.991
+#> Last epoch:             14. 	VLB = -2.971 	IWAE = -2.955 	IWAE_running = -2.996
+#> Done with 'setup_approach.vaeac'.
+#> Working on batch 1 of 1 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
 
 # Look at the training and validation errors. We are quite happy with it.
-vaeac_plot_evaluation_criteria(list("Vaeac early stopping" = expl_early_stopping), plot_type = "method")
+vaeac_plot_evaluation_criteria(
+  list("Vaeac early stopping" = expl_early_stopping),
+  plot_type = "method"
+)
 ```
 
 ![](figure_vaeac/early-stopping-1-1.png)
@@ -666,7 +908,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
     explanation = expl_early_stopping_train_more,
     epochs_new = 15,
     x_train = x_train,
-    verbose = 2
+    verbose = 0
   )
 
 # Can even do it twice if desired
@@ -675,14 +917,17 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
     explanation = expl_early_stopping_train_more,
     epochs_new = 10,
     x_train = x_train,
-    verbose = 2
+    verbose = 0
   )
 
 # Look at the training and validation errors. We see some improvement
-vaeac_plot_evaluation_criteria(list(
-  "Vaeac early stopping" = expl_early_stopping,
-  "Vaeac early stopping more epochs" = expl_early_stopping_train_more
-), plot_type = "method")
+vaeac_plot_evaluation_criteria(
+  list(
+    "Vaeac early stopping" = expl_early_stopping,
+    "Vaeac early stopping more epochs" = expl_early_stopping_train_more
+  ),
+  plot_type = "method"
+)
 ```
 
 ![](figure_vaeac/early-stopping-2-1.png)
@@ -704,6 +949,8 @@ expl_early_stopping_train_more <- explain(
     vaeac.pretrained_vaeac_model = expl_early_stopping_train_more$internal$parameters$vaeac
   )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # We can compare their MSEv scores
 plot_MSEv_eval_crit(list(
@@ -750,7 +997,35 @@ expl_group <- explain(
   verbose = 2,
   vaeac.epochs = 4,
   vaeac.n_vaeacs_initialize = 2,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Starting 'setup_approach.vaeac'.
+#> Training a vaeac model with the provided parameters from scratch on the CPU.
+#> Using 'Specified_masks_mask_generator' with '2' coalitions.
+#> The vaeac model contains 17032 trainable parameters.
+#> Initializing vaeac number 1 of 2.
+#> Initializing vaeac number 2 of 2.
+#> Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.814 after 2 epochs. Continue to train this inititalization.
+#> Saving `best` vaeac model at epoch 3.
+#> Saving `best_running` vaeac model at epoch 3.
+#> Saving `best_running` vaeac model at epoch 4.
+#> Saving `last` vaeac model at epoch 4.
+#> 
+#> Results of the `vaeac` training process:
+#> Best epoch:             3. 	VLB = -3.935 	IWAE = -3.124 	IWAE_running = -3.267
+#> Best running avg epoch: 4. 	VLB = -3.619 	IWAE = -3.138 	IWAE_running = -3.235
+#> Last epoch:             4. 	VLB = -3.619 	IWAE = -3.138 	IWAE_running = -3.235
+#> Done with 'setup_approach.vaeac'.
+#> Working on batch 1 of 2 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Working on batch 2 of 2 in `prepare_data.vaeac()`.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
 
 # Plot the resulting explanations
 plot(expl_group)
@@ -804,6 +1079,8 @@ expl_ctree <- explain(
   n_batches = 1,
   n_samples = 250
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Then we use the vaeac approach
 expl_vaeac_with <- explain(
@@ -815,8 +1092,11 @@ expl_vaeac_with <- explain(
   n_batches = 1,
   n_samples = 250,
   vaeac.epochs = 50,
-  vaeac.n_vaeacs_initialize = 4
+  vaeac.n_vaeacs_initialize = 4,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Then we use the vaeac approach
 expl_vaeac_without <- explain(
@@ -829,14 +1109,23 @@ expl_vaeac_without <- explain(
   n_samples = 250,
   vaeac.epochs = 50,
   vaeac.n_vaeacs_initialize = 4,
-  vaeac.extra_parameters = list(vaeac.skip_conn_layer = FALSE, vaeac.skip_conn_masked_enc_dec = FALSE)
+  vaeac.extra_parameters = list(
+    vaeac.skip_conn_layer = FALSE,
+    vaeac.skip_conn_masked_enc_dec = FALSE,
+    vaeac.cuda = vaeac.cuda
+  )
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # We see that the `vaeac` model without the skip connections perform worse
-vaeac_plot_evaluation_criteria(list(
-  "Vaeac w.o. skip-con." = expl_vaeac_without,
-  "Vaeac w. skip-con." = expl_vaeac_with
-), plot_type = "criterion")
+vaeac_plot_evaluation_criteria(
+  list(
+    "Vaeac w.o. skip-con." = expl_vaeac_without,
+    "Vaeac w. skip-con." = expl_vaeac_with
+  ),
+  plot_type = "criterion"
+)
 ```
 
 ![](figure_vaeac/vaeac-mixed-data-1.png)
@@ -856,17 +1145,144 @@ plot_MSEv_eval_crit(list(
 ```r
 
 # Can compare the Shapley values. Ctree and vaeac with skip connections produce similar explanations
-plot_SV_several_approaches(list(
-  "Vaeac w.o. skip-con." = expl_vaeac_without,
-  "Vaeac w. skip-con." = expl_vaeac_with,
-  "Ctree" = expl_ctree
-), index_explicands = 1:6)
+plot_SV_several_approaches(
+  list(
+    "Vaeac w.o. skip-con." = expl_vaeac_without,
+    "Vaeac w. skip-con." = expl_vaeac_with,
+    "Ctree" = expl_ctree
+  ),
+  index_explicands = 1:6
+)
 ```
 
 ![](figure_vaeac/vaeac-mixed-data-3.png)
 
 
+## CPU vs GPU {#cpu_vs_gpu}
+In this section, we create a small setup for comparing the efficiency of using GPU and CPU. For small tabular data sets,
+there are often no benefit of using a GPU. However, this depends on what kind of CPU and GPU the user has access to.
+Furthermore, the times depends on several factors, e.g., the number of training observations, explicands, features, and
+batches.
 
 
-# Future Updates {#future}
--   Add support for GPU in vaeac. We have not had access to GPU, so have only used CPU.
+```r
+# Load necessary library
+library(mvtnorm)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Number of observations
+n_train <- 1000
+n_explain <- 50
+
+# Number of variables
+p <- 10
+
+# Generate random data from a multivariate normal distribution
+mean <- rep(0, p) # mean vector
+rho <- 0.7
+sigma <- matrix(c(rho), nrow = p, ncol = p) # covariance matrix
+diag(sigma) <- 1
+x_train <- mvtnorm::rmvnorm(n, mean, sigma)
+x_explain <- mvtnorm::rmvnorm(n, mean, sigma)
+
+# Create response variable based on linear combinations of variables
+coefficients <- rep(1, p)
+y_train <- x_train %*% coefficients
+y_explain <- x_explain %*% coefficients
+
+# Combine data and response into a data table
+dt_train <- data.table(y_train, x_train)
+dt_explain <- data.table(y_explain, x_explain)
+colnames(dt_train) <- colnames(dt_explain) <- c("y", paste0("X", seq(p)))
+x_train <- dt_train[, -1]
+x_explain <- dt_explain[, -1]
+
+# Create model
+model <- lm(y ~ ., dt_train)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+prediction_zero <- mean(y_train)
+
+# Fit vaeac model using the CPU
+time_cpu <- system.time({
+  explanation_cpu <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "vaeac",
+    prediction_zero = prediction_zero,
+    n_samples = 100,
+    n_batches = 5,
+    vaeac.epochs = 50,
+    vaeac.n_vaeacs_initialize = 2,
+    vaeac.extra_parameters = list(
+      vaeac.cuda = FALSE
+    )
+  )
+})
+
+# Fit vaeac model using the GPU
+time_cuda <- system.time({
+  explanation_cuda <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "vaeac",
+    prediction_zero = prediction_zero,
+    n_samples = 100,
+    n_batches = 5,
+    vaeac.epochs = 50,
+    vaeac.n_vaeacs_initialize = 2,
+    vaeac.extra_parameters = list(
+      vaeac.cuda = TRUE
+    )
+  )
+})
+#> Cuda/GPU is not available (`shapr` uses CPU instead).TRUE
+
+# Look at the internal and external timing. See that the times comparable.
+# Note that these times highly depend on the CPU/GPU version.
+rbind("Vaeac CPU" = explanation_cpu$timing$timing_secs, "Vaeac GPU" = explanation_cuda$timing$timing_secs)
+#>              setup test_prediction setup_computation compute_vS shapley_computation
+#> Vaeac CPU 0.085639        0.045625            61.775     76.989            0.039412
+#> Vaeac GPU 0.067961        0.046196            64.400     76.386            0.039012
+rbind("Vaeac CPU" = time_cpu, "Vaeac GPU" = time_cuda)
+#>           user.self sys.self elapsed user.child sys.child
+#> Vaeac CPU    687.89   941.38  138.94          0         0
+#> Vaeac GPU    705.69   985.45  140.94          0         0
+
+# It is no possible to set same random state on the CPU and GPU, hence, the results
+# are not equivalent. The difference is due to different initialization values.
+vaeac_plot_evaluation_criteria(
+  list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
+  plot_type = "criterion"
+)
+```
+
+![](figure_vaeac/unnamed-chunk-2-1.png)
+
+```r
+
+# Almost identical MSEv values
+plot_MSEv_eval_crit(list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda))
+```
+
+![](figure_vaeac/unnamed-chunk-2-2.png)
+
+```r
+
+# Can compare the Shapley values and see that we get comparable values
+plot_SV_several_approaches(
+  list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
+  index_explicands = 1:3,
+  facet_ncol = 3
+)
+```
+
+![](figure_vaeac/unnamed-chunk-2-3.png)
+
+
+
+

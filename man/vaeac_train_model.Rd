@@ -52,10 +52,10 @@ ensure a valid file name for all operating systems.}
 the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
 \code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}.}
 
-\item{cuda}{cuda Logical (default is \code{FALSE}). If \code{TRUE}, then the \code{vaeac} model will be trained using cuda/GPU.
-If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, the we fall back to use CPU. If \code{FALSE}, we use the CPU. Often this is
-faster for tabular data sets. Note, cuda is not not supported in the current version of the \code{shapr} package.
-TODO: Update this when this is done.}
+\item{cuda}{Logical (default is \code{FALSE}). If \code{TRUE}, then the \code{vaeac} model will be trained using cuda/GPU.
+If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, the we fall back to use CPU. If \code{FALSE}, we use the CPU. Using a GPU
+for smaller tabular dataset often do not improve the efficiency.
+See \code{vignette("installation", package = "torch")} fo help to enable running on the GPU (only Linux and Windows).}
 
 \item{n_vaeacs_initialize}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
 in the start. Pick the best performing one after \code{epochs_initiation_phase}

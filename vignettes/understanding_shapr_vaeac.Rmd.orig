@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
   fig.path = "figure_vaeac/", # Ensure that figures are saved in the right folder (this vignette will be built manually)
   cache.path = "cache_vaeac/", # Ensure that cached objects are saved in the right folder
   warning = FALSE,
-  message = FALSE
+  message = TRUE
   )
 ```
 
@@ -155,7 +155,7 @@ n_batches <- 1 # Do all coalitions in one batch
 vaeac.save_every_nth_epoch <- 3 # Save every 3th epoch + best and last epoch
 vaeac.n_vaeacs_initialize <- 2 # Initialize several vaeacs to counteract bad initialization values
 vaeac.epochs <- 4 # The number of training epochs
-vaeac.cuda <- FALSE # We run everything on CPU, but all code below works on GPU to 
+vaeac.cuda <- FALSE # We run everything on CPU, but all code below works on GPU to
 
 explanation <- explain(
   model = model,
@@ -170,7 +170,7 @@ explanation <- explain(
   vaeac.extra_parameters = list(
     vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.cuda = vaeac.cuda
-  ) 
+  )
 )
 ```
 

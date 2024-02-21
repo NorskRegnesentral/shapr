@@ -393,18 +393,22 @@ explanation <- explain(
   approach = "empirical",
   prediction_zero = p0
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values)
-#>        none    Solar.R      Wind      Temp      Month
-#>       <num>      <num>     <num>     <num>      <num>
-#> 1: 43.08571 13.2117337  4.785645 -25.57222  -5.599230
-#> 2: 43.08571 -9.9727747  5.830694 -11.03873  -7.829954
-#> 3: 43.08571 -2.2916185 -7.053393 -10.15035  -4.452481
-#> 4: 43.08571  3.3254595 -3.240879 -10.22492  -6.663488
-#> 5: 43.08571  4.3039571 -2.627764 -14.15166 -12.266855
-#> 6: 43.08571  0.4786417 -5.248686 -12.55344  -6.645738
+#>      none  Solar.R    Wind    Temp    Month
+#>     <num>    <num>   <num>   <num>    <num>
+#> 1: 43.086 13.21173  4.7856 -25.572  -5.5992
+#> 2: 43.086 -9.97277  5.8307 -11.039  -7.8300
+#> 3: 43.086 -2.29162 -7.0534 -10.150  -4.4525
+#> 4: 43.086  3.32546 -3.2409 -10.225  -6.6635
+#> 5: 43.086  4.30396 -2.6278 -14.152 -12.2669
+#> 6: 43.086  0.47864 -5.2487 -12.553  -6.6457
 
 # Plot the resulting explanations for observations 1 and 6
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
@@ -445,6 +449,10 @@ explanation_plot <- explain(
   approach = "empirical",
   prediction_zero = p0
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 plot(explanation_plot, plot_type = "beeswarm")
 ```
 
@@ -491,6 +499,8 @@ explanation_lm_cat <- explain(
   approach = "ctree",
   prediction_zero = p0
 )
+#> Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
@@ -518,6 +528,8 @@ explanation_ctree <- explain(
   ctree.minsplit = 20,
   ctree.minbucket = 20
 )
+#> Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 # Default parameters (based on (Hothorn, 2006)) are:
 # mincriterion = 0.95
 # minsplit = 20
@@ -556,6 +568,8 @@ explanation_cat_method <- explain(
   approach = "categorical",
   prediction_zero = p0
 )
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 ```
 
 Shapley values can be used to explain any predictive model. For
@@ -618,6 +632,8 @@ explanation_timeseries <- explain(
   prediction_zero = p0_ts,
   group = group_ts
 )
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 ```
 
 
@@ -730,6 +746,8 @@ explanation_independence <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Empirical approach
 explanation_empirical <- explain(
@@ -742,6 +760,8 @@ explanation_empirical <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Gaussian 1e1 approach
 explanation_gaussian_1e1 <- explain(
@@ -754,6 +774,8 @@ explanation_gaussian_1e1 <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Gaussian 1e2 approach
 explanation_gaussian_1e2 <- explain(
@@ -766,6 +788,8 @@ explanation_gaussian_1e2 <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Combined approach
 explanation_combined <- explain(
@@ -778,6 +802,8 @@ explanation_combined <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Create a list of explanations with names
 explanation_list_named <- list(
@@ -1020,6 +1046,10 @@ explanation_forecast <- explain_forecast(
   prediction_zero = p0_ar,
   group_lags = FALSE
 )
+#> Note: Feature names extracted from the model contains NA.
+#> Consistency checks between model and data is therefore disabled.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 explanation_forecast
 #>    explain_idx horizon    none     Y.1      Y.2
 #>          <int>   <int>   <num>   <num>    <num>
@@ -1062,7 +1092,7 @@ predict(model_ar_temp, n.ahead = 2)$pred
 #> Start = 154 
 #> End = 155 
 #> Frequency = 1 
-#> [1] 71.08111 71.52445
+#> [1] 71.081 71.524
 ```
 
 First, we pass the model and the data as `model` and `y`. Since we have
@@ -1104,6 +1134,8 @@ explanation <- explain_forecast(
   n_batches = 1,
   timing = FALSE
 )
+#> Note: Feature names extracted from the model contains NA.
+#> Consistency checks between model and data is therefore disabled.
 
 print(explanation)
 #>    explain_idx horizon  none Temp.1  Temp.2
@@ -1141,7 +1173,7 @@ predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
 #> Start = 152 
 #> End = 153 
 #> Frequency = 1 
-#> [1] 77.49992 76.38062
+#> [1] 77.500 76.381
 ```
 
 The `shapr` package can then explain not only the two autoregressive
@@ -1170,12 +1202,14 @@ explanation <- explain_forecast(
   n_batches = 1,
   timing = FALSE
 )
+#> Note: Feature names extracted from the model contains NA.
+#> Consistency checks between model and data is therefore disabled.
 
 print(explanation$shapley_values)
-#>    explain_idx horizon     none     Temp.1     Temp.2    Wind.1   Wind.F1    Wind.F2
-#>          <num>   <num>    <num>      <num>      <num>     <num>     <num>      <num>
-#> 1:         151       1 77.96026 -0.6779272 -0.6734041 -1.268789 0.4934084         NA
-#> 2:         151       2 77.96026  0.3996832 -0.5005937 -1.465464 0.0659129 -0.4742238
+#>    explain_idx horizon  none   Temp.1   Temp.2  Wind.1  Wind.F1  Wind.F2
+#>          <num>   <num> <num>    <num>    <num>   <num>    <num>    <num>
+#> 1:         151       1 77.96 -0.67793 -0.67340 -1.2688 0.493408       NA
+#> 2:         151       2 77.96  0.39968 -0.50059 -1.4655 0.065913 -0.47422
 ```
 
 <a id="advanced"></a>
@@ -1225,6 +1259,10 @@ explanation_combined <- explain(
   approach = c("empirical", "copula", "gaussian"),
   prediction_zero = p0
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
 plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
@@ -1245,6 +1283,10 @@ explanation_combined <- explain(
   approach = c("ctree", "ctree", "empirical"),
   prediction_zero = p0
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 ```
 
 ## Explain groups of features
@@ -1272,6 +1314,10 @@ explanation_group <- explain(
   prediction_zero = p0,
   group = group_list
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 # Prints the group-wise explanations
 explanation_group
 #>      none       A        B
@@ -1480,6 +1526,10 @@ explanation_vaeac <- explain(
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 ```
 
 Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 3` is likely to few epochs as it still seems like the `vaeac` model is learning.
@@ -1520,6 +1570,10 @@ explanation_vaeac_early_stop <- explain(
   vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 ```
 
 Can compare with the previous version and see that the results are more stable now.
@@ -1586,6 +1640,8 @@ explanation_batch <- explain(
   prediction_zero = p0,
   n_batches = 10
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 ## Parallelized computation
@@ -1624,6 +1680,8 @@ explanation_par <- explain(
   prediction_zero = p0,
   n_batches = 10
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 future::plan(sequential) # To return to non-parallel computation
 ```
