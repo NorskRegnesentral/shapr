@@ -523,6 +523,9 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
 
+  # Setting that we are using regression based the approach name
+  parameters$regression <- grepl("regression", parameters$approach)
+
   return(parameters)
 }
 
@@ -690,6 +693,10 @@ check_approach <- function(internal) {
         "with only the above strings."
       )
     )
+  }
+
+  if (length(approach) > 1 && grepl("regression", approach)) {
+    stop("The `regression_separate` approach cannot be combined with other approaches.")
   }
 }
 
