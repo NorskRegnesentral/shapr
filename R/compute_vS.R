@@ -67,34 +67,39 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   explain_lags <- internal$parameters$explain_lags
   y <- internal$data$y
   xreg <- internal$data$xreg
+  regression <- internal$parameters$regression
 
-  dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
+  if (regression) { # We are using regression to compute the contribution function values
+    dt_vS <- prepare_data.regression_separate(internal, index_features = S[S != internal$parameters$n_combinations])
 
-  pred_cols <- paste0("p_hat", seq_len(output_size))
+  } else { # We are using Monte Carlo integration to compute the contribution function values
+    dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
-  compute_preds(
-    dt, # Updating dt by reference
-    feature_names = feature_names,
-    predict_model = predict_model,
-    model = model,
-    pred_cols = pred_cols,
-    type = type,
-    horizon = horizon,
-    n_endo = n_endo,
-    explain_idx = explain_idx,
-    explain_lags = explain_lags,
-    y = y,
-    xreg = xreg
-  )
-  dt_vS <- compute_MCint(dt, pred_cols)
-  if (!is.null(p)) {
-    p(
-      amount = length(S),
-      message = "Estimating v(S)"
-    ) # TODO: Add a message to state what batch has been computed
+    pred_cols <- paste0("p_hat", seq_len(output_size))
+
+    compute_preds(
+      dt, # Updating dt by reference
+      feature_names = feature_names,
+      predict_model = predict_model,
+      model = model,
+      pred_cols = pred_cols,
+      type = type,
+      horizon = horizon,
+      n_endo = n_endo,
+      explain_idx = explain_idx,
+      explain_lags = explain_lags,
+      y = y,
+      xreg = xreg
+    )
+    dt_vS <- compute_MCint(dt, pred_cols)
   }
 
-  if (keep_samp_for_vS) {
+  # Update the progress bar if provided
+  if (!is.null(p)) {
+    p(amount = length(S), message = "Estimating v(S)") # TODO: Add a message to state what batch has been computed
+  }
+
+  if (keep_samp_for_vS) { # keep_samp_for_vS will always be FALSE for the regression approach
     return(list(dt_vS = dt_vS, dt_samp_for_vS = dt))
   } else {
     return(dt_vS = dt_vS)
