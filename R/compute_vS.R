@@ -70,7 +70,7 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   regression <- internal$parameters$regression
 
   if (regression) { # We are using regression to compute the contribution function values
-    dt_vS <- prepare_data.regression_separate(internal, index_features = S[S != internal$parameters$n_combinations])
+    dt_vS <- batch_prepare_vS_regression(S = S, internal = internal)
 
   } else { # We are using Monte Carlo integration to compute the contribution function values
     dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
@@ -129,6 +129,29 @@ batch_prepare_vS <- function(S, internal) {
     dt <- rbind(dt, dt_max)
     setkey(dt, id, id_combination)
   }
+  return(dt)
+}
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+batch_prepare_vS_regression <- function(S, internal) {
+  max_id_combination <- internal$parameters$n_combinations
+
+  # Compute the contribution functions different based on if the grand coalition is in S or not
+  if (!(max_id_combination %in% S)) {
+    dt <- prepare_data(internal, index_features = S)
+  } else {
+    # Remove the grand coalition. NULL is for the special case for when the batch only includes the grand coalition.
+    dt <- if (length(S) > 1) prepare_data.regression_separate(internal, index_features = S[S != max_id_combination]) else NULL
+
+    # Add the results for the grand coalition
+    dt <- rbind(dt, data.table(id_combination = max_id_combination,
+                               matrix(internal$data$x_explain_predicted_response, nrow = 1)), use.names = FALSE)
+  }
+
+  # Set id_combination to be the key
+  setkey(dt, id_combination)
+
   return(dt)
 }
 
