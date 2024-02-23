@@ -47,10 +47,13 @@ setup_approach.regression_separate <- function(internal,
   }
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
-  defaults <- mget(c("regression_model", "regression_tune_values", "regression_vfold_cv_para", "regression_recipe_func"))
+  defaults <- mget(c("regression_model",
+                     "regression_tune_values",
+                     "regression_vfold_cv_para",
+                     "regression_recipe_func"))
   internal <- insert_defaults(internal, defaults)
 
-  # Check that regression_recipe_func is a function that returns the RHS of the formula for arbitrary feature name inputs
+  # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
   check_regression_recipe_func(internal$parameters$regression_recipe_func)
 
   # Check that `regression_vfold_cv_para` is either NULL or a named list that only contains recognized parameters
@@ -60,7 +63,7 @@ setup_approach.regression_separate <- function(internal,
   internal$parameters$regression_tune <-
     get_regression_tune(internal$parameters$regression_model, internal$parameters$regression_tune_values)
 
-  # Predict the response of the training and explain data. Former is the response the regression models are fitted to.
+  # Predict the response of the training and explain data. Former is the response the regression models are fitted to
   model <- eval.parent(match.call()[["model"]])
   internal$data$x_train_predicted_response <- predict_model(model, internal$data$x_train)
   internal$data$x_explain_predicted_response <- predict_model(model, internal$data$x_explain)
@@ -119,7 +122,7 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 
     # Update the recipe if user has provided a function for this. User is responsible for that the function works.
     # This function can, e.g., add transformations, normalization, dummy encoding, interactions, and so on.
-    if (!is.null(regression_recipe_func)) regression_recipe = regression_recipe_func(regression_recipe)
+    if (!is.null(regression_recipe_func)) regression_recipe <- regression_recipe_func(regression_recipe)
 
     # Combine workflow, model specification, and recipe
     regression_workflow <-
@@ -139,18 +142,20 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
       # Add the hyperparameter tuning to the workflow
       regression_results <-
         regression_workflow %>%
-        tune::tune_grid(resamples = regression_folds,
-                        grid = regression_tune_values,
-                        metrics = yardstick::metric_set(rmse))
+        tune::tune_grid(
+          resamples = regression_folds,
+          grid = regression_tune_values,
+          metrics = yardstick::metric_set(rmse)
+        )
 
       # Small printout to the user
       if (verbose == 2) print(regression_results %>% tune::collect_metrics(), n = 10^4) # Large number to print all rows
       if (verbose == 2) {
-        best_results = regression_results %>% tune::show_best(n = 1)
-        feature_names = names(regression_tune_values)
-        feature_values = best_results[feature_names ]
-        feature_names = c(feature_names, "rmse")
-        feature_values = c(feature_values , round(best_results$mean, 3))
+        best_results <- regression_results %>% tune::show_best(n = 1)
+        feature_names <- names(regression_tune_values)
+        feature_values <- best_results[feature_names]
+        feature_names <- c(feature_names, "rmse")
+        feature_values <- c(feature_values, round(best_results$mean, 3))
         message(paste0("Best CV: ", paste(paste(feature_names, "=", feature_values), collapse = "\t")))
       }
 
@@ -229,7 +234,7 @@ get_regression_tune <- function(regression_model, regression_tune_values) {
 # Check functions ======================================================================================================
 #' Check regression_recipe_func
 #'
-#' Check that regression_recipe_func is a function that returns the RHS of the formula for arbitrary feature name inputs.
+#' Check that regression_recipe_func is a function that returns the RHS of the formula for arbitrary feature name inputs
 #'
 #' @inheritParams setup_approach.regression_separate
 #'

@@ -71,7 +71,6 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
 
   if (regression) { # We are using regression to compute the contribution function values
     dt_vS <- batch_prepare_vS_regression(S = S, internal = internal)
-
   } else { # We are using Monte Carlo integration to compute the contribution function values
     dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
@@ -145,8 +144,10 @@ batch_prepare_vS_regression <- function(S, internal) {
     dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_combination]) else NULL
 
     # Add the results for the grand coalition
-    dt <- rbind(dt, data.table(id_combination = max_id_combination,
-                               matrix(internal$data$x_explain_predicted_response, nrow = 1)), use.names = FALSE)
+    dt <- rbind(dt, data.table(
+      id_combination = max_id_combination,
+      matrix(internal$data$x_explain_predicted_response, nrow = 1)
+    ), use.names = FALSE)
   }
 
   # Set id_combination to be the key

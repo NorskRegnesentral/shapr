@@ -230,9 +230,9 @@ Lets look at some ways to specify `regression_tune_values`.
 ```{r echo=TRUE, results='hide'}
 # Possible ways to define the `regression_tune_values` object. One automatic and three manual ways.
 dials::grid_regular(dials::tree_depth(), levels = 4)
-data.frame(tree_depth = c(1,5,10,15))
-data.table(tree_depth = c(1,5,10,15))
-as.data.table(matrix(c(1,5,10,15), ncol = 1, dimnames = list(NULL, c("tree_depth"))))
+data.frame(tree_depth = c(1, 5, 10, 15))
+data.table(tree_depth = c(1, 5, 10, 15))
+as.data.table(matrix(c(1, 5, 10, 15), ncol = 1, dimnames = list(NULL, c("tree_depth"))))
 ```
 
 
@@ -277,7 +277,7 @@ unlist(sapply(list(
   tree_stump = explanation_tree_stump,
   tree_default = explanation_tree_default,
   tree_cv = explanation_tree_cv
-), "[[", "timing")[2,])
+), "[[", "timing")[2, ])
 ```
 
 
