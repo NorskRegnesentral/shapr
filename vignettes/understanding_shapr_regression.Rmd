@@ -268,7 +268,7 @@ Note that this a bit of an unfair comparison for the `empirical` approach which 
 tune. However, `shapr` does not currently provide a function to do this automatically.
 
 
-Furthermore, we have to consider that doing the cross validation increased the elapsed time with almost a factor of fifteen.
+Furthermore, we have to consider that doing the cross validation increased the elapsed time with almost a factor of 10 to 20.
 ```{r}
 # Elapsed time for the different methods
 unlist(sapply(list(
