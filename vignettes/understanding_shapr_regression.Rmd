@@ -1,0 +1,301 @@
+---
+title: "Shapley value explanations using the regression paradigm "
+author: "Lars Henry Berge Olsen"
+output: rmarkdown::html_vignette
+bibliography: ../inst/REFERENCES.bib
+vignette: >
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{The `vaeac` approach in `shapr`}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.cap = "",
+  fig.width = 7,
+  fig.height = 5,
+  fig.path = "figure_regression/", # Ensure that figures are saved in the right folder (this vignette will be built manually)
+  cache.path = "cache_regression/", # Ensure that cached objects are saved in the right folder
+  warning = FALSE,
+  message = TRUE
+)
+```
+
+
+> [The separate regression method class](#separate)
+
+> [The surrogate regression method class](#surrogate)
+
+
+<a id="intro"></a>
+
+
+In this vignette, we elaborate and illustrate the regression paradigm explained in @olsen2023comparative.
+We describe how to specify the regression model, how to enable automatic cross-validation of the model's
+hyper-parameters, and applying pre-processing steps to the data before fitting the regression models.
+
+The regression paradigm can be divided into the separate and surrogate regression method classes. In this vignette,
+we give a short introduction to the two method classes. For an in depth explanation, we refer the reader to 
+Section 3.5 and 3.6 in @olsen2023comparative.
+
+Briefly stated, the regression paradigm uses regression models to directly estimate the contribution function
+$v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]$. The separate regression method class
+fits a separate regression model for each coalition $S$, while the surrogate regression method class fits
+a single regression model to predict the contribution function for all coalitions simultaneously.
+
+The `shapr` package supports any regression model from the popular *tidymodels* package, developed by @tidymodels.
+See [list of tidymodels](https://www.tidymodels.org/find/parsnip/) for a complete list of the 
+supported regression models (currently 80).
+
+
+
+Note that we use the same data and predictive models in this vignette as in the main vignette.
+
+
+# The separate regression method class {#separate}
+In the \separatereg\ methods, we train a new regression model $g_S(\boldsymbol{x}s)$ to estimate
+the conditional expectation for each coalition of features. 
+
+The idea is to estimate $v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*]$ separately
+for each coalition $S$ using regression. Let $X = \{ \boldsymbol{x}^{[i]}, y^{[i]} \}_{i=1}^{N_{\text{train}}}$
+denote the training data, where $\boldsymbol{x}^{[i]}$ is the $i$th $M$-dimensional input and $y^{[i]}$
+is the associated response. For each coalition $S \subseteq \{1,2,\dots,M\}$, the corresponding training data set is
+\begin{align*}
+            X_S 
+            =
+            \{\boldsymbol{x}_S^{[i]}, f(\underbrace{\boldsymbol{x}_\bar{S}^{[i]}, \boldsymbol{x}_S^{[i]}}_{\boldsymbol{x}^{[i]}})\}_{i=1}^{N_{\text{train}}}
+            =
+            \{\boldsymbol{x}_S^{[i]}, \underbrace{f(\boldsymbol{x}^{[i]})}_{z^{[i]}}\}_{i=1}^{N_{\text{train}}}
+            =
+            \{\boldsymbol{x}_S^{[i]}, z^{[i]}\}_{i=1}^{N_{\text{train}}}.
+\end{align*}
+
+For each data set $X_S$, we train a regression model $g_S(\boldsymbol{x}s)$ with respect to the mean squared error loss
+function. The optimal model, with respect to the loss function, is 
+$g^*_S(\boldsymbol{x}_S) = E[z|\boldsymbol{x}_S] = E[f(\boldsymbol{x}_\bar{S}, \boldsymbol{x}_S)|\boldsymbol{x}_S]$,
+which corresponds to the contribution function $v(S)$. The regression model $g_S$ aims for the optimal, hence, it
+resembles/estimates the contribution function, i.e., 
+$g_S(\boldsymbol{x}_S) = \hat{v}(S) \approx v(S) = E[f(\boldsymbol{x}_\bar{S}, \boldsymbol{x}_S) | \boldsymbol{x}_S = \boldsymbol{x}_S^*]$. 
+
+
+
+## Code {#separate_code}
+In the following examples we use the same data and want to explain the same model as in the main vignette.
+That is, we train a simple `xgboost` model on the `airquality` dataset, and illustrate how `shapr` and 
+the separate regression method class can be used to explain the individual predictions.
+
+```{r}
+library(xgboost)
+library(data.table)
+library(tidymodels)
+library(shapr)
+
+data("airquality")
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
+
+x_var <- c("Solar.R", "Wind", "Temp", "Month")
+y_var <- "Ozone"
+
+ind_x_explain <- 1:20
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost::xgboost(
+  data = as.matrix(x_train),
+  label = y_train,
+  nround = 20,
+  verbose = FALSE
+)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+p0 <- mean(y_train)
+
+# Specify that we are using the regression paradigm and the separate method class
+approach <- "regression_separate"
+
+# Specify that we want to use a linear regression model
+regression_model <- parsnip::linear_reg()
+
+# Compute the Shapley value explanations
+explanation_lm <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = approach,
+  regression_model = parsnip::linear_reg()
+)
+```
+
+A linear model is often not flexible enough and can produce inaccurate Shapley value explanations. 
+We can compare with using the `empirical` approach and see see that
+the `empirical` approach outperforms the linear regression model approach quite significantly.
+
+```{r}
+# Compute the Shapley value explanations using the empirical method
+explanation_empirical <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  prediction_zero = p0
+)
+
+# Compare the MSEv criterion of the different explanation methods
+plot_MSEv_eval_crit(list(
+  empirical = explanation_empirical,
+  linear_model = explanation_lm
+)) +
+  theme(legend.position = "none") # Remove the legend
+```
+
+In the next example, we use a decision tree model. The `tidymodels` package supports several implementations,
+so we have to use `set_engine()` to specify which one to use and we need to specify that we are going to do 
+regression by using `set_mode()`. Note that we do not specify the parameters of the decision tree, which means
+that `tidymodels` will use the default parameters set in `rpart`.
+
+By searching for "decision tree" in [list of tidymodels](https://www.tidymodels.org/find/parsnip/), we will see
+that the default parameters for [`decision_tree_rpart`](https://parsnip.tidymodels.org//reference/details_decision_tree_rpart.html) are `tree_depth = 30`, `min_n = 2`, and `cost_complexity = 0.01`.
+
+```{r}
+# Set the parameters (stumps)
+explanation_tree_stump <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 1,
+  approach = "regression_separate",
+  regression_model = decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>%
+    set_engine("rpart") %>%
+    set_mode("regression")
+)
+
+# Using default parameters
+explanation_tree_default <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 1,
+  approach = "regression_separate",
+  regression_model = decision_tree() %>%
+    set_engine("rpart") %>%
+    set_mode("regression")
+)
+```
+
+We can now compare the two new methods. We see that the decision tree with default parameters (177.7) outperform 
+the linear model approach (745.2) with respect to the MSEv criterion, and is on the same level as the empirical
+approach (179.4). By using stumps, i.e., trees with depth one, we obtained a worse method (218.0).
+
+```{r}
+# Compare the MSEv criterion of the different explanation methods
+plot_MSEv_eval_crit(list(
+  empirical = explanation_empirical,
+  linear_model = explanation_lm,
+  tree_stump = explanation_tree_stump,
+  tree_default = explanation_tree_default
+)) +
+  theme(legend.position = "none") # Remove the legend
+```
+
+### Cross validation
+
+Another option is to use cross validation to tune the hyperparameters. To do this, we need to specify three things:
+
+1. In `regression_model`, we need to specify which parameters to tune in the model. This is done by setting the parameter
+equal to `tune()`. E.g., if we want to tune the `tree_depth` in the `decision_tree`,
+while using default parameters for the other parameters, then we set `decision_tree(tree_depth = tune())`.
+2. In `regression_tune_values`, we must provide a data.frame/data.table/tibble of the possible hyperparameter values
+to consider. The column names of `regression_tune_values` must match the tuneable hyperparameters specified in
+`regression_model`. I.e., for the example above, `regression_tune_values` must be a one column data.frame with the name
+`tree_depth`. This can either be done by specifying them manually, or use the `dials` package, e.g.,
+`dials::grid_regular(dials::tree_depth(), levels = 5)`.
+3. It is optional to specify the `regression_vfold_cv_para` parameter. If used, then `regression_vfold_cv_para` must
+be a named list specifying the parameters to send to the cross-validation function `rsample::vfold_cv()`. 
+See `?vfold_cv` to see the default parameters. The names in `regression_vfold_cv_para` must match the parameter names in
+`rsample::vfold_cv()`. For example, if we want 5-fold cv, then we set `regression_vfold_cv_para = list(v = 5)`.
+
+
+Lets look at some ways to specify `regression_tune_values`.
+```{r echo=TRUE, results='hide'}
+# Possible ways to define the `regression_tune_values` object. One automatic and three manual ways.
+dials::grid_regular(dials::tree_depth(), levels = 4)
+data.frame(tree_depth = c(1,5,10,15))
+data.table(tree_depth = c(1,5,10,15))
+as.data.table(matrix(c(1,5,10,15), ncol = 1, dimnames = list(NULL, c("tree_depth"))))
+```
+
+
+Then we use cross validation on the `tree_depth` parameter, and we see that we obtain better MSEv results (169.96).
+```{r}
+# Use trees with cross validation on the depth
+explanation_tree_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = decision_tree(tree_depth = tune()) %>%
+    set_engine("rpart") %>%
+    set_mode("regression"),
+  regression_tune_values = dials::grid_regular(dials::tree_depth(), levels = 4),
+  regression_vfold_cv_para = list(v = 5)
+)
+
+# Compare the MSEv criterion of the different explanation methods. Remove linear_model
+plot_MSEv_eval_crit(list(
+  empirical = explanation_empirical,
+  tree_stump = explanation_tree_stump,
+  tree_default = explanation_tree_default,
+  tree_cv = explanation_tree_cv
+)) +
+  theme(legend.position = "none") # Remove the legend
+```
+
+
+Note that this a bit of an unfair comparison for the `empirical` approach which also has hyper-parameters one could
+tune. However, `shapr` does not currently provide a function to do this automatically.
+
+
+Furthermore, we have to consider that doing the cross validation increased the elapsed time with almost a factor of fifteen.
+```{r}
+# Elapsed time for the different methods
+unlist(sapply(list(
+  empirical = explanation_empirical,
+  linear_model = explanation_lm,
+  tree_stump = explanation_tree_stump,
+  tree_default = explanation_tree_default,
+  tree_cv = explanation_tree_cv
+), "[[", "timing")[2,])
+```
+
+
+
+
+
+# The surrogate regression method class {#surrogate}
+
+
+Since the \separatereg\ methods train a new regression model $g_S(\boldsymbol{x}_S)$ for each coalition
+$S \subseteq \{1,2,\dots,M\}$, a total of $2^M-2$ models has to be trained, which can be time-consuming for
+slowly fitted models. The minus two corresponds to the empty and grand coalitions.
+The \surrogatereg\ method class builds on the ideas from the \separatereg\ class, but instead of fitting a
+new regression model for each coalition, we train a single regression model $g(\tilde{\boldsymbol{x}}_S)$
+for all coalitions $S \subseteq \{1,2,\dots,M\}$ (except empty and grand coalitions),
+where $\tilde{\boldsymbol{x}}_S$ is an augmented version of $\boldsymbol{x}_S$. See Section 3.6.1 in
+@olsen2023comparative for more details and examples.
+
+
+
+## Code {#surrogate_code}
