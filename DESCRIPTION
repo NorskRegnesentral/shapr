@@ -57,7 +57,14 @@ Suggests:
     torch,
     GGally,
     progress,
-    coro
+    coro,
+    tidymodels,
+    workflows,
+    tune,
+    parnsnip,
+    recipies,
+    rsample,
+    dials
 LinkingTo: 
     RcppArmadillo,
     Rcpp
