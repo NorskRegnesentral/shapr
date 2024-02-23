@@ -47,10 +47,12 @@ setup_approach.regression_separate <- function(internal,
   }
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
-  defaults <- mget(c("regression_model",
-                     "regression_tune_values",
-                     "regression_vfold_cv_para",
-                     "regression_recipe_func"))
+  defaults <- mget(c(
+    "regression_model",
+    "regression_tune_values",
+    "regression_vfold_cv_para",
+    "regression_recipe_func"
+  ))
   internal <- insert_defaults(internal, defaults)
 
   # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
@@ -234,7 +236,8 @@ get_regression_tune <- function(regression_model, regression_tune_values) {
 # Check functions ======================================================================================================
 #' Check regression_recipe_func
 #'
-#' Check that regression_recipe_func is a function that returns the RHS of the formula for arbitrary feature name inputs
+#' Check that regression_recipe_func is a function that returns the
+#' RHS of the formula for arbitrary feature name inputs.
 #'
 #' @inheritParams setup_approach.regression_separate
 #'

@@ -11,7 +11,7 @@ check_regression_recipe_func(regression_recipe_func)
 the RHS of the formula for arbitrary feature name inputs.}
 }
 \description{
-Check that regression_recipe_func is a function that returns the RHS of the formula for arbitrary feature name inputs.
+Check that regression_recipe_func is a function that returns the RHS of the formula for arbitrary feature name inputs
 }
 \author{
 Lars Henry Berge Olsen
