@@ -142,7 +142,7 @@ batch_prepare_vS_regression <- function(S, internal) {
     dt <- prepare_data(internal, index_features = S)
   } else {
     # Remove the grand coalition. NULL is for the special case for when the batch only includes the grand coalition.
-    dt <- if (length(S) > 1) prepare_data.regression_separate(internal, index_features = S[S != max_id_combination]) else NULL
+    dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_combination]) else NULL
 
     # Add the results for the grand coalition
     dt <- rbind(dt, data.table(id_combination = max_id_combination,
