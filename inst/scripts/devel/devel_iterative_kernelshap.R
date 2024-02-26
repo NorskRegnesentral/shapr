@@ -110,16 +110,15 @@ lines(org_imp/sum(org_imp),col="red")
 sorted_norm_cor_imp <- sort(norm_cor_imp,decreasing = TRUE)
 cumsum_sorted_norm_cor_imp <- cumsum(sorted_norm_cor_imp)
 
-### TODO: get the cutoff based on max features and remeianing imp in the cumsum.
 
 cutoff0 <- which(cumsum_sorted_norm_cor_imp<=1-max_cutoff_remaining_imp)
 cutoff <- ifelse(length(cutoff0)>=max_cutoff_features,cutoff0[max_cutoff_features],cutoff0[length(cutoff)])
-cutoff_cumsum_imp <- cumsum_sorted_norm_cor_imp[cutoff]
+cutoff_imp <- sorted_norm_cor_imp[1:cutoff]
+cutoff_feats <- names(cutoff_imp)
 
 
 for(j in 1:max_comp_features){
-  these_norm_comp <- sorted_norm_cor_imp[seq_len(j)]
-  these_features <- names(these_norm_comp)
+  these_features <- cutoff_feats[seq_len(j)]
 
 }
 
