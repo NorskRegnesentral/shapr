@@ -695,7 +695,7 @@ check_approach <- function(internal) {
     )
   }
 
-  if (length(approach) > 1 && grepl("regression", approach)) {
+  if (length(approach) > 1 && any(grepl("regression", approach))) {
     stop("The `regression_separate` approach cannot be combined with other approaches.")
   }
 }
