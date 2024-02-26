@@ -65,6 +65,8 @@ Suggests:
     recipes,
     rsample,
     dials
+    rlang, 
+    yardstick
 LinkingTo: 
     RcppArmadillo,
     Rcpp
