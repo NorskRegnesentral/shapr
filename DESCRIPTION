@@ -61,8 +61,8 @@ Suggests:
     tidymodels,
     workflows,
     tune,
-    parnsnip,
-    recipies,
+    parsnip,
+    recipes,
     rsample,
     dials
 LinkingTo: 
