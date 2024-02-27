@@ -71,33 +71,17 @@ setup <- function(x_train,
 
   # Sets up and organizes data
   if (type == "forecast") {
-    internal$data <- get_data_forecast(
-      y,
-      xreg,
-      train_idx,
-      explain_idx,
-      explain_y_lags,
-      explain_xreg_lags,
-      horizon
-    )
-
-    internal$parameters$output_labels <- cbind(
-      rep(explain_idx, horizon),
-      rep(seq_len(horizon), each = length(explain_idx))
-    )
+    internal$data <- get_data_forecast(y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon)
+    internal$parameters$output_labels <-
+      cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
     colnames(internal$parameters$output_labels) <- c("explain_idx", "horizon")
     internal$parameters$explain_idx <- explain_idx
     internal$parameters$explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
 
     # TODO: Consider handling this parameter update somewhere else (like in get_extra_parameters?)
-    if (group_lags) {
-      internal$parameters$group <- internal$data$group
-    }
+    if (group_lags) internal$parameters$group <- internal$data$group
   } else {
-    internal$data <- get_data(
-      x_train,
-      x_explain
-    )
+    internal$data <- get_data(x_train, x_explain)
   }
 
   internal$objects <- list(feature_specs = feature_specs)
@@ -105,7 +89,6 @@ setup <- function(x_train,
   check_data(internal)
 
   internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
-
 
   internal <- check_and_set_parameters(internal)
 
@@ -122,7 +105,6 @@ check_and_set_parameters <- function(internal) {
   n_groups <- internal$parameters$n_groups
   is_groupwise <- internal$parameters$is_groupwise
   exact <- internal$parameters$exact
-
 
   if (!is.null(group)) {
     check_groups(feature_names, group)
@@ -152,6 +134,8 @@ check_and_set_parameters <- function(internal) {
   # Checking n_batches vs n_combinations etc
   check_n_batches(internal)
 
+  # Remove n_samples if we are doing regression, as we are not doing MC sampling
+  if (internal$parameters$regression) internal$parameters$n_samples = NULL
 
   return(internal)
 }
@@ -255,7 +239,6 @@ check_data <- function(internal) {
   NA_classes <- any(is.na(model_feature_specs$classes))
   NA_factor_levels <- any(is.na(model_feature_specs$factor_levels))
 
-
   if (is.null(model_feature_specs)) {
     message(
       "Note: You passed a model to explain() which is not natively supported, and did not supply a ",
@@ -287,7 +270,6 @@ check_data <- function(internal) {
 
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   }
-
 
   # Check model vs x_train (allowing different label ordering in specs from model)
   compare_feature_specs(model_feature_specs, x_train_feature_specs, "model", "x_train", sort_labels = TRUE)
@@ -606,8 +588,6 @@ get_data_specs <- function(x) {
   return(feature_specs)
 }
 
-
-
 #' Check that the group parameter has the right form and content
 #'
 #'
@@ -696,7 +676,7 @@ check_approach <- function(internal) {
   }
 
   if (length(approach) > 1 && any(grepl("regression", approach))) {
-    stop("The `regression_separate` approach cannot be combined with other approaches.")
+    stop("The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.")
   }
 }
 
