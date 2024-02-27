@@ -25,16 +25,16 @@ setup_approach.regression_separate <- function(internal,
     stop("`tidymodels` is not installed. Please run install.packages('tidymodels')")
   }
 
-  # Give a small warning that the time
-  message(paste(
-    "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object can be",
-    "missleading as `setup_computation` does not contain the training times of the regerssion models",
-    "as they are trained on the fly in `compute_vS`. This is to reduce memory usage and for",
-    "improved efficeny.\n"
-  )) # TODO: should we add the time somewhere else?
-
   # Small printout to the user
-  if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_separate'.")
+  if (internal$parameters$verbose == 2) {
+    message(paste(
+      "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object can be",
+      "missleading as `setup_computation` does not contain the training times of the regerssion models",
+      "as they are trained on the fly in `compute_vS`. This is to reduce memory usage and for",
+      "improved efficeny.\n"
+    )) # TODO: should we add the time somewhere else?
+    message("Starting 'setup_approach.regression_separate'.")
+  }
 
   # Check that the model outputs one-dimensional predictions
   if (internal$parameters$output_size != 1) {
@@ -47,12 +47,8 @@ setup_approach.regression_separate <- function(internal,
   }
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
-  defaults <- mget(c(
-    "regression_model",
-    "regression_tune_values",
-    "regression_vfold_cv_para",
-    "regression_recipe_func"
-  ))
+  defaults <-
+    mget(c("regression_model", "regression_tune_values", "regression_vfold_cv_para", "regression_recipe_func"))
   internal <- insert_defaults(internal, defaults)
 
   # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
@@ -73,8 +69,7 @@ setup_approach.regression_separate <- function(internal,
   # Small printout to the user
   if (internal$parameters$verbose == 2) message("Done with 'setup_approach.regression_separate'.\n")
 
-  # Return the updated internal list
-  return(internal)
+  return(internal) # Return the updated internal list
 }
 
 #' @inheritParams default_doc
