@@ -276,9 +276,7 @@ explain <- function(model,
                     verbose = 0,
                     ...) { # ... is further arguments passed to specific approaches
 
-  timing_list <- list(
-    init_time = Sys.time()
-  )
+  timing_list <- list(init_time = Sys.time())
 
   set.seed(seed)
 
@@ -309,10 +307,7 @@ explain <- function(model,
   timing_list$setup <- Sys.time()
 
   # Gets predict_model (if not passed to explain)
-  predict_model <- get_predict_model(
-    predict_model = predict_model,
-    model = model
-  )
+  predict_model <- get_predict_model(predict_model = predict_model, model = model)
 
   # Checks that predict_model gives correct format
   test_predict_model(
