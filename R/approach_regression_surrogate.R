@@ -116,7 +116,6 @@ setup_approach.regression_surrogate <- function(internal,
 }
 
 
-# Augment function =====================================================================================================
 #' @inheritParams default_doc
 #' @rdname prepare_data
 #' @export
@@ -137,23 +136,32 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 }
 
 
-
-#' Title
+# Augment function =====================================================================================================
+#' Augment the training data and the explicands
 #'
-#' @param internal
-#' @param x
-#' @param y_hat
-#' @param index_features
-#' @param augment_add_id_comb
-#' @param augment_include_grand
-#' @param augment_masks_as_factor
-#' @param augment_comb_prob
-#' @param augment_weights
+#' @inheritParams default_doc
+#' @param x Data.table containing the data. Either the training data or the explicands. If `x` is the explicands,
+#' then `index_features` must be provided.
+#' @param y_hat Vector of numerics (optional) containing the predicted responses for the observations in `x`.
+#' @param index_features Array of integers (optional) containing which coalitions to consider. Must be provided if
+#' `x` is the explicands.
+#' @param augment_add_id_comb Logical (default is `FALSE`). If `TRUE`, an additional column is adding containing
+#' which coalition was applied.
+#' @param augment_include_grand Logical (default is `FALSE`). If `TRUE`, then the grand coalition is included.
+#' If `index_features` are provided, then `augment_include_grand` has no effect.
+#' @param augment_masks_as_factor Logical (default is `FALSE`). If `TRUE`, then the binary masks are converted
+#' to factors. If `FALSE`, then the binary masks are numerics.
+#' @param augment_comb_prob Array of numerics (default is `NULL`). The length of the array must match the number of
+#' combinations being considered, where each entry specifies the probability of sampling the corresponding coalition.
+#' This is useful if we want to generate more training data for some specific coalitions.
+#' @param augment_weights String (optional). Specifying which type of weights to add to the observations.
+#' If `NULL` (default), then no weights are added. If `"Shapley"`, then the Shapley weights for the different
+#' combinations are added to corresponding observations where the coalitions was applied. If `uniform`, then
+#' all observations get an equal weight of one.
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @return A data.table containing the augmented data.
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
 regression_surr_augment <- function(internal,
                                     x,
                                     y_hat = NULL,

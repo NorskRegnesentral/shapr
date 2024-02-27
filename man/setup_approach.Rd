@@ -2,8 +2,8 @@
 % Please edit documentation in R/approach.R, R/approach_categorical.R,
 %   R/approach_copula.R, R/approach_ctree.R, R/approach_empirical.R,
 %   R/approach_gaussian.R, R/approach_independence.R,
-%   R/approach_regression_separate.R, R/approach_timeseries.R,
-%   R/approach_vaeac.R
+%   R/approach_regression_separate.R, R/approach_regression_surrogate.R,
+%   R/approach_timeseries.R, R/approach_vaeac.R
 \name{setup_approach}
 \alias{setup_approach}
 \alias{setup_approach.categorical}
@@ -13,6 +13,7 @@
 \alias{setup_approach.gaussian}
 \alias{setup_approach.independence}
 \alias{setup_approach.regression_separate}
+\alias{setup_approach.regression_surrogate}
 \alias{setup_approach.timeseries}
 \alias{setup_approach.vaeac}
 \title{Set up the framework chosen approach}
@@ -56,6 +57,15 @@ setup_approach(internal, ...)
 \method{setup_approach}{independence}(internal, ...)
 
 \method{setup_approach}{regression_separate}(
+  internal,
+  regression_model = parsnip::linear_reg(),
+  regression_tune_values = NULL,
+  regression_vfold_cv_para = NULL,
+  regression_recipe_func = NULL,
+  ...
+)
+
+\method{setup_approach}{regression_surrogate}(
   internal,
   regression_model = parsnip::linear_reg(),
   regression_tune_values = NULL,
