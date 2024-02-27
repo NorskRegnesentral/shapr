@@ -64,7 +64,7 @@ Suggests:
     parsnip,
     recipes,
     rsample,
-    dials
+    dials,
     rlang, 
     yardstick
 LinkingTo: 
