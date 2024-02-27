@@ -125,7 +125,7 @@ approach <- "regression_separate"
 regression_model <- parsnip::linear_reg()
 
 # Compute the Shapley value explanations
-explanation_lm <- explain(
+explanation_sep_lm <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -152,7 +152,7 @@ explanation_empirical <- explain(
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_eval_crit(list(
   empirical = explanation_empirical,
-  linear_model = explanation_lm
+  sep_linear_model = explanation_sep_lm
 )) +
   theme(legend.position = "none") # Remove the legend
 ```
@@ -167,7 +167,7 @@ that the default parameters for [`decision_tree_rpart`](https://parsnip.tidymode
 
 ```{r}
 # Set the parameters (stumps)
-explanation_tree_stump <- explain(
+explanation_sep_tree_stump <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -180,7 +180,7 @@ explanation_tree_stump <- explain(
 )
 
 # Using default parameters
-explanation_tree_default <- explain(
+explanation_sep_tree_default <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -200,10 +200,10 @@ approach (179.4). By using stumps, i.e., trees with depth one, we obtained a wor
 ```{r}
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_eval_crit(list(
-  empirical = explanation_empirical,
-  linear_model = explanation_lm,
-  tree_stump = explanation_tree_stump,
-  tree_default = explanation_tree_default
+  empirical = explanation_sep_empirical,
+  sep_linear_model = explanation_sep_lm,
+  sep_tree_stump = explanation_sep_tree_stump,
+  sep_tree_default = explanation_sep_tree_default
 )) +
   theme(legend.position = "none") # Remove the legend
 ```
@@ -239,7 +239,7 @@ as.data.table(matrix(c(1, 5, 10, 15), ncol = 1, dimnames = list(NULL, c("tree_de
 Then we use cross validation on the `tree_depth` parameter, and we see that we obtain better MSEv results (169.96).
 ```{r}
 # Use trees with cross validation on the depth
-explanation_tree_cv <- explain(
+explanation_sep_tree_cv <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -256,9 +256,9 @@ explanation_tree_cv <- explain(
 # Compare the MSEv criterion of the different explanation methods. Remove linear_model
 plot_MSEv_eval_crit(list(
   empirical = explanation_empirical,
-  tree_stump = explanation_tree_stump,
-  tree_default = explanation_tree_default,
-  tree_cv = explanation_tree_cv
+  sep_tree_stump = explanation_sep_tree_stump,
+  sep_tree_default = explanation_sep_tree_default,
+  sep_tree_cv = explanation_sep_tree_cv
 )) +
   theme(legend.position = "none") # Remove the legend
 ```
@@ -273,10 +273,10 @@ Furthermore, we have to consider that doing the cross validation increased the e
 # Elapsed time for the different methods
 unlist(sapply(list(
   empirical = explanation_empirical,
-  linear_model = explanation_lm,
-  tree_stump = explanation_tree_stump,
-  tree_default = explanation_tree_default,
-  tree_cv = explanation_tree_cv
+  sep_linear_model = explanation_sep_lm,
+  sep_tree_stump = explanation_sep_tree_stump,
+  sep_tree_default = explanation_sep_tree_default,
+  sep_tree_cv = explanation_sep_tree_cv
 ), "[[", "timing")[2, ])
 ```
 
@@ -299,3 +299,23 @@ where $\tilde{\boldsymbol{x}}_S$ is an augmented version of $\boldsymbol{x}_S$. 
 
 
 ## Code {#surrogate_code}
+
+```{r}
+# Specify that we are using the regression paradigm and the separate method class
+approach <- "regression_separate"
+
+# Specify that we want to use a linear regression model
+regression_model <- parsnip::linear_reg()
+
+# Compute the Shapley value explanations
+explanation_sur_lm <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = approach,
+  regression_model = parsnip::linear_reg()
+)
+
+```
+
