@@ -106,23 +106,14 @@ check_and_set_parameters <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
   exact <- internal$parameters$exact
 
-  if (!is.null(group)) {
-    check_groups(feature_names, group)
-  }
+  if (!is.null(group)) check_groups(feature_names, group)
 
-  if (!exact) {
-    if (!is_groupwise) {
-      internal$parameters$used_n_combinations <- min(2^n_features, n_combinations)
-    } else {
-      internal$parameters$used_n_combinations <- min(2^n_groups, n_combinations)
-    }
-    check_n_combinations(internal)
+  if (exact) {
+    internal$parameters$used_n_combinations <- if (is_groupwise) 2^n_groups else 2^n_features
   } else {
-    if (!is_groupwise) {
-      internal$parameters$used_n_combinations <- 2^n_features
-    } else {
-      internal$parameters$used_n_combinations <- 2^n_groups
-    }
+    internal$parameters$used_n_combinations <-
+      if (is_groupwise) min(2^n_groups, n_combinations) else min(2^n_features, n_combinations)
+    check_n_combinations(internal)
   }
 
   # Check approach
@@ -137,7 +128,25 @@ check_and_set_parameters <- function(internal) {
   # Remove n_samples if we are doing regression, as we are not doing MC sampling
   if (internal$parameters$regression) internal$parameters$n_samples = NULL
 
+  # Check regression if we are doing regression
+  if (internal$parameters$regression) check_regression(internal)
+
   return(internal)
+}
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+check_regression <- function(internal) {
+  # Check that the model outputs one-dimensional predictions
+  if (internal$parameters$output_size != 1) {
+    stop("`regression_separate` and `regression_surrogate` only supports models with one-dimensional output")
+  }
+
+  # Check that we are not to keep the Monte Carlo samples
+  if (internal$parameters$keep_samp_for_vS) {
+    stop(paste("`keep_samp_for_vS` must be `FALSE` for the `regression_separate` and `regression_surrogate`",
+               "approaches as there are no Monte Carlo samples to keep for these approaches."))
+  }
 }
 
 #' @keywords internal
@@ -175,13 +184,9 @@ check_n_combinations <- function(internal) {
     }
   } else {
     if (!is_groupwise) {
-      if (n_combinations <= n_features) {
-        stop("`n_combinations` has to be greater than the number of features.")
-      }
+      if (n_combinations <= n_features) stop("`n_combinations` has to be greater than the number of features.")
     } else {
-      if (n_combinations <= n_groups) {
-        stop("`n_combinations` has to be greater than the number of groups.")
-      }
+      if (n_combinations <= n_groups)  stop("`n_combinations` has to be greater than the number of groups.")
     }
   }
 }
