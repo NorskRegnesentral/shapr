@@ -26,51 +26,27 @@ setup_approach.regression_separate <- function(internal,
   }
 
   # Small printout to the user
-  if (internal$parameters$verbose == 2) {
-    message(paste(
-      "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object can be",
-      "missleading as `setup_computation` does not contain the training times of the regerssion models",
-      "as they are trained on the fly in `compute_vS`. This is to reduce memory usage and for",
-      "improved efficeny.\n"
-    )) # TODO: should we add the time somewhere else?
-    message("Starting 'setup_approach.regression_separate'.")
-  }
-
-  # Check that the model outputs one-dimensional predictions
-  if (internal$parameters$output_size != 1) {
-    stop("`regression_separate` only supports models with one-dimensional output")
-  }
-
-  # Check that we are not to keep the Monte Carlo samples
-  if (internal$parameters$keep_samp_for_vS) {
-    stop("`keep_samp_for_vS` must be `FALSE` as there are no Monte Carlo samples to keep for this approach.")
-  }
+  if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_separate'.")
+  if (internal$parameters$verbose == 2) regression_sep_time_message() # TODO: maybe remove
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <-
     mget(c("regression_model", "regression_tune_values", "regression_vfold_cv_para", "regression_recipe_func"))
   internal <- insert_defaults(internal, defaults)
 
-  # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
-  check_regression_recipe_func(internal$parameters$regression_recipe_func)
+  # Check the parameters to the regression approach
+  internal <- check_regression_parameters(internal)
 
-  # Check that `regression_vfold_cv_para` is either NULL or a named list that only contains recognized parameters
-  check_regression_vfold_cv_para(internal$parameters$regression_vfold_cv_para)
-
-  # Check and get if we are to tune the hyperparameters of the regression model
-  internal$parameters$regression_tune <-
-    get_regression_tune(internal$parameters$regression_model, internal$parameters$regression_tune_values)
-
-  # Predict the response of the training and explain data. Former is the response the regression models are fitted to
-  model <- eval.parent(match.call()[["model"]])
-  internal$data$x_train_predicted_response <- predict_model(model, internal$data$x_train)
-  internal$data$x_explain_predicted_response <- predict_model(model, internal$data$x_explain)
+  # Get the predicted response of the training and explain data
+  internal <- get_regression_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
 
   # Small printout to the user
   if (internal$parameters$verbose == 2) message("Done with 'setup_approach.regression_separate'.\n")
 
   return(internal) # Return the updated internal list
 }
+
+
 
 #' @inheritParams default_doc
 #' @rdname prepare_data
@@ -90,13 +66,8 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
   regression_vfold_cv_para <- parameters$regression_vfold_cv_para
   regression_recipe_func <- parameters$regression_recipe_func
 
-  # Small printout to the user
-  if (verbose == 2) {
-    message(paste0(
-      "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
-      internal$parameters$n_batches, " in `prepare_data.regression_separate()`."
-    ))
-  }
+  # Small printout to the user about which batch that are currently worked on
+  if (verbose == 2) regression_prep_data_message(internal = internal)
 
   # Initialize empty data table with specific column names and ensure that id_combination is integer. The data table
   # will contain the contribution function values for the coalitions given by `index_features` and all explicands.
@@ -111,7 +82,7 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
     current_coalition <- features[[j]]
 
     # Extract the current training (and add f(x) as response) and explain data
-    current_x_train <- data$x_train[, ..current_coalition][, "y_train_hat" := data$x_train_predicted_response]
+    current_x_train <- data$x_train[, ..current_coalition][, "y_train_hat" := data$x_train_y_hat]
     current_x_explain <- data$x_explain[, ..current_coalition]
 
     # Create a recipe to the current training data.
@@ -142,7 +113,8 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
         tune::tune_grid(
           resamples = regression_folds,
           grid = regression_tune_values,
-          metrics = yardstick::metric_set(rmse)
+          metrics = yardstick::metric_set(rmse),
+          control = control_grid(verbose = ifelse(verbose == 2, TRUE, FALSE))
         )
 
       # Small printout to the user
@@ -181,9 +153,101 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 }
 
 
+# Train functions ======================================================================================================
+#' Train a [tidymodels()] model
+#'
+#' Function that trains a [tidymodels()] model based on the provided input parameters.
+#' This function allows for cross validating the hyperparameters of the model.
+#'
+#' @inheritParams setup_approach.regression_separate
+#' @inheritParams explain
+#' @param x Data.table containing the data. Either the training data or the explicands. If `x` is the explicands,
+#' then `index_features` must be provided.
+#' @param regression_tune Logical (default is `FALSE`). If `TRUE`, then we are to tune the hyperparemeters based on
+#' the values provided in `regression_tune_values`. Note that no checks are conducted as this is checked earlier in
+#' `setup_approach.regression_separate` and `setup_approach.regression_surrogate`.
+#' @param regression_response_var String (default is `y_hat`) containing the name of the response variable.
+#'
+#' @return A trained [tidymodels()] model based on the provided input parameters.
+#' @export
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+regression_train = function(x,
+                            regression_model = parsnip::linear_reg(),
+                            regression_tune = FALSE,
+                            regression_tune_values = NULL,
+                            regression_vfold_cv_para = NULL,
+                            regression_recipe_func = NULL,
+                            regression_response_var = "y_hat",
+                            verbose = 0) {
+
+  # Create a recipe to the augmented training data
+  regression_recipe <- recipes::recipe(as.formula(paste(regression_response_var, "~ .")), data = x_train_augmented)
+
+  # Update the recipe if user has provided a function for this. User is responsible for that the function works.
+  # This function can, e.g., add transformations, normalization, dummy encoding, interactions, and so on.
+  if (!is.null(regression_recipe_func)) regression_recipe <- regression_recipe_func(regression_recipe)
+
+  # Combine workflow, model specification, and recipe
+  regression_workflow <-
+    workflows::workflow() %>%
+    workflows::add_model(regression_model) %>%
+    workflows::add_recipe(regression_recipe)
+
+  # Check if we are to tune hyperparameters in the regression model, as we then need to update the workflow.
+  # If we are not doing any hyperparameter tuning, then the workflow above is enough.
+  if (regression_tune) {
+    if (verbose == 2) message("Start tuning the model.")
+
+    # Set up the V-fold cross validation using the user provided parameters in `regression_vfold_cv_para`.
+    # Note if `regression_vfold_cv_para` is NULL, then we use the default parameters in `vfold_cv()`.
+    regression_folds <- do.call(rsample::vfold_cv, c(list(data = x_train_augmented), regression_vfold_cv_para))
+
+    # Add the hyperparameter tuning to the workflow
+    regression_results <-
+      regression_workflow %>%
+      tune::tune_grid(
+        resamples = regression_folds,
+        grid = regression_tune_values,
+        metrics = yardstick::metric_set(rmse),
+        control = control_grid(verbose = ifelse(verbose == 2, TRUE, FALSE))
+      )
+
+    # Small printout to the user
+    if (verbose == 2) print(regression_results %>% tune::collect_metrics(), n = 10^4) # Large number to print all rows
+
+    # Update the workflow by finalizing it using the hyperparameters that attained the best rmse
+    regression_workflow <-
+      regression_workflow %>%
+      tune::finalize_workflow(regression_results %>% tune::select_best(rmse))
+  }
+
+  if (verbose == 2) message("Start fitting the model.")
+
+  # Fit the model to the augmented training data
+  regression_fit <- regression_workflow %>% fit(data = x_train_augmented)
+
+  # Return the trained model
+  return(regression_fit)
+}
 
 
 # Get functions ========================================================================================================
+#' Get the predicted responses
+#'
+#' @inheritParams default_doc
+#'
+#' @return The same `internal` list, but added vectors `internal$data$x_train_y_hat` and
+#' `internal$data$x_explain_y_hat` containing the predicted response of the training and explain data.
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+get_regression_y_hat <- function(internal, model) {
+  # Predict the response of the training and explain data. Former is the response the regression models are fitted to.
+  internal$data$x_train_y_hat <- predict_model(model, internal$data$x_train)
+  internal$data$x_explain_y_hat <- predict_model(model, internal$data$x_explain)
+  return(internal)
+}
+
 #' Get if model is to be tuned
 #'
 #' That is, if the regression model contains hyper-parameters we are to tune using cross validation.
@@ -229,7 +293,33 @@ get_regression_tune <- function(regression_model, regression_tune_values) {
 
 
 # Check functions ======================================================================================================
-#' Check regression_recipe_func
+#' Check regression parameters
+#'
+#' @inheritParams default_doc
+#'
+#' @return The same `internal` list, but added logical indicator `internal$parameters$regression_tune`
+#' if we are to tune the regression model/models.
+#'
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+check_regression_parameters <- function(internal) {
+  # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
+  check_regression_recipe_func(internal$parameters$regression_recipe_func)
+
+  # Check that `regression_vfold_cv_para` is either NULL or a named list that only contains recognized parameters
+  check_regression_vfold_cv_para(internal$parameters$regression_vfold_cv_para)
+
+  # Check that `check_regression_n_comb` is a valid value (only applicable for surrogate regression)
+  check_regression_n_comb(internal$parameters$regression_surr_n_comb, internal$parameters$used_n_combinations)
+
+  # Check and get if we are to tune the hyperparameters of the regression model
+  internal$parameters$regression_tune <-
+    get_regression_tune(internal$parameters$regression_model, internal$parameters$regression_tune_values)
+
+  return(internal)
+}
+
+#' Check `regression_recipe_func`
 #'
 #' Check that regression_recipe_func is a function that returns the
 #' RHS of the formula for arbitrary feature name inputs.
@@ -246,7 +336,7 @@ check_regression_recipe_func <- function(regression_recipe_func) {
 
 #' Check the parameters that are sent to [rsample::vfold_cv()]
 #'
-#' Check that `regression_vfold_cv_para` is either NULL or a named list that only contains recognized parameters
+#' Check that `regression_vfold_cv_para` is either NULL or a named list that only contains recognized parameters.
 #'
 #' @inheritParams setup_approach.regression_separate
 #'
@@ -270,3 +360,24 @@ check_regression_vfold_cv_para <- function(regression_vfold_cv_para) {
     }
   }
 }
+
+# Message functions ====================================================================================================
+#' Produce time message for separate regression
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+regression_sep_time_message = function() {
+  message(paste(
+    "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object can be",
+    "missleading as `setup_computation` does not contain the training times of the regerssion models",
+    "as they are trained on the fly in `compute_vS`. This is to reduce memory usage and for",
+    "improved efficeny.\n"
+  )) # TODO: should we add the time somewhere else?
+}
+
+regression_prep_data_message = function(internal) {
+  message(paste0(
+    "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
+    internal$parameters$n_batches, " in `prepare_data.", internal$parameters$approach, "()`."
+  ))
+}
+
