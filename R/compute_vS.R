@@ -11,24 +11,13 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   S_batch <- internal$objects$S_batch
 
   if (method == "future") {
-    ret <- future_compute_vS_batch(
-      S_batch = S_batch,
-      internal = internal,
-      model = model,
-      predict_model = predict_model
-    )
+    ret <- future_compute_vS_batch(S_batch = S_batch, internal = internal, model = model, predict_model = predict_model)
   } else {
     # Doing the same as above without future without progressbar or paralellization
     ret <- list()
     for (i in seq_along(S_batch)) {
       S <- S_batch[[i]]
-
-      ret[[i]] <- batch_compute_vS(
-        S = S,
-        internal = internal,
-        model = model,
-        predict_model = predict_model
-      )
+      ret[[i]] <- batch_compute_vS(S = S, internal = internal, model = model, predict_model = predict_model)
     }
   }
 
@@ -94,15 +83,11 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   }
 
   # Update the progress bar if provided
-  if (!is.null(p)) {
-    p(amount = length(S), message = "Estimating v(S)") # TODO: Add a message to state what batch has been computed
-  }
+  # TODO: Add a message to state what batch has been computed
+  if (!is.null(p)) p(amount = length(S), message = "Estimating v(S)")
 
-  if (keep_samp_for_vS) { # keep_samp_for_vS will always be FALSE for the regression approach
-    return(list(dt_vS = dt_vS, dt_samp_for_vS = dt))
-  } else {
-    return(dt_vS = dt_vS)
-  }
+  # keep_samp_for_vS will always be FALSE for the regression approach
+  if (keep_samp_for_vS) return(list(dt_vS = dt_vS, dt_samp_for_vS = dt)) else return(dt_vS = dt_vS)
 }
 
 #' @keywords internal
