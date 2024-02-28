@@ -134,20 +134,18 @@ batch_prepare_vS <- function(S, internal) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 batch_prepare_vS_regression <- function(S, internal) {
-  max_id_combination <- internal$parameters$n_combinations
+  max_id_comb <- internal$parameters$n_combinations
+  x_explain_y_hat <- internal$data$x_explain_y_hat
 
   # Compute the contribution functions different based on if the grand coalition is in S or not
-  if (!(max_id_combination %in% S)) {
+  if (!(max_id_comb %in% S)) {
     dt <- prepare_data(internal, index_features = S)
   } else {
     # Remove the grand coalition. NULL is for the special case for when the batch only includes the grand coalition.
-    dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_combination]) else NULL
+    dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_comb]) else NULL
 
     # Add the results for the grand coalition
-    dt <- rbind(dt, data.table(
-      id_combination = max_id_combination,
-      matrix(internal$data$x_explain_predicted_response, nrow = 1)
-    ), use.names = FALSE)
+    dt <- rbind(dt, data.table(id_combination = max_id_comb, matrix(x_explain_y_hat, nrow = 1)), use.names = FALSE)
   }
 
   # Set id_combination to be the key
