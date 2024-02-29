@@ -11,7 +11,7 @@ check_regression_vfold_cv_para(regression_vfold_cv_para)
 the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}.}
 }
 \description{
-Check that \code{regression_vfold_cv_para} is either NULL or a named list that only contains recognized parameters
+Check that \code{regression_vfold_cv_para} is either NULL or a named list that only contains recognized parameters.
 }
 \author{
 Lars Henry Berge Olsen

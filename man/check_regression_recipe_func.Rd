@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_regression_separate.R
 \name{check_regression_recipe_func}
 \alias{check_regression_recipe_func}
-\title{Check regression_recipe_func}
+\title{Check \code{regression_recipe_func}}
 \usage{
 check_regression_recipe_func(regression_recipe_func)
 }
