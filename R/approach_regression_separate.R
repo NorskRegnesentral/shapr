@@ -352,18 +352,10 @@ regression_cv_message <- function(regression_results, regression_tune_values, n_
   # Extract the n_cv best results
   best_results <- tune::show_best(regression_results, n = n_cv)
 
-  # DID NOT LIKE THIS. IT BECAME TO COMPLEX. AND DID NOT MANAGE TO MAKE IT WORK
-  # # Compute sprintf format to ensure a nice printed table
+  # Needed to make prinout tables prettier to ensure same column dimensions for all settings.
   regression_tune_values$rmse <- round(best_results$mean, 2)
   regression_tune_values$rmse_std <- round(best_results$std_err, 2)
-  # print(as.data.table(regression_tune_values))
-  # is_charachter <- sapply(regression_tune_values, is.character)
-  # sprintf_character <- ifelse(is_charachter, "s", "g")
   width <- sapply(regression_tune_values, function(x) max(nchar(as.character(unique(x)))))
-  # sprintf_character[!is_charachter] <- paste0(max_num_lengths[!is_charachter], ".2", sprintf_character[!is_charachter])
-  # sprintf_character[is_charachter] <- paste0(max_num_lengths[is_charachter], sprintf_character[is_charachter])
-  # sprintf_character <- paste0("%", sprintf_character)
-  # print(sprintf_character)
 
   # Message title of the results
   message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
@@ -381,11 +373,6 @@ regression_cv_message <- function(regression_results, regression_tune_values, n_
       function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "right")
     )
     message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))
-    # # CORRESPONDS TO THE MESSAGE ABOVE
-    # message(do.call(sprintf, c(
-    #   fmt = paste0("#", row_idx, ": ", paste(feature_names_rmse, "=", sprintf_character, collapse = "    ")),
-    #   as.list(feature_values_rmse)
-    # )))
   }
 
   message("") # Empty message to get a blank line
