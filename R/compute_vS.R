@@ -129,8 +129,11 @@ batch_prepare_vS_regression <- function(S, internal) {
     # Remove the grand coalition. NULL is for the special case for when the batch only includes the grand coalition.
     dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_comb]) else NULL
 
-    # Add the results for the grand coalition
-    dt <- rbind(dt, data.table(id_combination = max_id_comb, matrix(x_explain_y_hat, nrow = 1)), use.names = FALSE)
+    # Add the results for the grand coalition (Need to add names in case the batch only contains the grand coalition)
+    dt <- rbind(dt, data.table(as.integer(max_id_comb), matrix(x_explain_y_hat, nrow = 1)), use.names = FALSE)
+
+    # Need to add column names if batch S only contains the grand coalition
+    if (length(S) == 1) setnames(dt, c("id_combination", paste0("p_hat1_", seq_len(internal$parameters$n_explain))))
   }
 
   # Set id_combination to be the key

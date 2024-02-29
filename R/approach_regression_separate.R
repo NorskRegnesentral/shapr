@@ -55,31 +55,25 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
   features <- internal$objects$X$features[index_features]
 
   # Small printout to the user about which batch that are currently worked on
-  if (internal$parameters$verbose == 2) regression_prep_data_message(internal, index_features)
+  if (internal$parameters$verbose == 2) regression_prep_message_batch(internal, index_features)
 
-  # Initialize empty data table with specific column names and ensure that id_combination is integer. The data table
-  # will contain the contribution function values for the coalitions given by `index_features` and all explicands.
+  # Initialize empty data table with specific column names and id_combination (transformed to integer later). The data
+  # table will contain the contribution function values for the coalitions given by `index_features` and all explicands.
   dt_res_column_names <- c("id_combination", paste0("p_hat1_", seq_len(internal$parameters$n_explain)))
-  dt_res <- data.table(integer(0), matrix(ncol = length(dt_res_column_names) - 1, nrow = 0))
-  data.table::setnames(dt_res, dt_res_column_names)
+  dt_res <- data.table(matrix(ncol = length(dt_res_column_names), nrow = 0, dimnames = list(NULL, dt_res_column_names)))
 
   # Iterate over the coalitions provided by index_features.
   # Note that index_features will never be NULL and never contain the empty or grand coalitions.
-  for (j in seq_along(features)) {
-    # Get the column indices of the features in current coalition
-    current_coalition <- features[[j]]
+  for (comb_idx in seq_along(features)) {
+    # Get the column indices of the features in current coalition/combination
+    current_comb <- features[[comb_idx]]
 
     # Extract the current training (and add y_hat as response) and explain data
-    current_x_train <- internal$data$x_train[, ..current_coalition][, "y_hat" := internal$data$x_train_y_hat]
-    current_x_explain <- internal$data$x_explain[, ..current_coalition]
+    current_x_train <- internal$data$x_train[, ..current_comb][, "y_hat" := internal$data$x_train_y_hat]
+    current_x_explain <- internal$data$x_explain[, ..current_comb]
 
     # Fit the current separate regression model to the current training data
-    if (internal$parameters$verbose == 2) {
-      message(paste0(
-        "Working on combination with id ", internal$objects$X$id_combination[index_features[j]],
-        " of ", internal$parameters$used_n_combinations, "."
-      ))
-    }
+    if (internal$parameters$verbose == 2) regression_prep_message_comb(internal, index_features, comb_idx)
     current_regression_fit <- regression_train(
       x = current_x_train,
       regression_model = internal$parameters$regression_model,
@@ -94,11 +88,11 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
     pred_explicand <- predict(current_regression_fit, new_data = current_x_explain)$.pred
 
     # Add the new contribution function values for the current coalitions S to the result data table as a new row
-    dt_res <-
-      rbind(dt_res, data.table(as.integer(index_features[j]), matrix(pred_explicand, nrow = 1)), use.names = FALSE)
+    dt_res <- rbind(dt_res, data.table(index_features[comb_idx], matrix(pred_explicand, nrow = 1)), use.names = FALSE)
   }
 
   # Set id_combination to be the key
+  dt_res[, id_combination := as.integer(id_combination)]
   data.table::setkey(dt_res, id_combination)
 
   # Return the estimated contribution function values
@@ -159,7 +153,7 @@ regression_train <- function(x,
         resamples = regression_folds,
         grid = regression_tune_values,
         metrics = yardstick::metric_set(rmse),
-        control = control_grid(verbose = ifelse(verbose == 3, TRUE, FALSE))
+        control = tune::control_grid(verbose = ifelse(verbose == 3, TRUE, FALSE))
       )
 
     # Small printout to the user
@@ -325,10 +319,23 @@ regression_sep_time_message <- function() {
 #' @inheritParams default_doc_explain
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression_prep_data_message <- function(internal, index_features) {
+regression_prep_message_batch <- function(internal, index_features) {
   message(paste0(
     "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
     internal$parameters$n_batches, " in `prepare_data.", internal$parameters$approach, "()`."
+  ))
+}
+
+#' Produce message about which combination prepare_data is working on
+#' @inheritParams default_doc
+#' @inheritParams default_doc_explain
+#' @param comb_idx Integer. The index of the combination in a specific batch.
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+regression_prep_message_comb <- function(internal, index_features, comb_idx) {
+  message(paste0(
+    "Working on combination with id ", internal$objects$X$id_combination[index_features[comb_idx]],
+    " of ", internal$parameters$used_n_combinations, "."
   ))
 }
 
@@ -349,7 +356,7 @@ regression_cv_message <- function(regression_results, regression_tune_values, n_
   n_cv = min(n_cv, nrow(regression_tune_values))
 
   # Extract the n_cv best results
-  best_results <- regression_results %>% tune::show_best(n_cv = n_cv)
+  best_results <- regression_results %>% tune::show_best(n = n_cv)
 
   # Message title of the results
   message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
