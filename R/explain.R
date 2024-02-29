@@ -327,7 +327,6 @@ explain <- function(model,
 
   timing_list$setup_computation <- Sys.time()
 
-
   # Compute the v(S):
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
@@ -336,22 +335,23 @@ explain <- function(model,
 
   timing_list$compute_vS <- Sys.time()
 
-
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
-  output <- finalize_explanation(
-    vS_list = vS_list,
-    internal = internal
-  )
+  output <- finalize_explanation(vS_list = vS_list, internal = internal)
 
   timing_list$shapley_computation <- Sys.time()
 
-  if (timing == TRUE) {
-    output$timing <- compute_time(timing_list)
-  }
+  if (timing == TRUE) output$timing <- compute_time(timing_list)
 
   # Temporary to avoid failing tests
+  output <- remove_outputs_to_pass_tests(output)
 
+  return(output)
+}
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+remove_outputs_to_pass_tests = function(output) {
   output$internal$objects$id_combination_mapper_dt <- NULL
   output$internal$objects$cols_per_horizon <- NULL
   output$internal$objects$W_list <- NULL
