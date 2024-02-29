@@ -135,9 +135,7 @@ regression_train <- function(x,
 
   # Combine workflow, model specification, and recipe
   regression_workflow <-
-    workflows::workflow() %>%
-    workflows::add_model(regression_model) %>%
-    workflows::add_recipe(regression_recipe)
+    workflows::add_recipe(workflows::add_model(workflows::workflow(), regression_model), regression_recipe)
 
   # Check if we are to tune hyperparameters in the regression model, as we then need to update the workflow.
   # If we are not doing any hyperparameter tuning, then the workflow above is enough.
@@ -147,26 +145,22 @@ regression_train <- function(x,
     regression_folds <- do.call(rsample::vfold_cv, c(list(data = x), regression_vfold_cv_para))
 
     # Add the hyperparameter tuning to the workflow
-    regression_results <-
-      regression_workflow %>%
-      tune::tune_grid(
-        resamples = regression_folds,
-        grid = regression_tune_values,
-        metrics = yardstick::metric_set(rmse),
-        control = tune::control_grid(verbose = ifelse(verbose == 3, TRUE, FALSE))
-      )
+    regression_results <- tune::tune_grid(
+      object = regression_workflow,
+      resamples = regression_folds,
+      grid = regression_tune_values,
+      metrics = yardstick::metric_set(yardstick::rmse)
+    )
 
     # Small printout to the user
     if (verbose == 2) regression_cv_message(regression_results, regression_tune_values)
 
     # Update the workflow by finalizing it using the hyperparameters that attained the best rmse
-    regression_workflow <-
-      regression_workflow %>%
-      tune::finalize_workflow(regression_results %>% tune::select_best("rmse"))
+    regression_workflow <- tune::finalize_workflow(regression_workflow, tune::select_best(regression_results, "rmse"))
   }
 
   # Fit the model to the augmented training data
-  regression_fit <- regression_workflow %>% fit(data = x)
+  regression_fit <- fit(regression_workflow, data = x)
 
   # Return the trained model
   return(regression_fit)
@@ -356,7 +350,7 @@ regression_cv_message <- function(regression_results, regression_tune_values, n_
   n_cv = min(n_cv, nrow(regression_tune_values))
 
   # Extract the n_cv best results
-  best_results <- regression_results %>% tune::show_best(n = n_cv)
+  best_results <- tune::show_best(regression_results, n = n_cv)
 
   # Message title of the results
   message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
