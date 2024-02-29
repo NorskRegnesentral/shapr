@@ -46,7 +46,7 @@ setup_approach.regression_surrogate <- function(internal,
     regression_surrogate_augment(internal, x = internal$data$x_train, y_hat = internal$data$x_train_y_hat)
 
   # Fit the surrogate regression model and store it in the internal list
-  if (internal$parameters$verbose == 2) message("Start training the surrogate model...")
+  if (internal$parameters$verbose == 2) message("Start training the surrogate model.")
   internal$objects$regression_surrogate_model <- regression_train(
     x = x_train_augmented,
     regression_model = internal$parameters$regression_model,
@@ -58,11 +58,10 @@ setup_approach.regression_surrogate <- function(internal,
   )
 
   # Small printout to the user
-  if (internal$parameters$verbose == 2) message("Done with 'setup_approach.regression_surrogate'.\n")
+  if (internal$parameters$verbose == 2) message("Done with 'setup_approach.regression_surrogate'.")
 
   return(internal) # Return the updated internal list
 }
-
 
 #' @inheritParams default_doc
 #' @rdname prepare_data
@@ -70,7 +69,7 @@ setup_approach.regression_surrogate <- function(internal,
 #' @author Lars Henry Berge Olsen
 prepare_data.regression_surrogate <- function(internal, index_features = NULL, ...) {
   # Small printout to the user about which batch that are currently worked on
-  if (internal$parameters$verbose == 2) regression_prep_data_message(internal = internal)
+  if (internal$parameters$verbose == 2) regression_prep_data_message(internal, index_features)
 
   # Augment the explicand data
   x_explain_augmented <-
@@ -86,7 +85,6 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 
   return(dt_res)
 }
-
 
 # Augment function =====================================================================================================
 #' Augment the training data and the explicands
@@ -153,7 +151,7 @@ regression_surrogate_augment <- function(internal,
   feature_cat <- names(feature_classes)[feature_classes == "factor"]
   feature_cont <- names(feature_classes)[feature_classes != "factor"]
 
-  # Get the indices of the order of the cat and cont features in
+  # Get the indices of the order of the cat and cont features
   feature_cat_idx <- which(names(feature_classes) %in% feature_cat)
   feature_cont_idx <- which(names(feature_classes) %in% feature_cont)
 
@@ -161,7 +159,6 @@ regression_surrogate_augment <- function(internal,
   if (is.null(index_features)) {
     # Training: get matrix of dimension n_obs x regression_surr_n_comb containing the indices of the active coalitions
     if (regression_surr_n_comb >= actual_n_combinations) { # Start from two to exclude the empty set
-      # TODO: remove `comb_active_idx <- matrix(rep(seq(2, actual_n_combinations), times = n_obs), nrow = n_obs, byrow = TRUE)`
       comb_active_idx <- matrix(rep(seq(2, actual_n_combinations + 1), times = n_obs), ncol = n_obs)
     } else {
       comb_active_idx <- sapply(seq(n_obs), function(x) { # Add 1 as we want to exclude the empty set
