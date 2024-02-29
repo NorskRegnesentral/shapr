@@ -370,7 +370,7 @@ regression_cv_message <- function(regression_results, regression_tune_values, n_
     )
     values_fixed_len <- sapply(
       seq(length(feature_values_rmse)),
-      function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "right")
+      function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "left")
     )
     message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))
   }
