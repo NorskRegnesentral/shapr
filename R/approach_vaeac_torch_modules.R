@@ -22,7 +22,7 @@
 #' @param activation_function A [torch::nn_module()] representing an activation function such as, e.g.,
 #' [torch::nn_relu()], [torch::nn_leaky_relu()], [torch::nn_selu()],
 #' [torch::nn_sigmoid()].
-#' @param skip_conn_layer Boolean. If we are to use skip connections in each layer, see [shapr::SkipConnection()].
+#' @param skip_conn_layer Boolean. If we are to use skip connections in each layer, see [shapr::skip_connection()].
 #' If `TRUE`, then we add the input to the outcome of each hidden layer, so the output becomes
 #' \eqn{X + \operatorname{activation}(WX + b)}. I.e., the identity skip connection.
 #' @param skip_conn_masked_enc_dec Boolean. If we are to apply concatenating skip
@@ -35,11 +35,11 @@
 #' @param paired_sampling Boolean. If we are doing paired sampling. I.e., if we are to include both coalition S
 #' and \eqn{\bar{S}} when we sample coalitions during training for each batch.
 #' @param mask_generator_name String specifying the type of mask generator to use. Need to be one of
-#' 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specified_masks_mask_generator'.
+#' 'mcar_mask_generator', 'specified_prob_mask_generator', and 'specified_masks_mask_generator'.
 #' @param masking_ratio Scalar. The probability for an entry in the generated mask to be 1 (masked).
 #' Not used if `mask_gen_coalitions` is given.
 #' @param mask_gen_coalitions Matrix containing the different coalitions to learn.
-#' Must be given if `mask_generator_name = 'Specified_masks_mask_generator'`.
+#' Must be given if `mask_generator_name = 'specified_masks_mask_generator'`.
 #' @param mask_gen_coalitions_prob Numerics containing the probabilities
 #' for sampling each mask in `mask_gen_coalitions`.
 #' Array containing the probabilities for sampling the coalitions in `mask_gen_coalitions`.
@@ -133,9 +133,9 @@ vaeac <- torch::nn_module(
                         batch_normalization = FALSE,
                         paired_sampling = FALSE,
                         mask_generator_name = c(
-                          "MCAR_mask_generator",
-                          "Specified_prob_mask_generator",
-                          "Specified_masks_mask_generator"
+                          "mcar_mask_generator",
+                          "specified_prob_mask_generator",
+                          "specified_masks_mask_generator"
                         ),
                         masking_ratio = 0.5,
                         mask_gen_coalitions = NULL,
@@ -167,44 +167,44 @@ vaeac <- torch::nn_module(
     self$paired_sampling <- paired_sampling
 
     # Save the how to compute the loss and how to sample from the vaeac model.
-    self$reconstruction_log_prob <- GaussCatLoss(one_hot_max_sizes)
-    self$sampler_most_likely <- GaussCatSamplerMostLikely(one_hot_max_sizes)
-    self$sampler_random <- GaussCatSamplerRandom(one_hot_max_sizes)
-    self$generative_parameters <- GaussCatParameters(one_hot_max_sizes)
+    self$reconstruction_log_prob <- gauss_cat_loss(one_hot_max_sizes)
+    self$sampler_most_likely <- gauss_cat_sampler_most_likely(one_hot_max_sizes)
+    self$sampler_random <- gauss_cat_sampler_random(one_hot_max_sizes)
+    self$generative_parameters <- gauss_cat_parameters(one_hot_max_sizes)
     self$n_features <- n_features
     self$vlb_scale_factor <- 1 / n_features
 
     ##### Generate the mask generator
-    if (mask_generator_name == "MCAR_mask_generator") {
-      # Create a MCAR_mask_generator and attach it to the vaeac object. Note that masking_ratio is a singleton here.
-      self$mask_generator <- MCAR_mask_generator(
+    if (mask_generator_name == "mcar_mask_generator") {
+      # Create a mcar_mask_generator and attach it to the vaeac object. Note that masking_ratio is a singleton here.
+      self$mask_generator <- mcar_mask_generator(
         masking_ratio = masking_ratio,
         paired_sampling = paired_sampling
       )
 
       # Attach the masking ratio to the vaeac object.
       self$masking_ratio <- masking_ratio
-    } else if (mask_generator_name == "Specified_prob_mask_generator") {
-      # Create a Specified_prob_mask_generator and attach it to the vaeac object.
+    } else if (mask_generator_name == "specified_prob_mask_generator") {
+      # Create a specified_prob_mask_generator and attach it to the vaeac object.
       # Note that masking_ratio is an array here.
-      self$mask_generator <- Specified_prob_mask_generator(
+      self$mask_generator <- specified_prob_mask_generator(
         masking_probs = masking_ratio,
         paired_sampling = paired_sampling
       )
 
       # Attach the masking probabilities to the vaeac object.
       self$masking_probs <- masking_ratio
-    } else if (mask_generator_name == "Specified_masks_mask_generator") {
+    } else if (mask_generator_name == "specified_masks_mask_generator") {
       # Small check that they have been provided.
       if (is.null(mask_gen_coalitions) | is.null(mask_gen_coalitions_prob)) {
         stop(paste0(
           "Both 'mask_gen_coalitions' and 'mask_gen_coalitions_prob' ",
-          "must be provided when using 'Specified_masks_mask_generator'."
+          "must be provided when using 'specified_masks_mask_generator'."
         ))
       }
 
-      # Create a Specified_masks_mask_generator and attach it to the vaeac object.
-      self$mask_generator <- Specified_masks_mask_generator(
+      # Create a specified_masks_mask_generator and attach it to the vaeac object.
+      self$mask_generator <- specified_masks_mask_generator(
         masks = mask_gen_coalitions,
         masks_probs = mask_gen_coalitions_prob,
         paired_sampling = paired_sampling
@@ -216,8 +216,8 @@ vaeac <- torch::nn_module(
     } else {
       # Print error to user.
       stop(paste0(
-        "`mask_generator_name` must be one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', or ",
-        "'Specified_masks_mask_generator', and not '", mask_generator_name, "'."
+        "`mask_generator_name` must be one of 'mcar_mask_generator', 'specified_prob_mask_generator', or ",
+        "'specified_masks_mask_generator', and not '", mask_generator_name, "'."
       ))
     }
 
@@ -226,7 +226,7 @@ vaeac <- torch::nn_module(
 
     # Full Encoder: Input layer
     full_encoder_network$add_module(
-      module = CategoricalToOneHotLayer(c(one_hot_max_sizes, rep(0, n_features)), seq(n_features)),
+      module = categorical_to_one_hot_layer(c(one_hot_max_sizes, rep(0, n_features)), seq(n_features)),
       name = "input_layer_cat_to_one_hot"
     )
     full_encoder_network$add_module(
@@ -253,7 +253,7 @@ vaeac <- torch::nn_module(
         # Add identity skip connection. Such that the input is added to the output of the linear layer
         # and activation function: output = X + activation(WX + b).
         full_encoder_network$add_module(
-          module = SkipConnection(
+          module = skip_connection(
             torch::nn_linear(width, width),
             activation_function(),
             if (batch_normalization) torch::nn_batch_norm1d(width)
@@ -290,12 +290,12 @@ vaeac <- torch::nn_module(
 
     # Masked Encoder: Input layer
     masked_encoder_network$add_module(
-      module = CategoricalToOneHotLayer(c(one_hot_max_sizes, rep(0, n_features))),
+      module = categorical_to_one_hot_layer(c(one_hot_max_sizes, rep(0, n_features))),
       name = "input_layer_cat_to_one_hot"
     )
     if (skip_conn_masked_enc_dec) {
       masked_encoder_network$add_module(
-        module = MemoryLayer("#input"),
+        module = memory_layer("#input"),
         name = "input_layer_memory"
       )
     }
@@ -322,11 +322,11 @@ vaeac <- torch::nn_module(
       if (skip_conn_layer) {
         # Add identity skip connection. Such that the input is added to the output of the linear layer
         # and activation function: output = X + activation(WX + b).
-        # Also check inside SkipConnection if we are to use MemoryLayer. I.e., skip connection with
+        # Also check inside skip_connection if we are to use memory_layer. I.e., skip connection with
         # concatenation from masked encoder to decoder.
         masked_encoder_network$add_module(
-          module = SkipConnection(
-            if (skip_conn_masked_enc_dec) MemoryLayer(paste0("#", i)),
+          module = skip_connection(
+            if (skip_conn_masked_enc_dec) memory_layer(paste0("#", i)),
             torch::nn_linear(width, width),
             activation_function()
           ),
@@ -342,7 +342,7 @@ vaeac <- torch::nn_module(
         # Do not use skip connections and do not add the input to the output.
         if (skip_conn_masked_enc_dec) {
           masked_encoder_network$add_module(
-            module = MemoryLayer(paste0("#", i)),
+            module = memory_layer(paste0("#", i)),
             name = paste0("hidden_layer_", i, "_memory")
           )
         }
@@ -366,7 +366,7 @@ vaeac <- torch::nn_module(
     # Masked Encoder: Go to latent space
     if (skip_conn_masked_enc_dec) {
       masked_encoder_network$add_module(
-        module = MemoryLayer(paste0("#", depth + 1)),
+        module = memory_layer(paste0("#", depth + 1)),
         name = "latent_space_layer_memory"
       )
     }
@@ -413,16 +413,16 @@ vaeac <- torch::nn_module(
     for (i in seq(depth_decoder)) {
       if (skip_conn_layer) {
         # Add identity skip connection. Such that the input is added to the output of the linear layer and activation
-        # function: output = X + activation(WX + b). Also check inside SkipConnection if we are to use MemoryLayer.
+        # function: output = X + activation(WX + b). Also check inside skip_connection if we are to use memory_layer.
         # I.e., skip connection with concatenation from masked encoder to decoder. If TRUE, then the memory layers
         # extracts the corresponding input used in the masked encoder and concatenate them with the current input. Note
         # that we add the memory layers in the opposite direction from how they were created. So, we get a classical
         # U-net with latent space at the bottom and a connection between the layers on the same height of the U-shape.
         decoder_network$add_module(
           module = torch::nn_sequential(
-            SkipConnection(
+            skip_connection(
               if (skip_conn_masked_enc_dec) {
-                MemoryLayer(paste0("#", depth - i + 2), TRUE)
+                memory_layer(paste0("#", depth - i + 2), TRUE)
               },
               torch::nn_linear(width_decoder, width),
               activation_function()
@@ -440,7 +440,7 @@ vaeac <- torch::nn_module(
         # Do not use skip connections and do not add the input to the output.
         if (skip_conn_masked_enc_dec) {
           decoder_network$add_module(
-            module = MemoryLayer(paste0("#", depth - i + 2), TRUE),
+            module = memory_layer(paste0("#", depth - i + 2), TRUE),
             name = paste0("hidden_layer_", i, "_memory")
           )
         }
@@ -465,7 +465,7 @@ vaeac <- torch::nn_module(
     # Concatenate the input to the first layer of the masked encoder to the last layer of the decoder network.
     if (skip_conn_masked_enc_dec) {
       decoder_network$add_module(
-        module = MemoryLayer("#input", TRUE),
+        module = memory_layer("#input", TRUE),
         name = "output_layer_memory"
       )
     }
@@ -1096,7 +1096,7 @@ vaeac_dataset <- torch::dataset(
 #'   )
 #' )
 #' dataload$.length() # Number of batches, same as ceiling((2 * n_observations) / batch_size)
-#' mask_generator <- MCAR_mask_generator(paired = TRUE)
+#' mask_generator <- mcar_mask_generator(paired = TRUE)
 #' coro::loop(for (batch in dataload) {
 #'   mask <- mask_generator(batch)
 #'   obs <- mask * batch
@@ -1124,7 +1124,7 @@ paired_sampler <- torch::sampler(
 
 
 # Neural Network Utility Functions ====================================================================================
-##  MemoryLayer -------------------------------------------------------------------------------------------------------
+##  memory_layer -------------------------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a Memory Layer
 #'
 #' @description The layer is used to make skip-connections inside a [torch::nn_sequential] network
@@ -1148,30 +1148,30 @@ paired_sampler <- torch::sampler(
 #' @examples
 #' \dontrun{
 #' net1 <- torch::nn_sequential(
-#'   MemoryLayer("#1"),
-#'   MemoryLayer("#0.1"),
+#'   memory_layer("#1"),
+#'   memory_layer("#0.1"),
 #'   torch::nn_linear(512, 256),
 #'   torch::nn_leaky_relu(),
 #'   # here add cannot be TRUE because the dimensions mismatch
-#'   MemoryLayer("#0.1", output = TRUE, add = FALSE),
+#'   memory_layer("#0.1", output = TRUE, add = FALSE),
 #'   torch::nn_linear(768, 256),
 #'   # the dimension after the concatenation with skip-connection is 512 + 256 = 768
 #' )
 #' net2 <- torch::nn_equential(
 #'   torch::nn_linear(512, 512),
-#'   MemoryLayer("#1", output = TRUE, add = TRUE),
+#'   memory_layer("#1", output = TRUE, add = TRUE),
 #'   ...
 #' )
 #' b <- net1(a)
 #' d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
 #' }
-MemoryLayer <- torch::nn_module(
-  classname = "MemoryLayer", # field classname Name of the of torch::nn_module object.
+memory_layer <- torch::nn_module(
+  classname = "memory_layer", # field classname Name of the of torch::nn_module object.
 
-  # field shared_env A shared environment for all instances of MemoryLayers.
+  # field shared_env A shared environment for all instances of memory_layers.
   shared_env = new.env(),
 
-  # description Create a new MemoryLayer object.
+  # description Create a new `memory_layer` object.
   # param id A unique id to use as a key in the storage list.
   # param output Boolean variable indicating if the memory layer is to store input in storage or extract from storage.
   # param add Boolean variable indicating if the extracted value are to be added or concatenated to the input.
@@ -1188,7 +1188,7 @@ MemoryLayer <- torch::nn_module(
     if (!self$output) {
       if (self$verbose) message(paste0("Inserting data to memory layer `self$id = ", self$id, "`."))
 
-      # Insert the input into the storage list which is in the shared environment of the MemoryLayer class.
+      # Insert the input into the storage list which is in the shared environment of the memory_layer class.
       # Note that we do not check if self$id is unique.
       self$shared_env$storage[[self$id]] <- input
       return(input) # Return/send the input to the next layer in the network.
@@ -1218,22 +1218,22 @@ MemoryLayer <- torch::nn_module(
   }
 )
 
-## SkipConnection -----------------------------------------------------------------------------------------------------
+## skip_connection -----------------------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a skip connection
 #'
 #' @description Skip connection over the sequence of layers in the constructor. The module passes
 #' input data sequentially through these layers and then adds original data to the result.
 #'
 #' @param ... network modules such as, e.g., [torch::nn_linear()], [torch::nn_relu()],
-#' and [shapr::MemoryLayer()] objects. See [shapr::vaeac()] for more information.
+#' and [shapr::memory_layer()] objects. See [shapr::vaeac()] for more information.
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-SkipConnection <- torch::nn_module(
-  classname = "SkipConnection", # field classname Name of the of torch::nn_module object
-  # description Initialize a new SkipConnection module
+skip_connection <- torch::nn_module(
+  classname = "skip_connection", # field classname Name of the of torch::nn_module object
+  # description Initialize a new skip_connection module
   initialize = function(...) self$inner_net <- torch::nn_sequential(...),
-  # description What to do when a SkipConnection module is called
+  # description What to do when a skip_connection module is called
   forward = function(input) {
     return(input + self$inner_net(input))
   }
@@ -1347,7 +1347,7 @@ vaeac_get_val_iwae <- function(val_dataloader,
 #'
 #' @param params Tensor of dimension `batch_size` x `2*n_featuers` containing the means and standard deviations
 #' to be used in the normal distributions for of the `batch_size` observations.
-#' @inheritParams GaussCatParameters
+#' @inheritParams gauss_cat_parameters
 #'
 #' @return A [torch::distr_normal()] distribution with the provided means and standard deviations.
 #'
@@ -1383,7 +1383,7 @@ vaeac_normal_parse_params <- function(params, min_sigma = 1e-4) {
 #' take on any value, negative and positive. The output \eqn{\operatorname{Softmax}(x_i) \in [0,1]}
 #' and \eqn{\sum_{j} Softmax(x_i) = 1}.
 #'
-#' @inheritParams GaussCatParameters
+#' @inheritParams gauss_cat_parameters
 #' @param params Tensor of dimension `batch_size` x `K` containing the logits for each of the `K` classes and
 #' `batch_size` observations.
 #' @param max_prob For stability it might be desirable that the maximal probability is not too close to one.
@@ -1421,24 +1421,24 @@ vaeac_kl_normal_normal <- function(p, q) {
 }
 
 # Neural Network Modules ===============================================================================================
-## GaussCatSamplerMostLikely -------------------------------------------------------------------------------
-#' A [torch::nn_module()] Representing a GaussCatSamplerMostLikely
+## gauss_cat_sampler_most_likely -------------------------------------------------------------------------------
+#' A [torch::nn_module()] Representing a `gauss_cat_sampler_most_likely`
 #'
-#' @description The GaussCatSamplerMostLikely generates the most likely samples from the generative distribution defined
-#' by the output of the vaeac. I.e., the layer will return the mean and most probable class for the Gaussian (continuous
-#' features) and categorical (categorical features) distributions, respectively.
+#' @description The `gauss_cat_sampler_most_likely` generates the most likely samples from the generative distribution
+#' defined by the output of the vaeac. I.e., the layer will return the mean and most probable class for the Gaussian
+#' (continuous features) and categorical (categorical features) distributions, respectively.
 #'
 #' @inheritParams vaeac
-#' @inheritParams GaussCatParameters
+#' @inheritParams gauss_cat_parameters
 #'
-#' @return A `GaussCatSamplerMostLikely` object.
+#' @return A `gauss_cat_sampler_most_likely` object.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-GaussCatSamplerMostLikely <- torch::nn_module(
-  classname = "GaussCatSamplerMostLikely", # field classname Type of torch::nn_module
+gauss_cat_sampler_most_likely <- torch::nn_module(
+  classname = "gauss_cat_sampler_most_likely", # field classname Type of torch::nn_module
 
-  # description Initialize a GaussCatSamplerMostLikely which generates the most likely
+  # description Initialize a gauss_cat_sampler_most_likely which generates the most likely
   # sample from the generative distribution defined by the output of the neural network.
   initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
     self$one_hot_max_sizes <- one_hot_max_sizes
@@ -1478,26 +1478,24 @@ GaussCatSamplerMostLikely <- torch::nn_module(
   }
 )
 
-## GaussCatSamplerRandom -----------------------------------------------------------------------------------
-#' A [torch::nn_module()] Representing a GaussCatSamplerRandom
+## gauss_cat_sampler_random -----------------------------------------------------------------------------------
+#' A [torch::nn_module()] Representing a gauss_cat_sampler_random
 #'
-#' @description
-#' The GaussCatSamplerRandom generates random samples from the generative
-#' distribution defined by the output of the vaeac. The random sample is generated by
-#' sampling from the inferred Gaussian and categorical distributions for the
-#' continuous and categorical features, respectively.
+#' @description The `gauss_cat_sampler_random` generates random samples from the generative distribution defined by the
+#' output of the vaeac. The random sample is generated by sampling from the inferred Gaussian and categorical
+#' distributions for the continuous and categorical features, respectively.
 #'
 #' @inheritParams vaeac
-#' @inheritParams GaussCatSamplerMostLikely
+#' @inheritParams gauss_cat_sampler_most_likely
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-GaussCatSamplerRandom <- torch::nn_module(
-  classname = "GaussCatSamplerRandom", # field classname Type of torch::nn_module
+gauss_cat_sampler_random <- torch::nn_module(
+  classname = "gauss_cat_sampler_random", # field classname Type of torch::nn_module
 
-  # description Initialize a GaussCatSamplerRandom which generates a sample from the
+  # description Initialize a gauss_cat_sampler_random which generates a sample from the
   # generative distribution defined by the output of the neural network by random sampling.
-  # return A new `GaussCatSamplerRandom` object.
+  # return A new `gauss_cat_sampler_random` object.
   initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
     self$one_hot_max_sizes <- one_hot_max_sizes
     self$min_sigma <- min_sigma
@@ -1537,10 +1535,10 @@ GaussCatSamplerRandom <- torch::nn_module(
 )
 
 
-## GaussCatParameters --------------------------------------------------------------------------------------
-#' A [torch::nn_module()] Representing a GaussCatParameters
+## gauss_cat_parameters --------------------------------------------------------------------------------------
+#' A [torch::nn_module()] Representing a `gauss_cat_parameters`
 #'
-#' @description The GaussCatParameters module extracts the parameters from the inferred generative Gaussian and
+#' @description The `gauss_cat_parameters` module extracts the parameters from the inferred generative Gaussian and
 #' categorical distributions for the continuous and categorical features, respectively.
 #'
 #' If `one_hot_max_sizes` is \eqn{[4, 1, 1, 2]}, then the inferred distribution parameters for one observation is the
@@ -1556,13 +1554,13 @@ GaussCatSamplerRandom <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-GaussCatParameters <- torch::nn_module(
+gauss_cat_parameters <- torch::nn_module(
   # field classname Type of torch::nn_module
-  classname = "GaussCatParameters",
+  classname = "gauss_cat_parameters",
 
-  # description Initialize a `GaussCatParameters` which extract the parameters from the generative distribution
+  # description Initialize a `gauss_cat_parameters` which extract the parameters from the generative distribution
   # defined by the output of the neural network.
-  # return A new `GaussCatParameters` object.
+  # return A new `gauss_cat_parameters` object.
   initialize = function(one_hot_max_sizes,
                         min_sigma = 1e-4,
                         min_prob = 1e-4) {
@@ -1603,26 +1601,26 @@ GaussCatParameters <- torch::nn_module(
   }
 )
 
-## GaussCatLoss --------------------------------------------------------------------------------------------
-#' A [torch::nn_module()] Representing a GaussCatLoss
+## gauss_cat_loss --------------------------------------------------------------------------------------------
+#' A [torch::nn_module()] Representing a `gauss_cat_loss`
 #'
-#' @description The GaussCatLoss module/layer computes the log probability of the `groundtruth` for each object given
-#' the mask and the distribution parameters. That is, the log-likelihoods of the true/full training observations based
-#' on the generative distributions parameters `distr_params` inferred by the masked versions of the observations.
+#' @description The `gauss_cat_loss module` layer computes the log probability of the `groundtruth` for each object
+#' given the mask and the distribution parameters. That is, the log-likelihoods of the true/full training observations
+#' based on the generative distributions parameters `distr_params` inferred by the masked versions of the observations.
 #'
 #' @details Note that the module works with mixed data represented as 2-dimensional inputs and it
 #' works correctly with missing values in `groundtruth` as long as they are represented by NaNs.
 #'
 #' @inheritParams vaeac
-#' @inheritParams GaussCatParameters
+#' @inheritParams gauss_cat_parameters
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-GaussCatLoss <- torch::nn_module(
-  classname = "GaussCatLoss", # field classname Type of torch::nn_module
+gauss_cat_loss <- torch::nn_module(
+  classname = "gauss_cat_loss", # field classname Type of torch::nn_module
 
-  # description Initialize a `GaussCatLoss`.
-  # return A new `GaussCatLoss` object.
+  # description Initialize a `gauss_cat_loss`.
+  # return A new `gauss_cat_loss` object.
   initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
     self$one_hot_max_sizes <- one_hot_max_sizes
     self$min_sigma <- min_sigma
@@ -1678,11 +1676,11 @@ GaussCatLoss <- torch::nn_module(
 )
 
 
-## CategoricalToOneHotLayer -------------------------------------------------------------------------------------------
-#' A [torch::nn_module()] Representing a CategoricalToOneHotLayer
+## categorical_to_one_hot_layer -------------------------------------------------------------------------------------------
+#' A [torch::nn_module()] Representing a `categorical_to_one_hot_layer`
 #'
 #' @description
-#' The CategoricalToOneHotLayer module/layer expands categorical features into one-hot vectors,
+#' The `categorical_to_one_hot_layer` module/layer expands categorical features into one-hot vectors,
 #' because multi-layer perceptrons are known to work better with this data representation.
 #' It also replaces NaNs with zeros in order so that further layers may work correctly.
 #'
@@ -1696,11 +1694,11 @@ GaussCatLoss <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-CategoricalToOneHotLayer <- torch::nn_module(
-  classname = "CategoricalToOneHotLayer", # field classname Type of torch::nn_module
+categorical_to_one_hot_layer <- torch::nn_module(
+  classname = "categorical_to_one_hot_layer", # field classname Type of torch::nn_module
 
-  # description Initialize a `CategoricalToOneHotLayer`.
-  # return A new `CategoricalToOneHotLayer` object.
+  # description Initialize a `categorical_to_one_hot_layer`.
+  # return A new `categorical_to_one_hot_layer` object.
   initialize = function(one_hot_max_sizes, add_nans_map_for_columns = NULL) {
     # Here one_hot_max_sizes includes zeros at the end of the list: one_hot_max_sizes + [0] * len(one_hot_max_sizes)
     # Thus, if features have this many categories [1, 2, 3, 1], then one_hot_max_sizes = [1, 2, 3, 1, 0, 0, 0, 0]
@@ -1763,7 +1761,7 @@ CategoricalToOneHotLayer <- torch::nn_module(
 )
 
 # Mask Generators =====================================================================================================
-## MCAR_mask_generator ------------------------------------------------------------------------------------------------
+## mcar_mask_generator ------------------------------------------------------------------------------------------------
 #' Missing Completely at Random (MCAR) Mask Generator
 #'
 #' @description A mask generator which masks the entries in the input completely at random.
@@ -1786,15 +1784,15 @@ CategoricalToOneHotLayer <- torch::nn_module(
 #'
 #' @examples
 #' \dontrun{
-#' mask_gen <- MCAR_mask_generator(masking_ratio = 0.5, paired_sampling = FALSE)
+#' mask_gen <- mcar_mask_generator(masking_ratio = 0.5, paired_sampling = FALSE)
 #' batch <- torch::torch_randn(c(5, 3))
 #' mask_gen(batch)
 #' }
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-MCAR_mask_generator <- torch::nn_module(
-  name = "MCAR_mask_generator", # field name Type of mask generator
+mcar_mask_generator <- torch::nn_module(
+  name = "mcar_mask_generator", # field name Type of mask generator
 
   # description Initialize a missing completely at random mask generator.
   # param masking_ratio The probability for an entry in the generated mask to be 1 (masked).
@@ -1802,18 +1800,18 @@ MCAR_mask_generator <- torch::nn_module(
   # If TRUE, then batch must be sampled using `paired_sampler` which creates batches where
   # the first half and second half of the rows are duplicates of each other. That is,
   # batch = [row1, row1, row2, row2, row3, row3, ...].
-  # return A new `MCAR_mask_generator` object.
+  # return A new `mcar_mask_generator` object.
   initialize = function(masking_ratio = 0.5, paired_sampling = FALSE) {
     self$masking_ratio <- masking_ratio
     self$paired_sampling <- paired_sampling
   },
 
-  # description Generates a MCAR mask by calling self$MCAR_mask_generator_function function.
+  # description Generates a MCAR mask by calling self$mcar_mask_generator_function function.
   # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
   # entries are missing. If any are missing, then the returned mask will ensure that
   # these missing entries are masked.
   forward = function(batch) {
-    self$MCAR_mask_generator_function(batch, prob = self$masking_ratio, paired_sampling = self$paired_sampling)
+    self$mcar_mask_generator_function(batch, prob = self$masking_ratio, paired_sampling = self$paired_sampling)
   },
 
   # description Missing Completely At Random Mask Generator: A mask generator where the masking
@@ -1838,12 +1836,12 @@ MCAR_mask_generator <- torch::nn_module(
   # batch = [row1, row1, row2, row2, row3, row3, ...].
   #
   # examples
-  # MCAR_mask_generator_function(torch::torch_rand(c(5, 3)))
+  # mcar_mask_generator_function(torch::torch_rand(c(5, 3)))
   #
   # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
-  MCAR_mask_generator_function = function(batch, prob = 0.5, seed = NULL, paired_sampling = FALSE) {
+  mcar_mask_generator_function = function(batch, prob = 0.5, seed = NULL, paired_sampling = FALSE) {
     if (!is.null(seed)) set.seed(seed) # If the user specify a seed for reproducibility
     size <- prod(batch$shape) # Get the number of entries in the batch.
     nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
@@ -1870,8 +1868,8 @@ MCAR_mask_generator <- torch::nn_module(
 )
 
 
-## Specified_prob_mask_generator -------------------------------------------------------------------------------
-#' A [torch::nn_module()] Representing a Specified_prob_mask_generator
+## specified_prob_mask_generator -------------------------------------------------------------------------------
+#' A [torch::nn_module()] Representing a specified_prob_mask_generator
 #'
 #' @description A mask generator which masks the entries based on specified probabilities.
 #'
@@ -1882,7 +1880,7 @@ MCAR_mask_generator <- torch::nn_module(
 #' the batch based on the given M+1 probabilities. The 'd' masked are uniformly sampled from the 'M' possible feature
 #' indices. The d'th entry of the probability of having d-1 masked values.
 #'
-#' Note that MCAR_mask_generator with p = 0.5 is the same as using [shapr::Specified_prob_mask_generator()] with
+#' Note that mcar_mask_generator with p = 0.5 is the same as using [shapr::specified_prob_mask_generator()] with
 #' `masking_ratio` = choose(M, 0:M), where M is the number of features. This function was initially created to check if
 #' increasing the probability of having a masks with many masked features improved vaeac's performance by focusing more
 #' on these situations during training.
@@ -1897,7 +1895,7 @@ MCAR_mask_generator <- torch::nn_module(
 #' @examples
 #' \dontrun{
 #' probs <- c(1, 8, 6, 3, 2)
-#' mask_gen <- Specified_prob_mask_generator(probs)
+#' mask_gen <- specified_prob_mask_generator(probs)
 #' masks <- mask_gen(torch::torch_randn(c(10000, length(probs)) - 1))
 #' empirical_prob <- table(as.array(masks$sum(2)))
 #' empirical_prob / sum(empirical_prob)
@@ -1905,8 +1903,8 @@ MCAR_mask_generator <- torch::nn_module(
 #' }
 #'
 #' @keywords internal
-Specified_prob_mask_generator <- torch::nn_module(
-  name = "Specified_prob_mask_generator", # field name Type of mask generator
+specified_prob_mask_generator <- torch::nn_module(
+  name = "specified_prob_mask_generator", # field name Type of mask generator
 
   # description Initialize a specified_probability mask generator.
   initialize = function(masking_probs, paired_sampling = FALSE) {
@@ -1914,11 +1912,11 @@ Specified_prob_mask_generator <- torch::nn_module(
     self$paired_sampling <- paired_sampling
   },
 
-  # description Generates a specified probability mask by calling the self$Specified_prob_mask_generator_function.
+  # description Generates a specified probability mask by calling the self$specified_prob_mask_generator_function.
   # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the entries are
   # missing. If any are missing, then the returned mask will ensure that these missing entries are masked.
   forward = function(batch) {
-    self$Specified_prob_mask_generator_function(
+    self$specified_prob_mask_generator_function(
       batch = batch,
       masking_prob = self$masking_probs,
       paired_sampling = self$paired_sampling
@@ -1930,7 +1928,7 @@ Specified_prob_mask_generator <- torch::nn_module(
   # are uniformly sampled from the 'M' possible feature indices. The d'th entry of the probability of having d-1 masked
   # values.
   #
-  # details Note that MCAR_mask_generator with p = 0.5 is the same as using Specified_prob_mask_generator
+  # details Note that mcar_mask_generator with p = 0.5 is the same as using specified_prob_mask_generator
   # with masking_ratio = choose(M, 0:M), where M is the number of features. This function was initially
   # created to check if increasing the probability of having a masks with many masked features improved
   # vaeac's performance by focusing more on these situations during training.
@@ -1944,12 +1942,12 @@ Specified_prob_mask_generator <- torch::nn_module(
   # the first half and second half of the rows are duplicates of each other. That is,
   # `batch = [row1, row1, row2, row2, row3, row3, ...]`.
   #
-  # examples Specified_prob_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
+  # examples specified_prob_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
   #
   # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
-  Specified_prob_mask_generator_function = function(batch, masking_probs, seed = NULL, paired_sampling = FALSE) {
+  specified_prob_mask_generator_function = function(batch, masking_probs, seed = NULL, paired_sampling = FALSE) {
     if (!is.null(seed)) set.seed(seed) # If the user specify a seed for reproducibility
     n_features <- ncol(batch) # Get the number of features in the batch
     size <- nrow(batch) # Get the number of observations in the batch
@@ -1977,8 +1975,8 @@ Specified_prob_mask_generator <- torch::nn_module(
   }
 )
 
-## Specified_masks_mask_generator -------------------------------------------------------------------------------------
-#' A [torch::nn_module()] Representing a Specified_masks_mask_generator
+## specified_masks_mask_generator -------------------------------------------------------------------------------------
+#' A [torch::nn_module()] Representing a specified_masks_mask_generator
 #'
 #' @description
 #' A mask generator which masks the entries based on sampling provided 1D masks with corresponding probabilities.
@@ -2002,7 +2000,7 @@ Specified_prob_mask_generator <- torch::nn_module(
 #'   nrow = 3, ncol = 4, byrow = TRUE
 #' ))
 #' masks_probs <- c(3, 1, 6)
-#' mask_gen <- Specified_masks_mask_generator(masks = masks, masks_probs = masks_probs)
+#' mask_gen <- specified_masks_mask_generator(masks = masks, masks_probs = masks_probs)
 #' empirical_prob <-
 #'   table(as.array(mask_gen(torch::torch_randn(c(10000, ncol(masks))))$sum(-1)))
 #' empirical_prob / sum(empirical_prob)
@@ -2011,8 +2009,8 @@ Specified_prob_mask_generator <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-Specified_masks_mask_generator <- torch::nn_module(
-  name = "Specified_masks_mask_generator", # field name Type of mask generator
+specified_masks_mask_generator <- torch::nn_module(
+  name = "specified_masks_mask_generator", # field name Type of mask generator
 
   # description Initialize a specified masks mask generator.
   initialize = function(masks, masks_probs, paired_sampling = FALSE) {
@@ -2021,12 +2019,12 @@ Specified_masks_mask_generator <- torch::nn_module(
     self$paired_sampling <- paired_sampling
   },
 
-  # description Generates a mask by calling self$Specified_masks_mask_generator_function function.
+  # description Generates a mask by calling self$specified_masks_mask_generator_function function.
   # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
   # entries are missing. If any are missing, then the returned mask will ensure that
   # these missing entries are masked.
   forward = function(batch) {
-    self$Specified_masks_mask_generator_function(
+    self$specified_masks_mask_generator_function(
       batch = batch,
       masks = self$masks,
       masks_probs = self$masks_probs,
@@ -2057,7 +2055,7 @@ Specified_masks_mask_generator <- torch::nn_module(
   # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
-  Specified_masks_mask_generator_function = function(batch, masks, masks_probs, seed = NULL, paired_sampling = FALSE) {
+  specified_masks_mask_generator_function = function(batch, masks, masks_probs, seed = NULL, paired_sampling = FALSE) {
     if (!is.null(seed)) set.seed(seed) # Set seed if the user specifies a seed for reproducibility.
     nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
     n_masks <- nrow(masks) # Get the number of masks to choose from

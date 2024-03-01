@@ -301,7 +301,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' @param batch_size Positive integer (default is `64`). The number of samples to include in each batch
 #' during the training of the vaeac model. Used in [torch::dataloader()].
 #' @param skip_conn_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
-#' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
+#' layer, see [shapr::skip_connection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 #' so the output becomes \eqn{X + activation(WX + b)}.
 #' @param skip_conn_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
 #' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
@@ -320,11 +320,11 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
 #' @param masking_ratio Numeric (default is `0.5`). Probability of masking a feature in the
-#' [shapr::MCAR_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
+#' [shapr::mcar_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
 #' model can do arbitrary conditioning as all coalitions will be trained. `masking_ratio` will be overruled if
 #' `mask_gen_coalitions` is specified.
 #' @param mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
-#' `vaeac` model will be trained on, see [shapr::Specified_masks_mask_generator()]. This parameter is used internally
+#' `vaeac` model will be trained on, see [shapr::specified_masks_mask_generator()]. This parameter is used internally
 #' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
 #' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 #' when `group` is specified in [shapr::explain()].
@@ -1652,7 +1652,7 @@ vaeac_check_parameters <- function(x_train,
 #' @param vaeac.running_avg_n_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
 #' @param vaeac.skip_conn_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
-#' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
+#' layer, see [shapr::skip_connection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 #' so the output becomes \eqn{X + activation(WX + b)}.
 #' @param vaeac.skip_conn_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
 #' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
@@ -1668,11 +1668,11 @@ vaeac_check_parameters <- function(x_train,
 #' this will increase the training time due to more complex implementation and doubling the size of each batch. See
 #' [shapr::paired_sampler()] for more information.
 #' @param vaeac.masking_ratio Numeric (default is `0.5`). Probability of masking a feature in the
-#' [shapr::MCAR_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
+#' [shapr::mcar_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
 #' model can do arbitrary conditioning as all coalitions will be trained. `vaeac.masking_ratio` will be overruled if
 #' `vaeac.mask_gen_coalitions` is specified.
 #' @param vaeac.mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
-#' `vaeac` model will be trained on, see [shapr::Specified_masks_mask_generator()]. This parameter is used internally
+#' `vaeac` model will be trained on, see [shapr::specified_masks_mask_generator()]. This parameter is used internally
 #' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
 #' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 #' when `group` is specified in [shapr::explain()].
@@ -1804,29 +1804,29 @@ vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
                                           verbose) {
   if (!is.null(mask_gen_coalitions) && !is.null(mask_gen_coalitions_prob)) {
     # User have provided mask_gen_coalitions (and mask_gen_coalitions_prob),
-    # and we want to use Specified_masks_mask_generator
-    mask_generator_name <- "Specified_masks_mask_generator"
+    # and we want to use specified_masks_mask_generator
+    mask_generator_name <- "specified_masks_mask_generator"
 
     # Small printout
     if (verbose == 2) {
-      message(paste0("Using 'Specified_masks_mask_generator' with '", nrow(mask_gen_coalitions), "' coalitions."))
+      message(paste0("Using 'specified_masks_mask_generator' with '", nrow(mask_gen_coalitions), "' coalitions."))
     }
   } else if (length(masking_ratio) == 1) {
-    # We are going to use 'MCAR_mask_generator' as masking_ratio is a singleton.
+    # We are going to use 'mcar_mask_generator' as masking_ratio is a singleton.
     # I.e., all feature values are equally likely to be masked based on masking_ratio.
-    mask_generator_name <- "MCAR_mask_generator"
+    mask_generator_name <- "mcar_mask_generator"
 
     # Small printout
-    if (verbose == 2) message(paste0("Using 'MCAR_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
+    if (verbose == 2) message(paste0("Using 'mcar_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
   } else if (length(masking_ratio) > 1) {
-    # We are going to use 'Specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
+    # We are going to use 'specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
     # I.e., masking_ratio[5] specifies the probability of masking 5 features
-    mask_generator_name <- "Specified_prob_mask_generator"
+    mask_generator_name <- "specified_prob_mask_generator"
 
-    # We have an array of masking ratios. Then we are using the Specified_prob_mask_generator.
+    # We have an array of masking ratios. Then we are using the specified_prob_mask_generator.
     if (verbose == 2) {
       message(paste0(
-        "Using 'Specified_prob_mask_generator' mask generator with 'masking_ratio = [",
+        "Using 'specified_prob_mask_generator' mask generator with 'masking_ratio = [",
         paste(masking_ratio, collapse = ", "), "]'."
       ))
     }
