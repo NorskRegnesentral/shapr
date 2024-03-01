@@ -1464,7 +1464,7 @@ vaeac_check_x_colnames <- function(feature_names_vaeac, feature_names_new) {
   # Check for equal number of features
   if (n_features_new != n_features_vaeac) {
     stop(paste0(
-      "The provided `vaeac` model is trainined on a ", n_features_vaeac, "-dimensional dataset, but the current ",
+      "The provided `vaeac` model is trained on a ", n_features_vaeac, "-dimensional dataset, but the current ",
       "dataset is ", n_features_new, "-dimensional."
     ))
   }
