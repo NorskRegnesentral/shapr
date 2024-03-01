@@ -200,7 +200,7 @@ approach (179.4). By using stumps, i.e., trees with depth one, we obtained a wor
 ```{r}
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_eval_crit(list(
-  empirical = explanation_sep_empirical,
+  empirical = explanation_empirical,
   sep_linear_model = explanation_sep_lm,
   sep_tree_stump = explanation_sep_tree_stump,
   sep_tree_default = explanation_sep_tree_default
@@ -230,9 +230,11 @@ Lets look at some ways to specify `regression_tune_values`.
 ```{r echo=TRUE, results='hide'}
 # Possible ways to define the `regression_tune_values` object. One automatic and three manual ways.
 dials::grid_regular(dials::tree_depth(), levels = 4)
-data.frame(tree_depth = c(1, 5, 10, 15))
-data.table(tree_depth = c(1, 5, 10, 15))
-as.data.table(matrix(c(1, 5, 10, 15), ncol = 1, dimnames = list(NULL, c("tree_depth"))))
+data.table(tree_depth = c(1, 5, 10, 15)) # Note that we can also use data.frame and tibble too.
+
+# For several features
+dials::grid_regular(dials::tree_depth(), dials::cost_complexity(), levels = 3)
+expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.05, 0.01))
 ```
 
 
@@ -245,6 +247,7 @@ explanation_sep_tree_cv <- explain(
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
+  verbose = 2,
   approach = "regression_separate",
   regression_model = decision_tree(tree_depth = tune()) %>%
     set_engine("rpart") %>%
@@ -262,13 +265,40 @@ plot_MSEv_eval_crit(list(
 )) +
   theme(legend.position = "none") # Remove the legend
 ```
+```{r}
+# Use trees with cross validation on the depth and cost complexity. Manually set the values
+explanation_sep_tree_cv_2 <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  verbose = 2, # If we want a prinout of the results
+  approach = "regression_separate",
+  regression_model = decision_tree(tree_depth = tune(), cost_complexity = tune()) %>%
+    set_engine("rpart") %>%
+    set_mode("regression"),
+  regression_tune_values = expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
+  regression_vfold_cv_para = list(v = 5)
+)
+
+# Compare the MSEv criterion of the different explanation methods. Remove linear_model
+plot_MSEv_eval_crit(list(
+  empirical = explanation_empirical,
+  sep_tree_stump = explanation_sep_tree_stump,
+  sep_tree_default = explanation_sep_tree_default,
+  sep_tree_cv = explanation_sep_tree_cv,
+  sep_tree_cv_2 = explanation_sep_tree_cv_2
+)) +
+  theme(legend.position = "none") # Remove the legend
+```
 
 
 Note that this a bit of an unfair comparison for the `empirical` approach which also has hyper-parameters one could
 tune. However, `shapr` does not currently provide a function to do this automatically.
 
 
-Furthermore, we have to consider that doing the cross validation increased the elapsed time with almost a factor of 10 to 20.
+Furthermore, we have to consider that doing the cross validation drastically increase the elapsed time in seconds.
 ```{r}
 # Elapsed time for the different methods
 unlist(sapply(list(
@@ -276,11 +306,64 @@ unlist(sapply(list(
   sep_linear_model = explanation_sep_lm,
   sep_tree_stump = explanation_sep_tree_stump,
   sep_tree_default = explanation_sep_tree_default,
-  sep_tree_cv = explanation_sep_tree_cv
+  sep_tree_cv = explanation_sep_tree_cv,
+  sep_tree_cv_2 = explanation_sep_tree_cv_2
 ), "[[", "timing")[2, ])
 ```
 
 
+
+```{r}
+explanation_sep_xgboost <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  verbose = 2, # If we want a prinout of the results
+  approach = "regression_separate",
+  regression_model = boost_tree() %>% set_engine("xgboost") %>% set_mode("regression")
+)
+
+
+library(progressr)
+library(future)
+future::plan(multisession, workers = 4)
+progressr::handlers("cli") # requires the 'cli' package
+progressr::with_progress({
+  explanation_sep_xgboost_cv <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    prediction_zero = p0,
+    n_batches = 15,
+    verbose = 2, # If we want a printout of the results
+    approach = "regression_separate",
+    regression_model = boost_tree(trees = tune()) %>%
+      set_engine("xgboost") %>%
+      set_mode("regression"),
+    regression_tune_values = dials::grid_regular(dials::tree_depth(),
+      dials::trees(range = c(50, 1000)),
+      dials::learn_rate(),
+      levels = 4
+    ),
+    regression_vfold_cv_para = list(v = 4)
+  )
+})
+future::plan(sequential) # To return to non-parallel computation
+
+# Compare the MSEv criterion of the different explanation methods. Remove linear_model
+plot_MSEv_eval_crit(list(
+  empirical = explanation_empirical,
+  sep_tree_stump = explanation_sep_tree_stump,
+  sep_tree_default = explanation_sep_tree_default,
+  sep_tree_cv = explanation_sep_tree_cv,
+  sep_tree_cv_2 = explanation_sep_tree_cv_2,
+  sep_xgboost = explanation_sep_xgboost,
+  sep_xgboost_cv = explanation_sep_xgboost_cv
+)) +
+  theme(legend.position = "none") # Remove the legend
+```
 
 
 
@@ -302,7 +385,7 @@ where $\tilde{\boldsymbol{x}}_S$ is an augmented version of $\boldsymbol{x}_S$. 
 
 ```{r}
 # Specify that we are using the regression paradigm and the separate method class
-approach <- "regression_separate"
+approach <- "regression_surrogate"
 
 # Specify that we want to use a linear regression model
 regression_model <- parsnip::linear_reg()
@@ -313,9 +396,93 @@ explanation_sur_lm <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
+  n_batches = 4,
   approach = approach,
+  verbose = 2,
   regression_model = parsnip::linear_reg()
 )
 
+# Compare the MSEv criterion of the different explanation methods. Remove linear_model
+plot_MSEv_eval_crit(list(
+  empirical = explanation_empirical,
+  sep_tree_stump = explanation_sep_tree_stump,
+  sep_tree_default = explanation_sep_tree_default,
+  sep_tree_cv = explanation_sep_tree_cv,
+  sep_tree_cv_2 = explanation_sep_tree_cv_2,
+  sep_lm = explanation_sep_lm,
+  sur_lm = explanation_sur_lm
+)) +
+  theme(legend.position = "none") # Remove the legend
+```
+```{r}
+# Using random forest with default parameters as the surrogate model
+explanation_sur_rf <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = approach,
+  verbose = 2,
+  regression_model = rand_forest() %>%
+    set_engine("ranger") %>%
+    set_mode("regression")
+)
+
+# Using random forest with parameters tuned by cv as the surrogate model
+explanation_sur_rf <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = approach,
+  verbose = 2,
+  regression_model = rand_forest(mtry = tune(), trees = tune()) %>%
+    set_engine("ranger") %>%
+    set_mode("regression"),
+  regression_tune_values =
+    dials::grid_regular(dials::mtry(c(1, ncol(x_explain) - 1)), dials::trees(c(10, 750)), levels = 4),
+  regression_vfold_cv_para = list(v = 5)
+)
+
+# Using xgboost with default parameters as the surrogate model
+explanation_sur_xgboost <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = approach,
+  verbose = 2,
+  regression_model = boost_tree() %>%
+    set_engine("xgboost") %>%
+    set_mode("regression")
+)
+
+# Compare the MSEv criterion of the different explanation methods. Remove linear_model
+plot_MSEv_eval_crit(list(
+  empirical = explanation_empirical,
+  sep_tree_stump = explanation_sep_tree_stump,
+  sep_tree_default = explanation_sep_tree_default,
+  sep_tree_cv = explanation_sep_tree_cv,
+  sep_tree_cv_2 = explanation_sep_tree_cv_2,
+  sur_rf = explanation_sur_rf,
+  sur_rf_cv = explanation_sur_rf_cv,
+  sur_xgboost = explanation_sur_xgboost
+)) +
+  theme(legend.position = "none") # Remove the legend
 ```
 
+```{r}
+plot_SV_several_approaches(list(
+  empirical = explanation_empirical,
+  sep_tree_stump = explanation_sep_tree_stump,
+  sep_tree_default = explanation_sep_tree_default,
+  sep_tree_cv = explanation_sep_tree_cv,
+  sep_tree_cv_2 = explanation_sep_tree_cv_2,
+  sur_rf = explanation_sur_rf,
+  sur_rf_cv = explanation_sur_rf_cv,
+  sur_xgboost = explanation_sur_xgboost
+), index_explicands = 1:4)
+```
