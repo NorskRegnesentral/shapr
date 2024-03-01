@@ -45,7 +45,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   if (!requireNamespace("torch", quietly = TRUE)) {
     stop("`torch` is not installed. Please run `install.packages('torch')`.")
   }
-  if (!torch::torch_is_installed()) stop("`torch` is not installed. Please run `torch::install_torch()`.")
+  if (!torch::torch_is_installed()) stop("`torch` is not properly installed. Please run `torch::install_torch()`.")
 
 
   # Extract the objects we will use later
@@ -54,7 +54,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters <- internal$parameters
 
   # Small printout to user
-  if (parameters$verbose == 2) message("Starting 'setup_approach.vaeac'.")
+  if (parameters$verbose == 2) message("Setting up vaeac approach.")
 
   # Check if we are doing a combination of approaches
   combined_approaches <- length(internal$parameters$approach) > 1
@@ -114,7 +114,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # We train a vaeac model with the parameters in `parameters`, as user did not provide pre-trained vaeac model
     if (parameters$verbose == 2) {
       message(paste0(
-        "Training a vaeac model with the provided parameters from scratch on the ",
+        "Training the vaeac model with the provided parameters from scratch on ",
         ifelse(parameters$vaeac.extra_parameter$vaeac.cuda, "GPU", "CPU"), "."
       ))
     }
@@ -148,7 +148,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # The pre-trained vaeac model is either:
     # 1. The explanation$internal$parameters$vaeac list of type "vaeac" from an earlier call to explain().
     # 2. A string containing the path to where the "vaeac" model is stored on disk.
-    if (parameters$verbose == 2) message("Loading the provided `vaeac` model.")
+    if (parameters$verbose == 2) message("Loading the provided vaeac model.")
 
     # Boolean representing that a pre-trained vaeac model was provided
     parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- TRUE
@@ -156,11 +156,10 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # Check some aspects of the pre-trained vaeac model and add it to the parameters list if it passes the checks
     parameters <- vaeac_update_pretrained_model(parameters = parameters)
 
-    # Small prinout informing about the location of the model
+    # Small printout informing about the location of the model
     if (parameters$verbose == 2) {
       message(paste0(
-        "The provided vaeac model is located on the ",
-        ifelse(parameters$vaeac$parameters$cuda, "GPU", "CPU"), "."
+        "The vaeac model runs/is trained on ", ifelse(parameters$vaeac$parameters$cuda, "GPU", "CPU"), "."
       ))
     }
   }
@@ -212,17 +211,11 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   vaeac.checkpoint <- internal$parameters$vaeac.checkpoint
   vaeac.batch_size_sampling <- internal$parameters$vaeac.extra_parameters$vaeac.batch_size_sampling
 
-  # Small printout to the user
-  if (verbose == 2) {
-    message(paste0(
-      "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
-      internal$parameters$n_batches, " in `prepare_data.vaeac()`."
-    ))
-  }
+  # Small printout to the user about which batch we are working on
+  if (verbose == 2) vaeac_prep_message_batch(internal = internal, index_features = index_features)
 
   # Apply all coalitions to all explicands to get a data table where `vaeac` will impute the `NaN` values
-  x_explain_extended <-
-    vaeac_get_x_explain_extended(x_explain = x_explain, S = S, index_features = index_features)
+  x_explain_extended <- vaeac_get_x_explain_extended(x_explain = x_explain, S = S, index_features = index_features)
 
   # Set the number of observations do generate the MC samples for at the time.
   n_explain_extended <- nrow(x_explain_extended)
@@ -873,7 +866,7 @@ vaeac_train_model_continue <- function(explanation,
   if (is.null(x_train)) x_train <- checkpoint$x_train
 
   # Check that the provided vaeac model is trained on a dataset with the same feature names
-  vaeac_check_x_train_names(feature_names_vaeac = checkpoint$feature_list$labels, feature_names_new = names(x_train))
+  vaeac_check_x_colnames(feature_names_vaeac = checkpoint$feature_list$labels, feature_names_new = names(x_train))
 
   # Check if we can reuse the original validation and training indices
   if (!is.null(checkpoint$x_train) || nrow(x_train) == checkpoint$n_train) {
@@ -1475,7 +1468,7 @@ vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch,
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_x_train_names <- function(feature_names_vaeac, feature_names_new) {
+vaeac_check_x_colnames <- function(feature_names_vaeac, feature_names_new) {
   n_features_vaeac <- length(feature_names_vaeac)
   n_features_new <- length(feature_names_new)
 
@@ -1490,8 +1483,8 @@ vaeac_check_x_train_names <- function(feature_names_vaeac, feature_names_new) {
   # Check that the feature names of x_train matches the names of the training data used to train the vaeac model
   if (!all.equal(feature_names_vaeac, feature_names_new)) {
     stop(paste0(
-      "The training data's feature names (`", paste(feature_names_new, collapse = "`, `"), "`) do not match the ",
-      "names of the `vaeac` model's original training data (`", paste(feature_names_vaeac, collapse = "`, `"), "`)."
+      "The current feature names (`", paste(feature_names_new, collapse = "`, `"), "`) do not match the ",
+      "feature names in the provided `vaeac` model (`", paste(feature_names_vaeac, collapse = "`, `"), "."
     ))
   }
 }
@@ -2321,7 +2314,7 @@ vaeac_update_pretrained_model <- function(parameters) {
   if (is.list(vaeac_object)) {
     # Check for list of type vaeac
     if (!("vaeac" %in% class(vaeac_object))) stop("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
-    vaeac_check_x_train_names(
+    vaeac_check_x_colnames(
       feature_names_vaeac = vaeac_object$parameters$feature_list$labels,
       feature_names_new = parameters$feature_names
     )
@@ -2352,7 +2345,7 @@ vaeac_update_pretrained_model <- function(parameters) {
     }
 
     # Check that the provided vaeac model is trained on a dataset with the same feature names
-    vaeac_check_x_train_names(
+    vaeac_check_x_colnames(
       feature_names_vaeac = vaeac_model$feature_list$labels,
       feature_names_new = parameters$feature_names
     )
@@ -2427,6 +2420,18 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     last_state$train_vlb[-1]$cpu(),
     last_state$val_iwae[-1]$cpu(),
     last_state$val_iwae_running[-1]$cpu()
+  ))
+}
+
+#' Produce message about which batch prepare_data is working on
+#' @inheritParams default_doc
+#' @inheritParams default_doc_explain
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+vaeac_prep_message_batch <- function(internal, index_features) {
+  message(paste0(
+    "Generating Monte Carlo samples using the vaeac approch for batch ",
+    internal$objects$X[id_combination == index_features[1]]$batch, " of ", internal$parameters$n_batches, "."
   ))
 }
 
@@ -2520,17 +2525,17 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' )
 #'
 #' # Call the function with the named list, will use the provided names
-#' vaeac_plot_evaluation_criteria(explanation_list = explanation_list)
+#' vaeac_plot_eval_crit(explanation_list = explanation_list)
 #'
 #' # The function also works if we have only one method,
 #' # but then one should only look at the method plot.
-#' vaeac_plot_evaluation_criteria(
+#' vaeac_plot_eval_crit(
 #'   explanation_list = explanation_list[2],
 #'   plot_type = "method"
 #' )
 #'
 #' # Can alter the plot
-#' vaeac_plot_evaluation_criteria(
+#' vaeac_plot_eval_crit(
 #'   explanation_list = explanation_list,
 #'   plot_from_nth_epoch = 2,
 #'   plot_every_nth_epoch = 2,
@@ -2538,7 +2543,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' )
 #'
 #' # If we only want the VLB
-#' vaeac_plot_evaluation_criteria(
+#' vaeac_plot_eval_crit(
 #'   explanation_list = explanation_list,
 #'   criteria = "VLB",
 #'   plot_type = "criterion"
@@ -2546,7 +2551,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'
 #' # If we want only want the criterion version
 #' tmp_fig_criterion <-
-#'   vaeac_plot_evaluation_criteria(explanation_list = explanation_list, plot_type = "criterion")
+#'   vaeac_plot_eval_crit(explanation_list = explanation_list, plot_type = "criterion")
 #'
 #' # Since tmp_fig_criterion is a ggplot2 object, we can alter it
 #' # by, e.g,. adding points or smooths with se bands
@@ -2559,13 +2564,13 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'
 #' @author Lars Henry Berge Olsen
 #' @export
-vaeac_plot_evaluation_criteria <- function(explanation_list,
-                                           plot_from_nth_epoch = 1,
-                                           plot_every_nth_epoch = 1,
-                                           criteria = c("VLB", "IWAE"),
-                                           plot_type = c("method", "criterion"),
-                                           facet_wrap_scales = "fixed",
-                                           facet_wrap_ncol = NULL) {
+vaeac_plot_eval_crit <- function(explanation_list,
+                                 plot_from_nth_epoch = 1,
+                                 plot_every_nth_epoch = 1,
+                                 criteria = c("VLB", "IWAE"),
+                                 plot_type = c("method", "criterion"),
+                                 facet_wrap_scales = "fixed",
+                                 facet_wrap_ncol = NULL) {
   ## Checks
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {

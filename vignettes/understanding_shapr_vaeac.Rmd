@@ -425,7 +425,7 @@ We can compare the results by looking at the training and validation errors and 
 ```r
 explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE,
                          "Paired samp." = expl_paired_sampling_TRUE)
-vaeac_plot_evaluation_criteria(explanation_list, plot_type = "criterion")
+vaeac_plot_eval_crit(explanation_list, plot_type = "criterion")
 ```
 
 ![](figure_vaeac/paired-sampling-plotting-1.png)
@@ -658,7 +658,7 @@ expl_little_training <- explain(
 #> Assuming feature classes from the data are correct.
 
 # Look at the training and validation errors. Not happy and want to train more.
-vaeac_plot_evaluation_criteria(list("Original" = expl_little_training), plot_type = "method")
+vaeac_plot_eval_crit(list("Original" = expl_little_training), plot_type = "method")
 ```
 
 ![](figure_vaeac/continue-training-1.png)
@@ -722,7 +722,7 @@ expl_train_more_vaeac <- explain(
 #> Assuming feature classes from the data are correct.
 
 # Look at the training and validation errors and conclude that we want to train some more
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list("Original" = expl_little_training, "More epochs" = expl_train_more),
   plot_type = "method"
 )
@@ -758,7 +758,7 @@ expl_train_even_more_vaeac <- explain(
 #> Assuming feature classes from the data are correct.
 
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list(
     "Original" = expl_little_training,
     "More epochs" = expl_train_more,
@@ -886,7 +886,7 @@ expl_early_stopping <- explain(
 #> Postprocessing the Monte Carlo samples.
 
 # Look at the training and validation errors. We are quite happy with it.
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list("Vaeac early stopping" = expl_early_stopping),
   plot_type = "method"
 )
@@ -921,7 +921,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
   )
 
 # Look at the training and validation errors. We see some improvement
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list(
     "Vaeac early stopping" = expl_early_stopping,
     "Vaeac early stopping more epochs" = expl_early_stopping_train_more
@@ -1119,7 +1119,7 @@ expl_vaeac_without <- explain(
 #> Assuming feature classes from the data are correct.
 
 # We see that the `vaeac` model without the skip connections perform worse
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list(
     "Vaeac w.o. skip-con." = expl_vaeac_without,
     "Vaeac w. skip-con." = expl_vaeac_with
@@ -1255,7 +1255,7 @@ rbind("Vaeac CPU" = time_cpu, "Vaeac GPU" = time_cuda)
 
 # It is no possible to set same random state on the CPU and GPU, hence, the results
 # are not equivalent. The difference is due to different initialization values.
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
   plot_type = "criterion"
 )

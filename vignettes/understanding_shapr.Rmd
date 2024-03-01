@@ -1536,7 +1536,7 @@ Can look at the training and validation error for the trained `vaeac` model and 
 
 ```r
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criteria(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
+vaeac_plot_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
 ```
 
 ![](figure_main/vaeac-plot-1-1.png)
@@ -1580,7 +1580,7 @@ Can compare with the previous version and see that the results are more stable n
 
 ```r
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop),
   plot_type = "method"
 )

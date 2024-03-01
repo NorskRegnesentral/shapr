@@ -185,9 +185,13 @@ plot(explanation)
 
 ## Pre-trained vaeac {#pretrained_vaeac}
 If the user has a pre-trained `vaeac` model (from a previous run), the user can send that to the `explain()` function
-and `shapr` will skip the training of a new `vaeac` model and rather use the provided `vaeac` model. The `vaeac` model
-is accessible via `explanation$internal$parameters$vaeac`. Note that if we set `verbose = 2` in `explain()`, then
-`shapr` will give a message that it loads a pretrained `vaeac` model instead of training it from scratch.
+and `shapr` will skip the training of a new `vaeac` model and rather use the provided `vaeac` model. This is useful
+if we want to explain new predictions using the same combinations/coalitions as previously, i.e., we have a new
+`x_explain`. Note that the new `x_explain` must have the same features as before.
+
+The `vaeac` model is accessible via `explanation$internal$parameters$vaeac`.
+Note that if we set `verbose = 2` in `explain()`, then `shapr` will give a message
+that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 In this example, we extract the trained `vaeac` model from the previous example and send it to `explain()`.
 
@@ -240,6 +244,8 @@ all.equal(explanation$shapley_values, expl_pretrained_vaeac_path$shapley_values)
 
 ## Specified n_combinations and more batches {#n_combinations}
 
+In this section, we discuss two general `shapr` parameters in the `explain()` function
+that are method independent, namely, `n_combinations` and `n_batches`.
 The user can limit the Shapley value computations to only a subset of coalitions by setting the
 `n_combinations` parameter to a value lower than $2^{n_\text{features}}$. To lower the memory
 usage, the user can split the coalitions into several batches by setting `n_batches` to a desired
@@ -276,11 +282,10 @@ expl_batches_combinations$internal$objects$X
 explanation$internal$objects$X
 ```
 
-
-
-Note that if we train a `vaeac` model from scratch with the setup above, then the `vaeac` model will use
-the "Specified_masks_mask_generator" which ensures that the `vaeac` model only train on a specified set of coalitions.
-In this case, it will be the `n_combinations - 2` sampled coalitions. The minus two is because the `vaeac` model will
+Note that if we train a `vaeac` model from scratch with the setup above, then the `vaeac` model will not use
+a missing completely as random (MCAR) mask generator, but rather a mask generator that ensures that the `vaeac`
+model is only trained on the specified set of coalitions. In this case, it will be the set of the
+`n_combinations - 2` sampled coalitions. The minus two is because the `vaeac` model will
 not train on the empty and grand coalitions as they are not needed in the Shapley value computations.
 ```{r check-n_combinations-and-more-batches-2, cache = TRUE}
 expl_batches_combinations_2 <- explain(
@@ -304,10 +309,14 @@ expl_batches_combinations_2 <- explain(
 
 The `vaeac` approach can use paired sampling to improve the stability of the training procedure.
 When using paired sampling, each observation in the training batches will be duplicated, but the first version will
-be masked by $S$ and the second one is masked by the complement $\bar{S}$. The mask are taken from the
+be masked by $S$ and the second verion will be masked by the complement $\bar{S}$. The mask are taken from the
 `explanation$internal$objects$S` matrix. Note that `vaeac` does not check if the complement is also in said matrix.
-Furthermore, the masks are randomly selected for each observation in the batch. The training time when using paired
-sampling is higher in comparison to random sampling due to more complex implementation.
+This means that if the Shapley value explanations are computed based on a subset of coalitions, i.e., `n_combinations`
+is less than $2^{n_\text{features}}$, then the `vaeac` model might be trained on coalitions which are not used when
+computing the Shapley values. This should not be considered as redundant training as it increases the stablility and
+performance of the `vaeac` model as a whole, hence, we reccomend to use paried samping (default). Furthermore, the masks
+are randomly selected for each observation in the batch. The training time when using paired sampling is higher in
+comparison to random sampling due to more complex implementation.
 
 ```{r paired-sampling-training, cache = TRUE}
 expl_paired_sampling_TRUE <- explain(
@@ -338,10 +347,12 @@ expl_paired_sampling_FALSE <- explain(
 ```
 
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
+We do this by using the `vaeac_plot_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
+respectively.
 ```{r paired-sampling-plotting, cache = TRUE}
 explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE,
                          "Paired samp." = expl_paired_sampling_TRUE)
-vaeac_plot_evaluation_criteria(explanation_list, plot_type = "criterion")
+vaeac_plot_eval_crit(explanation_list, plot_type = "criterion")
 plot_MSEv_eval_crit(explanation_list)
 ```
 
@@ -357,31 +368,14 @@ rbind(
 
 
 ## Progressr {#progress_bar}
+As discussed in the main vignette, the `shapr` package provides two ways for recieving information about the progress
+of the approach. First, the `shapr` package provides progress updates of the computation of the Shapley values through
+the `progressr` package. Second, the user can also get information by setting `verbose = 2` in `explain()`, which
+will print out extra information related to the `vaeac` approach. The `verbose` parameter works independently of the
+`progressr` package. Meaning that the user can chose to use none, either, or both options simultaneously. We give
+two examples here, and refer the reader to the main vignette for more detailed information.
 
-The `shapr` package provides progress updates of the computation of the Shapley
-values through the R-package `progressr`. If the user also sets `verbose = 2` in `explain()`, then we will get
-extra information related to the `vaeac` approach. The `verbose` parameter works independently of the `progressr`
-package.
-
-In this setup, we get no progress updates.
-```{r progressr-false-verbose-0, cache = TRUE}
-library(progressr)
-handlers("void") # To silence all progressr updates
-expl_without_messages <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "vaeac",
-  prediction_zero = prediction_zero,
-  n_samples = n_samples,
-  n_batches = 5,
-  verbose = 0,
-  vaeac.epochs = 5,
-  vaeac.n_vaeacs_initialize = 2
-)
-```
-
-By setting `verbose = 2`, we will get messages about the progress.
+By setting `verbose = 2`, we get messages about the progress of the `vaeac` approach.
 ```{r progressr-false-verbose-2, cache = TRUE}
 handlers("void") # To silence all progressr updates
 expl_with_messages <- explain(
@@ -396,32 +390,14 @@ expl_with_messages <- explain(
   vaeac.epochs = 5,
   vaeac.n_vaeacs_initialize = 2
 )
-all.equal(expl_without_messages$shapley_values, expl_with_messages$shapley_values)
 ```
 
 For more visual information, we can use the `progressr` package. This can help us see the progress of the training
 step for the final `vaeac` model. Note that one can set `verbose = 0` to not get any messages from the `vaeac`
-approach and only get the progress bars.
+approach and only get the progress bars. See the main vignette for examples for how to change the progress bar.
 ```{r progressr-true-verbose-2, cache = TRUE}
+library(progressr)
 progressr::handlers("cli")
-# If no progression handler is specified, the txtprogressbar is used
-# Other progression handlers:
-# progressr::handlers('rstudio') # requires the 'rstudioapi' package
-# progressr::handlers('handler_winprogressbar') # Window only
-# progressr::handlers('cli') # requires the 'cli' package
-#
-# Another progressbar with sound which requires that `beepr` is installed
-# progressr::handlers(list(
-#   progressr::handler_pbcol(
-#       adjust = 1.0,
-#     complete = function(s) cli::bg_red(cli::col_black(s)),
-#   incomplete = function(s) cli::bg_cyan(cli::col_black(s))
-# ),
-#   progressr::handler_beepr(
-#     finish   = "wilhelm",
-#     interval = 2.0
-#   )
-# ))
 progressr::with_progress({
   expl_with_progressr <- explain(
     model = model,
@@ -436,7 +412,7 @@ progressr::with_progress({
     vaeac.n_vaeacs_initialize = 2
   )
 })
-all.equal(expl_without_messages$shapley_values, expl_with_progressr$shapley_values)
+all.equal(expl_with_messages$shapley_values, expl_with_progressr$shapley_values)
 ```
 
 ## Continue the training of the vaeac approach {#continue_training}
@@ -449,8 +425,14 @@ then call the `explain()` function again but this time by using the extra parame
 as illustrated above. Note that we have set the number of `vaeac.epochs` to be very low in this example and we
 recommend to use many more epochs.
 
+We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
+We do this by using the `vaeac_plot_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
+respectively. We also use the `vaeac_plot_imputed_ggpairs()` function which generates samples from $p(x)$, this
+is ment as a sanity check to see that the `vaeac` model is able to follow the general structure/distribution of the
+data. However, recall that the `vaeac` model is never trained on the empty coalition, so the produces sampled should
+be taken with a grain of salt.
 
-```{r continue-training, cache=FALSE}
+```{r continue-training, cache=FALSE, message=FALSE}
 expl_little_training <- explain(
   model = model,
   x_explain = x_explain,
@@ -464,7 +446,7 @@ expl_little_training <- explain(
 )
 
 # Look at the training and validation errors. Not happy and want to train more.
-vaeac_plot_evaluation_criteria(list("Original" = expl_little_training), plot_type = "method")
+vaeac_plot_eval_crit(list("Original" = expl_little_training), plot_type = "method")
 
 # Can also see how well vaeac generates data from the full joint distribution. Quite good.
 vaeac_plot_imputed_ggpairs(
@@ -497,7 +479,7 @@ expl_train_more_vaeac <- explain(
 )
 
 # Look at the training and validation errors and conclude that we want to train some more
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list("Original" = expl_little_training, "More epochs" = expl_train_more),
   plot_type = "method"
 )
@@ -526,7 +508,7 @@ expl_train_even_more_vaeac <- explain(
 )
 
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list(
     "Original" = expl_little_training,
     "More epochs" = expl_train_more,
@@ -541,8 +523,11 @@ vaeac_plot_imputed_ggpairs(
   which_vaeac_model = "best",
   x_true = x_train
 )
+```
 
-# Can see that the extra training has decreased the MSEv score.
+We can see that the extra training has decreased the MSEv score. The Shapley value explanations have also
+changed, but they are often comparable.
+```{r continue-training-2, cache=FALSE}
 plot_MSEv_eval_crit(list(
   "Few epochs" = expl_little_training,
   "More epochs" = expl_train_more_vaeac,
@@ -556,6 +541,7 @@ plot_SV_several_approaches(list(
   "Even more epochs" = expl_train_even_more_vaeac
 ))
 ```
+
 
 
 ## Vaeac with early stopping {#early_stopping}
@@ -581,7 +567,7 @@ expl_early_stopping <- explain(
 )
 
 # Look at the training and validation errors. We are quite happy with it.
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list("Vaeac early stopping" = expl_early_stopping),
   plot_type = "method"
 )
@@ -613,7 +599,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
   )
 
 # Look at the training and validation errors. We see some improvement
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list(
     "Vaeac early stopping" = expl_early_stopping,
     "Vaeac early stopping more epochs" = expl_early_stopping_train_more
@@ -714,7 +700,7 @@ prediction_zero <- mean(data_train_cat[, get(y_var)])
 ```
 Then we compute explanations using the `ctree` and `vaeac` approaches. For the `vaeac` approach, we
 consider two setups: the default architecture, and a simpler one without skip connections. We do this
-to illustrate that the skip connections improve the `vaeac` method.
+to illustrate that the skip connections improve the `vaeac` method. We use `ctree` with default parameters.
 
 ```{r vaeac-mixed-data, cache = TRUE}
 # Here we use the ctree approach
@@ -759,7 +745,7 @@ expl_vaeac_without <- explain(
 )
 
 # We see that the `vaeac` model without the skip connections perform worse
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list(
     "Vaeac w.o. skip-con." = expl_vaeac_without,
     "Vaeac w. skip-con." = expl_vaeac_with
@@ -874,7 +860,7 @@ rbind("Vaeac CPU" = time_cpu, "Vaeac GPU" = time_cuda)
 
 # It is no possible to set same random state on the CPU and GPU, hence, the results
 # are not equivalent. The difference is due to different initialization values.
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
   plot_type = "criterion"
 )
