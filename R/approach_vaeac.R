@@ -638,7 +638,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   # Variable that we change to `TRUE` if early stopping is applied
   if (!is.null(state_list)) state_list$early_stopping_applied <- FALSE
 
-  # Variables to stores the epochs of the `vaeac` at the best epoch according to IWAE and IWAE_running
+  # Variable to store the epochs of the `vaeac` at the best epoch according to IWAE and IWAE_running
   if (is.null(initialization_idx)) best_epoch <- best_epoch_running <- NULL
 
   # Get the batch size
