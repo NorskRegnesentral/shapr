@@ -1676,7 +1676,7 @@ gauss_cat_loss <- torch::nn_module(
 )
 
 
-## categorical_to_one_hot_layer -------------------------------------------------------------------------------------------
+## categorical_to_one_hot_layer ----------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a `categorical_to_one_hot_layer`
 #'
 #' @description
