@@ -155,7 +155,6 @@ We are now going to explain predictions made by the model using the `vaeac` appr
 ```{r first-vaeac, cache = TRUE}
 n_samples <- 25 # Low number of MC samples to make the vignette build faster
 n_batches <- 1 # Do all coalitions in one batch
-vaeac.save_every_nth_epoch <- 3 # Save every 3th epoch + best and last epoch
 vaeac.n_vaeacs_initialize <- 2 # Initialize several vaeacs to counteract bad initialization values
 vaeac.epochs <- 4 # The number of training epochs
 vaeac.cuda <- FALSE # We run everything on CPU, but all code below works on GPU too
@@ -170,10 +169,7 @@ explanation <- explain(
   n_batches = n_batches,
   vaeac.epochs = vaeac.epochs,
   vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize,
-  vaeac.extra_parameters = list(
-    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
-    vaeac.cuda = vaeac.cuda
-  )
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
 ```
 We can look at the Shapley values.
@@ -474,10 +470,7 @@ expl_little_training <- explain(
   n_batches = n_batches,
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(
-    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
-    vaeac.cuda = vaeac.cuda
-  )
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
 
 # Look at the training and validation errors. Not happy and want to train more.
