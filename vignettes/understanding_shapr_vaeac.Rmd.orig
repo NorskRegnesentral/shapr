@@ -862,7 +862,7 @@ are not equivalent. The difference is due to different initialization values.
 ```{r vaeac-cpu-gpu-1, cache = TRUE, eval = FALSE}
 vaeac_plot_eval_crit(
   list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
-  plot_type = "criterion"
+  plot_type = "method"
 )
 ```
 ![](figure_vaeac/vaeac-cpu-gpu-1-1.png)
