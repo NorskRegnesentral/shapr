@@ -42,8 +42,11 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.extra_parameters = list(),
                                  ...) {
   # Check that torch is installed
-  if (!requireNamespace("torch", quietly = TRUE)) stop("`torch` is not installed. Please run install.packages('torch')")
-  if (!torch::torch_is_installed()) torch::install_torch()
+  if (!requireNamespace("torch", quietly = TRUE)) {
+    stop("`torch` is not installed. Please run `install.packages('torch')`.")
+  }
+  if (!torch::torch_is_installed()) stop("`torch` is not installed. Please run `torch::install_torch()`.")
+
 
   # Extract the objects we will use later
   S <- internal$objects$S
