@@ -43,7 +43,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters <- internal$parameters
 
   # Small printout to user
-  if (parameters$verbose == 2) message("Setting up vaeac approach.")
+  if (parameters$verbose == 2) message("Setting up the `vaeac` approach.")
 
   # Check if we are doing a combination of approaches
   combined_approaches <- length(parameters$approach) > 1
@@ -103,7 +103,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # We train a vaeac model with the parameters in `parameters`, as user did not provide pre-trained vaeac model
     if (parameters$verbose == 2) {
       message(paste0(
-        "Training the vaeac model with the provided parameters from scratch on ",
+        "Training the `vaeac` model with the provided parameters from scratch on ",
         ifelse(parameters$vaeac.extra_parameter$vaeac.cuda, "GPU", "CPU"), "."
       ))
     }
@@ -137,7 +137,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # The pre-trained vaeac model is either:
     # 1. The explanation$internal$parameters$vaeac list of type "vaeac" from an earlier call to explain().
     # 2. A string containing the path to where the "vaeac" model is stored on disk.
-    if (parameters$verbose == 2) message("Loading the provided vaeac model.")
+    if (parameters$verbose == 2) message("Loading the provided `vaeac` model.")
 
     # Boolean representing that a pre-trained vaeac model was provided
     parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- TRUE
@@ -148,7 +148,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # Small printout informing about the location of the model
     if (parameters$verbose == 2) {
       message(paste0(
-        "The vaeac model runs/is trained on ", ifelse(parameters$vaeac$parameters$cuda, "GPU", "CPU"), "."
+        "The `vaeac` model runs/is trained on ", ifelse(parameters$vaeac$parameters$cuda, "GPU", "CPU"), "."
       ))
     }
   }
@@ -173,7 +173,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   internal$parameters <- parameters
 
   # Small printout to user
-  if (parameters$verbose == 2) message("Done with 'setup_approach.vaeac'.\n")
+  if (parameters$verbose == 2) message("Done with setting up the `vaeac` approach.\n")
 
   # Return the updated internal list.
   return(internal)
@@ -1461,19 +1461,19 @@ vaeac_check_x_colnames <- function(feature_names_vaeac, feature_names_new) {
   n_features_vaeac <- length(feature_names_vaeac)
   n_features_new <- length(feature_names_new)
 
-  # Check for equal number of features
+  # Check that the feature names of x_train matches the names of the training data used to train the vaeac model
+  if (!isTRUE(all.equal(feature_names_vaeac, feature_names_new))) {
+    stop(paste0(
+      "The current feature names (`", paste(feature_names_new, collapse = "`, `"), "`) do not match the ",
+      "feature names in the provided `vaeac` model (`", paste(feature_names_vaeac, collapse = "`, `"), ")."
+    ))
+  }
+
+  # Check for equal number of features (this should never occur as test above indirectly checks this too)
   if (n_features_new != n_features_vaeac) {
     stop(paste0(
       "The provided `vaeac` model is trained on a ", n_features_vaeac, "-dimensional dataset, but the current ",
       "dataset is ", n_features_new, "-dimensional."
-    ))
-  }
-
-  # Check that the feature names of x_train matches the names of the training data used to train the vaeac model
-  if (!all.equal(feature_names_vaeac, feature_names_new)) {
-    stop(paste0(
-      "The current feature names (`", paste(feature_names_new, collapse = "`, `"), "`) do not match the ",
-      "feature names in the provided `vaeac` model (`", paste(feature_names_vaeac, collapse = "`, `"), "."
     ))
   }
 }
@@ -2430,20 +2430,18 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 vaeac_prep_message_batch <- function(internal, index_features) {
   id_batch <- internal$objects$X[id_combination == index_features[1]]$batch
   n_batches <- internal$parameters$n_batches
-  message(paste0("Generating Monte Carlo samples using the vaeac approch for batch ", id_batch, " of ", n_batches, "."))
+  message(paste0("Generating Monte Carlo samples using `vaeac` for batch ", id_batch, " of ", n_batches, "."))
 }
 
 # Plot functions =======================================================================================================
 #' Plot the training VLB and validation IWAE for `vaeac` models
 #'
-#' @description
-#' This function makes ([ggplot2::ggplot()]) figures of the training VLB and the validation IWAE for a list
+#' @description This function makes ([ggplot2::ggplot()]) figures of the training VLB and the validation IWAE for a list
 #' of [shapr::explain()] objects with `approach = "vaeac"`. See [setup_approach()] for more information about the
 #' `vaeac` approach. Two figures are returned by the function. In the figure, each object in `explanation_list` gets
 #' its own facet, while in the second figure, we plot the criteria in each facet for all objects.
 #'
-#' @details
-#' See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} or the
+#' @details See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} or the
 #' \href{https://borea17.github.io/paper_summaries/iwae/}{blog post} for a summary of the VLB and IWAE.
 #'
 #' @param explanation_list A list of [explain()] objects applied to the same data, model, and
