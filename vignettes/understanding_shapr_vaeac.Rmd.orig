@@ -112,6 +112,9 @@ will try to correct for misplaced and duplicated parameters and give warnings to
 
 # Code Examples {#code}
 We now demonstrate the `vaeac` approach on several different use cases.
+Note that this vignette runs on CPU, but all code sections below can be run on GPU too.
+To enable GPU, we have to include `vaeac.extra_parameters = list(vaeac.cuda = TRUE)`
+in the calls to the `explain()` function. See [CPU vs GPU](#cpu_vs_gpu) for more information.
 
 
 ## Basic Example {#basicexample}
@@ -150,6 +153,7 @@ prediction_zero <- mean(y_train)
 
 ## First vaeac example
 
+
 We are now going to explain predictions made by the model using the `vaeac` approach.
 
 ```{r first-vaeac, cache = TRUE}
@@ -157,7 +161,6 @@ n_samples <- 25 # Low number of MC samples to make the vignette build faster
 n_batches <- 1 # Do all coalitions in one batch
 vaeac.n_vaeacs_initialize <- 2 # Initialize several vaeacs to counteract bad initialization values
 vaeac.epochs <- 4 # The number of training epochs
-vaeac.cuda <- FALSE # We run everything on CPU, but all code below works on GPU too
 
 explanation <- explain(
   model = model,
@@ -168,8 +171,7 @@ explanation <- explain(
   n_samples = n_samples,
   n_batches = n_batches,
   vaeac.epochs = vaeac.epochs,
-  vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize,
-  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
+  vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize
 )
 ```
 We can look at the Shapley values.
@@ -260,8 +262,7 @@ expl_batches_combinations <- explain(
   n_batches = 5,
   n_samples = n_samples,
   vaeac.extra_parameters = list(
-    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac,
-    vaeac.cuda = vaeac.cuda
+    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
   )
 )
 
@@ -293,8 +294,7 @@ expl_batches_combinations_2 <- explain(
   n_samples = n_samples,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.epochs = 3,
-  verbose = 2,
-  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
+  verbose = 2
 )
 ```
 
@@ -320,10 +320,7 @@ expl_paired_sampling_TRUE <- explain(
   n_batches = n_batches,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
-  vaeac.extra_parameters = list(
-    vaeac.paired_sampling = TRUE,
-    vaeac.cuda = vaeac.cuda
-  )
+  vaeac.extra_parameters = list(vaeac.paired_sampling = TRUE)
 )
 
 expl_paired_sampling_FALSE <- explain(
@@ -336,10 +333,7 @@ expl_paired_sampling_FALSE <- explain(
   n_batches = n_batches,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
-  vaeac.extra_parameters = list(
-    vaeac.paired_sampling = FALSE,
-    vaeac.cuda = vaeac.cuda
-  )
+  vaeac.extra_parameters = list(vaeac.paired_sampling = FALSE)
 )
 ```
 
@@ -383,8 +377,7 @@ expl_without_messages <- explain(
   n_batches = 5,
   verbose = 0,
   vaeac.epochs = 5,
-  vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
+  vaeac.n_vaeacs_initialize = 2
 )
 ```
 
@@ -401,8 +394,7 @@ expl_with_messages <- explain(
   n_batches = 5,
   verbose = 2,
   vaeac.epochs = 5,
-  vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
+  vaeac.n_vaeacs_initialize = 2
 )
 all.equal(expl_without_messages$shapley_values, expl_with_messages$shapley_values)
 ```
@@ -441,8 +433,7 @@ progressr::with_progress({
     n_batches = 5,
     verbose = 2,
     vaeac.epochs = 5,
-    vaeac.n_vaeacs_initialize = 2,
-    vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
+    vaeac.n_vaeacs_initialize = 2
   )
 })
 all.equal(expl_without_messages$shapley_values, expl_with_progressr$shapley_values)
@@ -469,8 +460,7 @@ expl_little_training <- explain(
   n_samples = 250,
   n_batches = n_batches,
   vaeac.epochs = 3,
-  vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
+  vaeac.n_vaeacs_initialize = 2
 )
 
 # Look at the training and validation errors. Not happy and want to train more.
@@ -575,6 +565,7 @@ If we do not want to specify the number of `epochs`, as we are uncertain how man
 model will stop the training procedure if there has been no improvement in the validation score for `5` epochs.
 
 ```{r early-stopping-1, cache = TRUE}
+# Low value for `vaeac.epochs_early_stopping` here to build the vignette faster
 expl_early_stopping <- explain(
   model = model,
   x_explain = x_explain,
@@ -586,10 +577,7 @@ expl_early_stopping <- explain(
   verbose = 2,
   vaeac.epochs = 1000, # Set it to a big number
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(
-    vaeac.epochs_early_stopping = 2, # Low value here for faster building of the vignette
-    vaeac.cuda = vaeac.cuda
-  )
+  vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
 )
 
 # Look at the training and validation errors. We are quite happy with it.
@@ -687,8 +675,7 @@ expl_group <- explain(
   n_samples = n_samples,
   verbose = 2,
   vaeac.epochs = 4,
-  vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
+  vaeac.n_vaeacs_initialize = 2
 )
 
 # Plot the resulting explanations
@@ -751,8 +738,7 @@ expl_vaeac_with <- explain(
   n_batches = 1,
   n_samples = 250,
   vaeac.epochs = 50,
-  vaeac.n_vaeacs_initialize = 4,
-  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
+  vaeac.n_vaeacs_initialize = 4
 )
 
 # Then we use the vaeac approach
@@ -768,8 +754,7 @@ expl_vaeac_without <- explain(
   vaeac.n_vaeacs_initialize = 4,
   vaeac.extra_parameters = list(
     vaeac.skip_conn_layer = FALSE,
-    vaeac.skip_conn_masked_enc_dec = FALSE,
-    vaeac.cuda = vaeac.cuda
+    vaeac.skip_conn_masked_enc_dec = FALSE
   )
 )
 
@@ -862,9 +847,7 @@ time_cpu <- system.time({
     n_batches = 5,
     vaeac.epochs = 50,
     vaeac.n_vaeacs_initialize = 2,
-    vaeac.extra_parameters = list(
-      vaeac.cuda = FALSE
-    )
+    vaeac.extra_parameters = list(vaeac.cuda = FALSE)
   )
 })
 
@@ -880,9 +863,7 @@ time_cuda <- system.time({
     n_batches = 5,
     vaeac.epochs = 50,
     vaeac.n_vaeacs_initialize = 2,
-    vaeac.extra_parameters = list(
-      vaeac.cuda = TRUE
-    )
+    vaeac.extra_parameters = list(vaeac.cuda = TRUE)
   )
 })
 
