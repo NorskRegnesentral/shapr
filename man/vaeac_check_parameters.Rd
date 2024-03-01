@@ -104,7 +104,7 @@ when we compute the running means of the IWAE criterion.}
 \code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
 \item{skip_conn_layer}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply identity skip connections in each
-layer, see \code{\link[=SkipConnection]{SkipConnection()}}. That is, we add the input \eqn{X} to the outcome of each hidden layer,
+layer, see \code{\link[=skip_connection]{skip_connection()}}. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 so the output becomes \eqn{X + activation(WX + b)}.}
 
 \item{skip_conn_masked_enc_dec}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply concatenate skip
@@ -124,12 +124,12 @@ this will increase the training time due to more complex implementation and doub
 \code{\link[=paired_sampler]{paired_sampler()}} for more information.}
 
 \item{masking_ratio}{Numeric (default is \code{0.5}). Probability of masking a feature in the
-\code{\link[=MCAR_mask_generator]{MCAR_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
+\code{\link[=mcar_mask_generator]{mcar_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
 model can do arbitrary conditioning as all coalitions will be trained. \code{masking_ratio} will be overruled if
 \code{mask_gen_coalitions} is specified.}
 
 \item{mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
-\code{vaeac} model will be trained on, see \code{\link[=Specified_masks_mask_generator]{Specified_masks_mask_generator()}}. This parameter is used internally
+\code{vaeac} model will be trained on, see \code{\link[=specified_masks_mask_generator]{specified_masks_mask_generator()}}. This parameter is used internally
 in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
 \code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 when \code{group} is specified in \code{\link[=explain]{explain()}}.}

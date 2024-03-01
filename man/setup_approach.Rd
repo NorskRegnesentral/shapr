@@ -191,18 +191,6 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 The different choices of \code{approach} takes different (optional) parameters,
 which are forwarded from \code{\link[=explain]{explain()}}.
 }
-\section{The vaeac approach}{
-
-The \code{vaeac} model consists of three neural network (a full encoder, a masked encoder, and a decoder) based
-on the provided \code{vaeac.depth} and \code{vaeac.width}. The encoders map the full and masked input
-representations to latent representations, respectively, where the dimension is given by \code{vaeac.latent_dim}.
-The latent representations are sent to the decoder to go back to the real feature space and
-provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
-We use the \code{vaeac} method at the epoch with the lowest validation error (IWAE) by default, but
-other possibilities are available but setting the \code{vaeac.which_vaeac_model} parameter. See
-\href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
-}
-
 \author{
 Martin Jullum
 

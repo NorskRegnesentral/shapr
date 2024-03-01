@@ -85,7 +85,7 @@ rather  than \code{vaeac.batch_size_sampling}. Larger batch sizes are often much
 when we compute the running means of the IWAE criterion.}
 
 \item{vaeac.skip_conn_layer}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply identity skip connections in each
-layer, see \code{\link[=SkipConnection]{SkipConnection()}}. That is, we add the input \eqn{X} to the outcome of each hidden layer,
+layer, see \code{\link[=skip_connection]{skip_connection()}}. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 so the output becomes \eqn{X + activation(WX + b)}.}
 
 \item{vaeac.skip_conn_masked_enc_dec}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply concatenate skip
@@ -105,12 +105,12 @@ this will increase the training time due to more complex implementation and doub
 \code{\link[=paired_sampler]{paired_sampler()}} for more information.}
 
 \item{vaeac.masking_ratio}{Numeric (default is \code{0.5}). Probability of masking a feature in the
-\code{\link[=MCAR_mask_generator]{MCAR_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
+\code{\link[=mcar_mask_generator]{mcar_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
 model can do arbitrary conditioning as all coalitions will be trained. \code{vaeac.masking_ratio} will be overruled if
 \code{vaeac.mask_gen_coalitions} is specified.}
 
 \item{vaeac.mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
-\code{vaeac} model will be trained on, see \code{\link[=Specified_masks_mask_generator]{Specified_masks_mask_generator()}}. This parameter is used internally
+\code{vaeac} model will be trained on, see \code{\link[=specified_masks_mask_generator]{specified_masks_mask_generator()}}. This parameter is used internally
 in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
 \code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 when \code{group} is specified in \code{\link[=explain]{explain()}}.}
@@ -159,6 +159,16 @@ Note that both \code{vaeac.model_description} and \code{vaeac.folder_to_save_mod
 \description{
 In this function, we specify the default values for the extra parameters used in \code{\link[=explain]{explain()}}
 for \code{approach = "vaeac"}.
+}
+\details{
+The \code{vaeac} model consists of three neural network (a full encoder, a masked encoder, and a decoder) based
+on the provided \code{vaeac.depth} and \code{vaeac.width}. The encoders map the full and masked input
+representations to latent representations, respectively, where the dimension is given by \code{vaeac.latent_dim}.
+The latent representations are sent to the decoder to go back to the real feature space and
+provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
+We use the \code{vaeac} method at the epoch with the lowest validation error (IWAE) by default, but
+other possibilities are available but setting the \code{vaeac.which_vaeac_model} parameter. See
+\href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
 }
 \author{
 Lars Henry Berge Olsen
