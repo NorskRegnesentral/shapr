@@ -69,14 +69,13 @@ setup_approach.regression_surrogate <- function(internal,
 #' @author Lars Henry Berge Olsen
 prepare_data.regression_surrogate <- function(internal, index_features = NULL, ...) {
   # Small printout to the user about which batch that are currently worked on
-  if (internal$parameters$verbose == 2) regression_prep_data_message(internal, index_features)
+  if (internal$parameters$verbose == 2) regression_prep_message_batch(internal, index_features)
 
   # Augment the explicand data
-  x_explain_augmented <-
-    regression_surrogate_augment(internal, x = internal$data$x_explain, index_features = index_features)
+  x_explain_aug <- regression_surrogate_augment(internal, x = internal$data$x_explain, index_features = index_features)
 
   # Compute the predicted response for the explicands, i.e., v(S, x_i) for all explicands x_i and S in index_features
-  pred_explicand <- predict(internal$objects$regression_surrogate_model, new_data = x_explain_augmented)$.pred
+  pred_explicand <- predict(internal$objects$regression_surrogate_model, new_data = x_explain_aug)$.pred
 
   # Insert the predicted contribution functions values into a data table of the correct setup
   dt_res <- data.table(as.integer(index_features), matrix(pred_explicand, nrow = length(index_features)))
