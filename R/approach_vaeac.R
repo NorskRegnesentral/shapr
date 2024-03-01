@@ -17,16 +17,6 @@
 #' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach. See
 #'  [shapr::vaeac_get_extra_para_default()] for description of possible additional parameters and their default values.
 #'
-#' @section The vaeac approach:
-#' The `vaeac` model consists of three neural network (a full encoder, a masked encoder, and a decoder) based
-#' on the provided `vaeac.depth` and `vaeac.width`. The encoders map the full and masked input
-#' representations to latent representations, respectively, where the dimension is given by `vaeac.latent_dim`.
-#' The latent representations are sent to the decoder to go back to the real feature space and
-#' provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
-#' We use the `vaeac` method at the epoch with the lowest validation error (IWAE) by default, but
-#' other possibilities are available but setting the `vaeac.which_vaeac_model` parameter. See
-#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
-#'
 #' @inheritParams default_doc_explain
 #'
 #' @export
@@ -47,7 +37,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   }
   if (!torch::torch_is_installed()) stop("`torch` is not properly installed. Please run `torch::install_torch()`.")
 
-
   # Extract the objects we will use later
   S <- internal$objects$S
   X <- internal$objects$X
@@ -57,7 +46,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   if (parameters$verbose == 2) message("Setting up vaeac approach.")
 
   # Check if we are doing a combination of approaches
-  combined_approaches <- length(internal$parameters$approach) > 1
+  combined_approaches <- length(parameters$approach) > 1
 
   # Ensure that `parameters$vaeac.extra_parameters` is a named list
   if (is.null(parameters$vaeac.extra_parameters)) parameters$vaeac.extra_parameters <- list()
@@ -1613,6 +1602,16 @@ vaeac_check_parameters <- function(x_train,
 #' @description In this function, we specify the default values for the extra parameters used in [shapr::explain()]
 #' for `approach = "vaeac"`.
 #'
+#' @details
+#' The `vaeac` model consists of three neural network (a full encoder, a masked encoder, and a decoder) based
+#' on the provided `vaeac.depth` and `vaeac.width`. The encoders map the full and masked input
+#' representations to latent representations, respectively, where the dimension is given by `vaeac.latent_dim`.
+#' The latent representations are sent to the decoder to go back to the real feature space and
+#' provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
+#' We use the `vaeac` method at the epoch with the lowest validation error (IWAE) by default, but
+#' other possibilities are available but setting the `vaeac.which_vaeac_model` parameter. See
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
+#'
 #' @param vaeac.model_description String (default is `make.names(Sys.time())`). String containing, e.g., the name of the
 #' data distribution or additional parameter information. Used in the save name of the fitted model. If not provided,
 #' then a name will be generated based on [base::Sys.time()] to ensure a unique name. We use [base::make.names()] to
@@ -2429,10 +2428,9 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 vaeac_prep_message_batch <- function(internal, index_features) {
-  message(paste0(
-    "Generating Monte Carlo samples using the vaeac approch for batch ",
-    internal$objects$X[id_combination == index_features[1]]$batch, " of ", internal$parameters$n_batches, "."
-  ))
+  id_batch <- internal$objects$X[id_combination == index_features[1]]$batch
+  n_batches <- internal$parameters$n_batches
+  message(paste0("Generating Monte Carlo samples using the vaeac approch for batch ", id_batch, " of ", n_batches, "."))
 }
 
 # Plot functions =======================================================================================================
