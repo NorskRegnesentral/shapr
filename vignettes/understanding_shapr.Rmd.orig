@@ -1140,7 +1140,7 @@ explanation_combined <- explain(
 plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-As a second example using `"ctree"` to conditing on 1 and 2 features, and
+As a second example using `"ctree"` to condition on 1 and 2 features, and
 `"empirical"` when conditioning on 3 features:
 
 ```{r}
