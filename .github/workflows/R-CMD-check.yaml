@@ -50,6 +50,7 @@ jobs:
 
     steps:
       - name: Set the value
+        shell: bash # Default on non-Windows, but needs to be specfied for this to run on Windows
         run: echo "TORCH_INSTALL=1" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@v2
