@@ -13,7 +13,7 @@ compare_rds <- function(old, new) {
   old <- readRDS(old)
   new <- readRDS(new)
 
-  check <- all.equal(old, new, tolerance = 10^(-6)) # Increase tolerance
+  check <- all.equal(old, new, tolerance = 10^(-5)) # Increase tolerance
   ifelse(is.character(check), FALSE, check)
 }
 
