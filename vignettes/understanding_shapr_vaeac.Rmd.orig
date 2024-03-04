@@ -765,7 +765,7 @@ plot_SV_several_approaches(
 
 ## CPU vs GPU {#cpu_vs_gpu}
 In this section, we create a small setup for comparing the efficiency of using GPU and CPU. For small tabular data sets,
-there are often no benefit of using a GPU. However, this depends on what kind of CPU and GPU the user has access to. As our CPU, we use a 13th Gen Intel(R) Core(TM) i7-13700H 2.40 GHz and 32.0 GB 4800 MHz RAM. While for the GPU, we use a NVIDIA GeForce RTX 4050 Laptop with 6 GB dedicated memmory and 16 GB shared. Furthermore, the times depends on several factors, e.g., the number of training observations, explicands, features, and
+there are often no benefit of using a GPU. However, this depends on what kind of CPU and GPU the user has access to. As our CPU, we use a 13th Gen Intel(R) Core(TM) i7-13700H 2.40 GHz and 32.0 GB 4800 MHz RAM. While for the GPU, we use a NVIDIA GeForce RTX 4050 Laptop with 6 GB dedicated memory and 16 GB shared. Furthermore, the times depends on several factors, e.g., the number of training observations, explicands, features, and
 batches.
 
 Finally, note that if the user specifies `vaeac.cuda = TRUE`, but there is no available GPU, then `vaeac` provides
@@ -862,7 +862,7 @@ are not equivalent. The difference is due to different initialization values.
 ```{r vaeac-cpu-gpu-1, cache = TRUE, eval = FALSE}
 vaeac_plot_eval_crit(
   list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
-  plot_type = "method"
+  plot_type = "criterion"
 )
 ```
 ![](figure_vaeac/vaeac-cpu-gpu-1-1.png)

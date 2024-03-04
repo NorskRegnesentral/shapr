@@ -112,7 +112,6 @@ First we set up the model we want to explain.
 ```r
 library(xgboost)
 library(data.table)
-#> data.table 1.15.2 using 10 threads (see ?getDTthreads).  Latest news: r-datatable.com
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -172,14 +171,14 @@ We can look at the Shapley values.
 # Printing and ploting the Shapley values.
 # See ?shapr::explain for interpretation of the values.
 print(explanation$shapley_values)
-#>        none   Solar.R      Wind       Temp      Month
-#>       <num>     <num>     <num>      <num>      <num>
-#> 1: 43.08571  6.120728  3.143015 -18.677950 -2.8861381
-#> 2: 43.08572 -2.077884 -2.554779 -20.118234  0.6956914
-#> 3: 43.08572  3.038485 -5.512098 -18.257521 -2.5587136
-#> 4: 43.08571  3.000938 -4.722036  -8.945166 -3.9248570
-#> 5: 43.08572 -1.102200 -4.431948 -13.545894 -5.2956652
-#> 6: 43.08571  3.932041 -9.844483 -11.948902 -3.5601849
+#>      none Solar.R    Wind     Temp    Month
+#>     <num>   <num>   <num>    <num>    <num>
+#> 1: 43.086  6.1207  3.1430 -18.6779 -2.88614
+#> 2: 43.086 -2.0779 -2.5548 -20.1182  0.69569
+#> 3: 43.086  3.0385 -5.5121 -18.2575 -2.55871
+#> 4: 43.086  3.0009 -4.7220  -8.9452 -3.92486
+#> 5: 43.086 -1.1022 -4.4319 -13.5459 -5.29567
+#> 6: 43.086  3.9320 -9.8445 -11.9489 -3.56018
 plot(explanation)
 ```
 
@@ -287,7 +286,11 @@ expl_batches_combinations <- explain(
 
 # Gives different Shapley values as the latter one are only based on a subset of coalitions
 plot_SV_several_approaches(list("Original" = explanation, "Other combi." = expl_batches_combinations))
-#> Error in plot_SV_several_approaches(list(Original = explanation, `Other combi.` = expl_batches_combinations)): The object/objects 'Other combi.' in `explanation_list` has/have a different `x_explain` than 'Original'. Cannot compare them.
+```
+
+![](figure_vaeac/check-n_combinations-and-more-batches-1.png)
+
+```r
 # Here we can see that the samples coalitions are in different batches and have different weights
 expl_batches_combinations$internal$objects$X
 #> Key: <id_combination>
@@ -445,9 +448,9 @@ rbind(
   "Paired" = expl_paired_sampling_TRUE$timing$timing_secs,
   "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
 )
-#>              setup test_prediction setup_computation compute_vS shapley_computation
-#> Paired  0.21440387      0.02784705          3.935513  0.1883459         0.003329039
-#> Regular 0.04577899      0.03394413          3.906748  0.2306199         0.003444910
+#>           setup test_prediction setup_computation compute_vS shapley_computation
+#> Paired  0.10987        0.055879            7.1928    0.29876           0.0043712
+#> Regular 0.05501        0.037705            6.2180    0.30362           0.0044370
 ```
 
 
@@ -464,7 +467,6 @@ By setting `verbose = 2`, we get messages about the progress of the `vaeac` appr
 
 ```r
 handlers("void") # To silence all progressr updates
-#> Error in handlers("void"): could not find function "handlers"
 expl_with_messages <- explain(
   model = model,
   x_explain = x_explain,
@@ -873,14 +875,19 @@ plot_MSEv_eval_crit(list(
   "Vaeac early stopping" = expl_early_stopping,
   "Vaeac early stopping more epochs" = expl_early_stopping_train_more
 ))
-#> Error in MSEv_check_explanation_list(explanation_list): The object/objects 'Vaeac early stopping more epochs' in `explanation_list` has/have a different `x_explain` than 'Vaeac early stopping'. Cannot compare them.
+```
+
+![](figure_vaeac/early-stopping-3-1.png)
+
+```r
 # We see that the Shapley values have changed, but only slightly
 plot_SV_several_approaches(list(
   "Vaeac early stopping" = expl_early_stopping,
   "Vaeac early stopping more epochs" = expl_early_stopping_train_more
 ))
-#> Error in plot_SV_several_approaches(list(`Vaeac early stopping` = expl_early_stopping, : The object/objects 'Vaeac early stopping more epochs' in `explanation_list` has/have a different `x_explain` than 'Vaeac early stopping'. Cannot compare them.
 ```
+
+![](figure_vaeac/early-stopping-3-2.png)
 
 
 
@@ -1066,7 +1073,7 @@ plot_SV_several_approaches(
 
 ## CPU vs GPU {#cpu_vs_gpu}
 In this section, we create a small setup for comparing the efficiency of using GPU and CPU. For small tabular data sets,
-there are often no benefit of using a GPU. However, this depends on what kind of CPU and GPU the user has access to. As our CPU, we use a 13th Gen Intel(R) Core(TM) i7-13700H 2.40 GHz and 32.0 GB 4800 MHz RAM. While for the GPU, we use a NVIDIA GeForce RTX 4050 Laptop with 6 GB dedicated memmory and 16 GB shared. Furthermore, the times depends on several factors, e.g., the number of training observations, explicands, features, and
+there are often no benefit of using a GPU. However, this depends on what kind of CPU and GPU the user has access to. As our CPU, we use a 13th Gen Intel(R) Core(TM) i7-13700H 2.40 GHz and 32.0 GB 4800 MHz RAM. While for the GPU, we use a NVIDIA GeForce RTX 4050 Laptop with 6 GB dedicated memory and 16 GB shared. Furthermore, the times depends on several factors, e.g., the number of training observations, explicands, features, and
 batches.
 
 Finally, note that if the user specifies `vaeac.cuda = TRUE`, but there is no available GPU, then `vaeac` provides
