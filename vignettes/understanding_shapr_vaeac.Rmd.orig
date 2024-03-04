@@ -274,7 +274,6 @@ expl_batches_combinations <- explain(
 
 # Gives different Shapley values as the latter one are only based on a subset of coalitions
 plot_SV_several_approaches(list("Original" = explanation, "Other combi." = expl_batches_combinations))
-
 # Here we can see that the samples coalitions are in different batches and have different weights
 expl_batches_combinations$internal$objects$X
 
@@ -447,14 +446,12 @@ expl_little_training <- explain(
 
 # Look at the training and validation errors. Not happy and want to train more.
 vaeac_plot_eval_crit(list("Original" = expl_little_training), plot_type = "method")
-
 # Can also see how well vaeac generates data from the full joint distribution. Quite good.
 vaeac_plot_imputed_ggpairs(
   explanation = expl_little_training,
   which_vaeac_model = "best",
   x_true = x_train
 ) + ggplot2::labs(title = NULL)
-
 # Make a copy of the explanation object and continue to train the vaeac model some more epochs
 expl_train_more <- expl_little_training
 expl_train_more$internal$parameters$vaeac <-
@@ -483,7 +480,6 @@ vaeac_plot_eval_crit(
   list("Original" = expl_little_training, "More epochs" = expl_train_more),
   plot_type = "method"
 )
-
 # Continue to train the vaeac model some more epochs
 expl_train_even_more <- expl_train_more
 expl_train_even_more$internal$parameters$vaeac <-
@@ -516,7 +512,6 @@ vaeac_plot_eval_crit(
   ),
   plot_type = "method"
 )
-
 # Can also see how well vaeac generates data from the full joint distribution
 vaeac_plot_imputed_ggpairs(
   explanation = expl_train_even_more,
@@ -533,8 +528,7 @@ plot_MSEv_eval_crit(list(
   "More epochs" = expl_train_more_vaeac,
   "Even more epochs" = expl_train_even_more_vaeac
 ))
-
-# We see that the Shapley values have changed, but they are often comparable.
+# We see that the Shapley values have changed, but they are often comparable
 plot_SV_several_approaches(list(
   "Few epochs" = expl_little_training,
   "More epochs" = expl_train_more_vaeac,
@@ -630,7 +624,6 @@ plot_MSEv_eval_crit(list(
   "Vaeac early stopping" = expl_early_stopping,
   "Vaeac early stopping more epochs" = expl_early_stopping_train_more
 ))
-
 # We see that the Shapley values have changed, but only slightly
 plot_SV_several_approaches(list(
   "Vaeac early stopping" = expl_early_stopping,
@@ -752,15 +745,13 @@ vaeac_plot_eval_crit(
   ),
   plot_type = "criterion"
 )
-
 # The vaeac model with skip connections have the lowest/best MSE_Frye evaluation criterion score
 plot_MSEv_eval_crit(list(
   "Vaeac w.o. skip-con." = expl_vaeac_without,
   "Vaeac w. skip-con." = expl_vaeac_with,
   "Ctree" = expl_ctree
 ))
-
-# Can compare the Shapley values. Ctree and vaeac with skip connections produce similar explanations
+# Can compare the Shapley values. Ctree and vaeac with skip connections produce similar explanations.
 plot_SV_several_approaches(
   list(
     "Vaeac w.o. skip-con." = expl_vaeac_without,
@@ -774,14 +765,13 @@ plot_SV_several_approaches(
 
 ## CPU vs GPU {#cpu_vs_gpu}
 In this section, we create a small setup for comparing the efficiency of using GPU and CPU. For small tabular data sets,
-there are often no benefit of using a GPU. However, this depends on what kind of CPU and GPU the user has access to.
-Furthermore, the times depends on several factors, e.g., the number of training observations, explicands, features, and
+there are often no benefit of using a GPU. However, this depends on what kind of CPU and GPU the user has access to. As our CPU, we use a 13th Gen Intel(R) Core(TM) i7-13700H 2.40 GHz and 32.0 GB 4800 MHz RAM. While for the GPU, we use a NVIDIA GeForce RTX 4050 Laptop with 6 GB dedicated memmory and 16 GB shared. Furthermore, the times depends on several factors, e.g., the number of training observations, explicands, features, and
 batches.
 
 Finally, note that if the user specifies `vaeac.cuda = TRUE`, but there is no available GPU, then `vaeac` provides
 a warning and falls back to use CPU instead.
 
-```{r vaeac-cpu-gpu, cache = TRUE}
+```{r vaeac-cpu-gpu, cache = TRUE, eval = FALSE}
 # Load necessary library
 library(mvtnorm)
 
@@ -855,23 +845,45 @@ time_cuda <- system.time({
 
 # Look at the internal and external timing. See that the times comparable.
 # Note that these times highly depend on the CPU/GPU version.
-rbind("Vaeac CPU" = explanation_cpu$timing$timing_secs, "Vaeac GPU" = explanation_cuda$timing$timing_secs)
+rbind("Vaeac CPU" = explanation_cpu$timing$timing_secs,
+      "Vaeac GPU" = explanation_cuda$timing$timing_secs)
+#>                setup test_prediction setup_computation compute_vS shapley_computation
+#> Vaeac CPU 0.04163814      0.02751589          54.46604   7.096326         0.005872011
+#> Vaeac GPU 0.03711700      0.02697015          72.71818   7.599831         0.010197163
 rbind("Vaeac CPU" = time_cpu, "Vaeac GPU" = time_cuda)
+#>           user.self sys.self elapsed user.child sys.child
+#> Vaeac CPU     57.61     2.69   61.64         NA        NA
+#> Vaeac GPU     73.79     6.37   80.39         NA        NA
+```
 
-# It is no possible to set same random state on the CPU and GPU, hence, the results
-# are not equivalent. The difference is due to different initialization values.
+
+It is no possible to set same random state on the CPU and GPU, hence, the results
+are not equivalent. The difference is due to different initialization values.
+```{r vaeac-cpu-gpu-1, cache = TRUE, eval = FALSE}
 vaeac_plot_eval_crit(
   list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
   plot_type = "criterion"
 )
+```
+![](figure_vaeac/vaeac-cpu-gpu-1-1.png)
 
-# Almost identical MSEv values
-plot_MSEv_eval_crit(list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda))
 
-# Can compare the Shapley values and see that we get comparable values
+We also get almost identical $\text{MSE}_v$ values.
+```{r vaeac-cpu-gpu-2, cache = TRUE, eval = FALSE}
+plot_MSEv_eval_crit(list("Vaeac CPU" = explanation_cpu,
+"Vaeac GPU" = explanation_cuda))
+```
+![](figure_vaeac/vaeac-cpu-gpu-2-1.png)
+
+
+We can also compare the Shapley values and see that we get comparable explanations.
+```{r vaeac-cpu-gpu-3, cache = TRUE, eval = FALSE}
 plot_SV_several_approaches(
   list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
   index_explicands = 1:3,
-  facet_ncol = 3
+  facet_ncol = 3,
+  digits = 2
 )
 ```
+
+![](figure_vaeac/vaeac-cpu-gpu-3-1.png)
