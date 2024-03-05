@@ -50,6 +50,14 @@ explain_numeric_combined <- explain(
   timing = FALSE
 )
 
+# Create a list of explanations with names
+explanation_list_named <- list(
+  "Emp." = explain_numeric_empirical,
+  "Gaus." = explain_numeric_gaussian,
+  "Ctree" = explain_numeric_ctree,
+  "Comb." = explain_numeric_combined
+)
+
 test_that("checking default outputs", {
   skip_if_not_installed("vdiffr")
 
@@ -173,14 +181,6 @@ test_that("beeswarm_plot_new_arguments", {
 test_that("MSEv evaluation criterion plots", {
   skip_if_not_installed("vdiffr")
 
-  # Create a list of explanations with names
-  explanation_list_named <- list(
-    "Emp." = explain_numeric_empirical,
-    "Gaus." = explain_numeric_gaussian,
-    "Ctree" = explain_numeric_ctree,
-    "Comb." = explain_numeric_combined
-  )
-
   MSEv_plots <- plot_MSEv_eval_crit(
     explanation_list_named,
     plot_type = c("overall", "comb", "explicand"),
@@ -268,5 +268,49 @@ test_that("MSEv evaluation criterion plots", {
       id_combination = c(3, 4, 9, 13:15),
       CI_level = 0.95
     )$MSEv_combination_bar
+  )
+})
+
+test_that("plot_SV_several_approaches_explanations", {
+  skip_if_not_installed("vdiffr")
+
+  vdiffr::expect_doppelganger(
+    title = "plot_SV_several_approaches_default",
+    fig = plot_SV_several_approaches(explanation_list_named)
+  )
+
+
+  vdiffr::expect_doppelganger(
+    title = "plot_SV_several_div_input_1",
+    fig = plot_SV_several_approaches(explanation_list_named,
+      plot_phi0 = TRUE,
+      add_zero_line = TRUE,
+      facet_ncol = 3,
+      facet_scales = "free_y",
+      horizontal_bars = TRUE
+    )
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "plot_SV_several_div_input_2",
+    fig = plot_SV_several_approaches(explanation_list_named,
+      axis_labels_n_dodge = 1,
+      facet_ncol = 1,
+      facet_scales = "free_x",
+      horizontal_bars = FALSE,
+      index_explicands = c(1, 3),
+      add_zero_line = TRUE
+    )
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "plot_SV_several_div_input_3",
+    fig = plot_SV_several_approaches(explanation_list_named,
+      facet_ncol = 1,
+      facet_scales = "free_y",
+      brewer_palette = "Set1",
+      only_these_features = c("Month", "Day", "Solar.R"),
+      plot_phi0 = TRUE
+    )
   )
 })

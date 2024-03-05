@@ -25,6 +25,7 @@ explain_forecast(
   predict_model = NULL,
   get_model_specs = NULL,
   timing = TRUE,
+  verbose = 0,
   ...
 )
 }
@@ -65,8 +66,8 @@ If \code{xreg != NULL}, denotes the number of lags that should be used for each 
 The forecast horizon to explain. Passed to the \code{predict_model} function.}
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
-All elements should,
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
+All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
+\code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
 \item{prediction_zero}{Numeric.
@@ -137,8 +138,13 @@ Can also be used to override the default function for natively supported model c
 \item{timing}{Logical.
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
 
+\item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
+If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
+Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
+TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
+
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
+  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
   \describe{
     \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
@@ -187,6 +193,21 @@ If FALSE and the number of observations in the leaf node is more than \code{n_sa
 the method will sample \code{n_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+    \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
+in the neural networks of the masked encoder, full encoder, and decoder.}
+    \item{\code{vaeac.width}}{Positive integer (default is \code{32}). The number of neurons in each
+hidden layer in the neural networks of the masked encoder, full encoder, and decoder.}
+    \item{\code{vaeac.latent_dim}}{Positive integer (default is \code{8}). The number of dimensions in the latent space.}
+    \item{\code{vaeac.lr}}{Positive numeric (default is \code{0.001}). The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
+    \item{\code{vaeac.activation_function}}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
+\code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
+    \item{\code{vaeac.n_vaeacs_initialize}}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
+in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
+epochs (default is \code{2}) and continue training that one.}
+    \item{\code{vaeac.epochs}}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
+This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
+    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
+\code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.
@@ -232,7 +253,7 @@ It's equal for all observations and set by the user through the argument \code{p
 The difference between the prediction and \code{none} is distributed among the other features.
 In theory this value should be the expected prediction without conditioning on any features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable. \code{\link[=explain]{explain()}} \code{\link[=explain]{explain()}}
+such as the mean of the predictions in the training data are also reasonable.
 }
 \description{
 Computes dependence-aware Shapley values for observations in \code{explain_idx} from the specified

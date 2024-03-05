@@ -7,25 +7,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
   %\VignetteIndexEntry{`shapr`: Explaining individual machine learning predictions with Shapley values}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 72
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.width = 7,
-  fig.height = 3,
-  warning = FALSE,
-  message = FALSE
-)
-```
 
-```{r setup, include=FALSE, warning=FALSE}
-library(shapr)
-```
+
+
 
 > [Introduction](#intro)
 
@@ -112,7 +101,7 @@ expectations can be written as
 ```{=tex}
 \begin{equation}
 \label{eq:CondExp}
-E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*] = 
+E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*] =
 \int f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S^*)\,p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)d\boldsymbol{x}_{\bar{S}},
 \end{equation}
 ```
@@ -145,11 +134,11 @@ change, the contributions and Shapley values may then be approximated as
 in the ordinary Kernel SHAP framework. @aas2019explaining propose three
 different approaches for estimating the conditional probabilities which
 are implemented: `empirical`, `gaussian` and `copula`. The package also
-implements the method `ctree` method from @redelmeier2020explaining. The
-original `independence` approach of @lundberg2017unified is also
-available. The methods may also be combined, such that e.g. one method
-is used when conditioning on a small number of features, while another
-method is used otherwise.
+implements the `ctree` method from @redelmeier2020explaining, and the
+`vaeac` method from @olsen2022using. The original `independence` approach
+of @lundberg2017unified is also available. The methods may also be combined,
+such that e.g. one method is used when conditioning on a small number of
+features, while another method is used otherwise.
 
 <a id="gaussian"></a>
 
@@ -280,6 +269,51 @@ the conditional expectations as in Kernel SHAP. See
 The conditional inference trees are fit using the *party* and *partykit*
 packages (@partykit_package).
 
+
+
+<a id="vaeac"></a>
+
+## Variational AutoEncoder with Arbitrary Conditioning (vaeac) Approach
+Another approach that supports mixed features is the Variational AutoEncoder
+with Arbitrary Conditioning (@olsen2022using), abbreviated to `vaeac`.
+The `vaeac` is an extension of the regular variational autoencoder
+(@kingma2014autoencoding), but instead of giving a probabilistic representation
+of the distribution $p(\boldsymbol{x})$ it gives a probabilistic representation
+of the conditional distribution
+$p(\boldsymbol{x}_{\bar{\mathcal{S}}} \mid \boldsymbol{x}_{\mathcal{S}})$,
+for all possible feature subsets $\mathcal{S}\subseteq\mathcal{M}$ simultaneously,
+where $\mathcal{M}$ is the set of all features. That is, only a single `vaeac`
+model is needed to model all conditional distributions.
+
+The `vaeac` consists of three neural networks: a *full encoder*, a *masked encoder*,
+and a *decoder*. The encoders map the full and masked/conditional input representations,
+i.e., $\boldsymbol{x}$ and $\boldsymbol{x}_{\mathcal{S}}$, respectively,
+to latent probabilistic representations. Sampled instances from this latent probabilistic
+representations are sent to the decoder, which maps them back to the feature space
+and provides a samplable probabilistic representation for the unconditioned features
+$\boldsymbol{x}_{\bar{\mathcal{S}}}$. The full encoder is only used during the
+training phase of the `vaeac` model to guide the training process of the masked encoder,
+as the former relies on the full input sample $\boldsymbol{x}$, which is not accessible
+in the deployment phase (when we generate the Monte Carlo samples), as we only have access
+to $\boldsymbol{x}_{\mathcal{S}}$. The networks are trained by minimizing a variational
+lower bound, and see Section 3 in @olsen2022using for an in-depth introduction to the
+`vaeac` methodology. We use the `vaeac` model at the epoch which obtains the lowest
+validation IWAE score to generate the Monte Carlo samples used in the Shapley value computations.
+
+We fit the `vaeac` model using the *torch* package in $\textsf{R}$ (@torch). The main
+parameters are the the number of layers in the networks (`vaeac.depth`), the width of the layers
+(`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
+the activation function between the layers in the networks (`vaeac.activation_function`),
+the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
+to remedy poorly initiated model parameter values (`vaeac.n_vaeacs_initialize`), and
+the number of learning epochs (`vaeac.epochs`). Call `?shapr::setup_approach.vaeac` for
+a more detailed description of the parameters.
+
+There are additional extra parameters which can be set by including a named list in the call to
+the `explain()` function. For example, we can the change the batch size to 32 by including
+`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
+extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
+
 ## Categorical Approach
 
 When the features are all categorical, we can estimate the conditional
@@ -317,12 +351,13 @@ The following example shows how a simple `xgboost` model is trained
 using the `airquality` dataset, and how `shapr` can be used to explain
 the individual predictions. Note that the empirical conditional
 distribution approach is the default (i.e. `approach = "empirical"`).
-The Gaussian, Gaussian copula, ctree or independence approaches can be
+The Gaussian, Gaussian copula, ctree, vaeac, or independence approaches can be
 used instead by setting the argument `approach` to either `"gaussian"`,
-`"copula"`, `"ctree"`, `"categorical"` or `"independence"` in the code
+`"copula"`, `"ctree"`, `"vaeac"`, `"categorical"` or `"independence"` in the code
 below.
 
-```{r, warning=FALSE}
+
+```r
 library(xgboost)
 library(data.table)
 
@@ -358,25 +393,42 @@ explanation <- explain(
   approach = "empirical",
   prediction_zero = p0
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values)
+#>      none  Solar.R    Wind    Temp    Month
+#>     <num>    <num>   <num>   <num>    <num>
+#> 1: 43.086 13.21173  4.7856 -25.572  -5.5992
+#> 2: 43.086 -9.97277  5.8307 -11.039  -7.8300
+#> 3: 43.086 -2.29162 -7.0534 -10.150  -4.4525
+#> 4: 43.086  3.32546 -3.2409 -10.225  -6.6635
+#> 5: 43.086  4.30396 -2.6278 -14.152 -12.2669
+#> 6: 43.086  0.47864 -5.2487 -12.553  -6.6457
 
 # Plot the resulting explanations for observations 1 and 6
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
+![](figure_main/unnamed-chunk-2-1.png)
+
 There are multiple plot options specified by the `plot_type` argument in
 `plot`. The `waterfall` option shows the changes in the prediction score
 due to each features contribution (their Shapley values):
 
-There are multiple plot options specified by the `plot_type` argument in `plot`. 
-The `waterfall` option shows the changes in the prediction score due to each features contribution (their Shapley values): 
+There are multiple plot options specified by the `plot_type` argument in `plot`.
+The `waterfall` option shows the changes in the prediction score due to each features contribution (their Shapley values):
 
-```{r}
+
+```r
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```
+
+![](figure_main/unnamed-chunk-3-1.png)
 
 The other two plot options, `"beeswarm"` and `"scatter"`, can be useful
 when you have many observations that you want to explain. For the
@@ -387,7 +439,8 @@ values along the x-axis across all features. Each point gives the
 Shapley value of a given instance, where the points are colored by the
 feature value of that instance:
 
-```{r}
+
+```r
 x_explain_many <- data[, ..x_var]
 explanation_plot <- explain(
   model = model,
@@ -396,21 +449,31 @@ explanation_plot <- explain(
   approach = "empirical",
   prediction_zero = p0
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 plot(explanation_plot, plot_type = "beeswarm")
 ```
+
+![](figure_main/unnamed-chunk-4-1.png)
 
 The `plot_type = "scatter"` plots the feature values on the x-axis and
 Shapley values on the y-axis, as well as (optionally) a background
 scatter_hist showing the distribution of the feature data:
 
-```{r}
+
+```r
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-We can use mixed (i.e continuous, categorical, ordinal) data with ctree.
-Use ctree with mixed data in the following manner:
+![](figure_main/unnamed-chunk-5-1.png)
 
-```{r}
+We can use mixed (i.e continuous, categorical, ordinal) data with `ctree` or `vaeac`.
+Use `ctree` with mixed data in the following manner:
+
+
+```r
 # convert the month variable to a factor
 data[, Month_factor := as.factor(Month)]
 
@@ -436,17 +499,22 @@ explanation_lm_cat <- explain(
   approach = "ctree",
   prediction_zero = p0
 )
+#> Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
 plot(explanation_lm_cat, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
+![](figure_main/unnamed-chunk-6-1.png)
+
 We can specify parameters used to build the conditional inference trees
 in the following manner. Default values are based on
 @hothorn2006unbiased.
 
-```{r}
+
+```r
 # Use the conditional inference tree approach
 # We can specify parameters used to building trees by specifying mincriterion,
 # minsplit, minbucket
@@ -460,6 +528,8 @@ explanation_ctree <- explain(
   ctree.minsplit = 20,
   ctree.minbucket = 20
 )
+#> Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 # Default parameters (based on (Hothorn, 2006)) are:
 # mincriterion = 0.95
 # minsplit = 20
@@ -469,7 +539,8 @@ explanation_ctree <- explain(
 If **all** features are categorical, one may use the categorical
 approach as follows:
 
-```{r}
+
+```r
 # For the sake of illustration, convert ALL features to factors
 data[, Solar.R_factor := as.factor(cut(Solar.R, 10))]
 data[, Wind_factor := as.factor(cut(Wind, 3))]
@@ -497,6 +568,8 @@ explanation_cat_method <- explain(
   approach = "categorical",
   prediction_zero = p0
 )
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 ```
 
 Shapley values can be used to explain any predictive model. For
@@ -510,7 +583,8 @@ achieved through the `group` attribute. Other optional parameters of
 `timeseries.bounds` (a vector indicating upper and lower bounds of the
 time series if necessary).
 
-```{r}
+
+```r
 # Simulate time series data with AR(1)-structure
 set.seed(1)
 data_ts <- data.frame(matrix(NA, ncol = 41, nrow = 4))
@@ -558,6 +632,8 @@ explanation_timeseries <- explain(
   prediction_zero = p0_ts,
   group = group_ts
 )
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 ```
 
 
@@ -568,7 +644,7 @@ and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
 ```{=tex}
 \begin{align}
     \label{eq:MSE_v}
-    \operatorname{MSE}_{v} = \operatorname{MSE}_{v}(\text{method } \texttt{q}) 
+    \operatorname{MSE}_{v} = \operatorname{MSE}_{v}(\text{method } \texttt{q})
     =
      \frac{1}{N_\mathcal{S}} \sum_{\mathcal{S} \in \mathcal{P}^*(\mathcal{M})} \frac{1}{N_\text{explain}}
      \sum_{i=1}^{N_\text{explain}} \left( f(\boldsymbol{x}^{[i]}) - {\hat{v}}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}^{[i]})\right)^2\!,
@@ -577,21 +653,21 @@ and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
 where ${\hat{v}}_{\texttt{q}}$ is the estimated contribution function using method $\texttt{q}$ and $N_\mathcal{S} = |\mathcal{P}^*(\mathcal{M})| = 2^M-2$, i.e., we have removed the empty ($\mathcal{S} = \emptyset$) and the grand combinations ($\mathcal{S} = \mathcal{M}$) as they are method independent. Meaning that these two combinations do not influence the ranking of the methods as the methods are not used to compute the contribution function for them.
 
 The motivation behind the
-$\operatorname{MSE}_{v}$ criterion is that 
+$\operatorname{MSE}_{v}$ criterion is that
 $\mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (v_{\texttt{true}}(\mathcal{S},\boldsymbol{x}) - \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2$
 can be decomposed as
 ```{=tex}
 \begin{align}
     \label{eq:expectation_decomposition}
     \begin{split}
-    \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (v_{\texttt{true}}(\mathcal{S}, \boldsymbol{x})- \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2 
+    \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (v_{\texttt{true}}(\mathcal{S}, \boldsymbol{x})- \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2
     &=
     \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (f(\boldsymbol{x}) - \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2 \\
     &\phantom{\,\,\,\,\,\,\,}- \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (f(\boldsymbol{x})-v_{\texttt{true}}(\mathcal{S}, \boldsymbol{x}))^2,
     \end{split}
 \end{align}
 ```
-see Appendix A in @covert2020understanding. The first term on the right-hand side of 
+see Appendix A in @covert2020understanding. The first term on the right-hand side of
 the equation above can be estimated by $\operatorname{MSE}_{v}$, while the second
 term is a fixed (unknown) constant not influenced by the approach \texttt{q}. Thus, a low value
 of $\operatorname{MSE}_{v}$ indicates that the estimated contribution function $\hat{v}_{\texttt{q}}$
@@ -599,7 +675,7 @@ is closer to the true counterpart $v_{\texttt{true}}$ than a high value.
 
 In `shapr`, we allow for weighting the combinations in the $\operatorname{MSE}_{v}$ evaluation criterion either
 uniformly or by using the corresponding Shapley kernel weights (or the sampling frequencies when sampling of
-combinations is used). 
+combinations is used).
 This is determined by the logical parameter `MSEv_uniform_comb_weights` in the `explain()` function, and the
 default is to do uniform weighting, that is, `MSEv_uniform_comb_weights = TRUE`.
 
@@ -613,8 +689,8 @@ First, we can only use the $\operatorname{MSE}_{v}$ criterion to rank the method
 their closeness to the optimum since the minimum value of the $\operatorname{MSE}_{v}$ criterion
 is unknown. Second, the criterion evaluates the contribution functions and not the Shapley values.
 
-Note that @olsen2023comparative observed a relatively linear relationship between the 
-$\operatorname{MSE}_{v}$ criterion and the mean absolute error $(\operatorname{MAE})$ between the 
+Note that @olsen2023comparative observed a relatively linear relationship between the
+$\operatorname{MSE}_{v}$ criterion and the mean absolute error $(\operatorname{MAE})$ between the
 true and estimated Shapley values in extensive simulation studies where the true Shapley values
 were known. That is, a method that achieves a low $\operatorname{MSE}_{v}$ score also tends to
 obtain a low $\operatorname{MAE}$ score, and vice versa.
@@ -623,7 +699,7 @@ obtain a low $\operatorname{MAE}$ score, and vice versa.
 The $\operatorname{MSE}_{v}$ criterion can be written as
 $\operatorname{MSE}_{v} = \frac{1}{N_\text{explain}}\sum_{i=1}^{N_\text{explain}} \operatorname{MSE}_{v,\text{explain }i}$.
 We can therefore use the central limit theorem to compute an approximate
-confidence interval for the $\operatorname{MSE}_{v}$ criterion. We have that 
+confidence interval for the $\operatorname{MSE}_{v}$ criterion. We have that
 $\operatorname{MSE}_{v} \pm t_{\alpha/2}\frac{\operatorname{SD}(\operatorname{MSE}_{v})}{\sqrt{N_\text{explain}}}$
 is a $(1-\alpha/2)\%$ approximate confidence interval for the evaluation criterion,
 where $t_{\alpha/2}$ is the $\alpha/2$ percentile of the $T_{N_\text{explain}-1}$ distribution.
@@ -640,7 +716,8 @@ each observation, as each combination is a different prediction tasks.
 ### MSEv examples
 
 Start by explaining the predictions by using different methods and combining them into lists.
-```{r}
+
+```r
 # We use more explicands here for more stable confidence intervals
 ind_x_explain <- 1:25
 x_train <- data[-ind_x_explain, ..x_var]
@@ -669,6 +746,8 @@ explanation_independence <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Empirical approach
 explanation_empirical <- explain(
@@ -681,6 +760,8 @@ explanation_empirical <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Gaussian 1e1 approach
 explanation_gaussian_1e1 <- explain(
@@ -693,6 +774,8 @@ explanation_gaussian_1e1 <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Gaussian 1e2 approach
 explanation_gaussian_1e2 <- explain(
@@ -705,6 +788,8 @@ explanation_gaussian_1e2 <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Combined approach
 explanation_combined <- explain(
@@ -717,6 +802,8 @@ explanation_combined <- explain(
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Create a list of explanations with names
 explanation_list_named <- list(
@@ -731,7 +818,8 @@ explanation_list_named <- list(
 
 We can then compare the different approaches by creating plots of the $\operatorname{MSE}_{v}$ evaluation criterion.
 
-```{r}
+
+```r
 # Create the MSEv plots with approximate 95% confidence intervals
 MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
   plot_type = c("overall", "comb", "explicand"),
@@ -740,35 +828,75 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 
 # 5 plots are made
 names(MSEv_plots)
+#> [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"   "MSEv_combination_bar"        "MSEv_combination_line_point"
+#> [5] "MSEv_bar"
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
 we have only averaged over the observations or the combinations (both as bar and line plots).
 
-```{r}
+
+```r
 # The main plot of the overall MSEv averaged over both the combinations and observations
 MSEv_plots$MSEv_bar
+```
+
+![](figure_main/unnamed-chunk-12-1.png)
+
+```r
 
 # The MSEv averaged over only the explicands for each combinations
 MSEv_plots$MSEv_combination_bar
+```
+
+![](figure_main/unnamed-chunk-12-2.png)
+
+```r
 
 # The MSEv averaged over only the combinations for each observation/explicand
 MSEv_plots$MSEv_explicand_bar
+```
+
+![](figure_main/unnamed-chunk-12-3.png)
+
+```r
 
 # To see which coalition S each of the `id_combination` corresponds to,
 # i.e., which features that are conditions on.
 explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination", "features")]
+#>     id_combination features
+#>              <int>   <list>
+#>  1:              2        1
+#>  2:              3        2
+#>  3:              4        3
+#>  4:              5        4
+#>  5:              6      1,2
+#>  6:              7      1,3
+#>  7:              8      1,4
+#>  8:              9      2,3
+#>  9:             10      2,4
+#> 10:             11      3,4
+#> 11:             12    1,2,3
+#> 12:             13    1,2,4
+#> 13:             14    1,3,4
+#> 14:             15    2,3,4
 ```
 
-We can specify the `index_x_explain` and `id_combination` parameters in `plot_MSEv_eval_crit()` to only plot 
+We can specify the `index_x_explain` and `id_combination` parameters in `plot_MSEv_eval_crit()` to only plot
 certain test observations and combinations, respectively.
 
-```{r}
+
+```r
 # We can specify which test observations or combinations to plot
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "explicand",
   index_x_explain = c(1, 3:4, 6),
   CI_level = 0.95
 )$MSEv_explicand_bar
+```
+
+![](figure_main/unnamed-chunk-13-1.png)
+
+```r
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "comb",
   id_combination = c(3, 4, 9, 13:15),
@@ -776,15 +904,16 @@ plot_MSEv_eval_crit(explanation_list_named,
 )$MSEv_combination_bar
 ```
 
+![](figure_main/unnamed-chunk-13-2.png)
+
 
 We can also alter the plots design-wise as we do in the code below.
 
-```{r}
+
+```r
 bar_text_n_decimals <- 1
-CI_level <- 0.95
-MSEv_plot <- plot_MSEv_eval_crit(explanation_list_named, CI_level = CI_level)$MSEv_bar
-MSEv_plot +
-  ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plot$data$Method))) +
+plot_MSEv_eval_crit(explanation_list_named) +
+  ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plots$MSEv_bar$data$Method))) +
   ggplot2::coord_flip() +
   ggplot2::scale_fill_brewer(palette = "Paired") +
   ggplot2::theme_minimal() + # This must be set before other theme calls
@@ -804,6 +933,9 @@ MSEv_plot +
     size = 4
   )
 ```
+
+![](figure_main/unnamed-chunk-14-1.png)
+
 
 ## Main arguments in `explain`
 
@@ -887,7 +1019,8 @@ may be of more interesting to explain the impact of each variable,
 rather than each lag of each variable. This can be done by setting
 `group_lags = TRUE`.
 
-```{r}
+
+```r
 # Simulate time series data with AR(1)-structure.
 set.seed(1)
 data_ts <- data.frame(Y = arima.sim(list(order = c(1, 0, 0), ar = .5), n = 500))
@@ -913,7 +1046,19 @@ explanation_forecast <- explain_forecast(
   prediction_zero = p0_ar,
   group_lags = FALSE
 )
+#> Note: Feature names extracted from the model contains NA.
+#> Consistency checks between model and data is therefore disabled.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 explanation_forecast
+#>    explain_idx horizon    none     Y.1      Y.2
+#>          <int>   <int>   <num>   <num>    <num>
+#> 1:         499       1 0.04018  0.5053 -0.07659
+#> 2:         500       1 0.04018 -0.3622  0.02497
+#> 3:         499       2 0.04018  0.5053 -0.07659
+#> 4:         500       2 0.04018 -0.3622  0.02497
+#> 5:         499       3 0.04018  0.5053 -0.07659
+#> 6:         500       3 0.04018 -0.3622  0.02497
 ```
 
 Note that for a multivariate model such as a VAR (Vector AutoRegressive
@@ -936,12 +1081,18 @@ model is then used to make a forecast of the temperature of the day that
 comes after the last day in the data, this forecast starts from index
 153.
 
-```{r}
+
+```r
 data <- data.table::as.data.table(airquality)
 
 model_ar_temp <- ar(data$Temp, order = 2)
 
 predict(model_ar_temp, n.ahead = 2)$pred
+#> Time Series:
+#> Start = 154 
+#> End = 155 
+#> Frequency = 1 
+#> [1] 71.081 71.524
 ```
 
 First, we pass the model and the data as `model` and `y`. Since we have
@@ -968,7 +1119,8 @@ explained separately. Grouping lags may be more interesting to do in a
 model with multiple variables, as it is then possible to explain each
 variable separately.
 
-```{r}
+
+```r
 explanation <- explain_forecast(
   model = model_ar_temp,
   y = data[, "Temp"],
@@ -982,8 +1134,14 @@ explanation <- explain_forecast(
   n_batches = 1,
   timing = FALSE
 )
+#> Note: Feature names extracted from the model contains NA.
+#> Consistency checks between model and data is therefore disabled.
 
 print(explanation)
+#>    explain_idx horizon  none Temp.1  Temp.2
+#>          <num>   <num> <num>  <num>   <num>
+#> 1:         153       1 77.88 -6.622 -0.1788
+#> 2:         153       2 77.88 -6.025 -0.3327
 ```
 
 The results are presented per value of `explain_idx` and forecast
@@ -1000,7 +1158,8 @@ regressor must be available for the predicted time points, the model is
 just fit on the 151 first observations, leaving two observations of
 `Wind` to be used as exogenous values during the prediction phase.
 
-```{r}
+
+```r
 data <- data.table::as.data.table(airquality)
 
 data_fit <- data[seq_len(151), ]
@@ -1010,6 +1169,11 @@ model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wi
 newxreg <- data[-seq_len(151), "Wind", drop = FALSE]
 
 predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
+#> Time Series:
+#> Start = 152 
+#> End = 153 
+#> Frequency = 1 
+#> [1] 77.500 76.381
 ```
 
 The `shapr` package can then explain not only the two autoregressive
@@ -1021,7 +1185,8 @@ makes it possible for `shapr` to not only explain the effect of the
 first lag of the exogenous variable, but also the contemporary effect
 during the forecasting period.
 
-```{r}
+
+```r
 explanation <- explain_forecast(
   model = model_ar_temp,
   y = data_fit[, "Temp"],
@@ -1037,8 +1202,14 @@ explanation <- explain_forecast(
   n_batches = 1,
   timing = FALSE
 )
+#> Note: Feature names extracted from the model contains NA.
+#> Consistency checks between model and data is therefore disabled.
 
 print(explanation$shapley_values)
+#>    explain_idx horizon  none   Temp.1   Temp.2  Wind.1  Wind.F1  Wind.F2
+#>          <num>   <num> <num>    <num>    <num>   <num>    <num>    <num>
+#> 1:         151       1 77.96 -0.67793 -0.67340 -1.2688 0.493408       NA
+#> 2:         151       2 77.96  0.39968 -0.50059 -1.4655 0.065913 -0.47422
 ```
 
 <a id="advanced"></a>
@@ -1055,7 +1226,7 @@ In addition to letting the user select one of the five aforementioned
 approaches for estimating the conditional distribution of the data (i.e.
 `approach` equals either [`"gaussian"`](#gaussian),
 [`"copula"`](#copula), [`"empirical"`](#empirical),
-[`"ctree"`](#ctree), [`"categorical"`](#categorical)) or `"timeseries"`, the package
+[`"ctree"`](#ctree), [`"vaeac"`](#vaeac), [`"categorical"`](#categorical)) or `"timeseries"`, the package
 allows the user to combine the given approaches. To simplify the usage,
 the flexibility is restricted such that the same approach is used when
 conditioning on the same number of features. This is also in line
@@ -1076,9 +1247,10 @@ by the complete prediction itself, and should thus not be part of the vector.
 
 The code below exemplifies this approach for a case where there are four
 features, using `"empirical", "copula"` and `"gaussian"` when
-conditioning on respectively 1, 2 and 3 features. 
+conditioning on respectively 1, 2 and 3 features.
 
-```{r}
+
+```r
 # Use the combined approach
 explanation_combined <- explain(
   model = model,
@@ -1087,15 +1259,22 @@ explanation_combined <- explain(
   approach = c("empirical", "copula", "gaussian"),
   prediction_zero = p0
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
 plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-As a second example using `"ctree"` to conditin on 1 and 2 features, and 
+![](figure_main/unnamed-chunk-20-1.png)
+
+As a second example using `"ctree"` to condition on 1 and 2 features, and
 `"empirical"` when conditioning on 3 features:
 
-```{r}
+
+```r
 # Use the combined approach
 explanation_combined <- explain(
   model = model,
@@ -1104,6 +1283,10 @@ explanation_combined <- explain(
   approach = c("ctree", "ctree", "empirical"),
   prediction_zero = p0
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 ```
 
 ## Explain groups of features
@@ -1114,7 +1297,8 @@ features instead of single features, see (@jullum2021efficient) for
 intuition and real world examples. Explaining prediction in terms of
 groups of features is very easy using `shapr`:
 
-```{r}
+
+```r
 # Define the feature groups
 group_list <- list(
   A = c("Temp", "Month"),
@@ -1130,11 +1314,45 @@ explanation_group <- explain(
   prediction_zero = p0,
   group = group_list
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 # Prints the group-wise explanations
 explanation_group
+#>      none       A        B
+#>     <num>   <num>    <num>
+#>  1: 47.27 -29.588  13.1628
+#>  2: 47.27 -11.834 -15.7011
+#>  3: 47.27 -15.976 -17.5729
+#>  4: 47.27 -25.067  -5.1374
+#>  5: 47.27 -35.848  20.2892
+#>  6: 47.27 -27.257  -8.4830
+#>  7: 47.27 -14.960 -21.3995
+#>  8: 47.27 -18.325   7.3791
+#>  9: 47.27 -23.012   9.6591
+#> 10: 47.27 -16.189  -5.6100
+#> 11: 47.27 -25.607 -10.1334
+#> 12: 47.27 -25.065  -5.1394
+#> 13: 47.27 -25.841  -0.7281
+#> 14: 47.27 -21.518 -13.3293
+#> 15: 47.27 -21.248  -1.3199
+#> 16: 47.27 -13.676 -16.9497
+#> 17: 47.27 -13.899 -14.8890
+#> 18: 47.27 -12.276  -8.2472
+#> 19: 47.27 -13.768 -13.5242
+#> 20: 47.27 -24.866 -10.8744
+#> 21: 47.27 -14.486 -22.7674
+#> 22: 47.27  -4.122 -14.2893
+#> 23: 47.27 -11.218  22.4682
+#> 24: 47.27 -33.002  14.2114
+#> 25: 47.27 -16.251  -8.6796
+#>      none       A        B
 # Plots the group-wise explanations
 plot(explanation_group, bar_plot_phi0 = TRUE, index_x_explain = c(1, 6))
 ```
+
+![](figure_main/unnamed-chunk-22-1.png)
 
 ## Explain custom models
 
@@ -1184,7 +1402,8 @@ and a minimal version which skips the `get_model_specs` function. We do
 this for the `gbm` model class from the `gbm` package, fitted to the
 same airquality data set as used above.
 
-```{r,warning=TRUE, message=TRUE}
+
+```r
 library(gbm)
 
 formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
@@ -1234,9 +1453,16 @@ explanation_custom <- explain(
   predict_model = MY_predict_model,
   get_model_specs = MY_get_model_specs
 )
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Plot results
 plot(explanation_custom, index_x_explain = c(1, 6))
+```
+
+![](figure_main/unnamed-chunk-23-1.png)
+
+```r
 
 
 #### Minimal version of the three required model functions ####
@@ -1257,10 +1483,122 @@ explanation_custom_minimal <- explain(
   prediction_zero = p0,
   predict_model = MY_MINIMAL_predict_model
 )
+#> Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
+#> Consistency checks between model and data is therefore disabled.
+#> 
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Plot results
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ```
+
+![](figure_main/unnamed-chunk-23-2.png)
+
+## The parameters of the `vaeac` approach
+
+The `vaeac` approach is a very flexible method that supports mixed data. The main
+parameters are the the number of layers in the networks (`vaeac.depth`), the width of the layers
+(`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
+the activation function between the layers in the networks (`vaeac.activation_function`),
+the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
+to remedy poorly initiated model parameter values (`vaeac.n_vaeacs_initialize`), and
+the number of learning epochs (`vaeac.epochs`). Call `?shapr::setup_approach.vaeac` for
+a more detailed description of the parameters.
+
+There are additional extra parameters which can be set by including a named list in the call to
+the `explain()` function. For example, we can the change the batch size to 32 by including
+`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
+extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
+
+
+
+```r
+explanation_vaeac <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "vaeac",
+  prediction_zero = p0,
+  n_samples = 100,
+  vaeac.width = 16,
+  vaeac.depth = 2,
+  vaeac.epochs = 3,
+  vaeac.n_vaeacs_initialize = 2
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
+```
+
+Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 3` is likely to few epochs as it still seems like the `vaeac` model is learning.
+
+```r
+# Look at the training and validation errors.
+vaeac_plot_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
+```
+
+![](figure_main/vaeac-plot-1-1.png)
+
+
+
+
+### Early stopping
+If we are uncertain about the choice of `vaeac.epochs`, we can rather use `vaeac` with early stopping.
+We will then set `vaeac.epochs` to a large number which will act as a maximum number of allowed epochs
+and in the `vaeac.extra_parameters` list, we set `vaeac.epochs_early_stopping` the number of epochs we
+allow the `vaeac` model to not improve its validation score. That is, if `vaeac.epochs_early_stopping = 2`,
+then `vaeac` will stop the training procedure if there has been no improvement in the validation score
+for `2` consecutive epochs, of if `vaeac.epochs` is reached. Note that if using early stopping and progress
+updates simultaneously, then the estimated timer remaining will obviously be incorrect if early stopping
+is applied. Furthermore, a value of `2` is too low for real world applications, but we set it so low here
+to make the vignette faster to build.
+
+
+```r
+explanation_vaeac_early_stop <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "vaeac",
+  prediction_zero = p0,
+  n_samples = 100,
+  vaeac.width = 16,
+  vaeac.depth = 2,
+  vaeac.epochs = 1000, # Set it to a large number
+  vaeac.n_vaeacs_initialize = 2,
+  vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
+```
+
+Can compare with the previous version and see that the results are more stable now.
+
+```r
+# Look at the training and validation errors.
+vaeac_plot_eval_crit(
+  list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop),
+  plot_type = "method"
+)
+```
+
+![](figure_main/vaeac-plot-2-1.png)
+
+Can also compare the $MSE_{v}$ evaluation scores.
+
+
+```r
+plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
+```
+
+![](figure_main/vaeac-plot-3-1.png)
+
+
+
 
 <a id="scalability"></a>
 
@@ -1292,7 +1630,8 @@ computation speed and memory consumption which depends on
 is most apparent for models with more than say 6-7 features. Below we a
 basic example where `n_batches=10`:
 
-```{r}
+
+```r
 explanation_batch <- explain(
   model = model,
   x_explain = x_explain,
@@ -1301,12 +1640,14 @@ explanation_batch <- explain(
   prediction_zero = p0,
   n_batches = 10
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 ## Parallelized computation
 
 In addition to reducing the memory consumption, the introduction of the
-`n_batch` argument allows computation within each batch to be performed in parallel. 
+`n_batch` argument allows computation within each batch to be performed in parallel.
 The parallelization in `shapr::explain()` is handled by the
 `future_apply` which builds on the `future` environment. The `future`
 package works on all OS, allows the user to decide the parallelization
@@ -1317,16 +1658,17 @@ clusters, and also supports progress updates for the parallelized task
 Note that, since it takes some time to duplicate data into different
 processes/machines when running in parallel, it is not always
 preferrable to run `shapr::explain()` in parallel, at least not with
-many parallel sessions (hereby called **workers**). Parallelizatiob also
+many parallel sessions (hereby called **workers**). Parallelization also
 increases the memory consumption proportionally, so you want to limit
 the number of workers for that reason too. In a future version of
 `shapr` we will provide experienced based automatic selection of the
-number of workers. In the meanwhile, this is all lef to the user, and we
+number of workers. In the meanwhile, this is all let to the user, and we
 advice that `n_batches` equals some positive integer multiplied by the
 number of workers. Below is a basic example of a parallelization with
 two workers.
 
-```{r}
+
+```r
 library(future)
 future::plan(multisession, workers = 2)
 
@@ -1338,6 +1680,8 @@ explanation_par <- explain(
   prediction_zero = p0,
   n_batches = 10
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 future::plan(sequential) # To return to non-parallel computation
 ```
@@ -1346,10 +1690,10 @@ future::plan(sequential) # To return to non-parallel computation
 
 `shapr` provides progress updates of the computation of the Shapley
 values through the R-package `progressr`. This gives the user full
-control over the visual apperance of the progress updates, and also
-intergrates seemlessly with the parallelization framework `future` used
+control over the visual appearance of the progress updates, and also
+integrates seamlessly with the parallelization framework `future` used
 by `shapr` (see above). Note that the progress is updated as the batches
-are completed, meaning that if you have choosen `n_batches=1`, you will
+are completed, meaning that if you have chosen `n_batches=1`, you will
 not get intermediate updates, while if you set `n_batches=10` you will
 get updates on every 10% of the computation.
 
@@ -1358,7 +1702,7 @@ command `progressr::handlers(local=TRUE)`, before calling
 `shapr::explain()`. To use progress updates for only a single call to
 `shapr::explain()`, one can wrap the call using
 `progressr::with_progress` as follows:
-`progressr::with_progress({ shapr::explain() })` The default appearence
+`progressr::with_progress({ shapr::explain() })` The default appearance
 of the progress updates is a basic ASCII-based horizontal progress bar.
 Other variants can be chosen by passing different strings to
 `progressr::handlers()`, some of which require additional packages. If
@@ -1374,7 +1718,8 @@ options available with `progressr`, see the `progressr`
 [vignette](https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html).
 A full code example of using `progressr` with `shapr` is shown below:
 
-```{r,eval = FALSE}
+
+```r
 library(progressr)
 progressr::handlers(global = TRUE)
 # If no progression handler is specified, the txtprogressbar is used
@@ -1391,8 +1736,12 @@ explanation <- explain(
   n_batches = 10
 )
 
+handlers("progress")
 #| [=================================>----------------------]  60% Estimating v(S)
 ```
+
+
+
 
 <a id="compare"></a>
 

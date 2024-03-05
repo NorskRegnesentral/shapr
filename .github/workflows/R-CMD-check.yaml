@@ -49,6 +49,10 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
+      - name: Set the value
+        shell: bash # Default on non-Windows, but needs to be specfied for this to run on Windows
+        run: echo "TORCH_INSTALL=1" >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-pandoc@v2
@@ -63,6 +67,11 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+
+# Try to do this with the env variable TORCH_INSTALL instead to hopefully get setup-r-dependencies to cache the installation
+#      - name: Install torch dependencies
+#        run: torch::install_torch()
+#        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
