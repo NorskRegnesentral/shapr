@@ -107,5 +107,8 @@
       "x_train_torch"
     )
   )
+
+  make_ppr_reg() # This defines projection pursuit regression in the model database
+
   invisible()
 }

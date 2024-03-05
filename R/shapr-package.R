@@ -45,20 +45,3 @@ release_questions <- function() {
     "`rebuild-long-running-vignette.R`?"
   ))
 }
-
-
-
-# Regression approaches -------------------------------------------------------------------------------------------
-## To avoid dependency issues
-#' @importFrom parsnip set_new_model
-NULL
-
-## Global vars ------------------------------------------------------------------
-utils::globalVariables(c("x", "y"))
-
-## .onload ----------------------------------------------------------------------
-# The functions below define the model information. These access the model environment
-# inside of parsnip so they have to be executed once parsnip has been loaded.
-.onLoad <- function(libname, pkgname) {
-  make_ppr_reg() # This defines projection pursuit regression in the model database
-}
