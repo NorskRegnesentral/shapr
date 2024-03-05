@@ -31,6 +31,7 @@ knitr::opts_chunk$set(
 
 > [The surrogate regression method class](#surrogate)
 
+> [Add new regression methods](#new)
 
 <a id="intro"></a>
 
@@ -125,7 +126,7 @@ approach <- "regression_separate"
 regression_model <- parsnip::linear_reg()
 
 # Compute the Shapley value explanations
-explanation_sep_lm <- explain(
+explanation_sep_lm <- shapr::explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -141,7 +142,7 @@ the `empirical` approach outperforms the linear regression model approach quite 
 
 ```{r}
 # Compute the Shapley value explanations using the empirical method
-explanation_empirical <- explain(
+explanation_empirical <- shapr::explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -486,3 +487,189 @@ plot_SV_several_approaches(list(
   sur_xgboost = explanation_sur_xgboost
 ), index_explicands = 1:4)
 ```
+
+
+
+# Add new regression methods {#new}
+
+Even though the `tidymodels` package contain a lot of models (See [list of tidymodels](https://www.tidymodels.org/find/parsnip/)), we might want to add additional methods.
+In the following section, we illustrate how to add a the projection pursuit regression (PPR) model as 
+new method that can be used by `shapr` to compute the Shapley value explanations; both as a separate and surrogate method.
+
+We use the `ppr()` implementation in the `stats` package to fit the PPR model. The model has several
+hyperparameters that can be tuned, but the main hyperparameter is the number of terms `nterms`.
+The following is based on [tidymodels' guide](https://www.tidymodels.org/learn/develop/models/) and
+we refer to that guide for more details and explanations of the code below.
+
+
+```{r}
+library(parsnip)
+
+  # Step 1: register the model, modes, and arguments
+  parsnip::set_new_model(model = "ppr_reg")
+  parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
+  parsnip::set_model_engine(model = "ppr_reg", mode = "regression", eng = "ppr")
+  parsnip::set_dependency("ppr_reg", eng = "ppr", pkg = "stats")
+
+  # If your function has several parameters, then we add one of these functions for each parameter
+  parsnip::set_model_arg(
+    model = "ppr_reg",
+    eng = "ppr",
+    original = "nterms", # The original parameter name used in stats::ppr
+    parsnip = "num_terms", # Change parameter name to match tidymodels' name convention
+    func = list(pkg = "dials", fun = "num_terms"), #list(pkg = "stats", fun = "ppr"),
+    has_submodel = FALSE
+  )
+
+  # Step 2: create the model function
+  ppr_reg <- function(mode = "regression", num_terms = NULL) {
+    # Check for correct mode
+    if (mode  != "regression") rlang::abort("`mode` should be 'regression'")
+
+    # Capture the arguments in quosures
+    args <- list(num_terms = rlang::enquo(num_terms))
+
+    # Save some empty slots for future parts of the specification
+    parsnip::new_model_spec(
+      "ppr_reg",
+      args = args,
+      eng_args = NULL,
+      mode = mode,
+      method = NULL,
+      engine = NULL
+    )
+  }
+
+  # Step 3: add a fit module
+  parsnip::set_fit(
+    model = "ppr_reg",
+    eng = "ppr",
+    mode = "regression",
+    value = list(
+      interface = "formula",
+      protect = c("formula", "data", "weights"),
+      func = c(pkg = "stats", fun = "ppr"),
+      defaults = list()
+    )
+  )
+
+  parsnip::set_encoding(
+    model = "ppr_reg",
+    eng = "ppr",
+    mode = "regression",
+    options = list(
+      predictor_indicators = "traditional",
+      compute_intercept = TRUE,
+      remove_intercept = TRUE,
+      allow_sparse_x = FALSE
+    )
+  )
+
+  # Step 4: add modules for prediction
+  parsnip::set_pred(
+    model = "ppr_reg",
+    eng = "ppr",
+    mode = "regression",
+    type = "numeric",
+    value = list(
+      pre = NULL,
+      post = NULL,
+      func = c(fun = "predict"),
+      args = list(
+        object = quote(object$fit),
+        newdata = quote(new_data),
+        type = "numeric"
+      )
+    )
+  )
+
+  # Step 5: add tuning function (used by tune::tune_grid())
+  tunable.ppr_reg <- function(x, ...) {
+    tibble::tibble(
+      name = c("num_terms"),
+      call_info = list(list(pkg = NULL, fun = "num_terms")),
+      source = "model_spec",
+      component = "ppr_reg",
+      component_id = "main"
+    )
+  }
+
+  # Step 6: add updating function (used by tune::finalize_workflow())
+  update.ppr_reg <- function(object, parameters = NULL, num_terms = NULL, ...) {
+    rlang::check_installed("parsnip")
+    eng_args <- parsnip::update_engine_parameters(object$eng_args, fresh = TRUE, ...)
+    args <- list(num_terms = rlang::enquo(num_terms))
+    args <- parsnip::update_main_parameters(args, parameters)
+    parsnip::new_model_spec(
+      "ppr_reg",
+      args = args,
+      eng_args = eng_args,
+      mode = object$mode,
+      method = NULL,
+      engine = object$engine
+    )
+  }
+```
+We can now test it:
+
+```{r}
+
+data("airquality")
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
+
+x_var <- c("Solar.R", "Wind", "Temp", "Month")
+y_var <- "Ozone"
+
+ind_x_explain <- 1:20
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost::xgboost(
+  data = as.matrix(x_train),
+  label = y_train,
+  nround = 20,
+  verbose = FALSE
+)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+p0 <- mean(y_train)
+
+# Specify that we are using the regression paradigm and the separate method class
+approach <- "regression_separate"
+
+# Compute the Shapley value explanations
+explanation_sep_ppr <- shapr::explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = approach,
+  regression_model = ppr_reg(num_terms = 2) %>% set_engine("ppr") %>% set_mode("regression")
+)
+
+# Compute the Shapley value explanations
+explanation_sep_ppr_cv <- shapr::explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = approach,
+  regression_model = 
+    ppr_reg(num_terms = tune()) %>% set_engine("ppr") %>% set_mode("regression"),
+  regression_tune_values = dials::grid_regular(dials::num_terms(c(1, 4)), levels = 3),
+  regression_vfold_cv_para = list(v = 10)
+)
+
+# Compare the MSEv criterion of the different explanation methods
+shapr::plot_MSEv_eval_crit(list(
+  empirical = explanation_empirical,
+  sep_linear_model = explanation_sep_lm,
+  sep_ppr_model = explanation_sep_ppr,
+  sep_ppr_model_cv = explanation_sep_ppr_cv
+)) +
+  theme(legend.position = "none") # Remove the legend
+```
+
