@@ -18,7 +18,7 @@ which are forwarded from explain()."><!-- mathjax --><script src="https://cdnjs.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
       </span>
     </div>
 
@@ -55,7 +55,7 @@ which are forwarded from explain()."><!-- mathjax --><script src="https://cdnjs.
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Set up the framework chosen approach</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a>, and 5 more</small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a>, and 6 more</small>
     <div class="hidden name"><code>setup_approach.Rd</code></div>
     </div>
 
@@ -114,6 +114,20 @@ which are forwarded from <code><a href="explain.html">explain()</a></code>.</p>
 <span>  <span class="va">internal</span>,</span>
 <span>  timeseries.fixed_sigma_vec <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  timeseries.bounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="cn">NULL</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for vaeac</span></span>
+<span><span class="fu">setup_approach</span><span class="op">(</span></span>
+<span>  <span class="va">internal</span>,</span>
+<span>  vaeac.depth <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  vaeac.width <span class="op">=</span> <span class="fl">32</span>,</span>
+<span>  vaeac.latent_dim <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  vaeac.activation_function <span class="op">=</span> <span class="fu">torch</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/torch/man/nn_relu.html" class="external-link">nn_relu</a></span>,</span>
+<span>  vaeac.lr <span class="op">=</span> <span class="fl">0.001</span>,</span>
+<span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  vaeac.epochs <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -251,10 +265,50 @@ If one or both of these bounds are not NULL, we restrict the sampled time series
 between these bounds.
 This is useful if the underlying time series are scaled between 0 and 1, for example.</p></dd>
 
+
+<dt>vaeac.depth</dt>
+<dd><p>Positive integer (default is <code>3</code>). The number of hidden layers
+in the neural networks of the masked encoder, full encoder, and decoder.</p></dd>
+
+
+<dt>vaeac.width</dt>
+<dd><p>Positive integer (default is <code>32</code>). The number of neurons in each
+hidden layer in the neural networks of the masked encoder, full encoder, and decoder.</p></dd>
+
+
+<dt>vaeac.latent_dim</dt>
+<dd><p>Positive integer (default is <code>8</code>). The number of dimensions in the latent space.</p></dd>
+
+
+<dt>vaeac.activation_function</dt>
+<dd><p>An <code><a href="https://rdrr.io/pkg/torch/man/nn_module.html" class="external-link">torch::nn_module()</a></code> representing an activation function such as, e.g.,
+<code><a href="https://rdrr.io/pkg/torch/man/nn_relu.html" class="external-link">torch::nn_relu()</a></code> (default), <code><a href="https://rdrr.io/pkg/torch/man/nn_leaky_relu.html" class="external-link">torch::nn_leaky_relu()</a></code>, <code><a href="https://rdrr.io/pkg/torch/man/nn_selu.html" class="external-link">torch::nn_selu()</a></code>, or <code><a href="https://rdrr.io/pkg/torch/man/nn_sigmoid.html" class="external-link">torch::nn_sigmoid()</a></code>.</p></dd>
+
+
+<dt>vaeac.lr</dt>
+<dd><p>Positive numeric (default is <code>0.001</code>). The learning rate used in the <code><a href="https://rdrr.io/pkg/torch/man/optim_adam.html" class="external-link">torch::optim_adam()</a></code> optimizer.</p></dd>
+
+
+<dt>vaeac.n_vaeacs_initialize</dt>
+<dd><p>Positive integer (default is <code>4</code>). The number of different vaeac models to initiate
+in the start. Pick the best performing one after <code>vaeac.extra_parameters$epochs_initiation_phase</code>
+epochs (default is <code>2</code>) and continue training that one.</p></dd>
+
+
+<dt>vaeac.epochs</dt>
+<dd><p>Positive integer (default is <code>100</code>). The number of epochs to train the final vaeac model.
+This includes <code>vaeac.extra_parameters$epochs_initiation_phase</code>, where the default is <code>2</code>.</p></dd>
+
+
+<dt>vaeac.extra_parameters</dt>
+<dd><p>Named list with extra parameters to the <code>vaeac</code> approach. See
+<code><a href="vaeac_get_extra_para_default.html">vaeac_get_extra_para_default()</a></code> for description of possible additional parameters and their default values.</p></dd>
+
 </dl></div>
     <div id="author">
     <h2>Author</h2>
     <p>Martin Jullum</p>
+<p>Lars Henry Berge Olsen</p>
     </div>
 
   </div>
@@ -265,7 +319,7 @@ This is useful if the underlying time series are scaled between 0 and 1, for exa
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

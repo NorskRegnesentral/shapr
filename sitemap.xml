@@ -22,6 +22,9 @@
     <loc>https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr/articles/understanding_shapr_vaeac.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr/authors.html</loc>
   </url>
   <url>
@@ -35,6 +38,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/aicc_full_single_cpp.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/categorical_to_one_hot_layer.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/check_groups.html</loc>
@@ -80,6 +86,18 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/finalize_explanation.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/gauss_cat_loss.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/gauss_cat_parameters.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/gauss_cat_sampler_most_likely.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/gauss_cat_sampler_random.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/gaussian_transform.html</loc>
@@ -130,6 +148,12 @@
     <loc>https://norskregnesentral.github.io/shapr/reference/mahalanobis_distance_cpp.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/mcar_mask_generator.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/memory_layer.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/model_checker.html</loc>
   </url>
   <url>
@@ -139,10 +163,16 @@
     <loc>https://norskregnesentral.github.io/shapr/reference/observation_impute_cpp.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/paired_sampler.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/plot.shapr.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/plot_MSEv_eval_crit.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/plot_SV_several_approaches.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/predict_model.html</loc>
@@ -164,6 +194,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/reg_forecast_setup.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/release_questions.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/rss_cpp.html</loc>
@@ -190,7 +223,163 @@
     <loc>https://norskregnesentral.github.io/shapr/reference/shapr-package.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/skip_connection.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/specified_masks_mask_generator.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/specified_prob_mask_generator.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/test_predict_model.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_categorical_parse_params.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_activation_func.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_cuda.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_epoch_values.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_extra_named_list.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_logicals.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_mask_gen.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_masking_ratio.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_parameters.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_positive_integers.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_positive_numerics.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_probabilities.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_save_names.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_save_parameters.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_verbose.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_which_vaeac_model.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_check_x_colnames.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_compute_normalization.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_dataset.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_extend_batch.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_current_save_state.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_data_objects.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_evaluation_criteria.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_extra_para_default.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_full_state_list.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_mask_generator_name.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_model_from_checkp.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_n_decimals.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_optimizer.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_save_file_names.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_val_iwae.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_get_x_explain_extended.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_impute_missing_entries.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_kl_normal_normal.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_normal_parse_params.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_normalize_data.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_plot_eval_crit.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_plot_imputed_ggpairs.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_postprocess_data.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_prep_message_batch.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_preprocess_data.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_print_train_summary.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_save_state.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_train_model.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_train_model_auxiliary.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_train_model_continue.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_update_para_locations.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/vaeac_update_pretrained_model.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/weight_matrix.html</loc>

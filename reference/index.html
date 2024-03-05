@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
       </span>
     </div>
 
@@ -109,6 +109,10 @@
         </td>
         <td><p>Plots of the MSEv Evaluation Criterion</p></td>
       </tr><tr><td>
+          <p><code><a href="plot_SV_several_approaches.html">plot_SV_several_approaches()</a></code> </p>
+        </td>
+        <td><p>Shapley value bar plots for several explanation objects</p></td>
+      </tr><tr><td>
           <p><code><a href="process_factor_data.html">process_factor_data()</a></code> </p>
         </td>
         <td><p>Treat factors as numeric values</p></td>
@@ -116,6 +120,10 @@
           <p><code><a href="reg_forecast_setup.html">reg_forecast_setup()</a></code> </p>
         </td>
         <td><p>Set up exogenous regressors for explanation in a forecast model.</p></td>
+      </tr><tr><td>
+          <p><code><a href="release_questions.html">release_questions()</a></code> </p>
+        </td>
+        <td><p>Auxiliary function for the vaeac vignette</p></td>
       </tr><tr><td>
           <p><code><a href="setup.html">setup()</a></code> </p>
         </td>
@@ -128,6 +136,34 @@
           <p><code><a href="setup_computation.html">setup_computation()</a></code> </p>
         </td>
         <td><p>Sets up everything for the Shapley values computation in <code><a href="../reference/explain.html">explain()</a></code></p></td>
+      </tr><tr><td>
+          <p><code><a href="vaeac_get_data_objects.html">vaeac_get_data_objects()</a></code> </p>
+        </td>
+        <td><p>Function to set up data loaders and save file names</p></td>
+      </tr><tr><td>
+          <p><code><a href="vaeac_get_evaluation_criteria.html">vaeac_get_evaluation_criteria()</a></code> </p>
+        </td>
+        <td><p>Extract the Training VLB and Validation IWAE from a list of explanations objects using the vaeac approach</p></td>
+      </tr><tr><td>
+          <p><code><a href="vaeac_get_extra_para_default.html">vaeac_get_extra_para_default()</a></code> </p>
+        </td>
+        <td><p>Function to specify the extra parameters in the <code>vaeac</code> model</p></td>
+      </tr><tr><td>
+          <p><code><a href="vaeac_plot_eval_crit.html">vaeac_plot_eval_crit()</a></code> </p>
+        </td>
+        <td><p>Plot the training VLB and validation IWAE for <code>vaeac</code> models</p></td>
+      </tr><tr><td>
+          <p><code><a href="vaeac_plot_imputed_ggpairs.html">vaeac_plot_imputed_ggpairs()</a></code> </p>
+        </td>
+        <td><p>Plot Pairwise Plots for Imputed and True Data</p></td>
+      </tr><tr><td>
+          <p><code><a href="vaeac_train_model.html">vaeac_train_model()</a></code> </p>
+        </td>
+        <td><p>Train the Vaeac Model</p></td>
+      </tr><tr><td>
+          <p><code><a href="vaeac_train_model_continue.html">vaeac_train_model_continue()</a></code> </p>
+        </td>
+        <td><p>Continue to Train the vaeac Model</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -137,7 +173,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

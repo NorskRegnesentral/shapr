@@ -18,7 +18,7 @@ model by using the method specified in approach to estimate the conditional expe
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
       </span>
     </div>
 
@@ -119,17 +119,13 @@ It's equal for all observations and set by the user through the argument <code>p
 The difference between the prediction and <code>none</code> is distributed among the other features.
 In theory this value should be the expected prediction without conditioning on any features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable. <code><a href="explain.html">explain()</a></code></p>
-<p></p>
-<p><code><a href="explain.html">explain()</a></code></p>
-
-
+such as the mean of the predictions in the training data are also reasonable.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
     <p>The most important thing to notice is that <code>shapr</code> has implemented six different
 approaches for estimating the conditional distributions of the data, namely <code>"empirical"</code>,
-<code>"gaussian"</code>, <code>"copula"</code>, <code>"ctree"</code>, <code>"categorical"</code>, <code>"timeseries"</code>, and <code>"independence"</code>.
+<code>"gaussian"</code>, <code>"copula"</code>, <code>"ctree"</code>, <code>"vaeac"</code>, <code>"categorical"</code>, <code>"timeseries"</code>, and <code>"independence"</code>.
 In addition, the user also has the option of combining the different approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the <code>"gaussian"</code> approach when you condition on a single feature,
@@ -285,7 +281,7 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

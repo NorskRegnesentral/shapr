@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
       </span>
     </div>
 
@@ -236,9 +236,9 @@ in the ordinary Kernel SHAP framework. <span class="citation">Aas,
 Jullum, and Løland (2021)</span> propose three different approaches for
 estimating the conditional probabilities which are implemented:
 <code>empirical</code>, <code>gaussian</code> and <code>copula</code>.
-The package also implements the method <code>ctree</code> method from
-<span class="citation">Redelmeier, Jullum, and Aas (2020)</span>. The
-original <code>independence</code> approach of <span class="citation">Lundberg and Lee (2017)</span> is also available. The
+The package also implements the <code>ctree</code> method from <span class="citation">Redelmeier, Jullum, and Aas (2020)</span>, and the
+<code>vaeac</code> method from <span class="citation">Olsen et al.
+(2022)</span>. The original <code>independence</code> approach of <span class="citation">Lundberg and Lee (2017)</span> is also available. The
 methods may also be combined, such that e.g. one method is used when
 conditioning on a small number of features, while another method is used
 otherwise.</p>
@@ -364,6 +364,72 @@ Aas (2020)</span> for more details.</p>
 <p>The conditional inference trees are fit using the <em>party</em> and
 <em>partykit</em> packages (<span class="citation">Hothorn and Zeileis
 (2015)</span>).</p>
+<p><a id="vaeac"></a></p>
+</div>
+<div class="section level3">
+<h3 id="variational-autoencoder-with-arbitrary-conditioning-vaeac-approach">Variational AutoEncoder with Arbitrary Conditioning (vaeac)
+Approach<a class="anchor" aria-label="anchor" href="#variational-autoencoder-with-arbitrary-conditioning-vaeac-approach"></a>
+</h3>
+<p>Another approach that supports mixed features is the Variational
+AutoEncoder with Arbitrary Conditioning (<span class="citation">Olsen et
+al. (2022)</span>), abbreviated to <code>vaeac</code>. The
+<code>vaeac</code> is an extension of the regular variational
+autoencoder (<span class="citation">Kingma and Welling (2014)</span>),
+but instead of giving a probabilistic representation of the distribution
+<span class="math inline">\(p(\boldsymbol{x})\)</span> it gives a
+probabilistic representation of the conditional distribution <span class="math inline">\(p(\boldsymbol{x}_{\bar{\mathcal{S}}} \mid
+\boldsymbol{x}_{\mathcal{S}})\)</span>, for all possible feature subsets
+<span class="math inline">\(\mathcal{S}\subseteq\mathcal{M}\)</span>
+simultaneously, where <span class="math inline">\(\mathcal{M}\)</span>
+is the set of all features. That is, only a single <code>vaeac</code>
+model is needed to model all conditional distributions.</p>
+<p>The <code>vaeac</code> consists of three neural networks: a <em>full
+encoder</em>, a <em>masked encoder</em>, and a <em>decoder</em>. The
+encoders map the full and masked/conditional input representations,
+i.e., <span class="math inline">\(\boldsymbol{x}\)</span> and <span class="math inline">\(\boldsymbol{x}_{\mathcal{S}}\)</span>,
+respectively, to latent probabilistic representations. Sampled instances
+from this latent probabilistic representations are sent to the decoder,
+which maps them back to the feature space and provides a samplable
+probabilistic representation for the unconditioned features <span class="math inline">\(\boldsymbol{x}_{\bar{\mathcal{S}}}\)</span>. The
+full encoder is only used during the training phase of the
+<code>vaeac</code> model to guide the training process of the masked
+encoder, as the former relies on the full input sample <span class="math inline">\(\boldsymbol{x}\)</span>, which is not accessible
+in the deployment phase (when we generate the Monte Carlo samples), as
+we only have access to <span class="math inline">\(\boldsymbol{x}_{\mathcal{S}}\)</span>. The
+networks are trained by minimizing a variational lower bound, and see
+Section 3 in <span class="citation">Olsen et al. (2022)</span> for an
+in-depth introduction to the <code>vaeac</code> methodology. We use the
+<code>vaeac</code> model at the epoch which obtains the lowest
+validation IWAE score to generate the Monte Carlo samples used in the
+Shapley value computations.</p>
+<p>We fit the <code>vaeac</code> model using the <em>torch</em> package
+in <span class="math inline">\(\textsf{R}\)</span> (<span class="citation">Falbel and Luraschi (2023)</span>). The main parameters
+are the the number of layers in the networks (<code>vaeac.depth</code>),
+the width of the layers (<code>vaeac.width</code>), the number of
+dimensions in the latent space (<code>vaeac.latent_dim</code>), the
+activation function between the layers in the networks
+(<code>vaeac.activation_function</code>), the learning rate in the ADAM
+optimizer (<code>vaeac.lr</code>), the number of <code>vaeac</code>
+models to initiate to remedy poorly initiated model parameter values
+(<code>vaeac.n_vaeacs_initialize</code>), and the number of learning
+epochs (<code>vaeac.epochs</code>). Call
+<code><a href="../reference/setup_approach.html">?shapr::setup_approach.vaeac</a></code> for a more detailed
+description of the parameters.</p>
+<p>There are additional extra parameters which can be set by including a
+named list in the call to the <code><a href="../reference/explain.html">explain()</a></code> function. For
+example, we can the change the batch size to 32 by including
+<code>vaeac.extra_parameters = list(vaeac.batch_size = 32)</code> as a
+parameter in the call the <code><a href="../reference/explain.html">explain()</a></code> function. See
+<code><a href="../reference/vaeac_get_extra_para_default.html">?shapr::vaeac_get_extra_para_default</a></code> for a description of
+the possible extra parameters to the <code>vaeac</code> approach. We
+strongly encourage the user to specify the main and extra parameters to
+the <code>vaeac</code> approach at the correct place in the call to the
+<code><a href="../reference/explain.html">explain()</a></code> function. That is, the main parameters are
+directly entered to the <code><a href="../reference/explain.html">explain()</a></code> function, while the extra
+parameters are included in a named list called
+<code>vaeac.extra_parameters</code>. However, the <code>vaeac</code>
+approach will try to correct for misplaced and duplicated parameters and
+give warnings to the user.</p>
 </div>
 <div class="section level3">
 <h3 id="categorical-approach">Categorical Approach<a class="anchor" aria-label="anchor" href="#categorical-approach"></a>
@@ -407,10 +473,11 @@ is trained using the <code>airquality</code> dataset, and how
 <code>shapr</code> can be used to explain the individual predictions.
 Note that the empirical conditional distribution approach is the default
 (i.e. <code>approach = "empirical"</code>). The Gaussian, Gaussian
-copula, ctree or independence approaches can be used instead by setting
-the argument <code>approach</code> to either <code>"gaussian"</code>,
-<code>"copula"</code>, <code>"ctree"</code>, <code>"categorical"</code>
-or <code>"independence"</code> in the code below.</p>
+copula, ctree, vaeac, or independence approaches can be used instead by
+setting the argument <code>approach</code> to either
+<code>"gaussian"</code>, <code>"copula"</code>, <code>"ctree"</code>,
+<code>"vaeac"</code>, <code>"categorical"</code> or
+<code>"independence"</code> in the code below.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
@@ -447,22 +514,26 @@ or <code>"independence"</code> in the code below.</p>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span></span>
 <span><span class="co"># Printing the Shapley values for the test data.</span></span>
 <span><span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        none    Solar.R      Wind      Temp      Month</span></span>
-<span><span class="co">#&gt;       &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 43.08571 13.2117337  4.785645 -25.57222  -5.599230</span></span>
-<span><span class="co">#&gt; 2: 43.08571 -9.9727747  5.830694 -11.03873  -7.829954</span></span>
-<span><span class="co">#&gt; 3: 43.08571 -2.2916185 -7.053393 -10.15035  -4.452481</span></span>
-<span><span class="co">#&gt; 4: 43.08571  3.3254595 -3.240879 -10.22492  -6.663488</span></span>
-<span><span class="co">#&gt; 5: 43.08571  4.3039571 -2.627764 -14.15166 -12.266855</span></span>
-<span><span class="co">#&gt; 6: 43.08571  0.4786417 -5.248686 -12.55344  -6.645738</span></span>
+<span><span class="co">#&gt;      none  Solar.R    Wind    Temp    Month</span></span>
+<span><span class="co">#&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;   &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 43.086 13.21173  4.7856 -25.572  -5.5992</span></span>
+<span><span class="co">#&gt; 2: 43.086 -9.97277  5.8307 -11.039  -7.8300</span></span>
+<span><span class="co">#&gt; 3: 43.086 -2.29162 -7.0534 -10.150  -4.4525</span></span>
+<span><span class="co">#&gt; 4: 43.086  3.32546 -3.2409 -10.225  -6.6635</span></span>
+<span><span class="co">#&gt; 5: 43.086  4.30396 -2.6278 -14.152 -12.2669</span></span>
+<span><span class="co">#&gt; 6: 43.086  0.47864 -5.2487 -12.553  -6.6457</span></span>
 <span></span>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-2-1.png"></p>
 <p>There are multiple plot options specified by the
 <code>plot_type</code> argument in <code>plot</code>. The
 <code>waterfall</code> option shows the changes in the prediction score
@@ -473,7 +544,7 @@ due to each features contribution (their Shapley values):</p>
 due to each features contribution (their Shapley values):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span>, plot_type <span class="op">=</span> <span class="st">"waterfall"</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-3-1.png"></p>
 <p>The other two plot options, <code>"beeswarm"</code> and
 <code>"scatter"</code>, can be useful when you have many observations
 that you want to explain. For the purpose of illustration, we explain
@@ -491,17 +562,22 @@ the points are colored by the feature value of that instance:</p>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_plot</span>, plot_type <span class="op">=</span> <span class="st">"beeswarm"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-4-1.png"></p>
 <p>The <code>plot_type = "scatter"</code> plots the feature values on
 the x-axis and Shapley values on the y-axis, as well as (optionally) a
 background scatter_hist showing the distribution of the feature
 data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_plot</span>, plot_type <span class="op">=</span> <span class="st">"scatter"</span>, scatter_hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-5-1.png"></p>
 <p>We can use mixed (i.e continuous, categorical, ordinal) data with
-ctree. Use ctree with mixed data in the following manner:</p>
+<code>ctree</code> or <code>vaeac</code>. Use <code>ctree</code> with
+mixed data in the following manner:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># convert the month variable to a factor</span></span>
 <span><span class="va">data</span><span class="op">[</span>, <span class="va">Month_factor</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">Month</span><span class="op">)</span><span class="op">]</span></span>
@@ -528,11 +604,13 @@ ctree. Use ctree with mixed data in the following manner:</p>
 <span>  approach <span class="op">=</span> <span class="st">"ctree"</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span></span>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span></span>
 <span><span class="co"># the no-covariate effect</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_lm_cat</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-6-1.png"></p>
 <p>We can specify parameters used to build the conditional inference
 trees in the following manner. Default values are based on <span class="citation">Hothorn, Hornik, and Zeileis (2006)</span>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -549,6 +627,8 @@ trees in the following manner. Default values are based on <span class="citation
 <span>  ctree.minsplit <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  ctree.minbucket <span class="op">=</span> <span class="fl">20</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span><span class="co"># Default parameters (based on (Hothorn, 2006)) are:</span></span>
 <span><span class="co"># mincriterion = 0.95</span></span>
 <span><span class="co"># minsplit = 20</span></span>
@@ -582,7 +662,9 @@ categorical approach as follows:</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train_all_cat</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"categorical"</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span></code></pre></div>
 <p>Shapley values can be used to explain any predictive model. For
 predictive models taking time series as input,
 <code>approach='timeseries'</code> can be used. In such models, joint
@@ -642,7 +724,9 @@ bounds of the time series if necessary).</p>
 <span>  approach <span class="op">=</span> <span class="st">"timeseries"</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0_ts</span>,</span>
 <span>  group <span class="op">=</span> <span class="va">group_ts</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="msev-evaluation-criterion">MSEv evaluation criterion<a class="anchor" aria-label="anchor" href="#msev-evaluation-criterion"></a>
 </h3>
@@ -784,6 +868,8 @@ combining them into lists.</p>
 <span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
 <span></span>
 <span><span class="co"># Empirical approach</span></span>
 <span><span class="va">explanation_empirical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -796,6 +882,8 @@ combining them into lists.</p>
 <span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
 <span></span>
 <span><span class="co"># Gaussian 1e1 approach</span></span>
 <span><span class="va">explanation_gaussian_1e1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -808,6 +896,8 @@ combining them into lists.</p>
 <span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
 <span></span>
 <span><span class="co"># Gaussian 1e2 approach</span></span>
 <span><span class="va">explanation_gaussian_1e2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -820,6 +910,8 @@ combining them into lists.</p>
 <span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
 <span></span>
 <span><span class="co"># Combined approach</span></span>
 <span><span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -832,6 +924,8 @@ combining them into lists.</p>
 <span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
 <span></span>
 <span><span class="co"># Create a list of explanations with names</span></span>
 <span><span class="va">explanation_list_named</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -853,8 +947,7 @@ criterion.</p>
 <span></span>
 <span><span class="co"># 5 plots are made</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">MSEv_plots</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"  </span></span>
-<span><span class="co">#&gt; [3] "MSEv_combination_bar"        "MSEv_combination_line_point"</span></span>
+<span><span class="co">#&gt; [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"   "MSEv_combination_bar"        "MSEv_combination_line_point"</span></span>
 <span><span class="co">#&gt; [5] "MSEv_bar"</span></span></code></pre></div>
 <p>The main plot if interest is the <code>MSEv_bar</code>, which
 displays the <span class="math inline">\(\operatorname{MSE}_{v}\)</span>
@@ -865,17 +958,17 @@ observations or the combinations (both as bar and line plots).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The main plot of the overall MSEv averaged over both the combinations and observations</span></span>
 <span><span class="va">MSEv_plots</span><span class="op">$</span><span class="va">MSEv_bar</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-12-1.png"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># The MSEv averaged over only the explicands for each combinations</span></span>
 <span><span class="va">MSEv_plots</span><span class="op">$</span><span class="va">MSEv_combination_bar</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-2.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-12-2.png"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># The MSEv averaged over only the combinations for each observation/explicand</span></span>
 <span><span class="va">MSEv_plots</span><span class="op">$</span><span class="va">MSEv_explicand_bar</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-3.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-12-3.png"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># To see which coalition S each of the `id_combination` corresponds to,</span></span>
@@ -908,22 +1001,20 @@ observations and combinations, respectively.</p>
 <span>  index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>,</span>
 <span>  CI_level <span class="op">=</span> <span class="fl">0.95</span></span>
 <span><span class="op">)</span><span class="op">$</span><span class="va">MSEv_explicand_bar</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-13-1.png"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list_named</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"comb"</span>,</span>
 <span>  id_combination <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">9</span>, <span class="fl">13</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span>,</span>
 <span>  CI_level <span class="op">=</span> <span class="fl">0.95</span></span>
-<span><span class="op">)</span><span class="op">$</span><span class="va">MSEv_combination_bar</span></span>
-<span><span class="co">#&gt; NULL</span></span></code></pre></div>
+<span><span class="op">)</span><span class="op">$</span><span class="va">MSEv_combination_bar</span></span></code></pre></div>
+<p><img src="figure_main/unnamed-chunk-13-2.png"></p>
 <p>We can also alter the plots design-wise as we do in the code
 below.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bar_text_n_decimals</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">CI_level</span> <span class="op">&lt;-</span> <span class="fl">0.95</span></span>
-<span><span class="va">MSEv_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list_named</span>, CI_level <span class="op">=</span> <span class="va">CI_level</span><span class="op">)</span><span class="op">$</span><span class="va">MSEv_bar</span></span>
-<span><span class="va">MSEv_plot</span> <span class="op">+</span></span>
-<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">MSEv_plot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">Method</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list_named</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">MSEv_plots</span><span class="op">$</span><span class="va">MSEv_bar</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">Method</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Paired"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="co"># This must be set before other theme calls</span></span>
@@ -942,7 +1033,7 @@ below.</p>
 <span>    position <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html" class="external-link">position_dodge</a></span><span class="op">(</span><span class="fl">0.9</span><span class="op">)</span>,</span>
 <span>    size <span class="op">=</span> <span class="fl">4</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-14-1.png"></p>
 </div>
 </div>
 <div class="section level3">
@@ -1056,6 +1147,10 @@ rather than each lag of each variable. This can be done by setting
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0_ar</span>,</span>
 <span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature names extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Consistency checks between model and data is therefore disabled.</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span><span class="va">explanation_forecast</span></span>
 <span><span class="co">#&gt;    explain_idx horizon    none     Y.1      Y.2</span></span>
 <span><span class="co">#&gt;          &lt;int&gt;   &lt;int&gt;   &lt;num&gt;   &lt;num&gt;    &lt;num&gt;</span></span>
@@ -1093,7 +1188,7 @@ this forecast starts from index 153.</p>
 <span><span class="co">#&gt; Start = 154 </span></span>
 <span><span class="co">#&gt; End = 155 </span></span>
 <span><span class="co">#&gt; Frequency = 1 </span></span>
-<span><span class="co">#&gt; [1] 71.08111 71.52445</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 71.081 71.524</span></span></code></pre></div>
 <p>First, we pass the model and the data as <code>model</code> and
 <code>y</code>. Since we have an AR(2) model, we want to explain the
 forecasts in terms of the two previous lags, whihc we specify with
@@ -1131,6 +1226,8 @@ separately.</p>
 <span>  n_batches <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  timing <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature names extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Consistency checks between model and data is therefore disabled.</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    explain_idx horizon  none Temp.1  Temp.2</span></span>
@@ -1164,7 +1261,7 @@ the prediction phase.</p>
 <span><span class="co">#&gt; Start = 152 </span></span>
 <span><span class="co">#&gt; End = 153 </span></span>
 <span><span class="co">#&gt; Frequency = 1 </span></span>
-<span><span class="co">#&gt; [1] 77.49992 76.38062</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 77.500 76.381</span></span></code></pre></div>
 <p>The <code>shapr</code> package can then explain not only the two
 autoregressive lags, but also the single lag of the exogenous regressor.
 In order to do so, the <code>Wind</code> variable is passed as the
@@ -1190,16 +1287,14 @@ during the forecasting period.</p>
 <span>  n_batches <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  timing <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature names extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Consistency checks between model and data is therefore disabled.</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    explain_idx horizon     none     Temp.1     Temp.2    Wind.1   Wind.F1</span></span>
-<span><span class="co">#&gt;          &lt;num&gt;   &lt;num&gt;    &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:         151       1 77.96026 -0.6779272 -0.6734041 -1.268789 0.4934084</span></span>
-<span><span class="co">#&gt; 2:         151       2 77.96026  0.3996832 -0.5005937 -1.465464 0.0659129</span></span>
-<span><span class="co">#&gt;       Wind.F2</span></span>
-<span><span class="co">#&gt;         &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:         NA</span></span>
-<span><span class="co">#&gt; 2: -0.4742238</span></span></code></pre></div>
+<span><span class="co">#&gt;    explain_idx horizon  none   Temp.1   Temp.2  Wind.1  Wind.F1  Wind.F2</span></span>
+<span><span class="co">#&gt;          &lt;num&gt;   &lt;num&gt; &lt;num&gt;    &lt;num&gt;    &lt;num&gt;   &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:         151       1 77.96 -0.67793 -0.67340 -1.2688 0.493408       NA</span></span>
+<span><span class="co">#&gt; 2:         151       2 77.96  0.39968 -0.50059 -1.4655 0.065913 -0.47422</span></span></code></pre></div>
 <p><a id="advanced"></a></p>
 <p><br></p>
 </div>
@@ -1213,7 +1308,7 @@ during the forecasting period.</p>
 </h3>
 <p>In addition to letting the user select one of the five aforementioned
 approaches for estimating the conditional distribution of the data (i.e.
-<code>approach</code> equals either <a href="#gaussian"><code>"gaussian"</code></a>, <a href="#copula"><code>"copula"</code></a>, <a href="#empirical"><code>"empirical"</code></a>, <a href="#ctree"><code>"ctree"</code></a>, <a href="#categorical"><code>"categorical"</code></a>) or
+<code>approach</code> equals either <a href="#gaussian"><code>"gaussian"</code></a>, <a href="#copula"><code>"copula"</code></a>, <a href="#empirical"><code>"empirical"</code></a>, <a href="#ctree"><code>"ctree"</code></a>, <a href="#vaeac"><code>"vaeac"</code></a>, <a href="#categorical"><code>"categorical"</code></a>) or
 <code>"timeseries"</code>, the package allows the user to combine the
 given approaches. To simplify the usage, the flexibility is restricted
 such that the same approach is used when conditioning on the same number
@@ -1245,12 +1340,16 @@ features.</p>
 <span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"empirical"</span>, <span class="st">"copula"</span>, <span class="st">"gaussian"</span><span class="op">)</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span></span>
 <span><span class="co"># the no-covariate effect</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-20-1.png" width="672"></p>
-<p>As a second example using <code>"ctree"</code> to conditin on 1 and 2
-features, and <code>"empirical"</code> when conditioning on 3
+<p><img src="figure_main/unnamed-chunk-20-1.png"></p>
+<p>As a second example using <code>"ctree"</code> to condition on 1 and
+2 features, and <code>"empirical"</code> when conditioning on 3
 features:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use the combined approach</span></span>
@@ -1260,7 +1359,11 @@ features:</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ctree"</span>, <span class="st">"ctree"</span>, <span class="st">"empirical"</span><span class="op">)</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="explain-groups-of-features">Explain groups of features<a class="anchor" aria-label="anchor" href="#explain-groups-of-features"></a>
@@ -1287,6 +1390,10 @@ easy using <code>shapr</code>:</p>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
 <span>  group <span class="op">=</span> <span class="va">group_list</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span><span class="co"># Prints the group-wise explanations</span></span>
 <span><span class="va">explanation_group</span></span>
 <span><span class="co">#&gt;      none       A        B</span></span>
@@ -1319,7 +1426,7 @@ easy using <code>shapr</code>:</p>
 <span><span class="co">#&gt;      none       A        B</span></span>
 <span><span class="co"># Plots the group-wise explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_group</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">TRUE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-22-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-22-1.png"></p>
 </div>
 <div class="section level3">
 <h3 id="explain-custom-models">Explain custom models<a class="anchor" aria-label="anchor" href="#explain-custom-models"></a>
@@ -1375,8 +1482,6 @@ these functions and a minimal version which skips the
 to the same airquality data set as used above.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gbm-developers/gbm" class="external-link">gbm</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loaded gbm 2.1.9</span></span>
-<span><span class="co">#&gt; This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3</span></span>
 <span></span>
 <span><span class="va">formula_gbm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="st">"~"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x_var</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Fitting a gbm model</span></span>
@@ -1430,7 +1535,7 @@ to the same airquality data set as used above.</p>
 <span></span>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-23-1.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-23-1.png"></p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span></span>
@@ -1454,14 +1559,122 @@ to the same airquality data set as used above.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().</span></span>
 <span><span class="co">#&gt; Consistency checks between model and data is therefore disabled.</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
 <span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span></span>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom_minimal</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-23-2.png" width="672"></p>
+<p><img src="figure_main/unnamed-chunk-23-2.png"></p>
+</div>
+<div class="section level3">
+<h3 id="the-parameters-of-the-vaeac-approach">The parameters of the <code>vaeac</code> approach<a class="anchor" aria-label="anchor" href="#the-parameters-of-the-vaeac-approach"></a>
+</h3>
+<p>The <code>vaeac</code> approach is a very flexible method that
+supports mixed data. The main parameters are the the number of layers in
+the networks (<code>vaeac.depth</code>), the width of the layers
+(<code>vaeac.width</code>), the number of dimensions in the latent space
+(<code>vaeac.latent_dim</code>), the activation function between the
+layers in the networks (<code>vaeac.activation_function</code>), the
+learning rate in the ADAM optimizer (<code>vaeac.lr</code>), the number
+of <code>vaeac</code> models to initiate to remedy poorly initiated
+model parameter values (<code>vaeac.n_vaeacs_initialize</code>), and the
+number of learning epochs (<code>vaeac.epochs</code>). Call
+<code><a href="../reference/setup_approach.html">?shapr::setup_approach.vaeac</a></code> for a more detailed
+description of the parameters.</p>
+<p>There are additional extra parameters which can be set by including a
+named list in the call to the <code><a href="../reference/explain.html">explain()</a></code> function. For
+example, we can the change the batch size to 32 by including
+<code>vaeac.extra_parameters = list(vaeac.batch_size = 32)</code> as a
+parameter in the call the <code><a href="../reference/explain.html">explain()</a></code> function. See
+<code><a href="../reference/vaeac_get_extra_para_default.html">?shapr::vaeac_get_extra_para_default</a></code> for a description of
+the possible extra parameters to the <code>vaeac</code> approach. We
+strongly encourage the user to specify the main and extra parameters to
+the <code>vaeac</code> approach at the correct place in the call to the
+<code><a href="../reference/explain.html">explain()</a></code> function. That is, the main parameters are
+directly entered to the <code><a href="../reference/explain.html">explain()</a></code> function, while the extra
+parameters are included in a named list called
+<code>vaeac.extra_parameters</code>. However, the <code>vaeac</code>
+approach will try to correct for misplaced and duplicated parameters and
+give warnings to the user.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">explanation_vaeac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
+<span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  n_samples <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  vaeac.width <span class="op">=</span> <span class="fl">16</span>,</span>
+<span>  vaeac.depth <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  vaeac.epochs <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span></code></pre></div>
+<p>Can look at the training and validation error for the trained
+<code>vaeac</code> model and see that <code>vaeac.epochs = 3</code> is
+likely to few epochs as it still seems like the <code>vaeac</code> model
+is learning.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Look at the training and validation errors.</span></span>
+<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure_main/vaeac-plot-1-1.png"></p>
+<div class="section level4">
+<h4 id="early-stopping">Early stopping<a class="anchor" aria-label="anchor" href="#early-stopping"></a>
+</h4>
+<p>If we are uncertain about the choice of <code>vaeac.epochs</code>, we
+can rather use <code>vaeac</code> with early stopping. We will then set
+<code>vaeac.epochs</code> to a large number which will act as a maximum
+number of allowed epochs and in the <code>vaeac.extra_parameters</code>
+list, we set <code>vaeac.epochs_early_stopping</code> the number of
+epochs we allow the <code>vaeac</code> model to not improve its
+validation score. That is, if
+<code>vaeac.epochs_early_stopping = 2</code>, then <code>vaeac</code>
+will stop the training procedure if there has been no improvement in the
+validation score for <code>2</code> consecutive epochs, of if
+<code>vaeac.epochs</code> is reached. Note that if using early stopping
+and progress updates simultaneously, then the estimated timer remaining
+will obviously be incorrect if early stopping is applied. Furthermore, a
+value of <code>2</code> is too low for real world applications, but we
+set it so low here to make the vignette faster to build.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">explanation_vaeac_early_stop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
+<span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  n_samples <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  vaeac.width <span class="op">=</span> <span class="fl">16</span>,</span>
+<span>  vaeac.depth <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  vaeac.epochs <span class="op">=</span> <span class="fl">1000</span>, <span class="co"># Set it to a large number</span></span>
+<span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vaeac.epochs_early_stopping <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
+<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span></code></pre></div>
+<p>Can compare with the previous version and see that the results are
+more stable now.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Look at the training and validation errors.</span></span>
+<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span>, <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">explanation_vaeac_early_stop</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure_main/vaeac-plot-2-1.png"></p>
+<p>Can also compare the <span class="math inline">\(MSE_{v}\)</span>
+evaluation scores.</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span>, <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">explanation_vaeac_early_stop</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure_main/vaeac-plot-3-1.png"></p>
 <p><a id="scalability"></a></p>
 <p><br></p>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -1493,7 +1706,7 @@ on <code>n_combinations</code> and <code>approach</code>. The
 memory/computation time trade-off is most apparent for models with more
 than say 6-7 features. Below we a basic example where
 <code>n_batches=10</code>:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -1501,7 +1714,9 @@ than say 6-7 features. Below we a basic example where
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
 <span>  n_batches <span class="op">=</span> <span class="fl">10</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="parallelized-computation">Parallelized computation<a class="anchor" aria-label="anchor" href="#parallelized-computation"></a>
@@ -1519,15 +1734,15 @@ updates for the parallelized task (see below).</p>
 processes/machines when running in parallel, it is not always
 preferrable to run <code><a href="../reference/explain.html">shapr::explain()</a></code> in parallel, at least
 not with many parallel sessions (hereby called
-<strong>workers</strong>). Parallelizatiob also increases the memory
+<strong>workers</strong>). Parallelization also increases the memory
 consumption proportionally, so you want to limit the number of workers
 for that reason too. In a future version of <code>shapr</code> we will
 provide experienced based automatic selection of the number of workers.
-In the meanwhile, this is all lef to the user, and we advice that
+In the meanwhile, this is all let to the user, and we advice that
 <code>n_batches</code> equals some positive integer multiplied by the
 number of workers. Below is a basic example of a parallelization with
 two workers.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -1539,6 +1754,8 @@ two workers.</p>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
 <span>  n_batches <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
 <span></span>
 <span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span> <span class="co"># To return to non-parallel computation</span></span></code></pre></div>
 </div>
@@ -1547,11 +1764,11 @@ two workers.</p>
 </h3>
 <p><code>shapr</code> provides progress updates of the computation of
 the Shapley values through the R-package <code>progressr</code>. This
-gives the user full control over the visual apperance of the progress
-updates, and also intergrates seemlessly with the parallelization
+gives the user full control over the visual appearance of the progress
+updates, and also integrates seamlessly with the parallelization
 framework <code>future</code> used by <code>shapr</code> (see above).
 Note that the progress is updated as the batches are completed, meaning
-that if you have choosen <code>n_batches=1</code>, you will not get
+that if you have chosen <code>n_batches=1</code>, you will not get
 intermediate updates, while if you set <code>n_batches=10</code> you
 will get updates on every 10% of the computation.</p>
 <p>Progress updates are enabled for the current R-session by running the
@@ -1560,7 +1777,7 @@ command <code>progressr::handlers(local=TRUE)</code>, before calling
 call to <code><a href="../reference/explain.html">shapr::explain()</a></code>, one can wrap the call using
 <code><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">progressr::with_progress</a></code> as follows:
 <code>progressr::with_progress({ shapr::explain() })</code> The default
-appearence of the progress updates is a basic ASCII-based horizontal
+appearance of the progress updates is a basic ASCII-based horizontal
 progress bar. Other variants can be chosen by passing different strings
 to <code><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">progressr::handlers()</a></code>, some of which require additional
 packages. If you are using Rstudio, the progress can be displayed
@@ -1576,7 +1793,7 @@ options available with <code>progressr</code>, see the
 <code>progressr</code> <a href="https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html" class="external-link">vignette</a>.
 A full code example of using <code>progressr</code> with
 <code>shapr</code> is shown below:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span>global <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># If no progression handler is specified, the txtprogressbar is used</span></span>
@@ -1593,6 +1810,7 @@ A full code example of using <code>progressr</code> with
 <span>  n_batches <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span><span class="st">"progress"</span><span class="op">)</span></span>
 <span><span class="co">#| [=================================&gt;----------------------]  60% Estimating v(S)</span></span></code></pre></div>
 <p><a id="compare"></a></p>
 <p><br></p>
@@ -1634,7 +1852,7 @@ the Python <code>shap</code> library.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-aas2019explaining" class="csl-entry">
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. <span>“Explaining
 Individual Predictions When Features Are Dependent: More Accurate
@@ -1645,6 +1863,10 @@ Intelligence</span></em> 298.
 Covert, Ian, Scott M Lundberg, and Su-In Lee. 2020. <span>“Understanding
 Global Feature Contributions with Additive Importance Measures.”</span>
 <em>Advances in Neural Information Processing Systems</em> 33: 17212–23.
+</div>
+<div id="ref-torch" class="csl-entry">
+Falbel, Daniel, and Javier Luraschi. 2023. <em>Torch: Tensors and Neural
+Networks with ’GPU’ Acceleration</em>. <a href="https://CRAN.R-project.org/package=torch" class="external-link">https://CRAN.R-project.org/package=torch</a>.
 </div>
 <div id="ref-frye2020shapley" class="csl-entry">
 Frye, Christopher, Damien de Mijolla, Tom Begley, Laurence Cowton, Megan
@@ -1669,6 +1891,12 @@ Jullum, Martin, Annabelle Redelmeier, and Kjersti Aas. 2021.
 Practical Perspective.”</span> In <em>Proceedings of the 2nd Italian
 Workshop on Explainable Artificial Intelligence</em>, 28–43. CEUR
 Workshop Proceedings.
+</div>
+<div id="ref-kingma2014autoencoding" class="csl-entry">
+Kingma, Diederik P., and Max Welling. 2014. <span>“<span>Auto-Encoding
+Variational Bayes</span>.”</span> In <em>2nd International Conference on
+Learning Representations, <span>ICLR</span> 2014, Banff, AB, Canada,
+April 14-16, 2014, Conference Track Proceedings</em>.
 </div>
 <div id="ref-lundberg2017unified" class="csl-entry">
 Lundberg, Scott M, and Su-In Lee. 2017. <span>“A Unified Approach to
@@ -1720,7 +1948,7 @@ Games</span></em> 2: 307–17.
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+<p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

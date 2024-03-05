@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
       </span>
     </div>
 
@@ -87,6 +87,7 @@
 <span>  explain_xreg_lags <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_lags <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">timing</span>,</span>
+<span>  <span class="va">verbose</span>,</span>
 <span>  is_python <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -107,8 +108,8 @@ Contains the the features, whose predictions ought to be explained.</p></dd>
 
 <dt>approach</dt>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
-All elements should,
-either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"categorical"</code>, <code>"timeseries"</code>, or <code>"independence"</code>.
+All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
+<code>"categorical"</code>, <code>"timeseries"</code>, or <code>"independence"</code>.
 See details for more information.</p></dd>
 
 
@@ -250,6 +251,13 @@ If <code>FALSE</code> all lags of each variable are explained individually.</p><
 Whether the timing of the different parts of the <code><a href="explain.html">explain()</a></code> should saved in the model object.</p></dd>
 
 
+<dt>verbose</dt>
+<dd><p>An integer specifying the level of verbosity. If <code>0</code>, <code>shapr</code> will stay silent.
+If <code>1</code>, it will print information about performance. If <code>2</code>, some additional information will be printed out.
+Use <code>0</code> (default) for no verbosity, <code>1</code> for low verbose, and <code>2</code> for high verbose.
+TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.</p></dd>
+
+
 <dt>is_python</dt>
 <dd><p>Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via <code><a href="explain.html">explain()</a></code> in R. The parameter is later used to disallow
@@ -269,7 +277,7 @@ running the AICc-versions of the empirical as that requires data based optimizat
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

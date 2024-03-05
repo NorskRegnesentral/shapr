@@ -18,7 +18,7 @@ model by using the method specified in approach to estimate the conditional expe
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
       </span>
     </div>
 
@@ -86,6 +86,7 @@ model by using the method specified in approach to estimate the conditional expe
 <span>  predict_model <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  get_model_specs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  timing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -145,8 +146,8 @@ The forecast horizon to explain. Passed to the <code>predict_model</code> functi
 
 <dt>approach</dt>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
-All elements should,
-either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"categorical"</code>, <code>"timeseries"</code>, or <code>"independence"</code>.
+All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
+<code>"categorical"</code>, <code>"timeseries"</code>, or <code>"independence"</code>.
 See details for more information.</p></dd>
 
 
@@ -244,8 +245,15 @@ Can also be used to override the default function for natively supported model c
 Whether the timing of the different parts of the <code><a href="explain.html">explain()</a></code> should saved in the model object.</p></dd>
 
 
+<dt>verbose</dt>
+<dd><p>An integer specifying the level of verbosity. If <code>0</code>, <code>shapr</code> will stay silent.
+If <code>1</code>, it will print information about performance. If <code>2</code>, some additional information will be printed out.
+Use <code>0</code> (default) for no verbosity, <code>1</code> for low verbose, and <code>2</code> for high verbose.
+TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.</p></dd>
+
+
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="setup_approach.html">setup_approach.empirical</a></code>, <code><a href="setup_approach.html">setup_approach.independence</a></code>, <code><a href="setup_approach.html">setup_approach.gaussian</a></code>, <code><a href="setup_approach.html">setup_approach.copula</a></code>, <code><a href="setup_approach.html">setup_approach.ctree</a></code>, <code><a href="setup_approach.html">setup_approach.categorical</a></code>, <code><a href="setup_approach.html">setup_approach.timeseries</a></code></p><dl><dt><code>empirical.type</code></dt>
+<dd><p>Arguments passed on to <code><a href="setup_approach.html">setup_approach.empirical</a></code>, <code><a href="setup_approach.html">setup_approach.independence</a></code>, <code><a href="setup_approach.html">setup_approach.gaussian</a></code>, <code><a href="setup_approach.html">setup_approach.copula</a></code>, <code><a href="setup_approach.html">setup_approach.ctree</a></code>, <code><a href="setup_approach.html">setup_approach.vaeac</a></code>, <code><a href="setup_approach.html">setup_approach.categorical</a></code>, <code><a href="setup_approach.html">setup_approach.timeseries</a></code></p><dl><dt><code>empirical.type</code></dt>
 <dd><p>Character. (default = <code>"fixed_sigma"</code>)
 Should be equal to either <code>"independence"</code>,<code>"fixed_sigma"</code>, <code>"AICc_each_k"</code> <code>"AICc_full"</code>.
 TODO: Describe better what the methods do here.</p></dd>
@@ -320,6 +328,37 @@ the method will sample <code>n_samples</code> observations (with replacement).
 This means that there will always be sampling in the leaf unless
 <code>sample</code> = FALSE AND the number of obs in the node is less than <code>n_samples</code>.</p></dd>
 
+    <dt><code>vaeac.depth</code></dt>
+<dd><p>Positive integer (default is <code>3</code>). The number of hidden layers
+in the neural networks of the masked encoder, full encoder, and decoder.</p></dd>
+
+    <dt><code>vaeac.width</code></dt>
+<dd><p>Positive integer (default is <code>32</code>). The number of neurons in each
+hidden layer in the neural networks of the masked encoder, full encoder, and decoder.</p></dd>
+
+    <dt><code>vaeac.latent_dim</code></dt>
+<dd><p>Positive integer (default is <code>8</code>). The number of dimensions in the latent space.</p></dd>
+
+    <dt><code>vaeac.lr</code></dt>
+<dd><p>Positive numeric (default is <code>0.001</code>). The learning rate used in the <code><a href="https://rdrr.io/pkg/torch/man/optim_adam.html" class="external-link">torch::optim_adam()</a></code> optimizer.</p></dd>
+
+    <dt><code>vaeac.activation_function</code></dt>
+<dd><p>An <code><a href="https://rdrr.io/pkg/torch/man/nn_module.html" class="external-link">torch::nn_module()</a></code> representing an activation function such as, e.g.,
+<code><a href="https://rdrr.io/pkg/torch/man/nn_relu.html" class="external-link">torch::nn_relu()</a></code> (default), <code><a href="https://rdrr.io/pkg/torch/man/nn_leaky_relu.html" class="external-link">torch::nn_leaky_relu()</a></code>, <code><a href="https://rdrr.io/pkg/torch/man/nn_selu.html" class="external-link">torch::nn_selu()</a></code>, or <code><a href="https://rdrr.io/pkg/torch/man/nn_sigmoid.html" class="external-link">torch::nn_sigmoid()</a></code>.</p></dd>
+
+    <dt><code>vaeac.n_vaeacs_initialize</code></dt>
+<dd><p>Positive integer (default is <code>4</code>). The number of different vaeac models to initiate
+in the start. Pick the best performing one after <code>vaeac.extra_parameters$epochs_initiation_phase</code>
+epochs (default is <code>2</code>) and continue training that one.</p></dd>
+
+    <dt><code>vaeac.epochs</code></dt>
+<dd><p>Positive integer (default is <code>100</code>). The number of epochs to train the final vaeac model.
+This includes <code>vaeac.extra_parameters$epochs_initiation_phase</code>, where the default is <code>2</code>.</p></dd>
+
+    <dt><code>vaeac.extra_parameters</code></dt>
+<dd><p>Named list with extra parameters to the <code>vaeac</code> approach. See
+<code><a href="vaeac_get_extra_para_default.html">vaeac_get_extra_para_default()</a></code> for description of possible additional parameters and their default values.</p></dd>
+
     <dt><code>categorical.joint_prob_dt</code></dt>
 <dd><p>Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
@@ -385,11 +424,7 @@ It's equal for all observations and set by the user through the argument <code>p
 The difference between the prediction and <code>none</code> is distributed among the other features.
 In theory this value should be the expected prediction without conditioning on any features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable. <code><a href="explain.html">explain()</a></code></p>
-<p></p>
-<p><code><a href="explain.html">explain()</a></code></p>
-
-
+such as the mean of the predictions in the training data are also reasonable.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -460,7 +495,7 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
