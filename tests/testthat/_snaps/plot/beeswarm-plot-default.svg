@@ -73,11 +73,15 @@
 <text x='513.55' y='556.10' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>10</text>
 <text x='370.47' y='568.24' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='69.12px' lengthAdjust='spacingAndGlyphs'>Shapley value</text>
 <rect x='662.60' y='192.86' width='51.93' height='182.17' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<image width='7.20' height='144.00' x='668.07' y='225.55' preserveAspectRatio='none' xlink:href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAEsCAYAAAACUNnVAAAA0klEQVQ4jbWQyw7CMAwEx/5frnw6QtDaHFJCnDgpQuJi+TG72Zb79eKKgCJO6aSMYfcz0l3HncwMvvLz0BEOecjz11inmlmxRpLuP4opvObO4dQvgcmuSUk5SzhLrhYKcZS9lq0U3NXVcdRdUEeOztB2dAS10mnYFYSo/chYwgywfWQ98sUujEdm2hjWBGJ8snfuZNW0Gxt4NBjsk8znVtMEUwObm8bPauB3l73byQbFeO3srf4N63er6552gu6V2+p1B3Rz0CeCPh30AejdQW/AC/KDN1dX1gu3AAAAAElFTkSuQmCC'/>
-<text x='680.75' y='372.34' style='font-size: 8.80px; font-family: sans;' textLength='16.15px' lengthAdjust='spacingAndGlyphs'>Low</text>
-<text x='680.75' y='228.82' style='font-size: 8.80px; font-family: sans;' textLength='18.10px' lengthAdjust='spacingAndGlyphs'>High</text>
 <text x='668.07' y='207.05' style='font-size: 11.00px; font-family: sans;' textLength='40.97px' lengthAdjust='spacingAndGlyphs'>Feature </text>
 <text x='668.07' y='218.93' style='font-size: 11.00px; font-family: sans;' textLength='29.36px' lengthAdjust='spacingAndGlyphs'> value</text>
+<image width='7.20' height='144.00' x='668.07' y='225.55' preserveAspectRatio='none' xlink:href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAEsCAYAAAACUNnVAAAA0klEQVQ4jbWQyw7CMAwEx/5frnw6QtDaHFJCnDgpQuJi+TG72Zb79eKKgCJO6aSMYfcz0l3HncwMvvLz0BEOecjz11inmlmxRpLuP4opvObO4dQvgcmuSUk5SzhLrhYKcZS9lq0U3NXVcdRdUEeOztB2dAS10mnYFYSo/chYwgywfWQ98sUujEdm2hjWBGJ8snfuZNW0Gxt4NBjsk8znVtMEUwObm8bPauB3l73byQbFeO3srf4N63er6552gu6V2+p1B3Rz0CeCPh30AejdQW/AC/KDN1dX1gu3AAAAAElFTkSuQmCC'/>
+<polyline points='671.82,369.31 675.27,369.31 ' style='stroke-width: 0.38; stroke: #FFFFFF; stroke-linecap: butt;' />
+<polyline points='671.82,225.79 675.27,225.79 ' style='stroke-width: 0.38; stroke: #FFFFFF; stroke-linecap: butt;' />
+<polyline points='671.53,369.31 668.07,369.31 ' style='stroke-width: 0.38; stroke: #FFFFFF; stroke-linecap: butt;' />
+<polyline points='671.53,225.79 668.07,225.79 ' style='stroke-width: 0.38; stroke: #FFFFFF; stroke-linecap: butt;' />
+<text x='680.75' y='372.34' style='font-size: 8.80px; font-family: sans;' textLength='16.15px' lengthAdjust='spacingAndGlyphs'>Low</text>
+<text x='680.75' y='228.82' style='font-size: 8.80px; font-family: sans;' textLength='18.10px' lengthAdjust='spacingAndGlyphs'>High</text>
 <text x='89.30' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='136.50px' lengthAdjust='spacingAndGlyphs'>beeswarm_plot_default</text>
 </g>
 </svg>

@@ -148,11 +148,11 @@ change, the contributions and Shapley values may then be approximated as
 in the ordinary Kernel SHAP framework. @aas2019explaining propose three
 different approaches for estimating the conditional probabilities which
 are implemented: `empirical`, `gaussian` and `copula`. The package also
-implements the method `ctree` method from @redelmeier2020explaining. The
-original `independence` approach of @lundberg2017unified is also
-available. The methods may also be combined, such that e.g. one method
-is used when conditioning on a small number of features, while another
-method is used otherwise.
+implements the `ctree` method from @redelmeier2020explaining, and the
+`vaeac` method from @olsen2022using. The original `independence` approach
+of @lundberg2017unified is also available. The methods may also be combined,
+such that e.g. one method is used when conditioning on a small number of
+features, while another method is used otherwise.
 
 <a id="gaussian"></a>
 
@@ -365,10 +365,11 @@ The following example shows how a simple `xgboost` model is trained
 using the `airquality` dataset, and how `shapr` can be used to explain
 the individual predictions. Note that the empirical conditional
 distribution approach is the default (i.e. `approach = "empirical"`).
-The Gaussian, Gaussian copula, ctree or independence approaches can be
+The Gaussian, Gaussian copula, ctree, vaeac, or independence approaches can be
 used instead by setting the argument `approach` to either `"gaussian"`,
-`"copula"`, `"ctree"`, `"categorical"` or `"independence"` in the code
+`"copula"`, `"ctree"`, `"vaeac"`, `"categorical"` or `"independence"` in the code
 below.
+
 
 ```{r, warning=FALSE}
 library(xgboost)
@@ -455,8 +456,8 @@ scatter_hist showing the distribution of the feature data:
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-We can use mixed (i.e continuous, categorical, ordinal) data with ctree or vaeac.
-Use ctree with mixed data in the following manner:
+We can use mixed (i.e continuous, categorical, ordinal) data with `ctree` or `vaeac`.
+Use `ctree` with mixed data in the following manner:
 
 ```{r}
 # convert the month variable to a factor
@@ -1102,7 +1103,7 @@ In addition to letting the user select one of the five aforementioned
 approaches for estimating the conditional distribution of the data (i.e.
 `approach` equals either [`"gaussian"`](#gaussian),
 [`"copula"`](#copula), [`"empirical"`](#empirical),
-[`"ctree"`](#ctree), [`"categorical"`](#categorical)) or `"timeseries"`, the package
+[`"ctree"`](#ctree), [`"vaeac"`](#vaeac), [`"categorical"`](#categorical)) or `"timeseries"`, the package
 allows the user to combine the given approaches. To simplify the usage,
 the flexibility is restricted such that the same approach is used when
 conditioning on the same number of features. This is also in line
@@ -1139,7 +1140,7 @@ explanation_combined <- explain(
 plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-As a second example using `"ctree"` to conditin on 1 and 2 features, and
+As a second example using `"ctree"` to condition on 1 and 2 features, and
 `"empirical"` when conditioning on 3 features:
 
 ```{r}
@@ -1344,7 +1345,7 @@ explanation_vaeac <- explain(
 Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 3` is likely to few epochs as it still seems like the `vaeac` model is learning.
 ```{r vaeac-plot-1, cache = TRUE}
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criteria(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
+vaeac_plot_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
 ```
 
 
@@ -1380,7 +1381,7 @@ explanation_vaeac_early_stop <- explain(
 Can compare with the previous version and see that the results are more stable now.
 ```{r vaeac-plot-2, cache = TRUE}
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criteria(
+vaeac_plot_eval_crit(
   list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop),
   plot_type = "method"
 )

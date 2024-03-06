@@ -351,7 +351,7 @@ explain <- function(model,
 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-remove_outputs_to_pass_tests = function(output) {
+remove_outputs_to_pass_tests <- function(output) {
   output$internal$objects$id_combination_mapper_dt <- NULL
   output$internal$objects$cols_per_horizon <- NULL
   output$internal$objects$W_list <- NULL

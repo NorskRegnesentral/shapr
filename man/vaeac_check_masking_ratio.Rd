@@ -8,7 +8,7 @@ vaeac_check_masking_ratio(masking_ratio, n_features)
 }
 \arguments{
 \item{masking_ratio}{Numeric (default is \code{0.5}). Probability of masking a feature in the
-\code{\link[=MCAR_mask_generator]{MCAR_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
+\code{\link[=mcar_mask_generator]{mcar_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
 model can do arbitrary conditioning as all coalitions will be trained. \code{masking_ratio} will be overruled if
 \code{mask_gen_coalitions} is specified.}
 

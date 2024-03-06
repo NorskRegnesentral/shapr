@@ -14,8 +14,8 @@ vaeac(
   skip_conn_masked_enc_dec = FALSE,
   batch_normalization = FALSE,
   paired_sampling = FALSE,
-  mask_generator_name = c("MCAR_mask_generator", "Specified_prob_mask_generator",
-    "Specified_masks_mask_generator"),
+  mask_generator_name = c("mcar_mask_generator", "specified_prob_mask_generator",
+    "specified_masks_mask_generator"),
   masking_ratio = 0.5,
   mask_gen_coalitions = NULL,
   mask_gen_coalitions_prob = NULL,
@@ -40,7 +40,7 @@ masked encoder, full encoder, and decoder.}
 \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}},
 \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
-\item{skip_conn_layer}{Boolean. If we are to use skip connections in each layer, see \code{\link[=SkipConnection]{SkipConnection()}}.
+\item{skip_conn_layer}{Boolean. If we are to use skip connections in each layer, see \code{\link[=skip_connection]{skip_connection()}}.
 If \code{TRUE}, then we add the input to the outcome of each hidden layer, so the output becomes
 \eqn{X + \operatorname{activation}(WX + b)}. I.e., the identity skip connection.}
 
@@ -57,13 +57,13 @@ done after the adding from the skip connection. I.e, we batch normalize the whol
 and \eqn{\bar{S}} when we sample coalitions during training for each batch.}
 
 \item{mask_generator_name}{String specifying the type of mask generator to use. Need to be one of
-'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specified_masks_mask_generator'.}
+'mcar_mask_generator', 'specified_prob_mask_generator', and 'specified_masks_mask_generator'.}
 
 \item{masking_ratio}{Scalar. The probability for an entry in the generated mask to be 1 (masked).
 Not used if \code{mask_gen_coalitions} is given.}
 
 \item{mask_gen_coalitions}{Matrix containing the different coalitions to learn.
-Must be given if \code{mask_generator_name = 'Specified_masks_mask_generator'}.}
+Must be given if \code{mask_generator_name = 'specified_masks_mask_generator'}.}
 
 \item{mask_gen_coalitions_prob}{Numerics containing the probabilities
 for sampling each mask in \code{mask_gen_coalitions}.

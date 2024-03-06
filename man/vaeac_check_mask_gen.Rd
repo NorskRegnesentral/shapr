@@ -8,7 +8,7 @@ vaeac_check_mask_gen(mask_gen_coalitions, mask_gen_coalitions_prob, x_train)
 }
 \arguments{
 \item{mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
-\code{vaeac} model will be trained on, see \code{\link[=Specified_masks_mask_generator]{Specified_masks_mask_generator()}}. This parameter is used internally
+\code{vaeac} model will be trained on, see \code{\link[=specified_masks_mask_generator]{specified_masks_mask_generator()}}. This parameter is used internally
 in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
 \code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 when \code{group} is specified in \code{\link[=explain]{explain()}}.}

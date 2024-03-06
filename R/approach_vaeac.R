@@ -17,16 +17,6 @@
 #' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach. See
 #'  [shapr::vaeac_get_extra_para_default()] for description of possible additional parameters and their default values.
 #'
-#' @section The vaeac approach:
-#' The `vaeac` model consists of three neural network (a full encoder, a masked encoder, and a decoder) based
-#' on the provided `vaeac.depth` and `vaeac.width`. The encoders map the full and masked input
-#' representations to latent representations, respectively, where the dimension is given by `vaeac.latent_dim`.
-#' The latent representations are sent to the decoder to go back to the real feature space and
-#' provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
-#' We use the `vaeac` method at the epoch with the lowest validation error (IWAE) by default, but
-#' other possibilities are available but setting the `vaeac.which_vaeac_model` parameter. See
-#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
-#'
 #' @inheritParams default_doc_explain
 #'
 #' @export
@@ -42,8 +32,10 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.extra_parameters = list(),
                                  ...) {
   # Check that torch is installed
-  if (!requireNamespace("torch", quietly = TRUE)) stop("`torch` is not installed. Please run install.packages('torch')")
-  if (!torch::torch_is_installed()) torch::install_torch()
+  if (!requireNamespace("torch", quietly = TRUE)) {
+    stop("`torch` is not installed. Please run `install.packages('torch')`.")
+  }
+  if (!torch::torch_is_installed()) stop("`torch` is not properly installed. Please run `torch::install_torch()`.")
 
   # Extract the objects we will use later
   S <- internal$objects$S
@@ -51,10 +43,10 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters <- internal$parameters
 
   # Small printout to user
-  if (parameters$verbose == 2) message("Starting 'setup_approach.vaeac'.")
+  if (parameters$verbose == 2) message("Setting up the `vaeac` approach.")
 
   # Check if we are doing a combination of approaches
-  combined_approaches <- length(internal$parameters$approach) > 1
+  combined_approaches <- length(parameters$approach) > 1
 
   # Ensure that `parameters$vaeac.extra_parameters` is a named list
   if (is.null(parameters$vaeac.extra_parameters)) parameters$vaeac.extra_parameters <- list()
@@ -71,8 +63,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
   # Add the default extra parameter values for the non-user specified extra parameters
   parameters$vaeac.extra_parameters <- utils::modifyList(vaeac_get_extra_para_default(),
-    parameters$vaeac.extra_parameters,
-    keep.null = TRUE
+                                                         parameters$vaeac.extra_parameters,
+                                                         keep.null = TRUE
   )
 
   # Add the default main parameter values for the non-user specified main parameters
@@ -100,7 +92,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # Normalize the weights/probabilities such that they sum to one.
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob <-
       parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob /
-        sum(parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob)
+      sum(parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob)
   } else {
     # We are going to use the MCAR(`masking_ratio`) masking scheme. Set the variables to `NULL` as we do not need them.
     parameters$vaeac.mask_gen_coalitions <- parameters$vaeac.mask_gen_coalitions_prob <- NULL
@@ -111,7 +103,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # We train a vaeac model with the parameters in `parameters`, as user did not provide pre-trained vaeac model
     if (parameters$verbose == 2) {
       message(paste0(
-        "Training a vaeac model with the provided parameters from scratch on the ",
+        "Training the `vaeac` model with the provided parameters from scratch on ",
         ifelse(parameters$vaeac.extra_parameter$vaeac.cuda, "GPU", "CPU"), "."
       ))
     }
@@ -153,11 +145,10 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # Check some aspects of the pre-trained vaeac model and add it to the parameters list if it passes the checks
     parameters <- vaeac_update_pretrained_model(parameters = parameters)
 
-    # Small prinout informing about the location of the model
+    # Small printout informing about the location of the model
     if (parameters$verbose == 2) {
       message(paste0(
-        "The provided vaeac model is located on the ",
-        ifelse(parameters$vaeac$parameters$cuda, "GPU", "CPU"), "."
+        "The `vaeac` model runs/is trained on ", ifelse(parameters$vaeac$parameters$cuda, "GPU", "CPU"), "."
       ))
     }
   }
@@ -182,7 +173,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   internal$parameters <- parameters
 
   # Small printout to user
-  if (parameters$verbose == 2) message("Done with 'setup_approach.vaeac'.\n")
+  if (parameters$verbose == 2) message("Done with setting up the `vaeac` approach.\n")
 
   # Return the updated internal list.
   return(internal)
@@ -209,17 +200,11 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   vaeac.checkpoint <- internal$parameters$vaeac.checkpoint
   vaeac.batch_size_sampling <- internal$parameters$vaeac.extra_parameters$vaeac.batch_size_sampling
 
-  # Small printout to the user
-  if (verbose == 2) {
-    message(paste0(
-      "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
-      internal$parameters$n_batches, " in `prepare_data.vaeac()`."
-    ))
-  }
+  # Small printout to the user about which batch we are working on
+  if (verbose == 2) vaeac_prep_message_batch(internal = internal, index_features = index_features)
 
   # Apply all coalitions to all explicands to get a data table where `vaeac` will impute the `NaN` values
-  x_explain_extended <-
-    vaeac_get_x_explain_extended(x_explain = x_explain, S = S, index_features = index_features)
+  x_explain_extended <- vaeac_get_x_explain_extended(x_explain = x_explain, S = S, index_features = index_features)
 
   # Set the number of observations do generate the MC samples for at the time.
   n_explain_extended <- nrow(x_explain_extended)
@@ -305,7 +290,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' @param batch_size Positive integer (default is `64`). The number of samples to include in each batch
 #' during the training of the vaeac model. Used in [torch::dataloader()].
 #' @param skip_conn_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
-#' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
+#' layer, see [shapr::skip_connection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 #' so the output becomes \eqn{X + activation(WX + b)}.
 #' @param skip_conn_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
 #' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
@@ -324,11 +309,11 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
 #' @param masking_ratio Numeric (default is `0.5`). Probability of masking a feature in the
-#' [shapr::MCAR_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
+#' [shapr::mcar_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
 #' model can do arbitrary conditioning as all coalitions will be trained. `masking_ratio` will be overruled if
 #' `mask_gen_coalitions` is specified.
 #' @param mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
-#' `vaeac` model will be trained on, see [shapr::Specified_masks_mask_generator()]. This parameter is used internally
+#' `vaeac` model will be trained on, see [shapr::specified_masks_mask_generator()]. This parameter is used internally
 #' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
 #' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 #' when `group` is specified in [shapr::explain()].
@@ -628,14 +613,14 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   }
 
   if (!((is.null(train_vlb) && is.null(val_iwae) && is.null(val_iwae_running)) ||
-    (!is.null(train_vlb) && !is.null(val_iwae) && !is.null(val_iwae_running)))) {
+        (!is.null(train_vlb) && !is.null(val_iwae) && !is.null(val_iwae_running)))) {
     stop("Either none or all of `train_vlb`, `val_iwae`, and `val_iwae_running` must be given.")
   }
 
   # Variable that we change to `TRUE` if early stopping is applied
   if (!is.null(state_list)) state_list$early_stopping_applied <- FALSE
 
-  # Variables to stores the epochs of the `vaeac` at the best epoch according to IWAE and IWAE_running
+  # Variable to store the epochs of the `vaeac` at the best epoch according to IWAE and IWAE_running
   if (is.null(initialization_idx)) best_epoch <- best_epoch_running <- NULL
 
   # Get the batch size
@@ -706,7 +691,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     val_iwae_running_now <-
       val_iwae[
         (-min(length(val_iwae), running_avg_n_values) +
-          length(val_iwae) + 1):(-1 + length(val_iwae) + 1),
+           length(val_iwae) + 1):(-1 + length(val_iwae) + 1),
         drop = FALSE
       ]$mean()$view(1)
     val_iwae_running <- torch::torch_cat(c(val_iwae_running, val_iwae_running_now), -1)
@@ -870,7 +855,7 @@ vaeac_train_model_continue <- function(explanation,
   if (is.null(x_train)) x_train <- checkpoint$x_train
 
   # Check that the provided vaeac model is trained on a dataset with the same feature names
-  vaeac_check_x_train_names(feature_names_vaeac = checkpoint$feature_list$labels, feature_names_new = names(x_train))
+  vaeac_check_x_colnames(feature_names_vaeac = checkpoint$feature_list$labels, feature_names_new = names(x_train))
 
   # Check if we can reuse the original validation and training indices
   if (!is.null(checkpoint$x_train) || nrow(x_train) == checkpoint$n_train) {
@@ -1472,23 +1457,23 @@ vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch,
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_x_train_names <- function(feature_names_vaeac, feature_names_new) {
+vaeac_check_x_colnames <- function(feature_names_vaeac, feature_names_new) {
   n_features_vaeac <- length(feature_names_vaeac)
   n_features_new <- length(feature_names_new)
 
-  # Check for equal number of features
-  if (n_features_new != n_features_vaeac) {
+  # Check that the feature names of x_train matches the names of the training data used to train the vaeac model
+  if (!isTRUE(all.equal(feature_names_vaeac, feature_names_new))) {
     stop(paste0(
-      "The provided `vaeac` model is trainined on a ", n_features_vaeac, "-dimensional dataset, but the current ",
-      "dataset is ", n_features_new, "-dimensional."
+      "The current feature names (`", paste(feature_names_new, collapse = "`, `"), "`) do not match the ",
+      "feature names in the provided `vaeac` model (`", paste(feature_names_vaeac, collapse = "`, `"), ")."
     ))
   }
 
-  # Check that the feature names of x_train matches the names of the training data used to train the vaeac model
-  if (!all.equal(feature_names_vaeac, feature_names_new)) {
+  # Check for equal number of features (this should never occur as test above indirectly checks this too)
+  if (n_features_new != n_features_vaeac) {
     stop(paste0(
-      "The training data's feature names (`", paste(feature_names_new, collapse = "`, `"), "`) do not match the ",
-      "names of the `vaeac` model's original training data (`", paste(feature_names_vaeac, collapse = "`, `"), "`)."
+      "The provided `vaeac` model is trained on a ", n_features_vaeac, "-dimensional dataset, but the current ",
+      "dataset is ", n_features_new, "-dimensional."
     ))
   }
 }
@@ -1617,6 +1602,16 @@ vaeac_check_parameters <- function(x_train,
 #' @description In this function, we specify the default values for the extra parameters used in [shapr::explain()]
 #' for `approach = "vaeac"`.
 #'
+#' @details
+#' The `vaeac` model consists of three neural network (a full encoder, a masked encoder, and a decoder) based
+#' on the provided `vaeac.depth` and `vaeac.width`. The encoders map the full and masked input
+#' representations to latent representations, respectively, where the dimension is given by `vaeac.latent_dim`.
+#' The latent representations are sent to the decoder to go back to the real feature space and
+#' provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
+#' We use the `vaeac` method at the epoch with the lowest validation error (IWAE) by default, but
+#' other possibilities are available but setting the `vaeac.which_vaeac_model` parameter. See
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
+#'
 #' @param vaeac.model_description String (default is `make.names(Sys.time())`). String containing, e.g., the name of the
 #' data distribution or additional parameter information. Used in the save name of the fitted model. If not provided,
 #' then a name will be generated based on [base::Sys.time()] to ensure a unique name. We use [base::make.names()] to
@@ -1656,7 +1651,7 @@ vaeac_check_parameters <- function(x_train,
 #' @param vaeac.running_avg_n_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
 #' @param vaeac.skip_conn_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
-#' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
+#' layer, see [shapr::skip_connection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 #' so the output becomes \eqn{X + activation(WX + b)}.
 #' @param vaeac.skip_conn_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
 #' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
@@ -1672,11 +1667,11 @@ vaeac_check_parameters <- function(x_train,
 #' this will increase the training time due to more complex implementation and doubling the size of each batch. See
 #' [shapr::paired_sampler()] for more information.
 #' @param vaeac.masking_ratio Numeric (default is `0.5`). Probability of masking a feature in the
-#' [shapr::MCAR_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
+#' [shapr::mcar_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
 #' model can do arbitrary conditioning as all coalitions will be trained. `vaeac.masking_ratio` will be overruled if
 #' `vaeac.mask_gen_coalitions` is specified.
 #' @param vaeac.mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
-#' `vaeac` model will be trained on, see [shapr::Specified_masks_mask_generator()]. This parameter is used internally
+#' `vaeac` model will be trained on, see [shapr::specified_masks_mask_generator()]. This parameter is used internally
 #' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
 #' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 #' when `group` is specified in [shapr::explain()].
@@ -1808,29 +1803,29 @@ vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
                                           verbose) {
   if (!is.null(mask_gen_coalitions) && !is.null(mask_gen_coalitions_prob)) {
     # User have provided mask_gen_coalitions (and mask_gen_coalitions_prob),
-    # and we want to use Specified_masks_mask_generator
-    mask_generator_name <- "Specified_masks_mask_generator"
+    # and we want to use specified_masks_mask_generator
+    mask_generator_name <- "specified_masks_mask_generator"
 
     # Small printout
     if (verbose == 2) {
-      message(paste0("Using 'Specified_masks_mask_generator' with '", nrow(mask_gen_coalitions), "' coalitions."))
+      message(paste0("Using 'specified_masks_mask_generator' with '", nrow(mask_gen_coalitions), "' coalitions."))
     }
   } else if (length(masking_ratio) == 1) {
-    # We are going to use 'MCAR_mask_generator' as masking_ratio is a singleton.
+    # We are going to use 'mcar_mask_generator' as masking_ratio is a singleton.
     # I.e., all feature values are equally likely to be masked based on masking_ratio.
-    mask_generator_name <- "MCAR_mask_generator"
+    mask_generator_name <- "mcar_mask_generator"
 
     # Small printout
-    if (verbose == 2) message(paste0("Using 'MCAR_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
+    if (verbose == 2) message(paste0("Using 'mcar_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
   } else if (length(masking_ratio) > 1) {
-    # We are going to use 'Specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
+    # We are going to use 'specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
     # I.e., masking_ratio[5] specifies the probability of masking 5 features
-    mask_generator_name <- "Specified_prob_mask_generator"
+    mask_generator_name <- "specified_prob_mask_generator"
 
-    # We have an array of masking ratios. Then we are using the Specified_prob_mask_generator.
+    # We have an array of masking ratios. Then we are using the specified_prob_mask_generator.
     if (verbose == 2) {
       message(paste0(
-        "Using 'Specified_prob_mask_generator' mask generator with 'masking_ratio = [",
+        "Using 'specified_prob_mask_generator' mask generator with 'masking_ratio = [",
         paste(masking_ratio, collapse = ", "), "]'."
       ))
     }
@@ -2209,8 +2204,8 @@ vaeac_update_para_locations <- function(parameters) {
     warning(paste0(
       "The following vaeac main parameters are not recognized (`shapr` removes them): ",
       paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
+                     ",(?=[^,]+$)",
+                     perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
 
@@ -2226,8 +2221,8 @@ vaeac_update_para_locations <- function(parameters) {
     warning(paste0(
       "The following vaeac extra parameters are not recognized (`shapr` removes them): ",
       paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
+                     ",(?=[^,]+$)",
+                     perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
 
@@ -2243,8 +2238,8 @@ vaeac_update_para_locations <- function(parameters) {
       "The following vaeac parameters were given as both main and extra parameters (`shapr` uses the ",
       "values at the correct location ): ",
       paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
+                     ",(?=[^,]+$)",
+                     perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
     # Note that we do not move it here as the moving will be fixed in the next two if-clauses
@@ -2257,14 +2252,14 @@ vaeac_update_para_locations <- function(parameters) {
       "The following vaeac parameters were given as main parameters but should have been extra ",
       "parameters (`shapr` fixes this): ",
       paste(strsplit(paste(paste0("`", extra_para_in_main_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
+                     ",(?=[^,]+$)",
+                     perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
 
     # Move extra parameter from the main parameters to extra_parameters list if they have NOT been specified already
     parameters$vaeac.extra_parameters[extra_para_in_main_para[!extra_para_in_main_para %in%
-      vaeac.extra_para_user_names]] <-
+                                                                vaeac.extra_para_user_names]] <-
       parameters[extra_para_in_main_para[!extra_para_in_main_para %in% vaeac.extra_para_user_names]]
 
     # Remove the extra parameter from the main parameters
@@ -2279,15 +2274,15 @@ vaeac_update_para_locations <- function(parameters) {
       "The following vaeac parameters were given as extra parameters but should have been main ",
       "parameters (`shapr` fixes this): ",
       paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
+                     ",(?=[^,]+$)",
+                     perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
 
     # Move main parameters from the extra_parameters list to main parameters if they have NOT been specified already
     parameters[main_para_in_extra_para[!main_para_in_extra_para %in% vaeac.main_para_user_names]] <-
       parameters$vaeac.extra_parameters[main_para_in_extra_para[!main_para_in_extra_para
-      %in% vaeac.main_para_user_names]]
+                                                                %in% vaeac.main_para_user_names]]
 
     # Remove the main parameter from the extra list
     parameters$vaeac.extra_parameters[main_para_in_extra_para] <- NULL
@@ -2318,7 +2313,7 @@ vaeac_update_pretrained_model <- function(parameters) {
   if (is.list(vaeac_object)) {
     # Check for list of type vaeac
     if (!("vaeac" %in% class(vaeac_object))) stop("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
-    vaeac_check_x_train_names(
+    vaeac_check_x_colnames(
       feature_names_vaeac = vaeac_object$parameters$feature_list$labels,
       feature_names_new = parameters$feature_names
     )
@@ -2349,7 +2344,7 @@ vaeac_update_pretrained_model <- function(parameters) {
     }
 
     # Check that the provided vaeac model is trained on a dataset with the same feature names
-    vaeac_check_x_train_names(
+    vaeac_check_x_colnames(
       feature_names_vaeac = vaeac_model$feature_list$labels,
       feature_names_new = parameters$feature_names
     )
@@ -2427,17 +2422,26 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
   ))
 }
 
+#' Produce message about which batch prepare_data is working on
+#' @inheritParams default_doc
+#' @inheritParams default_doc_explain
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+vaeac_prep_message_batch <- function(internal, index_features) {
+  id_batch <- internal$objects$X[id_combination == index_features[1]]$batch
+  n_batches <- internal$parameters$n_batches
+  message(paste0("Generating Monte Carlo samples using `vaeac` for batch ", id_batch, " of ", n_batches, "."))
+}
+
 # Plot functions =======================================================================================================
 #' Plot the training VLB and validation IWAE for `vaeac` models
 #'
-#' @description
-#' This function makes ([ggplot2::ggplot()]) figures of the training VLB and the validation IWAE for a list
+#' @description This function makes ([ggplot2::ggplot()]) figures of the training VLB and the validation IWAE for a list
 #' of [shapr::explain()] objects with `approach = "vaeac"`. See [setup_approach()] for more information about the
 #' `vaeac` approach. Two figures are returned by the function. In the figure, each object in `explanation_list` gets
 #' its own facet, while in the second figure, we plot the criteria in each facet for all objects.
 #'
-#' @details
-#' See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} or the
+#' @details See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} or the
 #' \href{https://borea17.github.io/paper_summaries/iwae/}{blog post} for a summary of the VLB and IWAE.
 #'
 #' @param explanation_list A list of [explain()] objects applied to the same data, model, and
@@ -2517,17 +2521,17 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' )
 #'
 #' # Call the function with the named list, will use the provided names
-#' vaeac_plot_evaluation_criteria(explanation_list = explanation_list)
+#' vaeac_plot_eval_crit(explanation_list = explanation_list)
 #'
 #' # The function also works if we have only one method,
 #' # but then one should only look at the method plot.
-#' vaeac_plot_evaluation_criteria(
+#' vaeac_plot_eval_crit(
 #'   explanation_list = explanation_list[2],
 #'   plot_type = "method"
 #' )
 #'
 #' # Can alter the plot
-#' vaeac_plot_evaluation_criteria(
+#' vaeac_plot_eval_crit(
 #'   explanation_list = explanation_list,
 #'   plot_from_nth_epoch = 2,
 #'   plot_every_nth_epoch = 2,
@@ -2535,7 +2539,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' )
 #'
 #' # If we only want the VLB
-#' vaeac_plot_evaluation_criteria(
+#' vaeac_plot_eval_crit(
 #'   explanation_list = explanation_list,
 #'   criteria = "VLB",
 #'   plot_type = "criterion"
@@ -2543,7 +2547,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'
 #' # If we want only want the criterion version
 #' tmp_fig_criterion <-
-#'   vaeac_plot_evaluation_criteria(explanation_list = explanation_list, plot_type = "criterion")
+#'   vaeac_plot_eval_crit(explanation_list = explanation_list, plot_type = "criterion")
 #'
 #' # Since tmp_fig_criterion is a ggplot2 object, we can alter it
 #' # by, e.g,. adding points or smooths with se bands
@@ -2556,13 +2560,13 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'
 #' @author Lars Henry Berge Olsen
 #' @export
-vaeac_plot_evaluation_criteria <- function(explanation_list,
-                                           plot_from_nth_epoch = 1,
-                                           plot_every_nth_epoch = 1,
-                                           criteria = c("VLB", "IWAE"),
-                                           plot_type = c("method", "criterion"),
-                                           facet_wrap_scales = "fixed",
-                                           facet_wrap_ncol = NULL) {
+vaeac_plot_eval_crit <- function(explanation_list,
+                                 plot_from_nth_epoch = 1,
+                                 plot_every_nth_epoch = 1,
+                                 criteria = c("VLB", "IWAE"),
+                                 plot_type = c("method", "criterion"),
+                                 facet_wrap_scales = "fixed",
+                                 facet_wrap_ncol = NULL) {
   ## Checks
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {

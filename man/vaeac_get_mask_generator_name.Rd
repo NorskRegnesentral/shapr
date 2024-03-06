@@ -13,7 +13,7 @@ vaeac_get_mask_generator_name(
 }
 \arguments{
 \item{mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
-\code{vaeac} model will be trained on, see \code{\link[=Specified_masks_mask_generator]{Specified_masks_mask_generator()}}. This parameter is used internally
+\code{vaeac} model will be trained on, see \code{\link[=specified_masks_mask_generator]{specified_masks_mask_generator()}}. This parameter is used internally
 in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
 \code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 when \code{group} is specified in \code{\link[=explain]{explain()}}.}
@@ -23,7 +23,7 @@ of \code{mask_gen_coalitions} containing the probabilities of sampling the corre
 \code{mask_gen_coalitions}.}
 
 \item{masking_ratio}{Numeric (default is \code{0.5}). Probability of masking a feature in the
-\code{\link[=MCAR_mask_generator]{MCAR_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
+\code{\link[=mcar_mask_generator]{mcar_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
 model can do arbitrary conditioning as all coalitions will be trained. \code{masking_ratio} will be overruled if
 \code{mask_gen_coalitions} is specified.}
 
