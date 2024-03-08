@@ -33,16 +33,19 @@ knitr::opts_chunk$set(
 
 > [Add new regression methods](#new)
 
+> [Summary figures](#summary)
+
 <a id="intro"></a>
 
 
 In this vignette, we elaborate and illustrate the regression paradigm explained in @olsen2023comparative.
 We describe how to specify the regression model, how to enable automatic cross-validation of the model's
-hyper-parameters, and applying pre-processing steps to the data before fitting the regression models.
+hyper-parameters, and applying pre-processing steps to the data before fitting the regression models. 
+We refer to @olsen2023comparative for when one should use the different paradigms, method classes, and methods.
 
 The regression paradigm can be divided into the separate and surrogate regression method classes. In this vignette,
 we give a short introduction to the two method classes. For an in depth explanation, we refer the reader to 
-Section 3.5 and 3.6 in @olsen2023comparative.
+Sections 3.5 and 3.6 in @olsen2023comparative.
 
 Briefly stated, the regression paradigm uses regression models to directly estimate the contribution function
 $v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]$. The separate regression method class
@@ -51,11 +54,22 @@ a single regression model to predict the contribution function for all coalition
 
 The `shapr` package supports any regression model from the popular *tidymodels* package, developed by @tidymodels.
 See [list of tidymodels](https://www.tidymodels.org/find/parsnip/) for a complete list of the 
-supported regression models (currently 80).
+supported regression models. There are currently 80 supported models, but we can also a apply a wide range
+of pre-processing data steps to increase this number. For example, the linear regression model can be applied directly
+to the data or we can pre-process the data to compute principal components (principal component regression).
 
+Our framework does not currently support model formulas with special terms. E.g., we do not support
+`parsnip::gen_additive_mod` (i.e., `mgcv::gam()`) as it uses a non-standard notion in its formulas
+(in this case the `s(feature, k = 2)` functions). See `?parsnip::model_formula()` for more information.
+However, this hurdle can be overcome by using pre-processing data steps containing spline functions. 
+We give an example of this in the [separate regression method class](#separate) section.
 
+We can also [add new regression methods](#new) that are not already implemented in `tidymodel`. 
+We demonstrate how to do this for the projection pursuit regression model.
 
 Note that we use the same data and predictive models in this vignette as in the main vignette.
+
+See the end of the vignette for summary figures of all the methods used in this vignette.
 
 
 # The separate regression method class {#separate}
@@ -90,10 +104,11 @@ In the following examples we use the same data and want to explain the same mode
 That is, we train a simple `xgboost` model on the `airquality` dataset, and illustrate how `shapr` and 
 the separate regression method class can be used to explain the individual predictions.
 
-```{r}
+First we set up the `airquality` dataset and train the `xgboost` model.
+```{r setup, message=FALSE}
 library(xgboost)
-library(data.table)
 library(tidymodels)
+library(data.table)
 library(shapr)
 
 data("airquality")
@@ -119,115 +134,266 @@ model <- xgboost::xgboost(
 # Specifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
-# Specify that we are using the regression paradigm and the separate method class
-approach <- "regression_separate"
+# List to store all the explanation objects
+explanation_list <- list()
 
-# Specify that we want to use a linear regression model
-regression_model <- parsnip::linear_reg()
+# Create helper function to plot the MSEv criterion scores
+plot_MSEv_scores <- function(explanation_list, method_line = NULL) {
+  fig <- plot_MSEv_eval_crit(explanation_list) +
+    ggplot2::theme(legend.position = "none") +
+    ggplot2::coord_flip() +
+    ggplot2::theme(plot.title = ggplot2::element_text(size = rel(1)))
+  fig <- fig + ggplot2::scale_x_discrete(limits = rev(levels(fig$data$Method)))
+  if (!is.null(method_line) && method_line %in% fig$data$Method) {
+    fig <- fig + ggplot2::geom_hline(
+      yintercept = fig$data$MSEv[fig$data$Method == method_line],
+      linetype = "dashed",
+      color = "black"
+    )
+  }
+  return(fig)
+}
 
-# Compute the Shapley value explanations
-explanation_sep_lm <- shapr::explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  prediction_zero = p0,
-  approach = approach,
-  regression_model = parsnip::linear_reg()
-)
+# Create helper function to print out the MSEv criterion scores
+print_MSEv_scores_and_time <- function(explanation_list) {
+  res <- t(sapply(
+    explanation_list,
+    function(explanation) {
+      c(explanation$MSEv$MSEv$MSEv, round(explanation$timing$total_time_secs, 2))
+    }
+  ))
+  colnames(res) <- c("MSEv", "Time")
+  return(res)
+}
 ```
 
-A linear model is often not flexible enough and can produce inaccurate Shapley value explanations. 
-We can compare with using the `empirical` approach and see see that
-the `empirical` approach outperforms the linear regression model approach quite significantly.
-
-```{r}
+To have a baseline to compare the regression methods with, we will in this vignette compare them with¨
+the Monte Carlos based `empirical` approach with defualt hyperparameters.
+```{r empirical}
 # Compute the Shapley value explanations using the empirical method
-explanation_empirical <- shapr::explain(
+explanation_list$empirical <- shapr::explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p0
 )
-
-# Compare the MSEv criterion of the different explanation methods
-plot_MSEv_eval_crit(list(
-  empirical = explanation_empirical,
-  sep_linear_model = explanation_sep_lm
-)) +
-  theme(legend.position = "none") # Remove the legend
 ```
 
-In the next example, we use a decision tree model. The `tidymodels` package supports several implementations,
-so we have to use `set_engine()` to specify which one to use and we need to specify that we are going to do 
-regression by using `set_mode()`. Note that we do not specify the parameters of the decision tree, which means
-that `tidymodels` will use the default parameters set in `rpart`.
 
-By searching for "decision tree" in [list of tidymodels](https://www.tidymodels.org/find/parsnip/), we will see
-that the default parameters for [`decision_tree_rpart`](https://parsnip.tidymodels.org//reference/details_decision_tree_rpart.html) are `tree_depth = 30`, `min_n = 2`, and `cost_complexity = 0.01`.
+
+
+### Linear regression model
+Then we compute the Shapley value explanations using a linear
+regression model and the separate regression method class.
+```{r explain-sep-lm}
+explanation_list$sep_lm <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = "regression_separate",
+  regression_model = parsnip::linear_reg()
+)
+```
+
+A linear model is often not flexible enough to properly model the contribution function. Thus, it can produce
+inaccurate Shapley value explanations. We see in the figure below that the `empirical` approach outperforms the
+linear regression model approach quite significantly with respect to the $\operatorname{MSE}_v$ evaluation criterion.
+
+```{r lm-emp-msev}
+plot_MSEv_scores(explanation_list)
+```
+
+### Pre-processing
+In this section, we describe how to pre-process the data before fitting the separate regression models.
+We illustrate this for the linear regression model, but this pre-processing can be applied to other regression 
+methods too. 
+
+The *recipe* package in `tidymodels` contains a wide range of functions for allowing us to preprocess the data before 
+fitting the model. This can be, for example, applying transformations (log, poly, splines, pls, pca), encodings,
+interactions, normalization, and so on. 
+See [list of functions](https://recipes.tidymodels.org/reference/index.html) for all list of all possible functions.
+The list also contains functions for helping us selecting which features to apply the functions too, e.g., 
+`recipes::all_predictors()`, `recipes::all_numeric_predictors()`, and `recipes::all_factor_predictors()` apply the
+functions to all features, only the numerical features, and only the factor features, respectively. You can also
+specify the names of the features to apply the functions too. However, as the included features changes in each
+coalition, we need to do a check that the feature we want to apply the function to is present in the dataset.
+We give an example of this below.
+
+
+First, we demonstrate how to compute the principal components and use (up-to) the first two components for
+each separate linear regression models. We write up-to as for the singleton coalitions, we can only compute a single
+component (the feature in itself). This is called principal component regression. 
+```{r pcr}
+explanation_list$sep_pcr <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = "regression_separate",
+  regression_model = parsnip::linear_reg(),
+  regression_recipe_func = function(regression_recipe) {
+    return(step_pca(regression_recipe, all_numeric_predictors(), num_comp = 2))
+  }
+)
+```
+
+Second, we use natural spline basis functions with two degrees of freedom. This is similar to fitting a GAM.
+```{r natural-splines}
+explanation_list$sep_splines <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = "regression_separate",
+  regression_model = parsnip::linear_reg(),
+  regression_recipe_func = function(regression_recipe) {
+    return(step_ns(regression_recipe, all_numeric_predictors(), deg_free = 2))
+  }
+)
+```
+
+Finally, we provide an example where we include interactions between the features `Solar.R` and `Wind`,
+log-transform `Solar.R`, convert `Wind` to be between 0 and 1 and then take the square root, 
+include polynomials of the third degree for `Temp`, and apply the Box Cox transformation to `Month`. 
+These transformations are only applied when the features are present for the different separate models.
+
+Furthermore, we stress that the purpose of this example is to highlight the flexibility of the framework and
+NOT that the transformations below are reasonable to do. 
+```{r}
+# Example function of how to apply step functions from the recipes package to specific features
+regression_recipe_func <- function(regression_recipe) {
+  # Get the names of the present features
+  feature_names <- regression_recipe$var_info$variable[regression_recipe$var_info$role == "predictor"]
+
+  # If Solar.R and Wind is present, then we add the interaction between them
+  if (all(c("Solar.R", "Wind") %in% feature_names)) {
+    regression_recipe <- step_interact(regression_recipe, terms = ~ Solar.R:Wind)
+  }
+
+  # If Solar.R is present, then log transform it
+  if ("Solar.R" %in% feature_names) regression_recipe <- step_log(regression_recipe, Solar.R)
+
+  # If Wind is present, then scale it to be between 0 and 1 and then sqrt transform it
+  if ("Wind" %in% feature_names) regression_recipe <- step_sqrt(step_range(regression_recipe, Wind))
+
+  # If Temp is present, then expand it using orthogonal polynomials of degree 3
+  if ("Temp" %in% feature_names) regression_recipe <- step_poly(regression_recipe, Temp, degree = 3)
+
+  # If Month is present, then Box-Cox transform it
+  if ("Month" %in% feature_names) regression_recipe <- step_BoxCox(regression_recipe, Month)
+
+  # Finally we normalize all features (not needed as LM does this internally)
+  regression_recipe <- step_normalize(regression_recipe, all_numeric_predictors())
+
+  return(regression_recipe)
+}
+
+# Compute the Shapley values using the pre-processing steps defined above
+explanation_list$sep_reicpe_example <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = "regression_separate",
+  regression_model = parsnip::linear_reg(),
+  regression_recipe_func = regression_recipe_func
+)
+```
 
 ```{r}
-# Set the parameters (stumps)
-explanation_sep_tree_stump <- explain(
+# Compare the MSEv criterion of the different explanation methods
+plot_MSEv_scores(explanation_list)
+
+# Print the MSEv scores and the elapsed time (in seconds) for the different methods
+print_MSEv_scores_and_time(explanation_list)
+```
+
+
+
+
+### Decision trees
+
+In the next example, we use a decision tree model instead of the simple linear regression model.
+
+The `tidymodels` package supports several implementations for the decision tree model. 
+Thus, we have to use `set_engine("rpart")` to specify that we want to use the implementation
+in the `rpart` package  and we need to specify that we are going to do regression by using 
+`set_mode("regression")`. Note that we do not specify the parameters of the decision tree,
+which means that `tidymodels` will use the default parameters set in `rpart`. 
+
+By searching for "decision tree" in [list of tidymodels](https://www.tidymodels.org/find/parsnip/),
+we will see that the default parameters for
+[`decision_tree_rpart`](https://parsnip.tidymodels.org//reference/details_decision_tree_rpart.html)
+are `tree_depth = 30`, `min_n = 2`, and `cost_complexity = 0.01`.
+
+```{r}
+# Decision tree with specified parameters (stumps)
+explanation_list$sep_tree_stump <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 1,
   approach = "regression_separate",
-  regression_model = decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>%
-    set_engine("rpart") %>%
-    set_mode("regression")
+  regression_model = parsnip::decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>%
+    parsnip::set_engine("rpart") %>%
+    parsnip::set_mode("regression")
 )
 
-# Using default parameters
-explanation_sep_tree_default <- explain(
+# Decision tree with default parameters
+explanation_list$sep_tree_default <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 1,
   approach = "regression_separate",
-  regression_model = decision_tree() %>%
-    set_engine("rpart") %>%
-    set_mode("regression")
+  regression_model =
+    parsnip::decision_tree() %>%
+      parsnip::set_engine("rpart") %>%
+      parsnip::set_mode("regression")
 )
 ```
+We can also set `regression_model = parsnip::decision_tree(mode = "regression", engine = "rpart", tree_depth = 1, min_n = 2, cost_complexity = 0.01)` if we do not want to use the pipe function (`%>%`).
 
-We can now compare the two new methods. We see that the decision tree with default parameters (177.7) outperform 
-the linear model approach (745.2) with respect to the MSEv criterion, and is on the same level as the empirical
-approach (179.4). By using stumps, i.e., trees with depth one, we obtained a worse method (218.0).
+We can now compare the two new methods. We see that the decision tree with default parameters outperform 
+the linear model approach with respect to the $\operatorname{MSE}_v$ criterion, and is on the same level
+as the empirical approach. By using stumps, i.e., trees with depth one, we obtained a worse method.
 
 ```{r}
 # Compare the MSEv criterion of the different explanation methods
-plot_MSEv_eval_crit(list(
-  empirical = explanation_empirical,
-  sep_linear_model = explanation_sep_lm,
-  sep_tree_stump = explanation_sep_tree_stump,
-  sep_tree_default = explanation_sep_tree_default
-)) +
-  theme(legend.position = "none") # Remove the legend
+plot_MSEv_scores(explanation_list)
+
+# Print the MSEv scores and the elapsed time (in seconds) for the different methods
+print_MSEv_scores_and_time(explanation_list)
 ```
 
 ### Cross validation
 
 Another option is to use cross validation to tune the hyperparameters. To do this, we need to specify three things:
 
-1. In `regression_model`, we need to specify which parameters to tune in the model. This is done by setting the parameter
-equal to `tune()`. E.g., if we want to tune the `tree_depth` in the `decision_tree`,
-while using default parameters for the other parameters, then we set `decision_tree(tree_depth = tune())`.
-2. In `regression_tune_values`, we must provide a data.frame/data.table/tibble of the possible hyperparameter values
-to consider. The column names of `regression_tune_values` must match the tuneable hyperparameters specified in
-`regression_model`. I.e., for the example above, `regression_tune_values` must be a one column data.frame with the name
-`tree_depth`. This can either be done by specifying them manually, or use the `dials` package, e.g.,
-`dials::grid_regular(dials::tree_depth(), levels = 5)`.
-3. It is optional to specify the `regression_vfold_cv_para` parameter. If used, then `regression_vfold_cv_para` must
-be a named list specifying the parameters to send to the cross-validation function `rsample::vfold_cv()`. 
-See `?vfold_cv` to see the default parameters. The names in `regression_vfold_cv_para` must match the parameter names in
-`rsample::vfold_cv()`. For example, if we want 5-fold cv, then we set `regression_vfold_cv_para = list(v = 5)`.
+1. In `regression_model`, we need to specify which parameters to tune in the model. 
+This is done by setting the parameter equal to `tune()`. E.g., if we want to
+tune the `tree_depth` in the `decision_tree`, while using default parameters for the
+other parameters, then we set `decision_tree(tree_depth = tune())`.
+2. In `regression_tune_values`, we must provide a data.frame/data.table/tibble of the
+possible hyperparameter values to consider. The column names of `regression_tune_values`
+must match the tuneable hyperparameters specified in `regression_model`. I.e., for the
+example above, `regression_tune_values` must be a one column data.frame/data.table/tibble
+with the column name `tree_depth`. This can either be done by specifying the values manually
+or using the `dials` package, e.g., `dials::grid_regular(dials::tree_depth(), levels = 5)`.
+3. It is optional to specify the `regression_vfold_cv_para` parameter. If used, then
+`regression_vfold_cv_para` must be a named list specifying the parameters to send to the
+cross-validation function `rsample::vfold_cv()`. See `?rsample::vfold_cv` to see the default
+parameters. The names in `regression_vfold_cv_para` must match the parameter names in
+`rsample::vfold_cv()`. For example, if we want 5-fold cross validation, then we set
+`regression_vfold_cv_para = list(v = 5)`.
 
-
-Lets look at some ways to specify `regression_tune_values`.
+First, let us look at some ways to specify `regression_tune_values`. 
+Note that `dials` have several other grid functions too, e.g., `dials::grid_random()` 
+and `dials::grid_latin_hypercube()`.
 ```{r echo=TRUE, results='hide'}
 # Possible ways to define the `regression_tune_values` object. One automatic and three manual ways.
 dials::grid_regular(dials::tree_depth(), levels = 4)
@@ -238,263 +404,264 @@ dials::grid_regular(dials::tree_depth(), dials::cost_complexity(), levels = 3)
 expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.05, 0.01))
 ```
 
+We are now ready to to use cross validation to fine tune the separate decision tree regression method. In the 
+following examples, we consider to versions. In the first example, we use cross validation on the `tree_depth` parameter
+using the `dials::grid_regular()` function. In the second example, we tune the `tree_dept()` and `cost_complexity()`
+parameters, where the possible hyperparameter values have been manually specified.
 
-Then we use cross validation on the `tree_depth` parameter, and we see that we obtain better MSEv results (169.96).
+For the first version, we set `verbose = 2` to see the printouts. We get messages about which batch and
+coalition/combination that are currently being processed and the results of the cross-validation procedure.
+We skip the prinout for the second version due to the length of the printouts.
+
 ```{r}
-# Use trees with cross validation on the depth
-explanation_sep_tree_cv <- explain(
+# Decision tree with cross validated depth (default values other parameters)
+explanation_list$sep_tree_cv <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
-  verbose = 2,
+  verbose = 2, # If we want a prinout of the results
   approach = "regression_separate",
-  regression_model = decision_tree(tree_depth = tune()) %>%
-    set_engine("rpart") %>%
-    set_mode("regression"),
+  regression_model =
+    parsnip::decision_tree(tree_depth = tune()) %>%
+      parsnip::set_engine("rpart") %>%
+      parsnip::set_mode("regression"),
   regression_tune_values = dials::grid_regular(dials::tree_depth(), levels = 4),
   regression_vfold_cv_para = list(v = 5)
 )
 
-# Compare the MSEv criterion of the different explanation methods. Remove linear_model
-plot_MSEv_eval_crit(list(
-  empirical = explanation_empirical,
-  sep_tree_stump = explanation_sep_tree_stump,
-  sep_tree_default = explanation_sep_tree_default,
-  sep_tree_cv = explanation_sep_tree_cv
-)) +
-  theme(legend.position = "none") # Remove the legend
-```
-```{r}
-# Use trees with cross validation on the depth and cost complexity. Manually set the values
-explanation_sep_tree_cv_2 <- explain(
+# Use trees with cross validation on the depth and cost complexity. Manually set the values.
+explanation_list$sep_tree_cv_2 <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
-  verbose = 2, # If we want a prinout of the results
   approach = "regression_separate",
-  regression_model = decision_tree(tree_depth = tune(), cost_complexity = tune()) %>%
-    set_engine("rpart") %>%
-    set_mode("regression"),
-  regression_tune_values = expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
+  regression_model =
+    parsnip::decision_tree(tree_depth = tune(), cost_complexity = tune()) %>%
+      parsnip::set_engine("rpart") %>%
+      parsnip::set_mode("regression"),
+  regression_tune_values =
+    expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
+  regression_vfold_cv_para = list(v = 5)
+)
+```
+
+We can look at the $\operatorname{MSE}_v$ evaluation criterion and we see that conducting cross-validation
+drastically improves the methods. The two cross-validated methods are very comparable, but the second version
+outperforms the first version with a small margin. Note that this a bit of an unfair comparison for the `empirical`
+approach which also has hyper-parameters one could tune. However, `shapr` does not currently provide a function
+to do this automatically.
+
+```{r}
+plot_MSEv_scores(explanation_list)
+```
+
+Furthermore, we have to consider that doing the cross validation drastically increase the elapsed time in seconds.
+Thus, we have to evaluate if the better precision is worth the extra elapsed time. 
+
+```{r}
+# Print the MSEv scores and the elapsed time (in seconds) for the different methods
+print_MSEv_scores_and_time(explanation_list)
+```
+
+
+### Parallelization
+The separate regression models can be trained in parallel using the *future* package. This is easily done with the
+`shapr` package as explained in the main vignette, where also how to enabling progress bars are discussed. 
+
+We use three methods here. The first method use default `xgboost` models, while the other two use cross-validation
+to tune the number of trees. The latter two specify the same potential hyperparameter values, but the first one is
+run sequentially while the second one is run in parallel to speed up the computations.
+
+```{r}
+# Regular xgboost with default parameters
+explanation_list$sep_xgboost <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::boost_tree() %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression")
+)
+
+# Do cross validation on number of trees
+explanation_list$sep_xgboost_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::boost_tree(trees = tune()) %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression"),
+  regression_tune_values = expand.grid(trees = c(5, 15, 25)),
   regression_vfold_cv_para = list(v = 5)
 )
 
-# Compare the MSEv criterion of the different explanation methods. Remove linear_model
-plot_MSEv_eval_crit(list(
-  empirical = explanation_empirical,
-  sep_tree_stump = explanation_sep_tree_stump,
-  sep_tree_default = explanation_sep_tree_default,
-  sep_tree_cv = explanation_sep_tree_cv,
-  sep_tree_cv_2 = explanation_sep_tree_cv_2
-)) +
-  theme(legend.position = "none") # Remove the legend
-```
-
-
-Note that this a bit of an unfair comparison for the `empirical` approach which also has hyper-parameters one could
-tune. However, `shapr` does not currently provide a function to do this automatically.
-
-
-Furthermore, we have to consider that doing the cross validation drastically increase the elapsed time in seconds.
-```{r}
-# Elapsed time for the different methods
-unlist(sapply(list(
-  empirical = explanation_empirical,
-  sep_linear_model = explanation_sep_lm,
-  sep_tree_stump = explanation_sep_tree_stump,
-  sep_tree_default = explanation_sep_tree_default,
-  sep_tree_cv = explanation_sep_tree_cv,
-  sep_tree_cv_2 = explanation_sep_tree_cv_2
-), "[[", "timing")[2, ])
-```
-
-
-
-```{r}
-explanation_sep_xgboost <- explain(
+# Do cross validation on number of trees but this time in parallel on two threads
+future::plan(multisession, workers = 2)
+explanation_list$sep_xgboost_cv_par <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
-  verbose = 2, # If we want a prinout of the results
   approach = "regression_separate",
-  regression_model = boost_tree() %>% set_engine("xgboost") %>% set_mode("regression")
+  regression_model = parsnip::boost_tree(trees = tune()) %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression"),
+  regression_tune_values = expand.grid(trees = c(5, 15, 25)),
+  regression_vfold_cv_para = list(v = 5)
 )
 
-
-library(progressr)
-library(future)
-future::plan(multisession, workers = 4)
-progressr::handlers("cli") # requires the 'cli' package
-progressr::with_progress({
-  explanation_sep_xgboost_cv <- explain(
-    model = model,
-    x_explain = x_explain,
-    x_train = x_train,
-    prediction_zero = p0,
-    n_batches = 15,
-    verbose = 2, # If we want a printout of the results
-    approach = "regression_separate",
-    regression_model = boost_tree(trees = tune()) %>%
-      set_engine("xgboost") %>%
-      set_mode("regression"),
-    regression_tune_values = dials::grid_regular(dials::tree_depth(),
-      dials::trees(range = c(50, 1000)),
-      dials::learn_rate(),
-      levels = 4
-    ),
-    regression_vfold_cv_para = list(v = 4)
-  )
-})
+explanation_list$sep_xgboost_cv_2_par <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::boost_tree(trees = tune(), tree_depth = tune()) %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression"),
+  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression_vfold_cv_para = list(v = 5)
+)
 future::plan(sequential) # To return to non-parallel computation
-
-# Compare the MSEv criterion of the different explanation methods. Remove linear_model
-plot_MSEv_eval_crit(list(
-  empirical = explanation_empirical,
-  sep_tree_stump = explanation_sep_tree_stump,
-  sep_tree_default = explanation_sep_tree_default,
-  sep_tree_cv = explanation_sep_tree_cv,
-  sep_tree_cv_2 = explanation_sep_tree_cv_2,
-  sep_xgboost = explanation_sep_xgboost,
-  sep_xgboost_cv = explanation_sep_xgboost_cv
-)) +
-  theme(legend.position = "none") # Remove the legend
 ```
+
+We can look at the elapsed time and we see that the parallel version is twice as fast as the sequential version.
+Furthermore, we see that conducting the cross-validation has lowered the $\operatorname{MSE}_v$ criterion drastically.
+Also note that we obtain the same value no matter if we run the cross-validation in parallel or sequentially.
+```{r}
+# Print the MSEv scores and the elapsed time (in seconds) for the different methods
+print_MSEv_scores_and_time(explanation_list)
+```
+
+
+
 
 
 
 # The surrogate regression method class {#surrogate}
-
-
 Since the \separatereg\ methods train a new regression model $g_S(\boldsymbol{x}_S)$ for each coalition
 $S \subseteq \{1,2,\dots,M\}$, a total of $2^M-2$ models has to be trained, which can be time-consuming for
 slowly fitted models. The minus two corresponds to the empty and grand coalitions.
+
 The \surrogatereg\ method class builds on the ideas from the \separatereg\ class, but instead of fitting a
 new regression model for each coalition, we train a single regression model $g(\tilde{\boldsymbol{x}}_S)$
 for all coalitions $S \subseteq \{1,2,\dots,M\}$ (except empty and grand coalitions),
 where $\tilde{\boldsymbol{x}}_S$ is an augmented version of $\boldsymbol{x}_S$. See Section 3.6.1 in
 @olsen2023comparative for more details and examples.
 
+All the examples given above for the separate regression method class can also be applied for the
+surrogate regression method class.
 
 
 ## Code {#surrogate_code}
 
+We illustrate the surrogate method class with several regression models. More specifically, we use linear regression,
+random forest (with and without (some) cross-validation), and xgboost (with and without (some) cross-validation).
+
 ```{r}
-# Specify that we are using the regression paradigm and the separate method class
-approach <- "regression_surrogate"
-
-# Specify that we want to use a linear regression model
-regression_model <- parsnip::linear_reg()
-
-# Compute the Shapley value explanations
-explanation_sur_lm <- explain(
+# Compute the Shapley value explanations using a surrogate linear regression model
+explanation_list$sur_lm <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
-  approach = approach,
-  verbose = 2,
+  approach = "regression_surrogate",
   regression_model = parsnip::linear_reg()
 )
 
-# Compare the MSEv criterion of the different explanation methods. Remove linear_model
-plot_MSEv_eval_crit(list(
-  empirical = explanation_empirical,
-  sep_tree_stump = explanation_sep_tree_stump,
-  sep_tree_default = explanation_sep_tree_default,
-  sep_tree_cv = explanation_sep_tree_cv,
-  sep_tree_cv_2 = explanation_sep_tree_cv_2,
-  sep_lm = explanation_sep_lm,
-  sur_lm = explanation_sur_lm
-)) +
-  theme(legend.position = "none") # Remove the legend
-```
-```{r}
 # Using random forest with default parameters as the surrogate model
-explanation_sur_rf <- explain(
+explanation_list$sur_rf <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
-  approach = approach,
-  verbose = 2,
-  regression_model = rand_forest() %>%
-    set_engine("ranger") %>%
-    set_mode("regression")
+  approach = "regression_surrogate",
+  regression_model = parsnip::rand_forest() %>%
+    parsnip::set_engine("ranger") %>%
+    parsnip::set_mode("regression")
 )
 
 # Using random forest with parameters tuned by cv as the surrogate model
-explanation_sur_rf <- explain(
+explanation_list$sur_rf_cv <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
-  approach = approach,
-  verbose = 2,
-  regression_model = rand_forest(mtry = tune(), trees = tune()) %>%
-    set_engine("ranger") %>%
-    set_mode("regression"),
+  approach = "regression_surrogate",
+  regression_model = parsnip::rand_forest(mtry = tune(), trees = tune()) %>%
+    parsnip::set_engine("ranger") %>%
+    parsnip::set_mode("regression"),
   regression_tune_values =
     dials::grid_regular(dials::mtry(c(1, ncol(x_explain) - 1)), dials::trees(c(10, 750)), levels = 4),
   regression_vfold_cv_para = list(v = 5)
 )
 
 # Using xgboost with default parameters as the surrogate model
-explanation_sur_xgboost <- explain(
+explanation_list$sur_xgboost <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
-  approach = approach,
-  verbose = 2,
-  regression_model = boost_tree() %>%
-    set_engine("xgboost") %>%
-    set_mode("regression")
+  approach = "regression_surrogate",
+  regression_model = parsnip::boost_tree() %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression")
 )
 
-# Compare the MSEv criterion of the different explanation methods. Remove linear_model
-plot_MSEv_eval_crit(list(
-  empirical = explanation_empirical,
-  sep_tree_stump = explanation_sep_tree_stump,
-  sep_tree_default = explanation_sep_tree_default,
-  sep_tree_cv = explanation_sep_tree_cv,
-  sep_tree_cv_2 = explanation_sep_tree_cv_2,
-  sur_rf = explanation_sur_rf,
-  sur_rf_cv = explanation_sur_rf_cv,
-  sur_xgboost = explanation_sur_xgboost
-)) +
-  theme(legend.position = "none") # Remove the legend
+# Using xgboost with default parameters as the surrogate model
+explanation_list$sur_xgboost_cv3 <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::boost_tree(trees = tune(), tree_depth = tune()) %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression"),
+  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression_vfold_cv_para = list(v = 10)
+)
 ```
 
 ```{r}
-plot_SV_several_approaches(list(
-  empirical = explanation_empirical,
-  sep_tree_stump = explanation_sep_tree_stump,
-  sep_tree_default = explanation_sep_tree_default,
-  sep_tree_cv = explanation_sep_tree_cv,
-  sep_tree_cv_2 = explanation_sep_tree_cv_2,
-  sur_rf = explanation_sur_rf,
-  sur_rf_cv = explanation_sur_rf_cv,
-  sur_xgboost = explanation_sur_xgboost
-), index_explicands = 1:4)
+# Compare the MSEv criterion of the different explanation methods.
+# Include vertical line corresponding to the MSEv of the empirical method.
+plot_MSEv_scores(explanation_list, method_line = "empirical")
+
+# Print the MSEv scores and the elapsed time (in seconds) for the different methods
+print_MSEv_scores_and_time(explanation_list)
+```
+
+```{r}
+plot_SV_several_approaches(explanation_list, index_explicands = 1:2)
 ```
 
 
 
 # Add new regression methods {#new}
 
-Even though the `tidymodels` package contain a lot of models (See [list of tidymodels](https://www.tidymodels.org/find/parsnip/)), we might want to add additional methods.
+Even though the `tidymodels` package contain a lot of models 
+(See [list of tidymodels](https://www.tidymodels.org/find/parsnip/)), we might want to add additional methods.
 In the following section, we illustrate how to add a the projection pursuit regression (PPR) model as 
-new method that can be used by `shapr` to compute the Shapley value explanations; both as a separate and surrogate method.
+new method that can be used by `shapr` to compute the Shapley value explanations;
+both as a separate and surrogate method.
 
 We use the `ppr()` implementation in the `stats` package to fit the PPR model. The model has several
 hyperparameters that can be tuned, but the main hyperparameter is the number of terms `nterms`.
@@ -503,173 +670,196 @@ we refer to that guide for more details and explanations of the code below.
 
 
 ```{r}
-library(parsnip)
+# Step 1: register the model, modes, and arguments
+parsnip::set_new_model(model = "ppr_reg")
+parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
+parsnip::set_model_engine(model = "ppr_reg", mode = "regression", eng = "ppr")
+parsnip::set_dependency("ppr_reg", eng = "ppr", pkg = "stats")
 
-  # Step 1: register the model, modes, and arguments
-  parsnip::set_new_model(model = "ppr_reg")
-  parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
-  parsnip::set_model_engine(model = "ppr_reg", mode = "regression", eng = "ppr")
-  parsnip::set_dependency("ppr_reg", eng = "ppr", pkg = "stats")
-
-  # If your function has several parameters, then we add one of these functions for each parameter
-  parsnip::set_model_arg(
-    model = "ppr_reg",
-    eng = "ppr",
-    original = "nterms", # The original parameter name used in stats::ppr
-    parsnip = "num_terms", # Change parameter name to match tidymodels' name convention
-    func = list(pkg = "dials", fun = "num_terms"), #list(pkg = "stats", fun = "ppr"),
-    has_submodel = FALSE
-  )
-
-  # Step 2: create the model function
-  ppr_reg <- function(mode = "regression", num_terms = NULL) {
-    # Check for correct mode
-    if (mode  != "regression") rlang::abort("`mode` should be 'regression'")
-
-    # Capture the arguments in quosures
-    args <- list(num_terms = rlang::enquo(num_terms))
-
-    # Save some empty slots for future parts of the specification
-    parsnip::new_model_spec(
-      "ppr_reg",
-      args = args,
-      eng_args = NULL,
-      mode = mode,
-      method = NULL,
-      engine = NULL
-    )
-  }
-
-  # Step 3: add a fit module
-  parsnip::set_fit(
-    model = "ppr_reg",
-    eng = "ppr",
-    mode = "regression",
-    value = list(
-      interface = "formula",
-      protect = c("formula", "data", "weights"),
-      func = c(pkg = "stats", fun = "ppr"),
-      defaults = list()
-    )
-  )
-
-  parsnip::set_encoding(
-    model = "ppr_reg",
-    eng = "ppr",
-    mode = "regression",
-    options = list(
-      predictor_indicators = "traditional",
-      compute_intercept = TRUE,
-      remove_intercept = TRUE,
-      allow_sparse_x = FALSE
-    )
-  )
-
-  # Step 4: add modules for prediction
-  parsnip::set_pred(
-    model = "ppr_reg",
-    eng = "ppr",
-    mode = "regression",
-    type = "numeric",
-    value = list(
-      pre = NULL,
-      post = NULL,
-      func = c(fun = "predict"),
-      args = list(
-        object = quote(object$fit),
-        newdata = quote(new_data),
-        type = "numeric"
-      )
-    )
-  )
-
-  # Step 5: add tuning function (used by tune::tune_grid())
-  tunable.ppr_reg <- function(x, ...) {
-    tibble::tibble(
-      name = c("num_terms"),
-      call_info = list(list(pkg = NULL, fun = "num_terms")),
-      source = "model_spec",
-      component = "ppr_reg",
-      component_id = "main"
-    )
-  }
-
-  # Step 6: add updating function (used by tune::finalize_workflow())
-  update.ppr_reg <- function(object, parameters = NULL, num_terms = NULL, ...) {
-    rlang::check_installed("parsnip")
-    eng_args <- parsnip::update_engine_parameters(object$eng_args, fresh = TRUE, ...)
-    args <- list(num_terms = rlang::enquo(num_terms))
-    args <- parsnip::update_main_parameters(args, parameters)
-    parsnip::new_model_spec(
-      "ppr_reg",
-      args = args,
-      eng_args = eng_args,
-      mode = object$mode,
-      method = NULL,
-      engine = object$engine
-    )
-  }
-```
-We can now test it:
-
-```{r}
-
-data("airquality")
-data <- data.table::as.data.table(airquality)
-data <- data[complete.cases(data), ]
-
-x_var <- c("Solar.R", "Wind", "Temp", "Month")
-y_var <- "Ozone"
-
-ind_x_explain <- 1:20
-x_train <- data[-ind_x_explain, ..x_var]
-y_train <- data[-ind_x_explain, get(y_var)]
-x_explain <- data[ind_x_explain, ..x_var]
-
-# Fitting a basic xgboost model to the training data
-model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
-  nround = 20,
-  verbose = FALSE
+# If your function has several parameters, then we add one of these functions for each parameter
+parsnip::set_model_arg(
+  model = "ppr_reg",
+  eng = "ppr",
+  original = "nterms", # The original parameter name used in stats::ppr
+  parsnip = "num_terms", # Change parameter name to match tidymodels' name convention
+  func = list(pkg = "dials", fun = "num_terms"), # list(pkg = "stats", fun = "ppr"),
+  has_submodel = FALSE
 )
 
-# Specifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(y_train)
+# Step 2: create the model function
+ppr_reg <- function(mode = "regression", num_terms = NULL) {
+  # Check for correct mode
+  if (mode != "regression") rlang::abort("`mode` should be 'regression'")
 
-# Specify that we are using the regression paradigm and the separate method class
-approach <- "regression_separate"
+  # Capture the arguments in quosures
+  args <- list(num_terms = rlang::enquo(num_terms))
 
-# Compute the Shapley value explanations
-explanation_sep_ppr <- shapr::explain(
+  # Save some empty slots for future parts of the specification
+  parsnip::new_model_spec(
+    "ppr_reg",
+    args = args,
+    eng_args = NULL,
+    mode = mode,
+    method = NULL,
+    engine = NULL
+  )
+}
+
+# Step 3: add a fit module
+parsnip::set_fit(
+  model = "ppr_reg",
+  eng = "ppr",
+  mode = "regression",
+  value = list(
+    interface = "formula",
+    protect = c("formula", "data", "weights"),
+    func = c(pkg = "stats", fun = "ppr"),
+    defaults = list()
+  )
+)
+
+parsnip::set_encoding(
+  model = "ppr_reg",
+  eng = "ppr",
+  mode = "regression",
+  options = list(
+    predictor_indicators = "traditional",
+    compute_intercept = TRUE,
+    remove_intercept = TRUE,
+    allow_sparse_x = FALSE
+  )
+)
+
+# Step 4: add modules for prediction
+parsnip::set_pred(
+  model = "ppr_reg",
+  eng = "ppr",
+  mode = "regression",
+  type = "numeric",
+  value = list(
+    pre = NULL,
+    post = NULL,
+    func = c(fun = "predict"),
+    args = list(
+      object = quote(object$fit),
+      newdata = quote(new_data),
+      type = "numeric"
+    )
+  )
+)
+
+# Step 5: add tuning function (used by tune::tune_grid())
+tunable.ppr_reg <- function(x, ...) {
+  tibble::tibble(
+    name = c("num_terms"),
+    call_info = list(list(pkg = NULL, fun = "num_terms")),
+    source = "model_spec",
+    component = "ppr_reg",
+    component_id = "main"
+  )
+}
+
+# Step 6: add updating function (used by tune::finalize_workflow())
+update.ppr_reg <- function(object, parameters = NULL, num_terms = NULL, ...) {
+  rlang::check_installed("parsnip")
+  eng_args <- parsnip::update_engine_parameters(object$eng_args, fresh = TRUE, ...)
+  args <- list(num_terms = rlang::enquo(num_terms))
+  args <- parsnip::update_main_parameters(args, parameters)
+  parsnip::new_model_spec(
+    "ppr_reg",
+    args = args,
+    eng_args = eng_args,
+    mode = object$mode,
+    method = NULL,
+    engine = object$engine
+  )
+}
+```
+
+
+We can now use the PPR model to compute the Shapley value explanations. We can use it as both a separate and
+surrogate approach, and we can either set the number of terms `num_terms` to a specific value or we can use cross-validation to tune it. We do all four combinations below.
+
+```{r}
+# PPR separate with specified number of terms
+explanation_list$sep_ppr <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  approach = approach,
+  approach = "regression_separate",
   regression_model = ppr_reg(num_terms = 2) %>% set_engine("ppr") %>% set_mode("regression")
 )
 
-# Compute the Shapley value explanations
-explanation_sep_ppr_cv <- shapr::explain(
+# PPR separate with cross-validated number of terms
+explanation_list$sep_ppr_cv <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  approach = approach,
-  regression_model = 
-    ppr_reg(num_terms = tune()) %>% set_engine("ppr") %>% set_mode("regression"),
+  approach = "regression_separate",
+  regression_model = parsnip::ppr_reg(num_terms = tune()) %>%
+    parsnip::set_engine("ppr") %>%
+    parsnip::set_mode("regression"),
   regression_tune_values = dials::grid_regular(dials::num_terms(c(1, 4)), levels = 3),
   regression_vfold_cv_para = list(v = 10)
 )
 
+# PPR surrogate with specified number of terms
+explanation_list$sur_ppr <- shapr::explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = "regression_surrogate",
+  regression_model = parsnip::ppr_reg(num_terms = 3) %>%
+    parsnip::set_engine("ppr") %>%
+    parsnip::set_mode("regression")
+)
+
+# PPR surrogate with cross-validated number of terms
+explanation_list$sur_ppr_cv <- shapr::explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  approach = "regression_surrogate",
+  regression_model = parsnip::ppr_reg(num_terms = tune()) %>%
+    parsnip::set_engine("ppr") %>%
+    parsnip::set_mode("regression"),
+  regression_tune_values = dials::grid_regular(dials::num_terms(c(1, 8)), levels = 4),
+  regression_vfold_cv_para = list(v = 10)
+)
+```
+We can then compare the $\operatorname{MSE}_v$ and some of the Shapley value explanations.
+We see that conducting cross-validation improves the evaluation criterion,
+but also increase the running time.
+
+```{r}
+# Print the MSEv scores and the elapsed time (in seconds) for the different methods
+print_MSEv_scores_and_time(explanation_list)
+
 # Compare the MSEv criterion of the different explanation methods
-shapr::plot_MSEv_eval_crit(list(
-  empirical = explanation_empirical,
-  sep_linear_model = explanation_sep_lm,
-  sep_ppr_model = explanation_sep_ppr,
-  sep_ppr_model_cv = explanation_sep_ppr_cv
-)) +
-  theme(legend.position = "none") # Remove the legend
+plot_MSEv_scores(explanation_list)
+
+# Compare the Shapley value explanations for the first four explicands
+plot_SV_several_approaches(explanation_list_ppr, index_explicands = c(1:4))
 ```
 
+
+# Summary figures {#summary}
+
+Here we include all the approaches that we 
+
+
+
+```{r}
+# Print the MSEv scores and the elapsed time (in seconds) for the different methods
+print_MSEv_scores_and_time(explanation_list)
+
+# Compare the MSEv criterion of the different explanation methods
+plot_MSEv_scores(explanation_list)
+
+# Compare the Shapley value explanations for the first four explicands
+plot_SV_several_approaches(explanation_list_ppr, index_explicands = c(1:4))
+```
