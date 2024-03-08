@@ -1,11 +1,11 @@
 ---
-title: "Shapley value explanations using the regression paradigm "
+title: "Shapley value explanations using the regression paradigm"
 author: "Lars Henry Berge Olsen"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{The `vaeac` approach in `shapr`}
+  %\VignetteIndexEntry{Shapley value explanations using the regression paradigm}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   markdown:
@@ -167,11 +167,12 @@ print_MSEv_scores_and_time <- function(explanation_list) {
 }
 ```
 
-To have a baseline to compare the regression methods with, we will in this vignette compare them with¨
-the Monte Carlos based `empirical` approach with defualt hyperparameters.
-```{r empirical}
+To have a baseline to compare the regression methods with, we will in this vignette compare them with
+the Monte Carlos based `empirical` approach with default hyperparameters. In the last section, we include
+all Monte Carlo based methods implemented in `shapr`, and it is `empirical` that performs the best.
+```{r empirical, cache=TRUE}
 # Compute the Shapley value explanations using the empirical method
-explanation_list$empirical <- shapr::explain(
+explanation_list$MC_empirical <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -186,7 +187,7 @@ explanation_list$empirical <- shapr::explain(
 ### Linear regression model
 Then we compute the Shapley value explanations using a linear
 regression model and the separate regression method class.
-```{r explain-sep-lm}
+```{r explain-sep-lm, cache=TRUE}
 explanation_list$sep_lm <- explain(
   model = model,
   x_explain = x_explain,
@@ -201,7 +202,7 @@ A linear model is often not flexible enough to properly model the contribution f
 inaccurate Shapley value explanations. We see in the figure below that the `empirical` approach outperforms the
 linear regression model approach quite significantly with respect to the $\operatorname{MSE}_v$ evaluation criterion.
 
-```{r lm-emp-msev}
+```{r lm-emp-msev, cache=TRUE}
 plot_MSEv_scores(explanation_list)
 ```
 
@@ -225,7 +226,7 @@ We give an example of this below.
 First, we demonstrate how to compute the principal components and use (up-to) the first two components for
 each separate linear regression models. We write up-to as for the singleton coalitions, we can only compute a single
 component (the feature in itself). This is called principal component regression. 
-```{r pcr}
+```{r pcr, cache=TRUE}
 explanation_list$sep_pcr <- explain(
   model = model,
   x_explain = x_explain,
@@ -240,7 +241,7 @@ explanation_list$sep_pcr <- explain(
 ```
 
 Second, we use natural spline basis functions with two degrees of freedom. This is similar to fitting a GAM.
-```{r natural-splines}
+```{r natural-splines, cache=TRUE}
 explanation_list$sep_splines <- explain(
   model = model,
   x_explain = x_explain,
@@ -261,7 +262,7 @@ These transformations are only applied when the features are present for the dif
 
 Furthermore, we stress that the purpose of this example is to highlight the flexibility of the framework and
 NOT that the transformations below are reasonable to do. 
-```{r}
+```{r recipe-func, cache=TRUE}
 # Example function of how to apply step functions from the recipes package to specific features
 regression_recipe_func <- function(regression_recipe) {
   # Get the names of the present features
@@ -302,7 +303,7 @@ explanation_list$sep_reicpe_example <- explain(
 )
 ```
 
-```{r}
+```{r preproc-plot, cache=TRUE}
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list)
 
@@ -328,7 +329,7 @@ we will see that the default parameters for
 [`decision_tree_rpart`](https://parsnip.tidymodels.org//reference/details_decision_tree_rpart.html)
 are `tree_depth = 30`, `min_n = 2`, and `cost_complexity = 0.01`.
 
-```{r}
+```{r decision-tree, cache=TRUE}
 # Decision tree with specified parameters (stumps)
 explanation_list$sep_tree_stump <- explain(
   model = model,
@@ -362,7 +363,7 @@ We can now compare the two new methods. We see that the decision tree with defau
 the linear model approach with respect to the $\operatorname{MSE}_v$ criterion, and is on the same level
 as the empirical approach. By using stumps, i.e., trees with depth one, we obtained a worse method.
 
-```{r}
+```{r decision-tree-plot, cache=TRUE}
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list)
 
@@ -413,7 +414,7 @@ For the first version, we set `verbose = 2` to see the printouts. We get message
 coalition/combination that are currently being processed and the results of the cross-validation procedure.
 We skip the prinout for the second version due to the length of the printouts.
 
-```{r}
+```{r dt-cv, cache=TRUE}
 # Decision tree with cross validated depth (default values other parameters)
 explanation_list$sep_tree_cv <- explain(
   model = model,
@@ -455,14 +456,14 @@ outperforms the first version with a small margin. Note that this a bit of an un
 approach which also has hyper-parameters one could tune. However, `shapr` does not currently provide a function
 to do this automatically.
 
-```{r}
+```{r dt-cv-plot, cache=TRUE}
 plot_MSEv_scores(explanation_list)
 ```
 
 Furthermore, we have to consider that doing the cross validation drastically increase the elapsed time in seconds.
 Thus, we have to evaluate if the better precision is worth the extra elapsed time. 
 
-```{r}
+```{r dt-cv-print, cache=TRUE}
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 ```
@@ -476,7 +477,7 @@ We use three methods here. The first method use default `xgboost` models, while 
 to tune the number of trees. The latter two specify the same potential hyperparameter values, but the first one is
 run sequentially while the second one is run in parallel to speed up the computations.
 
-```{r}
+```{r xgboost, cache=TRUE}
 # Regular xgboost with default parameters
 explanation_list$sep_xgboost <- explain(
   model = model,
@@ -506,7 +507,7 @@ explanation_list$sep_xgboost_cv <- explain(
 )
 
 # Do cross validation on number of trees but this time in parallel on two threads
-future::plan(multisession, workers = 2)
+future::plan(future::multisession, workers = 2)
 explanation_list$sep_xgboost_cv_par <- explain(
   model = model,
   x_explain = x_explain,
@@ -534,13 +535,13 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
   regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression_vfold_cv_para = list(v = 5)
 )
-future::plan(sequential) # To return to non-parallel computation
+future::plan(future::sequential) # To return to non-parallel computation
 ```
 
 We can look at the elapsed time and we see that the parallel version is twice as fast as the sequential version.
 Furthermore, we see that conducting the cross-validation has lowered the $\operatorname{MSE}_v$ criterion drastically.
 Also note that we obtain the same value no matter if we run the cross-validation in parallel or sequentially.
-```{r}
+```{r xgboost-print, cache=TRUE}
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 ```
@@ -570,7 +571,7 @@ surrogate regression method class.
 We illustrate the surrogate method class with several regression models. More specifically, we use linear regression,
 random forest (with and without (some) cross-validation), and xgboost (with and without (some) cross-validation).
 
-```{r}
+```{r surrogate, cache=TRUE}
 # Compute the Shapley value explanations using a surrogate linear regression model
 explanation_list$sur_lm <- explain(
   model = model,
@@ -625,7 +626,7 @@ explanation_list$sur_xgboost <- explain(
 )
 
 # Using xgboost with default parameters as the surrogate model
-explanation_list$sur_xgboost_cv3 <- explain(
+explanation_list$sur_xgboost_cv <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -636,23 +637,19 @@ explanation_list$sur_xgboost_cv3 <- explain(
     parsnip::set_engine("xgboost") %>%
     parsnip::set_mode("regression"),
   regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
-  regression_vfold_cv_para = list(v = 10)
+  regression_vfold_cv_para = list(v = 5)
 )
 ```
 
-```{r}
+We can then look at the 
+```{r surrogate-plot, cache=TRUE}
 # Compare the MSEv criterion of the different explanation methods.
 # Include vertical line corresponding to the MSEv of the empirical method.
-plot_MSEv_scores(explanation_list, method_line = "empirical")
+plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 ```
-
-```{r}
-plot_SV_several_approaches(explanation_list, index_explicands = 1:2)
-```
-
 
 
 # Add new regression methods {#new}
@@ -669,7 +666,7 @@ The following is based on [tidymodels' guide](https://www.tidymodels.org/learn/d
 we refer to that guide for more details and explanations of the code below.
 
 
-```{r}
+```{r ppr-setup, cache=TRUE}
 # Step 1: register the model, modes, and arguments
 parsnip::set_new_model(model = "ppr_reg")
 parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
@@ -780,13 +777,14 @@ update.ppr_reg <- function(object, parameters = NULL, num_terms = NULL, ...) {
 We can now use the PPR model to compute the Shapley value explanations. We can use it as both a separate and
 surrogate approach, and we can either set the number of terms `num_terms` to a specific value or we can use cross-validation to tune it. We do all four combinations below.
 
-```{r}
+```{r ppr-train, cache=TRUE}
 # PPR separate with specified number of terms
 explanation_list$sep_ppr <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
+  n_batches = 4,
   approach = "regression_separate",
   regression_model = ppr_reg(num_terms = 2) %>% set_engine("ppr") %>% set_mode("regression")
 )
@@ -797,8 +795,9 @@ explanation_list$sep_ppr_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
+  n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::ppr_reg(num_terms = tune()) %>%
+  regression_model = ppr_reg(num_terms = tune()) %>%
     parsnip::set_engine("ppr") %>%
     parsnip::set_mode("regression"),
   regression_tune_values = dials::grid_regular(dials::num_terms(c(1, 4)), levels = 3),
@@ -806,25 +805,27 @@ explanation_list$sep_ppr_cv <- explain(
 )
 
 # PPR surrogate with specified number of terms
-explanation_list$sur_ppr <- shapr::explain(
+explanation_list$sur_ppr <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
+  n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::ppr_reg(num_terms = 3) %>%
+  regression_model = ppr_reg(num_terms = 3) %>%
     parsnip::set_engine("ppr") %>%
     parsnip::set_mode("regression")
 )
 
 # PPR surrogate with cross-validated number of terms
-explanation_list$sur_ppr_cv <- shapr::explain(
+explanation_list$sur_ppr_cv <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
+  n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::ppr_reg(num_terms = tune()) %>%
+  regression_model = ppr_reg(num_terms = tune()) %>%
     parsnip::set_engine("ppr") %>%
     parsnip::set_mode("regression"),
   regression_tune_values = dials::grid_regular(dials::num_terms(c(1, 8)), levels = 4),
@@ -835,31 +836,100 @@ We can then compare the $\operatorname{MSE}_v$ and some of the Shapley value exp
 We see that conducting cross-validation improves the evaluation criterion,
 but also increase the running time.
 
-```{r}
+```{r ppr-plot, cache=TRUE}
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list)
-
-# Compare the Shapley value explanations for the first four explicands
-plot_SV_several_approaches(explanation_list_ppr, index_explicands = c(1:4))
 ```
 
 
 # Summary figures {#summary}
-
 Here we include all the approaches that we 
+```{r MC, cache=TRUE}
+explanation_list_MC <- list()
+
+# Compute the Shapley value explanations using the empirical method
+explanation_list_MC$MC_independence <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  n_batches = 4,
+  approach = "independence",
+  prediction_zero = p0
+)
+
+explanation_list_MC$MC_empirical <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  n_batches = 4,
+  approach = "empirical",
+  prediction_zero = p0
+)
+
+explanation_list_MC$MC_gaussian <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  n_batches = 4,
+  approach = "gaussian",
+  prediction_zero = p0
+)
+
+explanation_list_MC$MC_copula <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  n_batches = 4,
+  approach = "copula",
+  prediction_zero = p0
+)
+
+explanation_list_MC$MC_ctree <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  n_batches = 4,
+  approach = "ctree",
+  prediction_zero = p0
+)
+
+explanation_list_MC$MC_vaeac <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  n_batches = 4,
+  approach = "vaeac",
+  prediction_zero = p0
+)
+
+# Combine the two explanations lists
+explanation_list[1] <- NULL
+explanation_list <- c(explanation_list_MC, explanation_list)
+```
 
 
+We can now look at plots of the $\operatorname{MSE}_v$ evaluation criterion. We include a 
+vertical line corresponding to the $\operatorname{MSE}_v$ of the `empirical` method to make it easier to compare the
+regression methods with the Monte Carlo based methods. 
 
-```{r}
+```{r MSEv-sum, cache=TRUE}
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 
 # Compare the MSEv criterion of the different explanation methods
-plot_MSEv_scores(explanation_list)
+# Include vertical line corresponding to the MSEv of the empirical method.
+plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+```
 
-# Compare the Shapley value explanations for the first four explicands
-plot_SV_several_approaches(explanation_list_ppr, index_explicands = c(1:4))
+We can also look at how the different Shapley value explanations looks for the first six explicands (two at the time). 
+We see that most methods agree in the general directions, especially for the most important features 
+(the features with largest Shapley values in absolute value), but there are some differences for the less
+important features.
+```{r SV-sum, cache=TRUE}
+plot_SV_several_approaches(explanation_list, index_explicands = c(1, 2), facet_ncol = 1)
+plot_SV_several_approaches(explanation_list, index_explicands = c(3, 4), facet_ncol = 1)
+plot_SV_several_approaches(explanation_list, index_explicands = c(5, 6), facet_ncol = 1)
 ```
