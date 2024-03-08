@@ -113,6 +113,8 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 #' the values provided in `regression_tune_values`. Note that no checks are conducted as this is checked earlier in
 #' `setup_approach.regression_separate` and `setup_approach.regression_surrogate`.
 #' @param regression_response_var String (default is `y_hat`) containing the name of the response variable.
+#' @param regression_sur_n_comb Integer (default is `NULL`). The number of times each training observations
+#' has been augmented. If `NULL`, then we assume that we are doing separate regression.
 #'
 #' @return A trained [tidymodels()] model based on the provided input parameters.
 #' @export
@@ -125,6 +127,7 @@ regression_train <- function(x,
                              regression_vfold_cv_para = NULL,
                              regression_recipe_func = NULL,
                              regression_response_var = "y_hat",
+                             regression_sur_n_comb = NULL,
                              verbose = 0) {
   # Create a recipe to the augmented training data
   regression_recipe <- recipes::recipe(as.formula(paste(regression_response_var, "~ .")), data = x)
@@ -143,6 +146,28 @@ regression_train <- function(x,
     # Set up the V-fold cross validation using the user provided parameters in `regression_vfold_cv_para`.
     # Note if `regression_vfold_cv_para` is NULL, then we use the default parameters in `vfold_cv()`.
     regression_folds <- do.call(rsample::vfold_cv, c(list(data = x), regression_vfold_cv_para))
+
+    # Check if we are doing surrogate regression, as we then need to update the indices as the augmented
+    # training data is highly correlated due to the augmentations which will mess up the cross validation.
+    # Since one there assumes that the training and evaluation data are independent. The following code ensures
+    # that all augmentations of a single training observations are either in the training or evaluation data.
+    if (!is.null(regression_sur_n_comb)) {
+      if (!is.null(regression_vfold_cv_para) && any(names(regression_vfold_cv_para) != "v")) {
+        stop("The `regression_vfold_cv_para` parameter supports only the `v` parameter for surrogate regression.")
+      }
+
+      n = nrow(x) / regression_sur_n_comb # Get the number of training observations (before augmentation)
+      n_folds = nrow(regression_folds) # Get the number of folds
+      folds <- sample(rep(seq_len(n_folds), length.out = n)) # Sample in which fold the i'th obs is in the eval data
+      indices = lapply(split(seq_len(n), folds), function(x) setdiff(seq_len(n), x)) # Sample the training indices
+
+      # Loop over the folds, extend the indices to reflect the augmentation, and insert the updated training indices
+      for (fold_idx in seq(n_folds)) {
+        regression_folds$splits[[fold_idx]]$in_id =
+          unlist(lapply(indices[[fold_idx]],
+                        function(idx) seq(regression_sur_n_comb * (idx-1) + 1, regression_sur_n_comb * idx)))
+      }
+    }
 
     # Add the hyperparameter tuning to the workflow
     regression_results <- tune::tune_grid(
