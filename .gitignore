@@ -24,3 +24,9 @@ docs
 /Meta/
 .idea
 .DS_Store
+
+inst/scripts/devel/MJ_Kshap.csv
+
+inst/scripts/devel/MJ_Kshap_new.csv
+
+keep_list.rds

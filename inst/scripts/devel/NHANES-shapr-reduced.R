@@ -40,6 +40,16 @@ preds <- predict(model,as.matrix(x_explain),outputmargin = TRUE)
 
 treeShaps=predict(model,as.matrix(x_explain),predcontrib = TRUE)
 
+model <- xgboost::xgb.load(file.path(datafolder,"newdata/xgb_model_imp.json"))
+
+
+
+treeShaps=predict(model,as.matrix(x_explain),predcontrib = TRUE)
+model$feature_names <- names(x_explain)
+xgb.plot.shap(data=as.matrix(x_explain),model=model,top_n=5)
+
+
+
 
 reduced_Kshap <- function(model,x_train,x_explain,prediction_zero,indexTab,...){
   model_shapr <- model

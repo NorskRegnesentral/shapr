@@ -68,7 +68,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
 
 
   # this is a list of all 2^M trees (where number of features = M)
-  all_trees <- lapply(
+  all_trees <<- lapply(
     X = features,
     FUN = create_ctree,
     x_train = x_train,

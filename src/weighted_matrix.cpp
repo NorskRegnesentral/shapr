@@ -1,3 +1,4 @@
+#define ARMA_WARN_LEVEL 0
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
