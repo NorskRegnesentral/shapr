@@ -42,8 +42,9 @@ setup_approach.regression_surrogate <- function(internal,
   internal <- get_regression_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
 
   # Augment the training data
-  x_train_augmented <-
-    regression_surrogate_augment(internal, x = internal$data$x_train, y_hat = internal$data$x_train_y_hat)
+  x_train_augmented <- regression_surrogate_augment(
+    internal = internal, x = internal$data$x_train, y_hat = internal$data$x_train_y_hat, augment_include_grand = TRUE
+  )
 
   # Fit the surrogate regression model and store it in the internal list
   if (internal$parameters$verbose == 2) message("Start training the surrogate model.")
@@ -54,6 +55,7 @@ setup_approach.regression_surrogate <- function(internal,
     regression_tune_values = internal$parameters$regression_tune_values,
     regression_vfold_cv_para = internal$parameters$regression_vfold_cv_para,
     regression_recipe_func = internal$parameters$regression_recipe_func,
+    regression_sur_n_comb = regression_surr_n_comb + 1, # Add 1 as augment_include_grand = TRUE above
     verbose = internal$parameters$verbose
   )
 
@@ -96,7 +98,9 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 #' @param augment_add_id_comb Logical (default is `FALSE`). If `TRUE`, an additional column is adding containing
 #' which coalition was applied.
 #' @param augment_include_grand Logical (default is `FALSE`). If `TRUE`, then the grand coalition is included.
-#' If `index_features` are provided, then `augment_include_grand` has no effect.
+#' If `index_features` are provided, then `augment_include_grand` has no effect. Note that if we sample the
+#' combinations then the grand coalition is equally likely to be samples as the other coalitions (or weighted if
+#' `augment_comb_prob` is provided).
 #' @param augment_masks_as_factor Logical (default is `FALSE`). If `TRUE`, then the binary masks are converted
 #' to factors. If `FALSE`, then the binary masks are numerics.
 #' @param augment_comb_prob Array of numerics (default is `NULL`). The length of the array must match the number of
@@ -123,9 +127,12 @@ regression_surrogate_augment <- function(internal,
   # Get some of the parameters
   S <- internal$objects$S
   actual_n_combinations <- internal$parameters$used_n_combinations - 2 # Remove empty and grand coalitions
-  if (augment_include_grand) actual_n_combinations <- actual_n_combinations + 1 # Add 1 to include the grand comb
   regression_surr_n_comb <- internal$parameters$regression_surr_n_comb
-  if (!is.null(index_features)) regression_surr_n_comb <- length(index_features)
+  if (!is.null(index_features)) regression_surr_n_comb <- length(index_features) # Applicable when called from prep_data
+  if (augment_include_grand) {
+    actual_n_combinations <- actual_n_combinations + 1 # Add 1 to include the grand comb
+    regression_surr_n_comb <- regression_surr_n_comb + 1
+  }
   if (regression_surr_n_comb > actual_n_combinations) regression_surr_n_comb <- actual_n_combinations
 
   # Small checks
@@ -135,10 +142,10 @@ regression_surrogate_augment <- function(internal,
     stop(paste("`augment_comb_prob` must be of length", actual_n_combinations, "."))
   }
 
-  if (augment_include_grand && augment_shapley_weights) {
+  if (!is.null(augment_weights) && augment_include_grand && augment_weights == "Shapley") {
     stop(paste(
-      "`augment_include_grand` and `augment_shapley_weights` cannot both",
-      "be TRUE because this entails too large weight for the grand coalition."
+      "`augment_include_grand = TRUE` and `augment_weights = 'Shapley'` cannot occure",
+      "because this entails too large weight for the grand coalition."
     ))
   }
 
