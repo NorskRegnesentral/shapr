@@ -46,10 +46,13 @@ get_model_specs.workflow <- function(x) {
     fit(width ~ initial_volume * food_regime, data = urchins)
   lm_fit
 
-  lm_fit_w = workflow() %>% add_model(linear_reg()) %>% add_recipe(recipes::recipe(y ~ ., data = x_train)) %>% fit(data = x_train)
+  lm_fit_w <- workflow() %>%
+    add_model(linear_reg()) %>%
+    add_recipe(recipes::recipe(y ~ ., data = x_train)) %>%
+    fit(data = x_train)
   lm_fit_w$trained
   class(lm_fit_w)
-  tmp = lm_fit_w$pre$actions$recipe$recipe$var_info
+  tmp <- lm_fit_w$pre$actions$recipe$recipe$var_info
   tmp
 
   rf_fit <-
@@ -64,13 +67,13 @@ get_model_specs.workflow <- function(x) {
     fit(data = urchins)
 
   rf_fit_w$fit
-  tmp = rf_fit_w$pre$actions$recipe$recipe$var_info
-  feature_names = tmp$variable[tmp$role == "predictor"]
+  tmp <- rf_fit_w$pre$actions$recipe$recipe$var_info
+  feature_names <- tmp$variable[tmp$role == "predictor"]
 
   rf_fit_w$pre$actions$recipe$recip$template
   lapply(rf_fit_w$pre$actions$recipe$recip$template, levels)
 
-  x = rf_fit_w$fit$fit$fit
+  x <- rf_fit_w$fit$fit$fit
 
 
 
@@ -82,7 +85,6 @@ get_model_specs.workflow <- function(x) {
   rf_fit$lvl
   extract_fit_parsnip(rf_fit)
   summary(rf_fit)
-
 }
 
 
@@ -90,8 +92,6 @@ get_model_specs.workflow <- function(x) {
 #' @rdname model_checker
 #' @export
 model_checker.workflow <- function(x) {
-
-
   if (!is.null(x$params$objective) && x$params$objective == "reg:logistic") {
     stop(
       paste0(

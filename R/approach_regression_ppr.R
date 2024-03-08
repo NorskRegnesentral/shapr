@@ -4,8 +4,8 @@
 #' @export
 #'
 #' @examples
-make_ppr_reg = function() {
-  if (!requireNamespace("parsnip", quietly = TRUE)){
+make_ppr_reg <- function() {
+  if (!requireNamespace("parsnip", quietly = TRUE)) {
     stop("Package \"parsnip\" needed for this function to work. Please install it.", call. = FALSE)
   }
 
@@ -26,14 +26,14 @@ make_ppr_reg = function() {
     eng = "ppr",
     original = "nterms", # The original parameter name used in stats::ppr
     parsnip = "num_terms", # Change parameter name to match tidymodels' name convention
-    func = list(pkg = "dials", fun = "num_terms"), #list(pkg = "stats", fun = "ppr"),
+    func = list(pkg = "dials", fun = "num_terms"), # list(pkg = "stats", fun = "ppr"),
     has_submodel = FALSE
   )
 
   # Step 2: create the model function
   ppr_reg <- function(mode = "regression", num_terms = NULL) {
     # Check for correct mode
-    if (mode  != "regression") rlang::abort("`mode` should be 'regression'")
+    if (mode != "regression") rlang::abort("`mode` should be 'regression'")
 
     # Capture the arguments in quosures
     args <- list(num_terms = rlang::enquo(num_terms))
@@ -131,32 +131,40 @@ if (FALSE) {
   library(tidymodels)
   ppr_reg() %>% translate(engine = "ppr")
   ppr_reg(num_terms = 2) %>% translate(engine = "ppr")
-  ppr_reg(num_terms = tune()) %>%  translate(engine = "ppr")
+  ppr_reg(num_terms = tune()) %>% translate(engine = "ppr")
   ppr_reg()
 
 
-  x_train = data.table::data.table(matrix(rnorm(100), 25))
-  x_train$y = rowSums(x_train) + rnorm(25)
+  x_train <- data.table::data.table(matrix(rnorm(100), 25))
+  x_train$y <- rowSums(x_train) + rnorm(25)
 
 
-  recipe = recipes::recipe(y ~ ., data = x_train)
-  ppr_mod = ppr_reg(num_terms = 2) %>% set_engine("ppr") %>% set_mode("regression")
-  grid = grid_regular(num_terms(c(1L, 3)), levels = 3)
-  wf <- workflow() %>% add_model(ppr_mod) %>% add_recipe(recipe)
-  model = fit(wf, data = x_train)
+  recipe <- recipes::recipe(y ~ ., data = x_train)
+  ppr_mod <- ppr_reg(num_terms = 2) %>%
+    set_engine("ppr") %>%
+    set_mode("regression")
+  grid <- grid_regular(num_terms(c(1L, 3)), levels = 3)
+  wf <- workflow() %>%
+    add_model(ppr_mod) %>%
+    add_recipe(recipe)
+  model <- fit(wf, data = x_train)
   predict(model, new_data = x_train)
   class(model)
 
 
 
 
-  ppr_mod = ppr_reg(num_terms = tune()) %>% set_engine("ppr") %>% set_mode("regression")
+  ppr_mod <- ppr_reg(num_terms = tune()) %>%
+    set_engine("ppr") %>%
+    set_mode("regression")
   folds <- vfold_cv(x_train)
   ppr_mod %>% tune_grid(y ~ ., resamples = folds, grid = 4)
-  wf <- workflow() %>% add_model(ppr_mod) %>% add_recipe(recipe)
+  wf <- workflow() %>%
+    add_model(ppr_mod) %>%
+    add_recipe(recipe)
   res <- wf %>% tune_grid(resamples = folds, grid = grid)
   res %>% show_best(metric = "rmse")
-  best = res %>% select_best("rmse")
+  best <- res %>% select_best("rmse")
 
   # Update the workflow by finalizing it using the hyperparameters that attained the best rmse
   regression_workflow <- tune::finalize_workflow(wf, tune::select_best(res, "rmse"))
@@ -168,7 +176,6 @@ if (FALSE) {
 
   class(regression_workflow)
   class(regression_fit)
-
 }
 
 

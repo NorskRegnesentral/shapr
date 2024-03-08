@@ -126,7 +126,7 @@ check_and_set_parameters <- function(internal) {
   check_n_batches(internal)
 
   # Remove n_samples if we are doing regression, as we are not doing MC sampling
-  if (internal$parameters$regression) internal$parameters$n_samples = NULL
+  if (internal$parameters$regression) internal$parameters$n_samples <- NULL
 
   # Check regression if we are doing regression
   if (internal$parameters$regression) check_regression(internal)
@@ -144,8 +144,10 @@ check_regression <- function(internal) {
 
   # Check that we are not to keep the Monte Carlo samples
   if (internal$parameters$keep_samp_for_vS) {
-    stop(paste("`keep_samp_for_vS` must be `FALSE` for the `regression_separate` and `regression_surrogate`",
-               "approaches as there are no Monte Carlo samples to keep for these approaches."))
+    stop(paste(
+      "`keep_samp_for_vS` must be `FALSE` for the `regression_separate` and `regression_surrogate`",
+      "approaches as there are no Monte Carlo samples to keep for these approaches."
+    ))
   }
 }
 
@@ -186,7 +188,7 @@ check_n_combinations <- function(internal) {
     if (!is_groupwise) {
       if (n_combinations <= n_features) stop("`n_combinations` has to be greater than the number of features.")
     } else {
-      if (n_combinations <= n_groups)  stop("`n_combinations` has to be greater than the number of groups.")
+      if (n_combinations <= n_groups) stop("`n_combinations` has to be greater than the number of groups.")
     }
   }
 }

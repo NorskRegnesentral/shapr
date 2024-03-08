@@ -694,7 +694,9 @@ FCNN <- nn_module(
   },
 
   # How the forward pass of the network is computed.
-  forward = function(input) return(self$network(input))
+  forward = function(input) {
+    return(self$network(input))
+  }
 )
 
 
@@ -724,11 +726,11 @@ compute_normalization_NN <- function(data, one_hot_max_sizes) {
   # Iterate over the differ
   for (i in seq(one_hot_max_sizes)) {
     size <- one_hot_max_sizes[i] # Get the current size/number of categories.
-    if (size >= 2) next     # Do not do anything if the feature is categorical
-    v <- data[, i]     # Get the values of the i'th features
-    v <- v[torch_logical_not(torch_isnan(v))]     # Only keep the non-missing values
-    norm_vector_mean[i] <- mean(v)  # Compute the mean of the values and save it in the right place of the vector
-    norm_vector_std[i] <- std(v)     # Compute the std of the values and save it in the right place of the vector
+    if (size >= 2) next # Do not do anything if the feature is categorical
+    v <- data[, i] # Get the values of the i'th features
+    v <- v[torch_logical_not(torch_isnan(v))] # Only keep the non-missing values
+    norm_vector_mean[i] <- mean(v) # Compute the mean of the values and save it in the right place of the vector
+    norm_vector_std[i] <- std(v) # Compute the std of the values and save it in the right place of the vector
   }
 
   # return the vectors of means and standards deviations
@@ -814,13 +816,14 @@ NN_internal <- function(hidden_layer_depth,
 
   # Get the masking_scheme function.
   masking_function <- if (masking_scheme == "Frye") NN_internal_mask_generator else MCAR_mask_generator_NN
-  if (masking ) #TODO::: WE DO NOT WANT FRYE!
-  if (masking_scheme == "Frye") {
-    masking_function <- NN_internal_mask_generator
-  } else if (masking_scheme == "MCAR") {
-    masking_function <- MCAR_mask_generator_NN
-  } else {
-    stop(sprintf("The function does not support masking scheme '%s', it only supports 'Frye' and 'MCAR'."))
+  if (masking) { # TODO::: WE DO NOT WANT FRYE!
+    if (masking_scheme == "Frye") {
+      masking_function <- NN_internal_mask_generator
+    } else if (masking_scheme == "MCAR") {
+      masking_function <- MCAR_mask_generator_NN
+    } else {
+      stop(sprintf("The function does not support masking scheme '%s', it only supports 'Frye' and 'MCAR'."))
+    }
   }
 
   # Variable to keep track of best epoch on the validation data
@@ -2184,84 +2187,83 @@ explain_regression <- function(x,
                                one_hot_encoding = FALSE,
                                verbose = FALSE,
                                ...) {
-                                 #' Title
-                                 #'
-                                 #' Internal function that should be called by explain_regression().
-                                 #' This function computes the Shapley values for the test observations
-                                 #' using the NN method. Fit a single model to all coalitions.
-                                 #' See 'NN()' for explanation of the other parameters.
-                                 #'
-                                 #' @param explainer  An explainer object to use for explaining the observations. See ?shapr and explain_regression().
-                                 #' @param training_split_ratio
-                                 #' @param training_split_seed
-                                 #' @param training_split_indices
-                                 #' @param hidden_layer_depths
-                                 #' @param hidden_layer_widths
-                                 #' @param learning_rates
-                                 #' @param n_epochs
-                                 #' @param optimizer
-                                 #' @param batch_size
-                                 #' @param batch_size_validation
-                                 #' @param masking_schemes
-                                 #' @param masking_value
-                                 #' @param activation_function
-                                 #' @param use_cuda
-                                 #' @param test
-                                 #' @param save_folder
-                                 #' @param verbose
-                                 #' @param verbose_plot
-                                 #' @param verbose_plot_points
-                                 #' @param first_epoch_to_show
-                                 #' @param only_plot_epochs_divisible_by_this_value
-                                 #' @param ...
-                                 #' @param normalize_features
-                                 #' @param paired_sampling
-                                 #' @param extra_save_name
-                                 #' @param concatenate_mask
-                                 #' @param use_skip_connections
-                                 #' @param use_batch_normalization
-                                 #'
-                                 #' @return
-                                 #' @export
-                                 #'
+  #' Title
+  #'
+  #' Internal function that should be called by explain_regression().
+  #' This function computes the Shapley values for the test observations
+  #' using the NN method. Fit a single model to all coalitions.
+  #' See 'NN()' for explanation of the other parameters.
+  #'
+  #' @param explainer  An explainer object to use for explaining the observations. See ?shapr and explain_regression().
+  #' @param training_split_ratio
+  #' @param training_split_seed
+  #' @param training_split_indices
+  #' @param hidden_layer_depths
+  #' @param hidden_layer_widths
+  #' @param learning_rates
+  #' @param n_epochs
+  #' @param optimizer
+  #' @param batch_size
+  #' @param batch_size_validation
+  #' @param masking_schemes
+  #' @param masking_value
+  #' @param activation_function
+  #' @param use_cuda
+  #' @param test
+  #' @param save_folder
+  #' @param verbose
+  #' @param verbose_plot
+  #' @param verbose_plot_points
+  #' @param first_epoch_to_show
+  #' @param only_plot_epochs_divisible_by_this_value
+  #' @param ...
+  #' @param normalize_features
+  #' @param paired_sampling
+  #' @param extra_save_name
+  #' @param concatenate_mask
+  #' @param use_skip_connections
+  #' @param use_batch_normalization
+  #'
+  #' @return
+  #' @export
+  #'
   #' @examples
-  explain_regression_internal_combined.NN_without_training <- function(
-      # x,
-      explainer,
-      earlier_explainer,
-      # model_save_path,
-      # prediction_zero,
-      # verbose = FALSE,
-      # normalize_features = TRUE, # Not properly tested yet
-      # scale_response = FALSE,
-      # training_split_ratio = 0.75,
-      # training_split_seed = NULL,
-      # training_split_indices = NULL,
-      # hidden_layer_depths = 2,
-      # hidden_layer_widths = c(128, 256, 512),
-      # learning_rates = c(0.01, 0.001, 0.0001), #c(0.01, 0.001, 0.0001)
-      # n_epochs = 10^4,
-      # optimizer = "adam",
-      # batch_size = 256,
-      # batch_size_validation = 64,
-      # masking_schemes = c("Frye", "MCAR"),
-      # masking_value = -10,
-      # concatenate_mask = TRUE,
-      # paired_sampling = TRUE,
-      # use_skip_connections = TRUE,
-      # use_batch_normalization = TRUE,
-      # activation_function = nn_relu(),
-      # use_cuda = TRUE,
-      # test = NULL,
-      # save_folder = "/Users/larsolsen/PhD/Paper2/Simulations/NN_models/",
-      # extra_save_name = "",
-      # save_NN_every_100th_epoch = TRUE,
-      # verbose = TRUE,
-      # verbose_plot = TRUE,
-      # verbose_plot_points = FALSE,
-      # first_epoch_to_show = 5,
-      # only_plot_epochs_divisible_by_this_value = 10,
-      ...) {
+  explain_regression_internal_combined.NN_without_training <- function( # x,
+                                                                       explainer,
+                                                                       earlier_explainer,
+                                                                       # model_save_path,
+                                                                       # prediction_zero,
+                                                                       # verbose = FALSE,
+                                                                       # normalize_features = TRUE, # Not properly tested yet
+                                                                       # scale_response = FALSE,
+                                                                       # training_split_ratio = 0.75,
+                                                                       # training_split_seed = NULL,
+                                                                       # training_split_indices = NULL,
+                                                                       # hidden_layer_depths = 2,
+                                                                       # hidden_layer_widths = c(128, 256, 512),
+                                                                       # learning_rates = c(0.01, 0.001, 0.0001), #c(0.01, 0.001, 0.0001)
+                                                                       # n_epochs = 10^4,
+                                                                       # optimizer = "adam",
+                                                                       # batch_size = 256,
+                                                                       # batch_size_validation = 64,
+                                                                       # masking_schemes = c("Frye", "MCAR"),
+                                                                       # masking_value = -10,
+                                                                       # concatenate_mask = TRUE,
+                                                                       # paired_sampling = TRUE,
+                                                                       # use_skip_connections = TRUE,
+                                                                       # use_batch_normalization = TRUE,
+                                                                       # activation_function = nn_relu(),
+                                                                       # use_cuda = TRUE,
+                                                                       # test = NULL,
+                                                                       # save_folder = "/Users/larsolsen/PhD/Paper2/Simulations/NN_models/",
+                                                                       # extra_save_name = "",
+                                                                       # save_NN_every_100th_epoch = TRUE,
+                                                                       # verbose = TRUE,
+                                                                       # verbose_plot = TRUE,
+                                                                       # verbose_plot_points = FALSE,
+                                                                       # first_epoch_to_show = 5,
+                                                                       # only_plot_epochs_divisible_by_this_value = 10,
+                                                                       ...) {
     x <- earlier_explainer$x_test
 
     verbose <- TRUE

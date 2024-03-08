@@ -82,7 +82,11 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   if (!is.null(p)) p(amount = length(S), message = "Estimating v(S)")
 
   # keep_samp_for_vS will always be FALSE for the regression approach
-  if (keep_samp_for_vS) return(list(dt_vS = dt_vS, dt_samp_for_vS = dt)) else return(dt_vS = dt_vS)
+  if (keep_samp_for_vS) {
+    return(list(dt_vS = dt_vS, dt_samp_for_vS = dt))
+  } else {
+    return(dt_vS = dt_vS)
+  }
 }
 
 #' @keywords internal

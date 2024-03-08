@@ -142,7 +142,7 @@ plot_MSEv_scores <- function(explanation_list, method_line = NULL) {
   fig <- plot_MSEv_eval_crit(explanation_list) +
     ggplot2::theme(legend.position = "none") +
     ggplot2::coord_flip() +
-    ggplot2::theme(plot.title = ggplot2::element_text(size = rel(1)))
+    ggplot2::theme(plot.title = ggplot2::element_text(size = rel(0.95)))
   fig <- fig + ggplot2::scale_x_discrete(limits = rev(levels(fig$data$Method)))
   if (!is.null(method_line) && method_line %in% fig$data$Method) {
     fig <- fig + ggplot2::geom_hline(
@@ -933,3 +933,6 @@ plot_SV_several_approaches(explanation_list, index_explicands = c(1, 2), facet_n
 plot_SV_several_approaches(explanation_list, index_explicands = c(3, 4), facet_ncol = 1)
 plot_SV_several_approaches(explanation_list, index_explicands = c(5, 6), facet_ncol = 1)
 ```
+
+
+Sort them and only show for some

@@ -156,16 +156,18 @@ regression_train <- function(x,
         stop("The `regression_vfold_cv_para` parameter supports only the `v` parameter for surrogate regression.")
       }
 
-      n = nrow(x) / regression_sur_n_comb # Get the number of training observations (before augmentation)
-      n_folds = nrow(regression_folds) # Get the number of folds
+      n <- nrow(x) / regression_sur_n_comb # Get the number of training observations (before augmentation)
+      n_folds <- nrow(regression_folds) # Get the number of folds
       folds <- sample(rep(seq_len(n_folds), length.out = n)) # Sample in which fold the i'th obs is in the eval data
-      indices = lapply(split(seq_len(n), folds), function(x) setdiff(seq_len(n), x)) # Sample the training indices
+      indices <- lapply(split(seq_len(n), folds), function(x) setdiff(seq_len(n), x)) # Sample the training indices
 
       # Loop over the folds, extend the indices to reflect the augmentation, and insert the updated training indices
       for (fold_idx in seq(n_folds)) {
-        regression_folds$splits[[fold_idx]]$in_id =
-          unlist(lapply(indices[[fold_idx]],
-                        function(idx) seq(regression_sur_n_comb * (idx-1) + 1, regression_sur_n_comb * idx)))
+        regression_folds$splits[[fold_idx]]$in_id <-
+          unlist(lapply(
+            indices[[fold_idx]],
+            function(idx) seq(regression_sur_n_comb * (idx - 1) + 1, regression_sur_n_comb * idx)
+          ))
       }
     }
 
@@ -386,7 +388,7 @@ regression_cv_message <- function(regression_results, regression_tune_values, n_
   message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
 
   # Iterate over the n_cv best results and print out the hyper parameter values and the rmse and rmse_std_err
-  for (row_idx in seq(nrow(best_results))) {
+  for (row_idx in seq_len(nrow(best_results))) {
     best_result <- best_results[row_idx, ]
     feature_values <- best_result[feature_names]
     feature_values_rmse <- c(
@@ -394,7 +396,7 @@ regression_cv_message <- function(regression_results, regression_tune_values, n_
       format(round(best_result$mean, 2), nsmall = 2), format(round(best_result$std_err, 2), nsmall = 2)
     )
     values_fixed_len <- sapply(
-      seq(length(feature_values_rmse)),
+      seq_along(feature_values_rmse),
       function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "left")
     )
     message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))

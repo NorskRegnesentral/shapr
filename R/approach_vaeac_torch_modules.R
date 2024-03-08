@@ -401,8 +401,8 @@ vaeac <- torch::nn_module(
     # Same for the input dimension to the last layer in decoder that yields the distribution params.
     extra_params_skip_con_mask_enc <-
       ifelse(test = skip_conn_masked_enc_dec,
-             yes = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features,
-             no = 0
+        yes = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features,
+        no = 0
       )
 
     # Will need an extra hidden layer if we use skip connection from masked encoder to decoder
@@ -982,7 +982,7 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
   if (length(col_cat_names) > 0) {
     lapply(col_cat_names, function(col_cat_name) {
       data[, (col_cat_name) := lapply(.SD, factor, labels = map_new_to_original_names[[col_cat_name]]),
-           .SDcols = col_cat_name
+        .SDcols = col_cat_name
       ]
     })
   }
