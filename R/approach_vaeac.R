@@ -2831,7 +2831,7 @@ vaeac_plot_imputed_ggpairs <- function(
     seed = explanation$internal$parameters$seed
   )
 
-  # Combine the true (if there are any) adn imputed data and ensure that the categorical features are marked as factors.
+  # Combine the true (if there are any) and imputed data and ensure that the categorical features are marked as factors.
   combined_data <- data.table(rbind(x_true, imputed_values))
   col_cat_names <- checkpoint$col_cat_names
   if (length(col_cat_names) > 0) combined_data[, (col_cat_names) := lapply(.SD, as.factor), .SDcols = col_cat_names]
