@@ -3,7 +3,7 @@
 
 
 
-# Libraries ----------------------------------------------------------------------------------------------------------------------------------
+# Libraries ------------------------------------------------------------------------------------------------------------
 
 
 
@@ -19,7 +19,7 @@ library(ggplot2)
 library(progress)
 
 
-# Defining the Data Set Object ---------------------------------------------------------------------------------------------------------------
+# Defining the Data Set Object -----------------------------------------------------------------------------------------
 
 # Must create a data set object that represent a map from keys to data samples.
 # It is used by the dataloader() to load data which should be used to extract
@@ -55,12 +55,13 @@ NN_internal_sample_data_for_shapley_regression <- dataset(
 )
 
 
-# SkipConnection --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# SkipConnection -------------------------------------------------------------------------------------------------------
 #' A torch::nn_module representing a Skip Connection
 #'
 #' @description Skip-connection over the sequence of layers in the constructor. The module passes
 #' input data sequentially through these layers and then adds original data to the result.
-#' @param ... network modules such as nn_linear, activation_function(), and memory layers. See \code{get_imputation_networks}.
+#' @param ... network modules such as nn_linear, activation_function(), and memory layers.
+
 SkipConnection <- nn_module(
   classname = "SkipConnection",
   initialize = function(...) self$inner_net <- nn_sequential(...),
@@ -69,7 +70,7 @@ SkipConnection <- nn_module(
   }
 )
 
-# Mask Generators ----------------------------------------------------------------------------------------------------------------------------
+# Mask Generators ------------------------------------------------------------------------------------------------------
 
 #' Internal Mask Generator Frye Setup
 #'
@@ -136,7 +137,7 @@ NN_internal_mask_generator <- function(batch, seed = NULL, paired_sampling = FAL
   mask <- torch_tensor(mask)
 
   # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
-  if (paired_sampling) mask <- torch_cat(c(mask, !mask), 1L)[c(matrix(seq(nrow(batch)), nrow = 2, byrow = T)), ]
+  if (paired_sampling) mask <- torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
 
   # Final mask masks all entries that is either missing or artificially masked
   # by the Bernoulli mask. A value of 1 means that the entry is going to be masked.
@@ -247,7 +248,8 @@ specified_mask_generator <- function(batch,
   # }
   #
   # if (nrow(masks) != length(masks_probs)) {
-  #   stop(sprintf("The number of masks in 'masks' and the number of probabilities in 'masks_probs' are incompatible: %d != %d.",
+  #   stop(sprintf("The number of masks in 'masks' and the number of
+  # probabilities in 'masks_probs' are incompatible: %d != %d.",
   #                nrow(masks), length(masks_probs)))
   # }
 
@@ -272,7 +274,7 @@ specified_mask_generator <- function(batch,
   mask <- torch_tensor(masks[mask_rows_indices, ], dtype = torch_float())
 
   # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
-  if (paired_sampling) mask <- torch_cat(c(mask, !mask), 1L)[c(matrix(seq(nrow(batch)), nrow = 2, byrow = T)), ]
+  if (paired_sampling) mask <- torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
 
   # Final mask masks all entries that is either missing or artificially masked
   # by the generated mask. A value of 1 means that the entry is going to be masked.
@@ -327,10 +329,12 @@ MCAR_mask_generator_NN <- function(batch, prob = 0.5, seed = NULL, paired_sampli
   # mask = torch_bernoulli(torch_full_like(batch, prob))
 
   # Create the Bernoulli mask where an element is masked (1) with probability 'prob'.
-  mask <- torch_tensor(matrix(sample(c(0, 1), size = size, replace = TRUE, prob = c(prob, 1 - prob)), ncol = ncol(batch)), dtype = torch_float())
+  mask <- torch_tensor(matrix(sample(c(0, 1), size = size, replace = TRUE, prob = c(prob, 1 - prob)),
+    ncol = ncol(batch)
+  ), dtype = torch_float())
 
   # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
-  if (paired_sampling) mask <- torch_cat(c(mask, !mask), 1L)[c(matrix(seq(nrow(batch)), nrow = 2, byrow = T)), ]
+  if (paired_sampling) mask <- torch_cat(c(mask, !mask), 1L)[c(matrix(seq_leg(nrow(batch)), nrow = 2, byrow = TRUE)), ]
 
   # Final mask all entries that is either missing or artificially masked
   # by the Bernoulli mask. A value of 1 means that the entry is masked.
@@ -340,7 +344,7 @@ MCAR_mask_generator_NN <- function(batch, prob = 0.5, seed = NULL, paired_sampli
 
 
 
-# Paired Sampler  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Paired Sampler  ------------------------------------------------------------------------------------------------------
 # A sampler object that allows for paired sampling by always including
 # each observation twice. See more on https://rdrr.io/cran/torch/src/R/utils-data-sampler.R.
 # Samplers can be used with dataloader() when creating batches from a torch dataset(), see `?dataloader` and `?sampler`.
@@ -441,7 +445,7 @@ augment_data_by_masking_NN <- function(X,
 
   # Check that both S and weights_S are provided or that both are NULL.
   if (is.null(S) != is.null(weights_S)) {
-    stop("Either the user needs to provide both the coalitions 'S' and weigths 'weight_S', or neither should be provided.")
+    stop("Either both the coalitions `S` and weigths `weight_S`, or neither should be provided.")
   }
 
   # If the coalitions have not been provided, we consider all possible masks/coalitions.
@@ -488,8 +492,8 @@ augment_data_by_masking_NN <- function(X,
 
   ## Divide X into the continuous and categorical features
   # Get the column indices for the continuous and categorical features
-  cont_cols_idx <- seq(ncol(X))[sapply(X, class) == "numeric"]
-  cat_cols_idx <- seq(ncol(X))[sapply(X, class) == "factor"]
+  cont_cols_idx <- seq_len(ncol(X))[sapply(X, class) == "numeric"]
+  cat_cols_idx <- seq_len(ncol(X))[sapply(X, class) == "factor"]
 
   # Get the names of the continuous and categorical features
   cols <- colnames(X)
@@ -512,7 +516,7 @@ augment_data_by_masking_NN <- function(X,
 
     # Mask the categorical features
     coalitions_repeated_cat <- coalitions_repeated[, cat_cols_idx]
-    for (column in seq(ncol(X_repeated_cat))) {
+    for (column in seq_len(ncol(X_repeated_cat))) {
       levels(X_repeated_cat[[column]]) <- c(levels(X_repeated_cat[[column]]), "level_masked")
       X_repeated_cat[[column]][coalitions_repeated_cat == 0] <- "level_masked"
     }
@@ -579,7 +583,7 @@ augment_data_by_masking_NN <- function(X,
 
 
 
-# Full Connected Neural Network  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Full Connected Neural Network  ---------------------------------------------------------------------------------------
 
 
 # 'nn_module' is the base class for all neural network modules, thus, our
@@ -589,9 +593,11 @@ augment_data_by_masking_NN <- function(X,
 # number of hidden neural layers with 'relu' as the activation function, and
 # the width of the hidden layers are 'hidden_width'. The output is a one
 # dimensional scalar as we are doing regression.
-# nn_linear(in_features, out_features, bias = TRUE) is a linear module/layer that applies a linear transformation to the incoming data: y = xA^T + b.
+# nn_linear(in_features, out_features, bias = TRUE) is a linear module/layer that applies a
+# linear transformation to the incoming data: y = xA^T + b.
 # nn_relu is a relu module/'layer' that applies the rectified linear unit function element-wise: max(0, x).
-# nn_sequential is a sequential container of modules, where the modules are called sequentially in the order they are added.
+# nn_sequential is a sequential container of modules, where the modules are
+# called sequentially in the order they are added.
 # nn_module_list holds submodules in a list and can be indexed like a regular R list.
 # A class defining how to initialize a fully connected neural network.
 # FCNN = Fully Connected Neural Network
@@ -600,16 +606,20 @@ FCNN <- nn_module(
   name = "Fully Connected Neural Network",
 
   # Define the initializer
-  initialize = function(input_width, # The number of features in the data set
-                        hidden_layer_widths = c(32, 32, 32), # A array with the number of neurons per layer. If you add more elements to the list you create a deeper network.
-                        output_width = 1, # Since we are using the NN to do single regression
-                        activation_function = nn_relu(), # Which activation function we want to use. Must be on the 'nn_' form and not 'nnf_' form as we need to add it to a nn_sequential. See "https://cran.r-project.org/web/packages/torch/torch.pdf"
+  # @param input_width The number of features in the data set
+  # @param hidden_layer_widths An array with the number of neurons per layer.
+  # If you add more elements to the list you create a deeper network.
+  # @param output_width Since we are using the NN to do single regression
+  # @param activation_function # Which activation function we want to use. Must be on the 'nn_' form and not 'nnf_'
+  # form as we need to add it to a nn_sequential. See "https://cran.r-project.org/web/packages/torch/torch.pdf"
+  # @param use_skip_connections
+  # @param use_batch_normalization
+  initialize = function(input_width,
+                        hidden_layer_widths = c(32, 32, 32),
+                        output_width = 1,
+                        activation_function = nn_relu(),
                         use_skip_connections = TRUE,
                         use_batch_normalization = TRUE) {
-    # Could make this more elegant by including input, hidden and output widths in a common array and then just iterate over them.
-    # But would then need to check for last layer such that we do not add activation function at the end / or we could remove it
-
-
     # Extra strings to add to names of layers depending on if we use memory layers and/or batch normalization.
     # If FALSE, they are just an empty string and do not effect the names.
     name_extra_batch_normalize <- ifelse(use_batch_normalization, "_and_batch_norm", "")
@@ -619,13 +629,14 @@ FCNN <- nn_module(
 
     ### Initialize the zeroth layer.
     # if (use_skip_connections) {
-    #   # Add identity skip connection. Such that the input is added to the output of the linear layer and activation function: output = X + activation(WX + b).
+    #   # Add identity skip connection. Such that the input is added to the output of the linear layer
+    #   # and activation function: output = X + activation(WX + b).
     #   self$network$add_module(
     #     module = SkipConnection(
     #       nn_linear(input_width, hidden_layer_widths[1]),
     #       activation_function,
     #       if (use_batch_normalization) nn_batch_norm1d(num_features = hidden_layer_widths[1])),
-    #     name = paste0("input_layer_skip_connection_with_linear_and_activation", name_extra_batch_normalize)
+    #     name = paste0("input_layer_skip_connenction_", name_extra_batch_normalize)
     #   )
     # } else {
     # Linear layer from the input to the width of the first hidden layer
@@ -652,14 +663,15 @@ FCNN <- nn_module(
         # Note that depth will update its value outside this loop too!
 
         if (use_skip_connections) {
-          # Add identity skip connection. Such that the input is added to the output of the linear layer and activation function: output = X + activation(WX + b).
+          # Add identity skip connection. Such that the input is added to the output of the linear layer
+          # and activation function: output = X + activation(WX + b).
           self$network$add_module(
             module = SkipConnection(
               nn_linear(hidden_layer_widths[depth], hidden_layer_widths[depth + 1]),
               activation_function,
               if (use_batch_normalization) nn_batch_norm1d(num_features = hidden_layer_widths[depth + 1])
             ),
-            name = paste0("hidden_layer_", depth, "_skip_connection_with_linear_and_activation", name_extra_batch_normalize)
+            name = paste0("hidden_layer_", depth, "_skip_connenction_", name_extra_batch_normalize)
           )
         } else {
           # Do not use skip connections and do not add the input to the output.
@@ -753,7 +765,8 @@ compute_normalization_NN <- function(data, one_hot_max_sizes) {
 #' @param hidden_layer_width the number of neurons in each hidden layer (same in all layers).
 #' @param learning_rate the learning rate in the adam optimizer.
 #' @param masking_scheme if we are to use the mask Frye seems to use in his paper or a MCAR mask.
-#' @param masking_value which value to give to the features that are masked. Frye use -1 and states that it should be a value not in the training data.
+#' @param masking_value which value to give to the features that are masked.
+#' Frye use -1 and states that it should be a value not in the training data.
 #' @param activation_function which activation function to use in the network. Frye does not specify it.
 #' @param optimizer which optimizer to use. DEFAULT to adam as Frye specifies that it is the one they used.
 #' @param n_epochs the number of times we iterate over the whole training set in the training phase of the neural network.
@@ -877,7 +890,6 @@ NN_internal <- function(hidden_layer_depth,
       ### The Training Loop
       # Tell the network that we are training and that gradients should be computed
       current_NN_model$train()
-      if (current_NN_model$training != TRUE) stop("The network is not in its training mode. Will not keep track of gradients.")
 
       # Array to store the error of the model on the training and validation data after each epoch
       current_training_error <- rep(NA, n_epochs)
@@ -904,7 +916,6 @@ NN_internal <- function(hidden_layer_depth,
         current_NN_model$train()
 
         # Iterate over the training batches
-        # Note that `enumerate` construct is deprecated in favor of the `coro::loop`, see 'https://github.com/mlverse/torch/issues/558'.
         # batch = dl_train$.iter()$.next()
         coro::loop(for (batch in dl_train) {
           # Generate a missing completely at random mask.
@@ -980,6 +991,7 @@ NN_internal <- function(hidden_layer_depth,
 
           # explainer$active_coalitions
           # explainer$n_coalitions
+          # TODO: 512 should be a parameter
           if (explainer$n_coalitions > 512) {
             # We sample a subset of the coalitions
             sampled_indices <- sample(nrow(explainer$active_coalitions), 512)
@@ -990,7 +1002,15 @@ NN_internal <- function(hidden_layer_depth,
             explainer$active_coalitions_sampled <- explainer$active_coalitions
             explainer$active_coalitions_weights_sampled <- explainer$active_coalitions_weights
           }
-          explainer$active_coalitions_extended <- t(sapply(seq(nrow(explainer$active_coalitions_sampled)), function(current_row_idx) rep(explainer$active_coalitions_sampled[current_row_idx, ], times = n_levels)))
+          explainer$active_coalitions_extended <-
+            t(sapply(
+              seq_len(nrow(explainer$active_coalitions_sampled)),
+              function(current_row_idx) {
+                rep(explainer$active_coalitions_sampled[current_row_idx, ],
+                  times = n_levels
+                )
+              }
+            ))
 
           # Mask the validation data by all possible masks/coalitions.
           # TODO: THIS FUNCTION COMPUTES A LOT OF REDUNDANT STUFF. UPDATE.
@@ -1009,18 +1029,22 @@ NN_internal <- function(hidden_layer_depth,
           # Extract the augmented features and response
           cols_var <- if (concatenate_mask) seq(2 * n_features) else seq(n_features)
           batch_validation_augmented_x <- torch_tensor(as.matrix(batch_validation_augmented[, ..cols_var]))
-          batch_validation_augmented_y <- torch_tensor(as.matrix(batch_validation_augmented[[ncol(batch_validation_augmented)]]))
+          batch_validation_augmented_y <-
+            torch_tensor(as.matrix(batch_validation_augmented[[ncol(batch_validation_augmented)]]))
 
           # Compute the output of the NN
           output_validation <- current_NN_model(batch_validation_augmented_x)
 
           # Compute the squared validation error for the batch
-          validation_error_batch <- c(validation_error_batch, nnf_mse_loss(output_validation, batch_validation_augmented_y)$item() * nrow(output_validation))
+          validation_error_batch <-
+            c(validation_error_batch, nnf_mse_loss(output_validation, batch_validation_augmented_y)$item()
+            * nrow(output_validation))
         })
 
         # Compute the mean squared validation error averaged over all batches/observations
         # validation_error[epoch] = sum(validation_error_batch)/(n_validation_internal * (2^explainer$n_features - 2))
-        current_validation_error[epoch] <- sum(validation_error_batch) / (n_validation_internal * nrow(explainer$active_coalitions_sampled))
+        current_validation_error[epoch] <-
+          sum(validation_error_batch) / (n_validation_internal * nrow(explainer$active_coalitions_sampled))
 
         # Check if this is the best epoch/model thus far. If yes, then we save it.
         if (current_validation_error[epoch] < best_loss) {
@@ -1120,7 +1144,7 @@ NN_internal <- function(hidden_layer_depth,
   if (NN_model$training != TRUE) stop("The network is not in its training mode. Will not keep track of gradients.")
 
   # List to store the NN every 100th epoch
-  if (save_NN_every_100th_epoch) list_save_names_every_100th_epoch <- list()
+  if (save_NN_every_100th_epoch) save_names_every_100th_epoch <- list()
 
   # Create a progress bar. TODO: Maybe include width, depth, latent_dim, lr, if doing hyperparemeter tuning.
   pb <- progress_bar$new(
@@ -1143,7 +1167,6 @@ NN_internal <- function(hidden_layer_depth,
     NN_model$train()
 
     # Iterate over the training batches
-    # Note that `enumerate` construct is deprecated in favor of the `coro::loop`, see 'https://github.com/mlverse/torch/issues/558'.
     # batch = dl_train$.iter()$.next()
     coro::loop(for (batch in dl_train) {
       # Generate a missing completely at random mask.
@@ -1229,7 +1252,13 @@ NN_internal <- function(hidden_layer_depth,
         explainer$active_coalitions_sampled <- explainer$active_coalitions
         explainer$active_coalitions_weights_sampled <- explainer$active_coalitions_weights
       }
-      explainer$active_coalitions_extended <- t(sapply(seq(nrow(explainer$active_coalitions_sampled)), function(current_row_idx) rep(explainer$active_coalitions_sampled[current_row_idx, ], times = n_levels)))
+      explainer$active_coalitions_extended <-
+        t(sapply(
+          seq_len(nrow(explainer$active_coalitions_sampled)),
+          function(current_row_idx) {
+            rep(explainer$active_coalitions_sampled[current_row_idx, ], times = n_levels)
+          }
+        ))
 
       # Mask the validation data by all possible masks/coalitions.
       # TODO: THIS FUNCTION COMPUTES A LOT OF REDUNDANT STUFF. UPDATE.
@@ -1248,18 +1277,23 @@ NN_internal <- function(hidden_layer_depth,
       # Extract the augmented features and response
       cols_var <- if (concatenate_mask) seq(2 * n_features) else seq(n_features)
       batch_validation_augmented_x <- torch_tensor(as.matrix(batch_validation_augmented[, ..cols_var]))
-      batch_validation_augmented_y <- torch_tensor(as.matrix(batch_validation_augmented[[ncol(batch_validation_augmented)]]))
+      batch_validation_augmented_y <-
+        torch_tensor(as.matrix(batch_validation_augmented[[ncol(batch_validation_augmented)]]))
 
       # Compute the output of the NN
       output_validation <- NN_model(batch_validation_augmented_x)
 
       # Compute the squared validation error for the batch
-      validation_error_batch <- c(validation_error_batch, nnf_mse_loss(output_validation, batch_validation_augmented_y)$item() * nrow(output_validation))
+      validation_error_batch <- c(
+        validation_error_batch,
+        nnf_mse_loss(output_validation, batch_validation_augmented_y)$item() * nrow(output_validation)
+      )
     })
 
     # Compute the mean squared validation error averaged over all batches/observations
     # validation_error[epoch] = sum(validation_error_batch)/(n_validation_internal * (2^explainer$n_features - 2))
-    validation_error[epoch] <- sum(validation_error_batch) / (n_validation_internal * nrow(explainer$active_coalitions_sampled))
+    validation_error[epoch] <-
+      sum(validation_error_batch) / (n_validation_internal * nrow(explainer$active_coalitions_sampled))
 
     # Check if this is the best epoch/model thus far. If yes, then we save it.
     if (validation_error[epoch] < best_loss) {
@@ -1268,17 +1302,20 @@ NN_internal <- function(hidden_layer_depth,
       best_epoch <- epoch
     }
 
-    if (save_NN_every_100th_epoch & (epoch %% 100 == 0)) {
+    if (save_NN_every_100th_epoch && (epoch %% 100 == 0)) {
       torch_save(NN_model, paste(model_save_name, "_epoch_", epoch, ".pt", sep = ""))
-      list_save_names_every_100th_epoch[paste("epoch_", epoch, sep = "")] <- paste(model_save_name, "_epoch_", epoch, ".pt", sep = "")
+      save_names_every_100th_epoch[paste("epoch_", epoch, sep = "")] <-
+        paste(model_save_name, "_epoch_", epoch, ".pt", sep = "")
     }
 
     # # Printout to the user
     # if (verbose) {
     #   # if (validation_error[epoch] == best_loss) {
-    #   #   cat(sprintf("Loss at epoch %3d: training = %7.4f, validation = %7.4f (new best validation).\n", epoch, training_error[epoch], validation_error[epoch]))
+    #   #   cat(sprintf("Loss at epoch %3d: training = %7.4f, validation = %7.4f (new best validation).\n",
+    # epoch, training_error[epoch], validation_error[epoch]))
     #   # } else if (epoch %% (n_epochs/10) == 0) {
-    #   #   cat(sprintf("Loss at epoch %3d: training = %7.4f, validation = %7.4f.\n", epoch, training_error[epoch], validation_error[epoch]))
+    #   #   cat(sprintf("Loss at epoch %3d: training = %7.4f, validation = %7.4f.\n",
+    # epoch, training_error[epoch], validation_error[epoch]))
     #   # }
     #   if (epoch %% (n_epochs/10) == 0) {
     #     cat(sprintf("Epoch %3d. Best epoch so far is %d with training error %5.3f and validation error %5.3f.\n",
@@ -1299,7 +1336,10 @@ NN_internal <- function(hidden_layer_depth,
     # Early stopping
     if (epoch - best_epoch > n_epochs_early_stopping) {
       pb$terminate()
-      cat(sprintf("Early stopping at epoch %d. No validation imporvment has been made in %d epochs.\n", epoch, n_epochs_early_stopping))
+      cat(sprintf(
+        "Early stopping at epoch %d. No validation imporvment has been made in %d epochs.\n",
+        epoch, n_epochs_early_stopping
+      ))
 
       # Remove NA entries from arrays as they have not been added due to early stopping
       training_error <- training_error[!is.na(training_error)]
@@ -1334,7 +1374,7 @@ NN_internal <- function(hidden_layer_depth,
   )
 
   if (save_NN_every_100th_epoch) {
-    return_list$list_save_names_every_100th_epoch <- list_save_names_every_100th_epoch
+    return_list$save_names_every_100th_epoch <- save_names_every_100th_epoch
   }
 
   # If we are to plot the
@@ -1345,7 +1385,10 @@ NN_internal <- function(hidden_layer_depth,
     return_list$plot_data <- tibble(training_error, validation_error) %>%
       pivot_longer(c(1, 2), names_to = "type", values_to = "error") %>%
       dplyr::arrange(type) %>%
-      dplyr::mutate(epoch = rep(seq(n_epochs), times = 2), masking_scheme = masking_scheme, hld = hidden_layer_depth, hlw = hidden_layer_width, lr = learning_rate)
+      dplyr::mutate(
+        epoch = rep(seq(n_epochs), times = 2),
+        masking_scheme = masking_scheme, hld = hidden_layer_depth, hlw = hidden_layer_width, lr = learning_rate
+      )
 
     figure <-
       return_list$plot_data %>%
@@ -1397,15 +1440,21 @@ NN_internal <- function(hidden_layer_depth,
 #' @param training_split_seed if we are going to set some specified seed before splitting the training data.
 #' @param training_split_indices if the user want to manually specify the observations used to train the model.
 #'  Overwrites the two parameters above.
-#' @param hidden_layer_depths the number of hidden layers in the neural network. Iterate over the provided depths and finds the best.
-#' @param hidden_layer_widths the number of neurons in each hidden layer (same in all layers). Iterate over the provided widths and finds the best.
-#' @param learning_rates the learning rate in the adam optimizer. Iterate over the provided learning rates and finds the best.
-#' @param n_epochs the number of times we iterate over the whole training set in the training phase of the neural network.
+#' @param hidden_layer_depths the number of hidden layers in the neural network. Iterate over the provided depths
+#' and finds the best.
+#' @param hidden_layer_widths the number of neurons in each hidden layer (same in all layers). Iterate over the provided
+#' widths and finds the best.
+#' @param learning_rates the learning rate in the adam optimizer. Iterate over the provided learning rates and finds the
+#' best.
+#' @param n_epochs the number of times we iterate over the whole training set in the training phase of the neural
+#' network.
 #' @param optimizer which optimizer to use. DEFAULT to adam as Frye specifies that it is the one they used.
 #' @param batch_size the batch size used during the training phase.
-#' @param batch_size_validation the batch size used during the validation phase. Should be less as each observation is masked in 2^{num_features} ways.
+#' @param batch_size_validation the batch size used during the validation phase. Should be less as each observation is
+#' masked in 2^{num_features} ways.
 #' @param masking_schemes if we are to use the mask Frye seems to use in his paper or a MCAR mask.
-#' @param masking_value which value to give to the features that are masked. Frye use -1 and states that it should be a value not in the training data.
+#' @param masking_value which value to give to the features that are masked. Frye use -1 and states that it should be
+#' a value not in the training data.
 #' @param activation_function which activation function to use in the network. Frye does not specify it.
 #' @param use_cuda if we are to run the code on the CPU or CUDA/GPU, if available.
 #' @param test same as the training data. Used to evaluate the fitted NN. NOT IMPLEMENTED YET!
@@ -1413,7 +1462,8 @@ NN_internal <- function(hidden_layer_depth,
 #' @param verbose if the function should give printouts to the user.
 #' @param verbose_plot if we are to plot the training and validation error.
 #' @param verbose_plot_points if we are to plot points along the training and validation error curves.
-#' @param first_epoch_to_show if we are to plot, which epoch is the first to show. Using 1 might result in large range on y-axis.
+#' @param first_epoch_to_show if we are to plot, which epoch is the first to show. Using 1 might result in large range
+#' on y-axis.
 #' @param only_plot_epochs_divisible_by_this_value if we are to skip some of the of the epochs in the plot.
 #' @param extra_save_name If we are to add any post text to the filenames.
 #' @param paired_sampling
@@ -1473,11 +1523,14 @@ NN <- function(training,
   # Check for valid masking scheme
   masking_schemes <- match.arg(masking_schemes)
   # if ("Frye" %in% masking_schemes & paired_sampling == TRUE) {
-  #   stop(sprintf("Masking scheme 'Frye' does not support paired sampling. Paired sampling is only applicable for masking scheme 'MCAR'.\n"))
+  #   stop(sprintf("Masking scheme 'Frye' does not support paired sampling. Paired sampling is only
+  # applicable for masking scheme 'MCAR'.\n"))
   # }
 
   ### Some test for valid parameter input
-  if (training_split_ratio <= 0 | 1 <= training_split_ratio) stop("Training error is outside (0,1). We recommend 'training_split_ratio = 0.75'.")
+  if (training_split_ratio <= 0 || 1 <= training_split_ratio) {
+    stop("Training error is outside (0,1). We recommend `training_split_ratio = 0.75`.")
+  }
 
   # Check how close the masking_value is any value in the training data
   closest_observation <- which.min(as.matrix(abs(training$x - masking_value))) %% nrow(training$x)
@@ -1493,7 +1546,7 @@ NN <- function(training,
   # First, we check whether a compatible GPU is available for computation, and
   # if the user wants the code to run on cuda/GPU, then we set the device to cuda.
   # Note, default is CPU.
-  if (torch::cuda_is_available() & use_cuda) {
+  if (torch::cuda_is_available() && use_cuda) {
     device <- torch_device("cuda")
   } else {
     if (use_cuda) warning("cuda is not available. Fall back on CPU instead of GPU.")
@@ -1608,7 +1661,8 @@ NN <- function(training,
           if (verbose) {
             cat(sprintf(
               "Best setup so far: masking = %s, concat = %s, paired = %s, depth = %d, width = %d, lr = %g, and val_loss = %.3g.\n",
-              best_model$masking_scheme, best_model$concatenate_mask, best_model$paired_sampling, best_model$hidden_layer_depth, best_model$hidden_layer_width, best_model$learning_rate, best_model$best_loss
+              best_model$masking_scheme, best_model$concatenate_mask, best_model$paired_sampling,
+              best_model$hidden_layer_depth, best_model$hidden_layer_width, best_model$learning_rate, best_model$best_loss
             ))
             cat(sprintf(
               "Currently working on: masking = %s, concat = %s, paired = %s, depth = %d, width = %d, and lr = %g.\n",
@@ -1621,7 +1675,9 @@ NN <- function(training,
             "Shap_reg_NN_mask_%s_cat_%s_paired_%s_depth_%d_width_%d_lr_%g",
             masking_scheme, concatenate_mask, paired_sampling, hidden_layer_depth, hidden_layer_width, learning_rate
           )
-          if (extra_save_name != "" && substr(extra_save_name, 1, 1) != "_") extra_save_name <- paste("_", extra_save_name, sep = "")
+          if (extra_save_name != "" && substr(extra_save_name, 1, 1) != "_") {
+            extra_save_name <- paste("_", extra_save_name, sep = "")
+          }
           model_save_name <- paste(save_folder, model_save_name, extra_save_name, sep = "")
 
           # Fit the neural network
@@ -1657,7 +1713,7 @@ NN <- function(training,
           )
           NN_results$time <- NN_results_time
 
-          # Check if this setup of hyper-parameters are best
+          # Check if this setup of hyperparameters are best
           if (NN_results$best_loss < best_loss) {
             best_model <- NN_results
             best_loss <- NN_results$best_loss
@@ -1850,7 +1906,7 @@ NN <- function(training,
 
 
 
-# Explain Functions used in rshapr --------------------------------------------------------------------------------------------------------------
+# Explain Functions used in rshapr -------------------------------------------------------------------------------------
 
 
 
@@ -2000,7 +2056,8 @@ explain_regression_internal_combined.NN <- function(explainer,
   # Note that the response is the prediction of the predictive model f,
   # which we are to explain.
   # AND NOT THE ACTUAL RESPONSE THE MODEL WAS TRAINDED ON.
-  training_list <- list(x = x_train, y = as.matrix(explainer$y_train_hat / explainer$largest_absolute_value)) # as.matrix WILL NOT WORK FOR CATEGORICAL DATA.
+  training_list <- list(x = x_train, y = as.matrix(explainer$y_train_hat / explainer$largest_absolute_value))
+  # as.matrix WILL NOT WORK FOR CATEGORICAL DATA.
 
   explainer$time_surrogate_training_model <- system.time(
     {
@@ -2059,9 +2116,15 @@ explain_regression_internal_combined.NN <- function(explainer,
   # n_levels = unname(sapply(explainer$feature_list$factor_levels, length))
   # n_levels[n_levels == 0] = 1
   n_levels <- explainer$x_train_attribute
-  explainer$active_coalitions_extended <- t(sapply(seq(nrow(explainer$active_coalitions)), function(current_row_idx) rep(explainer$active_coalitions[current_row_idx, ], times = n_levels)))
+  explainer$active_coalitions_extended <-
+    t(sapply(
+      seq_len(nrow(explainer$active_coalitions)),
+      function(current_row_idx) {
+        rep(explainer$active_coalitions[current_row_idx, ], times = n_levels)
+      }
+    ))
 
-  if (nrow(x_train) <= 5000 & ncol(x_train) < 10) {
+  if (nrow(x_train) <= 5000 && ncol(x_train) < 10) {
     # Cannot handle to big datasets due to memmory
 
     # Augment the training data
@@ -2448,11 +2511,12 @@ explain_regression <- function(x,
 
     NN_results_list <- list()
 
-    NN_save_paths <- earlier_explainer$NN_return_list$NN_results_list[[1]][[1]][[1]][[1]]$list_save_names_every_100th_epoch
+    NN_save_paths <-
+      earlier_explainer$NN_return_list$NN_results_list[[1]][[1]][[1]][[1]]$save_names_every_100th_epoch
 
 
     NN_save_path_idx <- 1
-    for (NN_save_path_idx in seq(length(NN_save_paths))) {
+    for (NN_save_path_idx in seq_along(NN_save_paths)) {
       NN_save_path_current <- NN_save_paths[[NN_save_path_idx]]
 
       NN_results_list[[NN_save_path_current]] <- explainer
