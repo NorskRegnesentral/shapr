@@ -104,7 +104,7 @@ In the following examples we use the same data and want to explain the same mode
 That is, we train a simple `xgboost` model on the `airquality` dataset, and illustrate how `shapr` and 
 the separate regression method class can be used to explain the individual predictions.
 
-First we set up the `airquality` dataset and train the `xgboost` model.
+First we setup the `airquality` dataset and train the `xgboost` model.
 ```{r setup, message=FALSE}
 library(xgboost)
 library(tidymodels)
@@ -177,7 +177,8 @@ explanation_list$MC_empirical <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0
+  prediction_zero = p0,
+    n_batches = 4
 )
 ```
 
@@ -193,6 +194,7 @@ explanation_list$sep_lm <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
+    n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::linear_reg()
 )
@@ -232,6 +234,7 @@ explanation_list$sep_pcr <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
+    n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::linear_reg(),
   regression_recipe_func = function(regression_recipe) {
@@ -247,6 +250,7 @@ explanation_list$sep_splines <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
+    n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::linear_reg(),
   regression_recipe_func = function(regression_recipe) {
@@ -297,6 +301,7 @@ explanation_list$sep_reicpe_example <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
+    n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::linear_reg(),
   regression_recipe_func = regression_recipe_func
@@ -314,7 +319,7 @@ print_MSEv_scores_and_time(explanation_list)
 
 
 
-### Decision trees
+### Other regression models
 
 In the next example, we use a decision tree model instead of the simple linear regression model.
 
@@ -336,7 +341,7 @@ explanation_list$sep_tree_stump <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 1,
+  n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>%
     parsnip::set_engine("rpart") %>%
@@ -349,7 +354,7 @@ explanation_list$sep_tree_default <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 1,
+  n_batches = 4,
   approach = "regression_separate",
   regression_model =
     parsnip::decision_tree() %>%
@@ -379,12 +384,18 @@ Another option is to use cross validation to tune the hyperparameters. To do thi
 This is done by setting the parameter equal to `tune()`. E.g., if we want to
 tune the `tree_depth` in the `decision_tree`, while using default parameters for the
 other parameters, then we set `decision_tree(tree_depth = tune())`.
-2. In `regression_tune_values`, we must provide a data.frame/data.table/tibble of the
-possible hyperparameter values to consider. The column names of `regression_tune_values`
+2. In `regression_tune_values`, we must provide either a data.frame/data.table/tibble of the
+possible hyperparameter values to consider or a function that takes in the training data for 
+each combination/coalition and outputs the a data.frame with the possible hyperparameter values.
+The latter allows us to use different hyperparameter values for the different coalition sizes.
+This is also essential if the domain of a hyperparameter changes with the coalition size. E.g., 
+`mtry` in `ranger` (random forest). See example below. 
+The column names of `regression_tune_values` (or the output if it is a function)
 must match the tuneable hyperparameters specified in `regression_model`. I.e., for the
 example above, `regression_tune_values` must be a one column data.frame/data.table/tibble
 with the column name `tree_depth`. This can either be done by specifying the values manually
-or using the `dials` package, e.g., `dials::grid_regular(dials::tree_depth(), levels = 5)`.
+or using the `dials` package, e.g., `dials::grid_regular(dials::tree_depth(), levels = 5)`. 
+Or it can be a function that outputs a data.frame on the same form.
 3. It is optional to specify the `regression_vfold_cv_para` parameter. If used, then
 `regression_vfold_cv_para` must be a named list specifying the parameters to send to the
 cross-validation function `rsample::vfold_cv()`. See `?rsample::vfold_cv` to see the default
@@ -397,10 +408,12 @@ Note that `dials` have several other grid functions too, e.g., `dials::grid_rand
 and `dials::grid_latin_hypercube()`.
 ```{r echo=TRUE, results='hide'}
 # Possible ways to define the `regression_tune_values` object. One automatic and three manual ways.
+# function(x) return(dials::grid_regular(dials::tree_depth(), levels = 4))
 dials::grid_regular(dials::tree_depth(), levels = 4)
 data.table(tree_depth = c(1, 5, 10, 15)) # Note that we can also use data.frame and tibble too.
 
 # For several features
+# function(x) return(dials::grid_regular(dials::tree_depth(), dials::cost_complexity(), levels = 3))
 dials::grid_regular(dials::tree_depth(), dials::cost_complexity(), levels = 3)
 expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.05, 0.01))
 ```
@@ -449,19 +462,59 @@ explanation_list$sep_tree_cv_2 <- explain(
   regression_vfold_cv_para = list(v = 5)
 )
 ```
+We also include one example with a random forest model where the tunable hyperparameter `mtry` is dependent 
+on the coalition size, hence, we let `regression_tune_values` be a function. If we do not let `regression_tune_values`
+be a function, then `tidymodels` will crash for any `mtry` larger than 1. We also set `verbose = 2` to illustrate
+that the tested hyperparameter value combinations changes best on the coalition size.
+```{r}
+# Using random forest with default parameters
+explanation_list$sep_rf <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::rand_forest() %>%
+    parsnip::set_engine("ranger") %>%
+    parsnip::set_mode("regression")
+)
+
+# Using random forest with parameters tuned by cross validation
+explanation_list$sep_rf_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 1, # One batch to get printouts in chronological order
+  verbose = 2,
+  approach = "regression_separate",
+  regression_model = parsnip::rand_forest(mtry = tune(), trees = tune()) %>%
+    parsnip::set_engine("ranger") %>%
+    parsnip::set_mode("regression"),
+  regression_tune_values = 
+    function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 3)),
+  regression_vfold_cv_para = list(v = 5)
+)
+```
+
 
 We can look at the $\operatorname{MSE}_v$ evaluation criterion and we see that conducting cross-validation
-drastically improves the methods. The two cross-validated methods are very comparable, but the second version
+drastically improves both the decision tree method and the random forest method. 
+The two cross-validated decision tree methods are very comparable, but the second version
 outperforms the first version with a small margin. Note that this a bit of an unfair comparison for the `empirical`
 approach which also has hyper-parameters one could tune. However, `shapr` does not currently provide a function
-to do this automatically.
+to do this automatically. In the figure below, we include a vertical line at the $\operatorname{MSE}_v$ score
+of the `empirical` method.
 
 ```{r dt-cv-plot, cache=TRUE}
-plot_MSEv_scores(explanation_list)
+plot_MSEv_scores(explanation_list, method_line = "MC_empirical") 
 ```
 
 Furthermore, we have to consider that doing the cross validation drastically increase the elapsed time in seconds.
-Thus, we have to evaluate if the better precision is worth the extra elapsed time. 
+Thus, we have to evaluate if the better precision is worth the extra elapsed time. We also see that the complex
+random forest method performs significantly worse than the simple decision tree method. This can indicate that
+even though we do hyperparameter tuning, we are still overfitting the data.
 
 ```{r dt-cv-print, cache=TRUE}
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
@@ -596,7 +649,7 @@ explanation_list$sur_rf <- explain(
     parsnip::set_mode("regression")
 )
 
-# Using random forest with parameters tuned by cv as the surrogate model
+# Using random forest with parameters tuned by cross validation as the surrogate model
 explanation_list$sur_rf_cv <- explain(
   model = model,
   x_explain = x_explain,
@@ -608,7 +661,7 @@ explanation_list$sur_rf_cv <- explain(
     parsnip::set_engine("ranger") %>%
     parsnip::set_mode("regression"),
   regression_tune_values =
-    dials::grid_regular(dials::mtry(c(1, ncol(x_explain) - 1)), dials::trees(c(10, 750)), levels = 4),
+    dials::grid_regular(dials::mtry(c(1, ncol(x_explain))), dials::trees(c(50, 750)), levels = 4),
   regression_vfold_cv_para = list(v = 5)
 )
 
@@ -902,7 +955,8 @@ explanation_list_MC$MC_vaeac <- explain(
   x_train = x_train,
   n_batches = 4,
   approach = "vaeac",
-  prediction_zero = p0
+  prediction_zero = p0,
+  vaeac.epochs = 10
 )
 
 # Combine the two explanations lists
@@ -936,3 +990,354 @@ plot_SV_several_approaches(explanation_list, index_explicands = c(5, 6), facet_n
 
 
 Sort them and only show for some
+
+
+
+
+
+
+# Mixed data {#mixed}
+
+In this section, we replicate and extend the mixed data example from the main vignette by demonstrating
+how to use the separate and surrogate regression methods. Of the Monte Carlo based methods, only 
+`independence` (not recommended), `ctree` and `vaeac` support mixed data. For the regression methods,
+we can divide the regression models into two groups. Those that can handle categorical features by default
+and those models we need to apply pre-processing of the categorical features. By pre-processing, we mean
+that we need to convert them into numerical values using for example dummy features. We demonstrate how
+this is done below using the `regression_recipe_func` function. 
+
+## Mixed data: setup
+
+First, we copy the setup from the main vignette.
+
+```{r mixed-setup, cache = TRUE}
+# convert the month variable to a factor
+data_cat = copy(data)[, Month_factor := as.factor(Month)]
+
+data_train_cat <- data_cat[-ind_x_explain, ]
+data_explain_cat <- data_cat[ind_x_explain, ]
+
+x_var_cat <- c("Solar.R", "Wind", "Temp", "Month_factor")
+
+x_train_cat <- data_train_cat[, ..x_var_cat]
+x_explain_cat <- data_explain_cat[, ..x_var_cat]
+
+p0_cat <- mean(y_train)
+
+# Fitting an lm model here as xgboost does not handle categorical features directly
+formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + ")))
+model_cat <- lm(formula, data_train_cat)
+
+# We could also consider other models such as random forest which supports mixed data
+# model_cat <- ranger(formula, data_train_cat)
+
+# List to store the explanations for this mixed data setup
+explanation_list_mixed <- list()
+```
+
+
+## Mixed data: Monte Carlo-based methods
+Second, we compute the explanations using the Monte Carlo Based methods.
+
+```{r mixed-MC, cache = TRUE}
+explanation_list_mixed$MC_independence <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "independence"
+)
+
+explanation_list_mixed$MC_ctree <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "ctree"
+)
+
+explanation_list_mixed$MC_vaeac_50_4 <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "vaeac",
+  verbose = 2,
+  vaeac.epochs = 5,
+  n_samples = 20
+)
+
+explanation_list_mixed$MC_vaeac_200 <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "vaeac",
+  vaeac.epochs = 200
+)
+```
+
+
+## Mixed data: separate regression methods
+Third, we use separate regression to compute the Shapley value explanations.
+```{r mixed-separate, cache = TRUE}
+# Standard linear regression
+explanation_list_mixed$sep_lm <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::linear_reg()
+)
+
+# Linear regression where we have added splines to the numerical features
+explanation_list_mixed$sep_splines <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::linear_reg(),
+  regression_recipe_func = function(regression_recipe) {
+    return(step_ns(regression_recipe, all_numeric_predictors(), deg_free = 2))
+  }
+)
+
+# Decision tree with default parameters
+explanation_list_mixed$sep_tree <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model =
+    parsnip::decision_tree() %>%
+      parsnip::set_engine("rpart") %>%
+      parsnip::set_mode("regression")
+)
+
+# Use trees with cross validation on the depth and cost complexity. Manually set the values.
+explanation_list_mixed$sep_tree_cv <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model =
+    parsnip::decision_tree(tree_depth = tune(), cost_complexity = tune()) %>%
+      parsnip::set_engine("rpart") %>%
+      parsnip::set_mode("regression"),
+  regression_tune_values =
+    expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
+  regression_vfold_cv_para = list(v = 5)
+)
+
+# Random forest with default hyperparameters. Do NOT need to use dummy features.
+explanation_list_mixed$sep_rf <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::rand_forest() %>%
+    parsnip::set_engine("ranger") %>%
+    parsnip::set_mode("regression")
+)
+
+# Random forest with cross validated hyperparameters.
+explanation_list_mixed$sep_rf_cv <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::rand_forest(mtry = tune(), trees = tune()) %>%
+    parsnip::set_engine("ranger") %>%
+    parsnip::set_mode("regression"),
+  regression_tune_values =
+    function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 4)),
+  regression_vfold_cv_para = list(v = 5)
+)
+
+# Xgboost with default hyperparameters, but we have to dummy encode the factors
+explanation_list_mixed$sep_xgboost <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::boost_tree() %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression"),
+  regression_recipe_func = function(regression_recipe) {
+    return(step_dummy(regression_recipe, all_factor_predictors()))
+  }
+)
+
+# Xgboost with cross validated hyperparameters and we dummy encode the factors
+explanation_list_mixed$sep_xgboost_cv <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression_model = parsnip::boost_tree(trees = tune(), tree_depth = tune()) %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression"),
+  regression_recipe_func = function(regression_recipe) {
+    return(step_dummy(regression_recipe, all_factor_predictors()))
+  },
+  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression_vfold_cv_para = list(v = 5)
+)
+```
+
+
+## Mixed data: surrogate regression methods
+Fourth, we use separate regression to compute the Shapley value explanations.
+```{r mixed-surrogate, cache = TRUE}
+# Standard linear regression
+explanation_list_mixed$sur_lm <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::linear_reg()
+)
+
+# Linear regression where we have added splines to the numerical features
+explanation_list_mixed$sur_splines <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::linear_reg(),
+  regression_recipe_func = function(regression_recipe) {
+    return(step_ns(regression_recipe, all_numeric_predictors(), deg_free = 2))
+  }
+)
+
+# Decision tree with default parameters
+explanation_list_mixed$sur_tree <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model =
+    parsnip::decision_tree() %>%
+      parsnip::set_engine("rpart") %>%
+      parsnip::set_mode("regression")
+)
+
+# Use trees with cross validation on the depth and cost complexity. Manually set the values.
+explanation_list_mixed$sur_tree_cv <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model =
+    parsnip::decision_tree(tree_depth = tune(), cost_complexity = tune()) %>%
+      parsnip::set_engine("rpart") %>%
+      parsnip::set_mode("regression"),
+  regression_tune_values =
+    expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
+  regression_vfold_cv_para = list(v = 5)
+)
+
+# Random forest with default hyperparameters. Do NOT need to use dummy features.
+explanation_list_mixed$sur_rf <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::rand_forest() %>%
+    parsnip::set_engine("ranger") %>%
+    parsnip::set_mode("regression")
+)
+
+# Random forest with cross validated hyperparameters.
+explanation_list_mixed$sur_rf_cv <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::rand_forest(mtry = tune(), trees = tune()) %>%
+    parsnip::set_engine("ranger") %>%
+    parsnip::set_mode("regression"),
+  regression_tune_values =
+    function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 4)),
+  regression_vfold_cv_para = list(v = 5)
+)
+
+# Xgboost with default hyperparameters, but we have to dummy encode the factors
+explanation_list_mixed$sur_xgboost <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::boost_tree() %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression"),
+  regression_recipe_func = function(regression_recipe) {
+    return(step_dummy(regression_recipe, all_factor_predictors()))
+  }
+)
+
+# Xgboost with cross validated hyperparameters and we dummy encode the factors
+explanation_list_mixed$sur_xgboost_cv <- explain(
+  model = model_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  prediction_zero = p0_cat,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::boost_tree(trees = tune(), tree_depth = tune()) %>%
+    parsnip::set_engine("xgboost") %>%
+    parsnip::set_mode("regression"),
+  regression_recipe_func = function(regression_recipe) {
+    return(step_dummy(regression_recipe, all_factor_predictors()))
+  },
+  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression_vfold_cv_para = list(v = 5)
+)
+```
+
+## Mixed data: summary
+Fifth, and finally, we compare the results. 
+```{r mixed-plot, cache = TRUE}
+# Print the MSEv scores and the elapsed time (in seconds) for the different methods
+print_MSEv_scores_and_time(explanation_list_mixed)
+
+# Compare the MSEv criterion of the different explanation methods
+# Include vertical line corresponding to the MSEv of the empirical method.
+plot_MSEv_scores(explanation_list_mixed)
+
+plot_SV_several_approaches(explanation_list_mixed, index_explicands = c(1, 2), facet_ncol = 1)
+```
