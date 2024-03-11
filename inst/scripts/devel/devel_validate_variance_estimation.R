@@ -226,7 +226,11 @@ setcolorder(dt_kshap_full,"id")
 
 #### funcs from devel_iterative_kernelshap_v2
 
-feature_set_sample <- function(feature_sample_all = NULL, m, n_combinations = 200, unique_sampling = TRUE) {
+# feature_sample_all is always NULL here, since that is what we do in the simulation setting here
+feature_set_sample <- function(feature_sample_all = NULL, m, n_combinations = 200, unique_sampling = TRUE,paired_sampling = FALSE) {
+  if(paired_sampling == TRUE & unique_sampling == TRUE){
+    stop("unique_sampling cannot be TRUE for paired_sampling in the simulation setting. Should implement it when we don't do simulations though.")
+  }
   # Find weights for given number of features ----------
   n_features <- seq(m - 1)
   n <- sapply(n_features, choose, n = m)
@@ -240,7 +244,6 @@ feature_set_sample <- function(feature_sample_all = NULL, m, n_combinations = 20
     unique_samples <- length(unique(feature_sample_all))
     n_combinations <- n_combinations + unique_samples + 2
   }
-
 
   if (unique_sampling) {
     while (unique_samples < n_combinations - 2) {
@@ -258,14 +261,21 @@ feature_set_sample <- function(feature_sample_all = NULL, m, n_combinations = 20
       unique_samples <- length(unique(feature_sample_all))
     }
   } else {
+
     n_features_sample <- sample(
       x = n_features,
-      size = n_combinations - 2, # Sample -2 as we add zero and m samples below
+      size = (n_combinations - 2)*ifelse(paired_sampling,0.5,1), # Sample -2 as we add zero and m samples below
       replace = TRUE,
       prob = p
     )
     feature_sample <- shapr:::sample_features_cpp(m, n_features_sample)
+    if(paired_sampling){
+      feature_sample_paired <- lapply(feature_sample, function(x) seq(m)[-x])
+      feature_sample <- c(feature_sample,feature_sample_paired) # Beware that the ordering here only works properly if we sample all at the same time, not with feature_sample_all set to something else as input
+    }
+
     feature_sample_all <- c(feature_sample_all, feature_sample)
+
   }
 
   return(feature_sample_all)
@@ -342,17 +352,31 @@ X_from_feature_set_v2 <- function(feature_sample_all = NULL, m, weight_zero_m = 
 
 
 
-sample_cov_estimator <- function(feature_sample_all,dt_vS,testObs_computed,n_var_est_reps = 10,n_var_est_groups = 10,m,comp_strategy = "all_combined", shapley_reweighting_strategy = "on_N",return = "sd_mat"){
+sample_cov_estimator <- function(feature_sample_all,dt_vS,testObs_computed,n_var_est_reps = 10,n_var_est_groups = 10,m,comp_strategy = "all_combined", shapley_reweighting_strategy = "on_N",return = "sd_mat",
+                                 paired_sampling = paired_sampling){
 
 
   sample_var_dt_kshap_list <- list()
   for(j in seq_len(n_var_est_reps)){
 
 
-    # Covert-approach by splitting the feature samples into subgroups
-    feature_sample_all_randomorder <- sample(seq_along(feature_sample_all))
-    # Split the feature samples into n_var_est_groups different subgroups of approximately equal size
-    feature_sample_all_randomsplit <- split(feature_sample_all_randomorder, ceiling(seq(10^(-20),n_var_est_groups,length.out = length(feature_sample_all_randomorder))))
+    if(paired_sampling == TRUE){ # Assuming the second half is the paired copy of the first half of the feature samples
+      halfway <- length(feature_sample_all)/2
+      feature_sample_initial <- feature_sample_all[1:halfway]
+
+      # Covert-approach by splitting the feature samples into subgroups
+      feature_sample_initial_randomorder <- sample(seq_along(feature_sample_initial))
+      # Split the feature samples into n_var_est_groups different subgroups of approximately equal size
+      feature_sample_inital_randomsplit <- split(feature_sample_initial_randomorder, ceiling(seq(10^(-20),n_var_est_groups,length.out = length(feature_sample_initial_randomorder))))
+      feature_sample_all_randomsplit <- lapply(feature_sample_inital_randomsplit,function(x)c(x,x+halfway))
+
+    } else {
+      # Covert-approach by splitting the feature samples into subgroups
+      feature_sample_all_randomorder <- sample(seq_along(feature_sample_all))
+      # Split the feature samples into n_var_est_groups different subgroups of approximately equal size
+      feature_sample_all_randomsplit <- split(feature_sample_all_randomorder, ceiling(seq(10^(-20),n_var_est_groups,length.out = length(feature_sample_all_randomorder))))
+
+    }
 
 
 
@@ -429,13 +453,25 @@ sample_cov_estimator <- function(feature_sample_all,dt_vS,testObs_computed,n_var
   }
 
 }
-boot_cov_estimator <- function(feature_sample_all,dt_vS,testObs_computed,n_boot_ests = 100,m,shapley_reweighting_strategy = "on_N",return = "sd_mat"){
+boot_cov_estimator <- function(feature_sample_all,dt_vS,testObs_computed,n_boot_ests = 100,m,shapley_reweighting_strategy = "on_N",return = "sd_mat",
+                               paired_sampling = paired_sampling){
 
   boot_var_list <- list()
 
   for (i in seq_len(n_boot_ests)){
 
-    these_ids <- sample(seq_along(feature_sample_all),replace = TRUE)
+    if(paired_sampling == TRUE){ # Assuming the second half is the paired copy of the first half of the feature samples
+      halfway <- length(feature_sample_all)/2
+      feature_sample_initial <- feature_sample_all[1:halfway]
+
+      these_ids0 <- sample(seq_along(feature_sample_initial),replace = TRUE)
+      these_ids <- c(these_ids0,these_ids0+halfway)
+
+    } else {
+      these_ids <- sample(seq_along(feature_sample_all),replace = TRUE)
+    }
+
+
     X_tmp <- X_from_feature_set_v2(feature_sample_all[these_ids],m=m,sample_ids=these_ids)[] # sample_ids could be removed from the function -- never used
 
     X_tmp[,features_char:=sapply(features,function(x)paste0(x, collapse = "_"))]
@@ -476,7 +512,11 @@ boot_cov_estimator <- function(feature_sample_all,dt_vS,testObs_computed,n_boot_
     ret <- t(sapply(boot_cov_mat_full_list,function(x) sqrt(diag(x))))
     ret_dt <- as.data.table(ret)
     ret_dt[,id:=testObs_computed]
-    ret_dt[,sd_type:="boot"]
+    if(paired_sampling){
+      ret_dt[,sd_type:="boot_unpaired"]
+    } else {
+      ret_dt[,sd_type:="boot_paired"]
+    }
     setcolorder(ret_dt,c("sd_type","id"))
     return(ret_dt)
   } else {
@@ -514,93 +554,109 @@ shapley_reweighting <- function(XX,strategy = "on_N"){
 
 n_combinations_vec <- c(50,100,200,400,800,1600,3200,6400)
 res_list <- list()
+paired_sampling_vec <- c(TRUE,FALSE)[1]
+unique_sampling <- FALSE
+m <- max_cutoff_features
+estimation_reps <- 100
+shapley_reweighting_strategy_vec <- c("none","on_N","on_n_features","on_all")
+
+set.seed(123)
+
+dt_kshap_list <- dt_sdkshap_list <- list()
+
 
 for(aa in seq_along(n_combinations_vec)){
 
-
   n_combinations <- n_combinations_vec[aa]
-  unique_sampling <- FALSE
-  m <- max_cutoff_features
-  estimation_reps <- 100
-  shapley_reweighting_strategy_vec <- c("none","on_N","on_n_features","on_all")
 
-  set.seed(123)
+  for (bb in seq_along(paired_sampling_vec)){
 
-  dt_kshap_list <- dt_sdkshap_list <- list()
+    paired_sampling <- paired_sampling_vec[bb]
 
-  for(i in seq_len(estimation_reps)){
-    feature_sample_all <- feature_set_sample(feature_sample_all = NULL, m=m,n_combinations = n_combinations,unique_sampling = unique_sampling)
+    for(i in seq_len(estimation_reps)){
 
-    X <- X_from_feature_set_v2(feature_sample_all,m=m,sample_ids=seq_along(feature_sample_all))[]
-    X[,features_char:=sapply(features,function(x)paste0(x, collapse = "_"))]
+      feature_sample_all <- feature_set_sample(feature_sample_all = NULL, m=m,n_combinations = n_combinations,unique_sampling = unique_sampling,paired_sampling = paired_sampling)
 
-    tmp <- list(kshap=list(),sdkshap=list())
-    for(j in seq_along(shapley_reweighting_strategy_vec)){
-      shapley_reweighting_strategy <- shapley_reweighting_strategy_vec[j]
+      X <- X_from_feature_set_v2(feature_sample_all,m=m,sample_ids=seq_along(feature_sample_all))[]
+      X[,features_char:=sapply(features,function(x)paste0(x, collapse = "_"))]
 
-      X_rw <- shapley_reweighting(X,strategy = shapley_reweighting_strategy)
+      tmp <- list(kshap=list(),sdkshap=list())
+      for(j in seq_along(shapley_reweighting_strategy_vec)){
+        shapley_reweighting_strategy <- shapley_reweighting_strategy_vec[j]
 
-      # Get weighted matrix ----------------
-      W <- shapr:::weight_matrix(
-        X = X_rw,
-        normalize_W_weights = TRUE,
-        is_groupwise = FALSE
-      )
+        X_rw <- shapley_reweighting(X,strategy = shapley_reweighting_strategy)
 
-      dt_vS_relevant <- merge(dt_vS, X_rw[,.(sorter=id_combination,features_char)], by = "features_char")
-      setorder(dt_vS_relevant,sorter)
-      dt_vS_relevant[,sorter:=NULL]
+        # Get weighted matrix ----------------
+        W <- shapr:::weight_matrix(
+          X = X_rw,
+          normalize_W_weights = TRUE,
+          is_groupwise = FALSE
+        )
 
-      kshap <- t(W %*% as.matrix(dt_vS_relevant[, -c("id_combination","features_char")]))
-      dt_kshap <- data.table::as.data.table(kshap)
-      colnames(dt_kshap) <- c("none", cutoff_feats)
-      dt_kshap[,id:=testObs_computed]
-      dt_kshap[,est_rep:=i]
-      dt_kshap[,reweighting_strategy:=shapley_reweighting_strategy]
-      setcolorder(dt_kshap,c("id","est_rep","reweighting_strategy"))
-      tmp$kshap[[j]] <- copy(dt_kshap)
+        dt_vS_relevant <- merge(dt_vS, X_rw[,.(sorter=id_combination,features_char)], by = "features_char")
+        setorder(dt_vS_relevant,sorter)
+        dt_vS_relevant[,sorter:=NULL]
+
+        kshap <- t(W %*% as.matrix(dt_vS_relevant[, -c("id_combination","features_char")]))
+        dt_kshap <- data.table::as.data.table(kshap)
+        colnames(dt_kshap) <- c("none", cutoff_feats)
+        dt_kshap[,id:=testObs_computed]
+        dt_kshap[,est_rep:=i]
+        dt_kshap[,reweighting_strategy:=shapley_reweighting_strategy]
+        setcolorder(dt_kshap,c("id","est_rep","reweighting_strategy"))
+        tmp$kshap[[j]] <- copy(dt_kshap)
 
 
-      #sample_sd_dt_combined <- sample_cov_estimator(feature_sample_all,dt_vS=copy(dt_vS_relevant),testObs_computed,n_var_est_reps = 10,n_var_est_groups = 10,m,comp_strategy = "all_combined",return="sd_mat")
-      sample_sd_dt_seperate <- sample_cov_estimator(feature_sample_all,dt_vS=copy(dt_vS_relevant),testObs_computed,n_var_est_reps = 10,n_var_est_groups = 10,m,comp_strategy = "separate",return="sd_mat")
-      boot_sd_dt <- boot_cov_estimator(feature_sample_all,dt_vS=dt_vS_relevant,testObs_computed,n_boot_ests = 100,m,shapley_reweighting_strategy = shapley_reweighting_strategy,return="sd_mat")
+        #sample_sd_dt_combined <- sample_cov_estimator(feature_sample_all,dt_vS=copy(dt_vS_relevant),testObs_computed,n_var_est_reps = 10,n_var_est_groups = 10,m,comp_strategy = "all_combined",return="sd_mat")
+        sample_sd_dt_seperate <- sample_cov_estimator(feature_sample_all,dt_vS=copy(dt_vS_relevant),testObs_computed,n_var_est_reps = 10,n_var_est_groups = 10,m,comp_strategy = "separate",return="sd_mat",paired_sampling = paired_sampling)
+        boot_sd_dt_paired <- boot_cov_estimator(feature_sample_all,dt_vS=dt_vS_relevant,testObs_computed,n_boot_ests = 100,m,shapley_reweighting_strategy = shapley_reweighting_strategy,return="sd_mat",paired_sampling = paired_sampling)
+        boot_sd_dt_unpaired <- boot_cov_estimator(feature_sample_all,dt_vS=dt_vS_relevant,testObs_computed,n_boot_ests = 100,m,shapley_reweighting_strategy = shapley_reweighting_strategy,return="sd_mat",paired_sampling = FALSE)
 
-      sd_dt <- rbind(sample_sd_dt_seperate,
-                     boot_sd_dt)
 
-      #sd_dt <- rbind(sample_sd_dt_combined,
-      #               sample_sd_dt_seperate,
-      #               boot_sd_dt)
+        sd_dt <- rbind(sample_sd_dt_seperate,
+                       boot_sd_dt_paired,
+                       boot_sd_dt_unpaired)
 
-      sd_dt[,est_rep:=i]
-      sd_dt[,reweighting_strategy:=shapley_reweighting_strategy]
-      setcolorder(sd_dt,c("sd_type","id","est_rep","reweighting_strategy"))
+        #sd_dt <- rbind(sample_sd_dt_combined,
+        #               sample_sd_dt_seperate,
+        #               boot_sd_dt)
 
-      # save results
-      tmp$sdkshap[[j]] <- copy(sd_dt)
+        sd_dt[,est_rep:=i]
+        sd_dt[,reweighting_strategy:=shapley_reweighting_strategy]
+        setcolorder(sd_dt,c("sd_type","id","est_rep","reweighting_strategy"))
 
+        # save results
+        tmp$sdkshap[[j]] <- copy(sd_dt)
+
+      }
+
+      dt_kshap_list[[i]] <- rbindlist(tmp$kshap)
+      dt_sdkshap_list[[i]] <- rbindlist(tmp$sdkshap)
+
+      print(c(aa,i))
     }
 
-    dt_kshap_list[[i]] <- rbindlist(tmp$kshap)
-    dt_sdkshap_list[[i]] <- rbindlist(tmp$sdkshap)
+    dt_kshap_sim <- rbindlist(dt_kshap_list)
+    dt_sdkshap_sim <- rbindlist(dt_sdkshap_list)
 
-    print(c(aa,i))
+    dt_kshap_sim[,n_comb:=n_combinations]
+    dt_sdkshap_sim[,n_comb:=n_combinations]
+
+    dt_kshap_sim[,uses_paired_sampling:=paired_sampling]
+    dt_sdkshap_sim[,uses_paired_sampling:=paired_sampling]
+
   }
-
-  dt_kshap_sim <- rbindlist(dt_kshap_list)
-  dt_sdkshap_sim <- rbindlist(dt_sdkshap_list)
-
-  dt_kshap_sim[,n_comb:=n_combinations]
-  dt_sdkshap_sim[,n_comb:=n_combinations]
 
   res_list[[aa]] <- list(dt_kshap_full = dt_kshap_full,
                          dt_kshap_sim = dt_kshap_sim,
                          dt_sdkshap_sim  = dt_sdkshap_sim)
 
-  saveRDS(res_list,file=paste0("res_list_10_features_",aa,".rds"))
+
+  saveRDS(res_list,file=paste0("res_list_10_features_",aa,"_with_paired_sampling.rds"))
 
 
 }
+
 
 dt_kshap_sim_all <- dt_sdkshap_sim_all <- NULL
 
@@ -804,6 +860,14 @@ sd_est_RMSE <- rbindlist(resres_list$sd_est_RMSE)
 sd_est_MAE <- rbindlist(resres_list$sd_est_MAE)
 coverage <- rbindlist(resres_list$coverage)
 
+aaap=MAE[n_comb==100,lapply(.SD,mean),by=.(n_comb,reweighting_strategy),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(n_comb,reweighting_strategy)]
+bbbp=sd_est_MAE[n_comb==100&sd_type=="boot_paired",lapply(.SD,mean),by=reweighting_strategy,.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=reweighting_strategy]
+bbbp2=sd_est_MAE[n_comb==100&sd_type=="boot_unpaired",lapply(.SD,mean),by=reweighting_strategy,.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=reweighting_strategy]
+bbbp3=sd_est_MAE[n_comb==100&sd_type=="sample_separate",lapply(.SD,mean),by=reweighting_strategy,.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=reweighting_strategy]
+
+
+aaa=MAE[n_comb==100,lapply(.SD,mean),by=.(n_comb,reweighting_strategy),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(n_comb,reweighting_strategy)]
+bbb=sd_est_MAE[n_comb==100&sd_type=="boot",lapply(.SD,mean),by=reweighting_strategy,.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=reweighting_strategy]
 
 
 MAE[lapply(.SD,mean),by=.(n_comb,reweighting_strategy),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(n_comb,reweighting_strategy)]
