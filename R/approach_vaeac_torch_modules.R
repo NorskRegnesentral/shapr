@@ -981,8 +981,13 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
   # Convert all categorical features (if there are any) from numeric back to factors with the original class names
   if (length(col_cat_names) > 0) {
     lapply(col_cat_names, function(col_cat_name) {
-      data[, (col_cat_name) := lapply(.SD, factor, labels = map_new_to_original_names[[col_cat_name]]),
-        .SDcols = col_cat_name
+      data[, (col_cat_name) := lapply(
+        .SD,
+        factor,
+        labels = map_new_to_original_names[[col_cat_name]],
+        levels = seq_along(map_new_to_original_names[[col_cat_name]])
+      ),
+      .SDcols = col_cat_name
       ]
     })
   }
