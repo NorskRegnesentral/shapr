@@ -4,19 +4,12 @@
 \alias{regression_cv_message}
 \title{Produce message about which batch prepare_data is working on}
 \usage{
-regression_cv_message(
-  regression_results,
-  regression_tune_values,
-  regression_folds,
-  n_cv = 10
-)
+regression_cv_message(regression_results, regression_grid, n_cv = 10)
 }
 \arguments{
 \item{regression_results}{The results of the CV procedures.}
 
-\item{regression_tune_values}{Object containing the hyperparameter values.}
-
-\item{regression_folds}{The \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}} object containing the folds.}
+\item{regression_grid}{Object containing the hyperparameter values.}
 
 \item{n_cv}{Integer (default is 10) specifying the number of CV hyperparameter configurations to print.}
 }

@@ -33,7 +33,9 @@ then \code{index_features} must be provided.}
 to factors. If \code{FALSE}, then the binary masks are numerics.}
 
 \item{augment_include_grand}{Logical (default is \code{FALSE}). If \code{TRUE}, then the grand coalition is included.
-If \code{index_features} are provided, then \code{augment_include_grand} has no effect.}
+If \code{index_features} are provided, then \code{augment_include_grand} has no effect. Note that if we sample the
+combinations then the grand coalition is equally likely to be samples as the other coalitions (or weighted if
+\code{augment_comb_prob} is provided).}
 
 \item{augment_add_id_comb}{Logical (default is \code{FALSE}). If \code{TRUE}, an additional column is adding containing
 which coalition was applied.}

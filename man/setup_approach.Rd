@@ -178,17 +178,21 @@ Containing the mean of the data generating distribution.
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
 
-\item{regression_model}{A tidymodels object of class \code{model_specs}. Default is a linear regression model
-(\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}). See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models.}
+\item{regression_model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model
+(\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}). See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
+and see the vignette for how to add new/own models.}
 
-\item{regression_tune_values}{Either NULL (default) or a data.frame/data.table/tibble containing the possible
-hyper-parameter value combinations to try. The column names must match the names of the tuneable parameters specified
-in \code{regression_model}.}
+\item{regression_tune_values}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
+The data.frame must contain the possible hyperparameter value combinations to try.
+The column names must match the names of the tuneable parameters specified in \code{regression_model}.
+If \code{regression_tune_values} is a function, then it should take one argument \code{x} which is the training data
+for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
+Using a function allows the hyperparameter values to change based on the size of the combination.}
 
-\item{regression_vfold_cv_para}{Either NULL (default) or a list containing
+\item{regression_vfold_cv_para}{Either \code{NULL} (default) or a list containing
 the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}.}
 
-\item{regression_recipe_func}{Either NULL (default) or a function that must return
+\item{regression_recipe_func}{Either \code{NULL} (default) or a function that must return
 the RHS of the formula for arbitrary feature name inputs.}
 
 \item{regression_surr_n_comb}{Integer (default is \code{internal$parameters$used_n_combinations}) specifying the number
@@ -234,18 +238,6 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 The different choices of \code{approach} takes different (optional) parameters,
 which are forwarded from \code{\link[=explain]{explain()}}.
 }
-\section{The vaeac approach}{
-
-The \code{vaeac} model consists of three neural network (a full encoder, a masked encoder, and a decoder) based
-on the provided \code{vaeac.depth} and \code{vaeac.width}. The encoders map the full and masked input
-representations to latent representations, respectively, where the dimension is given by \code{vaeac.latent_dim}.
-The latent representations are sent to the decoder to go back to the real feature space and
-provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
-We use the \code{vaeac} method at the epoch with the lowest validation error (IWAE) by default, but
-other possibilities are available but setting the \code{vaeac.which_vaeac_model} parameter. See
-\href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
-}
-
 \author{
 Martin Jullum
 

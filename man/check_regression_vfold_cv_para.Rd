@@ -7,7 +7,7 @@
 check_regression_vfold_cv_para(regression_vfold_cv_para)
 }
 \arguments{
-\item{regression_vfold_cv_para}{Either NULL (default) or a list containing
+\item{regression_vfold_cv_para}{Either \code{NULL} (default) or a list containing
 the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}.}
 }
 \description{

@@ -12,6 +12,7 @@ regression_train(
   regression_vfold_cv_para = NULL,
   regression_recipe_func = NULL,
   regression_response_var = "y_hat",
+  regression_sur_n_comb = NULL,
   verbose = 0
 )
 }
@@ -19,24 +20,31 @@ regression_train(
 \item{x}{Data.table containing the data. Either the training data or the explicands. If \code{x} is the explicands,
 then \code{index_features} must be provided.}
 
-\item{regression_model}{A tidymodels object of class \code{model_specs}. Default is a linear regression model
-(\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}). See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models.}
+\item{regression_model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model
+(\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}). See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
+and see the vignette for how to add new/own models.}
 
 \item{regression_tune}{Logical (default is \code{FALSE}). If \code{TRUE}, then we are to tune the hyperparemeters based on
 the values provided in \code{regression_tune_values}. Note that no checks are conducted as this is checked earlier in
 \code{setup_approach.regression_separate} and \code{setup_approach.regression_surrogate}.}
 
-\item{regression_tune_values}{Either NULL (default) or a data.frame/data.table/tibble containing the possible
-hyper-parameter value combinations to try. The column names must match the names of the tuneable parameters specified
-in \code{regression_model}.}
+\item{regression_tune_values}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
+The data.frame must contain the possible hyperparameter value combinations to try.
+The column names must match the names of the tuneable parameters specified in \code{regression_model}.
+If \code{regression_tune_values} is a function, then it should take one argument \code{x} which is the training data
+for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
+Using a function allows the hyperparameter values to change based on the size of the combination.}
 
-\item{regression_vfold_cv_para}{Either NULL (default) or a list containing
+\item{regression_vfold_cv_para}{Either \code{NULL} (default) or a list containing
 the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}.}
 
-\item{regression_recipe_func}{Either NULL (default) or a function that must return
+\item{regression_recipe_func}{Either \code{NULL} (default) or a function that must return
 the RHS of the formula for arbitrary feature name inputs.}
 
 \item{regression_response_var}{String (default is \code{y_hat}) containing the name of the response variable.}
+
+\item{regression_sur_n_comb}{Integer (default is \code{NULL}). The number of times each training observations
+has been augmented. If \code{NULL}, then we assume that we are doing separate regression.}
 
 \item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
 If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.

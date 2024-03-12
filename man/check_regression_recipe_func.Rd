@@ -4,11 +4,14 @@
 \alias{check_regression_recipe_func}
 \title{Check \code{regression_recipe_func}}
 \usage{
-check_regression_recipe_func(regression_recipe_func)
+check_regression_recipe_func(regression_recipe_func, x_explain)
 }
 \arguments{
-\item{regression_recipe_func}{Either NULL (default) or a function that must return
+\item{regression_recipe_func}{Either \code{NULL} (default) or a function that must return
 the RHS of the formula for arbitrary feature name inputs.}
+
+\item{x_explain}{A matrix or data.frame/data.table.
+Contains the the features, whose predictions ought to be explained.}
 }
 \description{
 Check that regression_recipe_func is a function that returns the
