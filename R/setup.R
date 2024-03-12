@@ -512,8 +512,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
 
-  # Setting that we are using regression based the approach name
-  parameters$regression <- grepl("regression", parameters$approach)
+  # Setting that we are using regression based the approach name (any in case several approaches)
+  parameters$regression <- any(grepl("regression", parameters$approach))
 
   return(parameters)
 }
@@ -674,9 +674,9 @@ check_approach <- function(internal) {
     all(is.element(approach, supported_approaches)))
   ) {
     stop(
-      paste(
+      paste0(
         "`approach` must be one of the following: \n", paste0(supported_approaches, collapse = ", "), "\n",
-        "or a vector of length one less than the number of features (", n_features - 1, "),",
+        "or a vector of length one less than the number of features (", n_features - 1, "), ",
         "with only the above strings."
       )
     )
