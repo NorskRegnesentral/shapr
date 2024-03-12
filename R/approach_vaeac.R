@@ -1887,14 +1887,13 @@ vaeac_get_save_file_names <- function(model_description,
 #' @param vaeac_model A `vaeac` model created using [vaeac()].
 #' @param optimizer_name String containing the name of the [torch::optimizer()] to use.
 #'
-#' @return Array of string containing the save files to use when training the `vaeac` model. The first three names
-#' corresponds to the best, best_running, and last epochs, in that order.
+#' @return A [torch::optim_adam()] optimizer connected to the parameters of the `vaeac_model`.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_get_optimizer <- function(vaeac_model, lr, optimizer_name = "adam") {
   if (optimizer_name == "adam") {
-    # Create the adam optimizer
+    # Create the adam optimizer with defualt parameters except from the provided learning rate
     optimizer <- torch::optim_adam(
       params = vaeac_model$parameters,
       lr = lr,
