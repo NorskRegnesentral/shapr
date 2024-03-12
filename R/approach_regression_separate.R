@@ -250,8 +250,8 @@ get_regression_tune <- function(regression_model, regression_tune_values, x_trai
 
   # Check function or tibble
   if (!is.null(regression_tune_values) &&
-      !is.data.frame(regression_tune_values) &&
-      !is.function(regression_tune_values)) {
+    !is.data.frame(regression_tune_values) &&
+    !is.function(regression_tune_values)) {
     stop("`regression_tune_values` must be of either class `data.frame` or `function`. See documentation.")
   }
 
@@ -333,12 +333,11 @@ check_regression_recipe_func <- function(regression_recipe_func, x_explain) {
   }
 
   if (!is.null(regression_recipe_func) && is.function(regression_recipe_func)) {
-    x_temp = copy(x_explain)[, y_hat_temp := 1]
+    x_temp <- copy(x_explain)[, y_hat_temp := 1]
     if (class(regression_recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))) != "recipe") {
       stop("The output of the `regression_recipe_func` must be of class `recipe`.")
     }
   }
-
 }
 
 #' Check the parameters that are sent to [rsample::vfold_cv()]
@@ -431,7 +430,7 @@ regression_cv_message <- function(regression_results, regression_grid, n_cv = 10
   best_results <- tune::show_best(regression_results, n = n_cv)
 
   # Needed to make prinout tables prettier to ensure same column dimensions for all settings.
-  regression_grid_best = best_results[,feature_names]
+  regression_grid_best <- best_results[, feature_names]
   regression_grid_best$rmse <- round(best_results$mean, 2)
   regression_grid_best$rmse_std <- round(best_results$std_err, 2)
   width <- sapply(regression_grid_best, function(x) max(nchar(as.character(unique(x)))))
