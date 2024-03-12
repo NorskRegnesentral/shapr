@@ -1,7 +1,9 @@
 ---
 title: "Shapley value explanations using the regression paradigm"
 author: "Lars Henry Berge Olsen"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteEncoding{UTF-8}
@@ -10,6 +12,7 @@ vignette: >
 editor_options:
   markdown:
     wrap: 72
+    toc: true
 ---
 
 ```{r, include = FALSE}
@@ -26,16 +29,25 @@ knitr::opts_chunk$set(
 )
 ```
 
+<!-- # Table of Contents -->
+<!-- * [Section 1](#separate) -->
+<!-- * [Section 2](#surrogate) -->
 
-> [The separate regression method class](#separate)
+<!-- > [The separate regression method class](#separate) -->
 
-> [The surrogate regression method class](#surrogate)
+<!-- >> [Data pre-processing](#separate_preproc) -->
 
-> [Add new regression methods](#new)
+<!-- >> [Cross validation](#separate_cv) -->
 
-> [Summary figures](#summary)
+<!-- >> [Parallelization](#separate_parallelization) -->
 
-> [Mixed Data](#summary)
+<!-- > [The surrogate regression method class](#surrogate) -->
+
+<!-- > [Add new regression methods](#new) -->
+
+<!-- > [Summary figures](#summary) -->
+
+<!-- > [Mixed data](#mixed) -->
 
 <a id="intro"></a>
 
@@ -62,7 +74,7 @@ to the data or we can pre-process the data to compute principal components (prin
 
 Our framework does not currently support model formulas with special terms. E.g., we do not support
 `parsnip::gen_additive_mod` (i.e., `mgcv::gam()`) as it uses a non-standard notion in its formulas
-(in this case the `s(feature, k = 2)` functions). See `?parsnip::model_formula()` for more information.
+(in this case the `s(feature, k = 2)` function). See `?parsnip::model_formula()` for more information.
 However, this hurdle can be overcome by using pre-processing data steps containing spline functions. 
 We give an example of this in the [separate regression method class](#separate) section.
 
@@ -70,7 +82,7 @@ We can also [add new regression methods](#new) that are not already implemented 
 We demonstrate how to do this for the projection pursuit regression model.
 
 In the [mixed data](#mixed) section, we demonstrate that the regression-based methods works on mixed data too, 
-however, we have to add a preprocessing step where we encode categorical features for some of the regresssion models.
+however, we have to add a preprocessing step where we encode categorical features for some of the regression models.
 
 Note that we use the same data and predictive models in this vignette as in the main vignette.
 
@@ -109,7 +121,8 @@ In the following examples we use the same data and want to explain the same mode
 That is, we train a simple `xgboost` model on the `airquality` dataset, and illustrate how `shapr` and 
 the separate regression method class can be used to explain the individual predictions.
 
-First we setup the `airquality` dataset and train the `xgboost` model.
+First we setup the `airquality` dataset, train the `xgboost` model, and introduce some helper functions which 
+we use later in the vignette to print and plot the results.
 ```{r setup, message=FALSE}
 library(xgboost)
 library(ggplot2)
@@ -220,7 +233,7 @@ linear regression model approach quite significantly with respect to the $\opera
 plot_MSEv_scores(explanation_list)
 ```
 
-### Pre-processing
+### Pre-processing {#separate_preproc}
 In this section, we describe how to pre-process the data before fitting the separate regression models.
 We illustrate this for the linear regression model, but this pre-processing can be applied to other regression 
 methods too. 
@@ -390,7 +403,7 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 print_MSEv_scores_and_time(explanation_list)
 ```
 
-### Cross validation 
+### Cross validation {#separate_cv}
 
 Another option is to use cross validation to tune the hyperparameters. To do this, we need to specify three things:
 
@@ -437,10 +450,6 @@ following examples, we consider to versions. In the first example, we use cross 
 using the `dials::grid_regular()` function. In the second example, we tune the `tree_dept()` and `cost_complexity()`
 parameters, where the possible hyperparameter values have been manually specified.
 
-For the first version, we set `verbose = 2` to see the printouts. We get messages about which batch and
-coalition/combination that are currently being processed and the results of the cross-validation procedure.
-We skip the printout for the second version due to the length of the printouts.
-
 ```{r dt-cv, cache=TRUE}
 # Decision tree with cross validated depth (default values other parameters)
 explanation_list$sep_tree_cv <- explain(
@@ -449,7 +458,6 @@ explanation_list$sep_tree_cv <- explain(
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
-  verbose = 2, # If we want a printout of the results
   approach = "regression_separate",
   regression_model = parsnip::decision_tree(
     tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"
@@ -477,11 +485,12 @@ explanation_list$sep_tree_cv_2 <- explain(
   regression_vfold_cv_para = list(v = 5)
 )
 ```
+
 We also include one example with a random forest model where the tunable hyperparameter `mtry` is dependent 
 on the coalition size, hence, we let `regression_tune_values` be a function. If we do not let `regression_tune_values`
-be a function, then `tidymodels` will crash for any `mtry` larger than 1. We also set `verbose = 2` to illustrate
-that the tested hyperparameter value combinations changes best on the coalition size.
-```{r rf-cv}
+be a function, then `tidymodels` will crash for any `mtry` larger than 1. By setting `verbose = 2`, we 
+get messages about which batch and coalition/combination that are currently being processed and the results of the cross-validation procedure. Note, that the tested hyperparameter value combinations changes based on the coalition size.
+```{r rf-cv, cache=TRUE}
 # Using random forest with default parameters
 explanation_list$sep_rf <- explain(
   model = model,
@@ -500,14 +509,14 @@ explanation_list$sep_rf_cv <- explain(
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 1, # One batch to get printouts in chronological order
-  verbose = 2,
+  verbose = 2, # To get printouts
   approach = "regression_separate",
   regression_model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
   regression_tune_values =
     function(x) {
-      return(dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 3))
+      dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 3)
     },
   regression_vfold_cv_para = list(v = 5)
 )
@@ -537,7 +546,7 @@ print_MSEv_scores_and_time(explanation_list)
 ```
 
 
-### Parallelization
+### Parallelization {#separate_parallelization}
 The separate regression models can be trained in parallel using the *future* package. This is easily done with the
 `shapr` package as explained in the main vignette, where also how to enabling progress bars are discussed. 
 
@@ -594,7 +603,10 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
   n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::boost_tree(
-    trees = hardhat::tune(), tree_depth = hardhat::tune(), engine = "xgboost", mode = "regression"
+    trees = hardhat::tune(),
+    tree_depth = hardhat::tune(),
+    engine = "xgboost",
+    mode = "regression"
   ),
   regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression_vfold_cv_para = list(v = 5)
@@ -697,21 +709,24 @@ explanation_list$sur_xgboost_cv <- explain(
   n_batches = 4,
   approach = "regression_surrogate",
   regression_model = parsnip::boost_tree(
-    trees = hardhat::tune(), tree_depth = hardhat::tune(), engine = "xgboost", mode = "regression"
+    trees = hardhat::tune(),
+    tree_depth = hardhat::tune(),
+    engine = "xgboost",
+    mode = "regression"
   ),
   regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression_vfold_cv_para = list(v = 5)
 )
 ```
 
-We can then look at the 
+We then look at the  $\operatorname{MSE}_v$ evaluation criterion and the elapsed time. We see that the surrogate methods (except the linear regression model) outperforms `empirical`, but the are not on the same level as the best separate regression methods.
 ```{r surrogate-plot, cache=TRUE}
+# Print the MSEv scores and the elapsed time (in seconds) for the different methods
+print_MSEv_scores_and_time(explanation_list)
+
 # Compare the MSEv criterion of the different explanation methods.
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
-
-# Print the MSEv scores and the elapsed time (in seconds) for the different methods
-print_MSEv_scores_and_time(explanation_list)
 ```
 
 
@@ -906,7 +921,8 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 
 
 # Summary figures {#summary}
-Here we include all the approaches that we 
+Here we include all the approaches above and we include the other Monte Carlo-based methods too.
+
 ```{r MC, cache=TRUE}
 explanation_list_MC <- list()
 
@@ -967,7 +983,7 @@ explanation_list_MC$MC_vaeac <- explain(
 )
 
 # Combine the two explanations lists
-explanation_list[1] <- NULL
+explanation_list$MC_empirical <- NULL
 explanation_list <- c(explanation_list_MC, explanation_list)
 ```
 
@@ -983,11 +999,18 @@ print_MSEv_scores_and_time(explanation_list)
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+```
 
-# We can also order them to more easily look at the order of the methods
+We see that the `vaeac` approach is the best performing Monte Carlo-based method, but the overall
+best method is the `sep_xgboost_cv_2_par`. I.e., the separate regression method using an `xgboost` model with the number of trees and tree depth tuned by cross-validation.
+
+We can also order the methods to more easily look at the order of the methods according to the $\operatorname{MSE}_v$ criterion.
+```{r MSEv-sum-2, cache=TRUE}
 order_methods <- get_k_best_methods(explanation_list, k = length(explanation_list))
 plot_MSEv_scores(explanation_list[order_methods], method_line = "MC_empirical")
 ```
+
+
 
 We can also look at how the different Shapley value explanations looks for the first six explicands (two at the time). 
 We see that most methods agree in the general directions, especially for the most important features 
@@ -999,7 +1022,7 @@ plot_SV_several_approaches(explanation_list, index_explicands = c(3, 4), facet_n
 plot_SV_several_approaches(explanation_list, index_explicands = c(5, 6), facet_ncol = 1)
 ```
 
-Here we focus on the 5 best methods
+Here we focus on the 5 best methods (+ `empricial`) to make it easier to see the individual Shapley value explanations.
 ```{r SV-sum-2, cache = TRUE}
 # Extract the 5 best methods (and empirical)
 best_methods <- get_k_best_methods(explanation_list, k = 5)
@@ -1132,7 +1155,10 @@ explanation_list_mixed$sep_tree_cv <- explain(
   n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::decision_tree(
-    tree_depth = hardhat::tune(), cost_complexity = hardhat::tune(), engine = "rpart", mode = "regression"
+    tree_depth = hardhat::tune(),
+    cost_complexity = hardhat::tune(),
+    engine = "rpart",
+    mode = "regression"
   ),
   regression_tune_values =
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
@@ -1191,7 +1217,10 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
   n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::boost_tree(
-    trees = hardhat::tune(), tree_depth = hardhat::tune(), engine = "xgboost", mode = "regression"
+    trees = hardhat::tune(),
+    tree_depth = hardhat::tune(),
+    engine = "xgboost",
+    mode = "regression"
   ),
   regression_recipe_func = function(regression_recipe) {
     return(step_dummy(regression_recipe, all_factor_predictors()))
@@ -1252,7 +1281,10 @@ explanation_list_mixed$sur_tree_cv <- explain(
   n_batches = 4,
   approach = "regression_surrogate",
   regression_model = parsnip::decision_tree(
-    tree_depth = hardhat::tune(), cost_complexity = hardhat::tune(), engine = "xgboost", mode = "regression"
+    tree_depth = hardhat::tune(),
+    cost_complexity = hardhat::tune(),
+    engine = "rpart",
+    mode = "regression"
   ),
   regression_tune_values =
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
@@ -1308,7 +1340,10 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
   n_batches = 4,
   approach = "regression_surrogate",
   regression_model = parsnip::boost_tree(
-    trees = hardhat::tune(), tree_depth = hardhat::tune(), engine = "xgboost", mode = "regression"
+    trees = hardhat::tune(),
+    tree_depth = hardhat::tune(),
+    engine = "xgboost",
+    mode = "regression"
   ),
   regression_recipe_func = function(regression_recipe) {
     return(step_dummy(regression_recipe, all_factor_predictors()))
@@ -1329,16 +1364,28 @@ print_MSEv_scores_and_time(explanation_list_mixed)
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list_mixed, method_line = "MC_ctree")
+```
 
-# We can also order them to more easily look at the order of the methods
+We see that the best performing methods are surrogate random forest and xgboost with cross validation. The 
+Monte Carlo-based method perform worse, with `ctree` being the best of them with a seventh place overall.
+
+We can also order the methods to more easily look at the order of the methods according to the $\operatorname{MSE}_v$ criterion.
+```{r mixed-plot-2, cache = TRUE}
 order_methods <- get_k_best_methods(explanation_list_mixed, k = length(explanation_list_mixed))
 plot_MSEv_scores(explanation_list_mixed[order_methods], method_line = "MC_ctree")
+```
 
-# Can then plot the
+We also take a look at some of the Shapley value explanations, and we see that many of them produce quite similar explanations.
+```{r mixed-plot-3, cache = TRUE}
 plot_SV_several_approaches(explanation_list_mixed, index_explicands = c(1, 2), facet_ncol = 1)
+```
 
-# Can also focus on the best 5 (+ ctree)
+
+We can also focus on the Shapley value explanations for the best 5 methods according to the
+$\operatorname{MSE}_v$ criterion. We also include `ctree`, as it is the best performing Monte Carlo-based method.
+```{r mixed-plot-4, cache = TRUE}
 best_methods <- get_k_best_methods(explanation_list_mixed, k = 5)
 if (!"MC_ctree" %in% best_methods) best_methods <- c(best_methods, "MC_ctree")
 plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicands = 1:4)
 ```
+
