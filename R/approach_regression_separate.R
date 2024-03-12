@@ -239,7 +239,7 @@ get_regression_tune <- function(regression_model, regression_tune_values, x_trai
 
   # Check if we are to tune some model hyperparameters
   regression_para <- lapply(regression_model$args, function(para) rlang::quo_get_expr(para))
-  regression_para_tune <- lapply(regression_para, function(para) !is.null(para) && para == "tune()")
+  regression_para_tune <- lapply(regression_para, function(para) !is.null(para) && grepl("tune()", para))
   regression_para_tune_names <- names(regression_para_tune)[unlist(regression_para_tune)]
   regression_tune <- any(unlist(regression_para_tune))
 
@@ -293,7 +293,10 @@ get_regression_tune <- function(regression_model, regression_tune_values, x_trai
 #' @keywords internal
 check_regression_parameters <- function(internal) {
   # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
-  check_regression_recipe_func(regression_recipe_func = internal$parameters$regression_recipe_func)
+  check_regression_recipe_func(
+    regression_recipe_func = internal$parameters$regression_recipe_func,
+    x_explain = internal$data$x_explain
+  )
 
   # Check that `regression_vfold_cv_para` is either NULL or a named list that only contains recognized parameters
   check_regression_vfold_cv_para(regression_vfold_cv_para = internal$parameters$regression_vfold_cv_para)
@@ -319,14 +322,23 @@ check_regression_parameters <- function(internal) {
 #' Check that regression_recipe_func is a function that returns the
 #' RHS of the formula for arbitrary feature name inputs.
 #'
+#' @inheritParams explain
 #' @inheritParams setup_approach.regression_separate
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_regression_recipe_func <- function(regression_recipe_func) {
+check_regression_recipe_func <- function(regression_recipe_func, x_explain) {
   if (!is.null(regression_recipe_func) && !is.function(regression_recipe_func)) {
     stop("`regression_recipe_func` must be a function. See documentation.")
   }
+
+  if (!is.null(regression_recipe_func) && is.function(regression_recipe_func)) {
+    x_temp = copy(x_explain)[, y_hat_temp := 1]
+    if (class(regression_recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))) != "recipe") {
+      stop("The output of the `regression_recipe_func` must be of class `recipe`.")
+    }
+  }
+
 }
 
 #' Check the parameters that are sent to [rsample::vfold_cv()]
@@ -367,10 +379,10 @@ check_regression_vfold_cv_para <- function(regression_vfold_cv_para) {
 #' @keywords internal
 regression_sep_time_message <- function() {
   message(paste(
-    "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object can be",
-    "missleading as `setup_computation` does not contain the training times of the regerssion models",
-    "as they are trained on the fly in `compute_vS`. This is to reduce memory usage and to",
-    "improve efficency.\n"
+    "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object \n",
+    "can be missleading as `setup_computation` does not contain the training times of the \n",
+    "regression models as they are trained on the fly in `compute_vS`. This is to reduce memory \n",
+    "usage and to improve efficency.\n"
   )) # TODO: should we add the time somewhere else?
 }
 
