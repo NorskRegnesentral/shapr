@@ -35,6 +35,8 @@ knitr::opts_chunk$set(
 
 > [Summary figures](#summary)
 
+> [Mixed Data](#summary)
+
 <a id="intro"></a>
 
 
@@ -66,6 +68,9 @@ We give an example of this in the [separate regression method class](#separate) 
 
 We can also [add new regression methods](#new) that are not already implemented in `tidymodel`. 
 We demonstrate how to do this for the projection pursuit regression model.
+
+In the [mixed data](#mixed) section, we demonstrate that the regression-based methods works on mixed data too, 
+however, we have to add a preprocessing step where we encode categorical features for some of the regresssion models.
 
 Note that we use the same data and predictive models in this vignette as in the main vignette.
 
@@ -107,6 +112,7 @@ the separate regression method class can be used to explain the individual predi
 First we setup the `airquality` dataset and train the `xgboost` model.
 ```{r setup, message=FALSE}
 library(xgboost)
+library(ggplot2)
 library(tidymodels)
 library(data.table)
 library(shapr)
@@ -156,14 +162,20 @@ plot_MSEv_scores <- function(explanation_list, method_line = NULL) {
 
 # Create helper function to print out the MSEv criterion scores
 print_MSEv_scores_and_time <- function(explanation_list) {
-  res <- t(sapply(
+  res <- as.data.frame(t(sapply(
     explanation_list,
     function(explanation) {
-      c(explanation$MSEv$MSEv$MSEv, round(explanation$timing$total_time_secs, 2))
+      round(c(explanation$MSEv$MSEv$MSEv, explanation$timing$total_time_secs), 2)
     }
-  ))
+  )))
   colnames(res) <- c("MSEv", "Time")
   return(res)
+}
+
+# Create helper function to extract the k best methods
+get_k_best_methods <- function(explanation_list, k_best) {
+  res <- print_MSEv_scores_and_time(explanation_list)
+  return(rownames(res)[order(res$MSEv)[seq(k_best)]])
 }
 ```
 
@@ -178,7 +190,7 @@ explanation_list$MC_empirical <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p0,
-    n_batches = 4
+  n_batches = 4
 )
 ```
 
@@ -194,7 +206,7 @@ explanation_list$sep_lm <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-    n_batches = 4,
+  n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::linear_reg()
 )
@@ -234,7 +246,7 @@ explanation_list$sep_pcr <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-    n_batches = 4,
+  n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::linear_reg(),
   regression_recipe_func = function(regression_recipe) {
@@ -250,7 +262,7 @@ explanation_list$sep_splines <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-    n_batches = 4,
+  n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::linear_reg(),
   regression_recipe_func = function(regression_recipe) {
@@ -268,31 +280,31 @@ Furthermore, we stress that the purpose of this example is to highlight the flex
 NOT that the transformations below are reasonable to do. 
 ```{r recipe-func, cache=TRUE}
 # Example function of how to apply step functions from the recipes package to specific features
-regression_recipe_func <- function(regression_recipe) {
+regression_recipe_func <- function(recipe) {
   # Get the names of the present features
-  feature_names <- regression_recipe$var_info$variable[regression_recipe$var_info$role == "predictor"]
+  feature_names <- recipe$var_info$variable[recipe$var_info$role == "predictor"]
 
   # If Solar.R and Wind is present, then we add the interaction between them
   if (all(c("Solar.R", "Wind") %in% feature_names)) {
-    regression_recipe <- step_interact(regression_recipe, terms = ~ Solar.R:Wind)
+    recipe <- step_interact(recipe, terms = ~ Solar.R:Wind)
   }
 
   # If Solar.R is present, then log transform it
-  if ("Solar.R" %in% feature_names) regression_recipe <- step_log(regression_recipe, Solar.R)
+  if ("Solar.R" %in% feature_names) recipe <- step_log(recipe, Solar.R)
 
   # If Wind is present, then scale it to be between 0 and 1 and then sqrt transform it
-  if ("Wind" %in% feature_names) regression_recipe <- step_sqrt(step_range(regression_recipe, Wind))
+  if ("Wind" %in% feature_names) recipe <- step_sqrt(step_range(recipe, Wind))
 
   # If Temp is present, then expand it using orthogonal polynomials of degree 3
-  if ("Temp" %in% feature_names) regression_recipe <- step_poly(regression_recipe, Temp, degree = 3)
+  if ("Temp" %in% feature_names) recipe <- step_poly(recipe, Temp, degree = 3)
 
   # If Month is present, then Box-Cox transform it
-  if ("Month" %in% feature_names) regression_recipe <- step_BoxCox(regression_recipe, Month)
+  if ("Month" %in% feature_names) recipe <- step_BoxCox(recipe, Month)
 
   # Finally we normalize all features (not needed as LM does this internally)
-  regression_recipe <- step_normalize(regression_recipe, all_numeric_predictors())
+  recipe <- step_normalize(recipe, all_numeric_predictors())
 
-  return(regression_recipe)
+  return(recipe)
 }
 
 # Compute the Shapley values using the pre-processing steps defined above
@@ -301,7 +313,7 @@ explanation_list$sep_reicpe_example <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-    n_batches = 4,
+  n_batches = 4,
   approach = "regression_separate",
   regression_model = parsnip::linear_reg(),
   regression_recipe_func = regression_recipe_func
@@ -310,7 +322,7 @@ explanation_list$sep_reicpe_example <- explain(
 
 ```{r preproc-plot, cache=TRUE}
 # Compare the MSEv criterion of the different explanation methods
-plot_MSEv_scores(explanation_list)
+plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
@@ -343,9 +355,10 @@ explanation_list$sep_tree_stump <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>%
-    parsnip::set_engine("rpart") %>%
-    parsnip::set_mode("regression")
+  regression_model =
+    parsnip::decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>%
+      parsnip::set_engine("rpart") %>%
+      parsnip::set_mode("regression")
 )
 
 # Decision tree with default parameters
@@ -370,7 +383,7 @@ as the empirical approach. By using stumps, i.e., trees with depth one, we obtai
 
 ```{r decision-tree-plot, cache=TRUE}
 # Compare the MSEv criterion of the different explanation methods
-plot_MSEv_scores(explanation_list)
+plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
@@ -407,13 +420,13 @@ First, let us look at some ways to specify `regression_tune_values`.
 Note that `dials` have several other grid functions too, e.g., `dials::grid_random()` 
 and `dials::grid_latin_hypercube()`.
 ```{r echo=TRUE, results='hide'}
-# Possible ways to define the `regression_tune_values` object. One automatic and three manual ways.
-# function(x) return(dials::grid_regular(dials::tree_depth(), levels = 4))
+# Possible ways to define the `regression_tune_values` object.
+# function(x) dials::grid_regular(dials::tree_depth(), levels = 4)
 dials::grid_regular(dials::tree_depth(), levels = 4)
-data.table(tree_depth = c(1, 5, 10, 15)) # Note that we can also use data.frame and tibble too.
+data.table(tree_depth = c(1, 5, 10, 15)) # Note that we can also use data.frame or tibble too.
 
 # For several features
-# function(x) return(dials::grid_regular(dials::tree_depth(), dials::cost_complexity(), levels = 3))
+# function(x) dials::grid_regular(dials::tree_depth(), dials::cost_complexity(), levels = 3)
 dials::grid_regular(dials::tree_depth(), dials::cost_complexity(), levels = 3)
 expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.05, 0.01))
 ```
@@ -425,7 +438,7 @@ parameters, where the possible hyperparameter values have been manually specifie
 
 For the first version, we set `verbose = 2` to see the printouts. We get messages about which batch and
 coalition/combination that are currently being processed and the results of the cross-validation procedure.
-We skip the prinout for the second version due to the length of the printouts.
+We skip the printout for the second version due to the length of the printouts.
 
 ```{r dt-cv, cache=TRUE}
 # Decision tree with cross validated depth (default values other parameters)
@@ -438,7 +451,7 @@ explanation_list$sep_tree_cv <- explain(
   verbose = 2, # If we want a prinout of the results
   approach = "regression_separate",
   regression_model =
-    parsnip::decision_tree(tree_depth = tune()) %>%
+    parsnip::decision_tree(tree_depth = hardhat::tune()) %>%
       parsnip::set_engine("rpart") %>%
       parsnip::set_mode("regression"),
   regression_tune_values = dials::grid_regular(dials::tree_depth(), levels = 4),
@@ -466,7 +479,7 @@ We also include one example with a random forest model where the tunable hyperpa
 on the coalition size, hence, we let `regression_tune_values` be a function. If we do not let `regression_tune_values`
 be a function, then `tidymodels` will crash for any `mtry` larger than 1. We also set `verbose = 2` to illustrate
 that the tested hyperparameter value combinations changes best on the coalition size.
-```{r}
+```{r rf-cv}
 # Using random forest with default parameters
 explanation_list$sep_rf <- explain(
   model = model,
@@ -492,8 +505,10 @@ explanation_list$sep_rf_cv <- explain(
   regression_model = parsnip::rand_forest(mtry = tune(), trees = tune()) %>%
     parsnip::set_engine("ranger") %>%
     parsnip::set_mode("regression"),
-  regression_tune_values = 
-    function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 3)),
+  regression_tune_values =
+    function(x) {
+      return(dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 3))
+    },
   regression_vfold_cv_para = list(v = 5)
 )
 ```
@@ -508,7 +523,7 @@ to do this automatically. In the figure below, we include a vertical line at the
 of the `empirical` method.
 
 ```{r dt-cv-plot, cache=TRUE}
-plot_MSEv_scores(explanation_list, method_line = "MC_empirical") 
+plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
 Furthermore, we have to consider that doing the cross validation drastically increase the elapsed time in seconds.
@@ -660,8 +675,11 @@ explanation_list$sur_rf_cv <- explain(
   regression_model = parsnip::rand_forest(mtry = tune(), trees = tune()) %>%
     parsnip::set_engine("ranger") %>%
     parsnip::set_mode("regression"),
-  regression_tune_values =
-    dials::grid_regular(dials::mtry(c(1, ncol(x_explain))), dials::trees(c(50, 750)), levels = 4),
+  regression_tune_values = dials::grid_regular(
+    dials::mtry(c(1, ncol(x_explain))),
+    dials::trees(c(50, 750)),
+    levels = 4
+  ),
   regression_vfold_cv_para = list(v = 5)
 )
 
@@ -894,7 +912,7 @@ but also increase the running time.
 print_MSEv_scores_and_time(explanation_list)
 
 # Compare the MSEv criterion of the different explanation methods
-plot_MSEv_scores(explanation_list)
+plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
 
@@ -976,6 +994,10 @@ print_MSEv_scores_and_time(explanation_list)
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+
+# We can also order them to more easily look at the order of the methods
+order_methods = get_k_best_methods(explanation_list, k = length(explanation_list))
+plot_MSEv_scores(explanation_list[order_methods], method_line = "MC_empirical")
 ```
 
 We can also look at how the different Shapley value explanations looks for the first six explicands (two at the time). 
@@ -988,10 +1010,13 @@ plot_SV_several_approaches(explanation_list, index_explicands = c(3, 4), facet_n
 plot_SV_several_approaches(explanation_list, index_explicands = c(5, 6), facet_ncol = 1)
 ```
 
-
-Sort them and only show for some
-
-
+Here we focus on the 5 best methods
+```{r SV-sum-2, cache = TRUE}
+# Extract the 5 best methods (and empirical)
+best_methods = get_k_best_methods(explanation_list, k = 5)
+if (!"MC_empirical" %in% best_methods) best_methods = c(best_methods, "MC_empirical")
+plot_SV_several_approaches(explanation_list[best_methods], index_explicands = 1:4)
+```
 
 
 
@@ -1012,7 +1037,7 @@ First, we copy the setup from the main vignette.
 
 ```{r mixed-setup, cache = TRUE}
 # convert the month variable to a factor
-data_cat = copy(data)[, Month_factor := as.factor(Month)]
+data_cat <- copy(data)[, Month_factor := as.factor(Month)]
 
 data_train_cat <- data_cat[-ind_x_explain, ]
 data_explain_cat <- data_cat[ind_x_explain, ]
@@ -1058,32 +1083,20 @@ explanation_list_mixed$MC_ctree <- explain(
   approach = "ctree"
 )
 
-explanation_list_mixed$MC_vaeac_50_4 <- explain(
+explanation_list_mixed$MC_vaeac_50 <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
   n_batches = 4,
-  approach = "vaeac",
-  verbose = 2,
-  vaeac.epochs = 5,
-  n_samples = 20
-)
-
-explanation_list_mixed$MC_vaeac_200 <- explain(
-  model = model_cat,
-  x_explain = x_explain_cat,
-  x_train = x_train_cat,
-  prediction_zero = p0_cat,
-  n_batches = 4,
-  approach = "vaeac",
-  vaeac.epochs = 200
+  approach = "vaeac"
 )
 ```
 
 
 ## Mixed data: separate regression methods
-Third, we use separate regression to compute the Shapley value explanations.
+Third, we use separate regression to compute the Shapley value explanations. 
+We use many of the same regression models as we did above for the continuous data examples above.
 ```{r mixed-separate, cache = TRUE}
 # Standard linear regression
 explanation_list_mixed$sep_lm <- explain(
@@ -1166,7 +1179,9 @@ explanation_list_mixed$sep_rf_cv <- explain(
     parsnip::set_engine("ranger") %>%
     parsnip::set_mode("regression"),
   regression_tune_values =
-    function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 4)),
+    function(x) {
+      dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 4)
+    },
   regression_vfold_cv_para = list(v = 5)
 )
 
@@ -1207,7 +1222,8 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
 
 
 ## Mixed data: surrogate regression methods
-Fourth, we use separate regression to compute the Shapley value explanations.
+Fourth, we use surrogate regression to compute the Shapley value explanations. 
+We use the same models as we did for the separate regression.
 ```{r mixed-surrogate, cache = TRUE}
 # Standard linear regression
 explanation_list_mixed$sur_lm <- explain(
@@ -1221,6 +1237,7 @@ explanation_list_mixed$sur_lm <- explain(
 )
 
 # Linear regression where we have added splines to the numerical features
+# NOTE, that we remove the augmented mask variables to avoid a rank-deficient fit
 explanation_list_mixed$sur_splines <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1229,8 +1246,8 @@ explanation_list_mixed$sur_splines <- explain(
   n_batches = 4,
   approach = "regression_surrogate",
   regression_model = parsnip::linear_reg(),
-  regression_recipe_func = function(regression_recipe) {
-    return(step_ns(regression_recipe, all_numeric_predictors(), deg_free = 2))
+  regression_recipe_func = function(recipe) {
+    return(step_ns(recipe, all_numeric_predictors(), -starts_with("mask_"), deg_free = 2))
   }
 )
 
@@ -1289,8 +1306,7 @@ explanation_list_mixed$sur_rf_cv <- explain(
   regression_model = parsnip::rand_forest(mtry = tune(), trees = tune()) %>%
     parsnip::set_engine("ranger") %>%
     parsnip::set_mode("regression"),
-  regression_tune_values =
-    function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 4)),
+  regression_tune_values = expand_grid(mtry = c(1,2,4), trees = c(50, 250, 500, 750)),
   regression_vfold_cv_para = list(v = 5)
 )
 
@@ -1330,14 +1346,26 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
 ```
 
 ## Mixed data: summary
-Fifth, and finally, we compare the results. 
+Fifth, and finally, we compare the results. We see that the surrogate random forest model performs well and actually
+outperforms the cross-validated version, but note the wide confidence interval. We see that several of the regression-
+based methods outperform the Monte Carlo-based methods.
 ```{r mixed-plot, cache = TRUE}
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list_mixed)
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
-plot_MSEv_scores(explanation_list_mixed)
+plot_MSEv_scores(explanation_list_mixed, method_line = "MC_ctree")
 
+# We can also order them to more easily look at the order of the methods
+order_methods = get_k_best_methods(explanation_list_mixed, k = length(explanation_list_mixed))
+plot_MSEv_scores(explanation_list_mixed[order_methods], method_line = "MC_ctree")
+
+# Can then plot the 
 plot_SV_several_approaches(explanation_list_mixed, index_explicands = c(1, 2), facet_ncol = 1)
+
+# Can also focus on the best 5 (+ ctree)
+best_methods = get_k_best_methods(explanation_list_mixed, k = 5)
+if (!"MC_ctree" %in% best_methods) best_methods = c(best_methods, "MC_ctree")
+plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicands = 1:4)
 ```
