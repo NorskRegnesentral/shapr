@@ -232,10 +232,12 @@ regression_surrogate_augment <- function(internal,
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 check_regression_n_comb <- function(regression_surr_n_comb, used_n_combinations) {
-  if (!is.null(regression_surr_n_comb) && regression_surr_n_comb > used_n_combinations - 2) {
-    stop(paste0(
-      "`regression_surr_n_comb` (", regression_surr_n_comb, ") must be less than or equal to ",
-      "`used_n_combinations` minus two (", used_n_combinations - 2, ")."
-    ))
+  if (!is.null(regression_surr_n_comb)) {
+    if (regression_surr_n_comb < 1 || used_n_combinations - 2 < regression_surr_n_comb) {
+      stop(paste0(
+        "`regression_surr_n_comb` (", regression_surr_n_comb, ") must be a positive integer less than or equal to ",
+        "`used_n_combinations` minus two (", used_n_combinations - 2, ")."
+      ))
+    }
   }
 }
