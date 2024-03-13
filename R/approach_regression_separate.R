@@ -104,9 +104,9 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 }
 
 # Train functions ======================================================================================================
-#' Train a [tidymodels()] model
+#' Train a tidymodels model via workflows
 #'
-#' Function that trains a [tidymodels()] model based on the provided input parameters.
+#' Function that trains a `tidymodels` model via `workflows` based on the provided input parameters.
 #' This function allows for cross validating the hyperparameters of the model.
 #'
 #' @inheritParams setup_approach.regression_separate
@@ -120,7 +120,7 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 #' @param regression_sur_n_comb Integer (default is `NULL`). The number of times each training observations
 #' has been augmented. If `NULL`, then we assume that we are doing separate regression.
 #'
-#' @return A trained [tidymodels()] model based on the provided input parameters.
+#' @return A trained `tidymodels` model based on the provided input parameters.
 #' @export
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
@@ -198,7 +198,7 @@ regression_train <- function(x,
   }
 
   # Fit the model to the augmented training data
-  regression_fit <- fit(regression_workflow, data = x)
+  regression_fit <- workflows:::fit.workflow(regression_workflow, data = x)
 
   # Return the trained model
   return(regression_fit)
@@ -333,8 +333,8 @@ check_regression_recipe_func <- function(regression_recipe_func, x_explain) {
   }
 
   if (!is.null(regression_recipe_func) && is.function(regression_recipe_func)) {
-    x_temp <- copy(x_explain)[, y_hat_temp := 1]
-    if (!is(class(regression_recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))), "recipe")) {
+    x_temp <- copy(x_explain)[, "y_hat_temp" := 1]
+    if (!methods::isClass(class(regression_recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))), "recipe")) {
       stop("The output of the `regression_recipe_func` must be of class `recipe`.")
     }
   }
@@ -357,7 +357,7 @@ check_regression_vfold_cv_para <- function(regression_vfold_cv_para) {
 
     # Check that all entries are parameters in the rsample::vfold_cv() function
     unknown_para_names <-
-      names(regression_vfold_cv_para)[!names(regression_vfold_cv_para) %in% formalArgs(rsample::vfold_cv)[-1]]
+      names(regression_vfold_cv_para)[!names(regression_vfold_cv_para) %in% methods::formalArgs(rsample::vfold_cv)[-1]]
     if (length(unknown_para_names) > 0) {
       stop(paste0(
         "The following parameters in `regression_vfold_cv_para` are not supported by `rsample::vfold_cv()`: '",
