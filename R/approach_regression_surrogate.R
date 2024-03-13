@@ -207,14 +207,14 @@ regression_surrogate_augment <- function(internal,
 
   # Add either uniform weights or Shapley kernel weights
   if (!is.null(augment_weights)) {
-    x_augmented[, weight := if (augment_weights == "Shapley") internal$objects$X$shapley_weight[id_comb] else 1]
+    x_augmented[, "weight" := if (augment_weights == "Shapley") internal$objects$X$shapley_weight[id_comb] else 1]
   }
 
   # Add the id_comb as a factor
-  if (augment_add_id_comb) x_augmented[, ("id_comb") := factor(id_comb)]
+  if (augment_add_id_comb) x_augmented[, "id_comb" := factor(id_comb)]
 
   # Add repeated responses if provided
-  if (!is.null(y_hat)) x_augmented[, ("y_hat") := rep(y_hat, each = regression_surr_n_comb)]
+  if (!is.null(y_hat)) x_augmented[, "y_hat" := rep(y_hat, each = regression_surr_n_comb)]
 
   # Return the augmented data
   return(x_augmented)

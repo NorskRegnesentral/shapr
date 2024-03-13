@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_regression_separate.R
 \name{regression_train}
 \alias{regression_train}
-\title{Train a \code{\link[=tidymodels]{tidymodels()}} model}
+\title{Train a tidymodels model via workflows}
 \usage{
 regression_train(
   x,
@@ -52,10 +52,10 @@ Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} 
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 }
 \value{
-A trained \code{\link[=tidymodels]{tidymodels()}} model based on the provided input parameters.
+A trained \code{tidymodels} model based on the provided input parameters.
 }
 \description{
-Function that trains a \code{\link[=tidymodels]{tidymodels()}} model based on the provided input parameters.
+Function that trains a \code{tidymodels} model via \code{workflows} based on the provided input parameters.
 This function allows for cross validating the hyperparameters of the model.
 }
 \author{
