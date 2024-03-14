@@ -1887,14 +1887,13 @@ vaeac_get_save_file_names <- function(model_description,
 #' @param vaeac_model A `vaeac` model created using [vaeac()].
 #' @param optimizer_name String containing the name of the [torch::optimizer()] to use.
 #'
-#' @return Array of string containing the save files to use when training the `vaeac` model. The first three names
-#' corresponds to the best, best_running, and last epochs, in that order.
+#' @return A [torch::optim_adam()] optimizer connected to the parameters of the `vaeac_model`.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_get_optimizer <- function(vaeac_model, lr, optimizer_name = "adam") {
   if (optimizer_name == "adam") {
-    # Create the adam optimizer
+    # Create the adam optimizer with defualt parameters except from the provided learning rate
     optimizer <- torch::optim_adam(
       params = vaeac_model$parameters,
       lr = lr,
@@ -2831,7 +2830,7 @@ vaeac_plot_imputed_ggpairs <- function(
     seed = explanation$internal$parameters$seed
   )
 
-  # Combine the true (if there are any) adn imputed data and ensure that the categorical features are marked as factors.
+  # Combine the true (if there are any) and imputed data and ensure that the categorical features are marked as factors.
   combined_data <- data.table(rbind(x_true, imputed_values))
   col_cat_names <- checkpoint$col_cat_names
   if (length(col_cat_names) > 0) combined_data[, (col_cat_names) := lapply(.SD, as.factor), .SDcols = col_cat_names]

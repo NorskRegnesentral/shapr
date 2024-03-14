@@ -14,8 +14,7 @@ vaeac_get_optimizer(vaeac_model, lr, optimizer_name = "adam")
 \item{optimizer_name}{String containing the name of the \code{\link[torch:optimizer]{torch::optimizer()}} to use.}
 }
 \value{
-Array of string containing the save files to use when training the \code{vaeac} model. The first three names
-corresponds to the best, best_running, and last epochs, in that order.
+A \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer connected to the parameters of the \code{vaeac_model}.
 }
 \description{
 Only \code{\link[torch:optim_adam]{torch::optim_adam()}} is currently supported. But it is easy to add an additional option later.
