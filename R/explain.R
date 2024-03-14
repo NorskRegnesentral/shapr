@@ -364,5 +364,8 @@ remove_outputs_to_pass_tests <- function(output) {
       NULL
   }
 
+  # Remove the `regression` parameter from the output list when we are not doing regression
+  if (isFALSE(output$linternal$parameters$regression)) output$linternal$parameters$regression <- NULL
+
   return(output)
 }
