@@ -674,7 +674,7 @@ check_approach <- function(internal) {
     all(is.element(approach, supported_approaches)))
   ) {
     stop(
-      paste0(
+      paste(
         "`approach` must be one of the following: \n", paste0(supported_approaches, collapse = ", "), "\n",
         "or a vector of length one less than the number of features (", n_features - 1, "), ",
         "with only the above strings."
