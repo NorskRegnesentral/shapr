@@ -197,8 +197,10 @@ regression_surrogate_augment <- function(internal,
   ]
 
   # Add new columns indicating when the continuous features are masked
-  masked_columns <- paste0("mask_", feature_cont)
-  x_augmented <- cbind(x_augmented, setNames(data.table(1 * (comb_active[, feature_cont_idx] == 0)), masked_columns))
+  if (length(feature_cont) > 0) {
+    masked_columns <- paste0("mask_", feature_cont)
+    x_augmented <- cbind(x_augmented, setNames(data.table(1 * (comb_active[, feature_cont_idx] == 0)), masked_columns))
+  }
 
   # Convert the binary masks to factor if user has specified so
   if (augment_masks_as_factor) x_augmented[, (masked_columns) := lapply(.SD, as.factor), .SDcols = masked_columns]
