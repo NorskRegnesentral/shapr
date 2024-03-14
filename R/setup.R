@@ -139,7 +139,12 @@ check_and_set_parameters <- function(internal) {
 check_regression <- function(internal) {
   # Check that the model outputs one-dimensional predictions
   if (internal$parameters$output_size != 1) {
-    stop("`regression_separate` and `regression_surrogate` only supports models with one-dimensional output")
+    stop("`regression_separate` and `regression_surrogate` only support models with one-dimensional output")
+  }
+
+  # Check that we are NOT explaining a forecast model
+  if (internal$parameters$type == "forecast") {
+    stop("`regression_separate` and `regression_surrogate` does not support `forecast`.")
   }
 
   # Check that we are not to keep the Monte Carlo samples
