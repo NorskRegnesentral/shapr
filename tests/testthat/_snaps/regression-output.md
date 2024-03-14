@@ -64,7 +64,7 @@
       2: 42.44   2.907 -5.119  -7.128  1.7841       -7.827
       3: 42.44   6.237 -9.010 -17.927 -0.6915       10.791
 
-# output_lm_mixed_decision_tree_cv_separate_parallelized
+# output_lm_mixed_decision_tree_cv_separate_parallel
 
     Code
       (out <- code)
@@ -108,7 +108,7 @@
       2: 42.44  0.6882   0.3332 -12.8835 1.93235 -3.9496
       3: 42.44  7.8022 -26.0731  -0.2148 0.04831  0.8691
 
-# output_lm_numeric_lm_surrogate_regression_surr_n_comb
+# output_lm_numeric_lm_surrogate_reg_surr_n_comb
 
     Code
       (out <- code)

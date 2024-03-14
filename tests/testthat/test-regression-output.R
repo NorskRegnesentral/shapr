@@ -101,7 +101,7 @@ test_that("output_lm_mixed_decision_tree_cv_separate", {
   )
 })
 
-test_that("output_lm_mixed_decision_tree_cv_separate_parallelized", {
+test_that("output_lm_mixed_decision_tree_cv_separate_parallel", {
   future::plan("multisession", workers = 2)
   expect_snapshot_rds(
     shapr::explain(
@@ -116,7 +116,7 @@ test_that("output_lm_mixed_decision_tree_cv_separate_parallelized", {
       regression_tune_values = data.frame(tree_depth = c(1, 2)),
       regression_vfold_cv_para = list(v = 2)
     ),
-    "output_lm_mixed_decision_tree_cv_separate_parallelized"
+    "output_lm_mixed_decision_tree_cv_separate_parallel"
   )
   future::plan("sequential")
 })
@@ -174,7 +174,7 @@ test_that("output_lm_numeric_lm_surrogate_n_comb", {
   )
 })
 
-test_that("output_lm_numeric_lm_surrogate_regression_surr_n_comb", {
+test_that("output_lm_numeric_lm_surrogate_reg_surr_n_comb", {
   expect_snapshot_rds(
     shapr::explain(
       model = model_lm_numeric,
@@ -188,7 +188,7 @@ test_that("output_lm_numeric_lm_surrogate_regression_surr_n_comb", {
       regression_model = parsnip::linear_reg(),
       regression_surr_n_comb = 8
     ),
-    "output_lm_numeric_lm_surrogate_regression_surr_n_comb"
+    "output_lm_numeric_lm_surrogate_reg_surr_n_comb"
   )
 })
 

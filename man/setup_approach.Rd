@@ -72,6 +72,7 @@ setup_approach(internal, ...)
   regression_vfold_cv_para = NULL,
   regression_recipe_func = NULL,
   regression_surr_n_comb = internal$parameters$used_n_combinations - 2,
+  regression_surr_save_x_augment = FALSE,
   ...
 )
 
@@ -205,6 +206,9 @@ in larger dimensions. Note that by "all", we mean all coalitions chosen by \code
 \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in the exact mode. If the
 user sets a lower value than \code{internal$parameters$used_n_combinations}, then we sample this amount of unique
 coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.}
+
+\item{regression_surr_save_x_augment}{Logical (default is \code{FALSE}). If \code{TRUE}, then the augmented version of the
+training data is included in the returned list from \code{\link[=explain]{explain()}}.}
 
 \item{timeseries.fixed_sigma_vec}{Numeric. (Default = 2)
 Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
