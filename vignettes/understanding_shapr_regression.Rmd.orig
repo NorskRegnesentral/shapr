@@ -121,6 +121,8 @@ In the following examples we use the same data and want to explain the same mode
 That is, we train a simple `xgboost` model on the `airquality` dataset, and illustrate how `shapr` and
 the separate regression method class can be used to explain the individual predictions.
 
+
+### Setup
 First we setup the `airquality` dataset, train the `xgboost` model, and introduce some helper functions which
 we use later in the vignette to print and plot the results.
 ```{r setup, message=FALSE, cache = TRUE}
@@ -210,15 +212,21 @@ explanation_list$MC_empirical <- explain(
 ```
 
 In the setup above, we directly used the `xgboost` package to fit the `xgboost` model. However, we can also
-specify the model using the `tidymodels` package to obtain the same model as we can see in the example below. Note
-that `shapr` supports any fitted `tidymodels` models via the `workflows` procedure outlined below.
+specify the model using the `tidymodels` package to fit the `xgboost` model. 
+We obtain identical fits as `tidymodels` calls `xgboost` internally. We demonstrate that in the example below.
+This is not restricted to `xgboost` as `shapr` supports any fitted `tidymodels` models via the `workflows`
+procedure outlined below.
 ```{r setup-2, cache = TRUE}
 # Fitting a basic xgboost model to the training data using tidymodels
 set.seed(123) # Set the same seed as above
 all_var <- c(y_var, x_var)
 train <- data[-ind_x_explain, ..all_var]
 model_tidymodels <- workflows::workflow() %>%
-  workflows::add_model(parsnip::boost_tree(trees = 20, engine = "xgboost", mode = "regression")) %>%
+  workflows::add_model(parsnip::boost_tree(
+    trees = 20,
+    engine = "xgboost",
+    mode = "regression"
+  )) %>%
   workflows::add_recipe(recipes::recipe(Ozone ~ ., data = train)) %>%
   parsnip::fit(data = train)
 
@@ -241,8 +249,6 @@ all.equal(
   explanation_list$MC_empirical_tidymodels$shapley_values,
 )
 ```
-
-
 
 
 
