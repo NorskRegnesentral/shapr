@@ -179,8 +179,8 @@
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
-       or a vector of length one less than the number of features ( 4 ), with only the above strings.
+      categorical, copula, ctree, empirical, gaussian, independence, regression_separate, regression_surrogate, timeseries, vaeac
+      or a vector of length one less than the number of features (4), with only the above strings except the regression approaches.
 
 ---
 
@@ -192,8 +192,8 @@
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
-       or a vector of length one less than the number of features ( 4 ), with only the above strings.
+      categorical, copula, ctree, empirical, gaussian, independence, regression_separate, regression_surrogate, timeseries, vaeac
+      or a vector of length one less than the number of features (4), with only the above strings except the regression approaches.
 
 ---
 
@@ -205,8 +205,8 @@
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
-       or a vector of length one less than the number of features ( 4 ), with only the above strings.
+      categorical, copula, ctree, empirical, gaussian, independence, regression_separate, regression_surrogate, timeseries, vaeac
+      or a vector of length one less than the number of features (4), with only the above strings except the regression approaches.
 
 # erroneous input: `prediction_zero`
 

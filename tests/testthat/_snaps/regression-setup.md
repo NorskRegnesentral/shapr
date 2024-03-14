@@ -185,8 +185,8 @@
           return(2)
         })
     Condition
-      Error in `workflows::add_recipe()`:
-      ! `recipe` must be a recipe.
+      Error in `check_regression_recipe_func()`:
+      ! The output of the `regression_recipe_func` must be of class `recipe`.
 
 # regression erroneous input: `regression_surr_n_comb`
 
