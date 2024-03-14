@@ -40,14 +40,14 @@ setup_approach.regression_surrogate <- function(internal,
   internal <- get_regression_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
 
   # Augment the training data
-  x_train_augmented <- regression_surrogate_augment(
+  internal$data$x_train_augmented <- regression_surrogate_augment(
     internal = internal, x = internal$data$x_train, y_hat = internal$data$x_train_y_hat, augment_include_grand = TRUE
   )
 
   # Fit the surrogate regression model and store it in the internal list
   if (internal$parameters$verbose == 2) message("Start training the surrogate model.")
   internal$objects$regression_surrogate_model <- regression_train(
-    x = x_train_augmented,
+    x = internal$data$x_train_augmented,
     regression_model = internal$parameters$regression_model,
     regression_tune = internal$parameters$regression_tune,
     regression_tune_values = internal$parameters$regression_tune_values,
