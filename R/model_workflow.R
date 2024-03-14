@@ -4,19 +4,21 @@ predict_model.workflow <- function(x, newdata, ...) {
   if (!requireNamespace("workflows", quietly = TRUE)) {
     stop("The `workflows` package is required for predicting `workflows`")
   }
-  predict(x, as.data.frame(newdata))
+  predict(x, as.data.frame(newdata))$.pred
 }
 
 #' @rdname get_model_specs
 #' @export
 get_model_specs.workflow <- function(x) {
   model_checker(x) # Checking if the model is supported
-  predictors <- x$pre$mold$predictors
+  var_info <- x$pre$actions$recipe$recipe$var_info
+  predictors <- var_info$variable[var_info$role == "predictor"]
+  template <- x$pre$actions$recipe$recipe$template[predictors]
   feature_specs <- list()
-  feature_specs$labels <- colnames(predictors)
-  feature_specs$classes <- sapply(predictors, class)
+  feature_specs$labels <- colnames(template)
+  feature_specs$classes <- sapply(template, class)
   feature_specs$classes[feature_specs$classes == "integer"] <- "numeric" # Integers to numerics, see `get_data_specs()`
-  feature_specs$factor_levels <- sapply(predictors, levels)
+  feature_specs$factor_levels <- sapply(template, levels)
   return(feature_specs)
 }
 
