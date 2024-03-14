@@ -48,7 +48,7 @@ setup_approach.regression_surrogate <- function(internal,
   )
 
   # Include the training data in the internal list if user has specified it
-  if (internal$parameters$regression_surr_save_x_augment) internal$data$x_train_augmented = x_train_augmented
+  if (internal$parameters$regression_surr_save_x_augment) internal$data$x_train_augmented <- x_train_augmented
 
   # Fit the surrogate regression model and store it in the internal list
   if (internal$parameters$verbose == 2) message("Start training the surrogate model.")

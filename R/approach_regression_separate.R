@@ -381,12 +381,14 @@ check_regression_vfold_cv_para <- function(regression_vfold_cv_para) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_regresseion_namespaces = function() {
-  namespaces = c("parsnip", "recipes", "workflows", "tune", "dials", "yardstick", "hardhat", "rsample", "rlang")
+check_regresseion_namespaces <- function() {
+  namespaces <- c("parsnip", "recipes", "workflows", "tune", "dials", "yardstick", "hardhat", "rsample", "rlang")
   for (namespace in namespaces) {
     if (!requireNamespace(namespace, quietly = TRUE)) {
-      stop(paste0("`", namespace, "` is not installed. Please run `install.packages('", namespace, "')` to install ",
-                  "it or run `install.packages('tidymodels')` to install all relevant packages."))
+      stop(paste0(
+        "`", namespace, "` is not installed. Please run `install.packages('", namespace, "')` to install ",
+        "it or run `install.packages('tidymodels')` to install all relevant packages."
+      ))
     }
   }
 }
