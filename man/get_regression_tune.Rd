@@ -16,7 +16,8 @@ The data.frame must contain the possible hyperparameter value combinations to tr
 The column names must match the names of the tuneable parameters specified in \code{regression_model}.
 If \code{regression_tune_values} is a function, then it should take one argument \code{x} which is the training data
 for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
-Using a function allows the hyperparameter values to change based on the size of the combination.}
+Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+vignette for several examples.}
 
 \item{x_train}{Matrix or data.frame/data.table.
 Contains the data used to estimate the (conditional) distributions for the features

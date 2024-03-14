@@ -58,15 +58,15 @@ Suggests:
     GGally,
     progress,
     coro,
-    workflows,
-    tune,
-    hardhat,
     parsnip,
     recipes,
-    rsample,
+    workflows,
+    tune,
     dials,
-    rlang, 
-    yardstick
+    yardstick,
+    hardhat,
+    rsample,
+    rlang
 LinkingTo: 
     RcppArmadillo,
     Rcpp

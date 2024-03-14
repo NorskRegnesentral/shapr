@@ -187,13 +187,16 @@ The data.frame must contain the possible hyperparameter value combinations to tr
 The column names must match the names of the tuneable parameters specified in \code{regression_model}.
 If \code{regression_tune_values} is a function, then it should take one argument \code{x} which is the training data
 for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
-Using a function allows the hyperparameter values to change based on the size of the combination.}
+Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+vignette for several examples.}
 
-\item{regression_vfold_cv_para}{Either \code{NULL} (default) or a list containing
-the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}.}
+\item{regression_vfold_cv_para}{Either \code{NULL} (default) or a named list containing
+the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}. See the regression vignette for
+several examples.}
 
-\item{regression_recipe_func}{Either \code{NULL} (default) or a function that must return
-the RHS of the formula for arbitrary feature name inputs.}
+\item{regression_recipe_func}{Either \code{NULL} (default) or a function that that takes in a \code{\link[recipes:recipe]{recipes::recipe()}}
+object and returns a modified \code{\link[recipes:recipe]{recipes::recipe()}} with potentially additional recipe steps. See the regression
+vignette for several examples.}
 
 \item{regression_surr_n_comb}{Integer (default is \code{internal$parameters$used_n_combinations}) specifying the number
 of unique combinations/coalitions to apply to each training observation. Maximum allowed value is

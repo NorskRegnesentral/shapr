@@ -7,8 +7,9 @@
 check_regression_recipe_func(regression_recipe_func, x_explain)
 }
 \arguments{
-\item{regression_recipe_func}{Either \code{NULL} (default) or a function that must return
-the RHS of the formula for arbitrary feature name inputs.}
+\item{regression_recipe_func}{Either \code{NULL} (default) or a function that that takes in a \code{\link[recipes:recipe]{recipes::recipe()}}
+object and returns a modified \code{\link[recipes:recipe]{recipes::recipe()}} with potentially additional recipe steps. See the regression
+vignette for several examples.}
 
 \item{x_explain}{A matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
