@@ -115,9 +115,17 @@ First we setup the `airquality` dataset, train the `xgboost` model, and introduc
 we use later in the vignette to print and plot the results.
 
 ```r
+# Either use library(tidymodels) or separately specify the libraries
+library(parsnip) 
+library(ggplot2) 
+library(recipes)
+library(workflows)
+library(dials)
+library(hardhat) 
+library(workflows) 
+
+# Other libraries
 library(xgboost)
-library(ggplot2)
-library(tidymodels)
 library(data.table)
 library(shapr)
 
@@ -244,7 +252,6 @@ all.equal(
 )
 #> [1] TRUE
 ```
-
 
 
 
@@ -1052,8 +1059,28 @@ we refer to that guide for more details and explanations of the code below.
 
 
 ```r
+# Additional libraries needed to create new parsnip model 
+library(tibble)
+library(rlang)
+#> 
+#> Attaching package: 'rlang'
+#> The following object is masked from 'package:shapr':
+#> 
+#>     :=
+#> The following objects are masked from 'package:testthat':
+#> 
+#>     is_false, is_null, is_true
+#> The following object is masked from 'package:data.table':
+#> 
+#>     :=
+#> The following objects are masked from 'package:purrr':
+#> 
+#>     %@%, flatten, flatten_chr, flatten_dbl, flatten_int, flatten_lgl, flatten_raw, invoke, splice
+
 # Step 1: register the model, modes, and arguments
 parsnip::set_new_model(model = "ppr_reg")
+#> Error in `check_model_doesnt_exist()`:
+#> ! Model `ppr_reg` already exists
 parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
 parsnip::set_model_engine(model = "ppr_reg", mode = "regression", eng = "ppr")
 parsnip::set_dependency("ppr_reg", eng = "ppr", pkg = "stats")
