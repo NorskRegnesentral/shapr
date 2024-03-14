@@ -20,10 +20,8 @@ setup_approach.regression_surrogate <- function(internal,
                                                 regression_recipe_func = NULL,
                                                 regression_surr_n_comb = internal$parameters$used_n_combinations - 2,
                                                 ...) {
-  # Check that tidymodels is installed
-  if (!requireNamespace("tidymodels", quietly = TRUE)) {
-    stop("`tidymodels` is not installed. Please run install.packages('tidymodels')")
-  }
+  # Check that required libraries are installed
+  check_regresseion_namespaces()
 
   # Small printout to the user
   if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_surrogate'.")

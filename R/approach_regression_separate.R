@@ -9,11 +9,14 @@
 #' The column names must match the names of the tuneable parameters specified in `regression_model`.
 #' If `regression_tune_values` is a function, then it should take one argument `x` which is the training data
 #' for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
-#' Using a function allows the hyperparameter values to change based on the size of the combination.
-#' @param regression_vfold_cv_para Either `NULL` (default) or a list containing
-#' the parameters to be sent to [rsample::vfold_cv()].
-#' @param regression_recipe_func Either `NULL` (default) or a function that must return
-#' the RHS of the formula for arbitrary feature name inputs.
+#' Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+#' vignette for several examples.
+#' @param regression_vfold_cv_para Either `NULL` (default) or a named list containing
+#' the parameters to be sent to [rsample::vfold_cv()]. See the regression vignette for
+#' several examples.
+#' @param regression_recipe_func Either `NULL` (default) or a function that that takes in a [recipes::recipe()]
+#' object and returns a modified [recipes::recipe()] with potentially additional recipe steps. See the regression
+#' vignette for several examples.
 #' @inheritParams default_doc_explain
 #'
 #' @export
@@ -24,10 +27,8 @@ setup_approach.regression_separate <- function(internal,
                                                regression_vfold_cv_para = NULL,
                                                regression_recipe_func = NULL,
                                                ...) {
-  # Check that tidymodels is installed
-  if (!requireNamespace("tidymodels", quietly = TRUE)) {
-    stop("`tidymodels` is not installed. Please run install.packages('tidymodels')")
-  }
+  # Check that required libraries are installed
+  check_regresseion_namespaces()
 
   # Small printout to the user
   if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_separate'.")
@@ -198,7 +199,7 @@ regression_train <- function(x,
   }
 
   # Fit the model to the augmented training data
-  regression_fit <- workflows:::fit.workflow(regression_workflow, data = x)
+  regression_fit <- parsnip::fit(regression_workflow, data = x)
 
   # Return the trained model
   return(regression_fit)
@@ -368,6 +369,23 @@ check_regression_vfold_cv_para <- function(regression_vfold_cv_para) {
     # Ensure that we have at least two folds in the cross validation procedure
     if ("v" %in% names(regression_vfold_cv_para) && regression_vfold_cv_para[["v"]] <= 1) {
       stop("The parameter `v` in `regression_vfold_cv_para` must be strictly larger than 1.")
+    }
+  }
+}
+
+#' Check that needed libraries are installed
+#'
+#' This function checks that the `parsnip`, `recipes`, `workflows`, `tune`, `dials`,
+#' `yardstick`, `hardhat`, `rsample`, and `rlang` packages are available.
+#'
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+check_regresseion_namespaces = function() {
+  namespaces = c("parsnip", "recipes", "workflows", "tune", "dials", "yardstick", "hardhat", "rsample", "rlang")
+  for (namespace in namespaces) {
+    if (!requireNamespace(namespace, quietly = TRUE)) {
+      stop(paste0("`", namespace, "` is not installed. Please run `install.packages('", namespace, "')` to install ",
+                  "it or run `install.packages('tidymodels')` to install all relevant packages."))
     }
   }
 }
