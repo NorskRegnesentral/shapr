@@ -1,6 +1,13 @@
-library(tidymodels)
-library(data.table)
-library(shapr)
+# Compare xgboost with parsnip version ----------------------------------------------------------------------------
+# Either use library(tidymodels) or separately specify the libraries
+library(parsnip)
+library(ggplot2)
+library(recipes)
+library(workflows)
+library(dials)
+library(hardhat)
+library(workflows)
+library(yardstick)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -33,7 +40,7 @@ set.seed(1)
 model_workflow <- workflows::workflow() %>%
   workflows::add_model(parsnip::boost_tree(trees = 10, engine = "xgboost", mode = "regression")) %>%
   workflows::add_recipe(recipes::recipe(Ozone ~ ., data = train)) %>%
-  fit(data = test)
+  parsnip::fit(data = test)
 
 # See that the predictions are identical
 all.equal(predict(model_workflow, x_train)$.pred, predict(model_xgboost, as.matrix(x_train)))
@@ -59,10 +66,8 @@ explain_xgboost = explain(
 # See that the shapley values are identical
 all.equal(explain_workflow$shapley_values, explain_xgboost$shapley_values)
 
-
-
-
 # Other models in workflow ---------------------------------------------------------------------------------------------
+set.seed(1)
 data <- data.table::as.data.table(airquality)
 data[, Month_factor := as.factor(Month)]
 data[, Ozone_sub30 := (Ozone < 30) * 1]
@@ -114,7 +119,8 @@ explain_decision_tree_lm = explain(
 
 #
 
-# CV --------------------------------------------------------------------------------------------------------------
+# CV -------------------------------------------------------------------------------------------------------------------
+set.seed(1)
 regression_workflow <- workflows::workflow() %>%
   workflows::add_model(parsnip::rand_forest(
    trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -134,7 +140,7 @@ regression_results <- tune::tune_grid(
 regression_workflow <- tune::finalize_workflow(regression_workflow, tune::select_best(regression_results, "rmse"))
 
 # Fit the model to the augmented training data
-model_rf_cv <- workflows:::fit.workflow(regression_workflow, data = train_mixed)
+model_rf_cv <- parsnip::fit(regression_workflow, data = train_mixed)
 
 # See that the model works with regression
 explain_decision_model_rf_cv_rf = explain(

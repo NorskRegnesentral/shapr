@@ -126,9 +126,17 @@ the separate regression method class can be used to explain the individual predi
 First we setup the `airquality` dataset, train the `xgboost` model, and introduce some helper functions which
 we use later in the vignette to print and plot the results.
 ```{r setup, message=FALSE, cache = TRUE}
+# Either use library(tidymodels) or separately specify the libraries
+library(parsnip) 
+library(ggplot2) 
+library(recipes)
+library(workflows)
+library(dials)
+library(hardhat) 
+library(workflows) 
+
+# Other libraries
 library(xgboost)
-library(ggplot2)
-library(tidymodels)
 library(data.table)
 library(shapr)
 
@@ -788,6 +796,10 @@ we refer to that guide for more details and explanations of the code below.
 
 
 ```{r ppr-setup, cache=TRUE}
+# Additional libraries needed to create new parsnip model 
+library(tibble)
+library(rlang)
+
 # Step 1: register the model, modes, and arguments
 parsnip::set_new_model(model = "ppr_reg")
 parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
