@@ -203,6 +203,9 @@ explain_forecast <- function(model,
     output$internal$parameters$vaeac$parameters$model_description <- NULL
   }
 
+  # Remove the `regression` parameter from the output list when we are not doing regression
+  if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
+
   return(output)
 }
 
