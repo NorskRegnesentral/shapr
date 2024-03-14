@@ -123,6 +123,8 @@ library(workflows)
 library(dials)
 library(hardhat) 
 library(workflows) 
+library(tibble)
+library(rlang)
 
 # Other libraries
 library(xgboost)
@@ -251,6 +253,9 @@ all.equal(
   explanation_list$MC_empirical_tidymodels$shapley_values,
 )
 #> [1] TRUE
+
+# Remove the tidymodels version from the explanation list
+explanation_list$MC_empirical_tidymodels = NULL
 ```
 
 
@@ -407,11 +412,11 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 1.64
-#> sep_lm             745.21 0.97
-#> sep_pcr            784.91 1.72
-#> sep_splines        165.13 2.07
-#> sep_reicpe_example 687.45 1.78
+#> MC_empirical       179.43 2.95
+#> sep_lm             745.21 0.90
+#> sep_pcr            784.91 1.24
+#> sep_splines        165.13 1.31
+#> sep_reicpe_example 687.45 1.72
 ```
 
 
@@ -486,13 +491,13 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 1.64
-#> sep_lm             745.21 0.97
-#> sep_pcr            784.91 1.72
-#> sep_splines        165.13 2.07
-#> sep_reicpe_example 687.45 1.78
-#> sep_tree_stump     218.05 1.23
-#> sep_tree_default   177.68 1.05
+#> MC_empirical       179.43 2.95
+#> sep_lm             745.21 0.90
+#> sep_pcr            784.91 1.24
+#> sep_splines        165.13 1.31
+#> sep_reicpe_example 687.45 1.72
+#> sep_tree_stump     218.05 1.13
+#> sep_tree_default   177.68 0.86
 ```
 
 ### Cross validation {#separate_cv}
@@ -784,17 +789,17 @@ even though we do hyperparameter tuning, we are still overfitting the data.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv  Time
-#> MC_empirical       179.43  1.64
-#> sep_lm             745.21  0.97
-#> sep_pcr            784.91  1.72
-#> sep_splines        165.13  2.07
-#> sep_reicpe_example 687.45  1.78
-#> sep_tree_stump     218.05  1.23
-#> sep_tree_default   177.68  1.05
-#> sep_tree_cv        169.96 22.91
-#> sep_tree_cv_2      168.38 45.74
-#> sep_rf             210.99  1.47
-#> sep_rf_cv          206.03 36.68
+#> MC_empirical       179.43  2.95
+#> sep_lm             745.21  0.90
+#> sep_pcr            784.91  1.24
+#> sep_splines        165.13  1.31
+#> sep_reicpe_example 687.45  1.72
+#> sep_tree_stump     218.05  1.13
+#> sep_tree_default   177.68  0.86
+#> sep_tree_cv        169.96 19.61
+#> sep_tree_cv_2      168.38 40.38
+#> sep_rf             210.99  1.51
+#> sep_rf_cv          206.03 36.33
 ```
 
 
@@ -883,21 +888,21 @@ Also note that we obtain the same value no matter if we run the cross-validation
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  1.64
-#> sep_lm               745.21  0.97
-#> sep_pcr              784.91  1.72
-#> sep_splines          165.13  2.07
-#> sep_reicpe_example   687.45  1.78
-#> sep_tree_stump       218.05  1.23
-#> sep_tree_default     177.68  1.05
-#> sep_tree_cv          169.96 22.91
-#> sep_tree_cv_2        168.38 45.74
-#> sep_rf               210.99  1.47
-#> sep_rf_cv            206.03 36.68
-#> sep_xgboost          197.72  1.16
-#> sep_xgboost_cv       175.05 11.31
-#> sep_xgboost_cv_par   175.05  9.65
-#> sep_xgboost_cv_2_par 129.11 11.50
+#> MC_empirical         179.43  2.95
+#> sep_lm               745.21  0.90
+#> sep_pcr              784.91  1.24
+#> sep_splines          165.13  1.31
+#> sep_reicpe_example   687.45  1.72
+#> sep_tree_stump       218.05  1.13
+#> sep_tree_default     177.68  0.86
+#> sep_tree_cv          169.96 19.61
+#> sep_tree_cv_2        168.38 40.38
+#> sep_rf               210.99  1.51
+#> sep_rf_cv            206.03 36.33
+#> sep_xgboost          197.72  1.34
+#> sep_xgboost_cv       175.05 11.46
+#> sep_xgboost_cv_par   175.05  9.22
+#> sep_xgboost_cv_2_par 129.11 12.97
 ```
 
 
@@ -1014,26 +1019,26 @@ We then look at the  $\operatorname{MSE}_v$ evaluation criterion and the elapsed
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  1.64
-#> sep_lm               745.21  0.97
-#> sep_pcr              784.91  1.72
-#> sep_splines          165.13  2.07
-#> sep_reicpe_example   687.45  1.78
-#> sep_tree_stump       218.05  1.23
-#> sep_tree_default     177.68  1.05
-#> sep_tree_cv          169.96 22.91
-#> sep_tree_cv_2        168.38 45.74
-#> sep_rf               210.99  1.47
-#> sep_rf_cv            206.03 36.68
-#> sep_xgboost          197.72  1.16
-#> sep_xgboost_cv       175.05 11.31
-#> sep_xgboost_cv_par   175.05  9.65
-#> sep_xgboost_cv_2_par 129.11 11.50
-#> sur_lm               649.61  0.27
-#> sur_rf               195.10  0.60
-#> sur_rf_cv            173.74 20.21
-#> sur_xgboost          169.92  0.31
-#> sur_xgboost_cv       169.87  2.44
+#> MC_empirical         179.43  2.95
+#> sep_lm               745.21  0.90
+#> sep_pcr              784.91  1.24
+#> sep_splines          165.13  1.31
+#> sep_reicpe_example   687.45  1.72
+#> sep_tree_stump       218.05  1.13
+#> sep_tree_default     177.68  0.86
+#> sep_tree_cv          169.96 19.61
+#> sep_tree_cv_2        168.38 40.38
+#> sep_rf               210.99  1.51
+#> sep_rf_cv            206.03 36.33
+#> sep_xgboost          197.72  1.34
+#> sep_xgboost_cv       175.05 11.46
+#> sep_xgboost_cv_par   175.05  9.22
+#> sep_xgboost_cv_2_par 129.11 12.97
+#> sur_lm               649.61  0.67
+#> sur_rf               195.10  0.72
+#> sur_rf_cv            173.74 21.04
+#> sur_xgboost          169.92  0.33
+#> sur_xgboost_cv       169.87  2.51
 
 # Compare the MSEv criterion of the different explanation methods.
 # Include vertical line corresponding to the MSEv of the empirical method.
@@ -1059,24 +1064,6 @@ we refer to that guide for more details and explanations of the code below.
 
 
 ```r
-# Additional libraries needed to create new parsnip model 
-library(tibble)
-library(rlang)
-#> 
-#> Attaching package: 'rlang'
-#> The following object is masked from 'package:shapr':
-#> 
-#>     :=
-#> The following objects are masked from 'package:testthat':
-#> 
-#>     is_false, is_null, is_true
-#> The following object is masked from 'package:data.table':
-#> 
-#>     :=
-#> The following objects are masked from 'package:purrr':
-#> 
-#>     %@%, flatten, flatten_chr, flatten_dbl, flatten_int, flatten_lgl, flatten_raw, invoke, splice
-
 # Step 1: register the model, modes, and arguments
 parsnip::set_new_model(model = "ppr_reg")
 #> Error in `check_model_doesnt_exist()`:
@@ -1259,30 +1246,30 @@ but also increase the running time.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  1.64
-#> sep_lm               745.21  0.97
-#> sep_pcr              784.91  1.72
-#> sep_splines          165.13  2.07
-#> sep_reicpe_example   687.45  1.78
-#> sep_tree_stump       218.05  1.23
-#> sep_tree_default     177.68  1.05
-#> sep_tree_cv          169.96 22.91
-#> sep_tree_cv_2        168.38 45.74
-#> sep_rf               210.99  1.47
-#> sep_rf_cv            206.03 36.68
-#> sep_xgboost          197.72  1.16
-#> sep_xgboost_cv       175.05 11.31
-#> sep_xgboost_cv_par   175.05  9.65
-#> sep_xgboost_cv_2_par 129.11 11.50
-#> sur_lm               649.61  0.27
-#> sur_rf               195.10  0.60
-#> sur_rf_cv            173.74 20.21
-#> sur_xgboost          169.92  0.31
-#> sur_xgboost_cv       169.87  2.44
-#> sep_ppr              327.23  1.12
-#> sep_ppr_cv           249.87 26.65
-#> sur_ppr              395.42  0.30
-#> sur_ppr_cv           334.61  3.67
+#> MC_empirical         179.43  2.95
+#> sep_lm               745.21  0.90
+#> sep_pcr              784.91  1.24
+#> sep_splines          165.13  1.31
+#> sep_reicpe_example   687.45  1.72
+#> sep_tree_stump       218.05  1.13
+#> sep_tree_default     177.68  0.86
+#> sep_tree_cv          169.96 19.61
+#> sep_tree_cv_2        168.38 40.38
+#> sep_rf               210.99  1.51
+#> sep_rf_cv            206.03 36.33
+#> sep_xgboost          197.72  1.34
+#> sep_xgboost_cv       175.05 11.46
+#> sep_xgboost_cv_par   175.05  9.22
+#> sep_xgboost_cv_2_par 129.11 12.97
+#> sur_lm               649.61  0.67
+#> sur_rf               195.10  0.72
+#> sur_rf_cv            173.74 21.04
+#> sur_xgboost          169.92  0.33
+#> sur_xgboost_cv       169.87  2.51
+#> sep_ppr              327.23  1.26
+#> sep_ppr_cv           249.87 27.25
+#> sur_ppr              395.42  0.29
+#> sur_ppr_cv           334.61  3.58
 
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
@@ -1381,35 +1368,35 @@ regression methods with the Monte Carlo based methods.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_independence      206.92  0.47
-#> MC_empirical         179.43  1.77
-#> MC_gaussian          245.19  0.40
-#> MC_copula            247.29  0.41
-#> MC_ctree             191.82  1.98
-#> MC_vaeac             141.88 75.13
-#> sep_lm               745.21  0.97
-#> sep_pcr              784.91  1.72
-#> sep_splines          165.13  2.07
-#> sep_reicpe_example   687.45  1.78
-#> sep_tree_stump       218.05  1.23
-#> sep_tree_default     177.68  1.05
-#> sep_tree_cv          169.96 22.91
-#> sep_tree_cv_2        168.38 45.74
-#> sep_rf               210.99  1.47
-#> sep_rf_cv            206.03 36.68
-#> sep_xgboost          197.72  1.16
-#> sep_xgboost_cv       175.05 11.31
-#> sep_xgboost_cv_par   175.05  9.65
-#> sep_xgboost_cv_2_par 129.11 11.50
-#> sur_lm               649.61  0.27
-#> sur_rf               195.10  0.60
-#> sur_rf_cv            173.74 20.21
-#> sur_xgboost          169.92  0.31
-#> sur_xgboost_cv       169.87  2.44
-#> sep_ppr              327.23  1.12
-#> sep_ppr_cv           249.87 26.65
-#> sur_ppr              395.42  0.30
-#> sur_ppr_cv           334.61  3.67
+#> MC_independence      206.92  0.56
+#> MC_empirical         179.43  2.73
+#> MC_gaussian          245.19  0.45
+#> MC_copula            247.29  0.52
+#> MC_ctree             191.82  1.66
+#> MC_vaeac             141.88 69.10
+#> sep_lm               745.21  0.90
+#> sep_pcr              784.91  1.24
+#> sep_splines          165.13  1.31
+#> sep_reicpe_example   687.45  1.72
+#> sep_tree_stump       218.05  1.13
+#> sep_tree_default     177.68  0.86
+#> sep_tree_cv          169.96 19.61
+#> sep_tree_cv_2        168.38 40.38
+#> sep_rf               210.99  1.51
+#> sep_rf_cv            206.03 36.33
+#> sep_xgboost          197.72  1.34
+#> sep_xgboost_cv       175.05 11.46
+#> sep_xgboost_cv_par   175.05  9.22
+#> sep_xgboost_cv_2_par 129.11 12.97
+#> sur_lm               649.61  0.67
+#> sur_rf               195.10  0.72
+#> sur_rf_cv            173.74 21.04
+#> sur_xgboost          169.92  0.33
+#> sur_xgboost_cv       169.87  2.51
+#> sep_ppr              327.23  1.26
+#> sep_ppr_cv           249.87 27.25
+#> sur_ppr              395.42  0.29
+#> sur_ppr_cv           334.61  3.58
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
@@ -1753,7 +1740,7 @@ explanation_list_mixed$sur_rf_cv <- explain(
   regression_model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values = expand_grid(mtry = c(1, 2, 4), trees = c(50, 250, 500, 750)),
+  regression_tune_values = expand.grid(mtry = c(1, 2, 4), trees = c(50, 250, 500, 750)),
   regression_vfold_cv_para = list(v = 5)
 )
 
@@ -1802,25 +1789,25 @@ based methods outperform the Monte Carlo-based methods.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list_mixed)
 #>                   MSEv   Time
-#> MC_independence 641.82   0.64
-#> MC_ctree        554.50   2.58
-#> MC_vaeac_50     629.43 158.67
-#> sep_lm          550.06   1.33
-#> sep_splines     541.36   1.29
-#> sep_tree        753.84   1.02
-#> sep_tree_cv     756.27  40.66
-#> sep_rf          521.79   1.20
-#> sep_rf_cv       611.22  47.36
-#> sep_xgboost     792.17   1.17
-#> sep_xgboost_cv  591.50  25.28
-#> sur_lm          610.61   0.42
-#> sur_splines     596.86   0.38
-#> sur_tree        677.04   0.32
-#> sur_tree_cv     789.37   3.31
-#> sur_rf          414.15   0.58
-#> sur_rf_cv       501.37  14.67
+#> MC_independence 641.82   0.57
+#> MC_ctree        554.50   2.71
+#> MC_vaeac_50     629.43 146.42
+#> sep_lm          550.06   1.22
+#> sep_splines     541.36   1.44
+#> sep_tree        753.84   1.01
+#> sep_tree_cv     756.27  43.19
+#> sep_rf          521.79   1.28
+#> sep_rf_cv       611.22  48.15
+#> sep_xgboost     792.17   1.10
+#> sep_xgboost_cv  591.50  25.34
+#> sur_lm          610.61   0.43
+#> sur_splines     596.86   0.40
+#> sur_tree        677.04   0.60
+#> sur_tree_cv     789.37   3.60
+#> sur_rf          414.15   0.53
+#> sur_rf_cv       512.43  13.82
 #> sur_xgboost     606.92   0.35
-#> sur_xgboost_cv  429.06   2.59
+#> sur_xgboost_cv  429.06   2.56
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.

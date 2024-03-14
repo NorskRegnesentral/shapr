@@ -134,6 +134,8 @@ library(workflows)
 library(dials)
 library(hardhat) 
 library(workflows) 
+library(tibble)
+library(rlang)
 
 # Other libraries
 library(xgboost)
@@ -256,6 +258,9 @@ all.equal(
   explanation_list$MC_empirical$shapley_values,
   explanation_list$MC_empirical_tidymodels$shapley_values,
 )
+
+# Remove the tidymodels version from the explanation list
+explanation_list$MC_empirical_tidymodels = NULL
 ```
 
 
@@ -796,10 +801,6 @@ we refer to that guide for more details and explanations of the code below.
 
 
 ```{r ppr-setup, cache=TRUE}
-# Additional libraries needed to create new parsnip model 
-library(tibble)
-library(rlang)
-
 # Step 1: register the model, modes, and arguments
 parsnip::set_new_model(model = "ppr_reg")
 parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
@@ -1368,7 +1369,7 @@ explanation_list_mixed$sur_rf_cv <- explain(
   regression_model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values = expand_grid(mtry = c(1, 2, 4), trees = c(50, 250, 500, 750)),
+  regression_tune_values = expand.grid(mtry = c(1, 2, 4), trees = c(50, 250, 500, 750)),
   regression_vfold_cv_para = list(v = 5)
 )
 
