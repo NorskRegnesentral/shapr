@@ -64,6 +64,28 @@
       2: 42.44   2.907 -5.119  -7.128  1.7841       -7.827
       3: 42.44   6.237 -9.010 -17.927 -0.6915       10.791
 
+# output_lm_mixed_decision_tree_cv_separate_parallelized
+
+    Code
+      (out <- code)
+    Output
+          none Solar.R   Wind    Temp     Day Month_factor
+         <num>   <num>  <num>   <num>   <num>        <num>
+      1: 42.44  -8.131 12.303   9.935  1.6221       -5.145
+      2: 42.44   2.907 -5.119  -7.128  1.7841       -7.827
+      3: 42.44   6.237 -9.010 -17.927 -0.6915       10.791
+
+# output_lm_mixed_xgboost_separate
+
+    Code
+      (out <- code)
+    Output
+          none Solar.R    Wind    Temp    Day Month_factor
+         <num>   <num>   <num>   <num>  <num>        <num>
+      1: 42.44 -13.991  14.352  16.490   1.82       -8.088
+      2: 42.44   8.183  -1.463 -16.499   3.63       -9.233
+      3: 42.44   3.364 -14.946   0.401 -11.32       11.905
+
 # output_lm_numeric_lm_surrogate
 
     Code
@@ -85,6 +107,28 @@
       1: 42.44 -9.6804  12.2171  11.4871 0.74529 -2.1671
       2: 42.44  0.6882   0.3332 -12.8835 1.93235 -3.9496
       3: 42.44  7.8022 -26.0731  -0.2148 0.04831  0.8691
+
+# output_lm_numeric_lm_surrogate_regression_surr_n_comb
+
+    Code
+      (out <- code)
+    Output
+          none Solar.R     Wind     Temp   Month     Day
+         <num>   <num>    <num>    <num>   <num>   <num>
+      1: 42.44 -9.6804  12.2171  11.4871 0.74529 -2.1671
+      2: 42.44  0.6882   0.3332 -12.8835 1.93235 -3.9496
+      3: 42.44  7.8022 -26.0731  -0.2148 0.04831  0.8691
+
+# output_lm_categorical_lm_surrogate
+
+    Code
+      (out <- code)
+    Output
+          none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+         <num>        <num>              <num>          <num>       <num>
+      1: 42.44       -7.137              16.29         -9.895      0.2304
+      2: 42.44       -6.018             -16.28         23.091    -15.6258
+      3: 42.44       10.042             -18.58          2.415    -12.2431
 
 # output_lm_mixed_lm_surrogate
 
@@ -108,14 +152,14 @@
       2: 42.44  -3.077 -3.077 -3.077 -3.077       -3.077
       3: 42.44  -6.716 -6.716 -6.716 -6.716       16.262
 
-# output_lm_mixed_decision_tree_cv_separate_parallelized
+# output_lm_mixed_xgboost_surrogate
 
     Code
       (out <- code)
     Output
-          none Solar.R   Wind    Temp     Day Month_factor
-         <num>   <num>  <num>   <num>   <num>        <num>
-      1: 42.44  -8.131 12.303   9.935  1.6221       -5.145
-      2: 42.44   2.907 -5.119  -7.128  1.7841       -7.827
-      3: 42.44   6.237 -9.010 -17.927 -0.6915       10.791
+          none Solar.R    Wind   Temp    Day Month_factor
+         <num>   <num>   <num>  <num>  <num>        <num>
+      1: 42.44 -11.165   8.002  20.61  2.030       -8.896
+      2: 42.44   4.143  -1.515 -11.23  2.025       -8.806
+      3: 42.44   6.515 -18.268  -4.06 -3.992        9.204
 
