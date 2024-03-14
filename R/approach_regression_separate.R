@@ -335,7 +335,8 @@ check_regression_recipe_func <- function(regression_recipe_func, x_explain) {
 
   if (!is.null(regression_recipe_func) && is.function(regression_recipe_func)) {
     x_temp <- copy(x_explain)[, "y_hat_temp" := 1]
-    if (!methods::isClass(class(regression_recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))), "recipe")) {
+    regression_recipe_func_output <- regression_recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))
+    if (!"recipe" %in% class(regression_recipe_func_output)) {
       stop("The output of the `regression_recipe_func` must be of class `recipe`.")
     }
   }
