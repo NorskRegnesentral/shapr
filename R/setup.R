@@ -125,11 +125,8 @@ check_and_set_parameters <- function(internal) {
   # Checking n_batches vs n_combinations etc
   check_n_batches(internal)
 
-  # Remove n_samples if we are doing regression, as we are not doing MC sampling
-  if (internal$parameters$regression) internal$parameters$n_samples <- NULL
-
   # Check regression if we are doing regression
-  if (internal$parameters$regression) check_regression(internal)
+  if (internal$parameters$regression) internal <- check_regression(internal)
 
   return(internal)
 }
@@ -154,6 +151,16 @@ check_regression <- function(internal) {
       "approaches as there are no Monte Carlo samples to keep for these approaches."
     ))
   }
+
+  # For the moment, disable the regression approaches from python
+  if (internal$parameters$is_python) {
+    stop(paste0("Cannot use the `", internal$parameters$approach, "` approach from python."))
+  }
+
+  # Remove n_samples if we are doing regression, as we are not doing MC sampling
+  internal$parameters$n_samples <- NULL
+
+  return(internal)
 }
 
 #' @keywords internal
