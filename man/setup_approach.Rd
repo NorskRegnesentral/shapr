@@ -179,8 +179,8 @@ Containing the mean of the data generating distribution.
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
 
-\item{regression_model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model
-(\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}). See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
+\item{regression_model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
+\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
 and see the vignette for how to add new/own models.}
 
 \item{regression_tune_values}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.

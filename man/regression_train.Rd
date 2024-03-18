@@ -30,8 +30,8 @@ If \code{1}, it will print information about performance. If \code{2}, some addi
 Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
-\item{regression_model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model
-(\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}). See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
+\item{regression_model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
+\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
 and see the vignette for how to add new/own models.}
 
 \item{regression_tune}{Logical (default is \code{FALSE}). If \code{TRUE}, then we are to tune the hyperparemeters based on

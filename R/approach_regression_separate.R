@@ -1,8 +1,8 @@
 # Shapr functions ======================================================================================================
 #' @rdname setup_approach
 #'
-#' @param regression_model A `tidymodels` object of class `model_specs`. Default is a linear regression model
-#' ([parsnip::linear_reg()]). See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
+#' @param regression_model A `tidymodels` object of class `model_specs`. Default is a linear regression model, i.e.,
+#' [parsnip::linear_reg()]. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
 #' and see the vignette for how to add new/own models.
 #' @param regression_tune_values Either `NULL` (default), a data.frame/data.table/tibble, or a function.
 #' The data.frame must contain the possible hyperparameter value combinations to try.
