@@ -154,7 +154,7 @@ check_regression <- function(internal) {
 
   # For the moment, disable the regression approaches from python
   if (internal$parameters$is_python) {
-    stop(paste0("Cannot use the `", internal$parameters$approach, "` approach from python."))
+    stop(paste0("The `", internal$parameters$approach, "` approach cannot be used from python."))
   }
 
   # Remove n_samples if we are doing regression, as we are not doing MC sampling

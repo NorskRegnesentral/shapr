@@ -358,3 +358,24 @@ test_that("regression erroneous input: `regression_surr_n_comb`", {
     error = TRUE
   )
 })
+
+test_that("regression erroneous input: `is_python = TRUE`", {
+  set.seed(123)
+  expect_snapshot(
+    {
+      # Trying to call from python.
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        prediction_zero = p0,
+        n_batches = 1,
+        timing = FALSE,
+        approach = "regression_separate",
+        regression_model = parsnip::linear_reg(),
+        is_python = TRUE
+      )
+    },
+    error = TRUE
+  )
+})

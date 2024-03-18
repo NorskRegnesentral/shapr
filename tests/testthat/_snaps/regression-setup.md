@@ -208,3 +208,13 @@
       Error in `check_regression_n_comb()`:
       ! `regression_surr_n_comb` (0) must be a positive integer less than or equal to `used_n_combinations` minus two (30).
 
+# regression erroneous input: `is_python = TRUE`
+
+    Code
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+        regression_model = parsnip::linear_reg(), is_python = TRUE)
+    Condition
+      Error in `check_regression()`:
+      ! The `regression_separate` approach cannot be used from python.
+
