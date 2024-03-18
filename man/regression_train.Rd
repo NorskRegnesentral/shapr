@@ -6,19 +6,29 @@
 \usage{
 regression_train(
   x,
+  seed = 1,
+  verbose = 0,
   regression_model = parsnip::linear_reg(),
   regression_tune = FALSE,
   regression_tune_values = NULL,
   regression_vfold_cv_para = NULL,
   regression_recipe_func = NULL,
   regression_response_var = "y_hat",
-  regression_sur_n_comb = NULL,
-  verbose = 0
+  regression_sur_n_comb = NULL
 )
 }
 \arguments{
 \item{x}{Data.table containing the data. Either the training data or the explicands. If \code{x} is the explicands,
 then \code{index_features} must be provided.}
+
+\item{seed}{Positive integer.
+Specifies the seed before any randomness based code is being run.
+If \code{NULL} the seed will be inherited from the calling environment.}
+
+\item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
+If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
+Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
+TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
 \item{regression_model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model
 (\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}). See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
@@ -48,11 +58,6 @@ vignette for several examples.}
 
 \item{regression_sur_n_comb}{Integer (default is \code{NULL}). The number of times each training observations
 has been augmented. If \code{NULL}, then we assume that we are doing separate regression.}
-
-\item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
-If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
-Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
-TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 }
 \value{
 A trained \code{tidymodels} model based on the provided input parameters.
