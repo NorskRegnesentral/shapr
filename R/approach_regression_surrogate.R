@@ -54,13 +54,14 @@ setup_approach.regression_surrogate <- function(internal,
   if (internal$parameters$verbose == 2) message("Start training the surrogate model.")
   internal$objects$regression_surrogate_model <- regression_train(
     x = x_train_augmented,
+    seed = internal$parameters$seed,
+    verbose = internal$parameters$verbose,
     regression_model = internal$parameters$regression_model,
     regression_tune = internal$parameters$regression_tune,
     regression_tune_values = internal$parameters$regression_tune_values,
     regression_vfold_cv_para = internal$parameters$regression_vfold_cv_para,
     regression_recipe_func = internal$parameters$regression_recipe_func,
-    regression_sur_n_comb = regression_surr_n_comb + 1, # Add 1 as augment_include_grand = TRUE above
-    verbose = internal$parameters$verbose
+    regression_sur_n_comb = regression_surr_n_comb + 1 # Add 1 as augment_include_grand = TRUE above
   )
 
   # Small printout to the user

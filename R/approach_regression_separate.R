@@ -81,12 +81,13 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
     if (internal$parameters$verbose == 2) regression_prep_message_comb(internal, index_features, comb_idx)
     current_regression_fit <- regression_train(
       x = current_x_train,
+      seed = internal$parameters$seed,
+      verbose = internal$parameters$verbose,
       regression_model = internal$parameters$regression_model,
       regression_tune = internal$parameters$regression_tune,
       regression_tune_values = internal$parameters$regression_tune_values,
       regression_vfold_cv_para = internal$parameters$regression_vfold_cv_para,
-      regression_recipe_func = internal$parameters$regression_recipe_func,
-      verbose = internal$parameters$verbose
+      regression_recipe_func = internal$parameters$regression_recipe_func
     )
 
     # Compute the predicted response for the explicands, i.e., the v(S, x_i) for all explicands x_i.
@@ -126,14 +127,15 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression_train <- function(x,
+                             seed = 1,
+                             verbose = 0,
                              regression_model = parsnip::linear_reg(),
                              regression_tune = FALSE,
                              regression_tune_values = NULL,
                              regression_vfold_cv_para = NULL,
                              regression_recipe_func = NULL,
                              regression_response_var = "y_hat",
-                             regression_sur_n_comb = NULL,
-                             verbose = 0) {
+                             regression_sur_n_comb = NULL) {
   # Create a recipe to the augmented training data
   regression_recipe <- recipes::recipe(as.formula(paste(regression_response_var, "~ .")), data = x)
 
@@ -193,6 +195,9 @@ regression_train <- function(x,
 
     # Small printout to the user
     if (verbose == 2) regression_cv_message(regression_results = regression_results, regression_grid = regression_grid)
+
+    # Set seed for reproducibility. Without this we get different results based on if we run in parallel or sequential
+    set.seed(seed)
 
     # Update the workflow by finalizing it using the hyperparameters that attained the best rmse
     regression_workflow <- tune::finalize_workflow(regression_workflow, tune::select_best(regression_results, "rmse"))
