@@ -56,6 +56,9 @@ setup_approach.regression_separate <- function(internal,
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.regression_separate <- function(internal, index_features = NULL, ...) {
+  # Load `workflows`, needed when parallelized as we call predict with a workflow object. Checked installed above.
+  requireNamespace("workflows", quietly = TRUE)
+
   # Get the features in the batch
   features <- internal$objects$X$features[index_features]
 

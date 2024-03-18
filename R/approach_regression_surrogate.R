@@ -75,6 +75,9 @@ setup_approach.regression_surrogate <- function(internal,
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.regression_surrogate <- function(internal, index_features = NULL, ...) {
+  # Load `workflows`, needed when parallelized as we call predict with a workflow object. Checked installed above.
+  requireNamespace("workflows", quietly = TRUE)
+
   # Small printout to the user about which batch that are currently worked on
   if (internal$parameters$verbose == 2) regression_prep_message_batch(internal, index_features)
 
