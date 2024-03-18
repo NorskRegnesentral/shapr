@@ -116,13 +116,13 @@ we use later in the vignette to print and plot the results.
 
 ```r
 # Either use library(tidymodels) or separately specify the libraries
-library(parsnip) 
-library(ggplot2) 
+library(parsnip)
+library(ggplot2)
 library(recipes)
 library(workflows)
 library(dials)
-library(hardhat) 
-library(workflows) 
+library(hardhat)
+library(workflows)
 library(tibble)
 library(rlang)
 
@@ -214,7 +214,7 @@ explanation_list$MC_empirical <- explain(
 ```
 
 In the setup above, we directly used the `xgboost` package to fit the `xgboost` model. However, we can also
-specify the model using the `tidymodels` package to fit the `xgboost` model. 
+specify the model using the `tidymodels` package to fit the `xgboost` model.
 We obtain identical fits as `tidymodels` calls `xgboost` internally. We demonstrate that in the example below.
 This is not restricted to `xgboost` as `shapr` supports any fitted `tidymodels` models via the `workflows`
 procedure outlined below.
@@ -255,7 +255,7 @@ all.equal(
 #> [1] TRUE
 
 # Remove the tidymodels version from the explanation list
-explanation_list$MC_empirical_tidymodels = NULL
+explanation_list$MC_empirical_tidymodels <- NULL
 ```
 
 
@@ -412,11 +412,11 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 2.95
-#> sep_lm             745.21 0.90
-#> sep_pcr            784.91 1.24
-#> sep_splines        165.13 1.31
-#> sep_reicpe_example 687.45 1.72
+#> MC_empirical       179.43 2.60
+#> sep_lm             745.21 0.98
+#> sep_pcr            784.91 1.03
+#> sep_splines        165.13 1.25
+#> sep_reicpe_example 687.45 1.62
 ```
 
 
@@ -487,17 +487,16 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ![](figure_regression/decision-tree-plot-1.png)
 
 ```r
-
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 2.95
-#> sep_lm             745.21 0.90
-#> sep_pcr            784.91 1.24
-#> sep_splines        165.13 1.31
-#> sep_reicpe_example 687.45 1.72
-#> sep_tree_stump     218.05 1.13
-#> sep_tree_default   177.68 0.86
+#> MC_empirical       179.43 2.60
+#> sep_lm             745.21 0.98
+#> sep_pcr            784.91 1.03
+#> sep_splines        165.13 1.25
+#> sep_reicpe_example 687.45 1.62
+#> sep_tree_stump     218.05 1.26
+#> sep_tree_default   177.68 0.94
 ```
 
 ### Cross validation {#separate_cv}
@@ -643,123 +642,123 @@ explanation_list$sep_rf_cv <- explain(
 #> 
 #> Working on combination with id 3 of 16.
 #> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 28.22  rmse_std_err = 0.98
-#> #2: mtry = 1  trees = 400  rmse = 28.30  rmse_std_err = 0.93
-#> #3: mtry = 1  trees = 50   rmse = 28.61  rmse_std_err = 1.07
+#> #1: mtry = 1  trees = 50   rmse = 27.48  rmse_std_err = 1.50
+#> #2: mtry = 1  trees = 750  rmse = 27.52  rmse_std_err = 1.29
+#> #3: mtry = 1  trees = 400  rmse = 27.74  rmse_std_err = 1.30
 #> 
 #> Working on combination with id 4 of 16.
 #> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 23.11  rmse_std_err = 3.55
-#> #2: mtry = 1  trees = 50   rmse = 23.18  rmse_std_err = 3.40
-#> #3: mtry = 1  trees = 400  rmse = 23.19  rmse_std_err = 3.55
+#> #1: mtry = 1  trees = 400  rmse = 23.60  rmse_std_err = 3.17
+#> #2: mtry = 1  trees = 750  rmse = 23.63  rmse_std_err = 3.17
+#> #3: mtry = 1  trees = 50   rmse = 24.24  rmse_std_err = 3.37
 #> 
 #> Working on combination with id 5 of 16.
 #> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 31.10  rmse_std_err = 1.93
-#> #2: mtry = 1  trees = 750  rmse = 31.20  rmse_std_err = 1.91
-#> #3: mtry = 1  trees = 400  rmse = 31.24  rmse_std_err = 1.89
+#> #1: mtry = 1  trees = 400  rmse = 33.31  rmse_std_err = 2.81
+#> #2: mtry = 1  trees = 750  rmse = 33.34  rmse_std_err = 2.81
+#> #3: mtry = 1  trees = 50   rmse = 33.41  rmse_std_err = 2.87
 #> 
 #> Working on combination with id 6 of 16.
 #> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 21.52  rmse_std_err = 2.47
-#> #2: mtry = 1  trees = 400  rmse = 21.71  rmse_std_err = 2.64
-#> #3: mtry = 1  trees = 750  rmse = 21.72  rmse_std_err = 2.61
-#> #4: mtry = 2  trees = 400  rmse = 22.78  rmse_std_err = 2.84
-#> #5: mtry = 2  trees = 750  rmse = 22.83  rmse_std_err = 2.74
-#> #6: mtry = 2  trees = 50   rmse = 23.25  rmse_std_err = 2.63
+#> #1: mtry = 1  trees = 50   rmse = 21.25  rmse_std_err = 2.24
+#> #2: mtry = 1  trees = 400  rmse = 21.69  rmse_std_err = 2.38
+#> #3: mtry = 1  trees = 750  rmse = 21.81  rmse_std_err = 2.40
+#> #4: mtry = 2  trees = 400  rmse = 22.38  rmse_std_err = 2.11
+#> #5: mtry = 2  trees = 750  rmse = 22.68  rmse_std_err = 2.04
+#> #6: mtry = 2  trees = 50   rmse = 22.91  rmse_std_err = 1.97
 #> 
 #> Working on combination with id 7 of 16.
 #> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 2  trees = 50   rmse = 22.13  rmse_std_err = 3.54
-#> #2: mtry = 1  trees = 750  rmse = 22.44  rmse_std_err = 3.53
-#> #3: mtry = 1  trees = 400  rmse = 22.49  rmse_std_err = 3.50
-#> #4: mtry = 2  trees = 750  rmse = 22.79  rmse_std_err = 3.44
-#> #5: mtry = 1  trees = 50   rmse = 22.98  rmse_std_err = 3.33
-#> #6: mtry = 2  trees = 400  rmse = 22.99  rmse_std_err = 3.41
+#> #1: mtry = 2  trees = 50   rmse = 22.18  rmse_std_err = 2.93
+#> #2: mtry = 2  trees = 400  rmse = 22.28  rmse_std_err = 2.74
+#> #3: mtry = 1  trees = 750  rmse = 22.31  rmse_std_err = 2.90
+#> #4: mtry = 2  trees = 750  rmse = 22.35  rmse_std_err = 2.76
+#> #5: mtry = 1  trees = 400  rmse = 22.40  rmse_std_err = 2.80
+#> #6: mtry = 1  trees = 50   rmse = 22.62  rmse_std_err = 2.71
 #> 
 #> Working on combination with id 8 of 16.
 #> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 400  rmse = 27.13  rmse_std_err = 3.74
-#> #2: mtry = 1  trees = 50   rmse = 27.44  rmse_std_err = 3.36
-#> #3: mtry = 1  trees = 750  rmse = 27.52  rmse_std_err = 3.76
-#> #4: mtry = 2  trees = 50   rmse = 27.52  rmse_std_err = 4.31
-#> #5: mtry = 2  trees = 750  rmse = 27.56  rmse_std_err = 4.62
-#> #6: mtry = 2  trees = 400  rmse = 27.60  rmse_std_err = 4.52
+#> #1: mtry = 1  trees = 50   rmse = 29.35  rmse_std_err = 2.17
+#> #2: mtry = 1  trees = 400  rmse = 29.45  rmse_std_err = 2.37
+#> #3: mtry = 1  trees = 750  rmse = 29.57  rmse_std_err = 2.32
+#> #4: mtry = 2  trees = 750  rmse = 30.43  rmse_std_err = 2.21
+#> #5: mtry = 2  trees = 400  rmse = 30.49  rmse_std_err = 2.18
+#> #6: mtry = 2  trees = 50   rmse = 30.51  rmse_std_err = 2.19
 #> 
 #> Working on combination with id 9 of 16.
 #> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 15.87  rmse_std_err = 1.85
-#> #2: mtry = 2  trees = 750  rmse = 16.18  rmse_std_err = 2.29
-#> #3: mtry = 2  trees = 50   rmse = 16.20  rmse_std_err = 2.47
-#> #4: mtry = 1  trees = 400  rmse = 16.22  rmse_std_err = 2.03
-#> #5: mtry = 2  trees = 400  rmse = 16.29  rmse_std_err = 2.31
-#> #6: mtry = 1  trees = 750  rmse = 16.31  rmse_std_err = 2.12
+#> #1: mtry = 1  trees = 750  rmse = 18.61  rmse_std_err = 1.56
+#> #2: mtry = 2  trees = 400  rmse = 18.63  rmse_std_err = 1.56
+#> #3: mtry = 1  trees = 400  rmse = 18.80  rmse_std_err = 1.55
+#> #4: mtry = 2  trees = 750  rmse = 19.00  rmse_std_err = 1.70
+#> #5: mtry = 1  trees = 50   rmse = 19.02  rmse_std_err = 1.86
+#> #6: mtry = 2  trees = 50   rmse = 19.50  rmse_std_err = 1.72
 #> 
 #> Working on combination with id 10 of 16.
 #> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 22.92  rmse_std_err = 1.76
-#> #2: mtry = 1  trees = 400  rmse = 23.21  rmse_std_err = 1.73
-#> #3: mtry = 1  trees = 50   rmse = 23.36  rmse_std_err = 1.79
-#> #4: mtry = 2  trees = 750  rmse = 23.80  rmse_std_err = 2.11
-#> #5: mtry = 2  trees = 400  rmse = 23.84  rmse_std_err = 2.11
-#> #6: mtry = 2  trees = 50   rmse = 23.99  rmse_std_err = 2.19
+#> #1: mtry = 1  trees = 400  rmse = 23.61  rmse_std_err = 1.61
+#> #2: mtry = 1  trees = 50   rmse = 23.72  rmse_std_err = 1.49
+#> #3: mtry = 1  trees = 750  rmse = 23.79  rmse_std_err = 1.64
+#> #4: mtry = 2  trees = 750  rmse = 23.86  rmse_std_err = 0.83
+#> #5: mtry = 2  trees = 400  rmse = 23.91  rmse_std_err = 0.80
+#> #6: mtry = 2  trees = 50   rmse = 24.74  rmse_std_err = 0.68
 #> 
 #> Working on combination with id 11 of 16.
 #> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 21.44  rmse_std_err = 4.30
-#> #2: mtry = 1  trees = 400  rmse = 21.89  rmse_std_err = 4.36
-#> #3: mtry = 1  trees = 750  rmse = 21.90  rmse_std_err = 4.38
-#> #4: mtry = 2  trees = 50   rmse = 23.49  rmse_std_err = 5.02
-#> #5: mtry = 2  trees = 400  rmse = 23.68  rmse_std_err = 5.37
-#> #6: mtry = 2  trees = 750  rmse = 23.80  rmse_std_err = 5.27
+#> #1: mtry = 1  trees = 400  rmse = 22.99  rmse_std_err = 4.29
+#> #2: mtry = 1  trees = 750  rmse = 23.08  rmse_std_err = 4.33
+#> #3: mtry = 1  trees = 50   rmse = 23.16  rmse_std_err = 4.28
+#> #4: mtry = 2  trees = 50   rmse = 23.80  rmse_std_err = 3.70
+#> #5: mtry = 2  trees = 400  rmse = 23.85  rmse_std_err = 3.72
+#> #6: mtry = 2  trees = 750  rmse = 24.07  rmse_std_err = 3.79
 #> 
 #> Working on combination with id 12 of 16.
 #> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 15.82  rmse_std_err = 3.66
-#> #2: mtry = 2  trees = 400  rmse = 15.85  rmse_std_err = 3.94
-#> #3: mtry = 1  trees = 400  rmse = 15.93  rmse_std_err = 3.81
-#> #4: mtry = 2  trees = 750  rmse = 15.95  rmse_std_err = 4.00
-#> #5: mtry = 1  trees = 50   rmse = 16.62  rmse_std_err = 3.95
-#> #6: mtry = 3  trees = 750  rmse = 16.85  rmse_std_err = 4.54
-#> #7: mtry = 3  trees = 400  rmse = 16.86  rmse_std_err = 4.64
-#> #8: mtry = 2  trees = 50   rmse = 16.93  rmse_std_err = 4.30
-#> #9: mtry = 3  trees = 50   rmse = 16.95  rmse_std_err = 4.40
+#> #1: mtry = 1  trees = 50   rmse = 16.86  rmse_std_err = 2.19
+#> #2: mtry = 1  trees = 400  rmse = 16.90  rmse_std_err = 1.83
+#> #3: mtry = 1  trees = 750  rmse = 16.91  rmse_std_err = 1.93
+#> #4: mtry = 2  trees = 50   rmse = 17.47  rmse_std_err = 1.47
+#> #5: mtry = 2  trees = 750  rmse = 17.53  rmse_std_err = 1.77
+#> #6: mtry = 2  trees = 400  rmse = 17.82  rmse_std_err = 1.67
+#> #7: mtry = 3  trees = 50   rmse = 18.03  rmse_std_err = 1.84
+#> #8: mtry = 3  trees = 750  rmse = 18.47  rmse_std_err = 1.91
+#> #9: mtry = 3  trees = 400  rmse = 18.49  rmse_std_err = 1.82
 #> 
 #> Working on combination with id 13 of 16.
 #> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 2  trees = 400  rmse = 18.85  rmse_std_err = 1.89
-#> #2: mtry = 1  trees = 400  rmse = 19.09  rmse_std_err = 1.84
-#> #3: mtry = 2  trees = 750  rmse = 19.24  rmse_std_err = 1.81
-#> #4: mtry = 1  trees = 750  rmse = 19.28  rmse_std_err = 1.79
-#> #5: mtry = 2  trees = 50   rmse = 19.82  rmse_std_err = 1.82
-#> #6: mtry = 3  trees = 750  rmse = 19.83  rmse_std_err = 1.79
-#> #7: mtry = 1  trees = 50   rmse = 19.94  rmse_std_err = 1.87
-#> #8: mtry = 3  trees = 400  rmse = 19.95  rmse_std_err = 1.77
-#> #9: mtry = 3  trees = 50   rmse = 20.04  rmse_std_err = 1.77
+#> #1: mtry = 1  trees = 50   rmse = 19.27  rmse_std_err = 2.13
+#> #2: mtry = 2  trees = 750  rmse = 19.80  rmse_std_err = 1.59
+#> #3: mtry = 1  trees = 750  rmse = 20.03  rmse_std_err = 1.95
+#> #4: mtry = 2  trees = 400  rmse = 20.21  rmse_std_err = 1.59
+#> #5: mtry = 3  trees = 50   rmse = 20.42  rmse_std_err = 1.64
+#> #6: mtry = 1  trees = 400  rmse = 20.49  rmse_std_err = 2.13
+#> #7: mtry = 2  trees = 50   rmse = 20.59  rmse_std_err = 1.26
+#> #8: mtry = 3  trees = 400  rmse = 20.61  rmse_std_err = 1.68
+#> #9: mtry = 3  trees = 750  rmse = 20.85  rmse_std_err = 1.74
 #> 
 #> Working on combination with id 14 of 16.
 #> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 1  trees = 400  rmse = 21.92  rmse_std_err = 3.24
-#> #2: mtry = 1  trees = 750  rmse = 21.93  rmse_std_err = 3.24
-#> #3: mtry = 1  trees = 50   rmse = 22.16  rmse_std_err = 3.10
-#> #4: mtry = 2  trees = 750  rmse = 22.22  rmse_std_err = 3.23
-#> #5: mtry = 2  trees = 400  rmse = 22.27  rmse_std_err = 3.22
-#> #6: mtry = 2  trees = 50   rmse = 22.42  rmse_std_err = 2.93
-#> #7: mtry = 3  trees = 750  rmse = 23.19  rmse_std_err = 3.16
-#> #8: mtry = 3  trees = 400  rmse = 23.38  rmse_std_err = 3.09
-#> #9: mtry = 3  trees = 50   rmse = 23.77  rmse_std_err = 3.15
+#> #1: mtry = 1  trees = 750  rmse = 21.96  rmse_std_err = 3.12
+#> #2: mtry = 1  trees = 400  rmse = 22.36  rmse_std_err = 2.96
+#> #3: mtry = 1  trees = 50   rmse = 22.53  rmse_std_err = 3.01
+#> #4: mtry = 2  trees = 750  rmse = 22.59  rmse_std_err = 2.53
+#> #5: mtry = 2  trees = 400  rmse = 22.76  rmse_std_err = 2.39
+#> #6: mtry = 2  trees = 50   rmse = 22.80  rmse_std_err = 2.41
+#> #7: mtry = 3  trees = 400  rmse = 23.19  rmse_std_err = 2.26
+#> #8: mtry = 3  trees = 750  rmse = 23.42  rmse_std_err = 2.07
+#> #9: mtry = 3  trees = 50   rmse = 23.69  rmse_std_err = 2.22
 #> 
 #> Working on combination with id 15 of 16.
 #> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 2  trees = 750  rmse = 17.43  rmse_std_err = 2.03
-#> #2: mtry = 2  trees = 400  rmse = 17.46  rmse_std_err = 2.02
-#> #3: mtry = 3  trees = 400  rmse = 17.52  rmse_std_err = 2.02
-#> #4: mtry = 1  trees = 50   rmse = 17.54  rmse_std_err = 1.97
-#> #5: mtry = 2  trees = 50   rmse = 17.58  rmse_std_err = 1.67
-#> #6: mtry = 1  trees = 750  rmse = 17.62  rmse_std_err = 2.22
-#> #7: mtry = 1  trees = 400  rmse = 17.65  rmse_std_err = 2.37
-#> #8: mtry = 3  trees = 750  rmse = 17.78  rmse_std_err = 1.99
-#> #9: mtry = 3  trees = 50   rmse = 17.80  rmse_std_err = 1.81
+#> #1: mtry = 1  trees = 400  rmse = 18.33  rmse_std_err = 2.07
+#> #2: mtry = 1  trees = 750  rmse = 18.59  rmse_std_err = 2.25
+#> #3: mtry = 2  trees = 750  rmse = 18.78  rmse_std_err = 1.59
+#> #4: mtry = 2  trees = 400  rmse = 18.81  rmse_std_err = 1.58
+#> #5: mtry = 3  trees = 50   rmse = 18.93  rmse_std_err = 1.53
+#> #6: mtry = 3  trees = 400  rmse = 19.11  rmse_std_err = 1.57
+#> #7: mtry = 3  trees = 750  rmse = 19.17  rmse_std_err = 1.71
+#> #8: mtry = 2  trees = 50   rmse = 19.18  rmse_std_err = 1.33
+#> #9: mtry = 1  trees = 50   rmse = 19.94  rmse_std_err = 2.02
 #> 
 ```
 
@@ -789,17 +788,17 @@ even though we do hyperparameter tuning, we are still overfitting the data.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv  Time
-#> MC_empirical       179.43  2.95
-#> sep_lm             745.21  0.90
-#> sep_pcr            784.91  1.24
-#> sep_splines        165.13  1.31
-#> sep_reicpe_example 687.45  1.72
-#> sep_tree_stump     218.05  1.13
-#> sep_tree_default   177.68  0.86
-#> sep_tree_cv        169.96 19.61
-#> sep_tree_cv_2      168.38 40.38
-#> sep_rf             210.99  1.51
-#> sep_rf_cv          206.03 36.33
+#> MC_empirical       179.43  2.60
+#> sep_lm             745.21  0.98
+#> sep_pcr            784.91  1.03
+#> sep_splines        165.13  1.25
+#> sep_reicpe_example 687.45  1.62
+#> sep_tree_stump     218.05  1.26
+#> sep_tree_default   177.68  0.94
+#> sep_tree_cv        169.96 18.88
+#> sep_tree_cv_2      166.17 41.62
+#> sep_rf             210.99  1.33
+#> sep_rf_cv          212.88 37.24
 ```
 
 
@@ -807,9 +806,10 @@ print_MSEv_scores_and_time(explanation_list)
 The separate regression models can be trained in parallel using the *future* package. This is easily done with the
 `shapr` package as explained in the main vignette, where also how to enabling progress bars are discussed.
 
-We use three methods here. The first method use default `xgboost` models, while the other two use cross-validation
-to tune the number of trees. The latter two specify the same potential hyperparameter values, but the first one is
-run sequentially while the second one is run in parallel to speed up the computations.
+We use four methods here. The first method use default `xgboost` models, while the remaining three use cross-validation
+to tune the number of trees. The second and third specify the same potential hyperparameter values, but the former is
+run sequentially while the latter is run in parallel to speed up the computations. The fourth model is run in
+parallel and also tune the depth of the trees and not only the number of trees.
 
 
 ```r
@@ -880,7 +880,7 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
 future::plan(future::sequential) # To return to non-parallel computation
 ```
 
-We can look at the elapsed time and we see that the parallel version is twice as fast as the sequential version.
+We can look at the elapsed time and we see that the parallel version is just as fast as the sequential version.
 Furthermore, we see that conducting the cross-validation has lowered the $\operatorname{MSE}_v$ criterion drastically.
 Also note that we obtain the same value no matter if we run the cross-validation in parallel or sequentially.
 
@@ -888,21 +888,21 @@ Also note that we obtain the same value no matter if we run the cross-validation
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  2.95
-#> sep_lm               745.21  0.90
-#> sep_pcr              784.91  1.24
-#> sep_splines          165.13  1.31
-#> sep_reicpe_example   687.45  1.72
-#> sep_tree_stump       218.05  1.13
-#> sep_tree_default     177.68  0.86
-#> sep_tree_cv          169.96 19.61
-#> sep_tree_cv_2        168.38 40.38
-#> sep_rf               210.99  1.51
-#> sep_rf_cv            206.03 36.33
-#> sep_xgboost          197.72  1.34
-#> sep_xgboost_cv       175.05 11.46
-#> sep_xgboost_cv_par   175.05  9.22
-#> sep_xgboost_cv_2_par 129.11 12.97
+#> MC_empirical         179.43  2.60
+#> sep_lm               745.21  0.98
+#> sep_pcr              784.91  1.03
+#> sep_splines          165.13  1.25
+#> sep_reicpe_example   687.45  1.62
+#> sep_tree_stump       218.05  1.26
+#> sep_tree_default     177.68  0.94
+#> sep_tree_cv          169.96 18.88
+#> sep_tree_cv_2        166.17 41.62
+#> sep_rf               210.99  1.33
+#> sep_rf_cv            212.88 37.24
+#> sep_xgboost          197.72  1.12
+#> sep_xgboost_cv       176.78 10.20
+#> sep_xgboost_cv_par   176.78 12.44
+#> sep_xgboost_cv_2_par 178.88 10.84
 ```
 
 
@@ -928,7 +928,7 @@ surrogate regression method class.
 ## Code {#surrogate_code}
 
 We illustrate the surrogate method class with several regression models. More specifically, we use linear regression,
-random forest (with and without (some) cross-validation), and xgboost (with and without (some) cross-validation).
+random forest (with and without (some) cross-validation), and `xgboost` (with and without (some) cross-validation).
 
 
 ```r
@@ -941,6 +941,39 @@ explanation_list$sur_lm <- explain(
   n_batches = 4,
   approach = "regression_surrogate",
   regression_model = parsnip::linear_reg()
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+
+# Using xgboost with default parameters as the surrogate model
+explanation_list$sur_xgboost <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+
+# Using xgboost with default parameters as the surrogate model
+explanation_list$sur_xgboost_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::boost_tree(
+    trees = hardhat::tune(),
+    tree_depth = hardhat::tune(),
+    engine = "xgboost",
+    mode = "regression"
+  ),
+  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression_vfold_cv_para = list(v = 5)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -978,67 +1011,165 @@ explanation_list$sur_rf_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+```
 
-# Using xgboost with default parameters as the surrogate model
-explanation_list$sur_xgboost <- explain(
+### Parallelization {#surrogate_parallelization}
+In the code chunk below, we show how we can train the surrogate regression method class in parallel.
+More precisely, the `tune` package in `tidymodels` uses the `foreach` package to facilitate parallel computations
+of the cross validation step in the in training step. That is, parallelization is not applicable for surrogate models
+where no hyperparameters are to be tuned. Furthermore, this means that we have to use another parallelization package
+then the one we used for the [separate regression method class](#separate_parallelization).
+
+Note that `tidymodels` support several backends to
+[parallelizing computations](https://www.tmwr.org/resampling#parallel) and in the example below,
+we illustrate several of them. Note that we are training the same model as above, but the CV procedure is now
+run in parallel using different parallelization packages, that is, we obtain the same $\operatorname{MSE}_v$ score,
+but faster. 
+
+We demonstrate how to use the `doMC` (only Unix and macOS)
+and `doParallel` (all operating systems) packages. We also demonstrate that we can combine `doMC` with `future`
+to parallelize both the training step and the prediction step, respectively. This does not necessarily speed
+up the computations further, as it is the training step that is computationally expensive and initializing
+two parallelization steps leads to computational overhead.
+
+
+```r
+# Using the `doMC` package. Only for Unix and macOS
+library(doMC)
+doMC::registerDoMC(cores = 4)
+explanation_list$sur_rf_cv_par_doMC <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
-)
-#> Note: Feature classes extracted from the model contains NA.
-#> Assuming feature classes from the data are correct.
-
-# Using xgboost with default parameters as the surrogate model
-explanation_list$sur_xgboost_cv <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  prediction_zero = p0,
-  n_batches = 4,
-  approach = "regression_surrogate",
-  regression_model = parsnip::boost_tree(
-    trees = hardhat::tune(),
-    tree_depth = hardhat::tune(),
-    engine = "xgboost",
-    mode = "regression"
+  regression_model = parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression_tune_values = dials::grid_regular(
+    dials::mtry(c(1, ncol(x_explain))),
+    dials::trees(c(50, 750)),
+    levels = 4
+  ),
   regression_vfold_cv_para = list(v = 5)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+foreach::registerDoSEQ() # To return to non-parallel computation
+
+# See that we get the same explanations
+all.equal(
+  explanation_list$sur_rf_cv$shapley_values,
+  explanation_list$sur_rf_cv_par_doMC$shapley_values
+)
+#> [1] TRUE
+
+# Combine the parallelization
+doMC::registerDoMC(cores = 4)
+future::plan(future::multisession, workers = 4)
+explanation_list$sur_rf_cv_par_doMC_future <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  verbose = 2,
+  approach = "regression_surrogate",
+  regression_model = parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
+  ),
+  regression_tune_values = dials::grid_regular(
+    dials::mtry(c(1, ncol(x_explain))),
+    dials::trees(c(50, 750)),
+    levels = 4
+  ),
+  regression_vfold_cv_para = list(v = 5)
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+future::plan(future::sequential) # To return to non-parallel computation
+foreach::registerDoSEQ()
+
+# See that we get the same explanations
+all.equal(
+  explanation_list$sur_rf_cv$shapley_values,
+  explanation_list$sur_rf_cv_par_doMC_future$shapley_values
+)
+#> [1] TRUE
+
+# Using the `doParallel` package, which run on all operating systems
+library(doParallel) #
+cl <- makePSOCKcluster(4)
+registerDoParallel(cl)
+explanation_list$sur_rf_cv_par_doParallel <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  verbose = 2,
+  approach = "regression_surrogate",
+  regression_model = parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
+  ),
+  regression_tune_values = dials::grid_regular(
+    dials::mtry(c(1, ncol(x_explain))),
+    dials::trees(c(50, 750)),
+    levels = 4
+  ),
+  regression_vfold_cv_para = list(v = 5)
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+
+# Stop cluster and remove object that makes `shapr` crash
+stopCluster(cl)
+env <- foreach:::.foreachGlobals
+rm(list = ls(name = env), pos = env)
+
+# See that we get the same explanations
+all.equal(
+  explanation_list$sur_rf_cv$shapley_values,
+  explanation_list$sur_rf_cv_par_doParallel$shapley_values
+)
+#> [1] TRUE
 ```
 
-We then look at the  $\operatorname{MSE}_v$ evaluation criterion and the elapsed time. We see that the surrogate methods (except the linear regression model) outperforms `empirical`, but the are not on the same level as the best separate regression methods.
+
+We then look at the $\operatorname{MSE}_v$ evaluation criterion and the elapsed time.
+We see that the surrogate methods (except the linear regression model) outperforms `empirical`,
+but the are not on the same level as the best separate regression methods. Furthermore, we see that
+using parallelization (4 cores) significantly decreased the elapsed time while still obtaining the same
+$\operatorname{MSE}_v$ score. Parallelizing both the training and prediction steps was slower.
 
 ```r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
-#>                        MSEv  Time
-#> MC_empirical         179.43  2.95
-#> sep_lm               745.21  0.90
-#> sep_pcr              784.91  1.24
-#> sep_splines          165.13  1.31
-#> sep_reicpe_example   687.45  1.72
-#> sep_tree_stump       218.05  1.13
-#> sep_tree_default     177.68  0.86
-#> sep_tree_cv          169.96 19.61
-#> sep_tree_cv_2        168.38 40.38
-#> sep_rf               210.99  1.51
-#> sep_rf_cv            206.03 36.33
-#> sep_xgboost          197.72  1.34
-#> sep_xgboost_cv       175.05 11.46
-#> sep_xgboost_cv_par   175.05  9.22
-#> sep_xgboost_cv_2_par 129.11 12.97
-#> sur_lm               649.61  0.67
-#> sur_rf               195.10  0.72
-#> sur_rf_cv            173.74 21.04
-#> sur_xgboost          169.92  0.33
-#> sur_xgboost_cv       169.87  2.51
+#>                             MSEv  Time
+#> MC_empirical              179.43  2.60
+#> sep_lm                    745.21  0.98
+#> sep_pcr                   784.91  1.03
+#> sep_splines               165.13  1.25
+#> sep_reicpe_example        687.45  1.62
+#> sep_tree_stump            218.05  1.26
+#> sep_tree_default          177.68  0.94
+#> sep_tree_cv               169.96 18.88
+#> sep_tree_cv_2             166.17 41.62
+#> sep_rf                    210.99  1.33
+#> sep_rf_cv                 212.88 37.24
+#> sep_xgboost               197.72  1.12
+#> sep_xgboost_cv            176.78 10.20
+#> sep_xgboost_cv_par        176.78 12.44
+#> sep_xgboost_cv_2_par      178.88 10.84
+#> sur_lm                    649.61  0.52
+#> sur_xgboost               169.92  0.38
+#> sur_xgboost_cv            169.87  2.51
+#> sur_rf                    195.10  0.58
+#> sur_rf_cv                 173.22 18.83
+#> sur_rf_cv_par_doMC        173.22 10.55
+#> sur_rf_cv_par_doMC_future 173.22 23.61
+#> sur_rf_cv_par_doParallel  173.22 11.93
 
 # Compare the MSEv criterion of the different explanation methods.
 # Include vertical line corresponding to the MSEv of the empirical method.
@@ -1046,6 +1177,12 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
 ![](figure_regression/surrogate-plot-1.png)
+
+```r
+# Remove the latter two parlallized versions from the explanation list
+explanation_list$sur_rf_cv_par_doMC_future <- NULL
+explanation_list$sur_rf_cv_par_doParallel <- NULL
+```
 
 
 # Add new regression methods {#new}
@@ -1246,30 +1383,31 @@ but also increase the running time.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  2.95
-#> sep_lm               745.21  0.90
-#> sep_pcr              784.91  1.24
-#> sep_splines          165.13  1.31
-#> sep_reicpe_example   687.45  1.72
-#> sep_tree_stump       218.05  1.13
-#> sep_tree_default     177.68  0.86
-#> sep_tree_cv          169.96 19.61
-#> sep_tree_cv_2        168.38 40.38
-#> sep_rf               210.99  1.51
-#> sep_rf_cv            206.03 36.33
-#> sep_xgboost          197.72  1.34
-#> sep_xgboost_cv       175.05 11.46
-#> sep_xgboost_cv_par   175.05  9.22
-#> sep_xgboost_cv_2_par 129.11 12.97
-#> sur_lm               649.61  0.67
-#> sur_rf               195.10  0.72
-#> sur_rf_cv            173.74 21.04
-#> sur_xgboost          169.92  0.33
+#> MC_empirical         179.43  2.60
+#> sep_lm               745.21  0.98
+#> sep_pcr              784.91  1.03
+#> sep_splines          165.13  1.25
+#> sep_reicpe_example   687.45  1.62
+#> sep_tree_stump       218.05  1.26
+#> sep_tree_default     177.68  0.94
+#> sep_tree_cv          169.96 18.88
+#> sep_tree_cv_2        166.17 41.62
+#> sep_rf               210.99  1.33
+#> sep_rf_cv            212.88 37.24
+#> sep_xgboost          197.72  1.12
+#> sep_xgboost_cv       176.78 10.20
+#> sep_xgboost_cv_par   176.78 12.44
+#> sep_xgboost_cv_2_par 178.88 10.84
+#> sur_lm               649.61  0.52
+#> sur_xgboost          169.92  0.38
 #> sur_xgboost_cv       169.87  2.51
-#> sep_ppr              327.23  1.26
-#> sep_ppr_cv           249.87 27.25
-#> sur_ppr              395.42  0.29
-#> sur_ppr_cv           334.61  3.58
+#> sur_rf               195.10  0.58
+#> sur_rf_cv            173.22 18.83
+#> sur_rf_cv_par_doMC   173.22 10.55
+#> sep_ppr              327.23  1.07
+#> sep_ppr_cv           241.29 25.68
+#> sur_ppr              395.42  0.31
+#> sur_ppr_cv           334.61  3.39
 
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
@@ -1368,35 +1506,36 @@ regression methods with the Monte Carlo based methods.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_independence      206.92  0.56
-#> MC_empirical         179.43  2.73
-#> MC_gaussian          245.19  0.45
-#> MC_copula            247.29  0.52
-#> MC_ctree             191.82  1.66
-#> MC_vaeac             141.88 69.10
-#> sep_lm               745.21  0.90
-#> sep_pcr              784.91  1.24
-#> sep_splines          165.13  1.31
-#> sep_reicpe_example   687.45  1.72
-#> sep_tree_stump       218.05  1.13
-#> sep_tree_default     177.68  0.86
-#> sep_tree_cv          169.96 19.61
-#> sep_tree_cv_2        168.38 40.38
-#> sep_rf               210.99  1.51
-#> sep_rf_cv            206.03 36.33
-#> sep_xgboost          197.72  1.34
-#> sep_xgboost_cv       175.05 11.46
-#> sep_xgboost_cv_par   175.05  9.22
-#> sep_xgboost_cv_2_par 129.11 12.97
-#> sur_lm               649.61  0.67
-#> sur_rf               195.10  0.72
-#> sur_rf_cv            173.74 21.04
-#> sur_xgboost          169.92  0.33
+#> MC_independence      206.92  0.52
+#> MC_empirical         179.43  2.61
+#> MC_gaussian          245.19  0.44
+#> MC_copula            247.29  0.45
+#> MC_ctree             191.82  1.62
+#> MC_vaeac             141.88 68.30
+#> sep_lm               745.21  0.98
+#> sep_pcr              784.91  1.03
+#> sep_splines          165.13  1.25
+#> sep_reicpe_example   687.45  1.62
+#> sep_tree_stump       218.05  1.26
+#> sep_tree_default     177.68  0.94
+#> sep_tree_cv          169.96 18.88
+#> sep_tree_cv_2        166.17 41.62
+#> sep_rf               210.99  1.33
+#> sep_rf_cv            212.88 37.24
+#> sep_xgboost          197.72  1.12
+#> sep_xgboost_cv       176.78 10.20
+#> sep_xgboost_cv_par   176.78 12.44
+#> sep_xgboost_cv_2_par 178.88 10.84
+#> sur_lm               649.61  0.52
+#> sur_xgboost          169.92  0.38
 #> sur_xgboost_cv       169.87  2.51
-#> sep_ppr              327.23  1.26
-#> sep_ppr_cv           249.87 27.25
-#> sur_ppr              395.42  0.29
-#> sur_ppr_cv           334.61  3.58
+#> sur_rf               195.10  0.58
+#> sur_rf_cv            173.22 18.83
+#> sur_rf_cv_par_doMC   173.22 10.55
+#> sep_ppr              327.23  1.07
+#> sep_ppr_cv           241.29 25.68
+#> sur_ppr              395.42  0.31
+#> sur_ppr_cv           334.61  3.39
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
@@ -1789,25 +1928,25 @@ based methods outperform the Monte Carlo-based methods.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list_mixed)
 #>                   MSEv   Time
-#> MC_independence 641.82   0.57
-#> MC_ctree        554.50   2.71
-#> MC_vaeac_50     629.43 146.42
-#> sep_lm          550.06   1.22
-#> sep_splines     541.36   1.44
-#> sep_tree        753.84   1.01
-#> sep_tree_cv     756.27  43.19
-#> sep_rf          521.79   1.28
-#> sep_rf_cv       611.22  48.15
-#> sep_xgboost     792.17   1.10
-#> sep_xgboost_cv  591.50  25.34
-#> sur_lm          610.61   0.43
-#> sur_splines     596.86   0.40
-#> sur_tree        677.04   0.60
-#> sur_tree_cv     789.37   3.60
-#> sur_rf          414.15   0.53
-#> sur_rf_cv       512.43  13.82
-#> sur_xgboost     606.92   0.35
-#> sur_xgboost_cv  429.06   2.56
+#> MC_independence 641.82   0.68
+#> MC_ctree        554.50   1.84
+#> MC_vaeac_50     629.43 164.14
+#> sep_lm          550.06   1.11
+#> sep_splines     541.36   1.17
+#> sep_tree        753.84   0.86
+#> sep_tree_cv     756.27  38.01
+#> sep_rf          521.79   1.15
+#> sep_rf_cv       609.58  48.23
+#> sep_xgboost     792.17   1.53
+#> sep_xgboost_cv  595.98  24.59
+#> sur_lm          610.61   0.34
+#> sur_splines     596.86   0.41
+#> sur_tree        677.04   0.32
+#> sur_tree_cv     789.37   2.99
+#> sur_rf          414.15   0.55
+#> sur_rf_cv       533.06  14.15
+#> sur_xgboost     606.92   0.31
+#> sur_xgboost_cv  429.06   2.33
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
@@ -1847,4 +1986,3 @@ plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicand
 ```
 
 ![](figure_regression/mixed-plot-4-1.png)
-

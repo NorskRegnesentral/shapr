@@ -127,13 +127,13 @@ First we setup the `airquality` dataset, train the `xgboost` model, and introduc
 we use later in the vignette to print and plot the results.
 ```{r setup, message=FALSE, cache = TRUE}
 # Either use library(tidymodels) or separately specify the libraries
-library(parsnip) 
-library(ggplot2) 
+library(parsnip)
+library(ggplot2)
 library(recipes)
 library(workflows)
 library(dials)
-library(hardhat) 
-library(workflows) 
+library(hardhat)
+library(workflows)
 library(tibble)
 library(rlang)
 
@@ -222,7 +222,7 @@ explanation_list$MC_empirical <- explain(
 ```
 
 In the setup above, we directly used the `xgboost` package to fit the `xgboost` model. However, we can also
-specify the model using the `tidymodels` package to fit the `xgboost` model. 
+specify the model using the `tidymodels` package to fit the `xgboost` model.
 We obtain identical fits as `tidymodels` calls `xgboost` internally. We demonstrate that in the example below.
 This is not restricted to `xgboost` as `shapr` supports any fitted `tidymodels` models via the `workflows`
 procedure outlined below.
@@ -260,7 +260,7 @@ all.equal(
 )
 
 # Remove the tidymodels version from the explanation list
-explanation_list$MC_empirical_tidymodels = NULL
+explanation_list$MC_empirical_tidymodels <- NULL
 ```
 
 
@@ -454,7 +454,6 @@ as the empirical approach. By using stumps, i.e., trees with depth one, we obtai
 ```{r decision-tree-plot, cache=TRUE}
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
-
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 ```
@@ -606,9 +605,10 @@ print_MSEv_scores_and_time(explanation_list)
 The separate regression models can be trained in parallel using the *future* package. This is easily done with the
 `shapr` package as explained in the main vignette, where also how to enabling progress bars are discussed.
 
-We use three methods here. The first method use default `xgboost` models, while the other two use cross-validation
-to tune the number of trees. The latter two specify the same potential hyperparameter values, but the first one is
-run sequentially while the second one is run in parallel to speed up the computations.
+We use four methods here. The first method use default `xgboost` models, while the remaining three use cross-validation
+to tune the number of trees. The second and third specify the same potential hyperparameter values, but the former is
+run sequentially while the latter is run in parallel to speed up the computations. The fourth model is run in
+parallel and also tune the depth of the trees and not only the number of trees.
 
 ```{r xgboost, cache=TRUE}
 # Regular xgboost with default parameters
@@ -670,7 +670,7 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
 future::plan(future::sequential) # To return to non-parallel computation
 ```
 
-We can look at the elapsed time and we see that the parallel version is twice as fast as the sequential version.
+We can look at the elapsed time and we see that the parallel version is just as fast as the sequential version.
 Furthermore, we see that conducting the cross-validation has lowered the $\operatorname{MSE}_v$ criterion drastically.
 Also note that we obtain the same value no matter if we run the cross-validation in parallel or sequentially.
 ```{r xgboost-print, cache=TRUE}
@@ -701,7 +701,7 @@ surrogate regression method class.
 ## Code {#surrogate_code}
 
 We illustrate the surrogate method class with several regression models. More specifically, we use linear regression,
-random forest (with and without (some) cross-validation), and xgboost (with and without (some) cross-validation).
+random forest (with and without (some) cross-validation), and `xgboost` (with and without (some) cross-validation).
 
 ```{r surrogate, cache=TRUE}
 # Compute the Shapley value explanations using a surrogate linear regression model
@@ -713,6 +713,35 @@ explanation_list$sur_lm <- explain(
   n_batches = 4,
   approach = "regression_surrogate",
   regression_model = parsnip::linear_reg()
+)
+
+# Using xgboost with default parameters as the surrogate model
+explanation_list$sur_xgboost <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
+)
+
+# Using xgboost with default parameters as the surrogate model
+explanation_list$sur_xgboost_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::boost_tree(
+    trees = hardhat::tune(),
+    tree_depth = hardhat::tune(),
+    engine = "xgboost",
+    mode = "regression"
+  ),
+  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression_vfold_cv_para = list(v = 5)
 )
 
 # Using random forest with default parameters as the surrogate model
@@ -744,38 +773,125 @@ explanation_list$sur_rf_cv <- explain(
   ),
   regression_vfold_cv_para = list(v = 5)
 )
+```
 
-# Using xgboost with default parameters as the surrogate model
-explanation_list$sur_xgboost <- explain(
+### Parallelization {#surrogate_parallelization}
+In the code chunk below, we show how we can train the surrogate regression method class in parallel.
+More precisely, the `tune` package in `tidymodels` uses the `foreach` package to facilitate parallel computations
+of the cross validation step in the in training step. That is, parallelization is not applicable for surrogate models
+where no hyperparameters are to be tuned. Furthermore, this means that we have to use another parallelization package
+then the one we used for the [separate regression method class](#separate_parallelization).
+
+Note that `tidymodels` support several backends to
+[parallelizing computations](https://www.tmwr.org/resampling#parallel) and in the example below,
+we illustrate several of them. Note that we are training the same model as above, but the CV procedure is now
+run in parallel using different parallelization packages, that is, we obtain the same $\operatorname{MSE}_v$ score,
+but faster.
+
+We demonstrate how to use the `doMC` (only Unix and macOS)
+and `doParallel` (all operating systems) packages. We also demonstrate that we can combine `doMC` with `future`
+to parallelize both the training step and the prediction step, respectively. This does not necessarily speed
+up the computations further, as it is the training step that is computationally expensive and initializing
+two parallelization steps leads to computational overhead.
+
+```{r surrogate-cv-par, cache=TRUE}
+# Using the `doMC` package. Only for Unix and macOS
+library(doMC)
+doMC::registerDoMC(cores = 4)
+explanation_list$sur_rf_cv_par_doMC <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
+  regression_model = parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
+  ),
+  regression_tune_values = dials::grid_regular(
+    dials::mtry(c(1, ncol(x_explain))),
+    dials::trees(c(50, 750)),
+    levels = 4
+  ),
+  regression_vfold_cv_para = list(v = 5)
+)
+foreach::registerDoSEQ() # To return to non-parallel computation
+
+# See that we get the same explanations
+all.equal(
+  explanation_list$sur_rf_cv$shapley_values,
+  explanation_list$sur_rf_cv_par_doMC$shapley_values
 )
 
-# Using xgboost with default parameters as the surrogate model
-explanation_list$sur_xgboost_cv <- explain(
+# Combine the parallelization
+doMC::registerDoMC(cores = 4)
+future::plan(future::multisession, workers = 4)
+explanation_list$sur_rf_cv_par_doMC_future <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::boost_tree(
-    trees = hardhat::tune(),
-    tree_depth = hardhat::tune(),
-    engine = "xgboost",
-    mode = "regression"
+  regression_model = parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression_tune_values = dials::grid_regular(
+    dials::mtry(c(1, ncol(x_explain))),
+    dials::trees(c(50, 750)),
+    levels = 4
+  ),
   regression_vfold_cv_para = list(v = 5)
+)
+future::plan(future::sequential) # To return to non-parallel computation
+foreach::registerDoSEQ()
+
+# See that we get the same explanations
+all.equal(
+  explanation_list$sur_rf_cv$shapley_values,
+  explanation_list$sur_rf_cv_par_doMC_future$shapley_values
+)
+
+# Using the `doParallel` package, which run on all operating systems
+library(doParallel) #
+cl <- makePSOCKcluster(4)
+registerDoParallel(cl)
+explanation_list$sur_rf_cv_par_doParallel <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression_model = parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
+  ),
+  regression_tune_values = dials::grid_regular(
+    dials::mtry(c(1, ncol(x_explain))),
+    dials::trees(c(50, 750)),
+    levels = 4
+  ),
+  regression_vfold_cv_para = list(v = 5)
+)
+
+# Stop cluster and remove object that makes `shapr` crash
+stopCluster(cl)
+env <- foreach:::.foreachGlobals
+rm(list = ls(name = env), pos = env)
+
+# See that we get the same explanations
+all.equal(
+  explanation_list$sur_rf_cv$shapley_values,
+  explanation_list$sur_rf_cv_par_doParallel$shapley_values
 )
 ```
 
-We then look at the  $\operatorname{MSE}_v$ evaluation criterion and the elapsed time. We see that the surrogate methods (except the linear regression model) outperforms `empirical`, but the are not on the same level as the best separate regression methods.
+
+We then look at the $\operatorname{MSE}_v$ evaluation criterion and the elapsed time.
+We see that the surrogate methods (except the linear regression model) outperforms `empirical`,
+but the are not on the same level as the best separate regression methods. Furthermore, we see that
+using parallelization (4 cores) significantly decreased the elapsed time while still obtaining the same
+$\operatorname{MSE}_v$ score. Parallelizing both the training and prediction steps was slower.
 ```{r surrogate-plot, cache=TRUE}
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
@@ -783,6 +899,9 @@ print_MSEv_scores_and_time(explanation_list)
 # Compare the MSEv criterion of the different explanation methods.
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+# Remove the latter two parlallized versions from the explanation list
+explanation_list$sur_rf_cv_par_doMC_future <- NULL
+explanation_list$sur_rf_cv_par_doParallel <- NULL
 ```
 
 
@@ -1444,4 +1563,3 @@ best_methods <- get_k_best_methods(explanation_list_mixed, k = 5)
 if (!"MC_ctree" %in% best_methods) best_methods <- c(best_methods, "MC_ctree")
 plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicands = 1:4)
 ```
-
