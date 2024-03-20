@@ -276,9 +276,7 @@ explain <- function(model,
                     verbose = 0,
                     ...) { # ... is further arguments passed to specific approaches
 
-  timing_list <- list(
-    init_time = Sys.time()
-  )
+  timing_list <- list(init_time = Sys.time())
 
   set.seed(seed)
 
@@ -309,10 +307,7 @@ explain <- function(model,
   timing_list$setup <- Sys.time()
 
   # Gets predict_model (if not passed to explain)
-  predict_model <- get_predict_model(
-    predict_model = predict_model,
-    model = model
-  )
+  predict_model <- get_predict_model(predict_model = predict_model, model = model)
 
   # Checks that predict_model gives correct format
   test_predict_model(
@@ -332,7 +327,6 @@ explain <- function(model,
 
   timing_list$setup_computation <- Sys.time()
 
-
   # Compute the v(S):
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
@@ -341,19 +335,13 @@ explain <- function(model,
 
   timing_list$compute_vS <- Sys.time()
 
-
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
-  output <- finalize_explanation(
-    vS_list = vS_list,
-    internal = internal
-  )
+  output <- finalize_explanation(vS_list = vS_list, internal = internal)
 
   timing_list$shapley_computation <- Sys.time()
 
-  if (timing == TRUE) {
-    output$timing <- compute_time(timing_list)
-  }
+  if (timing == TRUE) output$timing <- compute_time(timing_list)
 
   # Temporary to avoid failing tests
   output <- remove_outputs_to_pass_tests(output)
@@ -375,6 +363,9 @@ remove_outputs_to_pass_tests <- function(output) {
     output$internal$parameters$vaeac.extra_parameters[c("vaeac.folder_to_save_model", "vaeac.model_description")] <-
       NULL
   }
+
+  # Remove the `regression` parameter from the output list when we are not doing regression
+  if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
 
   return(output)
 }

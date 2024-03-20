@@ -11,24 +11,13 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   S_batch <- internal$objects$S_batch
 
   if (method == "future") {
-    ret <- future_compute_vS_batch(
-      S_batch = S_batch,
-      internal = internal,
-      model = model,
-      predict_model = predict_model
-    )
+    ret <- future_compute_vS_batch(S_batch = S_batch, internal = internal, model = model, predict_model = predict_model)
   } else {
     # Doing the same as above without future without progressbar or paralellization
     ret <- list()
     for (i in seq_along(S_batch)) {
       S <- S_batch[[i]]
-
-      ret[[i]] <- batch_compute_vS(
-        S = S,
-        internal = internal,
-        model = model,
-        predict_model = predict_model
-      )
+      ret[[i]] <- batch_compute_vS(S = S, internal = internal, model = model, predict_model = predict_model)
     }
   }
 
@@ -36,12 +25,7 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
 }
 
 future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
-  if (requireNamespace("progressr", quietly = TRUE)) {
-    p <- progressr::progressor(sum(lengths(S_batch)))
-  } else {
-    p <- NULL
-  }
-
+  p <- if (requireNamespace("progressr", quietly = TRUE)) progressr::progressor(sum(lengths(S_batch))) else NULL
   ret <- future.apply::future_lapply(
     X = S_batch,
     FUN = batch_compute_vS,
@@ -67,33 +51,37 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   explain_lags <- internal$parameters$explain_lags
   y <- internal$data$y
   xreg <- internal$data$xreg
+  regression <- internal$parameters$regression
 
-  dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
+  if (regression) { # We are using regression to compute the contribution function values
+    dt_vS <- batch_prepare_vS_regression(S = S, internal = internal)
+  } else { # We are using Monte Carlo integration to compute the contribution function values
+    dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
-  pred_cols <- paste0("p_hat", seq_len(output_size))
+    pred_cols <- paste0("p_hat", seq_len(output_size))
 
-  compute_preds(
-    dt, # Updating dt by reference
-    feature_names = feature_names,
-    predict_model = predict_model,
-    model = model,
-    pred_cols = pred_cols,
-    type = type,
-    horizon = horizon,
-    n_endo = n_endo,
-    explain_idx = explain_idx,
-    explain_lags = explain_lags,
-    y = y,
-    xreg = xreg
-  )
-  dt_vS <- compute_MCint(dt, pred_cols)
-  if (!is.null(p)) {
-    p(
-      amount = length(S),
-      message = "Estimating v(S)"
-    ) # TODO: Add a message to state what batch has been computed
+    compute_preds(
+      dt, # Updating dt by reference
+      feature_names = feature_names,
+      predict_model = predict_model,
+      model = model,
+      pred_cols = pred_cols,
+      type = type,
+      horizon = horizon,
+      n_endo = n_endo,
+      explain_idx = explain_idx,
+      explain_lags = explain_lags,
+      y = y,
+      xreg = xreg
+    )
+    dt_vS <- compute_MCint(dt, pred_cols)
   }
 
+  # Update the progress bar if provided
+  # TODO: Add a message to state what batch has been computed
+  if (!is.null(p)) p(amount = length(S), message = "Estimating v(S)")
+
+  # keep_samp_for_vS will always be FALSE for the regression approach
   if (keep_samp_for_vS) {
     return(list(dt_vS = dt_vS, dt_samp_for_vS = dt))
   } else {
@@ -124,6 +112,32 @@ batch_prepare_vS <- function(S, internal) {
     dt <- rbind(dt, dt_max)
     setkey(dt, id, id_combination)
   }
+  return(dt)
+}
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+batch_prepare_vS_regression <- function(S, internal) {
+  max_id_comb <- internal$parameters$n_combinations
+  x_explain_y_hat <- internal$data$x_explain_y_hat
+
+  # Compute the contribution functions different based on if the grand coalition is in S or not
+  if (!(max_id_comb %in% S)) {
+    dt <- prepare_data(internal, index_features = S)
+  } else {
+    # Remove the grand coalition. NULL is for the special case for when the batch only includes the grand coalition.
+    dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_comb]) else NULL
+
+    # Add the results for the grand coalition (Need to add names in case the batch only contains the grand coalition)
+    dt <- rbind(dt, data.table(as.integer(max_id_comb), matrix(x_explain_y_hat, nrow = 1)), use.names = FALSE)
+
+    # Need to add column names if batch S only contains the grand coalition
+    if (length(S) == 1) setnames(dt, c("id_combination", paste0("p_hat1_", seq_len(internal$parameters$n_explain))))
+  }
+
+  # Set id_combination to be the key
+  setkey(dt, id_combination)
+
   return(dt)
 }
 

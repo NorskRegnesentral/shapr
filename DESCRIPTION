@@ -57,7 +57,16 @@ Suggests:
     torch,
     GGally,
     progress,
-    coro
+    coro,
+    parsnip,
+    recipes,
+    workflows,
+    tune,
+    dials,
+    yardstick,
+    hardhat,
+    rsample,
+    rlang
 LinkingTo: 
     RcppArmadillo,
     Rcpp

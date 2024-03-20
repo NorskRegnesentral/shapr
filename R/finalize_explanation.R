@@ -7,7 +7,6 @@
 #'
 #' @export
 finalize_explanation <- function(vS_list, internal) {
-  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
   MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
 
   processed_vS_list <- postprocess_vS_list(
