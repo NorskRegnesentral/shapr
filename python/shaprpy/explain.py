@@ -37,7 +37,7 @@ def explain(
     keep_samp_for_vS: bool = False,
     predict_model: Callable = None,
     get_model_specs: Callable = None,
-    
+    MSEv_uniform_comb_weights: bool = True,
     timing: bool = True,
   ):
     '''Explain the output of machine learning models with more accurately estimated Shapley values.
@@ -136,6 +136,7 @@ def explain(
         seed = seed,
         keep_samp_for_vS = keep_samp_for_vS,
         feature_specs = rfeature_specs,
+        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
         timing = timing,
         is_python=True,
     )
