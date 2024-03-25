@@ -107,7 +107,8 @@ def explain(
     dict
       A dictionary of elapsed time information if `timing` is set to `True`.
     dict
-      A dictionary of the MSEv evaluation criterion scores.
+      A dictionary of the MSEv evaluation criterion scores: averaged over both the explicands and coalitions,
+      only over the explicands, and only over the coalitions.
     '''
 
     timing_list = {
