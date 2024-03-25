@@ -15,10 +15,6 @@ utils = importr('utils')
 base = importr('base')
 
 
-
-
-
-
 def maybe_null(val):
   return val if val is not None else NULL
 
@@ -38,6 +34,7 @@ def explain(
     predict_model: Callable = None,
     get_model_specs: Callable = None,
     timing: bool = True,
+    verbose: int | None = 0,
   ):
     '''Explain the output of machine learning models with more accurately estimated Shapley values.
 
@@ -49,7 +46,7 @@ def explain(
     model: The model whose predictions we want to explain. 
       `shaprpy` natively supports `sklearn`, `xgboost` and `keras` models.
       Unsupported models can still be explained by passing `predict_model` and (optionally) `get_model_specs`.
-    x_explain: Contains the the features, whose predictions ought to be explained.
+    x_explain: Contains the features whose predictions ought to be explained.
     x_train: Contains the data used to estimate the (conditional) distributions for the features
       needed to properly estimate the conditional expectations in the Shapley formula.
     approach: str or list[str] of length `n_features`.
@@ -89,7 +86,9 @@ def explain(
       If `None` (the default) internal functions are used for natively supported model classes, and the checking is
       disabled for unsupported model classes.
       Can also be used to override the default function for natively supported model classes.
-    timing: Indicates whether timing of the different parts of the explain call shoudl be saved and return.
+    timing: Indicates whether the timing of the different parts of the explain call should be saved and returned.
+    verbose:  An integer specifying the level of verbosity. If `0` (default), `shapr` will stay silent.
+      If `1`, it will print information about performance. If `2`, some additional information will be printed out.
 
     Returns
     -------
@@ -128,6 +127,7 @@ def explain(
         keep_samp_for_vS = keep_samp_for_vS,
         feature_specs = rfeature_specs,
         timing = timing,
+        verbose = verbose,
         is_python=True,
     )
 
