@@ -552,7 +552,8 @@ shapley_reweighting <- function(XX,strategy = "on_N"){
 # to the one we need for that specific sample, and then use that in the kernelshap computations
 # in the end
 
-n_combinations_vec <- c(50,100,200,400,800,1600,3200,6400)
+
+n_combinations_vec <- c(50,100,200,400,800,1600,3200,6400)[1:5]
 res_list <- list()
 paired_sampling_vec <- c(TRUE,FALSE)[1]
 unique_sampling <- FALSE
@@ -659,6 +660,7 @@ for(aa in seq_along(n_combinations_vec)){
 
 
 dt_kshap_sim_all <- dt_sdkshap_sim_all <- NULL
+dt_kshap_full <- res_list[[1]]$dt_kshap_full
 
 for(aa in seq_along(n_combinations_vec)){
   dt_kshap_sim_all <- rbind(dt_kshap_sim_all,res_list[[aa]]$dt_kshap_sim)

@@ -118,12 +118,25 @@ estimation_reps <- 100
 shapley_reweighting_strategy_vec <- c("none","on_N","on_n_features","on_all")
 
 
+
 res_list_paired <- readRDS("res_list_10_features_8_with_paired_sampling.rds")
 res_list_unpaired <- readRDS("res_list_10_features_8.rds")
 
 dt_kshap_full <- res_list_paired[[1]]$dt_kshap_full
 
+# First the paired list
+
+# Fixing coding error when running the paired stuff
+for(aa in seq_along(n_combinations_vec)){
+
+  res_list_paired[[aa]]$dt_sdkshap_sim[sd_type=="boot_paired",sd_type:="boot_paired0"]
+  res_list_paired[[aa]]$dt_sdkshap_sim[sd_type=="boot_unpaired",sd_type:="boot_paired"]
+  res_list_paired[[aa]]$dt_sdkshap_sim[sd_type=="boot_paired0",sd_type:="boot_unpaired"]
+}
+
 res_list <- res_list_paired
+
+
 
 resres_list <- list()
 for(aa in seq_along(n_combinations_vec)){
@@ -316,6 +329,7 @@ sd_est_RMSE_paired <- rbindlist(resres_list$sd_est_RMSE)
 sd_est_MAE_paired <- rbindlist(resres_list$sd_est_MAE)
 coverage_paired <- rbindlist(resres_list$coverage)
 
+# Then the unpaired list
 
 res_list <- res_list_unpaired
 
@@ -519,65 +533,168 @@ sd_est_RMSE_dt <- rbind(sd_est_RMSE_paired[,paired:=TRUE],sd_est_RMSE_unpaired[,
 sd_est_MAE_dt <- rbind(sd_est_MAE_paired[,paired:=TRUE],sd_est_MAE_unpaired[,paired:=FALSE])
 coverage_dt <- rbind(coverage_paired[,paired:=TRUE],coverage_unpaired[,paired:=FALSE])
 
+
+# Just creating a mapping from n_combinations to n_unique_combinations based on sampling
+feature_set_sample <- function(feature_sample_prev = NULL, m, n_combinations_sample = 200, unique_sampling = TRUE,paired_sampling = FALSE) {
+
+  #n_combinations_sample specifies the number of NEW n_combinations that shoudl be samples (it does not account for the full and zero set).
+  # if unique_sampling is TRUE, then the sampling will continue until the number of unique samples is equal to n_combinations_sample
+  # if paired_sampling is TRUE, then to the total number of combinations is equal to n_combinations_sample
+
+  # Find weights for given number of features ----------
+  n_features <- seq(m - 1)
+  n <- sapply(n_features, choose, n = m)
+  w <- shapr:::shapley_weights(m = m, N = n, n_features) * n
+  p <- w / sum(w)
+
+  if(is.null(feature_sample_prev)){
+    feature_sample_prev <- list()
+    unique_samples_prev <- unique_samples_current <- 0
+  } else {
+    unique_samples_prev <- unique_samples_current <- length(unique(feature_sample_prev))
+  }
+
+  feature_sample_current_1 <- feature_sample_current_2 <- NULL
+
+  if (unique_sampling) {
+    unique_samples_new <- unique_samples_current-unique_samples_prev
+    while (unique_samples_new < n_combinations_sample) {
+      remaining_samples <- n_combinations_sample-unique_samples_new
+
+      # Sample number of chosen features ----------
+      n_features_sample <- sample(
+        x = n_features,
+        size = remaining_samples*ifelse(paired_sampling,0.5,1), # Sample -2 as we add zero and m samples below
+        replace = TRUE,
+        prob = p
+      )
+
+      # Sample specific set of features -------
+      feature_sample_0 <- shapr:::sample_features_cpp(m, n_features_sample)
+      if(paired_sampling){
+        feature_sample_1 <- feature_sample_0
+        feature_sample_2 <- lapply(feature_sample_0, function(x) seq(m)[-x])
+      } else {
+        feature_sample_1 <- feature_sample_0[seq_len(n_combinations_sample*0.5)]
+        feature_sample_2 <- feature_sample_0[-seq_len(n_combinations_sample*0.5)]
+      }
+
+      feature_sample_current_1 <- c(feature_sample_current_1, feature_sample_1)
+      feature_sample_current_2 <- c(feature_sample_current_2, feature_sample_2) # The paired copy
+
+      unique_samples_current <- length(unique(c(feature_sample_prev,feature_sample_current_1,feature_sample_current_2)))
+
+      unique_samples_new <- unique_samples_current-unique_samples_prev
+    }
+  } else {
+
+    n_features_sample <- sample(
+      x = n_features,
+      size = n_combinations_sample*ifelse(paired_sampling,0.5,1), # Sample -2 as we add zero and m samples below
+      replace = TRUE,
+      prob = p
+    )
+    feature_sample_0 <- shapr:::sample_features_cpp(m, n_features_sample)
+    if(paired_sampling){
+      feature_sample_1 <- feature_sample_0
+      feature_sample_2 <- lapply(feature_sample_0, function(x) seq(m)[-x])
+    } else {
+      feature_sample_1 <- feature_sample_0[seq_len(n_combinations_sample*0.5)]
+      feature_sample_2 <- feature_sample_0[-seq_len(n_combinations_sample*0.5)]
+    }
+
+    feature_sample_current_1 <- c(feature_sample_current_1, feature_sample_1)
+    feature_sample_current_2 <- c(feature_sample_current_2, feature_sample_2) # The paired copy
+
+  }
+
+  return(list(feature_sample_current_1,feature_sample_current_2))
+
+}
+
+reps = 100
+set.seed(123)
+n_comb_dt_list <- list()
+for(aa in seq_along(n_combinations_vec)){
+  n_combinations = n_combinations_vec[aa]
+  a <- NULL
+  for(i in seq_len(reps)){
+    a[i] <- length(unique(unlist(feature_set_sample(NULL,m=m,n_combinations,unique_sampling=FALSE,paired_sampling = FALSE),recursive=FALSE)))
+  }
+  n_comb_dt_list[[aa]] <- data.table(n_comb=n_combinations,n_comb_unique=mean(a))
+}
+
+n_comb_dt <- rbindlist(n_comb_dt_list)
+
+MAE_dt <- MAE_dt[n_comb_dt,,on="n_comb"]
+RMSE_dt <- RMSE_dt[n_comb_dt,,on="n_comb"]
+bias_dt <- bias_dt[n_comb_dt,,on="n_comb"]
+sd_dt <- sd_dt[n_comb_dt,,on="n_comb"]
+sd_est_RMSE_dt <- sd_est_RMSE_dt[n_comb_dt,,on="n_comb"]
+sd_est_MAE_dt <- sd_est_MAE_dt[n_comb_dt,,on="n_comb"]
+coverage_dt <- coverage_dt[n_comb_dt,,on="n_comb"]
+
+
+
 library(ggplot2)
 
 
-plot_MAE <- MAE_dt[,.(MAE=mean(colMeans(.SD))),by=.(reweighting_strategy,paired,n_comb),.SDcols=cutoff_feats]
+plot_MAE <- MAE_dt[,.(MAE=mean(colMeans(.SD))),by=.(reweighting_strategy,paired,n_comb_unique),.SDcols=cutoff_feats]
 
-ggplot(plot_MAE,aes(x=n_comb,y=MAE,color=reweighting_strategy,linetype=paired))+
+ggplot(plot_MAE,aes(x=n_comb_unique,y=MAE,color=reweighting_strategy,linetype=paired))+
   geom_line(linewidth=1)+
 #  facet_wrap(~paired,scales="free")+
   theme_minimal()+
   # log scale on x axis
   scale_y_log10()+
-  labs(title="MAE",x="n_combinations",y="Mean absolute error")
+  labs(title="MAE",x="n unique combinations",y="Mean absolute error")
 
 
 
-plot_bias <- bias_dt[,.(bias=mean(colMeans(.SD))),by=.(reweighting_strategy,paired,n_comb),.SDcols=cutoff_feats]
+plot_bias <- bias_dt[,.(bias=mean(colMeans(.SD))),by=.(reweighting_strategy,paired,n_comb_unique),.SDcols=cutoff_feats]
 
-ggplot(plot_bias,aes(x=n_comb,y=abs(bias),color=reweighting_strategy,linetype=paired))+
+ggplot(plot_bias,aes(x=n_comb_unique,y=abs(bias),color=reweighting_strategy,linetype=paired))+
   geom_line(linewidth=1)+
   #  facet_wrap(~paired,scales="free")+
   theme_minimal()+
   # log scale on x axis
   scale_y_log10()+
-  labs(title="abs(bias)",x="n_combinations",y="Mean absolute error")
+  labs(title="abs(bias)",x="n unique combinations",y="Mean absolute error")
 
-plot_sd <- sd_dt[,.(sd=mean(colMeans(.SD))),by=.(reweighting_strategy,paired,n_comb),.SDcols=cutoff_feats]
+plot_sd <- sd_dt[,.(sd=mean(colMeans(.SD))),by=.(reweighting_strategy,paired,n_comb_unique),.SDcols=cutoff_feats]
 
-ggplot(plot_sd,aes(x=n_comb,y=sd,color=reweighting_strategy,linetype=paired))+
+ggplot(plot_sd,aes(x=n_comb_unique,y=sd,color=reweighting_strategy,linetype=paired))+
   geom_line(linewidth=1)+
   #  facet_wrap(~paired,scales="free")+
   theme_minimal()+
   # log scale on x axis
   scale_y_log10()+
-  labs(title="sd",x="n_combinations",y="Mean absolute error")
+  labs(title="sd",x="n unique combinations",y="Standard deviation")
 
 
 #### Now looking at the methods for estimating this variance
 
-plot_sd_est_MAE <- sd_est_MAE_dt[,.(sd_est_MAE=mean(colMeans(.SD))),by=.(reweighting_strategy,sd_type,paired,n_comb),.SDcols=cutoff_feats]
+plot_sd_est_MAE <- sd_est_MAE_dt[,.(sd_est_MAE=mean(colMeans(.SD))),by=.(reweighting_strategy,sd_type,paired,n_comb_unique),.SDcols=cutoff_feats]
 
-ggplot(plot_sd_est_MAE[reweighting_strategy=="on_n_features"],aes(x=n_comb,y=sd_est_MAE,color=sd_type,linetype=paired))+
+ggplot(plot_sd_est_MAE[reweighting_strategy=="on_n_features"],aes(x=n_comb_unique,y=sd_est_MAE,color=sd_type,linetype=paired))+
   geom_line(linewidth=1)+
   #  facet_wrap(~paired,scales="free")+
   theme_minimal()+
   # log scale on x axis
   scale_y_log10()+
-  labs(title="MAE of sd estimates",x="n_combinations",y="Mean absolute error")
+  labs(title="MAE of sd estimates",x="n unique combinations",y="Mean absolute error")
 
 # And finally coverage
 
-plot_coverage <- coverage_dt[,.(coverage=mean(colMeans(.SD))),by=.(reweighting_strategy,sd_type,CI_level,paired,n_comb),.SDcols=cutoff_feats]
+plot_coverage <- coverage_dt[,.(coverage=mean(colMeans(.SD))),by=.(reweighting_strategy,sd_type,CI_level,paired,n_comb_unique),.SDcols=cutoff_feats]
 plot_coverage[,coverage_error:=coverage-CI_level]
 
-ggplot(plot_coverage[CI_level ==0.95 &reweighting_strategy=="on_n_features"],aes(x=n_comb,y=coverage,color=sd_type,linetype=paired))+
+ggplot(plot_coverage[CI_level ==0.99 &reweighting_strategy=="on_n_features"],aes(x=n_comb_unique,y=coverage,color=sd_type,linetype=paired))+
   geom_line(linewidth=1)+
 #    facet_wrap(~CI_level,scales="free")+
   theme_minimal()+
   # log scale on x a,xis
-  labs(title="Coverage",x="n_combinations",y="Mean absolute error")
+  labs(title="Coverage",x="n unique combinations",y="Coverage")
 
 
 
