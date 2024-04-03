@@ -10,8 +10,6 @@
 #' \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if `shapr` is in the exact mode. If the
 #' user sets a lower value than `internal$parameters$used_n_combinations`, then we sample this amount of unique
 #' coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.
-#' @param regression_surr_save_x_augment Logical (default is `FALSE`). If `TRUE`, then the augmented version of the
-#' training data is included in the returned list from [shapr::explain()].
 #'
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -21,7 +19,6 @@ setup_approach.regression_surrogate <- function(internal,
                                                 regression.vfold_cv_para = NULL,
                                                 regression.recipe_func = NULL,
                                                 regression_surrogate.n_comb = internal$parameters$used_n_combinations - 2,
-                                                regression_surr_save_x_augment = FALSE,
                                                 ...) {
   # Check that required libraries are installed
   check_regresseion_namespaces()
@@ -32,7 +29,7 @@ setup_approach.regression_surrogate <- function(internal,
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <- mget(c(
     "regression.model", "regression.tune_values", "regression.vfold_cv_para",
-    "regression.recipe_func", "regression_surrogate.n_comb", "regression_surr_save_x_augment"
+    "regression.recipe_func", "regression_surrogate.n_comb"
   ))
   internal <- insert_defaults(internal, defaults)
 
@@ -46,9 +43,6 @@ setup_approach.regression_surrogate <- function(internal,
   x_train_augmented <- regression_surrogate_augment(
     internal = internal, x = internal$data$x_train, y_hat = internal$data$x_train_y_hat, augment_include_grand = TRUE
   )
-
-  # Include the training data in the internal list if user has specified it
-  if (internal$parameters$regression_surr_save_x_augment) internal$data$x_train_augmented <- x_train_augmented
 
   # Fit the surrogate regression model and store it in the internal list
   if (internal$parameters$verbose == 2) message("Start training the surrogate model.")
