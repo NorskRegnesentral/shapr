@@ -321,12 +321,12 @@ test_that("regression erroneous input: `regression.recipe_func`", {
   )
 })
 
-test_that("regression erroneous input: `regression_surrogate.n_comb`", {
+test_that("regression erroneous input: `regression.surrogate_n_comb`", {
   set.seed(123)
 
   expect_snapshot(
     {
-      # regression_surrogate.n_comb must be between 1 and 2^n_features - 2
+      # regression.surrogate_n_comb must be between 1 and 2^n_features - 2
       explain(
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
@@ -335,7 +335,7 @@ test_that("regression erroneous input: `regression_surrogate.n_comb`", {
         n_batches = 1,
         timing = FALSE,
         approach = "regression_surrogate",
-        regression_surrogate.n_comb = 2^ncol(x_explain_numeric) - 1
+        regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1
       )
     },
     error = TRUE
@@ -343,7 +343,7 @@ test_that("regression erroneous input: `regression_surrogate.n_comb`", {
 
   expect_snapshot(
     {
-      # regression_surrogate.n_comb must be between 1 and 2^n_features - 2
+      # regression.surrogate_n_comb must be between 1 and 2^n_features - 2
       explain(
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
@@ -352,7 +352,7 @@ test_that("regression erroneous input: `regression_surrogate.n_comb`", {
         n_batches = 1,
         timing = FALSE,
         approach = "regression_surrogate",
-        regression_surrogate.n_comb = 0
+        regression.surrogate_n_comb = 0
       )
     },
     error = TRUE

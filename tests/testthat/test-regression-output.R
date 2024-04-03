@@ -75,8 +75,8 @@ test_that("output_lm_mixed_splines_separate", {
       n_batches = 1,
       timing = FALSE,
       regression.model = parsnip::linear_reg(),
-      regression.recipe_func = function(regression_recipe) {
-        recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 2)
+      regression.recipe_func = function(regression.recipe) {
+        recipes::step_ns(regression.recipe, recipes::all_numeric_predictors(), deg_free = 2)
       }
     ),
     "output_lm_mixed_splines_separate"
@@ -132,8 +132,8 @@ test_that("output_lm_mixed_xgboost_separate", {
       timing = FALSE,
       approach = "regression_separate",
       regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
-      regression.recipe_func = function(regression_recipe) {
-        return(recipes::step_dummy(regression_recipe, recipes::all_factor_predictors()))
+      regression.recipe_func = function(regression.recipe) {
+        return(recipes::step_dummy(regression.recipe, recipes::all_factor_predictors()))
       }
     ),
     "output_lm_mixed_xgboost_separate"
@@ -186,7 +186,7 @@ test_that("output_lm_numeric_lm_surrogate_reg_surr_n_comb", {
       n_combinations = 10,
       timing = FALSE,
       regression.model = parsnip::linear_reg(),
-      regression_surrogate.n_comb = 8
+      regression.surrogate_n_comb = 8
     ),
     "output_lm_numeric_lm_surrogate_reg_surr_n_comb"
   )
@@ -253,8 +253,8 @@ test_that("output_lm_mixed_xgboost_surrogate", {
       timing = FALSE,
       approach = "regression_surrogate",
       regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
-      regression.recipe_func = function(regression_recipe) {
-        recipes::step_dummy(regression_recipe, recipes::all_factor_predictors())
+      regression.recipe_func = function(regression.recipe) {
+        recipes::step_dummy(regression.recipe, recipes::all_factor_predictors())
       }
     ),
     "output_lm_mixed_xgboost_surrogate"

@@ -82,19 +82,19 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 
     # Fit the current separate regression model to the current training data
     if (internal$parameters$verbose == 2) regression.prep_message_comb(internal, index_features, comb_idx)
-    current_regression_fit <- regression_train(
+    regression.current_fit <- regression.train_model(
       x = current_x_train,
       seed = internal$parameters$seed,
       verbose = internal$parameters$verbose,
       regression.model = internal$parameters$regression.model,
-      regression_tune = internal$parameters$regression_tune,
+      regression.tune = internal$parameters$regression.tune,
       regression.tune_values = internal$parameters$regression.tune_values,
       regression.vfold_cv_para = internal$parameters$regression.vfold_cv_para,
       regression.recipe_func = internal$parameters$regression.recipe_func
     )
 
     # Compute the predicted response for the explicands, i.e., the v(S, x_i) for all explicands x_i.
-    pred_explicand <- predict(current_regression_fit, new_data = current_x_explain)$.pred
+    pred_explicand <- predict(regression.current_fit, new_data = current_x_explain)$.pred
 
     # Add the new contribution function values for the current coalitions S to the result data table as a new row
     dt_res <- rbind(dt_res, data.table(index_features[comb_idx], matrix(pred_explicand, nrow = 1)), use.names = FALSE)
@@ -118,99 +118,96 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 #' @inheritParams explain
 #' @param x Data.table containing the data. Either the training data or the explicands. If `x` is the explicands,
 #' then `index_features` must be provided.
-#' @param regression_tune Logical (default is `FALSE`). If `TRUE`, then we are to tune the hyperparemeters based on
+#' @param regression.tune Logical (default is `FALSE`). If `TRUE`, then we are to tune the hyperparemeters based on
 #' the values provided in `regression.tune_values`. Note that no checks are conducted as this is checked earlier in
 #' `setup_approach.regression_separate` and `setup_approach.regression_surrogate`.
-#' @param regression_response_var String (default is `y_hat`) containing the name of the response variable.
-#' @param regression_sur_n_comb Integer (default is `NULL`). The number of times each training observations
+#' @param regression.response_var String (default is `y_hat`) containing the name of the response variable.
+#' @param regression.surrogate_n_comb Integer (default is `NULL`). The number of times each training observations
 #' has been augmented. If `NULL`, then we assume that we are doing separate regression.
 #'
 #' @return A trained `tidymodels` model based on the provided input parameters.
 #' @export
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression_train <- function(x,
-                             seed = 1,
-                             verbose = 0,
-                             regression.model = parsnip::linear_reg(),
-                             regression_tune = FALSE,
-                             regression.tune_values = NULL,
-                             regression.vfold_cv_para = NULL,
-                             regression.recipe_func = NULL,
-                             regression_response_var = "y_hat",
-                             regression_sur_n_comb = NULL) {
+regression.train_model <- function(x,
+                                   seed = 1,
+                                   verbose = 0,
+                                   regression.model = parsnip::linear_reg(),
+                                   regression.tune = FALSE,
+                                   regression.tune_values = NULL,
+                                   regression.vfold_cv_para = NULL,
+                                   regression.recipe_func = NULL,
+                                   regression.response_var = "y_hat",
+                                   regression.surrogate_n_comb = NULL) {
   # Create a recipe to the augmented training data
-  regression_recipe <- recipes::recipe(as.formula(paste(regression_response_var, "~ .")), data = x)
+  regression.recipe <- recipes::recipe(as.formula(paste(regression.response_var, "~ .")), data = x)
 
   # Update the recipe if user has provided a function for this. User is responsible for that the function works.
   # This function can, e.g., add transformations, normalization, dummy encoding, interactions, and so on.
-  if (!is.null(regression.recipe_func)) regression_recipe <- regression.recipe_func(regression_recipe)
+  if (!is.null(regression.recipe_func)) regression.recipe <- regression.recipe_func(regression.recipe)
 
   # Combine workflow, model specification, and recipe
-  regression_workflow <-
-    workflows::add_recipe(workflows::add_model(workflows::workflow(), regression.model), regression_recipe)
+  regression.workflow <-
+    workflows::add_recipe(workflows::add_model(workflows::workflow(), regression.model), regression.recipe)
 
   # Check if we are to tune hyperparameters in the regression model, as we then need to update the workflow.
   # If we are not doing any hyperparameter tuning, then the workflow above is enough.
-  if (regression_tune) {
+  if (regression.tune) {
     # Set up the V-fold cross validation using the user provided parameters in `regression.vfold_cv_para`.
     # Note if `regression.vfold_cv_para` is NULL, then we use the default parameters in `vfold_cv()`.
-    regression_folds <- do.call(rsample::vfold_cv, c(list(data = x), regression.vfold_cv_para))
+    regression.folds <- do.call(rsample::vfold_cv, c(list(data = x), regression.vfold_cv_para))
 
     # Check if we are doing surrogate regression, as we then need to update the indices as the augmented
     # training data is highly correlated due to the augmentations which will mess up the cross validation.
     # Since one there assumes that the training and evaluation data are independent. The following code ensures
     # that all augmentations of a single training observations are either in the training or evaluation data.
-    if (!is.null(regression_sur_n_comb)) {
+    if (!is.null(regression.surrogate_n_comb)) {
       if (!is.null(regression.vfold_cv_para) && any(names(regression.vfold_cv_para) != "v")) {
         stop("The `regression.vfold_cv_para` parameter supports only the `v` parameter for surrogate regression.")
       }
 
-      n <- nrow(x) / regression_sur_n_comb # Get the number of training observations (before augmentation)
-      n_folds <- nrow(regression_folds) # Get the number of folds
+      n <- nrow(x) / regression.surrogate_n_comb # Get the number of training observations (before augmentation)
+      n_folds <- nrow(regression.folds) # Get the number of folds
       folds <- sample(rep(seq_len(n_folds), length.out = n)) # Sample in which fold the i'th obs is in the eval data
       indices <- lapply(split(seq_len(n), folds), function(x) setdiff(seq_len(n), x)) # Sample the training indices
 
       # Loop over the folds, extend the indices to reflect the augmentation, and insert the updated training indices
       for (fold_idx in seq(n_folds)) {
-        regression_folds$splits[[fold_idx]]$in_id <-
+        regression.folds$splits[[fold_idx]]$in_id <-
           unlist(lapply(
             indices[[fold_idx]],
-            function(idx) seq(regression_sur_n_comb * (idx - 1) + 1, regression_sur_n_comb * idx)
+            function(idx) seq(regression.surrogate_n_comb * (idx - 1) + 1, regression.surrogate_n_comb * idx)
           ))
       }
     }
 
     # Extract the grid of hyperparameter values. Note that regression.tune_values is either a data.frame or a function.
     if (is.data.frame(regression.tune_values)) {
-      regression_grid <- regression.tune_values
+      regression.grid <- regression.tune_values
     } else {
-      regression_grid <- regression.tune_values(x[, -..regression_response_var])
+      regression.grid <- regression.tune_values(x[, -..regression.response_var])
     }
 
     # Add the hyperparameter tuning to the workflow
-    regression_results <- tune::tune_grid(
-      object = regression_workflow,
-      resamples = regression_folds,
-      grid = regression_grid,
+    regression.results <- tune::tune_grid(
+      object = regression.workflow,
+      resamples = regression.folds,
+      grid = regression.grid,
       metrics = yardstick::metric_set(yardstick::rmse)
     )
 
     # Small printout to the user
-    if (verbose == 2) regression.cv_message(regression_results = regression_results, regression_grid = regression_grid)
+    if (verbose == 2) regression.cv_message(regression.results = regression.results, regression.grid = regression.grid)
 
     # Set seed for reproducibility. Without this we get different results based on if we run in parallel or sequential
     set.seed(seed)
 
     # Update the workflow by finalizing it using the hyperparameters that attained the best rmse
-    regression_workflow <- tune::finalize_workflow(regression_workflow, tune::select_best(regression_results, "rmse"))
+    regression.workflow <- tune::finalize_workflow(regression.workflow, tune::select_best(regression.results, "rmse"))
   }
 
-  # Fit the model to the augmented training data
-  regression_fit <- parsnip::fit(regression_workflow, data = x)
-
-  # Return the trained model
-  return(regression_fit)
+  # Fit the model to the augmented training data and return the trained model
+  return(parsnip::fit(regression.workflow, data = x))
 }
 
 
@@ -250,44 +247,44 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
   regression_para <- lapply(regression.model$args, function(para) rlang::quo_get_expr(para))
   regression_para_tune <- lapply(regression_para, function(para) !is.null(para) && grepl("tune()", para))
   regression_para_tune_names <- names(regression_para_tune)[unlist(regression_para_tune)]
-  regression_tune <- any(unlist(regression_para_tune))
+  regression.tune <- any(unlist(regression_para_tune))
 
   # Check that user have provided a tuning
-  if (isTRUE(regression_tune) && is.null(regression.tune_values)) {
+  if (isTRUE(regression.tune) && is.null(regression.tune_values)) {
     stop("`regression.tune_values` must be provided when `regression.model` contains hyperparameters to tune.")
   }
 
   # Check function or tibble
   if (!is.null(regression.tune_values) &&
-    !is.data.frame(regression.tune_values) &&
-    !is.function(regression.tune_values)) {
+      !is.data.frame(regression.tune_values) &&
+      !is.function(regression.tune_values)) {
     stop("`regression.tune_values` must be of either class `data.frame` or `function`. See documentation.")
   }
 
   # Get the grid values. And if user provided a function, then check that it is a data.frame.
-  regression_tune_values_grid <- regression.tune_values
+  regression.tune_values_grid <- regression.tune_values
   if (is.function(regression.tune_values)) {
-    regression_tune_values_grid <- regression.tune_values(x_train)
-    if (!is.data.frame(regression_tune_values_grid)) {
+    regression.tune_values_grid <- regression.tune_values(x_train)
+    if (!is.data.frame(regression.tune_values_grid)) {
       stop("The output of the user provided `regression.tune_values` function must be of class `data.frame`.")
     }
   }
 
   # Get the names of the hyperparameters the user provided values for
-  regression_tune_values_names <- names(regression_tune_values_grid)
+  regression.tune_values_names <- names(regression.tune_values_grid)
 
   # Check that user have provided values for the hyperparameters to tune
-  if (!(all(regression_tune_values_names %in% regression_para_tune_names) &&
-    all(regression_para_tune_names %in% regression_tune_values_names))) {
+  if (!(all(regression.tune_values_names %in% regression_para_tune_names) &&
+        all(regression_para_tune_names %in% regression.tune_values_names))) {
     stop(paste0(
       "The tunable parameters in `regression.model` ('",
       paste(regression_para_tune_names, collapse = "', '"), "') and `regression.tune_values` ('",
-      paste(regression_tune_values_names, collapse = "', '"), "') must match."
+      paste(regression.tune_values_names, collapse = "', '"), "') must match."
     ))
   }
 
   # Return if we are to tune some model hyperparameters
-  return(regression_tune)
+  return(regression.tune)
 }
 
 # Check functions ======================================================================================================
@@ -295,7 +292,7 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 #'
 #' @inheritParams default_doc
 #'
-#' @return The same `internal` list, but added logical indicator `internal$parameters$regression_tune`
+#' @return The same `internal` list, but added logical indicator `internal$parameters$regression.tune`
 #' if we are to tune the regression model/models.
 #'
 #' @author Lars Henry Berge Olsen
@@ -310,14 +307,14 @@ regression.check_parameters <- function(internal) {
   # Check that `regression.vfold_cv_para` is either NULL or a named list that only contains recognized parameters
   regression.check_vfold_cv_para(regression.vfold_cv_para = internal$parameters$regression.vfold_cv_para)
 
-  # Check that `regression_sur.check_n_comb` is a valid value (only applicable for surrogate regression)
-  regression_sur.check_n_comb(
-    regression_surrogate.n_comb = internal$parameters$regression_surrogate.n_comb,
+  # Check that `regression.check_sur_n_comb` is a valid value (only applicable for surrogate regression)
+  regression.check_sur_n_comb(
+    regression.surrogate_n_comb = internal$parameters$regression.surrogate_n_comb,
     used_n_combinations = internal$parameters$used_n_combinations
   )
 
   # Check and get if we are to tune the hyperparameters of the regression model
-  internal$parameters$regression_tune <- regression.get_tune(
+  internal$parameters$regression.tune <- regression.get_tune(
     regression.model = internal$parameters$regression.model,
     regression.tune_values = internal$parameters$regression.tune_values,
     x_train = internal$data$x_train
@@ -343,8 +340,8 @@ regression.check_recipe_func <- function(regression.recipe_func, x_explain) {
 
   if (!is.null(regression.recipe_func) && is.function(regression.recipe_func)) {
     x_temp <- copy(x_explain)[, "y_hat_temp" := 1]
-    regression_recipe_func_output <- regression.recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))
-    if (!"recipe" %in% class(regression_recipe_func_output)) {
+    regression.recipe_func_output <- regression.recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))
+    if (!"recipe" %in% class(regression.recipe_func_output)) {
       stop("The output of the `regression.recipe_func` must be of class `recipe`.")
     }
   }
@@ -441,28 +438,28 @@ regression.prep_message_comb <- function(internal, index_features, comb_idx) {
 
 #' Produce message about which batch prepare_data is working on
 #'
-#' @param regression_results The results of the CV procedures.
-#' @param regression_grid Object containing the hyperparameter values.
+#' @param regression.results The results of the CV procedures.
+#' @param regression.grid Object containing the hyperparameter values.
 #' @param n_cv Integer (default is 10) specifying the number of CV hyperparameter configurations to print.
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression.cv_message <- function(regression_results, regression_grid, n_cv = 10) {
+regression.cv_message <- function(regression.results, regression.grid, n_cv = 10) {
   # Get the feature names and add evaluation metric rmse
-  feature_names <- names(regression_grid)
+  feature_names <- names(regression.grid)
   feature_names_rmse <- c(feature_names, "rmse", "rmse_std_err")
 
   # Let n_cv be the minimum of the provided value and the number of possible printouts
-  n_cv <- min(n_cv, nrow(regression_grid))
+  n_cv <- min(n_cv, nrow(regression.grid))
 
   # Extract the n_cv best results
-  best_results <- tune::show_best(regression_results, n = n_cv)
+  best_results <- tune::show_best(regression.results, n = n_cv)
 
   # Needed to make prinout tables prettier to ensure same column dimensions for all settings.
-  regression_grid_best <- best_results[, feature_names]
-  regression_grid_best$rmse <- round(best_results$mean, 2)
-  regression_grid_best$rmse_std <- round(best_results$std_err, 2)
-  width <- sapply(regression_grid_best, function(x) max(nchar(as.character(unique(x)))))
+  regression.grid_best <- best_results[, feature_names]
+  regression.grid_best$rmse <- round(best_results$mean, 2)
+  regression.grid_best$rmse_std <- round(best_results$std_err, 2)
+  width <- sapply(regression.grid_best, function(x) max(nchar(as.character(unique(x)))))
 
   # Message title of the results
   message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))

@@ -121,7 +121,7 @@ explain_decision_tree_lm = explain(
 
 # CV -------------------------------------------------------------------------------------------------------------------
 set.seed(1)
-regression_workflow <- workflows::workflow() %>%
+regression.workflow <- workflows::workflow() %>%
   workflows::add_model(parsnip::rand_forest(
    trees = hardhat::tune(), engine = "ranger", mode = "regression"
   )) %>%
@@ -129,18 +129,18 @@ regression_workflow <- workflows::workflow() %>%
                           recipes::step_dummy(all_factor_predictors()))
 
 # Add the hyperparameter tuning to the workflow
-regression_results <- tune::tune_grid(
-  object = regression_workflow,
+regression.results <- tune::tune_grid(
+  object = regression.workflow,
   resamples = rsample::vfold_cv(data = train_mixed, v = 3),
   grid = dials::grid_regular(dials::trees(c(50, 750)), levels = 3),
   metrics = yardstick::metric_set(yardstick::rmse)
 )
 
 # Update the workflow by finalizing it using the hyperparameters that attained the best rmse
-regression_workflow <- tune::finalize_workflow(regression_workflow, tune::select_best(regression_results, "rmse"))
+regression.workflow <- tune::finalize_workflow(regression.workflow, tune::select_best(regression.results, "rmse"))
 
 # Fit the model to the augmented training data
-model_rf_cv <- parsnip::fit(regression_workflow, data = train_mixed)
+model_rf_cv <- parsnip::fit(regression.workflow, data = train_mixed)
 
 # See that the model works with regression
 explain_decision_model_rf_cv_rf = explain(
