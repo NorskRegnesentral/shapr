@@ -28,11 +28,11 @@ setup_approach.regression_separate <- function(internal,
                                                regression.recipe_func = NULL,
                                                ...) {
   # Check that required libraries are installed
-  check_regresseion_namespaces()
+  regression.check_namespaces()
 
   # Small printout to the user
   if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_separate'.")
-  if (internal$parameters$verbose == 2) regression_sep_time_message() # TODO: maybe remove
+  if (internal$parameters$verbose == 2) regression_sep.time_message() # TODO: maybe remove
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <-
@@ -40,10 +40,10 @@ setup_approach.regression_separate <- function(internal,
   internal <- insert_defaults(internal, defaults)
 
   # Check the parameters to the regression approach
-  internal <- check_regression_parameters(internal = internal)
+  internal <- regression.check_parameters(internal = internal)
 
   # Get the predicted response of the training and explain data
-  internal <- get_regression_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
+  internal <- regression.get_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
 
   # Small printout to the user
   if (internal$parameters$verbose == 2) message("Done with 'setup_approach.regression_separate'.")
@@ -63,7 +63,7 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
   features <- internal$objects$X$features[index_features]
 
   # Small printout to the user about which batch that are currently worked on
-  if (internal$parameters$verbose == 2) regression_prep_message_batch(internal, index_features)
+  if (internal$parameters$verbose == 2) regression.prep_message_batch(internal, index_features)
 
   # Initialize empty data table with specific column names and id_combination (transformed to integer later). The data
   # table will contain the contribution function values for the coalitions given by `index_features` and all explicands.
@@ -81,7 +81,7 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
     current_x_explain <- internal$data$x_explain[, ..current_comb]
 
     # Fit the current separate regression model to the current training data
-    if (internal$parameters$verbose == 2) regression_prep_message_comb(internal, index_features, comb_idx)
+    if (internal$parameters$verbose == 2) regression.prep_message_comb(internal, index_features, comb_idx)
     current_regression_fit <- regression_train(
       x = current_x_train,
       seed = internal$parameters$seed,
@@ -197,7 +197,7 @@ regression_train <- function(x,
     )
 
     # Small printout to the user
-    if (verbose == 2) regression_cv_message(regression_results = regression_results, regression_grid = regression_grid)
+    if (verbose == 2) regression.cv_message(regression_results = regression_results, regression_grid = regression_grid)
 
     # Set seed for reproducibility. Without this we get different results based on if we run in parallel or sequential
     set.seed(seed)
@@ -223,7 +223,7 @@ regression_train <- function(x,
 #' `internal$data$x_explain_y_hat` containing the predicted response of the training and explain data.
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-get_regression_y_hat <- function(internal, model) {
+regression.get_y_hat <- function(internal, model) {
   # Predict the response of the training and explain data. Former is the response the regression models are fitted to.
   internal$data$x_train_y_hat <- predict_model(model, internal$data$x_train)
   internal$data$x_explain_y_hat <- predict_model(model, internal$data$x_explain)
@@ -240,7 +240,7 @@ get_regression_y_hat <- function(internal, model) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-get_regression_tune <- function(regression.model, regression.tune_values, x_train) {
+regression.get_tune <- function(regression.model, regression.tune_values, x_train) {
   # Check that the regression model is a tidymodels object
   if (is.null(regression.model) || !"model_spec" %in% class(regression.model)) {
     stop("`regression.model` must be a tidymodels object with class 'model_spec'. See documentation.")
@@ -300,24 +300,24 @@ get_regression_tune <- function(regression.model, regression.tune_values, x_trai
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_regression_parameters <- function(internal) {
+regression.check_parameters <- function(internal) {
   # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
-  check_regression_recipe_func(
+  regression.check_recipe_func(
     regression.recipe_func = internal$parameters$regression.recipe_func,
     x_explain = internal$data$x_explain
   )
 
   # Check that `regression.vfold_cv_para` is either NULL or a named list that only contains recognized parameters
-  check_regression_vfold_cv_para(regression.vfold_cv_para = internal$parameters$regression.vfold_cv_para)
+  regression.check_vfold_cv_para(regression.vfold_cv_para = internal$parameters$regression.vfold_cv_para)
 
-  # Check that `check_regression_n_comb` is a valid value (only applicable for surrogate regression)
-  check_regression_n_comb(
+  # Check that `regression_sur.check_n_comb` is a valid value (only applicable for surrogate regression)
+  regression_sur.check_n_comb(
     regression_surrogate.n_comb = internal$parameters$regression_surrogate.n_comb,
     used_n_combinations = internal$parameters$used_n_combinations
   )
 
   # Check and get if we are to tune the hyperparameters of the regression model
-  internal$parameters$regression_tune <- get_regression_tune(
+  internal$parameters$regression_tune <- regression.get_tune(
     regression.model = internal$parameters$regression.model,
     regression.tune_values = internal$parameters$regression.tune_values,
     x_train = internal$data$x_train
@@ -336,7 +336,7 @@ check_regression_parameters <- function(internal) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_regression_recipe_func <- function(regression.recipe_func, x_explain) {
+regression.check_recipe_func <- function(regression.recipe_func, x_explain) {
   if (!is.null(regression.recipe_func) && !is.function(regression.recipe_func)) {
     stop("`regression.recipe_func` must be a function. See documentation.")
   }
@@ -358,7 +358,7 @@ check_regression_recipe_func <- function(regression.recipe_func, x_explain) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_regression_vfold_cv_para <- function(regression.vfold_cv_para) {
+regression.check_vfold_cv_para <- function(regression.vfold_cv_para) {
   if (!is.null(regression.vfold_cv_para)) {
     # Check that regression.vfold_cv_para is a named list
     if (!is.list(regression.vfold_cv_para) || is.null(names(regression.vfold_cv_para))) {
@@ -389,7 +389,7 @@ check_regression_vfold_cv_para <- function(regression.vfold_cv_para) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_regresseion_namespaces <- function() {
+regression.check_namespaces <- function() {
   namespaces <- c("parsnip", "recipes", "workflows", "tune", "dials", "yardstick", "hardhat", "rsample", "rlang")
   for (namespace in namespaces) {
     if (!requireNamespace(namespace, quietly = TRUE)) {
@@ -405,7 +405,7 @@ check_regresseion_namespaces <- function() {
 #' Produce time message for separate regression
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression_sep_time_message <- function() {
+regression_sep.time_message <- function() {
   message(paste(
     "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object \n",
     "can be missleading as `setup_computation` does not contain the training times of the \n",
@@ -419,7 +419,7 @@ regression_sep_time_message <- function() {
 #' @inheritParams default_doc_explain
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression_prep_message_batch <- function(internal, index_features) {
+regression.prep_message_batch <- function(internal, index_features) {
   message(paste0(
     "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
     internal$parameters$n_batches, " in `prepare_data.", internal$parameters$approach, "()`."
@@ -432,7 +432,7 @@ regression_prep_message_batch <- function(internal, index_features) {
 #' @param comb_idx Integer. The index of the combination in a specific batch.
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression_prep_message_comb <- function(internal, index_features, comb_idx) {
+regression.prep_message_comb <- function(internal, index_features, comb_idx) {
   message(paste0(
     "Working on combination with id ", internal$objects$X$id_combination[index_features[comb_idx]],
     " of ", internal$parameters$used_n_combinations, "."
@@ -447,7 +447,7 @@ regression_prep_message_comb <- function(internal, index_features, comb_idx) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression_cv_message <- function(regression_results, regression_grid, n_cv = 10) {
+regression.cv_message <- function(regression_results, regression_grid, n_cv = 10) {
   # Get the feature names and add evaluation metric rmse
   feature_names <- names(regression_grid)
   feature_names_rmse <- c(feature_names, "rmse", "rmse_std_err")

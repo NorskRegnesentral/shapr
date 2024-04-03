@@ -126,14 +126,14 @@ check_and_set_parameters <- function(internal) {
   check_n_batches(internal)
 
   # Check regression if we are doing regression
-  if (internal$parameters$regression) internal <- check_regression(internal)
+  if (internal$parameters$regression) internal <- regression.check(internal)
 
   return(internal)
 }
 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-check_regression <- function(internal) {
+regression.check <- function(internal) {
   # Check that the model outputs one-dimensional predictions
   if (internal$parameters$output_size != 1) {
     stop("`regression_separate` and `regression_surrogate` only support models with one-dimensional output")

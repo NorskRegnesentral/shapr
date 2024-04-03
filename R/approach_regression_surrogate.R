@@ -3,8 +3,8 @@
 #'
 #' @inheritParams default_doc_explain
 #' @inheritParams setup_approach.regression_separate
-#' @param regression_surrogate.n_comb Integer (default is `internal$parameters$used_n_combinations`) specifying the number
-#' of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
+#' @param regression_surrogate.n_comb Integer (default is `internal$parameters$used_n_combinations`) specifying the
+#' number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
 #' "`internal$parameters$used_n_combinations` - 2". By default, we use all coalitions, but this can take a lot of memory
 #' in larger dimensions. Note that by "all", we mean all coalitions chosen by `shapr` to be used. This will be all
 #' \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if `shapr` is in the exact mode. If the
@@ -21,7 +21,7 @@ setup_approach.regression_surrogate <- function(internal,
                                                 regression_surrogate.n_comb = internal$parameters$used_n_combinations - 2,
                                                 ...) {
   # Check that required libraries are installed
-  check_regresseion_namespaces()
+  regression.check_namespaces()
 
   # Small printout to the user
   if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_surrogate'.")
@@ -34,13 +34,13 @@ setup_approach.regression_surrogate <- function(internal,
   internal <- insert_defaults(internal, defaults)
 
   # Check the parameters to the regression approach
-  internal <- check_regression_parameters(internal)
+  internal <- regression.check_parameters(internal)
 
   # Get the predicted response of the training and explain data
-  internal <- get_regression_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
+  internal <- regression.get_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
 
   # Augment the training data
-  x_train_augmented <- regression_surrogate_augment(
+  x_train_augmented <- regression_sur.augment_data(
     internal = internal, x = internal$data$x_train, y_hat = internal$data$x_train_y_hat, augment_include_grand = TRUE
   )
 
@@ -73,10 +73,10 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
   requireNamespace("workflows", quietly = TRUE)
 
   # Small printout to the user about which batch that are currently worked on
-  if (internal$parameters$verbose == 2) regression_prep_message_batch(internal, index_features)
+  if (internal$parameters$verbose == 2) regression.prep_message_batch(internal, index_features)
 
   # Augment the explicand data
-  x_explain_aug <- regression_surrogate_augment(internal, x = internal$data$x_explain, index_features = index_features)
+  x_explain_aug <- regression_sur.augment_data(internal, x = internal$data$x_explain, index_features = index_features)
 
   # Compute the predicted response for the explicands, i.e., v(S, x_i) for all explicands x_i and S in index_features
   pred_explicand <- predict(internal$objects$regression_surrogate_model, new_data = x_explain_aug)$.pred
@@ -117,7 +117,7 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 #' @return A data.table containing the augmented data.
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression_surrogate_augment <- function(internal,
+regression_sur.augment_data <- function(internal,
                                          x,
                                          y_hat = NULL,
                                          index_features = NULL,
@@ -235,12 +235,12 @@ regression_surrogate_augment <- function(internal,
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_regression_n_comb <- function(regression_surrogate.n_comb, used_n_combinations) {
+regression_sur.check_n_comb <- function(regression_surrogate.n_comb, used_n_combinations) {
   if (!is.null(regression_surrogate.n_comb)) {
     if (regression_surrogate.n_comb < 1 || used_n_combinations - 2 < regression_surrogate.n_comb) {
       stop(paste0(
-        "`regression_surrogate.n_comb` (", regression_surrogate.n_comb, ") must be a positive integer less than or equal to ",
-        "`used_n_combinations` minus two (", used_n_combinations - 2, ")."
+        "`regression_surrogate.n_comb` (", regression_surrogate.n_comb, ") must be a positive integer less than or ",
+        "equal to `used_n_combinations` minus two (", used_n_combinations - 2, ")."
       ))
     }
   }
