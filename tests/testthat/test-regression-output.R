@@ -9,7 +9,7 @@ test_that("output_lm_numeric_lm_separate", {
       prediction_zero = p0,
       n_batches = 1,
       timing = FALSE,
-      regression_model = parsnip::linear_reg()
+      regression.model = parsnip::linear_reg()
     ),
     "output_lm_numeric_lm_separate"
   )
@@ -26,7 +26,7 @@ test_that("output_lm_numeric_lm_separate_n_comb", {
       n_batches = 4,
       n_combinations = 10,
       timing = FALSE,
-      regression_model = parsnip::linear_reg()
+      regression.model = parsnip::linear_reg()
     ),
     "output_lm_numeric_lm_separate_n_comb"
   )
@@ -42,7 +42,7 @@ test_that("output_lm_categorical_lm_separate", {
       prediction_zero = p0,
       n_batches = 4,
       timing = FALSE,
-      regression_model = parsnip::linear_reg()
+      regression.model = parsnip::linear_reg()
     ),
     "output_lm_categorical_lm_separate"
   )
@@ -58,7 +58,7 @@ test_that("output_lm_mixed_lm_separate", {
       prediction_zero = p0,
       n_batches = 1,
       timing = FALSE,
-      regression_model = parsnip::linear_reg(),
+      regression.model = parsnip::linear_reg(),
     ),
     "output_lm_mixed_lm_separate"
   )
@@ -74,8 +74,8 @@ test_that("output_lm_mixed_splines_separate", {
       prediction_zero = p0,
       n_batches = 1,
       timing = FALSE,
-      regression_model = parsnip::linear_reg(),
-      regression_recipe_func = function(regression_recipe) {
+      regression.model = parsnip::linear_reg(),
+      regression.recipe_func = function(regression_recipe) {
         recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 2)
       }
     ),
@@ -93,9 +93,9 @@ test_that("output_lm_mixed_decision_tree_cv_separate", {
       n_batches = 4,
       timing = FALSE,
       approach = "regression_separate",
-      regression_model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
-      regression_tune_values = data.frame(tree_depth = c(1, 2)),
-      regression_vfold_cv_para = list(v = 2)
+      regression.model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
+      regression.tune_values = data.frame(tree_depth = c(1, 2)),
+      regression.vfold_cv_para = list(v = 2)
     ),
     "output_lm_mixed_decision_tree_cv_separate"
   )
@@ -112,9 +112,9 @@ test_that("output_lm_mixed_decision_tree_cv_separate_parallel", {
       n_batches = 4,
       timing = FALSE,
       approach = "regression_separate",
-      regression_model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
-      regression_tune_values = data.frame(tree_depth = c(1, 2)),
-      regression_vfold_cv_para = list(v = 2)
+      regression.model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
+      regression.tune_values = data.frame(tree_depth = c(1, 2)),
+      regression.vfold_cv_para = list(v = 2)
     ),
     "output_lm_mixed_decision_tree_cv_separate_parallel"
   )
@@ -131,8 +131,8 @@ test_that("output_lm_mixed_xgboost_separate", {
       n_batches = 4,
       timing = FALSE,
       approach = "regression_separate",
-      regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
-      regression_recipe_func = function(regression_recipe) {
+      regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
+      regression.recipe_func = function(regression_recipe) {
         return(recipes::step_dummy(regression_recipe, recipes::all_factor_predictors()))
       }
     ),
@@ -151,7 +151,7 @@ test_that("output_lm_numeric_lm_surrogate", {
       prediction_zero = p0,
       n_batches = 1,
       timing = FALSE,
-      regression_model = parsnip::linear_reg()
+      regression.model = parsnip::linear_reg()
     ),
     "output_lm_numeric_lm_surrogate"
   )
@@ -168,7 +168,7 @@ test_that("output_lm_numeric_lm_surrogate_n_comb", {
       n_batches = 4,
       n_combinations = 10,
       timing = FALSE,
-      regression_model = parsnip::linear_reg()
+      regression.model = parsnip::linear_reg()
     ),
     "output_lm_numeric_lm_surrogate_n_comb"
   )
@@ -185,8 +185,8 @@ test_that("output_lm_numeric_lm_surrogate_reg_surr_n_comb", {
       n_batches = 4,
       n_combinations = 10,
       timing = FALSE,
-      regression_model = parsnip::linear_reg(),
-      regression_surr_n_comb = 8
+      regression.model = parsnip::linear_reg(),
+      regression_surrogate.n_comb = 8
     ),
     "output_lm_numeric_lm_surrogate_reg_surr_n_comb"
   )
@@ -202,7 +202,7 @@ test_that("output_lm_categorical_lm_surrogate", {
       prediction_zero = p0,
       n_batches = 2,
       timing = FALSE,
-      regression_model = parsnip::linear_reg()
+      regression.model = parsnip::linear_reg()
     ),
     "output_lm_categorical_lm_surrogate"
   )
@@ -218,7 +218,7 @@ test_that("output_lm_mixed_lm_surrogate", {
       prediction_zero = p0,
       n_batches = 4,
       timing = FALSE,
-      regression_model = parsnip::linear_reg()
+      regression.model = parsnip::linear_reg()
     ),
     "output_lm_mixed_lm_surrogate"
   )
@@ -234,9 +234,9 @@ test_that("output_lm_mixed_decision_tree_cv_surrogate", {
       n_batches = 4,
       timing = FALSE,
       approach = "regression_surrogate",
-      regression_model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
-      regression_tune_values = data.frame(tree_depth = c(1, 2)),
-      regression_vfold_cv_para = list(v = 2)
+      regression.model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
+      regression.tune_values = data.frame(tree_depth = c(1, 2)),
+      regression.vfold_cv_para = list(v = 2)
     ),
     "output_lm_mixed_decision_tree_cv_surrogate"
   )
@@ -252,8 +252,8 @@ test_that("output_lm_mixed_xgboost_surrogate", {
       n_batches = 4,
       timing = FALSE,
       approach = "regression_surrogate",
-      regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
-      regression_recipe_func = function(regression_recipe) {
+      regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
+      regression.recipe_func = function(regression_recipe) {
         recipes::step_dummy(regression_recipe, recipes::all_factor_predictors())
       }
     ),

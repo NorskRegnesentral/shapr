@@ -1,20 +1,20 @@
 # Shapr functions ======================================================================================================
 #' @rdname setup_approach
 #'
-#' @param regression_model A `tidymodels` object of class `model_specs`. Default is a linear regression model, i.e.,
+#' @param regression.model A `tidymodels` object of class `model_specs`. Default is a linear regression model, i.e.,
 #' [parsnip::linear_reg()]. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
 #' and see the vignette for how to add new/own models.
-#' @param regression_tune_values Either `NULL` (default), a data.frame/data.table/tibble, or a function.
+#' @param regression.tune_values Either `NULL` (default), a data.frame/data.table/tibble, or a function.
 #' The data.frame must contain the possible hyperparameter value combinations to try.
-#' The column names must match the names of the tuneable parameters specified in `regression_model`.
-#' If `regression_tune_values` is a function, then it should take one argument `x` which is the training data
+#' The column names must match the names of the tuneable parameters specified in `regression.model`.
+#' If `regression.tune_values` is a function, then it should take one argument `x` which is the training data
 #' for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
 #' Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
 #' vignette for several examples.
-#' @param regression_vfold_cv_para Either `NULL` (default) or a named list containing
+#' @param regression.vfold_cv_para Either `NULL` (default) or a named list containing
 #' the parameters to be sent to [rsample::vfold_cv()]. See the regression vignette for
 #' several examples.
-#' @param regression_recipe_func Either `NULL` (default) or a function that that takes in a [recipes::recipe()]
+#' @param regression.recipe_func Either `NULL` (default) or a function that that takes in a [recipes::recipe()]
 #' object and returns a modified [recipes::recipe()] with potentially additional recipe steps. See the regression
 #' vignette for several examples.
 #' @inheritParams default_doc_explain
@@ -22,10 +22,10 @@
 #' @export
 #' @author Lars Henry Berge Olsen
 setup_approach.regression_separate <- function(internal,
-                                               regression_model = parsnip::linear_reg(),
-                                               regression_tune_values = NULL,
-                                               regression_vfold_cv_para = NULL,
-                                               regression_recipe_func = NULL,
+                                               regression.model = parsnip::linear_reg(),
+                                               regression.tune_values = NULL,
+                                               regression.vfold_cv_para = NULL,
+                                               regression.recipe_func = NULL,
                                                ...) {
   # Check that required libraries are installed
   check_regresseion_namespaces()
@@ -36,7 +36,7 @@ setup_approach.regression_separate <- function(internal,
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <-
-    mget(c("regression_model", "regression_tune_values", "regression_vfold_cv_para", "regression_recipe_func"))
+    mget(c("regression.model", "regression.tune_values", "regression.vfold_cv_para", "regression.recipe_func"))
   internal <- insert_defaults(internal, defaults)
 
   # Check the parameters to the regression approach
@@ -86,11 +86,11 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
       x = current_x_train,
       seed = internal$parameters$seed,
       verbose = internal$parameters$verbose,
-      regression_model = internal$parameters$regression_model,
+      regression.model = internal$parameters$regression.model,
       regression_tune = internal$parameters$regression_tune,
-      regression_tune_values = internal$parameters$regression_tune_values,
-      regression_vfold_cv_para = internal$parameters$regression_vfold_cv_para,
-      regression_recipe_func = internal$parameters$regression_recipe_func
+      regression.tune_values = internal$parameters$regression.tune_values,
+      regression.vfold_cv_para = internal$parameters$regression.vfold_cv_para,
+      regression.recipe_func = internal$parameters$regression.recipe_func
     )
 
     # Compute the predicted response for the explicands, i.e., the v(S, x_i) for all explicands x_i.
@@ -119,7 +119,7 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 #' @param x Data.table containing the data. Either the training data or the explicands. If `x` is the explicands,
 #' then `index_features` must be provided.
 #' @param regression_tune Logical (default is `FALSE`). If `TRUE`, then we are to tune the hyperparemeters based on
-#' the values provided in `regression_tune_values`. Note that no checks are conducted as this is checked earlier in
+#' the values provided in `regression.tune_values`. Note that no checks are conducted as this is checked earlier in
 #' `setup_approach.regression_separate` and `setup_approach.regression_surrogate`.
 #' @param regression_response_var String (default is `y_hat`) containing the name of the response variable.
 #' @param regression_sur_n_comb Integer (default is `NULL`). The number of times each training observations
@@ -132,11 +132,11 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 regression_train <- function(x,
                              seed = 1,
                              verbose = 0,
-                             regression_model = parsnip::linear_reg(),
+                             regression.model = parsnip::linear_reg(),
                              regression_tune = FALSE,
-                             regression_tune_values = NULL,
-                             regression_vfold_cv_para = NULL,
-                             regression_recipe_func = NULL,
+                             regression.tune_values = NULL,
+                             regression.vfold_cv_para = NULL,
+                             regression.recipe_func = NULL,
                              regression_response_var = "y_hat",
                              regression_sur_n_comb = NULL) {
   # Create a recipe to the augmented training data
@@ -144,26 +144,26 @@ regression_train <- function(x,
 
   # Update the recipe if user has provided a function for this. User is responsible for that the function works.
   # This function can, e.g., add transformations, normalization, dummy encoding, interactions, and so on.
-  if (!is.null(regression_recipe_func)) regression_recipe <- regression_recipe_func(regression_recipe)
+  if (!is.null(regression.recipe_func)) regression_recipe <- regression.recipe_func(regression_recipe)
 
   # Combine workflow, model specification, and recipe
   regression_workflow <-
-    workflows::add_recipe(workflows::add_model(workflows::workflow(), regression_model), regression_recipe)
+    workflows::add_recipe(workflows::add_model(workflows::workflow(), regression.model), regression_recipe)
 
   # Check if we are to tune hyperparameters in the regression model, as we then need to update the workflow.
   # If we are not doing any hyperparameter tuning, then the workflow above is enough.
   if (regression_tune) {
-    # Set up the V-fold cross validation using the user provided parameters in `regression_vfold_cv_para`.
-    # Note if `regression_vfold_cv_para` is NULL, then we use the default parameters in `vfold_cv()`.
-    regression_folds <- do.call(rsample::vfold_cv, c(list(data = x), regression_vfold_cv_para))
+    # Set up the V-fold cross validation using the user provided parameters in `regression.vfold_cv_para`.
+    # Note if `regression.vfold_cv_para` is NULL, then we use the default parameters in `vfold_cv()`.
+    regression_folds <- do.call(rsample::vfold_cv, c(list(data = x), regression.vfold_cv_para))
 
     # Check if we are doing surrogate regression, as we then need to update the indices as the augmented
     # training data is highly correlated due to the augmentations which will mess up the cross validation.
     # Since one there assumes that the training and evaluation data are independent. The following code ensures
     # that all augmentations of a single training observations are either in the training or evaluation data.
     if (!is.null(regression_sur_n_comb)) {
-      if (!is.null(regression_vfold_cv_para) && any(names(regression_vfold_cv_para) != "v")) {
-        stop("The `regression_vfold_cv_para` parameter supports only the `v` parameter for surrogate regression.")
+      if (!is.null(regression.vfold_cv_para) && any(names(regression.vfold_cv_para) != "v")) {
+        stop("The `regression.vfold_cv_para` parameter supports only the `v` parameter for surrogate regression.")
       }
 
       n <- nrow(x) / regression_sur_n_comb # Get the number of training observations (before augmentation)
@@ -181,11 +181,11 @@ regression_train <- function(x,
       }
     }
 
-    # Extract the grid of hyperparameter values. Note that regression_tune_values is either a data.frame or a function.
-    if (is.data.frame(regression_tune_values)) {
-      regression_grid <- regression_tune_values
+    # Extract the grid of hyperparameter values. Note that regression.tune_values is either a data.frame or a function.
+    if (is.data.frame(regression.tune_values)) {
+      regression_grid <- regression.tune_values
     } else {
-      regression_grid <- regression_tune_values(x[, -..regression_response_var])
+      regression_grid <- regression.tune_values(x[, -..regression_response_var])
     }
 
     # Add the hyperparameter tuning to the workflow
@@ -240,36 +240,36 @@ get_regression_y_hat <- function(internal, model) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-get_regression_tune <- function(regression_model, regression_tune_values, x_train) {
+get_regression_tune <- function(regression.model, regression.tune_values, x_train) {
   # Check that the regression model is a tidymodels object
-  if (is.null(regression_model) || !"model_spec" %in% class(regression_model)) {
-    stop("`regression_model` must be a tidymodels object with class 'model_spec'. See documentation.")
+  if (is.null(regression.model) || !"model_spec" %in% class(regression.model)) {
+    stop("`regression.model` must be a tidymodels object with class 'model_spec'. See documentation.")
   }
 
   # Check if we are to tune some model hyperparameters
-  regression_para <- lapply(regression_model$args, function(para) rlang::quo_get_expr(para))
+  regression_para <- lapply(regression.model$args, function(para) rlang::quo_get_expr(para))
   regression_para_tune <- lapply(regression_para, function(para) !is.null(para) && grepl("tune()", para))
   regression_para_tune_names <- names(regression_para_tune)[unlist(regression_para_tune)]
   regression_tune <- any(unlist(regression_para_tune))
 
   # Check that user have provided a tuning
-  if (isTRUE(regression_tune) && is.null(regression_tune_values)) {
-    stop("`regression_tune_values` must be provided when `regression_model` contains hyperparameters to tune.")
+  if (isTRUE(regression_tune) && is.null(regression.tune_values)) {
+    stop("`regression.tune_values` must be provided when `regression.model` contains hyperparameters to tune.")
   }
 
   # Check function or tibble
-  if (!is.null(regression_tune_values) &&
-    !is.data.frame(regression_tune_values) &&
-    !is.function(regression_tune_values)) {
-    stop("`regression_tune_values` must be of either class `data.frame` or `function`. See documentation.")
+  if (!is.null(regression.tune_values) &&
+    !is.data.frame(regression.tune_values) &&
+    !is.function(regression.tune_values)) {
+    stop("`regression.tune_values` must be of either class `data.frame` or `function`. See documentation.")
   }
 
   # Get the grid values. And if user provided a function, then check that it is a data.frame.
-  regression_tune_values_grid <- regression_tune_values
-  if (is.function(regression_tune_values)) {
-    regression_tune_values_grid <- regression_tune_values(x_train)
+  regression_tune_values_grid <- regression.tune_values
+  if (is.function(regression.tune_values)) {
+    regression_tune_values_grid <- regression.tune_values(x_train)
     if (!is.data.frame(regression_tune_values_grid)) {
-      stop("The output of the user provided `regression_tune_values` function must be of class `data.frame`.")
+      stop("The output of the user provided `regression.tune_values` function must be of class `data.frame`.")
     }
   }
 
@@ -280,8 +280,8 @@ get_regression_tune <- function(regression_model, regression_tune_values, x_trai
   if (!(all(regression_tune_values_names %in% regression_para_tune_names) &&
     all(regression_para_tune_names %in% regression_tune_values_names))) {
     stop(paste0(
-      "The tunable parameters in `regression_model` ('",
-      paste(regression_para_tune_names, collapse = "', '"), "') and `regression_tune_values` ('",
+      "The tunable parameters in `regression.model` ('",
+      paste(regression_para_tune_names, collapse = "', '"), "') and `regression.tune_values` ('",
       paste(regression_tune_values_names, collapse = "', '"), "') must match."
     ))
   }
@@ -303,32 +303,32 @@ get_regression_tune <- function(regression_model, regression_tune_values, x_trai
 check_regression_parameters <- function(internal) {
   # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
   check_regression_recipe_func(
-    regression_recipe_func = internal$parameters$regression_recipe_func,
+    regression.recipe_func = internal$parameters$regression.recipe_func,
     x_explain = internal$data$x_explain
   )
 
-  # Check that `regression_vfold_cv_para` is either NULL or a named list that only contains recognized parameters
-  check_regression_vfold_cv_para(regression_vfold_cv_para = internal$parameters$regression_vfold_cv_para)
+  # Check that `regression.vfold_cv_para` is either NULL or a named list that only contains recognized parameters
+  check_regression_vfold_cv_para(regression.vfold_cv_para = internal$parameters$regression.vfold_cv_para)
 
   # Check that `check_regression_n_comb` is a valid value (only applicable for surrogate regression)
   check_regression_n_comb(
-    regression_surr_n_comb = internal$parameters$regression_surr_n_comb,
+    regression_surrogate.n_comb = internal$parameters$regression_surrogate.n_comb,
     used_n_combinations = internal$parameters$used_n_combinations
   )
 
   # Check and get if we are to tune the hyperparameters of the regression model
   internal$parameters$regression_tune <- get_regression_tune(
-    regression_model = internal$parameters$regression_model,
-    regression_tune_values = internal$parameters$regression_tune_values,
+    regression.model = internal$parameters$regression.model,
+    regression.tune_values = internal$parameters$regression.tune_values,
     x_train = internal$data$x_train
   )
 
   return(internal)
 }
 
-#' Check `regression_recipe_func`
+#' Check `regression.recipe_func`
 #'
-#' Check that regression_recipe_func is a function that returns the
+#' Check that regression.recipe_func is a function that returns the
 #' RHS of the formula for arbitrary feature name inputs.
 #'
 #' @inheritParams explain
@@ -336,48 +336,48 @@ check_regression_parameters <- function(internal) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_regression_recipe_func <- function(regression_recipe_func, x_explain) {
-  if (!is.null(regression_recipe_func) && !is.function(regression_recipe_func)) {
-    stop("`regression_recipe_func` must be a function. See documentation.")
+check_regression_recipe_func <- function(regression.recipe_func, x_explain) {
+  if (!is.null(regression.recipe_func) && !is.function(regression.recipe_func)) {
+    stop("`regression.recipe_func` must be a function. See documentation.")
   }
 
-  if (!is.null(regression_recipe_func) && is.function(regression_recipe_func)) {
+  if (!is.null(regression.recipe_func) && is.function(regression.recipe_func)) {
     x_temp <- copy(x_explain)[, "y_hat_temp" := 1]
-    regression_recipe_func_output <- regression_recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))
+    regression_recipe_func_output <- regression.recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))
     if (!"recipe" %in% class(regression_recipe_func_output)) {
-      stop("The output of the `regression_recipe_func` must be of class `recipe`.")
+      stop("The output of the `regression.recipe_func` must be of class `recipe`.")
     }
   }
 }
 
 #' Check the parameters that are sent to [rsample::vfold_cv()]
 #'
-#' Check that `regression_vfold_cv_para` is either NULL or a named list that only contains recognized parameters.
+#' Check that `regression.vfold_cv_para` is either NULL or a named list that only contains recognized parameters.
 #'
 #' @inheritParams setup_approach.regression_separate
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_regression_vfold_cv_para <- function(regression_vfold_cv_para) {
-  if (!is.null(regression_vfold_cv_para)) {
-    # Check that regression_vfold_cv_para is a named list
-    if (!is.list(regression_vfold_cv_para) || is.null(names(regression_vfold_cv_para))) {
-      stop("`regression_vfold_cv_para` must be a named list. See documentation using '?shapr::explain()'.")
+check_regression_vfold_cv_para <- function(regression.vfold_cv_para) {
+  if (!is.null(regression.vfold_cv_para)) {
+    # Check that regression.vfold_cv_para is a named list
+    if (!is.list(regression.vfold_cv_para) || is.null(names(regression.vfold_cv_para))) {
+      stop("`regression.vfold_cv_para` must be a named list. See documentation using '?shapr::explain()'.")
     }
 
     # Check that all entries are parameters in the rsample::vfold_cv() function
     unknown_para_names <-
-      names(regression_vfold_cv_para)[!names(regression_vfold_cv_para) %in% methods::formalArgs(rsample::vfold_cv)[-1]]
+      names(regression.vfold_cv_para)[!names(regression.vfold_cv_para) %in% methods::formalArgs(rsample::vfold_cv)[-1]]
     if (length(unknown_para_names) > 0) {
       stop(paste0(
-        "The following parameters in `regression_vfold_cv_para` are not supported by `rsample::vfold_cv()`: '",
+        "The following parameters in `regression.vfold_cv_para` are not supported by `rsample::vfold_cv()`: '",
         paste0(unknown_para_names, collapse = "', '"), "'."
       ))
     }
 
     # Ensure that we have at least two folds in the cross validation procedure
-    if ("v" %in% names(regression_vfold_cv_para) && regression_vfold_cv_para[["v"]] <= 1) {
-      stop("The parameter `v` in `regression_vfold_cv_para` must be strictly larger than 1.")
+    if ("v" %in% names(regression.vfold_cv_para) && regression.vfold_cv_para[["v"]] <= 1) {
+      stop("The parameter `v` in `regression.vfold_cv_para` must be strictly larger than 1.")
     }
   }
 }

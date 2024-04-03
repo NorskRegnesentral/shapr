@@ -277,7 +277,7 @@ explanation_list$sep_lm <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::linear_reg()
+  regression.model = parsnip::linear_reg()
 )
 ```
 
@@ -317,8 +317,8 @@ explanation_list$sep_pcr <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::linear_reg(),
-  regression_recipe_func = function(regression_recipe) {
+  regression.model = parsnip::linear_reg(),
+  regression.recipe_func = function(regression_recipe) {
     return(step_pca(regression_recipe, all_numeric_predictors(), num_comp = 2))
   }
 )
@@ -333,8 +333,8 @@ explanation_list$sep_splines <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::linear_reg(),
-  regression_recipe_func = function(regression_recipe) {
+  regression.model = parsnip::linear_reg(),
+  regression.recipe_func = function(regression_recipe) {
     return(step_ns(regression_recipe, all_numeric_predictors(), deg_free = 2))
   }
 )
@@ -349,7 +349,7 @@ Furthermore, we stress that the purpose of this example is to highlight the flex
 NOT that the transformations below are reasonable to do.
 ```{r recipe-func, cache=TRUE}
 # Example function of how to apply step functions from the recipes package to specific features
-regression_recipe_func <- function(recipe) {
+regression.recipe_func <- function(recipe) {
   # Get the names of the present features
   feature_names <- recipe$var_info$variable[recipe$var_info$role == "predictor"]
 
@@ -384,8 +384,8 @@ explanation_list$sep_reicpe_example <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::linear_reg(),
-  regression_recipe_func = regression_recipe_func
+  regression.model = parsnip::linear_reg(),
+  regression.recipe_func = regression.recipe_func
 )
 ```
 
@@ -424,7 +424,7 @@ explanation_list$sep_tree_stump <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::decision_tree(
+  regression.model = parsnip::decision_tree(
     tree_depth = 1,
     min_n = 2,
     cost_complexity = 0.01,
@@ -441,10 +441,10 @@ explanation_list$sep_tree_default <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::decision_tree(engine = "rpart", mode = "regression")
+  regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
 ```
-We can also set `regression_model = parsnip::decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>% parsnip::set_engine("rpart") %>% parsnip::set_mode("regression")` if we want to use the pipe function (`%>%`).
+We can also set `regression.model = parsnip::decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>% parsnip::set_engine("rpart") %>% parsnip::set_mode("regression")` if we want to use the pipe function (`%>%`).
 
 
 We can now compare the two new methods. We see that the decision tree with default parameters outperform
@@ -462,34 +462,34 @@ print_MSEv_scores_and_time(explanation_list)
 
 Another option is to use cross validation to tune the hyperparameters. To do this, we need to specify three things:
 
-1. In `regression_model`, we need to specify which parameters to tune in the model.
+1. In `regression.model`, we need to specify which parameters to tune in the model.
 This is done by setting the parameter equal to `hardhat::tune()`. E.g., if we want to
 tune the `tree_depth` in the `decision_tree`, while using default parameters for the
 other parameters, then we set `decision_tree(tree_depth = hardhat::tune())`.
-2. In `regression_tune_values`, we must provide either a data.frame/data.table/tibble of the
+2. In `regression.tune_values`, we must provide either a data.frame/data.table/tibble of the
 possible hyperparameter values to consider or a function that takes in the training data for
 each combination/coalition and outputs the a data.frame with the possible hyperparameter values.
 The latter allows us to use different hyperparameter values for the different coalition sizes.
 This is also essential if the domain of a hyperparameter changes with the coalition size. E.g.,
 `mtry` in `ranger` (random forest). See example below.
-The column names of `regression_tune_values` (or the output if it is a function)
-must match the tuneable hyperparameters specified in `regression_model`. I.e., for the
-example above, `regression_tune_values` must be a one column data.frame/data.table/tibble
+The column names of `regression.tune_values` (or the output if it is a function)
+must match the tuneable hyperparameters specified in `regression.model`. I.e., for the
+example above, `regression.tune_values` must be a one column data.frame/data.table/tibble
 with the column name `tree_depth`. This can either be done by specifying the values manually
 or using the `dials` package, e.g., `dials::grid_regular(dials::tree_depth(), levels = 5)`.
 Or it can be a function that outputs a data.frame on the same form.
-3. It is optional to specify the `regression_vfold_cv_para` parameter. If used, then
-`regression_vfold_cv_para` must be a named list specifying the parameters to send to the
+3. It is optional to specify the `regression.vfold_cv_para` parameter. If used, then
+`regression.vfold_cv_para` must be a named list specifying the parameters to send to the
 cross-validation function `rsample::vfold_cv()`. See `?rsample::vfold_cv` to see the default
-parameters. The names in `regression_vfold_cv_para` must match the parameter names in
+parameters. The names in `regression.vfold_cv_para` must match the parameter names in
 `rsample::vfold_cv()`. For example, if we want 5-fold cross validation, then we set
-`regression_vfold_cv_para = list(v = 5)`.
+`regression.vfold_cv_para = list(v = 5)`.
 
-First, let us look at some ways to specify `regression_tune_values`.
+First, let us look at some ways to specify `regression.tune_values`.
 Note that `dials` have several other grid functions too, e.g., `dials::grid_random()`
 and `dials::grid_latin_hypercube()`.
 ```{r echo=TRUE, results='hide'}
-# Possible ways to define the `regression_tune_values` object.
+# Possible ways to define the `regression.tune_values` object.
 # function(x) dials::grid_regular(dials::tree_depth(), levels = 4)
 dials::grid_regular(dials::tree_depth(), levels = 4)
 data.table(tree_depth = c(1, 5, 10, 15)) # Note that we can also use data.frame or tibble too.
@@ -514,11 +514,11 @@ explanation_list$sep_tree_cv <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::decision_tree(
+  regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"
   ),
-  regression_tune_values = dials::grid_regular(dials::tree_depth(), levels = 4),
-  regression_vfold_cv_para = list(v = 5)
+  regression.tune_values = dials::grid_regular(dials::tree_depth(), levels = 4),
+  regression.vfold_cv_para = list(v = 5)
 )
 
 # Use trees with cross validation on the depth and cost complexity. Manually set the values.
@@ -529,20 +529,20 @@ explanation_list$sep_tree_cv_2 <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::decision_tree(
+  regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(),
     cost_complexity = hardhat::tune(),
     engine = "rpart",
     mode = "regression"
   ),
-  regression_tune_values =
+  regression.tune_values =
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.vfold_cv_para = list(v = 5)
 )
 ```
 
 We also include one example with a random forest model where the tunable hyperparameter `mtry` is dependent
-on the coalition size, hence, we let `regression_tune_values` be a function. If we do not let `regression_tune_values`
+on the coalition size, hence, we let `regression.tune_values` be a function. If we do not let `regression.tune_values`
 be a function, then `tidymodels` will crash for any `mtry` larger than 1. By setting `verbose = 2`, we
 get messages about which batch and coalition/combination that are currently being processed and the results of the cross-validation procedure. Note, that the tested hyperparameter value combinations changes based on the coalition size.
 ```{r rf-cv, cache=TRUE}
@@ -554,7 +554,7 @@ explanation_list$sep_rf <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::rand_forest(engine = "ranger", mode = "regression")
+  regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 
 # Using random forest with parameters tuned by cross validation
@@ -566,14 +566,14 @@ explanation_list$sep_rf_cv <- explain(
   n_batches = 1, # One batch to get printouts in chronological order
   verbose = 2, # To get printouts
   approach = "regression_separate",
-  regression_model = parsnip::rand_forest(
+  regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values =
+  regression.tune_values =
     function(x) {
       dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 3)
     },
-  regression_vfold_cv_para = list(v = 5)
+  regression.vfold_cv_para = list(v = 5)
 )
 ```
 
@@ -619,7 +619,7 @@ explanation_list$sep_xgboost <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
+  regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
 
 # Do cross validation on number of trees
@@ -630,10 +630,10 @@ explanation_list$sep_xgboost_cv <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model =
+  regression.model =
     parsnip::boost_tree(trees = hardhat::tune(), engine = "xgboost", mode = "regression"),
-  regression_tune_values = expand.grid(trees = c(5, 15, 25)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.tune_values = expand.grid(trees = c(5, 15, 25)),
+  regression.vfold_cv_para = list(v = 5)
 )
 
 # Do cross validation on number of trees but this time in parallel on two threads
@@ -645,10 +645,10 @@ explanation_list$sep_xgboost_cv_par <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model =
+  regression.model =
     parsnip::boost_tree(trees = hardhat::tune(), engine = "xgboost", mode = "regression"),
-  regression_tune_values = expand.grid(trees = c(5, 15, 25)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.tune_values = expand.grid(trees = c(5, 15, 25)),
+  regression.vfold_cv_para = list(v = 5)
 )
 
 explanation_list$sep_xgboost_cv_2_par <- explain(
@@ -658,14 +658,14 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::boost_tree(
+  regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
     tree_depth = hardhat::tune(),
     engine = "xgboost",
     mode = "regression"
   ),
-  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression.vfold_cv_para = list(v = 5)
 )
 future::plan(future::sequential) # To return to non-parallel computation
 ```
@@ -712,7 +712,7 @@ explanation_list$sur_lm <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::linear_reg()
+  regression.model = parsnip::linear_reg()
 )
 
 # Using xgboost with default parameters as the surrogate model
@@ -723,7 +723,7 @@ explanation_list$sur_xgboost <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
+  regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
 
 # Using xgboost with default parameters as the surrogate model
@@ -734,14 +734,14 @@ explanation_list$sur_xgboost_cv <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::boost_tree(
+  regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
     tree_depth = hardhat::tune(),
     engine = "xgboost",
     mode = "regression"
   ),
-  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression.vfold_cv_para = list(v = 5)
 )
 
 # Using random forest with default parameters as the surrogate model
@@ -752,7 +752,7 @@ explanation_list$sur_rf <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::rand_forest(engine = "ranger", mode = "regression")
+  regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 
 # Using random forest with parameters tuned by cross validation as the surrogate model
@@ -763,15 +763,15 @@ explanation_list$sur_rf_cv <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::rand_forest(
+  regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values = dials::grid_regular(
+  regression.tune_values = dials::grid_regular(
     dials::mtry(c(1, ncol(x_explain))),
     dials::trees(c(50, 750)),
     levels = 4
   ),
-  regression_vfold_cv_para = list(v = 5)
+  regression.vfold_cv_para = list(v = 5)
 )
 ```
 
@@ -805,15 +805,15 @@ explanation_list$sur_rf_cv_par_doMC <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::rand_forest(
+  regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values = dials::grid_regular(
+  regression.tune_values = dials::grid_regular(
     dials::mtry(c(1, ncol(x_explain))),
     dials::trees(c(50, 750)),
     levels = 4
   ),
-  regression_vfold_cv_para = list(v = 5)
+  regression.vfold_cv_para = list(v = 5)
 )
 foreach::registerDoSEQ() # To return to non-parallel computation
 
@@ -833,15 +833,15 @@ explanation_list$sur_rf_cv_par_doMC_future <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::rand_forest(
+  regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values = dials::grid_regular(
+  regression.tune_values = dials::grid_regular(
     dials::mtry(c(1, ncol(x_explain))),
     dials::trees(c(50, 750)),
     levels = 4
   ),
-  regression_vfold_cv_para = list(v = 5)
+  regression.vfold_cv_para = list(v = 5)
 )
 future::plan(future::sequential) # To return to non-parallel computation
 foreach::registerDoSEQ()
@@ -863,15 +863,15 @@ explanation_list$sur_rf_cv_par_doParallel <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::rand_forest(
+  regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values = dials::grid_regular(
+  regression.tune_values = dials::grid_regular(
     dials::mtry(c(1, ncol(x_explain))),
     dials::trees(c(50, 750)),
     levels = 4
   ),
-  regression_vfold_cv_para = list(v = 5)
+  regression.vfold_cv_para = list(v = 5)
 )
 
 # Stop cluster and remove object that makes `shapr` crash
@@ -1042,7 +1042,7 @@ explanation_list$sep_ppr <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = ppr_reg(num_terms = 2)
+  regression.model = ppr_reg(num_terms = 2)
 )
 
 # PPR separate with cross-validated number of terms
@@ -1053,9 +1053,9 @@ explanation_list$sep_ppr_cv <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = ppr_reg(num_terms = hardhat::tune()),
-  regression_tune_values = dials::grid_regular(dials::num_terms(c(1, 4)), levels = 3),
-  regression_vfold_cv_para = list(v = 10)
+  regression.model = ppr_reg(num_terms = hardhat::tune()),
+  regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 4)), levels = 3),
+  regression.vfold_cv_para = list(v = 5)
 )
 
 # PPR surrogate with specified number of terms
@@ -1066,7 +1066,7 @@ explanation_list$sur_ppr <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = ppr_reg(num_terms = 3)
+  regression.model = ppr_reg(num_terms = 3)
 )
 
 # PPR surrogate with cross-validated number of terms
@@ -1077,9 +1077,9 @@ explanation_list$sur_ppr_cv <- explain(
   prediction_zero = p0,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = ppr_reg(num_terms = hardhat::tune()),
-  regression_tune_values = dials::grid_regular(dials::num_terms(c(1, 8)), levels = 4),
-  regression_vfold_cv_para = list(v = 10)
+  regression.model = ppr_reg(num_terms = hardhat::tune()),
+  regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 8)), levels = 4),
+  regression.vfold_cv_para = list(v = 10)
 )
 ```
 We can then compare the $\operatorname{MSE}_v$ and some of the Shapley value explanations.
@@ -1216,7 +1216,7 @@ how to use the separate and surrogate regression methods. Of the Monte Carlo bas
 we can divide the regression models into two groups. Those that can handle categorical features by default
 and those models we need to apply pre-processing of the categorical features. By pre-processing, we mean
 that we need to convert them into numerical values using for example dummy features. We demonstrate how
-this is done below using the `regression_recipe_func` function.
+this is done below using the `regression.recipe_func` function.
 
 ## Mixed data: setup
 
@@ -1293,7 +1293,7 @@ explanation_list_mixed$sep_lm <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::linear_reg()
+  regression.model = parsnip::linear_reg()
 )
 
 # Linear regression where we have added splines to the numerical features
@@ -1304,8 +1304,8 @@ explanation_list_mixed$sep_splines <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::linear_reg(),
-  regression_recipe_func = function(regression_recipe) {
+  regression.model = parsnip::linear_reg(),
+  regression.recipe_func = function(regression_recipe) {
     return(step_ns(regression_recipe, all_numeric_predictors(), deg_free = 2))
   }
 )
@@ -1318,7 +1318,7 @@ explanation_list_mixed$sep_tree <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::decision_tree(engine = "rpart", mode = "regression")
+  regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
 
 # Use trees with cross validation on the depth and cost complexity. Manually set the values.
@@ -1329,15 +1329,15 @@ explanation_list_mixed$sep_tree_cv <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::decision_tree(
+  regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(),
     cost_complexity = hardhat::tune(),
     engine = "rpart",
     mode = "regression"
   ),
-  regression_tune_values =
+  regression.tune_values =
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.vfold_cv_para = list(v = 5)
 )
 
 # Random forest with default hyperparameters. Do NOT need to use dummy features.
@@ -1348,7 +1348,7 @@ explanation_list_mixed$sep_rf <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::rand_forest(engine = "ranger", mode = "regression")
+  regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 
 # Random forest with cross validated hyperparameters.
@@ -1359,14 +1359,14 @@ explanation_list_mixed$sep_rf_cv <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::rand_forest(
+  regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values =
+  regression.tune_values =
     function(x) {
       dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 4)
     },
-  regression_vfold_cv_para = list(v = 5)
+  regression.vfold_cv_para = list(v = 5)
 )
 
 # Xgboost with default hyperparameters, but we have to dummy encode the factors
@@ -1377,8 +1377,8 @@ explanation_list_mixed$sep_xgboost <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
-  regression_recipe_func = function(regression_recipe) {
+  regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
+  regression.recipe_func = function(regression_recipe) {
     return(step_dummy(regression_recipe, all_factor_predictors()))
   }
 )
@@ -1391,17 +1391,17 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_separate",
-  regression_model = parsnip::boost_tree(
+  regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
     tree_depth = hardhat::tune(),
     engine = "xgboost",
     mode = "regression"
   ),
-  regression_recipe_func = function(regression_recipe) {
+  regression.recipe_func = function(regression_recipe) {
     return(step_dummy(regression_recipe, all_factor_predictors()))
   },
-  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression.vfold_cv_para = list(v = 5)
 )
 ```
 
@@ -1418,7 +1418,7 @@ explanation_list_mixed$sur_lm <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::linear_reg()
+  regression.model = parsnip::linear_reg()
 )
 
 # Linear regression where we have added splines to the numerical features
@@ -1430,8 +1430,8 @@ explanation_list_mixed$sur_splines <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::linear_reg(),
-  regression_recipe_func = function(recipe) {
+  regression.model = parsnip::linear_reg(),
+  regression.recipe_func = function(recipe) {
     return(step_ns(recipe, all_numeric_predictors(), -starts_with("mask_"), deg_free = 2))
   }
 )
@@ -1444,7 +1444,7 @@ explanation_list_mixed$sur_tree <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::decision_tree(engine = "rpart", mode = "regression")
+  regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
 
 # Use trees with cross validation on the depth and cost complexity. Manually set the values.
@@ -1455,15 +1455,15 @@ explanation_list_mixed$sur_tree_cv <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::decision_tree(
+  regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(),
     cost_complexity = hardhat::tune(),
     engine = "rpart",
     mode = "regression"
   ),
-  regression_tune_values =
+  regression.tune_values =
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.vfold_cv_para = list(v = 5)
 )
 
 # Random forest with default hyperparameters. Do NOT need to use dummy features.
@@ -1474,7 +1474,7 @@ explanation_list_mixed$sur_rf <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::rand_forest(engine = "ranger", mode = "regression")
+  regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 
 # Random forest with cross validated hyperparameters.
@@ -1485,11 +1485,11 @@ explanation_list_mixed$sur_rf_cv <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::rand_forest(
+  regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
   ),
-  regression_tune_values = expand.grid(mtry = c(1, 2, 4), trees = c(50, 250, 500, 750)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.tune_values = expand.grid(mtry = c(1, 2, 4), trees = c(50, 250, 500, 750)),
+  regression.vfold_cv_para = list(v = 5)
 )
 
 # Xgboost with default hyperparameters, but we have to dummy encode the factors
@@ -1500,8 +1500,8 @@ explanation_list_mixed$sur_xgboost <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
-  regression_recipe_func = function(regression_recipe) {
+  regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
+  regression.recipe_func = function(regression_recipe) {
     return(step_dummy(regression_recipe, all_factor_predictors()))
   }
 )
@@ -1514,17 +1514,17 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
   prediction_zero = p0_cat,
   n_batches = 4,
   approach = "regression_surrogate",
-  regression_model = parsnip::boost_tree(
+  regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
     tree_depth = hardhat::tune(),
     engine = "xgboost",
     mode = "regression"
   ),
-  regression_recipe_func = function(regression_recipe) {
+  regression.recipe_func = function(regression_recipe) {
     return(step_dummy(regression_recipe, all_factor_predictors()))
   },
-  regression_tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
-  regression_vfold_cv_para = list(v = 5)
+  regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
+  regression.vfold_cv_para = list(v = 5)
 )
 ```
 
