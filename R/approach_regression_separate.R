@@ -454,7 +454,7 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
   n_cv <- min(n_cv, nrow(regression.grid))
 
   # Extract the n_cv best results
-  best_results <- tune::show_best(regression.results, n = n_cv)
+  best_results <- tune::show_best(regression.results, n = n_cv, metric = "rmse")
 
   # Needed to make prinout tables prettier to ensure same column dimensions for all settings.
   regression.grid_best <- best_results[, feature_names]
