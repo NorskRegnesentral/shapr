@@ -17,7 +17,12 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
     ret <- list()
     for (i in seq_along(S_batch)) {
       S <- S_batch[[i]]
-      ret[[i]] <- batch_compute_vS(S = S, internal = internal, model = model, predict_model = predict_model)
+      ret[[i]] <- batch_compute_vS(
+        S = S,
+        internal = internal,
+        model = model,
+        predict_model = predict_model
+      )
     }
   }
 
@@ -25,7 +30,11 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
 }
 
 future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
-  p <- if (requireNamespace("progressr", quietly = TRUE)) progressr::progressor(sum(lengths(S_batch))) else NULL
+  if (requireNamespace("progressr", quietly = TRUE)) {
+    p <- progressr::progressor(sum(lengths(S_batch)))
+  } else {
+    p <- NULL
+  }
   ret <- future.apply::future_lapply(
     X = S_batch,
     FUN = batch_compute_vS,
