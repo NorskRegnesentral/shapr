@@ -687,9 +687,9 @@ check_approach <- function(internal) {
   ) {
     stop(
       paste0(
-        "`approach` must be one of the following: \n", paste0(supported_approaches, collapse = ", "), "\n",
-        "or a vector of length one less than the number of features (", n_features - 1, "), ",
-        "with only the above strings except the regression approaches."
+        "`approach` must be one of the following: '", paste0(supported_approaches, collapse = "', '"), "'.\n",
+        "These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector ",
+        "of length one less than the number of features (", n_features - 1, ")."
       )
     )
   }
