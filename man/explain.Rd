@@ -118,7 +118,7 @@ Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} 
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
+  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
   \describe{
     \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
@@ -191,6 +191,29 @@ If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
+    \item{\code{regression.model}}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
+\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
+and see the vignette for how to add new/own models.}
+    \item{\code{regression.tune_values}}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
+The data.frame must contain the possible hyperparameter value combinations to try.
+The column names must match the names of the tuneable parameters specified in \code{regression.model}.
+If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
+for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
+Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+vignette for several examples.}
+    \item{\code{regression.vfold_cv_para}}{Either \code{NULL} (default) or a named list containing
+the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}. See the regression vignette for
+several examples.}
+    \item{\code{regression.recipe_func}}{Either \code{NULL} (default) or a function that that takes in a \code{\link[recipes:recipe]{recipes::recipe()}}
+object and returns a modified \code{\link[recipes:recipe]{recipes::recipe()}} with potentially additional recipe steps. See the regression
+vignette for several examples.}
+    \item{\code{regression.surrogate_n_comb}}{Integer (default is \code{internal$parameters$used_n_combinations}) specifying the
+number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
+"\code{internal$parameters$used_n_combinations} - 2". By default, we use all coalitions, but this can take a lot of memory
+in larger dimensions. Note that by "all", we mean all coalitions chosen by \code{shapr} to be used. This will be all
+\eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in the exact mode. If the
+user sets a lower value than \code{internal$parameters$used_n_combinations}, then we sample this amount of unique
+coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.}
     \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
 Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
     \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))

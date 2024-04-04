@@ -32,7 +32,7 @@ setup_approach.regression_separate <- function(internal,
 
   # Small printout to the user
   if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_separate'.")
-  if (internal$parameters$verbose == 2) regression_sep.time_message() # TODO: maybe remove
+  if (internal$parameters$verbose == 2) regression.separate_time_mess() # TODO: maybe remove
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <-
@@ -402,7 +402,7 @@ regression.check_namespaces <- function() {
 #' Produce time message for separate regression
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression_sep.time_message <- function() {
+regression.separate_time_mess <- function() {
   message(paste(
     "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object \n",
     "can be missleading as `setup_computation` does not contain the training times of the \n",

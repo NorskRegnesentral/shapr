@@ -58,21 +58,20 @@ setup_approach(internal, ...)
 
 \method{setup_approach}{regression_separate}(
   internal,
-  regression_model = parsnip::linear_reg(),
-  regression_tune_values = NULL,
-  regression_vfold_cv_para = NULL,
-  regression_recipe_func = NULL,
+  regression.model = parsnip::linear_reg(),
+  regression.tune_values = NULL,
+  regression.vfold_cv_para = NULL,
+  regression.recipe_func = NULL,
   ...
 )
 
 \method{setup_approach}{regression_surrogate}(
   internal,
-  regression_model = parsnip::linear_reg(),
-  regression_tune_values = NULL,
-  regression_vfold_cv_para = NULL,
-  regression_recipe_func = NULL,
-  regression_surr_n_comb = internal$parameters$used_n_combinations - 2,
-  regression_surr_save_x_augment = FALSE,
+  regression.model = parsnip::linear_reg(),
+  regression.tune_values = NULL,
+  regression.vfold_cv_para = NULL,
+  regression.recipe_func = NULL,
+  regression.surrogate_n_comb = internal$parameters$used_n_combinations - 2,
   ...
 )
 
@@ -179,36 +178,33 @@ Containing the mean of the data generating distribution.
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
 
-\item{regression_model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
+\item{regression.model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
 \code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
 and see the vignette for how to add new/own models.}
 
-\item{regression_tune_values}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
+\item{regression.tune_values}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
 The data.frame must contain the possible hyperparameter value combinations to try.
-The column names must match the names of the tuneable parameters specified in \code{regression_model}.
-If \code{regression_tune_values} is a function, then it should take one argument \code{x} which is the training data
+The column names must match the names of the tuneable parameters specified in \code{regression.model}.
+If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
 for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
 vignette for several examples.}
 
-\item{regression_vfold_cv_para}{Either \code{NULL} (default) or a named list containing
+\item{regression.vfold_cv_para}{Either \code{NULL} (default) or a named list containing
 the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}. See the regression vignette for
 several examples.}
 
-\item{regression_recipe_func}{Either \code{NULL} (default) or a function that that takes in a \code{\link[recipes:recipe]{recipes::recipe()}}
+\item{regression.recipe_func}{Either \code{NULL} (default) or a function that that takes in a \code{\link[recipes:recipe]{recipes::recipe()}}
 object and returns a modified \code{\link[recipes:recipe]{recipes::recipe()}} with potentially additional recipe steps. See the regression
 vignette for several examples.}
 
-\item{regression_surr_n_comb}{Integer (default is \code{internal$parameters$used_n_combinations}) specifying the number
-of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
+\item{regression.surrogate_n_comb}{Integer (default is \code{internal$parameters$used_n_combinations}) specifying the
+number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
 "\code{internal$parameters$used_n_combinations} - 2". By default, we use all coalitions, but this can take a lot of memory
 in larger dimensions. Note that by "all", we mean all coalitions chosen by \code{shapr} to be used. This will be all
 \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in the exact mode. If the
 user sets a lower value than \code{internal$parameters$used_n_combinations}, then we sample this amount of unique
 coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.}
-
-\item{regression_surr_save_x_augment}{Logical (default is \code{FALSE}). If \code{TRUE}, then the augmented version of the
-training data is included in the returned list from \code{\link[=explain]{explain()}}.}
 
 \item{timeseries.fixed_sigma_vec}{Numeric. (Default = 2)
 Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}

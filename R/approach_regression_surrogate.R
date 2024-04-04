@@ -18,7 +18,8 @@ setup_approach.regression_surrogate <- function(internal,
                                                 regression.tune_values = NULL,
                                                 regression.vfold_cv_para = NULL,
                                                 regression.recipe_func = NULL,
-                                                regression.surrogate_n_comb = internal$parameters$used_n_combinations - 2,
+                                                regression.surrogate_n_comb =
+                                                  internal$parameters$used_n_combinations - 2,
                                                 ...) {
   # Check that required libraries are installed
   regression.check_namespaces()
@@ -40,7 +41,7 @@ setup_approach.regression_surrogate <- function(internal,
   internal <- regression.get_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
 
   # Augment the training data
-  x_train_augmented <- regression.sur_augment_data (
+  x_train_augmented <- regression.surrogate_aug_data(
     internal = internal, x = internal$data$x_train, y_hat = internal$data$x_train_y_hat, augment_include_grand = TRUE
   )
 
@@ -76,7 +77,7 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
   if (internal$parameters$verbose == 2) regression.prep_message_batch(internal, index_features)
 
   # Augment the explicand data
-  x_explain_aug <- regression.sur_augment_data (internal, x = internal$data$x_explain, index_features = index_features)
+  x_explain_aug <- regression.surrogate_aug_data(internal, x = internal$data$x_explain, index_features = index_features)
 
   # Compute the predicted response for the explicands, i.e., v(S, x_i) for all explicands x_i and S in index_features
   pred_explicand <- predict(internal$objects$regression_surrogate_model, new_data = x_explain_aug)$.pred
@@ -117,20 +118,20 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 #' @return A data.table containing the augmented data.
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression.sur_augment_data  <- function(internal,
-                                         x,
-                                         y_hat = NULL,
-                                         index_features = NULL,
-                                         augment_masks_as_factor = FALSE,
-                                         augment_include_grand = FALSE,
-                                         augment_add_id_comb = FALSE,
-                                         augment_comb_prob = NULL,
-                                         augment_weights = NULL) {
+regression.surrogate_aug_data <- function(internal,
+                                          x,
+                                          y_hat = NULL,
+                                          index_features = NULL,
+                                          augment_masks_as_factor = FALSE,
+                                          augment_include_grand = FALSE,
+                                          augment_add_id_comb = FALSE,
+                                          augment_comb_prob = NULL,
+                                          augment_weights = NULL) {
   # Get some of the parameters
   S <- internal$objects$S
   actual_n_combinations <- internal$parameters$used_n_combinations - 2 # Remove empty and grand coalitions
   regression.surrogate_n_comb <- internal$parameters$regression.surrogate_n_comb
-  if (!is.null(index_features)) regression.surrogate_n_comb <- length(index_features) # Applicable when called from prep_data
+  if (!is.null(index_features)) regression.surrogate_n_comb <- length(index_features) # Applicable from prep_data()
   if (augment_include_grand) {
     actual_n_combinations <- actual_n_combinations + 1 # Add 1 to include the grand comb
     regression.surrogate_n_comb <- regression.surrogate_n_comb + 1
@@ -165,7 +166,7 @@ regression.sur_augment_data  <- function(internal,
 
   # Check if we are to augment the training data or the explicands
   if (is.null(index_features)) {
-    # Training: get matrix of dimension n_obs x regression.surrogate_n_comb containing the indices of the active coalitions
+    # Training: get matrix (n_obs x regression.surrogate_n_comb) containing the indices of the active coalitions
     if (regression.surrogate_n_comb >= actual_n_combinations) { # Start from two to exclude the empty set
       comb_active_idx <- matrix(rep(seq(2, actual_n_combinations + 1), times = n_obs), ncol = n_obs)
     } else {
