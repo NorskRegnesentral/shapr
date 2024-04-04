@@ -98,8 +98,8 @@ batch_prepare_vS_regression <- function(S, internal) {
 }
 
 #' @keywords internal
-#' @author Lars Henry Berge Olsen, Martin Jullum
-batch_prepare_vS_MC <- function(S, internal, predict_model) {
+#' @author Martin Jullum, Lars Henry Berge Olsen
+batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   output_size <- internal$parameters$output_size
   feature_names <- internal$parameters$feature_names
   type <- internal$parameters$type
