@@ -47,43 +47,16 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
   return(ret)
 }
 
-
 #' @keywords internal
 batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
-  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
-  feature_names <- internal$parameters$feature_names
-  type <- internal$parameters$type
-  horizon <- internal$parameters$horizon
-  n_endo <- internal$data$n_endo
-  output_size <- internal$parameters$output_size
-  explain_idx <- internal$parameters$explain_idx
-  explain_lags <- internal$parameters$explain_lags
-  y <- internal$data$y
-  xreg <- internal$data$xreg
   regression <- internal$parameters$regression
+  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
-  if (regression) { # We are using regression to compute the contribution function values
+  # Check if we are to use regression or Monte Carlo integration to compute the contribution function values
+  if (regression) {
     dt_vS <- batch_prepare_vS_regression(S = S, internal = internal)
-  } else { # We are using Monte Carlo integration to compute the contribution function values
-    dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
-
-    pred_cols <- paste0("p_hat", seq_len(output_size))
-
-    compute_preds(
-      dt, # Updating dt by reference
-      feature_names = feature_names,
-      predict_model = predict_model,
-      model = model,
-      pred_cols = pred_cols,
-      type = type,
-      horizon = horizon,
-      n_endo = n_endo,
-      explain_idx = explain_idx,
-      explain_lags = explain_lags,
-      y = y,
-      xreg = xreg
-    )
-    dt_vS <- compute_MCint(dt, pred_cols)
+  } else {
+    dt_vS <- batch_prepare_vS_MC(S = S, internal = internal, model = model, predict_model = predict_model)
   }
 
   # Update the progress bar if provided
@@ -96,32 +69,6 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   } else {
     return(dt_vS = dt_vS)
   }
-}
-
-#' @keywords internal
-batch_prepare_vS <- function(S, internal) {
-  max_id_combination <- internal$parameters$n_combinations
-  x_explain <- internal$data$x_explain
-  n_explain <- internal$parameters$n_explain
-
-  # TODO: Check what is the fastest approach to deal with the last observation.
-  # Not doing this for the largest id combination (should check if this is faster or slower, actually)
-  # An alternative would be to delete rows from the dt which is provided by prepare_data.
-  if (!(max_id_combination %in% S)) {
-    # TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
-    dt <- prepare_data(internal, index_features = S)
-  } else {
-    if (length(S) > 1) {
-      S <- S[S != max_id_combination]
-      dt <- prepare_data(internal, index_features = S)
-    } else {
-      dt <- NULL # Special case for when the batch only include the largest id
-    }
-    dt_max <- data.table(id_combination = max_id_combination, x_explain, w = 1, id = seq_len(n_explain))
-    dt <- rbind(dt, dt_max)
-    setkey(dt, id, id_combination)
-  }
-  return(dt)
 }
 
 #' @keywords internal
@@ -147,6 +94,68 @@ batch_prepare_vS_regression <- function(S, internal) {
   # Set id_combination to be the key
   setkey(dt, id_combination)
 
+  return(dt)
+}
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen, Martin Jullum
+batch_prepare_vS_MC <- function(S, internal, predict_model) {
+  output_size <- internal$parameters$output_size
+  feature_names <- internal$parameters$feature_names
+  type <- internal$parameters$type
+  horizon <- internal$parameters$horizon
+  n_endo <- internal$data$n_endo
+  explain_idx <- internal$parameters$explain_idx
+  explain_lags <- internal$parameters$explain_lags
+  y <- internal$data$y
+  xreg <- internal$data$xreg
+
+  dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
+
+  pred_cols <- paste0("p_hat", seq_len(output_size))
+
+  compute_preds(
+    dt, # Updating dt by reference
+    feature_names = feature_names,
+    predict_model = predict_model,
+    model = model,
+    pred_cols = pred_cols,
+    type = type,
+    horizon = horizon,
+    n_endo = n_endo,
+    explain_idx = explain_idx,
+    explain_lags = explain_lags,
+    y = y,
+    xreg = xreg
+  )
+  dt_vS <- compute_MCint(dt, pred_cols)
+
+  return(dt_vS)
+}
+
+#' @keywords internal
+batch_prepare_vS <- function(S, internal) {
+  max_id_combination <- internal$parameters$n_combinations
+  x_explain <- internal$data$x_explain
+  n_explain <- internal$parameters$n_explain
+
+  # TODO: Check what is the fastest approach to deal with the last observation.
+  # Not doing this for the largest id combination (should check if this is faster or slower, actually)
+  # An alternative would be to delete rows from the dt which is provided by prepare_data.
+  if (!(max_id_combination %in% S)) {
+    # TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
+    dt <- prepare_data(internal, index_features = S)
+  } else {
+    if (length(S) > 1) {
+      S <- S[S != max_id_combination]
+      dt <- prepare_data(internal, index_features = S)
+    } else {
+      dt <- NULL # Special case for when the batch only include the largest id
+    }
+    dt_max <- data.table(id_combination = max_id_combination, x_explain, w = 1, id = seq_len(n_explain))
+    dt <- rbind(dt, dt_max)
+    setkey(dt, id, id_combination)
+  }
   return(dt)
 }
 
