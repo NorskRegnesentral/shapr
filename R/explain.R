@@ -104,6 +104,8 @@
 #' @inheritDotParams setup_approach.ctree
 #' @inheritDotParams setup_approach.vaeac
 #' @inheritDotParams setup_approach.categorical
+#' @inheritDotParams setup_approach.regression_separate
+#' @inheritDotParams setup_approach.regression_surrogate
 #' @inheritDotParams setup_approach.timeseries
 #'
 #' @details The most important thing to notice is that `shapr` has implemented six different
