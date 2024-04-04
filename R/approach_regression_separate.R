@@ -203,7 +203,8 @@ regression.train_model <- function(x,
     set.seed(seed)
 
     # Update the workflow by finalizing it using the hyperparameters that attained the best rmse
-    regression.workflow <- tune::finalize_workflow(regression.workflow, tune::select_best(regression.results, "rmse"))
+    regression.workflow <-
+      tune::finalize_workflow(regression.workflow, tune::select_best(regression.results, metric = "rmse"))
   }
 
   # Fit the model to the augmented training data and return the trained model
