@@ -1355,7 +1355,7 @@ vaeac_check_mask_gen <- function(mask_gen_coalitions, mask_gen_coalitions_prob, 
   }
 }
 
-#' Function the checks the verbose parameter
+#' Function that checks the verbose parameter
 #'
 #' @inheritParams vaeac_train_model
 #'
