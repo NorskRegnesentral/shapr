@@ -49,6 +49,7 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
 
 #' @keywords internal
 batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
+  dt <- NULL # due to NSE notes in R CMD check
   regression <- internal$parameters$regression
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
@@ -100,7 +101,6 @@ batch_prepare_vS_regression <- function(S, internal) {
 #' @keywords internal
 #' @author Martin Jullum, Lars Henry Berge Olsen
 batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
-  dt <- NULL # due to NSE notes in R CMD check
   output_size <- internal$parameters$output_size
   feature_names <- internal$parameters$feature_names
   type <- internal$parameters$type
