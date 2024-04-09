@@ -139,7 +139,7 @@ def explain(
         feature_specs = rfeature_specs,
         MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
         timing = timing,
-        is_python=True,,
+        is_python=True,
     )
 
     timing_list["setup"] = datetime.now()
