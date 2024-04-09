@@ -100,6 +100,7 @@ batch_prepare_vS_regression <- function(S, internal) {
 #' @keywords internal
 #' @author Martin Jullum, Lars Henry Berge Olsen
 batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
+  dt <- NULL # due to NSE notes in R CMD check
   output_size <- internal$parameters$output_size
   feature_names <- internal$parameters$feature_names
   type <- internal$parameters$type
