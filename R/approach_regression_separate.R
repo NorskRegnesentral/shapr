@@ -257,8 +257,8 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 
   # Check function or tibble
   if (!is.null(regression.tune_values) &&
-      !is.data.frame(regression.tune_values) &&
-      !is.function(regression.tune_values)) {
+    !is.data.frame(regression.tune_values) &&
+    !is.function(regression.tune_values)) {
     stop("`regression.tune_values` must be of either class `data.frame` or `function`. See documentation.")
   }
 
@@ -276,7 +276,7 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 
   # Check that user have provided values for the hyperparameters to tune
   if (!(all(regression.tune_values_names %in% regression_para_tune_names) &&
-        all(regression_para_tune_names %in% regression.tune_values_names))) {
+    all(regression_para_tune_names %in% regression.tune_values_names))) {
     stop(paste0(
       "The tunable parameters in `regression.model` ('",
       paste(regression_para_tune_names, collapse = "', '"), "') and `regression.tune_values` ('",
