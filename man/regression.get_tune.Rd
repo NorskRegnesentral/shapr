@@ -9,7 +9,10 @@ regression.get_tune(regression.model, regression.tune_values, x_train)
 \arguments{
 \item{regression.model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
 \code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
-and see the vignette for how to add new/own models.}
+and see the vignette for how to add new/own models. Note, to make it easier to call \code{explain()} from Python, the
+\code{regression.model} parameter can also be a string specifying the model which will be parsed and evaluated. For
+example, \verb{"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine = "ranger", mode = "regression")"}
+is also a valid input. It is essential to include the package prefix if the package is not loaded.}
 
 \item{regression.tune_values}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
 The data.frame must contain the possible hyperparameter value combinations to try.
@@ -17,11 +20,18 @@ The column names must match the names of the tuneable parameters specified in \c
 If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
 for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
-vignette for several examples.}
+vignette for several examples.
+Note, to make it easier to call \code{explain()} from Python, the \code{regression.tune_values} can also be a string
+containing an R function. For example,
+\code{"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"} is also a valid input.
+It is essential to include the package prefix if the package is not loaded.}
 
 \item{x_train}{Matrix or data.frame/data.table.
 Contains the data used to estimate the (conditional) distributions for the features
 needed to properly estimate the conditional expectations in the Shapley formula.}
+}
+\value{
+A boolean variable indicating if the regression model is to be tuned.
 }
 \description{
 That is, if the regression model contains hyperparameters we are to tune using cross validation.

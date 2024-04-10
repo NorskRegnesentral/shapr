@@ -32,7 +32,10 @@ TODO: Make this clearer when we end up fixing this and if they should force a pr
 
 \item{regression.model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
 \code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
-and see the vignette for how to add new/own models.}
+and see the vignette for how to add new/own models. Note, to make it easier to call \code{explain()} from Python, the
+\code{regression.model} parameter can also be a string specifying the model which will be parsed and evaluated. For
+example, \verb{"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine = "ranger", mode = "regression")"}
+is also a valid input. It is essential to include the package prefix if the package is not loaded.}
 
 \item{regression.tune}{Logical (default is \code{FALSE}). If \code{TRUE}, then we are to tune the hyperparemeters based on
 the values provided in \code{regression.tune_values}. Note that no checks are conducted as this is checked earlier in
@@ -44,7 +47,11 @@ The column names must match the names of the tuneable parameters specified in \c
 If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
 for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
-vignette for several examples.}
+vignette for several examples.
+Note, to make it easier to call \code{explain()} from Python, the \code{regression.tune_values} can also be a string
+containing an R function. For example,
+\code{"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"} is also a valid input.
+It is essential to include the package prefix if the package is not loaded.}
 
 \item{regression.vfold_cv_para}{Either \code{NULL} (default) or a named list containing
 the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}. See the regression vignette for
@@ -52,7 +59,11 @@ several examples.}
 
 \item{regression.recipe_func}{Either \code{NULL} (default) or a function that that takes in a \code{\link[recipes:recipe]{recipes::recipe()}}
 object and returns a modified \code{\link[recipes:recipe]{recipes::recipe()}} with potentially additional recipe steps. See the regression
-vignette for several examples.}
+vignette for several examples.
+Note, to make it easier to call \code{explain()} from Python, the \code{regression.recipe_func} can also be a string
+containing an R function. For example,
+\code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
+a valid input. It is essential to include the package prefix if the package is not loaded.}
 
 \item{regression.response_var}{String (default is \code{y_hat}) containing the name of the response variable.}
 
