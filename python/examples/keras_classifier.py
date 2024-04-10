@@ -50,3 +50,11 @@ print(df_shapley)
 5          0.026814  
 
  """
+
+# Look at the (overall) MSEv
+MSEv["MSEv"]
+
+"""
+	MSEv	MSEv_sd
+1	0.000312	0.00014
+"""

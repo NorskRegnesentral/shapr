@@ -34,6 +34,12 @@ print(df_shapley)
 5  0.099410   0.315230   
 """
 
+MSEv["MSEv"]
+"""
+MSEv	MSEv_sd
+1	0.534141	0.247984
+"""
+
 # Now do this for grouping as well
 
 group = {'A': ['MedInc','HouseAge','AveRooms'],
