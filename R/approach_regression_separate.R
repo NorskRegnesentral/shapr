@@ -3,7 +3,10 @@
 #'
 #' @param regression.model A `tidymodels` object of class `model_specs`. Default is a linear regression model, i.e.,
 #' [parsnip::linear_reg()]. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
-#' and see the vignette for how to add new/own models.
+#' and see the vignette for how to add new/own models. Note, to make it easier to call `explain()` from Python, the
+#' `regression.model` parameter can also be a string specifying the model which will be parsed and evaluated. For
+#' example, `"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine = "ranger", mode = "regression")"`
+#' is also a valid input. It is essential to include the package prefix if the package is not loaded.
 #' @param regression.tune_values Either `NULL` (default), a data.frame/data.table/tibble, or a function.
 #' The data.frame must contain the possible hyperparameter value combinations to try.
 #' The column names must match the names of the tuneable parameters specified in `regression.model`.
@@ -11,12 +14,20 @@
 #' for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
 #' Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
 #' vignette for several examples.
+#' Note, to make it easier to call `explain()` from Python, the `regression.tune_values` can also be a string
+#' containing an R function. For example,
+#' `"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"` is also a valid input.
+#' It is essential to include the package prefix if the package is not loaded.
 #' @param regression.vfold_cv_para Either `NULL` (default) or a named list containing
 #' the parameters to be sent to [rsample::vfold_cv()]. See the regression vignette for
 #' several examples.
 #' @param regression.recipe_func Either `NULL` (default) or a function that that takes in a [recipes::recipe()]
 #' object and returns a modified [recipes::recipe()] with potentially additional recipe steps. See the regression
 #' vignette for several examples.
+#' Note, to make it easier to call `explain()` from Python, the `regression.recipe_func` can also be a string
+#' containing an R function. For example,
+#' `"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"` is also
+#' a valid input. It is essential to include the package prefix if the package is not loaded.
 #' @inheritParams default_doc_explain
 #'
 #' @export
@@ -213,12 +224,23 @@ regression.train_model <- function(x,
 
 
 # Get functions ========================================================================================================
+#' Convert the string into an R object
+#'
+#' @param string A character vector/string containing the text to convert into R code.
+#'
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+regression.get_string_to_R <- function(string) {
+  return(eval(parse(text = string)))
+}
+
 #' Get the predicted responses
 #'
 #' @inheritParams default_doc
 #'
 #' @return The same `internal` list, but added vectors `internal$data$x_train_y_hat` and
 #' `internal$data$x_explain_y_hat` containing the predicted response of the training and explain data.
+#'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.get_y_hat <- function(internal, model) {
@@ -235,6 +257,8 @@ regression.get_y_hat <- function(internal, model) {
 #'
 #' @inheritParams setup_approach.regression_separate
 #' @inheritParams explain
+#'
+#' @return A boolean variable indicating if the regression model is to be tuned.
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
@@ -299,6 +323,18 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.check_parameters <- function(internal) {
+
+  # Convert the objects to R-objects if they are strings
+  if (is.character(internal$parameters$regression.model)) {
+    internal$parameters$regression.model = regression.get_string_to_R(internal$parameters$regression.model)
+  }
+  if (is.character(internal$parameters$regression.tune_values)) {
+    internal$parameters$regression.tune_values = regression.get_string_to_R(internal$parameters$regression.tune_values)
+  }
+  if (is.character(internal$parameters$regression.recipe_func)) {
+    internal$parameters$regression.recipe_func = regression.get_string_to_R(internal$parameters$regression.recipe_func)
+  }
+
   # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
   regression.check_recipe_func(
     regression.recipe_func = internal$parameters$regression.recipe_func,
