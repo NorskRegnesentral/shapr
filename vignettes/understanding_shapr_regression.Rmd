@@ -442,11 +442,11 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 1.40
-#> sep_lm             745.21 0.68
-#> sep_pcr            784.91 0.78
-#> sep_splines        165.13 0.73
-#> sep_reicpe_example 687.45 1.43
+#> MC_empirical       179.43 1.37
+#> sep_lm             745.21 0.81
+#> sep_pcr            784.91 0.82
+#> sep_splines        165.13 0.71
+#> sep_reicpe_example 687.45 1.35
 ```
 
 
@@ -523,13 +523,13 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 1.40
-#> sep_lm             745.21 0.68
-#> sep_pcr            784.91 0.78
-#> sep_splines        165.13 0.73
-#> sep_reicpe_example 687.45 1.43
-#> sep_tree_stump     218.05 0.77
-#> sep_tree_default   177.68 0.72
+#> MC_empirical       179.43 1.37
+#> sep_lm             745.21 0.81
+#> sep_pcr            784.91 0.82
+#> sep_splines        165.13 0.71
+#> sep_reicpe_example 687.45 1.35
+#> sep_tree_stump     218.05 0.87
+#> sep_tree_default   177.68 0.64
 ```
 
 
@@ -842,17 +842,17 @@ tuning, we still overfit the data.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv  Time
-#> MC_empirical       179.43  1.40
-#> sep_lm             745.21  0.68
-#> sep_pcr            784.91  0.78
-#> sep_splines        165.13  0.73
-#> sep_reicpe_example 687.45  1.43
-#> sep_tree_stump     218.05  0.77
-#> sep_tree_default   177.68  0.72
-#> sep_tree_cv        169.96 14.78
-#> sep_tree_cv_2      166.17 30.75
-#> sep_rf             210.99  1.20
-#> sep_rf_cv          212.88 33.41
+#> MC_empirical       179.43  1.37
+#> sep_lm             745.21  0.81
+#> sep_pcr            784.91  0.82
+#> sep_splines        165.13  0.71
+#> sep_reicpe_example 687.45  1.35
+#> sep_tree_stump     218.05  0.87
+#> sep_tree_default   177.68  0.64
+#> sep_tree_cv        169.96 14.69
+#> sep_tree_cv_2      166.17 26.97
+#> sep_rf             210.99  1.93
+#> sep_rf_cv          212.88 31.15
 ```
 
 
@@ -973,21 +973,21 @@ cross-validation in parallel or sequentially.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  1.40
-#> sep_lm               745.21  0.68
-#> sep_pcr              784.91  0.78
-#> sep_splines          165.13  0.73
-#> sep_reicpe_example   687.45  1.43
-#> sep_tree_stump       218.05  0.77
-#> sep_tree_default     177.68  0.72
-#> sep_tree_cv          169.96 14.78
-#> sep_tree_cv_2        166.17 30.75
-#> sep_rf               210.99  1.20
-#> sep_rf_cv            212.88 33.41
-#> sep_xgboost          197.72  0.98
-#> sep_xgboost_cv       164.69 17.37
-#> sep_xgboost_cv_par   164.69 11.15
-#> sep_xgboost_cv_2_par 146.51 11.30
+#> MC_empirical         179.43  1.37
+#> sep_lm               745.21  0.81
+#> sep_pcr              784.91  0.82
+#> sep_splines          165.13  0.71
+#> sep_reicpe_example   687.45  1.35
+#> sep_tree_stump       218.05  0.87
+#> sep_tree_default     177.68  0.64
+#> sep_tree_cv          169.96 14.69
+#> sep_tree_cv_2        166.17 26.97
+#> sep_rf               210.99  1.93
+#> sep_rf_cv            212.88 31.15
+#> sep_xgboost          197.72  0.85
+#> sep_xgboost_cv       164.69 15.41
+#> sep_xgboost_cv_par   164.69 11.00
+#> sep_xgboost_cv_2_par 146.51 10.72
 ```
 
 
@@ -1170,27 +1170,27 @@ or in parallel.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  1.40
-#> sep_lm               745.21  0.68
-#> sep_pcr              784.91  0.78
-#> sep_splines          165.13  0.73
-#> sep_reicpe_example   687.45  1.43
-#> sep_tree_stump       218.05  0.77
-#> sep_tree_default     177.68  0.72
-#> sep_tree_cv          169.96 14.78
-#> sep_tree_cv_2        166.17 30.75
-#> sep_rf               210.99  1.20
-#> sep_rf_cv            212.88 33.41
-#> sep_xgboost          197.72  0.98
-#> sep_xgboost_cv       164.69 17.37
-#> sep_xgboost_cv_par   164.69 11.15
-#> sep_xgboost_cv_2_par 146.51 11.30
-#> sur_lm               649.61  0.25
-#> sur_xgboost          169.92  0.31
-#> sur_xgboost_cv       169.87  1.75
+#> MC_empirical         179.43  1.37
+#> sep_lm               745.21  0.81
+#> sep_pcr              784.91  0.82
+#> sep_splines          165.13  0.71
+#> sep_reicpe_example   687.45  1.35
+#> sep_tree_stump       218.05  0.87
+#> sep_tree_default     177.68  0.64
+#> sep_tree_cv          169.96 14.69
+#> sep_tree_cv_2        166.17 26.97
+#> sep_rf               210.99  1.93
+#> sep_rf_cv            212.88 31.15
+#> sep_xgboost          197.72  0.85
+#> sep_xgboost_cv       164.69 15.41
+#> sep_xgboost_cv_par   164.69 11.00
+#> sep_xgboost_cv_2_par 146.51 10.72
+#> sur_lm               649.61  0.30
+#> sur_xgboost          169.92  0.23
+#> sur_xgboost_cv       169.87  1.69
 #> sur_rf               195.10  0.41
-#> sur_rf_cv            171.84 24.38
-#> sur_rf_cv_par        171.84 18.49
+#> sur_rf_cv            171.84 23.94
+#> sur_rf_cv_par        171.84 17.16
 
 # Compare the MSEv criterion of the different explanation methods.
 # Include vertical line corresponding to the MSEv of the empirical method.
@@ -1401,31 +1401,31 @@ but also increase the running time.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  1.40
-#> sep_lm               745.21  0.68
-#> sep_pcr              784.91  0.78
-#> sep_splines          165.13  0.73
-#> sep_reicpe_example   687.45  1.43
-#> sep_tree_stump       218.05  0.77
-#> sep_tree_default     177.68  0.72
-#> sep_tree_cv          169.96 14.78
-#> sep_tree_cv_2        166.17 30.75
-#> sep_rf               210.99  1.20
-#> sep_rf_cv            212.88 33.41
-#> sep_xgboost          197.72  0.98
-#> sep_xgboost_cv       164.69 17.37
-#> sep_xgboost_cv_par   164.69 11.15
-#> sep_xgboost_cv_2_par 146.51 11.30
-#> sur_lm               649.61  0.25
-#> sur_xgboost          169.92  0.31
-#> sur_xgboost_cv       169.87  1.75
+#> MC_empirical         179.43  1.37
+#> sep_lm               745.21  0.81
+#> sep_pcr              784.91  0.82
+#> sep_splines          165.13  0.71
+#> sep_reicpe_example   687.45  1.35
+#> sep_tree_stump       218.05  0.87
+#> sep_tree_default     177.68  0.64
+#> sep_tree_cv          169.96 14.69
+#> sep_tree_cv_2        166.17 26.97
+#> sep_rf               210.99  1.93
+#> sep_rf_cv            212.88 31.15
+#> sep_xgboost          197.72  0.85
+#> sep_xgboost_cv       164.69 15.41
+#> sep_xgboost_cv_par   164.69 11.00
+#> sep_xgboost_cv_2_par 146.51 10.72
+#> sur_lm               649.61  0.30
+#> sur_xgboost          169.92  0.23
+#> sur_xgboost_cv       169.87  1.69
 #> sur_rf               195.10  0.41
-#> sur_rf_cv            171.84 24.38
-#> sur_rf_cv_par        171.84 18.49
-#> sep_ppr              327.23  0.83
-#> sep_ppr_cv           269.74 10.46
+#> sur_rf_cv            171.84 23.94
+#> sur_rf_cv_par        171.84 17.16
+#> sep_ppr              327.23  0.67
+#> sep_ppr_cv           269.74  9.18
 #> sur_ppr              395.42  0.22
-#> sur_ppr_cv           415.62  1.42
+#> sur_ppr_cv           415.62  1.37
 
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
@@ -1529,35 +1529,35 @@ the `MC_empirical` method to make the comparison easier.
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
 #> MC_independence      206.92  0.29
-#> MC_empirical         179.43  1.40
-#> MC_gaussian          245.19  0.42
-#> MC_copula            247.29  0.36
-#> MC_ctree             191.82  1.53
-#> MC_vaeac             141.88 51.22
-#> sep_lm               745.21  0.68
-#> sep_pcr              784.91  0.78
-#> sep_splines          165.13  0.73
-#> sep_reicpe_example   687.45  1.43
-#> sep_tree_stump       218.05  0.77
-#> sep_tree_default     177.68  0.72
-#> sep_tree_cv          169.96 14.78
-#> sep_tree_cv_2        166.17 30.75
-#> sep_rf               210.99  1.20
-#> sep_rf_cv            212.88 33.41
-#> sep_xgboost          197.72  0.98
-#> sep_xgboost_cv       164.69 17.37
-#> sep_xgboost_cv_par   164.69 11.15
-#> sep_xgboost_cv_2_par 146.51 11.30
-#> sur_lm               649.61  0.25
-#> sur_xgboost          169.92  0.31
-#> sur_xgboost_cv       169.87  1.75
+#> MC_empirical         179.43  1.37
+#> MC_gaussian          245.19  0.43
+#> MC_copula            247.29  0.34
+#> MC_ctree             191.82  1.42
+#> MC_vaeac             141.88 48.50
+#> sep_lm               745.21  0.81
+#> sep_pcr              784.91  0.82
+#> sep_splines          165.13  0.71
+#> sep_reicpe_example   687.45  1.35
+#> sep_tree_stump       218.05  0.87
+#> sep_tree_default     177.68  0.64
+#> sep_tree_cv          169.96 14.69
+#> sep_tree_cv_2        166.17 26.97
+#> sep_rf               210.99  1.93
+#> sep_rf_cv            212.88 31.15
+#> sep_xgboost          197.72  0.85
+#> sep_xgboost_cv       164.69 15.41
+#> sep_xgboost_cv_par   164.69 11.00
+#> sep_xgboost_cv_2_par 146.51 10.72
+#> sur_lm               649.61  0.30
+#> sur_xgboost          169.92  0.23
+#> sur_xgboost_cv       169.87  1.69
 #> sur_rf               195.10  0.41
-#> sur_rf_cv            171.84 24.38
-#> sur_rf_cv_par        171.84 18.49
-#> sep_ppr              327.23  0.83
-#> sep_ppr_cv           269.74 10.46
+#> sur_rf_cv            171.84 23.94
+#> sur_rf_cv_par        171.84 17.16
+#> sep_ppr              327.23  0.67
+#> sep_ppr_cv           269.74  9.18
 #> sur_ppr              395.42  0.22
-#> sur_ppr_cv           415.62  1.42
+#> sur_ppr_cv           415.62  1.37
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the MC_empirical method
@@ -1972,26 +1972,26 @@ three surrogate regression methods.
 ```r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list_mixed)
-#>                   MSEv   Time
-#> MC_independence 641.82   0.28
-#> MC_ctree        554.50   1.58
-#> MC_vaeac        629.43 121.57
-#> sep_lm          550.06   0.93
-#> sep_splines     541.36   1.01
-#> sep_tree        753.84   0.67
-#> sep_tree_cv     756.27  34.71
-#> sep_rf          521.79   1.18
-#> sep_rf_cv       609.58  55.10
-#> sep_xgboost     792.17   1.02
-#> sep_xgboost_cv  595.98  22.60
-#> sur_lm          610.61   0.43
-#> sur_splines     596.86   0.47
-#> sur_tree        677.04   0.35
-#> sur_tree_cv     789.37   3.25
-#> sur_rf          414.15   0.45
-#> sur_rf_cv       533.06  13.48
-#> sur_xgboost     606.92   0.35
-#> sur_xgboost_cv  429.06   1.97
+#>                   MSEv  Time
+#> MC_independence 641.82  0.34
+#> MC_ctree        554.50  1.53
+#> MC_vaeac        629.43 98.87
+#> sep_lm          550.06  0.70
+#> sep_splines     541.36  0.80
+#> sep_tree        753.84  0.63
+#> sep_tree_cv     756.27 27.40
+#> sep_rf          521.79  1.01
+#> sep_rf_cv       609.58 36.98
+#> sep_xgboost     792.17  0.74
+#> sep_xgboost_cv  595.98 16.35
+#> sur_lm          610.61  0.27
+#> sur_splines     596.86  0.27
+#> sur_tree        677.04  0.21
+#> sur_tree_cv     789.37  2.08
+#> sur_rf          414.15  0.41
+#> sur_rf_cv       533.06 11.89
+#> sur_xgboost     606.92  0.65
+#> sur_xgboost_cv  429.06  2.09
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
@@ -2038,6 +2038,140 @@ plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicand
 ```
 
 ![](figure_regression/mixed-plot-4-1.png)
+
+
+# Regression arguments as strings
+
+In this section, we demonstrate that the `regression.model`,
+`regression.tune_values`, and `regression.recipe_func`
+parameters can be provided as strings. This is a property
+which is convenient if the `explain()` function is called
+from Python. That is, the user only has to specify strings
+containing R code instead of having to deal with creating
+the R objects in Python. In the code chunk below, we see
+that we obtain identical $\operatorname{MSE}_v$ scores for
+the string and non-string versions.
+
+
+```r
+explanation_list_str <- list()
+explanation_list_str$sep_lm <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression.model = "parsnip::linear_reg()"
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+
+explanation_list_str$sep_pcr <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression.model = "parsnip::linear_reg()",
+  regression.recipe_func = "function(regression_recipe) {
+    return(recipes::step_pca(regression_recipe, recipes::all_numeric_predictors(), num_comp = 2))
+  }"
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+
+explanation_list_str$sep_splines <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression.model = parsnip::linear_reg(),
+  regression.recipe_func = "function(regression_recipe) {
+    return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 2))
+  }"
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+
+explanation_list_str$sep_tree_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression.model = "parsnip::decision_tree(
+    tree_depth = hardhat::tune(), engine = 'rpart', mode = 'regression'
+  )",
+  regression.tune_values = "dials::grid_regular(dials::tree_depth(), levels = 4)",
+  regression.vfold_cv_para = list(v = 5)
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+
+# Using random forest with parameters tuned by cross-validation
+explanation_list_str$sep_rf_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 1, # As we used this for the non-string version
+  approach = "regression_separate",
+  regression.model = "parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'
+  )",
+  regression.tune_values =
+    "function(x) {
+      dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 3)
+    }",
+  regression.vfold_cv_para = list(v = 5)
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+
+# Using random forest with parameters tuned by cross-validation as the surrogate model
+explanation_list_str$sur_rf_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression.model = "parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'
+  )",
+  regression.tune_values = "dials::grid_regular(
+    dials::mtry(c(1, ncol(x_explain))),
+    dials::trees(c(50, 750)),
+    levels = 6
+  )",
+  regression.vfold_cv_para = list(v = 5)
+)
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+
+# See that the evaluation scores match the non-string versions.
+print_MSEv_scores_and_time(explanation_list_str)
+#>               MSEv  Time
+#> sep_lm      745.21  0.70
+#> sep_pcr     784.91  0.77
+#> sep_splines 165.13  0.77
+#> sep_tree_cv 169.96 12.62
+#> sep_rf_cv   212.88 27.36
+#> sur_rf_cv   171.84 23.80
+print_MSEv_scores_and_time(explanation_list[names(explanation_list_str)])
+#>               MSEv  Time
+#> sep_lm      745.21  0.81
+#> sep_pcr     784.91  0.82
+#> sep_splines 165.13  0.71
+#> sep_tree_cv 169.96 14.69
+#> sep_rf_cv   212.88 31.15
+#> sur_rf_cv   171.84 23.94
+```
 
 
 # Vignette summary
