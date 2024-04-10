@@ -1649,7 +1649,7 @@ that we obtain identical $\operatorname{MSE}_v$ scores for
 the string and non-string versions.
 
 ```{r R-vs-string, cache = TRUE}
-explanation_list_str = list()
+explanation_list_str <- list()
 explanation_list_str$sep_lm <- explain(
   model = model,
   x_explain = x_explain,

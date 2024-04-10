@@ -323,16 +323,15 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.check_parameters <- function(internal) {
-
   # Convert the objects to R-objects if they are strings
   if (is.character(internal$parameters$regression.model)) {
-    internal$parameters$regression.model = regression.get_string_to_R(internal$parameters$regression.model)
+    internal$parameters$regression.model <- regression.get_string_to_R(internal$parameters$regression.model)
   }
   if (is.character(internal$parameters$regression.tune_values)) {
-    internal$parameters$regression.tune_values = regression.get_string_to_R(internal$parameters$regression.tune_values)
+    internal$parameters$regression.tune_values <- regression.get_string_to_R(internal$parameters$regression.tune_values)
   }
   if (is.character(internal$parameters$regression.recipe_func)) {
-    internal$parameters$regression.recipe_func = regression.get_string_to_R(internal$parameters$regression.recipe_func)
+    internal$parameters$regression.recipe_func <- regression.get_string_to_R(internal$parameters$regression.recipe_func)
   }
 
   # Check that it is a function that returns the RHS of the formula for arbitrary feature name inputs
