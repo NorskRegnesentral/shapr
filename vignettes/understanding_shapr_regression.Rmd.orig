@@ -1636,6 +1636,113 @@ plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicand
 ```
 
 
+# Regression arguments as strings
+
+In this section, we demonstrate that the `regression.model`,
+`regression.tune_values`, and `regression.recipe_func`
+parameters can be provided as strings. This is a property
+which is convenient if the `explain()` function is called
+from Python. That is, the user only has to specify strings
+containing R code instead of having to deal with creating
+the R objects in Python. In the code chunk below, we see
+that we obtain identical $\operatorname{MSE}_v$ scores for
+the string and non-string versions.
+
+```{r R-vs-string, cache = TRUE}
+explanation_list_str = list()
+explanation_list_str$sep_lm <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression.model = "parsnip::linear_reg()"
+)
+
+explanation_list_str$sep_pcr <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression.model = "parsnip::linear_reg()",
+  regression.recipe_func = "function(regression_recipe) {
+    return(recipes::step_pca(regression_recipe, recipes::all_numeric_predictors(), num_comp = 2))
+  }"
+)
+
+explanation_list_str$sep_splines <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression.model = parsnip::linear_reg(),
+  regression.recipe_func = "function(regression_recipe) {
+    return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 2))
+  }"
+)
+
+explanation_list_str$sep_tree_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_separate",
+  regression.model = "parsnip::decision_tree(
+    tree_depth = hardhat::tune(), engine = 'rpart', mode = 'regression'
+  )",
+  regression.tune_values = "dials::grid_regular(dials::tree_depth(), levels = 4)",
+  regression.vfold_cv_para = list(v = 5)
+)
+
+# Using random forest with parameters tuned by cross-validation
+explanation_list_str$sep_rf_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 1, # As we used this for the non-string version
+  approach = "regression_separate",
+  regression.model = "parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'
+  )",
+  regression.tune_values =
+    "function(x) {
+      dials::grid_regular(dials::mtry(c(1, ncol(x))), dials::trees(c(50, 750)), levels = 3)
+    }",
+  regression.vfold_cv_para = list(v = 5)
+)
+
+# Using random forest with parameters tuned by cross-validation as the surrogate model
+explanation_list_str$sur_rf_cv <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p0,
+  n_batches = 4,
+  approach = "regression_surrogate",
+  regression.model = "parsnip::rand_forest(
+    mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'
+  )",
+  regression.tune_values = "dials::grid_regular(
+    dials::mtry(c(1, ncol(x_explain))),
+    dials::trees(c(50, 750)),
+    levels = 6
+  )",
+  regression.vfold_cv_para = list(v = 5)
+)
+
+# See that the evaluation scores match the non-string versions.
+print_MSEv_scores_and_time(explanation_list_str)
+print_MSEv_scores_and_time(explanation_list[names(explanation_list_str)])
+```
+
+
 # Vignette summary
 
 This vignette demonstrates the rich possibilities that the regression
