@@ -48,15 +48,15 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
 }
 
 #' @keywords internal
+#' @author Martin Jullum, Lars Henry Berge Olsen
 batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
-  dt <- NULL # due to NSE notes in R CMD check
   regression <- internal$parameters$regression
-  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
   # Check if we are to use regression or Monte Carlo integration to compute the contribution function values
   if (regression) {
     dt_vS <- batch_prepare_vS_regression(S = S, internal = internal)
   } else {
+    # Here dt_vS is either only dt_vS or a list containing dt_vS and dt if internal$parameters$keep_samp_for_vS = TRUE
     dt_vS <- batch_prepare_vS_MC(S = S, internal = internal, model = model, predict_model = predict_model)
   }
 
@@ -64,12 +64,7 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   # TODO: Add a message to state what batch has been computed
   if (!is.null(p)) p(amount = length(S), message = "Estimating v(S)")
 
-  # keep_samp_for_vS will always be FALSE for the regression approach
-  if (keep_samp_for_vS) {
-    return(list(dt_vS = dt_vS, dt_samp_for_vS = dt))
-  } else {
-    return(dt_vS = dt_vS)
-  }
+  return(dt_vS)
 }
 
 #' @keywords internal
@@ -110,6 +105,7 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   explain_lags <- internal$parameters$explain_lags
   y <- internal$data$y
   xreg <- internal$data$xreg
+  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
@@ -131,7 +127,8 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   )
   dt_vS <- compute_MCint(dt, pred_cols)
 
-  return(dt_vS)
+  # Also return the dt object if keep_samp_for_vS is TRUE
+  return(if (keep_samp_for_vS) list(dt_vS = dt_vS, dt_samp_for_vS = dt) else dt_vS)
 }
 
 #' @keywords internal
@@ -204,5 +201,5 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
   }
   # dt_mat[, id_combination := NULL]
 
-  dt_mat
+  return(dt_mat)
 }
