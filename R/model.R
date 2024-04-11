@@ -4,7 +4,8 @@
 #' [stats::lm()],
 #' [stats::glm()],
 #' [ranger::ranger()],
-#' [mgcv::gam()] and
+#' [mgcv::gam()],
+#' [workflows::workflow()] (i.e., `tidymodels` models), and
 #' [xgboost::xgb.train()] with binary or continuous
 #' response. See details for more information.
 #'
@@ -21,6 +22,7 @@
 #' \item [stats::glm()]
 #' \item [ranger::ranger()]
 #' \item [mgcv::gam()]
+#' \item [workflows::workflow()]
 #' \item [xgboost::xgb.train()]
 #' }
 #'
