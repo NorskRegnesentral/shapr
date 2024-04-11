@@ -25,7 +25,7 @@ model.fit(dfx_train, dfy_train,
           epochs=10, 
           validation_data=(dfx_test, dfy_test))
 ## Shapr
-df_shapley, pred_explain, internal, timing = explain(
+df_shapley, pred_explain, internal, timing, MSEv = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
@@ -50,3 +50,11 @@ print(df_shapley)
 5          0.026814  
 
  """
+
+# Look at the (overall) MSEv
+MSEv["MSEv"]
+
+"""
+	MSEv	MSEv_sd
+1	0.000312	0.00014
+"""
