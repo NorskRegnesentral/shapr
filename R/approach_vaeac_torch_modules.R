@@ -1,5 +1,6 @@
+# The if test here allows installing shapr even if torch is not installed.
+# This is needed as the classes below require torch
 if(requireNamespace("torch", quietly = TRUE)) {
-
   # VAEAC Model =========================================================================================================
   ## vaeac --------------------------------------------------------------------------------------------------------------
   #' Initializing a vaeac model
