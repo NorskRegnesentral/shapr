@@ -53,9 +53,6 @@ setup_approach.regression_separate <- function(internal,
   # Check the parameters to the regression approach
   internal <- regression.check_parameters(internal = internal)
 
-  # Get the predicted response of the training and explain data
-  internal <- regression.get_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
-
   # Small printout to the user
   if (internal$parameters$verbose == 2) message("Done with 'setup_approach.regression_separate'.")
 
@@ -243,7 +240,7 @@ regression.get_string_to_R <- function(string) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression.get_y_hat <- function(internal, model) {
+regression.get_y_hat <- function(internal, model, predict_model) {
   # Predict the response of the training and explain data. Former is the response the regression models are fitted to.
   internal$data$x_train_y_hat <- predict_model(model, internal$data$x_train)
   internal$data$x_explain_y_hat <- predict_model(model, internal$data$x_explain)

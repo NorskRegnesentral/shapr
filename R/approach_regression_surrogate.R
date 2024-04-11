@@ -37,9 +37,6 @@ setup_approach.regression_surrogate <- function(internal,
   # Check the parameters to the regression approach
   internal <- regression.check_parameters(internal)
 
-  # Get the predicted response of the training and explain data
-  internal <- regression.get_y_hat(internal = internal, model = eval.parent(match.call()[["model"]]))
-
   # Augment the training data
   x_train_augmented <- regression.surrogate_aug_data(
     internal = internal, x = internal$data$x_train, y_hat = internal$data$x_train_y_hat, augment_include_grand = TRUE

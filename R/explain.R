@@ -322,6 +322,12 @@ explain <- function(model,
   timing_list$test_prediction <- Sys.time()
 
 
+  # Add the predicted response of the training and explain data to the internal list for regression-based methods.
+  # Use isTRUE as `regression` is not present (NULL) for non-regression methods (i.e., Monte Carlo-based methods).
+  if (isTRUE(internal$parameters$regression)) {
+    internal <- regression.get_y_hat(internal = internal, model = model, predict_model = predict_model)
+  }
+
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
   # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
