@@ -23,7 +23,7 @@
 #'
 #'
 #' @keywords internal
-default_doc <- function() {
+default_doc <- function(internal, model, predict_model, output_size, extra, ...) {
   NULL
 }
 
@@ -36,6 +36,6 @@ default_doc <- function() {
 #' apply to the present method. `NULL` means all combinations. Only used internally.
 #'
 #' @keywords internal
-default_doc_explain <- function() {
+default_doc_explain <- function(internal, index_features) {
   NULL
 }

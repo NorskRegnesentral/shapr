@@ -4,7 +4,7 @@
 \alias{default_doc_explain}
 \title{Exported documentation helper function.}
 \usage{
-default_doc_explain()
+default_doc_explain(internal, index_features)
 }
 \arguments{
 \item{internal}{Not used.}

@@ -4,7 +4,7 @@
 \alias{default_doc}
 \title{Unexported documentation helper function.}
 \usage{
-default_doc()
+default_doc(internal, model, predict_model, output_size, extra, ...)
 }
 \arguments{
 \item{internal}{List.

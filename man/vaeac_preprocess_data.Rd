@@ -25,8 +25,6 @@ take the exp of the results to get back to strictly positive values.}
 \item{norm_mean}{Torch tensor (optional). A 1D array containing the means of the columns of \code{x_torch}.}
 
 \item{norm_std}{Torch tensor (optional). A 1D array containing the stds of the columns of \code{x_torch}.}
-
-\item{x_torch}{Torch tensor. A 2D matrix containing the data to normalize.}
 }
 \value{
 list containing data which can be used in vaeac, maps between original and new class

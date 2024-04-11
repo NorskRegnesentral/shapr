@@ -2400,7 +2400,7 @@ vaeac_save_state <- function(state_list, file_name, return_state = FALSE) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_state) {
+vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_epoch) {
   message(sprintf(
     "\nResults of the `vaeac` training process:
 Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
