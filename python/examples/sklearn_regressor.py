@@ -9,7 +9,7 @@ model = RandomForestRegressor(random_state=0)
 model.fit(dfx_train, dfy_train.values.flatten())
 
 ## Shapr
-df_shapley, pred_explain, internal, timing = explain(
+df_shapley, pred_explain, internal, timing, MSEv = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
@@ -32,6 +32,12 @@ print(df_shapley)
 3  0.147927   0.290942  
 4  0.118805   0.203213  
 5  0.099410   0.315230   
+"""
+
+MSEv["MSEv"]
+"""
+MSEv	MSEv_sd
+1	0.534141	0.247984
 """
 
 # Now do this for grouping as well

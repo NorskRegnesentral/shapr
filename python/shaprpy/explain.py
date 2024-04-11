@@ -33,6 +33,7 @@ def explain(
     keep_samp_for_vS: bool = False,
     predict_model: Callable = None,
     get_model_specs: Callable = None,
+    MSEv_uniform_comb_weights: bool = True,
     timing: bool = True,
     verbose: int | None = 0,
   ):
@@ -86,6 +87,10 @@ def explain(
       If `None` (the default) internal functions are used for natively supported model classes, and the checking is
       disabled for unsupported model classes.
       Can also be used to override the default function for natively supported model classes.
+    MSEv_uniform_comb_weights: Logical. If `True` (default), then the function weights the combinations
+      uniformly when computing the MSEv criterion. If `False`, then the function use the Shapley kernel weights to
+      weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by
+      the sampling frequency when not all combinations are considered.
     timing: Indicates whether the timing of the different parts of the explain call should be saved and returned.
     verbose:  An integer specifying the level of verbosity. If `0` (default), `shapr` will stay silent.
       If `1`, it will print information about performance. If `2`, some additional information will be printed out.
@@ -98,6 +103,11 @@ def explain(
       A numpy.Array with the predictions on `x_explain`.
     dict
       A dictionary of additional information.
+    dict
+      A dictionary of elapsed time information if `timing` is set to `True`.
+    dict
+      A dictionary of the MSEv evaluation criterion scores: averaged over both the explicands and coalitions,
+      only over the explicands, and only over the coalitions.
     '''
 
     timing_list = {
@@ -126,6 +136,7 @@ def explain(
         seed = seed,
         keep_samp_for_vS = keep_samp_for_vS,
         feature_specs = rfeature_specs,
+        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
         timing = timing,
         verbose = verbose,
         is_python=True,
@@ -162,7 +173,8 @@ def explain(
     df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values')))
     pred_explain = r2py(routput.rx2('pred_explain'))
     internal = recurse_r_tree(routput.rx2('internal'))
-    return df_shapley, pred_explain, internal, timing
+    MSEv = recurse_r_tree(routput.rx2('MSEv'))
+    return df_shapley, pred_explain, internal, timing, MSEv
 
 
 def compute_vS(rinternal, model, predict_model):

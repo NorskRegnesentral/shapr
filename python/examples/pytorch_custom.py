@@ -36,7 +36,7 @@ for epoch in range(5):
         optim.zero_grad()
 
 ## Shapr
-df_shapley, pred_explain, internal, timing = explain(
+df_shapley, pred_explain, internal, timing, MSEv = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
@@ -45,3 +45,24 @@ df_shapley, pred_explain, internal, timing = explain(
     prediction_zero = dfy_train.mean().item(),
 )
 print(df_shapley)
+"""
+       none    MedInc  HouseAge  AveRooms  AveBedrms  Population  AveOccup  \
+1  2.205947  2.313935  5.774470  5.425240   4.194669    1.712164  3.546001   
+2  2.205947  4.477620  5.467266  2.904239   3.046492    1.484807  5.631292   
+3  2.205946  4.028013  1.168401  5.229893   1.719724    2.134012  3.426378   
+4  2.205948  4.230376  8.639265  1.138520   3.776463    3.786978  4.253034   
+5  2.205947  3.923747  1.483737  1.113199   4.963213   -3.645875  4.950775   
+
+   Latitude  Longitude  
+1  1.102239   2.906469  
+2  4.966465   2.178510  
+3  3.503413   2.909760  
+4  3.413727   3.795563  
+5  3.011126   4.016985  
+"""
+
+MSEv["MSEv"]
+"""
+MSEv	MSEv_sd
+1	27.046126	7.253933
+"""
