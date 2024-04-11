@@ -768,10 +768,10 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   } else {
     # Save the vaeac model at the last epoch
     if (verbose == 2) message("Saving `last` vaeac model at epoch ", epoch, ".")
-    last_state <- vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3], return_state = TRUE)
+    last_epoch <- vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3], return_state = TRUE)
 
     # Summary printout
-    if (verbose == 2) vaeac_print_train_summary(best_epoch, best_epoch_running, last_state)
+    if (verbose == 2) vaeac_print_train_summary(best_epoch, best_epoch_running, last_epoch)
 
     # Create a return list
     return_list <- list(
@@ -781,7 +781,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       train_vlb = as.array(train_vlb$cpu()),
       val_iwae = as.array(val_iwae$cpu()),
       val_iwae_running = as.array(val_iwae_running$cpu()),
-      parameters = last_state
+      parameters = last_epoch
     )
 
     # Add the potentially additional save names
@@ -2407,17 +2407,17 @@ Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     best_epoch,
-    last_state$train_vlb[best_epoch]$cpu(),
-    last_state$val_iwae[best_epoch]$cpu(),
-    last_state$val_iwae_running[best_epoch]$cpu(),
+    last_epoch$train_vlb[best_epoch]$cpu(),
+    last_epoch$val_iwae[best_epoch]$cpu(),
+    last_epoch$val_iwae_running[best_epoch]$cpu(),
     best_epoch_running,
-    last_state$train_vlb[best_epoch_running]$cpu(),
-    last_state$val_iwae[best_epoch_running]$cpu(),
-    last_state$val_iwae_running[best_epoch_running]$cpu(),
-    last_state$epoch,
-    last_state$train_vlb[-1]$cpu(),
-    last_state$val_iwae[-1]$cpu(),
-    last_state$val_iwae_running[-1]$cpu()
+    last_epoch$train_vlb[best_epoch_running]$cpu(),
+    last_epoch$val_iwae[best_epoch_running]$cpu(),
+    last_epoch$val_iwae_running[best_epoch_running]$cpu(),
+    last_epoch$epoch,
+    last_epoch$train_vlb[-1]$cpu(),
+    last_epoch$val_iwae[-1]$cpu(),
+    last_epoch$val_iwae_running[-1]$cpu()
   ))
 }
 
