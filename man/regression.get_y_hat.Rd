@@ -4,7 +4,7 @@
 \alias{regression.get_y_hat}
 \title{Get the predicted responses}
 \usage{
-regression.get_y_hat(internal, model)
+regression.get_y_hat(internal, model, predict_model)
 }
 \arguments{
 \item{internal}{List.
@@ -13,6 +13,10 @@ The list contains one or more of the elements \code{parameters}, \code{data}, \c
 
 \item{model}{Objects.
 The model object that ought to be explained.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
+
+\item{predict_model}{Function.
+The prediction function used when \code{model} is not natively supported.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
 }
 \value{

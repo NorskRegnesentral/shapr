@@ -63,7 +63,8 @@ Performs prediction of response
 \code{\link[stats:lm]{stats::lm()}},
 \code{\link[stats:glm]{stats::glm()}},
 \code{\link[ranger:ranger]{ranger::ranger()}},
-\code{\link[mgcv:gam]{mgcv::gam()}} and
+\code{\link[mgcv:gam]{mgcv::gam()}},
+\code{\link[workflows:workflow]{workflows::workflow()}} (i.e., \code{tidymodels} models), and
 \code{\link[xgboost:xgb.train]{xgboost::xgb.train()}} with binary or continuous
 response. See details for more information.
 
@@ -77,6 +78,7 @@ The following models are currently supported:
 \item \code{\link[stats:glm]{stats::glm()}}
 \item \code{\link[ranger:ranger]{ranger::ranger()}}
 \item \code{\link[mgcv:gam]{mgcv::gam()}}
+\item \code{\link[workflows:workflow]{workflows::workflow()}}
 \item \code{\link[xgboost:xgb.train]{xgboost::xgb.train()}}
 }
 
