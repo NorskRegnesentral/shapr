@@ -46,7 +46,7 @@ group = {'A': ['MedInc','HouseAge','AveRooms'],
          'B': ['AveBedrms','Population','AveOccup'],
          'C': ['Latitude','Longitude']}
 
-df_shapley_g, pred_explain_g, internal_g, timing_g = explain(
+df_shapley_g, pred_explain_g, internal_g, timing_g, MSEv_g = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
