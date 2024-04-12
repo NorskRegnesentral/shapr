@@ -40,7 +40,7 @@ editor_options:
 <a id="intro"></a>
 
 
-This vignette elaborates and illustrates the regression
+This vignette elaborates and demonstrates the regression
 paradigm explained in @olsen2023comparative. We describe
 how to specify the regression model, how to enable automatic
 cross-validation of the model's hyperparameters, and applying
