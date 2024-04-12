@@ -107,7 +107,7 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   xreg <- internal$data$xreg
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
-  dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
+  dt <- batch_prepare_vS_MC_auxiliary(S = S, internal = internal) # Make it optional to store and return the dt_list
 
   pred_cols <- paste0("p_hat", seq_len(output_size))
 
@@ -132,7 +132,7 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
 }
 
 #' @keywords internal
-batch_prepare_vS <- function(S, internal) {
+batch_prepare_vS_MC_auxiliary <- function(S, internal) {
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
