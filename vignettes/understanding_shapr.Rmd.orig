@@ -153,6 +153,10 @@ implements the `ctree` method from @redelmeier2020explaining, and the
 of @lundberg2017unified is also available. The methods may also be combined,
 such that e.g. one method is used when conditioning on a small number of
 features, while another method is used otherwise.
+The `shapr` package also supports directly estimating the contribution
+function using regression. We briefly introduce the regression-based
+methods below, but we refer to the separate regression vignette and
+@olsen2023comparative for an in-depth explanation of the regression paradigm.
 
 <a id="gaussian"></a>
 
@@ -351,6 +355,29 @@ $X_3 = 2$ is
 $$E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1, X_3=2)}.$$.
 
 <a id="ex"></a>
+
+
+
+<a id="Regression-based approaches"></a>
+Another paradigm for estimating the contribution function is the regression
+paradigm. In contrast to the methods above, which belong to the Monte Carlo
+paradigm, the regression based-methods use regression models to estimate the
+contribution function $v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]$ directly.
+The separate regression method class fits a separate regression model for
+each coalition $S$, while the surrogate regression method class fits a single
+regression model to simultaneously predict the contribution function for all
+coalitions. We refer to @olsen2023comparative for when one should use the
+different paradigms, method classes, and methods.
+
+In a separate vignette, we elaborate and demonstrate the regression paradigm.
+We describe how to specify the regression model, enable automatic cross-validation
+of the model's hyperparameters, and apply pre-processing steps to the data before
+fitting the regression models. @olsen2023comparative divides the regression
+paradigm into the separate and surrogate regression method classes. In the
+separate vignette, we briefly introduce the two method classes. For an in-depth
+explanation, we refer the reader to Sections 3.5 and 3.6 in @olsen2023comparative.
+
+
 
 <br>
 
