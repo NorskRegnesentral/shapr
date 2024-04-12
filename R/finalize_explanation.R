@@ -111,8 +111,10 @@ get_p <- function(dt_vS, internal) {
 }
 
 #' Compute shapley values
-#' @param explainer An `explain` object.
 #' @param dt_vS The contribution matrix.
+#'
+#' @inheritParams default_doc
+#'
 #' @return A `data.table` with Shapley values for each test observation.
 #' @export
 #' @keywords internal

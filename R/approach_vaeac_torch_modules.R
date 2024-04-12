@@ -815,7 +815,6 @@ vaeac_compute_normalization <- function(data, one_hot_max_sizes) {
 #' features are strictly positive, as for Burr and Abalone data, it can be advantageous to log-transform
 #' the data to unbounded form before using vaeac. If TRUE, then `vaeac_postprocess_data` will
 #' take the exp of the results to get back to strictly positive values.
-#' @param x_torch Torch tensor. A 2D matrix containing the data to normalize.
 #' @param norm_mean Torch tensor (optional). A 1D array containing the means of the columns of `x_torch`.
 #' @param norm_std Torch tensor (optional). A 1D array containing the stds of the columns of `x_torch`.
 #'
@@ -1995,9 +1994,6 @@ specified_prob_mask_generator <- torch::nn_module(
 #' If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
 #' the first half and second half of the rows are duplicates of each other. That is,
 #' `batch = [row1, row1, row2, row2, row3, row3, ...]`.
-#' @param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
-#' entries are missing. If any are missing, then the returned mask will ensure that
-#' these missing entries are masked.
 #'
 #' @examples
 #' \dontrun{

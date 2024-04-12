@@ -17,10 +17,6 @@ They are scaled, hence, they only need to be positive.}
 If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
 the first half and second half of the rows are duplicates of each other. That is,
 \verb{batch = [row1, row1, row2, row2, row3, row3, ...]}.}
-
-\item{batch}{Matrix/Tensor. Only used to get the dimensions and to check if any of the
-entries are missing. If any are missing, then the returned mask will ensure that
-these missing entries are masked.}
 }
 \description{
 A mask generator which masks the entries based on sampling provided 1D masks with corresponding probabilities.

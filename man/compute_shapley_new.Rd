@@ -7,9 +7,11 @@
 compute_shapley_new(internal, dt_vS)
 }
 \arguments{
-\item{dt_vS}{The contribution matrix.}
+\item{internal}{List.
+Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
-\item{explainer}{An \code{explain} object.}
+\item{dt_vS}{The contribution matrix.}
 }
 \value{
 A \code{data.table} with Shapley values for each test observation.

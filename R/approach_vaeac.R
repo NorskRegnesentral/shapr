@@ -2393,7 +2393,7 @@ vaeac_save_state <- function(state_list, file_name, return_state = FALSE) {
 #'
 #' @param best_epoch Positive integer. The epoch with the lowest validation error.
 #' @param best_epoch_running Positive integer. The epoch with the lowest running validation error.
-#' @param last_epoch The state list (i.e., the saved `vaeac` object)
+#' @param last_state The state list (i.e., the saved `vaeac` object)
 #' of `vaeac` model at the epoch with the lowest IWAE.
 #'
 #' @return This function only prints out a message.
