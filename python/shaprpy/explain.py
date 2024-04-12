@@ -127,7 +127,11 @@ def explain(
 
     # Fixes method specific argument names by replacing first occurrence of "_" with "."
     if len(kwargs) > 0:
-        kwargs = change_first_underscore_dot(kwargs)
+        kwargs = change_first_underscore_to_dot(kwargs)
+
+        # Convert from dict to a named list of vectors in R if `regression.vfold_cv_para` is provided by the user
+        if 'regression.vfold_cv_para' in kwargs:
+            kwargs['regression.vfold_cv_para'] = ListVector(kwargs['regression.vfold_cv_para'])
 
     # Sets up and organizes input parameters
     # Checks the input parameters and their compatability
@@ -421,7 +425,7 @@ def regression_remove_objects(routput):
     return routput
 
 
-def change_first_underscore_dot(kwargs):
+def change_first_underscore_to_dot(kwargs):
     kwargs_tmp = {}
     for k, v in kwargs.items():
         kwargs_tmp[k.replace('_', '.', 1)] = v
