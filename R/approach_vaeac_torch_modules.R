@@ -2060,7 +2060,7 @@ specified_masks_mask_generator <- torch::nn_module(
     if (!is.null(seed)) set.seed(seed) # Set seed if the user specifies a seed for reproducibility.
     nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
     n_masks <- nrow(masks) # Get the number of masks to choose from
-    size <- nrow(batch) # Get the number of observations in the batch+
+    size <- nrow(batch) # Get the number of observations in the batch
 
     # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
     if (paired_sampling) size <- size / 2
