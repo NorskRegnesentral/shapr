@@ -18,8 +18,8 @@
 #'
 #' @param approach Character vector of length `1` or one less than the number of features.
 #' All elements should, either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
-#' `"categorical"`, `"timeseries"`, or `"independence"`.
-#' See details for more information.
+#' `"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, or `"regression_surrogate"`.
+#' The two regression approaches can not be combined with any other approach. See details for more information.
 #'
 #' @param prediction_zero Numeric.
 #' The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
@@ -108,10 +108,12 @@
 #' @inheritDotParams setup_approach.regression_surrogate
 #' @inheritDotParams setup_approach.timeseries
 #'
-#' @details The most important thing to notice is that `shapr` has implemented six different
-#' approaches for estimating the conditional distributions of the data, namely `"empirical"`,
+#' @details The most important thing to notice is that `shapr` has implemented eight different
+#' Monte Carlo-based approaches for estimating the conditional distributions of the data, namely `"empirical"`,
 #' `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
-#' In addition, the user also has the option of combining the different approaches.
+#' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`,
+#' and see the separate vignette on the regression-based approaches for more information.
+#' In addition, the user also has the option of combining the different Monte Carlo-based approaches.
 #' E.g., if you're in a situation where you have trained a model that consists of 10 features,
 #' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
 #' the `"empirical"` approach if you condition on 2-5 features, and `"copula"` version
@@ -336,9 +338,10 @@ explain <- function(model,
   timing_list$setup_computation <- Sys.time()
 
   # Compute the v(S):
-  # Get the samples for the conditional distributions with the specified approach
+  # MC: Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
+  # Regression: directly estimate the conditional expectation (v(S)) using regression models
   vS_list <- compute_vS(internal, model, predict_model)
 
   timing_list$compute_vS <- Sys.time()
@@ -349,6 +352,7 @@ explain <- function(model,
 
   timing_list$shapley_computation <- Sys.time()
 
+  # Compute the elapsed time for the different steps
   if (timing == TRUE) output$timing <- compute_time(timing_list)
 
   # Temporary to avoid failing tests
