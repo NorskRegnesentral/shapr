@@ -97,14 +97,14 @@
 #'
 #' @param ... Further arguments passed to specific approaches
 #'
-#' @inheritDotParams setup_approach.empirical
-#' @inheritDotParams setup_approach.independence
-#' @inheritDotParams setup_approach.gaussian
-#' @inheritDotParams setup_approach.copula
-#' @inheritDotParams setup_approach.ctree
-#' @inheritDotParams setup_approach.vaeac
-#' @inheritDotParams setup_approach.categorical
-#' @inheritDotParams setup_approach.timeseries
+#' @inheritDotParams setup_approach.empirical -internal
+#' @inheritDotParams setup_approach.independence -internal
+#' @inheritDotParams setup_approach.gaussian -internal
+#' @inheritDotParams setup_approach.copula -internal
+#' @inheritDotParams setup_approach.ctree -internal
+#' @inheritDotParams setup_approach.vaeac -internal
+#' @inheritDotParams setup_approach.categorical -internal
+#' @inheritDotParams setup_approach.timeseries -internal
 #'
 #' @details The most important thing to notice is that `shapr` has implemented six different
 #' approaches for estimating the conditional distributions of the data, namely `"empirical"`,
