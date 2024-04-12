@@ -44,7 +44,7 @@ setup_approach.regression_surrogate <- function(internal,
 
   # Fit the surrogate regression model and store it in the internal list
   if (internal$parameters$verbose == 2) message("Start training the surrogate model.")
-  internal$objects$regression_surrogate_model <- regression.train_model(
+  internal$objects$regression.surrogate_model <- regression.train_model(
     x = x_train_augmented,
     seed = internal$parameters$seed,
     verbose = internal$parameters$verbose,
@@ -77,7 +77,7 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
   x_explain_aug <- regression.surrogate_aug_data(internal, x = internal$data$x_explain, index_features = index_features)
 
   # Compute the predicted response for the explicands, i.e., v(S, x_i) for all explicands x_i and S in index_features
-  pred_explicand <- predict(internal$objects$regression_surrogate_model, new_data = x_explain_aug)$.pred
+  pred_explicand <- predict(internal$objects$regression.surrogate_model, new_data = x_explain_aug)$.pred
 
   # Insert the predicted contribution functions values into a data table of the correct setup
   dt_res <- data.table(as.integer(index_features), matrix(pred_explicand, nrow = length(index_features)))

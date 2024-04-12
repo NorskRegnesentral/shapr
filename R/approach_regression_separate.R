@@ -266,10 +266,10 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
   }
 
   # Check if we are to tune some model hyperparameters
-  regression_para <- lapply(regression.model$args, function(para) rlang::quo_get_expr(para))
-  regression_para_tune <- lapply(regression_para, function(para) !is.null(para) && grepl("tune()", para))
-  regression_para_tune_names <- names(regression_para_tune)[unlist(regression_para_tune)]
-  regression.tune <- any(unlist(regression_para_tune))
+  regression.para <- lapply(regression.model$args, function(para) rlang::quo_get_expr(para))
+  regression.para_tune <- lapply(regression.para, function(para) !is.null(para) && grepl("tune()", para))
+  regression.para_tune_names <- names(regression.para_tune)[unlist(regression.para_tune)]
+  regression.tune <- any(unlist(regression.para_tune))
 
   # Check that user have provided a tuning
   if (isTRUE(regression.tune) && is.null(regression.tune_values)) {
@@ -296,11 +296,11 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
   regression.tune_values_names <- names(regression.tune_values_grid)
 
   # Check that user have provided values for the hyperparameters to tune
-  if (!(all(regression.tune_values_names %in% regression_para_tune_names) &&
-    all(regression_para_tune_names %in% regression.tune_values_names))) {
+  if (!(all(regression.tune_values_names %in% regression.para_tune_names) &&
+    all(regression.para_tune_names %in% regression.tune_values_names))) {
     stop(paste0(
       "The tunable parameters in `regression.model` ('",
-      paste(regression_para_tune_names, collapse = "', '"), "') and `regression.tune_values` ('",
+      paste(regression.para_tune_names, collapse = "', '"), "') and `regression.tune_values` ('",
       paste(regression.tune_values_names, collapse = "', '"), "') must match."
     ))
   }
