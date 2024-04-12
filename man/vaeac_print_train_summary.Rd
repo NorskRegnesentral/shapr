@@ -4,14 +4,14 @@
 \alias{vaeac_print_train_summary}
 \title{Function to printout a training summary for the \code{vaeac} model}
 \usage{
-vaeac_print_train_summary(best_epoch, best_epoch_running, last_epoch)
+vaeac_print_train_summary(best_epoch, best_epoch_running, last_state)
 }
 \arguments{
 \item{best_epoch}{Positive integer. The epoch with the lowest validation error.}
 
 \item{best_epoch_running}{Positive integer. The epoch with the lowest running validation error.}
 
-\item{last_epoch}{The state list (i.e., the saved \code{vaeac} object)
+\item{last_state}{The state list (i.e., the saved \code{vaeac} object)
 of \code{vaeac} model at the epoch with the lowest IWAE.}
 }
 \value{

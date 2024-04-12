@@ -768,10 +768,10 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   } else {
     # Save the vaeac model at the last epoch
     if (verbose == 2) message("Saving `last` vaeac model at epoch ", epoch, ".")
-    last_epoch <- vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3], return_state = TRUE)
+    last_state <- vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3], return_state = TRUE)
 
     # Summary printout
-    if (verbose == 2) vaeac_print_train_summary(best_epoch, best_epoch_running, last_epoch)
+    if (verbose == 2) vaeac_print_train_summary(best_epoch, best_epoch_running, last_state)
 
     # Create a return list
     return_list <- list(
@@ -781,7 +781,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       train_vlb = as.array(train_vlb$cpu()),
       val_iwae = as.array(val_iwae$cpu()),
       val_iwae_running = as.array(val_iwae_running$cpu()),
-      parameters = last_epoch
+      parameters = last_state
     )
 
     # Add the potentially additional save names
@@ -2393,31 +2393,31 @@ vaeac_save_state <- function(state_list, file_name, return_state = FALSE) {
 #'
 #' @param best_epoch Positive integer. The epoch with the lowest validation error.
 #' @param best_epoch_running Positive integer. The epoch with the lowest running validation error.
-#' @param last_epoch The state list (i.e., the saved `vaeac` object)
+#' @param last_state The state list (i.e., the saved `vaeac` object)
 #' of `vaeac` model at the epoch with the lowest IWAE.
 #'
 #' @return This function only prints out a message.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_epoch) {
+vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_state) {
   message(sprintf(
     "\nResults of the `vaeac` training process:
 Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     best_epoch,
-    last_epoch$train_vlb[best_epoch]$cpu(),
-    last_epoch$val_iwae[best_epoch]$cpu(),
-    last_epoch$val_iwae_running[best_epoch]$cpu(),
+    last_state$train_vlb[best_epoch]$cpu(),
+    last_state$val_iwae[best_epoch]$cpu(),
+    last_state$val_iwae_running[best_epoch]$cpu(),
     best_epoch_running,
-    last_epoch$train_vlb[best_epoch_running]$cpu(),
-    last_epoch$val_iwae[best_epoch_running]$cpu(),
-    last_epoch$val_iwae_running[best_epoch_running]$cpu(),
-    last_epoch$epoch,
-    last_epoch$train_vlb[-1]$cpu(),
-    last_epoch$val_iwae[-1]$cpu(),
-    last_epoch$val_iwae_running[-1]$cpu()
+    last_state$train_vlb[best_epoch_running]$cpu(),
+    last_state$val_iwae[best_epoch_running]$cpu(),
+    last_state$val_iwae_running[best_epoch_running]$cpu(),
+    last_state$epoch,
+    last_state$train_vlb[-1]$cpu(),
+    last_state$val_iwae[-1]$cpu(),
+    last_state$val_iwae_running[-1]$cpu()
   ))
 }
 
