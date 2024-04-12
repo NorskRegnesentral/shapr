@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
   fig.cap = "",
   fig.width = 7,
   fig.height = 5,
-  fig.path = "figure_regression/", # Ensure that figures are saved in the right folder (buil vignette manually)
+  fig.path = "figure_regression/", # Ensure that figures are saved in the right folder (build vignette manually)
   cache.path = "cache_regression/", # Ensure that cached objects are saved in the right folder
   warning = FALSE,
   message = TRUE
