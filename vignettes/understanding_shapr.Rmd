@@ -639,7 +639,7 @@ explanation_timeseries <- explain(
 
 ## MSEv evaluation criterion
 We can use the $\operatorname{MSE}_{v}$ criterion proposed by @frye2020shapley,
-and later used by, e.g., @olsen2022using and @olsen2023comparative, to evaluate
+and later used by, e.g., @olsen2022using and @olsen2024comparative, to evaluate
 and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
 ```{=tex}
 \begin{align}
@@ -689,7 +689,7 @@ First, we can only use the $\operatorname{MSE}_{v}$ criterion to rank the method
 their closeness to the optimum since the minimum value of the $\operatorname{MSE}_{v}$ criterion
 is unknown. Second, the criterion evaluates the contribution functions and not the Shapley values.
 
-Note that @olsen2023comparative observed a relatively linear relationship between the
+Note that @olsen2024comparative observed a relatively linear relationship between the
 $\operatorname{MSE}_{v}$ criterion and the mean absolute error $(\operatorname{MAE})$ between the
 true and estimated Shapley values in extensive simulation studies where the true Shapley values
 were known. That is, a method that achieves a low $\operatorname{MSE}_{v}$ score also tends to

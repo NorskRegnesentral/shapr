@@ -41,18 +41,18 @@ editor_options:
 
 
 This vignette elaborates and demonstrates the regression
-paradigm explained in @olsen2023comparative. We describe
+paradigm explained in @olsen2024comparative. We describe
 how to specify the regression model, how to enable automatic
 cross-validation of the model's hyperparameters, and applying
 pre-processing steps to the data before fitting the regression
-models. We refer to @olsen2023comparative for when one should
+models. We refer to @olsen2024comparative for when one should
 use the different paradigms, method classes, and methods.
 
-@olsen2023comparative divides the regression paradigm into
+@olsen2024comparative divides the regression paradigm into
 the separate and surrogate regression method classes. In this
 vignette, we briefly introduce the two method classes. For an
 in-depth explanation, we refer the reader to Sections 3.5 and
-3.6 in @olsen2023comparative.
+3.6 in @olsen2024comparative.
 
 Briefly stated, the regression paradigm uses regression
 models to directly estimate the contribution function
@@ -1007,7 +1007,7 @@ train a single regression model $g(\tilde{\boldsymbol{x}}_S)$
 for all coalitions $S \subseteq \{1,2,\dots,M\}$ (except the
 empty and grand coalitions), where $\tilde{\boldsymbol{x}}_S$
 is an augmented version of $\boldsymbol{x}_S$. See Section 3.6.1
-in @olsen2023comparative for more details and examples.
+in @olsen2024comparative for more details and examples.
 
 We can also apply all the examples above for the separate
 regression method class to the surrogate regression method class.
