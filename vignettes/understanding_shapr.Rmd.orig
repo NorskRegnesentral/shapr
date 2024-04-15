@@ -369,7 +369,8 @@ regression model to simultaneously predict the contribution function for all
 coalitions. We refer to @olsen2024comparative for when one should use the
 different paradigms, method classes, and methods.
 
-In a separate vignette, we elaborate and demonstrate the regression paradigm.
+In a separate vignette (Shapley value explanations using the regression paradigm),
+we elaborate and demonstrate the regression paradigm.
 We describe how to specify the regression model, enable automatic cross-validation
 of the model's hyperparameters, and apply pre-processing steps to the data before
 fitting the regression models. @olsen2024comparative divides the regression
