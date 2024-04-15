@@ -338,10 +338,12 @@ explain <- function(model,
   timing_list$setup_computation <- Sys.time()
 
   # Compute the v(S):
-  # MC: Get the samples for the conditional distributions with the specified approach
-  # Predict with these samples
-  # Perform MC integration on these to estimate the conditional expectation (v(S))
-  # Regression: directly estimate the conditional expectation (v(S)) using regression models
+  # MC:
+  # 1. Get the samples for the conditional distributions with the specified approach
+  # 2. Predict with these samples
+  # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
+  # Regression:
+  # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
   vS_list <- compute_vS(internal, model, predict_model)
 
   timing_list$compute_vS <- Sys.time()
