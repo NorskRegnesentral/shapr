@@ -1,6 +1,0 @@
-xgboost~=2.0.3
-numpy~=1.26.4
-pandas~=2.2.2
-rpy2~=3.5.16
-scikit-learn~=1.4.2
-shaprpy~=0.1
