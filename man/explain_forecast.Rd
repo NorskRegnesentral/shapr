@@ -170,7 +170,6 @@ Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AIC
     \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional, default = NULL)
 Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
-    \item{\code{internal}}{Not used.}
     \item{\code{gaussian.mu}}{Numeric vector. (Optional)
 Containing the mean of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}

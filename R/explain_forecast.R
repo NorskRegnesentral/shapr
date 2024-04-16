@@ -39,14 +39,14 @@
 #'
 #' @inheritParams explain
 #' @inherit explain return author references
-#' @inheritDotParams setup_approach.empirical
-#' @inheritDotParams setup_approach.independence
-#' @inheritDotParams setup_approach.gaussian
-#' @inheritDotParams setup_approach.copula
-#' @inheritDotParams setup_approach.ctree
-#' @inheritDotParams setup_approach.vaeac
-#' @inheritDotParams setup_approach.categorical
-#' @inheritDotParams setup_approach.timeseries
+#' @inheritDotParams setup_approach.empirical -internal -model -predict_model
+#' @inheritDotParams setup_approach.independence -internal
+#' @inheritDotParams setup_approach.gaussian -internal
+#' @inheritDotParams setup_approach.copula -internal
+#' @inheritDotParams setup_approach.ctree -internal
+#' @inheritDotParams setup_approach.vaeac -internal
+#' @inheritDotParams setup_approach.categorical -internal
+#' @inheritDotParams setup_approach.timeseries -internal
 #'
 #' @details This function explains a forecast of length `horizon`. The argument `train_idx`
 #' is analogous to x_train in `explain()`, however, it just contains the time indices of where
@@ -57,6 +57,8 @@
 #' arbitrary point in time, `explain_y_lags` and `explain_xreg_lags` define how many lags
 #' are required to "refit" the model at any given time index. This allows the different
 #' approaches to work in the same way they do for time-invariant models.
+#'
+#' @author Martin Jullum
 #'
 #' @examples
 #'
