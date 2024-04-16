@@ -255,9 +255,33 @@
 #' )
 #' print(explain_groups$shapley_values)
 #'
+#' # Separate and surrogate regression approaches with linear regression models.
+#' # More complex regression models can be used, and we can use CV to
+#' # tune the hyperparameters of the regression models and preprocess
+#' # the data before sending it to the model. See the regression vignette
+#' # (Shapley value explanations using the regression paradigm) for more
+#' # details about the `regression_separate` and `regression_surrogate` approaches.
+#' explain_separate_lm <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   prediction_zero = p,
+#'   approach = "regression_separate",
+#'   regression.model = parsnip::linear_reg()
+#' )
+#'
+#' explain_surrogate_lm <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   prediction_zero = p,
+#'   approach = "regression_surrogate",
+#'   regression.model = parsnip::linear_reg()
+#' )
+#'
 #' @export
 #'
-#' @author Martin Jullum
+#' @author Martin Jullum, Lars Henry Berge Olsen
 #'
 #' @references
 #'   Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
