@@ -141,7 +141,8 @@ such that e.g. one method is used when conditioning on a small number of
 features, while another method is used otherwise.
 The `shapr` package also supports directly estimating the contribution
 function using regression. We briefly introduce the regression-based
-methods below, but we refer to the separate regression vignette and
+methods below, but we refer to the separate regression vignette
+(Shapley value explanations using the regression paradigm) and
 @olsen2024comparative for an in-depth explanation of the regression paradigm.
 
 <a id="gaussian"></a>
@@ -340,11 +341,11 @@ calculated. For example, the expected value of $X_1$ given $X_2 = 1$ and
 $X_3 = 2$ is
 $$E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1, X_3=2)}.$$.
 
-<a id="ex"></a>
 
+<a id="Regression_approaches"></a>
 
+## Separate and Surrogate Regression Approaches
 
-<a id="Regression-based approaches"></a>
 Another paradigm for estimating the contribution function is the regression
 paradigm. In contrast to the methods above, which belong to the Monte Carlo
 paradigm, the regression based-methods use regression models to estimate the
@@ -365,6 +366,7 @@ separate vignette, we briefly introduce the two method classes. For an in-depth
 explanation, we refer the reader to Sections 3.5 and 3.6 in @olsen2024comparative.
 
 
+<a id="ex"></a>
 
 <br>
 
