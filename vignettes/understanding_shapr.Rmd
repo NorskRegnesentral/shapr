@@ -355,7 +355,8 @@ regression model to simultaneously predict the contribution function for all
 coalitions. We refer to @olsen2024comparative for when one should use the
 different paradigms, method classes, and methods.
 
-In a separate vignette, we elaborate and demonstrate the regression paradigm.
+In a separate vignette (Shapley value explanations using the regression paradigm),
+we elaborate and demonstrate the regression paradigm.
 We describe how to specify the regression model, enable automatic cross-validation
 of the model's hyperparameters, and apply pre-processing steps to the data before
 fitting the regression models. @olsen2024comparative divides the regression
@@ -426,6 +427,7 @@ explanation <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> 
 #> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
 #> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
@@ -1196,14 +1198,14 @@ data_fit <- data_ts3[seq_len(151), ]
 
 model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wind)
 
-newxreg <- data[-seq_len(151), "Wind", drop = FALSE]
+newxreg <- data_ts3[-seq_len(151), "Wind", drop = FALSE]
 
 predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
 #> Time Series:
 #> Start = 152 
 #> End = 153 
 #> Frequency = 1 
-#> [1] NA NA
+#> [1] 77.500 76.381
 ```
 
 The `shapr` package can then explain not only the two autoregressive
@@ -1518,7 +1520,6 @@ explanation_custom_minimal <- explain(
 )
 #> Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
 #> Consistency checks between model and data is therefore disabled.
-#> 
 #> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
 #> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 

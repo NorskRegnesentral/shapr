@@ -1087,7 +1087,7 @@ data_fit <- data_ts3[seq_len(151), ]
 
 model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wind)
 
-newxreg <- data[-seq_len(151), "Wind", drop = FALSE]
+newxreg <- data_ts3[-seq_len(151), "Wind", drop = FALSE]
 
 predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
 ```
