@@ -44,7 +44,10 @@ setup_approach.combined <- function(internal, ...) {
 #' @return A data.table containing simulated data used to estimate
 #' the contribution function by Monte Carlo integration.
 #'
+#' @inheritParams default_doc
 #' @inheritParams default_doc_explain
+#'
+#' @author Martin Jullum and Lars Henry Berge Olsen
 #'
 #' @export
 #' @keywords internal
