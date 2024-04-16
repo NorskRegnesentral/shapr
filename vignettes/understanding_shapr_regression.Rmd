@@ -250,7 +250,7 @@ get_k_best_methods <- function(explanation_list, k_best) {
 
 To establish a baseline against which to compare the regression methods,
 we will compare them with the Monte Carlo-based `empirical` approach
-with default hyperparameters. In thelast section, we include all Monte
+with default hyperparameters. In the last section, we include all Monte
 Carlo-based methods implemented in `shapr` to make an extensive comparison.
 
 
