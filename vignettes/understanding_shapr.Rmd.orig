@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
   warning = FALSE,
   message = TRUE
 )
+options("digits" = 5)
 ```
 
 ```{r setup, include=FALSE, warning=FALSE}
@@ -722,10 +723,10 @@ each observation, as each combination is a different prediction tasks.
 Start by explaining the predictions by using different methods and combining them into lists.
 ```{r}
 # We use more explicands here for more stable confidence intervals
-ind_x_explain <- 1:25
-x_train <- data[-ind_x_explain, ..x_var]
-y_train <- data[-ind_x_explain, get(y_var)]
-x_explain <- data[ind_x_explain, ..x_var]
+ind_x_explain_many <- 1:25
+x_train <- data[-ind_x_explain_many, ..x_var]
+y_train <- data[-ind_x_explain_many, get(y_var)]
+x_explain <- data[ind_x_explain_many, ..x_var]
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
@@ -1016,9 +1017,9 @@ comes after the last day in the data, this forecast starts from index
 153.
 
 ```{r}
-data <- data.table::as.data.table(airquality)
+data_ts2 <- data.table::as.data.table(airquality)
 
-model_ar_temp <- ar(data$Temp, order = 2)
+model_ar_temp <- ar(data_ts2$Temp, order = 2)
 
 predict(model_ar_temp, n.ahead = 2)$pred
 ```
@@ -1050,7 +1051,7 @@ variable separately.
 ```{r}
 explanation_forecast <- explain_forecast(
   model = model_ar_temp,
-  y = data[, "Temp"],
+  y = data_ts2[, "Temp"],
   train_idx = 2:152,
   explain_idx = 153,
   explain_y_lags = 2,
@@ -1080,9 +1081,9 @@ just fit on the 151 first observations, leaving two observations of
 `Wind` to be used as exogenous values during the prediction phase.
 
 ```{r}
-data <- data.table::as.data.table(airquality)
+data_ts3 <- data.table::as.data.table(airquality)
 
-data_fit <- data[seq_len(151), ]
+data_fit <- data_ts3[seq_len(151), ]
 
 model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wind)
 
@@ -1104,7 +1105,7 @@ during the forecasting period.
 explanation_forecast <- explain_forecast(
   model = model_ar_temp,
   y = data_fit[, "Temp"],
-  xreg = data[, "Wind"],
+  xreg = data_ts3[, "Wind"],
   train_idx = 2:150,
   explain_idx = 151,
   explain_y_lags = 2,
