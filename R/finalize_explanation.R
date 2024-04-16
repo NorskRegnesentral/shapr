@@ -1,9 +1,10 @@
 #' Computes the Shapley values given `v(S)`
 #'
-#' @inherit explain
+#' @inherit explain return
 #' @inheritParams default_doc
-#' @param vS_list List
-#' Output from [compute_vS()]
+#' @param vS_list List Output from [shapr::compute_vS()]
+#'
+#' @author Martin Jullum and Lars Henry Berge Olsen
 #'
 #' @export
 finalize_explanation <- function(vS_list, internal) {

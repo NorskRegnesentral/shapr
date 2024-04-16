@@ -7,8 +7,7 @@
 finalize_explanation(vS_list, internal)
 }
 \arguments{
-\item{vS_list}{List
-Output from \code{\link[=compute_vS]{compute_vS()}}}
+\item{vS_list}{List Output from \code{\link[=compute_vS]{compute_vS()}}}
 
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
@@ -45,130 +44,8 @@ Typically we set this value equal to the mean of the response variable in our tr
 such as the mean of the predictions in the training data are also reasonable.
 }
 \description{
-Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
-\code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
-}
-\details{
-The most important thing to notice is that \code{shapr} has implemented six different
-approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"vaeac"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
-In addition, the user also has the option of combining the different approaches.
-E.g., if you're in a situation where you have trained a model that consists of 10 features,
-and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
-the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
-if you condition on more than 5 features this can be done by simply passing
-\code{approach = c("gaussian", rep("empirical", 4), rep("copula", 4))}. If
-\code{"approach[i]" = "gaussian"} means that you'd like to use the \code{"gaussian"} approach
-when conditioning on \code{i} features. Conditioning on all features needs no approach as that is given
-by the complete prediction itself, and should thus not be part of the vector.
-
-For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
-from the leaf node (see an exception related to the \code{sample} argument).
-For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-\code{empirical.eta} argument.
-}
-\examples{
-
-# Load example data
-data("airquality")
-airquality <- airquality[complete.cases(airquality), ]
-x_var <- c("Solar.R", "Wind", "Temp", "Month")
-y_var <- "Ozone"
-
-# Split data into test- and training data
-data_train <- head(airquality, -3)
-data_explain <- tail(airquality, 3)
-
-x_train <- data_train[, x_var]
-x_explain <- data_explain[, x_var]
-
-# Fit a linear model
-lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
-model <- lm(lm_formula, data = data_train)
-
-# Explain predictions
-p <- mean(data_train[, y_var])
-
-# Empirical approach
-explain1 <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "empirical",
-  prediction_zero = p,
-  n_samples = 1e2
-)
-
-# Gaussian approach
-explain2 <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "gaussian",
-  prediction_zero = p,
-  n_samples = 1e2
-)
-
-# Gaussian copula approach
-explain3 <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "copula",
-  prediction_zero = p,
-  n_samples = 1e2
-)
-
-# ctree approach
-explain4 <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "ctree",
-  prediction_zero = p,
-  n_samples = 1e2
-)
-
-# Combined approach
-approach <- c("gaussian", "gaussian", "empirical")
-explain5 <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = approach,
-  prediction_zero = p,
-  n_samples = 1e2
-)
-
-# Print the Shapley values
-print(explain1$shapley_values)
-
-# Plot the results
-if (requireNamespace("ggplot2", quietly = TRUE)) {
-  plot(explain1)
-  plot(explain1, plot_type = "waterfall")
-}
-
-# Group-wise explanations
-group_list <- list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
-
-explain_groups <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  group = group_list,
-  approach = "empirical",
-  prediction_zero = p,
-  n_samples = 1e2
-)
-print(explain_groups$shapley_values)
-
-}
-\references{
-Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
-More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+Computes the Shapley values given \code{v(S)}
 }
 \author{
-Martin Jullum
+Martin Jullum and Lars Henry Berge Olsen
 }
