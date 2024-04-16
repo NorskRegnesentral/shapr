@@ -179,15 +179,17 @@ the `tidymodels` framework: `parsnip`, `recipes`, `workflows`,
 which package the functions originate from in the `tidymodels` framework.
 
 ```{r setup, message = FALSE, cache = TRUE}
-library(shapr)
-
 # Either use `library(tidymodels)` or separately specify the libraries indicated above
-# Note: Needs to be loaded after shapr, otherwise we need to use the 'shapr::' prefix when calling explain()
 library(tidymodels)
 
 # Other libraries
 library(xgboost)
 library(data.table)
+library(shapr)
+
+# Ensure that shapr's functions are prioritzed, otherwise we need to use the `shapr::`
+# prefix when calling explain(). The `conflicted` package is imported by `tidymodels`.
+conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
