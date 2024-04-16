@@ -95,10 +95,10 @@ def explain(
     timing: Indicates whether the timing of the different parts of the explain call should be saved and returned.
     verbose:  An integer specifying the level of verbosity. If `0` (default), `shapr` will stay silent.
       If `1`, it will print information about performance. If `2`, some additional information will be printed out.
-    kwargs: Further arguments passed to specific approaches. See R-documentation for more information about the
-      approach specific arguments (https://cran.r-project.org/web/packages/shapr/shapr.pdf). Note that the parameters
+    kwargs: Further arguments passed to specific approaches. See R-documentation of the function
+      `explain_tripledot_docs` for more information about the approach specific arguments
+      (https://norskregnesentral.github.io/shapr/reference/explain_tripledot_docs.html). Note that the parameters
       in R are called 'approach.parameter_name', but in Python the equivalent would be 'approach_parameter_name'.
-      # TODO: discuss with martin how to get the descriptions passed here. Because we cannot use @inheritDotParams.
 
     Returns
     -------
