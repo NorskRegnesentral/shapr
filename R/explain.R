@@ -97,7 +97,7 @@
 #'
 #' @param ... Further arguments passed to specific approaches
 #'
-#' @inheritDotParams setup_approach.empirical -internal
+#' @inheritDotParams setup_approach.empirical -internal -model -predict_model
 #' @inheritDotParams setup_approach.independence -internal
 #' @inheritDotParams setup_approach.gaussian -internal
 #' @inheritDotParams setup_approach.copula -internal
