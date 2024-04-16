@@ -168,15 +168,17 @@ which package the functions originate from in the `tidymodels` framework.
 
 
 ```r
-library(shapr)
-
 # Either use `library(tidymodels)` or separately specify the libraries indicated above
-# Note: Needs to be loaded after shapr, otherwise we need to use the 'shapr::' prefix when calling explain()
 library(tidymodels)
 
 # Other libraries
 library(xgboost)
 library(data.table)
+library(shapr)
+
+# Ensure that shapr's functions are prioritzed, otherwise we need to use the `shapr::`
+# prefix when calling explain(). The `conflicted` package is imported by `tidymodels`.
+conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -264,7 +266,8 @@ explanation_list$MC_empirical <- explain(
   prediction_zero = p0,
   n_batches = 4
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 
@@ -283,7 +286,8 @@ explanation_list$sep_lm <- explain(
   approach = "regression_separate",
   regression.model = parsnip::linear_reg()
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 A linear model is often not flexible enough to properly model the
@@ -295,8 +299,9 @@ concerning the $\operatorname{MSE}_v$ evaluation criterion.
 
 ```r
 plot_MSEv_scores(explanation_list)
-#> Error in make.unique(names, sep = "_"): 'names' must be a character vector
 ```
+
+![](figure_regression/lm-emp-msev-1.png)
 
 
 ### Pre-processing {#separate_preproc}
@@ -343,7 +348,8 @@ explanation_list$sep_pcr <- explain(
     return(recipes::step_pca(regression_recipe, recipes::all_numeric_predictors(), num_comp = 2))
   }
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 Second, we apply a pre-processing step that computes the basis
@@ -364,7 +370,8 @@ explanation_list$sep_splines <- explain(
     return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 2))
   }
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 Finally, we provide an example where we include interactions
@@ -418,7 +425,8 @@ explanation_list$sep_reicpe_example <- explain(
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = regression.recipe_func
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 We can examine the $\operatorname{MSE}_v$ evaluation scores, and we
@@ -429,11 +437,20 @@ the other methods.
 ```r
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
-#> Error in make.unique(names, sep = "_"): 'names' must be a character vector
+```
+
+![](figure_regression/preproc-plot-1.png)
+
+```r
 
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>                      MSEv Time
+#> MC_empirical       179.43 2.22
+#> sep_lm             745.21 0.77
+#> sep_pcr            784.91 1.32
+#> sep_splines        165.13 1.09
+#> sep_reicpe_example 687.45 1.74
 ```
 
 
@@ -472,7 +489,8 @@ explanation_list$sep_tree_stump <- explain(
     mode = "regression"
   )
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Decision tree with default parameters
 explanation_list$sep_tree_default <- explain(
@@ -484,7 +502,8 @@ explanation_list$sep_tree_default <- explain(
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 We can also set `regression.model = parsnip::decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>% parsnip::set_engine("rpart") %>% parsnip::set_mode("regression")`
@@ -500,10 +519,21 @@ i.e., trees with depth one.
 ```r
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
-#> Error in make.unique(names, sep = "_"): 'names' must be a character vector
+```
+
+![](figure_regression/decision-tree-plot-1.png)
+
+```r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>                      MSEv Time
+#> MC_empirical       179.43 2.22
+#> sep_lm             745.21 0.77
+#> sep_pcr            784.91 1.32
+#> sep_splines        165.13 1.09
+#> sep_reicpe_example 687.45 1.74
+#> sep_tree_stump     218.05 1.03
+#> sep_tree_default   177.68 0.89
 ```
 
 
@@ -579,7 +609,8 @@ explanation_list$sep_tree_cv <- explain(
   regression.tune_values = dials::grid_regular(dials::tree_depth(), levels = 4),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Use trees with cross-validation on the depth and cost complexity. Manually set the values.
 explanation_list$sep_tree_cv_2 <- explain(
@@ -599,7 +630,8 @@ explanation_list$sep_tree_cv_2 <- explain(
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 We also include one example with a random forest model where
@@ -625,7 +657,8 @@ explanation_list$sep_rf <- explain(
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Using random forest with parameters tuned by cross-validation
 explanation_list$sep_rf_cv <- explain(
@@ -645,7 +678,141 @@ explanation_list$sep_rf_cv <- explain(
     },
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Starting 'setup_approach.regression_separate'.
+#> When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object 
+#>  can be missleading as `setup_computation` does not contain the training times of the 
+#>  regression models as they are trained on the fly in `compute_vS`. This is to reduce memory 
+#>  usage and to improve efficency.
+#> Done with 'setup_approach.regression_separate'.
+#> Working on batch 1 of 1 in `prepare_data.regression_separate()`.
+#> Working on combination with id 2 of 16.
+#> Results of the 5-fold cross validation (top 3 best configurations):
+#> #1: mtry = 1  trees = 750  rmse = 34.85  rmse_std_err = 2.99
+#> #2: mtry = 1  trees = 400  rmse = 34.95  rmse_std_err = 3.05
+#> #3: mtry = 1  trees = 50   rmse = 34.99  rmse_std_err = 2.81
+#> 
+#> Working on combination with id 3 of 16.
+#> Results of the 5-fold cross validation (top 3 best configurations):
+#> #1: mtry = 1  trees = 50   rmse = 27.48  rmse_std_err = 1.50
+#> #2: mtry = 1  trees = 750  rmse = 27.52  rmse_std_err = 1.29
+#> #3: mtry = 1  trees = 400  rmse = 27.74  rmse_std_err = 1.30
+#> 
+#> Working on combination with id 4 of 16.
+#> Results of the 5-fold cross validation (top 3 best configurations):
+#> #1: mtry = 1  trees = 400  rmse = 23.60  rmse_std_err = 3.17
+#> #2: mtry = 1  trees = 750  rmse = 23.63  rmse_std_err = 3.17
+#> #3: mtry = 1  trees = 50   rmse = 24.24  rmse_std_err = 3.37
+#> 
+#> Working on combination with id 5 of 16.
+#> Results of the 5-fold cross validation (top 3 best configurations):
+#> #1: mtry = 1  trees = 400  rmse = 33.31  rmse_std_err = 2.81
+#> #2: mtry = 1  trees = 750  rmse = 33.34  rmse_std_err = 2.81
+#> #3: mtry = 1  trees = 50   rmse = 33.41  rmse_std_err = 2.87
+#> 
+#> Working on combination with id 6 of 16.
+#> Results of the 5-fold cross validation (top 6 best configurations):
+#> #1: mtry = 1  trees = 50   rmse = 21.25  rmse_std_err = 2.24
+#> #2: mtry = 1  trees = 400  rmse = 21.69  rmse_std_err = 2.38
+#> #3: mtry = 1  trees = 750  rmse = 21.81  rmse_std_err = 2.40
+#> #4: mtry = 2  trees = 400  rmse = 22.38  rmse_std_err = 2.11
+#> #5: mtry = 2  trees = 750  rmse = 22.68  rmse_std_err = 2.04
+#> #6: mtry = 2  trees = 50   rmse = 22.91  rmse_std_err = 1.97
+#> 
+#> Working on combination with id 7 of 16.
+#> Results of the 5-fold cross validation (top 6 best configurations):
+#> #1: mtry = 2  trees = 50   rmse = 22.18  rmse_std_err = 2.93
+#> #2: mtry = 2  trees = 400  rmse = 22.28  rmse_std_err = 2.74
+#> #3: mtry = 1  trees = 750  rmse = 22.31  rmse_std_err = 2.90
+#> #4: mtry = 2  trees = 750  rmse = 22.35  rmse_std_err = 2.76
+#> #5: mtry = 1  trees = 400  rmse = 22.40  rmse_std_err = 2.80
+#> #6: mtry = 1  trees = 50   rmse = 22.62  rmse_std_err = 2.71
+#> 
+#> Working on combination with id 8 of 16.
+#> Results of the 5-fold cross validation (top 6 best configurations):
+#> #1: mtry = 1  trees = 50   rmse = 29.35  rmse_std_err = 2.17
+#> #2: mtry = 1  trees = 400  rmse = 29.45  rmse_std_err = 2.37
+#> #3: mtry = 1  trees = 750  rmse = 29.57  rmse_std_err = 2.32
+#> #4: mtry = 2  trees = 750  rmse = 30.43  rmse_std_err = 2.21
+#> #5: mtry = 2  trees = 400  rmse = 30.49  rmse_std_err = 2.18
+#> #6: mtry = 2  trees = 50   rmse = 30.51  rmse_std_err = 2.19
+#> 
+#> Working on combination with id 9 of 16.
+#> Results of the 5-fold cross validation (top 6 best configurations):
+#> #1: mtry = 1  trees = 750  rmse = 18.61  rmse_std_err = 1.56
+#> #2: mtry = 2  trees = 400  rmse = 18.63  rmse_std_err = 1.56
+#> #3: mtry = 1  trees = 400  rmse = 18.80  rmse_std_err = 1.55
+#> #4: mtry = 2  trees = 750  rmse = 19.00  rmse_std_err = 1.70
+#> #5: mtry = 1  trees = 50   rmse = 19.02  rmse_std_err = 1.86
+#> #6: mtry = 2  trees = 50   rmse = 19.50  rmse_std_err = 1.72
+#> 
+#> Working on combination with id 10 of 16.
+#> Results of the 5-fold cross validation (top 6 best configurations):
+#> #1: mtry = 1  trees = 400  rmse = 23.61  rmse_std_err = 1.61
+#> #2: mtry = 1  trees = 50   rmse = 23.72  rmse_std_err = 1.49
+#> #3: mtry = 1  trees = 750  rmse = 23.79  rmse_std_err = 1.64
+#> #4: mtry = 2  trees = 750  rmse = 23.86  rmse_std_err = 0.83
+#> #5: mtry = 2  trees = 400  rmse = 23.91  rmse_std_err = 0.80
+#> #6: mtry = 2  trees = 50   rmse = 24.74  rmse_std_err = 0.68
+#> 
+#> Working on combination with id 11 of 16.
+#> Results of the 5-fold cross validation (top 6 best configurations):
+#> #1: mtry = 1  trees = 400  rmse = 22.99  rmse_std_err = 4.29
+#> #2: mtry = 1  trees = 750  rmse = 23.08  rmse_std_err = 4.33
+#> #3: mtry = 1  trees = 50   rmse = 23.16  rmse_std_err = 4.28
+#> #4: mtry = 2  trees = 50   rmse = 23.80  rmse_std_err = 3.70
+#> #5: mtry = 2  trees = 400  rmse = 23.85  rmse_std_err = 3.72
+#> #6: mtry = 2  trees = 750  rmse = 24.07  rmse_std_err = 3.79
+#> 
+#> Working on combination with id 12 of 16.
+#> Results of the 5-fold cross validation (top 9 best configurations):
+#> #1: mtry = 1  trees = 50   rmse = 16.86  rmse_std_err = 2.19
+#> #2: mtry = 1  trees = 400  rmse = 16.90  rmse_std_err = 1.83
+#> #3: mtry = 1  trees = 750  rmse = 16.91  rmse_std_err = 1.93
+#> #4: mtry = 2  trees = 50   rmse = 17.47  rmse_std_err = 1.47
+#> #5: mtry = 2  trees = 750  rmse = 17.53  rmse_std_err = 1.77
+#> #6: mtry = 2  trees = 400  rmse = 17.82  rmse_std_err = 1.67
+#> #7: mtry = 3  trees = 50   rmse = 18.03  rmse_std_err = 1.84
+#> #8: mtry = 3  trees = 750  rmse = 18.47  rmse_std_err = 1.91
+#> #9: mtry = 3  trees = 400  rmse = 18.49  rmse_std_err = 1.82
+#> 
+#> Working on combination with id 13 of 16.
+#> Results of the 5-fold cross validation (top 9 best configurations):
+#> #1: mtry = 1  trees = 50   rmse = 19.27  rmse_std_err = 2.13
+#> #2: mtry = 2  trees = 750  rmse = 19.80  rmse_std_err = 1.59
+#> #3: mtry = 1  trees = 750  rmse = 20.03  rmse_std_err = 1.95
+#> #4: mtry = 2  trees = 400  rmse = 20.21  rmse_std_err = 1.59
+#> #5: mtry = 3  trees = 50   rmse = 20.42  rmse_std_err = 1.64
+#> #6: mtry = 1  trees = 400  rmse = 20.49  rmse_std_err = 2.13
+#> #7: mtry = 2  trees = 50   rmse = 20.59  rmse_std_err = 1.26
+#> #8: mtry = 3  trees = 400  rmse = 20.61  rmse_std_err = 1.68
+#> #9: mtry = 3  trees = 750  rmse = 20.85  rmse_std_err = 1.74
+#> 
+#> Working on combination with id 14 of 16.
+#> Results of the 5-fold cross validation (top 9 best configurations):
+#> #1: mtry = 1  trees = 750  rmse = 21.96  rmse_std_err = 3.12
+#> #2: mtry = 1  trees = 400  rmse = 22.36  rmse_std_err = 2.96
+#> #3: mtry = 1  trees = 50   rmse = 22.53  rmse_std_err = 3.01
+#> #4: mtry = 2  trees = 750  rmse = 22.59  rmse_std_err = 2.53
+#> #5: mtry = 2  trees = 400  rmse = 22.76  rmse_std_err = 2.39
+#> #6: mtry = 2  trees = 50   rmse = 22.80  rmse_std_err = 2.41
+#> #7: mtry = 3  trees = 400  rmse = 23.19  rmse_std_err = 2.26
+#> #8: mtry = 3  trees = 750  rmse = 23.42  rmse_std_err = 2.07
+#> #9: mtry = 3  trees = 50   rmse = 23.69  rmse_std_err = 2.22
+#> 
+#> Working on combination with id 15 of 16.
+#> Results of the 5-fold cross validation (top 9 best configurations):
+#> #1: mtry = 1  trees = 400  rmse = 18.33  rmse_std_err = 2.07
+#> #2: mtry = 1  trees = 750  rmse = 18.59  rmse_std_err = 2.25
+#> #3: mtry = 2  trees = 750  rmse = 18.78  rmse_std_err = 1.59
+#> #4: mtry = 2  trees = 400  rmse = 18.81  rmse_std_err = 1.58
+#> #5: mtry = 3  trees = 50   rmse = 18.93  rmse_std_err = 1.53
+#> #6: mtry = 3  trees = 400  rmse = 19.11  rmse_std_err = 1.57
+#> #7: mtry = 3  trees = 750  rmse = 19.17  rmse_std_err = 1.71
+#> #8: mtry = 2  trees = 50   rmse = 19.18  rmse_std_err = 1.33
+#> #9: mtry = 1  trees = 50   rmse = 19.94  rmse_std_err = 2.02
+#> 
 ```
 
 We can look at the $\operatorname{MSE}_v$ evaluation criterion,
@@ -662,8 +829,9 @@ the `empirical` method for easier comparison.
 
 ```r
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
-#> Error in make.unique(names, sep = "_"): 'names' must be a character vector
 ```
+
+![](figure_regression/dt-cv-plot-1.png)
 
 Furthermore, we must consider that cross-validation drastically
 increases the elapsed time (seconds) and determine if the
@@ -677,7 +845,18 @@ tuning, we still overfit the data.
 ```r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>                      MSEv  Time
+#> MC_empirical       179.43  2.22
+#> sep_lm             745.21  0.77
+#> sep_pcr            784.91  1.32
+#> sep_splines        165.13  1.09
+#> sep_reicpe_example 687.45  1.74
+#> sep_tree_stump     218.05  1.03
+#> sep_tree_default   177.68  0.89
+#> sep_tree_cv        169.96 17.31
+#> sep_tree_cv_2      166.17 35.01
+#> sep_rf             210.99  1.58
+#> sep_rf_cv          212.88 38.41
 ```
 
 
@@ -718,7 +897,8 @@ explanation_list$sep_xgboost <- explain(
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Cross validate the number of trees
 explanation_list$sep_xgboost_cv <- explain(
@@ -733,7 +913,8 @@ explanation_list$sep_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(10, 15, 25, 50, 100, 500)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Cross validate the number of trees in parallel on two threads
 future::plan(future::multisession, workers = 2)
@@ -749,7 +930,8 @@ explanation_list$sep_xgboost_cv_par <- explain(
   regression.tune_values = expand.grid(trees = c(10, 15, 25, 50, 100, 500)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Use a finer grid of low values for `trees` and also tune `tree_depth`
 future::plan(future::multisession, workers = 4) # Change to 4 threads due to more complex CV
@@ -769,7 +951,8 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
   regression.tune_values = expand.grid(trees = c(8, 10, 12, 15), tree_depth = c(4, 6, 8)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 future::plan(future::sequential) # To return to non-parallel computation
 ```
 
@@ -793,7 +976,22 @@ cross-validation in parallel or sequentially.
 ```r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>                        MSEv  Time
+#> MC_empirical         179.43  2.22
+#> sep_lm               745.21  0.77
+#> sep_pcr              784.91  1.32
+#> sep_splines          165.13  1.09
+#> sep_reicpe_example   687.45  1.74
+#> sep_tree_stump       218.05  1.03
+#> sep_tree_default     177.68  0.89
+#> sep_tree_cv          169.96 17.31
+#> sep_tree_cv_2        166.17 35.01
+#> sep_rf               210.99  1.58
+#> sep_rf_cv            212.88 38.41
+#> sep_xgboost          197.72  0.99
+#> sep_xgboost_cv       164.69 20.72
+#> sep_xgboost_cv_par   164.69 17.53
+#> sep_xgboost_cv_2_par 146.51 21.94
 ```
 
 
@@ -839,7 +1037,8 @@ explanation_list$sur_lm <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Using xgboost with default parameters as the surrogate model
 explanation_list$sur_xgboost <- explain(
@@ -851,7 +1050,8 @@ explanation_list$sur_xgboost <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Using xgboost with parameters tuned by cross-validation as the surrogate model
 explanation_list$sur_xgboost_cv <- explain(
@@ -870,7 +1070,8 @@ explanation_list$sur_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Using random forest with default parameters as the surrogate model
 explanation_list$sur_rf <- explain(
@@ -882,7 +1083,8 @@ explanation_list$sur_rf <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Using random forest with parameters tuned by cross-validation as the surrogate model
 explanation_list$sur_rf_cv <- explain(
@@ -902,7 +1104,8 @@ explanation_list$sur_rf_cv <- explain(
   ),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 
@@ -944,7 +1147,8 @@ explanation_list$sur_rf_cv_par <- explain(
   ),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 future::plan(future::sequential) # To return to non-parallel computation
 
 # Check that we get identical Shapley value explanations
@@ -969,13 +1173,35 @@ or in parallel.
 ```r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>                        MSEv  Time
+#> MC_empirical         179.43  2.22
+#> sep_lm               745.21  0.77
+#> sep_pcr              784.91  1.32
+#> sep_splines          165.13  1.09
+#> sep_reicpe_example   687.45  1.74
+#> sep_tree_stump       218.05  1.03
+#> sep_tree_default     177.68  0.89
+#> sep_tree_cv          169.96 17.31
+#> sep_tree_cv_2        166.17 35.01
+#> sep_rf               210.99  1.58
+#> sep_rf_cv            212.88 38.41
+#> sep_xgboost          197.72  0.99
+#> sep_xgboost_cv       164.69 20.72
+#> sep_xgboost_cv_par   164.69 17.53
+#> sep_xgboost_cv_2_par 146.51 21.94
+#> sur_lm               649.61  0.31
+#> sur_xgboost          169.92  0.26
+#> sur_xgboost_cv       169.87  2.37
+#> sur_rf               195.10  0.52
+#> sur_rf_cv            171.84 30.55
+#> sur_rf_cv_par        171.84 33.24
 
 # Compare the MSEv criterion of the different explanation methods.
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
-#> Error in make.unique(names, sep = "_"): 'names' must be a character vector
 ```
+
+![](figure_regression/surrogate-plot-1.png)
 
 
 # Add new regression methods {#new}
@@ -1123,7 +1349,8 @@ explanation_list$sep_ppr <- explain(
   approach = "regression_separate",
   regression.model = ppr_reg(num_terms = 2)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # PPR separate with cross-validated number of terms
 explanation_list$sep_ppr_cv <- explain(
@@ -1137,7 +1364,8 @@ explanation_list$sep_ppr_cv <- explain(
   regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 4)), levels = 3),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # PPR surrogate with specified number of terms
 explanation_list$sur_ppr <- explain(
@@ -1149,7 +1377,8 @@ explanation_list$sur_ppr <- explain(
   approach = "regression_surrogate",
   regression.model = ppr_reg(num_terms = 3)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # PPR surrogate with cross-validated number of terms
 explanation_list$sur_ppr_cv <- explain(
@@ -1163,7 +1392,8 @@ explanation_list$sur_ppr_cv <- explain(
   regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 8)), levels = 4),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 ```
 
 We can then compare the $\operatorname{MSE}_v$ and some of the Shapley value explanations.
@@ -1174,12 +1404,38 @@ but also increase the running time.
 ```r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>                        MSEv  Time
+#> MC_empirical         179.43  2.22
+#> sep_lm               745.21  0.77
+#> sep_pcr              784.91  1.32
+#> sep_splines          165.13  1.09
+#> sep_reicpe_example   687.45  1.74
+#> sep_tree_stump       218.05  1.03
+#> sep_tree_default     177.68  0.89
+#> sep_tree_cv          169.96 17.31
+#> sep_tree_cv_2        166.17 35.01
+#> sep_rf               210.99  1.58
+#> sep_rf_cv            212.88 38.41
+#> sep_xgboost          197.72  0.99
+#> sep_xgboost_cv       164.69 20.72
+#> sep_xgboost_cv_par   164.69 17.53
+#> sep_xgboost_cv_2_par 146.51 21.94
+#> sur_lm               649.61  0.31
+#> sur_xgboost          169.92  0.26
+#> sur_xgboost_cv       169.87  2.37
+#> sur_rf               195.10  0.52
+#> sur_rf_cv            171.84 30.55
+#> sur_rf_cv_par        171.84 33.24
+#> sep_ppr              327.23  1.41
+#> sep_ppr_cv           269.74 15.46
+#> sur_ppr              395.42  0.29
+#> sur_ppr_cv           415.62  1.86
 
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
-#> Error in make.unique(names, sep = "_"): 'names' must be a character vector
 ```
+
+![](figure_regression/ppr-plot-1.png)
 
 
 # Summary figures {#summary}
@@ -1206,7 +1462,8 @@ explanation_list_MC$MC_independence <- explain(
   approach = "independence",
   prediction_zero = p0
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Copy the Shapley value explanations for the empirical method
 explanation_list_MC$MC_empirical <- explanation_list$MC_empirical
@@ -1220,7 +1477,8 @@ explanation_list_MC$MC_gaussian <- explain(
   approach = "gaussian",
   prediction_zero = p0
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Compute the Shapley value explanations using the copula method
 explanation_list_MC$MC_copula <- explain(
@@ -1231,7 +1489,8 @@ explanation_list_MC$MC_copula <- explain(
   approach = "copula",
   prediction_zero = p0
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Compute the Shapley value explanations using the ctree method
 explanation_list_MC$MC_ctree <- explain(
@@ -1242,7 +1501,8 @@ explanation_list_MC$MC_ctree <- explain(
   approach = "ctree",
   prediction_zero = p0
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Compute the Shapley value explanations using the vaeac method
 explanation_list_MC$MC_vaeac <- explain(
@@ -1254,7 +1514,8 @@ explanation_list_MC$MC_vaeac <- explain(
   prediction_zero = p0,
   vaeac.epochs = 10
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Combine the two explanations lists
 explanation_list$MC_empirical <- NULL
@@ -1270,13 +1531,44 @@ the `MC_empirical` method to make the comparison easier.
 ```r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>                        MSEv  Time
+#> MC_independence      206.92  0.50
+#> MC_empirical         179.43  2.22
+#> MC_gaussian          245.19  0.49
+#> MC_copula            247.29  0.46
+#> MC_ctree             191.82  1.72
+#> MC_vaeac             141.88 72.61
+#> sep_lm               745.21  0.77
+#> sep_pcr              784.91  1.32
+#> sep_splines          165.13  1.09
+#> sep_reicpe_example   687.45  1.74
+#> sep_tree_stump       218.05  1.03
+#> sep_tree_default     177.68  0.89
+#> sep_tree_cv          169.96 17.31
+#> sep_tree_cv_2        166.17 35.01
+#> sep_rf               210.99  1.58
+#> sep_rf_cv            212.88 38.41
+#> sep_xgboost          197.72  0.99
+#> sep_xgboost_cv       164.69 20.72
+#> sep_xgboost_cv_par   164.69 17.53
+#> sep_xgboost_cv_2_par 146.51 21.94
+#> sur_lm               649.61  0.31
+#> sur_xgboost          169.92  0.26
+#> sur_xgboost_cv       169.87  2.37
+#> sur_rf               195.10  0.52
+#> sur_rf_cv            171.84 30.55
+#> sur_rf_cv_par        171.84 33.24
+#> sep_ppr              327.23  1.41
+#> sep_ppr_cv           269.74 15.46
+#> sur_ppr              395.42  0.29
+#> sur_ppr_cv           415.62  1.86
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the MC_empirical method
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
-#> Error in make.unique(names, sep = "_"): 'names' must be a character vector
 ```
+
+![](figure_regression/MSEv-sum-1.png)
 
 The `vaeac` approach is the best-performing method according to the
 $\operatorname{MSE}_v$ evaluation criterion, while the `sep_xgboost_cv_2_par`
@@ -1290,10 +1582,10 @@ according to the $\operatorname{MSE}_v$ criterion.
 
 ```r
 order <- get_k_best_methods(explanation_list, k = length(explanation_list))
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
 plot_MSEv_scores(explanation_list[order], method_line = "MC_empirical")
-#> Error in explanation_list[order]: invalid subscript type 'closure'
 ```
+
+![](figure_regression/MSEv-sum-2-1.png)
 
 We can also examine the different Shapley value explanations for the first six
 explicands (two at a time), and we still sort the methods from best to worst.
@@ -1305,12 +1597,21 @@ are often more visible for the methods with poor/larger $\operatorname{MSE}_v$ v
 
 ```r
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(1, 2), facet_ncol = 1)
-#> Error in explanation_list[order]: invalid subscript type 'closure'
-plot_SV_several_approaches(explanation_list[order], index_explicands = c(3, 4), facet_ncol = 1)
-#> Error in explanation_list[order]: invalid subscript type 'closure'
-plot_SV_several_approaches(explanation_list[order], index_explicands = c(5, 6), facet_ncol = 1)
-#> Error in explanation_list[order]: invalid subscript type 'closure'
 ```
+
+![](figure_regression/SV-sum-1.png)
+
+```r
+plot_SV_several_approaches(explanation_list[order], index_explicands = c(3, 4), facet_ncol = 1)
+```
+
+![](figure_regression/SV-sum-2.png)
+
+```r
+plot_SV_several_approaches(explanation_list[order], index_explicands = c(5, 6), facet_ncol = 1)
+```
+
+![](figure_regression/SV-sum-3.png)
 
 Here, we focus on the five best methods (and `MC_empricial`) to make it
 easier to analyze the individual Shapley value explanations, and we see
@@ -1320,12 +1621,11 @@ a quite strong agreement between the different methods.
 ```r
 # Extract the 5 best methods (and empirical)
 best_methods <- get_k_best_methods(explanation_list, k = 5)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
 if (!"MC_empirical" %in% best_methods) best_methods <- c(best_methods, "MC_empirical")
-#> Error in eval(expr, envir, enclos): object 'best_methods' not found
 plot_SV_several_approaches(explanation_list[best_methods], index_explicands = 1:4)
-#> Error in eval(expr, envir, enclos): object 'best_methods' not found
 ```
+
+![](figure_regression/SV-sum-2-1.png)
 
 
 # Mixed data {#mixed}
@@ -1386,7 +1686,6 @@ explanation_list_mixed$MC_independence <- explain(
   n_batches = 4,
   approach = "independence"
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 explanation_list_mixed$MC_ctree <- explain(
   model = model_cat,
@@ -1396,7 +1695,6 @@ explanation_list_mixed$MC_ctree <- explain(
   n_batches = 4,
   approach = "ctree"
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 explanation_list_mixed$MC_vaeac <- explain(
   model = model_cat,
@@ -1406,7 +1704,6 @@ explanation_list_mixed$MC_vaeac <- explain(
   n_batches = 4,
   approach = "vaeac"
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 ```
 
 
@@ -1428,7 +1725,6 @@ explanation_list_mixed$sep_lm <- explain(
   approach = "regression_separate",
   regression.model = parsnip::linear_reg()
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Linear regression where we have added splines to the numerical features
 explanation_list_mixed$sep_splines <- explain(
@@ -1443,7 +1739,6 @@ explanation_list_mixed$sep_splines <- explain(
     return(step_ns(regression_recipe, all_numeric_predictors(), deg_free = 2))
   }
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Decision tree with default parameters
 explanation_list_mixed$sep_tree <- explain(
@@ -1455,7 +1750,6 @@ explanation_list_mixed$sep_tree <- explain(
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Use trees with cross-validation on the depth and cost complexity. Manually set the values.
 explanation_list_mixed$sep_tree_cv <- explain(
@@ -1475,7 +1769,6 @@ explanation_list_mixed$sep_tree_cv <- explain(
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Random forest with default hyperparameters. Do NOT need to use dummy features.
 explanation_list_mixed$sep_rf <- explain(
@@ -1487,7 +1780,6 @@ explanation_list_mixed$sep_rf <- explain(
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Random forest with cross validated hyperparameters.
 explanation_list_mixed$sep_rf_cv <- explain(
@@ -1506,7 +1798,6 @@ explanation_list_mixed$sep_rf_cv <- explain(
     },
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Xgboost with default hyperparameters, but we have to dummy encode the factors
 explanation_list_mixed$sep_xgboost <- explain(
@@ -1521,7 +1812,6 @@ explanation_list_mixed$sep_xgboost <- explain(
     return(step_dummy(regression_recipe, all_factor_predictors()))
   }
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Xgboost with cross validated hyperparameters and we dummy encode the factors
 explanation_list_mixed$sep_xgboost_cv <- explain(
@@ -1543,7 +1833,6 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 ```
 
 
@@ -1565,7 +1854,6 @@ explanation_list_mixed$sur_lm <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Linear regression where we have added splines to the numerical features
 # NOTE, that we remove the augmented mask variables to avoid a rank-deficient fit
@@ -1581,7 +1869,6 @@ explanation_list_mixed$sur_splines <- explain(
     return(step_ns(recipe, all_numeric_predictors(), -starts_with("mask_"), deg_free = 2))
   }
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Decision tree with default parameters
 explanation_list_mixed$sur_tree <- explain(
@@ -1593,7 +1880,6 @@ explanation_list_mixed$sur_tree <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Use trees with cross-validation on the depth and cost complexity. Manually set the values.
 explanation_list_mixed$sur_tree_cv <- explain(
@@ -1613,7 +1899,6 @@ explanation_list_mixed$sur_tree_cv <- explain(
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Random forest with default hyperparameters. Do NOT need to use dummy features.
 explanation_list_mixed$sur_rf <- explain(
@@ -1625,7 +1910,6 @@ explanation_list_mixed$sur_rf <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Random forest with cross validated hyperparameters.
 explanation_list_mixed$sur_rf_cv <- explain(
@@ -1641,7 +1925,6 @@ explanation_list_mixed$sur_rf_cv <- explain(
   regression.tune_values = expand.grid(mtry = c(1, 2, 4), trees = c(50, 250, 500, 750)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Xgboost with default hyperparameters, but we have to dummy encode the factors
 explanation_list_mixed$sur_xgboost <- explain(
@@ -1656,7 +1939,6 @@ explanation_list_mixed$sur_xgboost <- explain(
     return(step_dummy(regression_recipe, all_factor_predictors()))
   }
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 
 # Xgboost with cross validated hyperparameters and we dummy encode the factors
 explanation_list_mixed$sur_xgboost_cv <- explain(
@@ -1678,7 +1960,6 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "lm"
 ```
 
 
@@ -1695,13 +1976,33 @@ three surrogate regression methods.
 ```r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list_mixed)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>                   MSEv   Time
+#> MC_independence 641.82   0.69
+#> MC_ctree        554.50   2.36
+#> MC_vaeac        629.43 147.26
+#> sep_lm          550.06   1.53
+#> sep_splines     541.36   1.80
+#> sep_tree        753.84   0.84
+#> sep_tree_cv     756.27  41.75
+#> sep_rf          521.79   1.10
+#> sep_rf_cv       609.58  51.42
+#> sep_xgboost     792.17   1.13
+#> sep_xgboost_cv  595.98  26.29
+#> sur_lm          610.61   0.51
+#> sur_splines     596.86   0.55
+#> sur_tree        677.04   0.38
+#> sur_tree_cv     789.37   3.34
+#> sur_rf          414.15   0.55
+#> sur_rf_cv       533.06  15.50
+#> sur_xgboost     606.92   0.40
+#> sur_xgboost_cv  429.06   3.05
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list_mixed, method_line = "MC_ctree")
-#> Error in make.unique(names, sep = "_"): 'names' must be a character vector
 ```
+
+![](figure_regression/mixed-plot-1.png)
 
 The best-performing methods are the surrogate random forest
 and xgboost with cross-validation methods. The Monte Carlo-based
@@ -1714,10 +2015,10 @@ of the methods according to the $\operatorname{MSE}_v$ criterion.
 
 ```r
 order <- get_k_best_methods(explanation_list_mixed, k = length(explanation_list_mixed))
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
 plot_MSEv_scores(explanation_list_mixed[order], method_line = "MC_ctree")
-#> Error in explanation_list_mixed[order]: invalid subscript type 'closure'
 ```
+
+![](figure_regression/mixed-plot-2-1.png)
 
 We also look at some of the Shapley value explanations and
 see that many methods produce similar explanations.
@@ -1725,8 +2026,9 @@ see that many methods produce similar explanations.
 
 ```r
 plot_SV_several_approaches(explanation_list_mixed[order], index_explicands = c(1, 2), facet_ncol = 1)
-#> Error in explanation_list_mixed[order]: invalid subscript type 'closure'
 ```
+
+![](figure_regression/mixed-plot-3-1.png)
 
 We can also focus on the Shapley value explanations for the best five
 methods according to the $\operatorname{MSE}_v$ criterion. We also
@@ -1735,12 +2037,11 @@ include the `ctree` method, the best-performing Monte Carlo-based method.
 
 ```r
 best_methods <- get_k_best_methods(explanation_list_mixed, k = 5)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
 if (!"MC_ctree" %in% best_methods) best_methods <- c(best_methods, "MC_ctree")
-#> Error in eval(expr, envir, enclos): object 'best_methods' not found
 plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicands = 1:4)
-#> Error in eval(expr, envir, enclos): object 'best_methods' not found
 ```
+
+![](figure_regression/mixed-plot-4-1.png)
 
 
 # Regression arguments as strings
@@ -1767,7 +2068,8 @@ explanation_list_str$sep_lm <- explain(
   approach = "regression_separate",
   regression.model = "parsnip::linear_reg()"
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 explanation_list_str$sep_pcr <- explain(
   model = model,
@@ -1781,7 +2083,8 @@ explanation_list_str$sep_pcr <- explain(
     return(recipes::step_pca(regression_recipe, recipes::all_numeric_predictors(), num_comp = 2))
   }"
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 explanation_list_str$sep_splines <- explain(
   model = model,
@@ -1795,7 +2098,8 @@ explanation_list_str$sep_splines <- explain(
     return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 2))
   }"
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 explanation_list_str$sep_tree_cv <- explain(
   model = model,
@@ -1810,7 +2114,8 @@ explanation_list_str$sep_tree_cv <- explain(
   regression.tune_values = "dials::grid_regular(dials::tree_depth(), levels = 4)",
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Using random forest with parameters tuned by cross-validation
 explanation_list_str$sep_rf_cv <- explain(
@@ -1829,7 +2134,8 @@ explanation_list_str$sep_rf_cv <- explain(
     }",
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # Using random forest with parameters tuned by cross-validation as the surrogate model
 explanation_list_str$sur_rf_cv <- explain(
@@ -1849,13 +2155,26 @@ explanation_list_str$sur_rf_cv <- explain(
   )",
   regression.vfold_cv_para = list(v = 5)
 )
-#> Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "xgb.Booster"
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
 
 # See that the evaluation scores match the non-string versions.
 print_MSEv_scores_and_time(explanation_list_str)
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>               MSEv  Time
+#> sep_lm      745.21  1.14
+#> sep_pcr     784.91  1.19
+#> sep_splines 165.13  1.15
+#> sep_tree_cv 169.96 20.65
+#> sep_rf_cv   212.88 39.29
+#> sur_rf_cv   171.84 30.51
 print_MSEv_scores_and_time(explanation_list[names(explanation_list_str)])
-#> Error in names(x) <- value: 'names' attribute [2] must be the same length as the vector [0]
+#>               MSEv  Time
+#> sep_lm      745.21  0.77
+#> sep_pcr     784.91  1.32
+#> sep_splines 165.13  1.09
+#> sep_tree_cv 169.96 17.31
+#> sep_rf_cv   212.88 38.41
+#> sur_rf_cv   171.84 30.55
 ```
 
 
