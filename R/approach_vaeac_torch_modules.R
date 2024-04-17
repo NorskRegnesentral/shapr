@@ -1,5 +1,4 @@
-# VAEAC Model =========================================================================================================
-## vaeac --------------------------------------------------------------------------------------------------------------
+# VAEAC Model ==========================================================================================================
 #' Initializing a vaeac model
 #'
 #' @description Class that represents a vaeac model, i.e., the class creates the neural networks in the vaeac
@@ -117,572 +116,533 @@
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-vaeac <- torch::nn_module(
+vaeac <- function(one_hot_max_sizes,
+                  width = 32,
+                  depth = 3,
+                  latent_dim = 8,
+                  activation_function = torch::nn_relu,
+                  skip_conn_layer = FALSE,
+                  skip_conn_masked_enc_dec = FALSE,
+                  batch_normalization = FALSE,
+                  paired_sampling = FALSE,
+                  mask_generator_name = c(
+                    "mcar_mask_generator",
+                    "specified_prob_mask_generator",
+                    "specified_masks_mask_generator"
+                  ),
+                  masking_ratio = 0.5,
+                  mask_gen_coalitions = NULL,
+                  mask_gen_coalitions_prob = NULL,
+                  sigma_mu = 1e4,
+                  sigma_sigma = 1e-4) {
 
-  # Name of the torch::nn_module object
-  classname = "vaeac",
+  # Check that a valid mask_generator was provided.
+  mask_generator_name <- match.arg(mask_generator_name)
 
-  # Initializing a vaeac model
-  initialize = function(one_hot_max_sizes,
-                        width = 32,
-                        depth = 3,
-                        latent_dim = 8,
-                        activation_function = torch::nn_relu,
-                        skip_conn_layer = FALSE,
-                        skip_conn_masked_enc_dec = FALSE,
-                        batch_normalization = FALSE,
-                        paired_sampling = FALSE,
-                        mask_generator_name = c(
-                          "mcar_mask_generator",
-                          "specified_prob_mask_generator",
-                          "specified_masks_mask_generator"
-                        ),
-                        masking_ratio = 0.5,
-                        mask_gen_coalitions = NULL,
-                        mask_gen_coalitions_prob = NULL,
-                        sigma_mu = 1e4,
-                        sigma_sigma = 1e-4) {
-    # Check that a valid mask_generator was provided.
-    mask_generator_name <- match.arg(mask_generator_name)
+  vaeac_tmp <- torch::nn_module(
+    # Name of the torch::nn_module object
+    classname = "vaeac",
 
-    # Get the number of features
-    n_features <- length(one_hot_max_sizes)
+    # Initializing a vaeac model
+    initialize = function(one_hot_max_sizes,
+                          width,
+                          depth,
+                          latent_dim,
+                          activation_function,
+                          skip_conn_layer,
+                          skip_conn_masked_enc_dec,
+                          batch_normalization,
+                          paired_sampling,
+                          mask_generator_name,
+                          masking_ratio,
+                          mask_gen_coalitions,
+                          mask_gen_coalitions_prob,
+                          sigma_mu,
+                          sigma_sigma) {
 
-    # Extra strings to add to names of layers depending on if we use memory layers and/or batch normalization.
-    # If FALSE, they are just an empty string and do not effect the names.
-    name_extra_memory_layer <- ifelse(skip_conn_masked_enc_dec, "_and_memory", "")
-    name_extra_batch_normalize <- ifelse(batch_normalization, "_and_batch_norm", "")
+      # Get the number of features
+      n_features <- length(one_hot_max_sizes)
 
-    # Save some of the initializing hyperparameters to the vaeac object. Others are saved later.
-    self$one_hot_max_sizes <- one_hot_max_sizes
-    self$depth <- depth
-    self$width <- width
-    self$latent_dim <- latent_dim
-    self$activation_function <- activation_function
-    self$skip_conn_layer <- skip_conn_layer
-    self$skip_conn_masked_enc_dec <- skip_conn_masked_enc_dec
-    self$batch_normalization <- batch_normalization
-    self$sigma_mu <- sigma_mu
-    self$sigma_sigma <- sigma_sigma
-    self$paired_sampling <- paired_sampling
+      # Extra strings to add to names of layers depending on if we use memory layers and/or batch normalization.
+      # If FALSE, they are just an empty string and do not effect the names.
+      name_extra_memory_layer <- ifelse(skip_conn_masked_enc_dec, "_and_memory", "")
+      name_extra_batch_normalize <- ifelse(batch_normalization, "_and_batch_norm", "")
 
-    # Save the how to compute the loss and how to sample from the vaeac model.
-    self$reconstruction_log_prob <- gauss_cat_loss(one_hot_max_sizes)
-    self$sampler_most_likely <- gauss_cat_sampler_most_likely(one_hot_max_sizes)
-    self$sampler_random <- gauss_cat_sampler_random(one_hot_max_sizes)
-    self$generative_parameters <- gauss_cat_parameters(one_hot_max_sizes)
-    self$n_features <- n_features
-    self$vlb_scale_factor <- 1 / n_features
+      # Set up an environment that the memory_layer objects will use as "memory", i.e., where they store the tensors.
+      memory_layer_env <- new.env()
 
-    ##### Generate the mask generator
-    if (mask_generator_name == "mcar_mask_generator") {
-      # Create a mcar_mask_generator and attach it to the vaeac object. Note that masking_ratio is a singleton here.
-      self$mask_generator <- mcar_mask_generator(
-        masking_ratio = masking_ratio,
-        paired_sampling = paired_sampling
-      )
+      # Save some of the initializing hyperparameters to the vaeac object. Others are saved later.
+      self$one_hot_max_sizes <- one_hot_max_sizes
+      self$depth <- depth
+      self$width <- width
+      self$latent_dim <- latent_dim
+      self$activation_function <- activation_function
+      self$skip_conn_layer <- skip_conn_layer
+      self$skip_conn_masked_enc_dec <- skip_conn_masked_enc_dec
+      self$batch_normalization <- batch_normalization
+      self$sigma_mu <- sigma_mu
+      self$sigma_sigma <- sigma_sigma
+      self$paired_sampling <- paired_sampling
 
-      # Attach the masking ratio to the vaeac object.
-      self$masking_ratio <- masking_ratio
-    } else if (mask_generator_name == "specified_prob_mask_generator") {
-      # Create a specified_prob_mask_generator and attach it to the vaeac object.
-      # Note that masking_ratio is an array here.
-      self$mask_generator <- specified_prob_mask_generator(
-        masking_probs = masking_ratio,
-        paired_sampling = paired_sampling
-      )
+      # Save the how to compute the loss and how to sample from the vaeac model.
+      self$reconstruction_log_prob <- gauss_cat_loss(one_hot_max_sizes)
+      self$sampler_most_likely <- gauss_cat_sampler_most_likely(one_hot_max_sizes)
+      self$sampler_random <- gauss_cat_sampler_random(one_hot_max_sizes)
+      self$generative_parameters <- gauss_cat_parameters(one_hot_max_sizes)
+      self$n_features <- n_features
+      self$vlb_scale_factor <- 1 / n_features
 
-      # Attach the masking probabilities to the vaeac object.
-      self$masking_probs <- masking_ratio
-    } else if (mask_generator_name == "specified_masks_mask_generator") {
-      # Small check that they have been provided.
-      if (is.null(mask_gen_coalitions) | is.null(mask_gen_coalitions_prob)) {
+      ##### Generate the mask generator
+      if (mask_generator_name == "mcar_mask_generator") {
+        # Create a mcar_mask_generator and attach it to the vaeac object. Note that masking_ratio is a singleton here.
+        self$mask_generator <- mcar_mask_generator(
+          masking_ratio = masking_ratio,
+          paired_sampling = paired_sampling
+        )
+
+        # Attach the masking ratio to the vaeac object.
+        self$masking_ratio <- masking_ratio
+      } else if (mask_generator_name == "specified_prob_mask_generator") {
+        # Create a specified_prob_mask_generator and attach it to the vaeac object.
+        # Note that masking_ratio is an array here.
+        self$mask_generator <- specified_prob_mask_generator(
+          masking_probs = masking_ratio,
+          paired_sampling = paired_sampling
+        )
+
+        # Attach the masking probabilities to the vaeac object.
+        self$masking_probs <- masking_ratio
+      } else if (mask_generator_name == "specified_masks_mask_generator") {
+        # Small check that they have been provided.
+        if (is.null(mask_gen_coalitions) | is.null(mask_gen_coalitions_prob)) {
+          stop(paste0(
+            "Both 'mask_gen_coalitions' and 'mask_gen_coalitions_prob' ",
+            "must be provided when using 'specified_masks_mask_generator'."
+          ))
+        }
+
+        # Create a specified_masks_mask_generator and attach it to the vaeac object.
+        self$mask_generator <- specified_masks_mask_generator(
+          masks = mask_gen_coalitions,
+          masks_probs = mask_gen_coalitions_prob,
+          paired_sampling = paired_sampling
+        )
+
+        # Save the possible masks and corresponding probabilities to the vaeac object.
+        self$masks <- mask_gen_coalitions
+        self$masks_probs <- mask_gen_coalitions_prob
+      } else {
+        # Print error to user.
         stop(paste0(
-          "Both 'mask_gen_coalitions' and 'mask_gen_coalitions_prob' ",
-          "must be provided when using 'specified_masks_mask_generator'."
+          "`mask_generator_name` must be one of 'mcar_mask_generator', 'specified_prob_mask_generator', or ",
+          "'specified_masks_mask_generator', and not '", mask_generator_name, "'."
         ))
       }
 
-      # Create a specified_masks_mask_generator and attach it to the vaeac object.
-      self$mask_generator <- specified_masks_mask_generator(
-        masks = mask_gen_coalitions,
-        masks_probs = mask_gen_coalitions_prob,
-        paired_sampling = paired_sampling
-      )
+      ##### Full Encoder
+      full_encoder_network <- torch::nn_sequential()
 
-      # Save the possible masks and corresponding probabilities to the vaeac object.
-      self$masks <- mask_gen_coalitions
-      self$masks_probs <- mask_gen_coalitions_prob
-    } else {
-      # Print error to user.
-      stop(paste0(
-        "`mask_generator_name` must be one of 'mcar_mask_generator', 'specified_prob_mask_generator', or ",
-        "'specified_masks_mask_generator', and not '", mask_generator_name, "'."
-      ))
-    }
-
-    ##### Full Encoder
-    full_encoder_network <- torch::nn_sequential()
-
-    # Full Encoder: Input layer
-    full_encoder_network$add_module(
-      module = categorical_to_one_hot_layer(c(one_hot_max_sizes, rep(0, n_features)), seq(n_features)),
-      name = "input_layer_cat_to_one_hot"
-    )
-    full_encoder_network$add_module(
-      module = torch::nn_linear(
-        in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features * 2,
-        out_features = width
-      ),
-      name = "input_layer_linear"
-    )
-    full_encoder_network$add_module(
-      module = activation_function(),
-      name = "input_layer_layer_activation"
-    )
-    if (batch_normalization) {
+      # Full Encoder: Input layer
       full_encoder_network$add_module(
-        module = torch::nn_batch_norm1d(width),
-        name = "input_layer_layer_batch_norm"
+        module = categorical_to_one_hot_layer(c(one_hot_max_sizes, rep(0, n_features)), seq(n_features)),
+        name = "input_layer_cat_to_one_hot"
       )
-    }
+      full_encoder_network$add_module(
+        module = torch::nn_linear(
+          in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features * 2,
+          out_features = width
+        ),
+        name = "input_layer_linear"
+      )
+      full_encoder_network$add_module(
+        module = activation_function(),
+        name = "input_layer_layer_activation"
+      )
+      if (batch_normalization) {
+        full_encoder_network$add_module(
+          module = torch::nn_batch_norm1d(width),
+          name = "input_layer_layer_batch_norm"
+        )
+      }
 
-    # Full Encoder: Hidden layers
-    for (i in seq(depth)) {
-      if (skip_conn_layer) {
-        # Add identity skip connection. Such that the input is added to the output of the linear layer
-        # and activation function: output = X + activation(WX + b).
-        full_encoder_network$add_module(
-          module = skip_connection(
-            torch::nn_linear(width, width),
-            activation_function(),
-            if (batch_normalization) torch::nn_batch_norm1d(width)
-          ),
-          name = paste0("hidden_layer_", i, "_skip_conn_with_linear_and_activation", name_extra_batch_normalize)
-        )
-      } else {
-        # Do not use skip connections and do not add the input to the output.
-        full_encoder_network$add_module(
-          module = torch::nn_linear(width, width),
-          name = paste0("hidden_layer_", i, "_linear")
-        )
-        full_encoder_network$add_module(
-          module = activation_function(),
-          name = paste0("hidden_layer_", i, "_activation")
-        )
-        if (batch_normalization) {
+      # Full Encoder: Hidden layers
+      for (i in seq(depth)) {
+        if (skip_conn_layer) {
+          # Add identity skip connection. Such that the input is added to the output of the linear layer
+          # and activation function: output = X + activation(WX + b).
           full_encoder_network$add_module(
-            module = torch::nn_batch_norm1d(width),
-            name = paste0("hidden_layer_", i, "_batch_norm")
+            module = skip_connection(
+              torch::nn_linear(width, width),
+              activation_function(),
+              if (batch_normalization) torch::nn_batch_norm1d(width)
+            ),
+            name = paste0("hidden_layer_", i, "_skip_conn_with_linear_and_activation", name_extra_batch_normalize)
           )
-        }
-      }
-    }
-
-    # Full Encoder: Go to latent space
-    full_encoder_network$add_module(
-      module = torch::nn_linear(width, latent_dim * 2),
-      name = "latent_space_layer_linear"
-    )
-
-    ##### Masked Encoder
-    masked_encoder_network <- torch::nn_sequential()
-
-    # Masked Encoder: Input layer
-    masked_encoder_network$add_module(
-      module = categorical_to_one_hot_layer(c(one_hot_max_sizes, rep(0, n_features))),
-      name = "input_layer_cat_to_one_hot"
-    )
-    if (skip_conn_masked_enc_dec) {
-      masked_encoder_network$add_module(
-        module = memory_layer("#input"),
-        name = "input_layer_memory"
-      )
-    }
-    masked_encoder_network$add_module(
-      module = torch::nn_linear(
-        in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features,
-        out_features = width
-      ),
-      name = "input_layer_linear"
-    )
-    masked_encoder_network$add_module(
-      module = activation_function(),
-      name = "input_layer_activation"
-    )
-    if (batch_normalization) {
-      masked_encoder_network$add_module(
-        module = torch::nn_batch_norm1d(width),
-        name = "input_layer_batch_norm"
-      )
-    }
-
-    # Masked Encoder: Hidden layers
-    for (i in seq(depth)) {
-      if (skip_conn_layer) {
-        # Add identity skip connection. Such that the input is added to the output of the linear layer
-        # and activation function: output = X + activation(WX + b).
-        # Also check inside skip_connection if we are to use memory_layer. I.e., skip connection with
-        # concatenation from masked encoder to decoder.
-        masked_encoder_network$add_module(
-          module = skip_connection(
-            if (skip_conn_masked_enc_dec) memory_layer(paste0("#", i)),
-            torch::nn_linear(width, width),
-            activation_function()
-          ),
-          name = paste0("hidden_layer_", i, "_skip_conn_with_linear_and_activation", name_extra_memory_layer)
-        )
-        if (batch_normalization) {
-          masked_encoder_network$add_module(
-            module = torch::nn_batch_norm1d(width),
-            name = paste0("hidden_layer_", i, "_batch_norm")
+        } else {
+          # Do not use skip connections and do not add the input to the output.
+          full_encoder_network$add_module(
+            module = torch::nn_linear(width, width),
+            name = paste0("hidden_layer_", i, "_linear")
           )
-        }
-      } else {
-        # Do not use skip connections and do not add the input to the output.
-        if (skip_conn_masked_enc_dec) {
-          masked_encoder_network$add_module(
-            module = memory_layer(paste0("#", i)),
-            name = paste0("hidden_layer_", i, "_memory")
+          full_encoder_network$add_module(
+            module = activation_function(),
+            name = paste0("hidden_layer_", i, "_activation")
           )
-        }
-        masked_encoder_network$add_module(
-          module = torch::nn_linear(width, width),
-          name = paste0("hidden_layer_", i, "_linear")
-        )
-        masked_encoder_network$add_module(
-          module = activation_function(),
-          name = paste0("hidden_layer_", i, "_activation")
-        )
-        if (batch_normalization) {
-          masked_encoder_network$add_module(
-            module = torch::nn_batch_norm1d(width),
-            name = paste0("hidden_layer_", i, "_batch_norm")
-          )
-        }
-      }
-    }
-
-    # Masked Encoder: Go to latent space
-    if (skip_conn_masked_enc_dec) {
-      masked_encoder_network$add_module(
-        module = memory_layer(paste0("#", depth + 1)),
-        name = "latent_space_layer_memory"
-      )
-    }
-    masked_encoder_network$add_module(
-      module = torch::nn_linear(width, 2 * latent_dim),
-      name = "latent_space_layer_linear"
-    )
-
-    ##### Decoder
-    decoder_network <- torch::nn_sequential()
-
-    # Decoder: Go from latent space
-    decoder_network$add_module(
-      module = torch::nn_linear(latent_dim, width),
-      name = "latent_space_layer_linear"
-    )
-    decoder_network$add_module(
-      module = activation_function(),
-      name = "latent_space_layer_activation"
-    )
-    if (batch_normalization) {
-      decoder_network$add_module(
-        module = torch::nn_batch_norm1d(width),
-        name = "latent_space_layer_batch_norm"
-      )
-    }
-
-    # Get the width of the hidden layers in the decoder. Needs to be multiplied with two if
-    # we use skip connections between masked encoder and decoder as we concatenate the tensors.
-    width_decoder <- ifelse(skip_conn_masked_enc_dec, 2 * width, width)
-
-    # Same for the input dimension to the last layer in decoder that yields the distribution params.
-    extra_params_skip_con_mask_enc <-
-      ifelse(test = skip_conn_masked_enc_dec,
-        yes = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features,
-        no = 0
-      )
-
-    # Will need an extra hidden layer if we use skip connection from masked encoder to decoder
-    # as we send the full input layer of the masked encoder to the last layer in the decoder.
-    depth_decoder <- ifelse(skip_conn_masked_enc_dec, depth + 1, depth)
-
-    # Decoder: Hidden layers
-    for (i in seq(depth_decoder)) {
-      if (skip_conn_layer) {
-        # Add identity skip connection. Such that the input is added to the output of the linear layer and activation
-        # function: output = X + activation(WX + b). Also check inside skip_connection if we are to use memory_layer.
-        # I.e., skip connection with concatenation from masked encoder to decoder. If TRUE, then the memory layers
-        # extracts the corresponding input used in the masked encoder and concatenate them with the current input. Note
-        # that we add the memory layers in the opposite direction from how they were created. So, we get a classical
-        # U-net with latent space at the bottom and a connection between the layers on the same height of the U-shape.
-        decoder_network$add_module(
-          module = torch::nn_sequential(
-            skip_connection(
-              if (skip_conn_masked_enc_dec) {
-                memory_layer(paste0("#", depth - i + 2), TRUE)
-              },
-              torch::nn_linear(width_decoder, width),
-              activation_function()
+          if (batch_normalization) {
+            full_encoder_network$add_module(
+              module = torch::nn_batch_norm1d(width),
+              name = paste0("hidden_layer_", i, "_batch_norm")
             )
-          ),
-          name = paste0("hidden_layer_", i, "_skip_conn_with_linear_and_activation", name_extra_memory_layer)
-        )
-        if (batch_normalization) {
-          decoder_network$add_module(
-            module = torch::nn_batch_norm1d(n_features = width),
-            name = paste0("hidden_layer_", i, "_batch_norm")
-          )
-        }
-      } else {
-        # Do not use skip connections and do not add the input to the output.
-        if (skip_conn_masked_enc_dec) {
-          decoder_network$add_module(
-            module = memory_layer(paste0("#", depth - i + 2), TRUE),
-            name = paste0("hidden_layer_", i, "_memory")
-          )
-        }
-        decoder_network$add_module(
-          module = torch::nn_linear(width_decoder, width),
-          name = paste0("hidden_layer_", i, "_linear")
-        )
-        decoder_network$add_module(
-          module = activation_function(),
-          name = paste0("hidden_layer_", i, "_activation")
-        )
-        if (batch_normalization) {
-          decoder_network$add_module(
-            module = torch::nn_batch_norm1d(width),
-            name = paste0("hidden_layer_", i, "_batch_norm")
-          )
+          }
         }
       }
-    }
 
-    # Decoder: Go the parameter space of the generative distributions
-    # Concatenate the input to the first layer of the masked encoder to the last layer of the decoder network.
-    if (skip_conn_masked_enc_dec) {
-      decoder_network$add_module(
-        module = memory_layer("#input", TRUE),
-        name = "output_layer_memory"
+      # Full Encoder: Go to latent space
+      full_encoder_network$add_module(
+        module = torch::nn_linear(width, latent_dim * 2),
+        name = "latent_space_layer_linear"
       )
-    }
-    # Linear layer to the parameters of the generative distributions Gaussian and Categorical.
-    # Note that sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) is the number of
-    # one hot variables to the masked encoder and n_features represents the binary variables if
-    # the features was masked/missing or not when they entered the masked encoder.
-    # The output dimension is 2 for the continuous features and K_i for categorical feature X_i,
-    # where K_i is the number of classes the i'th categorical feature can take on.
-    decoder_network$add_module(
-      module = torch::nn_linear(
-        in_features = width + extra_params_skip_con_mask_enc,
-        out_features = sum(apply(rbind(one_hot_max_sizes, rep(2, n_features)), 2, max))
-      ),
-      name = "output_layer_linear"
-    )
 
-    # Save the networks to the vaeac object
-    self$full_encoder_network <- full_encoder_network
-    self$masked_encoder_network <- masked_encoder_network
-    self$decoder_network <- decoder_network
+      ##### Masked Encoder
+      masked_encoder_network <- torch::nn_sequential()
 
-    # Compute the number of trainable parameters in the different networks and save them
-    n_para_full_encoder <- sum(sapply(full_encoder_network$parameters, function(p) prod(p$size())))
-    n_para_masked_encoder <- sum(sapply(masked_encoder_network$parameters, function(p) prod(p$size())))
-    n_para_decoder <- sum(sapply(decoder_network$parameters, function(p) prod(p$size())))
-    n_para_total <- n_para_full_encoder + n_para_masked_encoder + n_para_decoder
-    self$n_train_param <- rbind(n_para_total, n_para_full_encoder, n_para_masked_encoder, n_para_decoder)
-  },
+      # Masked Encoder: Input layer
+      masked_encoder_network$add_module(
+        module = categorical_to_one_hot_layer(c(one_hot_max_sizes, rep(0, n_features))),
+        name = "input_layer_cat_to_one_hot"
+      )
+      if (skip_conn_masked_enc_dec) {
+        masked_encoder_network$add_module(
+          module = memory_layer(id = "#input", shared_env = memory_layer_env),
+          name = "input_layer_memory"
+        )
+      }
+      masked_encoder_network$add_module(
+        module = torch::nn_linear(
+          in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features,
+          out_features = width
+        ),
+        name = "input_layer_linear"
+      )
+      masked_encoder_network$add_module(
+        module = activation_function(),
+        name = "input_layer_activation"
+      )
+      if (batch_normalization) {
+        masked_encoder_network$add_module(
+          module = torch::nn_batch_norm1d(width),
+          name = "input_layer_batch_norm"
+        )
+      }
 
-  # Forward functions are required in torch::nn_modules, but is it not needed in the way we have implemented vaeac.
-  forward = function(...) {
-    warning("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
-    return("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
-  },
+      # Masked Encoder: Hidden layers
+      for (i in seq(depth)) {
+        if (skip_conn_layer) {
+          # Add identity skip connection. Such that the input is added to the output of the linear layer
+          # and activation function: output = X + activation(WX + b).
+          # Also check inside skip_connection if we are to use memory_layer. I.e., skip connection with
+          # concatenation from masked encoder to decoder.
+          masked_encoder_network$add_module(
+            module = skip_connection(
+              if (skip_conn_masked_enc_dec) memory_layer(id = paste0("#", i), shared_env = memory_layer_env),
+              torch::nn_linear(width, width),
+              activation_function()
+            ),
+            name = paste0("hidden_layer_", i, "_skip_conn_with_linear_and_activation", name_extra_memory_layer)
+          )
+          if (batch_normalization) {
+            masked_encoder_network$add_module(
+              module = torch::nn_batch_norm1d(width),
+              name = paste0("hidden_layer_", i, "_batch_norm")
+            )
+          }
+        } else {
+          # Do not use skip connections and do not add the input to the output.
+          if (skip_conn_masked_enc_dec) {
+            masked_encoder_network$add_module(
+              module = memory_layer(id = paste0("#", i), shared_env = memory_layer_env),
+              name = paste0("hidden_layer_", i, "_memory")
+            )
+          }
+          masked_encoder_network$add_module(
+            module = torch::nn_linear(width, width),
+            name = paste0("hidden_layer_", i, "_linear")
+          )
+          masked_encoder_network$add_module(
+            module = activation_function(),
+            name = paste0("hidden_layer_", i, "_activation")
+          )
+          if (batch_normalization) {
+            masked_encoder_network$add_module(
+              module = torch::nn_batch_norm1d(width),
+              name = paste0("hidden_layer_", i, "_batch_norm")
+            )
+          }
+        }
+      }
 
-  # Apply Mask to Batch to Create Observed Batch
-  #
-  # description Clones the batch and applies the mask to set masked entries to 0 to create the observed batch.
-  #
-  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
-  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
-  make_observed = function(batch, mask) {
-    observed <- batch$clone()$detach() # Clone and detach the batch from the graph (remove gradient element)
-    observed[mask == 1] <- 0 # Apply the mask by masking every entry in batch where 'mask' is 1.
-    return(observed) # Return the observed batch where masked entries are set to 0.
-  },
+      # Masked Encoder: Go to latent space
+      if (skip_conn_masked_enc_dec) {
+        masked_encoder_network$add_module(
+          module = memory_layer(id = paste0("#", depth + 1), shared_env = memory_layer_env),
+          name = "latent_space_layer_memory"
+        )
+      }
+      masked_encoder_network$add_module(
+        module = torch::nn_linear(width, 2 * latent_dim),
+        name = "latent_space_layer_linear"
+      )
 
-  # Compute the Latent Distributions Inferred by the Encoders
-  #
-  # description Compute the parameters for the latent normal distributions inferred by the encoders.
-  # If `only_masked_encoder = TRUE`, then we only compute the latent normal distributions inferred by the
-  # masked encoder. This is used in the deployment phase when we do not have access to the full observation.
-  #
-  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
-  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
-  # param only_masked_encoder Boolean. If we are only to compute the latent distributions for the masked encoder.
-  # Used in deployment phase when we do not have access to the full data. Always FALSE in the training phase.
-  make_latent_distributions = function(batch, mask, only_masked_encoder = FALSE) {
-    # Artificially mask the observations where mask == 1 to create the observed batch values.
-    observed <- self$make_observed(batch = batch, mask = mask)
+      ##### Decoder
+      decoder_network <- torch::nn_sequential()
 
-    # Check if we are in training or deployment phase
-    if (only_masked_encoder) {
-      # In deployment phase and only use the masked encoder.
-      full_encoder <- NULL
-    } else {
-      # In the training phase where we need to use both masked and full encoder.
+      # Decoder: Go from latent space
+      decoder_network$add_module(
+        module = torch::nn_linear(latent_dim, width),
+        name = "latent_space_layer_linear"
+      )
+      decoder_network$add_module(
+        module = activation_function(),
+        name = "latent_space_layer_activation"
+      )
+      if (batch_normalization) {
+        decoder_network$add_module(
+          module = torch::nn_batch_norm1d(width),
+          name = "latent_space_layer_batch_norm"
+        )
+      }
 
-      # Column bind the batch and the mask to create the full information sent to the full encoder.
-      full_info <- torch::torch_cat(c(batch, mask), dim = 2)
+      # Get the width of the hidden layers in the decoder. Needs to be multiplied with two if
+      # we use skip connections between masked encoder and decoder as we concatenate the tensors.
+      width_decoder <- ifelse(skip_conn_masked_enc_dec, 2 * width, width)
 
-      # Send the full_information through the full encoder. It needs the full information to know if a
-      # value is missing or just masked. The output tensor is of shape batch_size x (2 x latent_dim)
-      # In each row, i.e., each observation in the batch, the first latent_dim entries are the means mu
-      # while the last latent_dim entries are the softplus of the sigmas, so they can take on any
-      # negative or positive value. Recall that softplus(x) = ln(1+e^{x}).
-      full_encoder_params <- self$full_encoder_network(full_info)
+      # Same for the input dimension to the last layer in decoder that yields the distribution params.
+      extra_params_skip_con_mask_enc <-
+        ifelse(test = skip_conn_masked_enc_dec,
+          yes = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features,
+          no = 0
+        )
 
-      # Takes the full_encoder_parameters and returns a normal distribution, which is component-wise
-      # independent. If sigma (after softmax transform) is less than 1e-3, then we set sigma to 0.001.
-      full_encoder <- vaeac_normal_parse_params(params = full_encoder_params, min_sigma = 1e-3)
-    }
+      # Will need an extra hidden layer if we use skip connection from masked encoder to decoder
+      # as we send the full input layer of the masked encoder to the last layer in the decoder.
+      depth_decoder <- ifelse(skip_conn_masked_enc_dec, depth + 1, depth)
 
-    # Column bind the batch and the mask to create the observed information sent to the masked encoder.
-    observed_info <- torch::torch_cat(c(observed, mask), dim = -1)
+      # Decoder: Hidden layers
+      for (i in seq(depth_decoder)) {
+        if (skip_conn_layer) {
+          # Add identity skip connection. Such that the input is added to the output of the linear layer and activation
+          # function: output = X + activation(WX + b). Also check inside skip_connection if we are to use memory_layer.
+          # I.e., skip connection with concatenation from masked encoder to decoder. If TRUE, then the memory layers
+          # extracts the corresponding input used in the masked encoder and concatenate them with the current input.
+          # We add the memory layers in the opposite direction from how they were created. Thus, we get a classical
+          # U-net with latent space at the bottom and a connection between the layers on the same height of the U-shape.
+          decoder_network$add_module(
+            module = torch::nn_sequential(
+              skip_connection(
+                if (skip_conn_masked_enc_dec) {
+                  memory_layer(id = paste0("#", depth - i + 2), shared_env = memory_layer_env, output = TRUE)
+                },
+                torch::nn_linear(width_decoder, width),
+                activation_function()
+              )
+            ),
+            name = paste0("hidden_layer_", i, "_skip_conn_with_linear_and_activation", name_extra_memory_layer)
+          )
+          if (batch_normalization) {
+            decoder_network$add_module(
+              module = torch::nn_batch_norm1d(n_features = width),
+              name = paste0("hidden_layer_", i, "_batch_norm")
+            )
+          }
+        } else {
+          # Do not use skip connections and do not add the input to the output.
+          if (skip_conn_masked_enc_dec) {
+            decoder_network$add_module(
+              module = memory_layer(id = paste0("#", depth - i + 2), shared_env = memory_layer_env, output = TRUE),
+              name = paste0("hidden_layer_", i, "_memory")
+            )
+          }
+          decoder_network$add_module(
+            module = torch::nn_linear(width_decoder, width),
+            name = paste0("hidden_layer_", i, "_linear")
+          )
+          decoder_network$add_module(
+            module = activation_function(),
+            name = paste0("hidden_layer_", i, "_activation")
+          )
+          if (batch_normalization) {
+            decoder_network$add_module(
+              module = torch::nn_batch_norm1d(width),
+              name = paste0("hidden_layer_", i, "_batch_norm")
+            )
+          }
+        }
+      }
 
-    # Compute the latent normal dist parameters (mu, sigma) for the masked
-    # encoder by sending the observed values and the mask to the masked encoder.
-    masked_encoder_params <- self$masked_encoder_network(observed_info)
+      # Decoder: Go the parameter space of the generative distributions
+      # Concatenate the input to the first layer of the masked encoder to the last layer of the decoder network.
+      if (skip_conn_masked_enc_dec) {
+        decoder_network$add_module(
+          module = memory_layer(id = "#input", shared_env = memory_layer_env, output = TRUE),
+          name = "output_layer_memory"
+        )
+      }
+      # Linear layer to the parameters of the generative distributions Gaussian and Categorical.
+      # Note that sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) is the number of
+      # one hot variables to the masked encoder and n_features represents the binary variables if
+      # the features was masked/missing or not when they entered the masked encoder.
+      # The output dimension is 2 for the continuous features and K_i for categorical feature X_i,
+      # where K_i is the number of classes the i'th categorical feature can take on.
+      decoder_network$add_module(
+        module = torch::nn_linear(
+          in_features = width + extra_params_skip_con_mask_enc,
+          out_features = sum(apply(rbind(one_hot_max_sizes, rep(2, n_features)), 2, max))
+        ),
+        name = "output_layer_linear"
+      )
 
-    # Create the latent normal distributions based on the parameters (mu, sigma) from the masked encoder
-    masked_encoder <- vaeac_normal_parse_params(params = masked_encoder_params, min_sigma = 1e-3)
+      # Save the networks to the vaeac object
+      self$full_encoder_network <- full_encoder_network
+      self$masked_encoder_network <- masked_encoder_network
+      self$decoder_network <- decoder_network
 
-    # Return the full and masked encoders
-    return(list(
-      full_encoder = full_encoder,
-      masked_encoder = masked_encoder
-    ))
-  },
+      # Compute the number of trainable parameters in the different networks and save them
+      n_para_full_encoder <- sum(sapply(full_encoder_network$parameters, function(p) prod(p$size())))
+      n_para_masked_encoder <- sum(sapply(masked_encoder_network$parameters, function(p) prod(p$size())))
+      n_para_decoder <- sum(sapply(decoder_network$parameters, function(p) prod(p$size())))
+      n_para_total <- n_para_full_encoder + n_para_masked_encoder + n_para_decoder
+      self$n_train_param <- rbind(n_para_total, n_para_full_encoder, n_para_masked_encoder, n_para_decoder)
+    },
 
-  # Compute the Regularizes for the Latent Distribution Inferred by the Masked Encoder.
-  #
-  # description The masked encoder (prior) distribution regularization in the latent space.
-  # This is used to compute the extended variational lower bound used to train vaeac, see
-  # Section 3.3.1 in Olsen et al. (2022).
-  # Though regularizing prevents the masked encoder distribution parameters from going to infinity,
-  # the model usually doesn't diverge even without this regularization. It almost doesn't affect
-  # learning process near zero with default regularization parameters which are recommended to be used.
-  #
-  # param masked_encoder The torch_Normal object returned when calling the masked encoder.
-  masked_encoder_regularization = function(masked_encoder) {
-    # Extract the number of observations. Same as batch_size.
-    n_observations <- masked_encoder$mean$shape[1]
+    # Forward functions are required in torch::nn_modules, but is it not needed in the way we have implemented vaeac.
+    forward = function(...) {
+      warning("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
+      return("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
+    },
 
-    # Extract the number of dimension in the latent space.
-    n_latent_dimensions <- masked_encoder$mean$shape[2]
+    # Apply Mask to Batch to Create Observed Batch
+    #
+    # description Clones the batch and applies the mask to set masked entries to 0 to create the observed batch.
+    #
+    # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
+    # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+    make_observed = function(batch, mask) {
+      observed <- batch$clone()$detach() # Clone and detach the batch from the graph (remove gradient element)
+      observed[mask == 1] <- 0 # Apply the mask by masking every entry in batch where 'mask' is 1.
+      return(observed) # Return the observed batch where masked entries are set to 0.
+    },
 
-    # Extract means and ensure correct shape (batch_size x latent_dim).
-    mu <- masked_encoder$mean$view(c(n_observations, n_latent_dimensions))
+    # Compute the Latent Distributions Inferred by the Encoders
+    #
+    # description Compute the parameters for the latent normal distributions inferred by the encoders.
+    # If `only_masked_encoder = TRUE`, then we only compute the latent normal distributions inferred by the
+    # masked encoder. This is used in the deployment phase when we do not have access to the full observation.
+    #
+    # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
+    # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+    # param only_masked_encoder Boolean. If we are only to compute the latent distributions for the masked encoder.
+    # Used in deployment phase when we do not have access to the full data. Always FALSE in the training phase.
+    make_latent_distributions = function(batch, mask, only_masked_encoder = FALSE) {
+      # Artificially mask the observations where mask == 1 to create the observed batch values.
+      observed <- self$make_observed(batch = batch, mask = mask)
 
-    # Extract the sigmas and ensure correct shape (batch_size x latent_dim).
-    sigma <- masked_encoder$scale$view(c(n_observations, n_latent_dimensions))
+      # Check if we are in training or deployment phase
+      if (only_masked_encoder) {
+        # In deployment phase and only use the masked encoder.
+        full_encoder <- NULL
+      } else {
+        # In the training phase where we need to use both masked and full encoder.
 
-    # Note that sum(-1) indicates that we sum together the columns.
-    # mu_regularizer is then a tensor of length n_observations
-    mu_regularizer <- -(mu^2)$sum(-1) / (2 * self$sigma_mu^2)
+        # Column bind the batch and the mask to create the full information sent to the full encoder.
+        full_info <- torch::torch_cat(c(batch, mask), dim = 2)
 
-    # sigma_regularizer is then also a tensor of length n_observations.
-    sigma_regularizer <- (sigma$log() - sigma)$sum(-1) * self$sigma_sigma
+        # Send the full_information through the full encoder. It needs the full information to know if a
+        # value is missing or just masked. The output tensor is of shape batch_size x (2 x latent_dim)
+        # In each row, i.e., each observation in the batch, the first latent_dim entries are the means mu
+        # while the last latent_dim entries are the softplus of the sigmas, so they can take on any
+        # negative or positive value. Recall that softplus(x) = ln(1+e^{x}).
+        full_encoder_params <- self$full_encoder_network(full_info)
 
-    # Add the regularization terms together and return them.
-    return(mu_regularizer + sigma_regularizer)
-  },
+        # Takes the full_encoder_parameters and returns a normal distribution, which is component-wise
+        # independent. If sigma (after softmax transform) is less than 1e-3, then we set sigma to 0.001.
+        full_encoder <- vaeac_normal_parse_params(params = full_encoder_params, min_sigma = 1e-3)
+      }
 
-  # Compute the Variational Lower Bound for the Observations in the Batch
-  #
-  # description Compute differentiable lower bound for the given batch of objects and mask.
-  # Used as the (negative) loss function for training the vaeac model.
-  #
-  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
-  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
-  batch_vlb = function(batch, mask) {
-    # Compute the latent normal distributions obtained from the full and masked encoder
-    encoders_list <- self$make_latent_distributions(batch = batch, mask = mask)
+      # Column bind the batch and the mask to create the observed information sent to the masked encoder.
+      observed_info <- torch::torch_cat(c(observed, mask), dim = -1)
 
-    # Extract the masked and full encoders. These are torch_Normal objects.
-    masked_encoder <- encoders_list$masked_encoder
-    full_encoder <- encoders_list$full_encoder
+      # Compute the latent normal dist parameters (mu, sigma) for the masked
+      # encoder by sending the observed values and the mask to the masked encoder.
+      masked_encoder_params <- self$masked_encoder_network(observed_info)
 
-    # Apply the regularization on the mus and sigmas of the normal dist obtained from the masked encoder
-    # such that they don't blow up. Regularized according to their normal gamma prior, see Olsen et al. (2022).
-    masked_encoder_regularization <- self$masked_encoder_regularization(masked_encoder)
+      # Create the latent normal distributions based on the parameters (mu, sigma) from the masked encoder
+      masked_encoder <- vaeac_normal_parse_params(params = masked_encoder_params, min_sigma = 1e-3)
 
-    # To use the reparameterization trick to train vaeac, we need to use 'rsample'
-    # and not 'sample', which allows backpropagation through the mean and standard deviation layers,
-    # see https://pytorch.org/docs/stable/distributions.html#pathwise-derivative.
-    # For each training instance in the batch we sample values for each of the latent variables,
-    # i.e.,  we get a tensor of dimension batch_size x latent_dim.
-    latent <- full_encoder$rsample()
+      # Return the full and masked encoders
+      return(list(
+        full_encoder = full_encoder,
+        masked_encoder = masked_encoder
+      ))
+    },
 
-    # Send the latent samples through the decoder and get the batch_size x 2*n_features (in cont case)
-    # where we for each row have a normal dist on each feature The form will be (mu_1, sigma_1, ..., mu_p, sigma_p)
-    reconstruction_params <- self$decoder_network(latent)
+    # Compute the Regularizes for the Latent Distribution Inferred by the Masked Encoder.
+    #
+    # description The masked encoder (prior) distribution regularization in the latent space.
+    # This is used to compute the extended variational lower bound used to train vaeac, see
+    # Section 3.3.1 in Olsen et al. (2022).
+    # Though regularizing prevents the masked encoder distribution parameters from going to infinity,
+    # the model usually doesn't diverge even without this regularization. It almost doesn't affect
+    # learning process near zero with default regularization parameters which are recommended to be used.
+    #
+    # param masked_encoder The torch_Normal object returned when calling the masked encoder.
+    masked_encoder_regularization = function(masked_encoder) {
+      # Extract the number of observations. Same as batch_size.
+      n_observations <- masked_encoder$mean$shape[1]
 
-    # Compute the reconstruction loss, i.e., the log likelihood of only the masked values in
-    # the batch (true values) given the current reconstruction parameters from the decoder.
-    # We do not consider the log likelihood of observed or missing/nan values.
-    reconstruction_loss <- self$reconstruction_log_prob(batch, reconstruction_params, mask)
+      # Extract the number of dimension in the latent space.
+      n_latent_dimensions <- masked_encoder$mean$shape[2]
 
-    # Compute the KL divergence between the two latent normal distributions obtained from the full encoder
-    # and masked encoder. Since the networks create MVN with diagonal covariance matrices, that is, the same as
-    # a product of individual Gaussian distributions, we can compute KL analytically very easily:
-    # KL(p, q) = \int p(x) log(p(x)/q(x)) dx
-    #          = 0.5 * { (sigma_p/sigma_q)^2 + (mu_q - mu_p)^2/sigma_q^2 - 1 + 2 ln (sigma_q/sigma_p)}
-    # when both p and q are torch_Normal objects.
-    kl <- vaeac_kl_normal_normal(full_encoder, masked_encoder)$view(c(batch$shape[1], -1))$sum(-1)
+      # Extract means and ensure correct shape (batch_size x latent_dim).
+      mu <- masked_encoder$mean$view(c(n_observations, n_latent_dimensions))
 
-    # Return the variational lower bound with the prior regularization. See Section 3.3.1 in Olsen et al. (2022)
-    return(reconstruction_loss - kl + masked_encoder_regularization)
-  },
+      # Extract the sigmas and ensure correct shape (batch_size x latent_dim).
+      sigma <- masked_encoder$scale$view(c(n_observations, n_latent_dimensions))
 
-  # Compute the Importance Sampling Estimator for the Observations in the Batch
-  #
-  # description Compute IWAE log likelihood estimate with K samples per object.
-  #
-  # details Technically, it is differentiable, but it is recommended to use it for
-  # evaluation purposes inside torch.no_grad in order to save memory. With torch::with_no_grad
-  # the method almost doesn't require extra memory for very large K. The method makes K independent
-  # passes through decoder network, so the batch size is the same as for training with batch_vlb.
-  # IWAE is an abbreviation for Importance Sampling Estimator
-  # log p_{theta, psi}(x|y) approx
-  # log {1/K * sum_{i=1}^K [p_theta(x|z_i, y) * p_psi(z_i|y) / q_phi(z_i|x,y)]} =
-  # log {sum_{i=1}^K exp(log[p_theta(x|z_i, y) * p_psi(z_i|y) / q_phi(z_i|x,y)])} - log(K) =
-  # log {sum_{i=1}^K exp(log[p_theta(x|z_i, y)] + log[p_psi(z_i|y)] - log[q_phi(z_i|x,y)])} - log(K) =
-  # logsumexp(log[p_theta(x|z_i, y)] + log[p_psi(z_i|y)] - log[q_phi(z_i|x,y)]) - log(K) =
-  # logsumexp(rec_loss + prior_log_prob - proposal_log_prob) - log(K),
-  # where z_i ~ q_phi(z|x,y).
-  #
-  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
-  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
-  # param K Integer. The number of samples generated to compute the IWAE for each observation in `batch`.
-  batch_iwae = function(batch, mask, K) {
-    # Compute the latent normal distributions obtained from the full and masked encoder
-    encoders_list <- self$make_latent_distributions(batch = batch, mask = mask)
+      # Note that sum(-1) indicates that we sum together the columns.
+      # mu_regularizer is then a tensor of length n_observations
+      mu_regularizer <- -(mu^2)$sum(-1) / (2 * self$sigma_mu^2)
 
-    # Extract the masked and full encoders. These are torch_Normal objects.
-    masked_encoder <- encoders_list$masked_encoder
-    full_encoder <- encoders_list$full_encoder
+      # sigma_regularizer is then also a tensor of length n_observations.
+      sigma_regularizer <- (sigma$log() - sigma)$sum(-1) * self$sigma_sigma
 
-    # List to store the estimates.
-    estimates <- list()
+      # Add the regularization terms together and return them.
+      return(mu_regularizer + sigma_regularizer)
+    },
 
-    # Iterate over the number of samples/passes through the decoder for each validation observation.
-    for (i in seq(K)) {
-      # See equation 18 on page 18 in Ivanov et al. (2019). Create samples from the
-      # full encoder; z_i ~ q_phi(z|x,y). We get a tensor of dimension batch_size x latent_dim.
+    # Compute the Variational Lower Bound for the Observations in the Batch
+    #
+    # description Compute differentiable lower bound for the given batch of objects and mask.
+    # Used as the (negative) loss function for training the vaeac model.
+    #
+    # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
+    # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+    batch_vlb = function(batch, mask) {
+      # Compute the latent normal distributions obtained from the full and masked encoder
+      encoders_list <- self$make_latent_distributions(batch = batch, mask = mask)
+
+      # Extract the masked and full encoders. These are torch_Normal objects.
+      masked_encoder <- encoders_list$masked_encoder
+      full_encoder <- encoders_list$full_encoder
+
+      # Apply the regularization on the mus and sigmas of the normal dist obtained from the masked encoder
+      # such that they don't blow up. Regularized according to their normal gamma prior, see Olsen et al. (2022).
+      masked_encoder_regularization <- self$masked_encoder_regularization(masked_encoder)
+
+      # To use the reparameterization trick to train vaeac, we need to use 'rsample'
+      # and not 'sample', which allows backpropagation through the mean and standard deviation layers,
+      # see https://pytorch.org/docs/stable/distributions.html#pathwise-derivative.
+      # For each training instance in the batch we sample values for each of the latent variables,
+      # i.e.,  we get a tensor of dimension batch_size x latent_dim.
       latent <- full_encoder$rsample()
 
       # Send the latent samples through the decoder and get the batch_size x 2*n_features (in cont case)
@@ -694,80 +654,156 @@ vaeac <- torch::nn_module(
       # We do not consider the log likelihood of observed or missing/nan values.
       reconstruction_loss <- self$reconstruction_log_prob(batch, reconstruction_params, mask)
 
-      # Compute the log likelihood of observing the sampled latent representations from
-      # the full_encoder when using the normal distribution estimated by the masked_encoder.
-      masked_encoder_log_prob <- masked_encoder$log_prob(latent)
+      # Compute the KL divergence between the two latent normal distributions obtained from the full encoder
+      # and masked encoder. Since the networks create MVN with diagonal covariance matrices, that is, the same as
+      # a product of individual Gaussian distributions, we can compute KL analytically very easily:
+      # KL(p, q) = \int p(x) log(p(x)/q(x)) dx
+      #          = 0.5 * { (sigma_p/sigma_q)^2 + (mu_q - mu_p)^2/sigma_q^2 - 1 + 2 ln (sigma_q/sigma_p)}
+      # when both p and q are torch_Normal objects.
+      kl <- vaeac_kl_normal_normal(full_encoder, masked_encoder)$view(c(batch$shape[1], -1))$sum(-1)
 
-      # Ensure dimensions batch$shape[1] x something.
-      masked_encoder_log_prob <- masked_encoder_log_prob$view(c(batch$shape[1], -1))
+      # Return the variational lower bound with the prior regularization. See Section 3.3.1 in Olsen et al. (2022)
+      return(reconstruction_loss - kl + masked_encoder_regularization)
+    },
 
-      # Sum over the rows (last dimension), i.e., add the log-likelihood for each instance.
-      masked_encoder_log_prob <- masked_encoder_log_prob$sum(-1)
+    # Compute the Importance Sampling Estimator for the Observations in the Batch
+    #
+    # description Compute IWAE log likelihood estimate with K samples per object.
+    #
+    # details Technically, it is differentiable, but it is recommended to use it for
+    # evaluation purposes inside torch.no_grad in order to save memory. With torch::with_no_grad
+    # the method almost doesn't require extra memory for very large K. The method makes K independent
+    # passes through decoder network, so the batch size is the same as for training with batch_vlb.
+    # IWAE is an abbreviation for Importance Sampling Estimator
+    # log p_{theta, psi}(x|y) approx
+    # log {1/K * sum_{i=1}^K [p_theta(x|z_i, y) * p_psi(z_i|y) / q_phi(z_i|x,y)]} =
+    # log {sum_{i=1}^K exp(log[p_theta(x|z_i, y) * p_psi(z_i|y) / q_phi(z_i|x,y)])} - log(K) =
+    # log {sum_{i=1}^K exp(log[p_theta(x|z_i, y)] + log[p_psi(z_i|y)] - log[q_phi(z_i|x,y)])} - log(K) =
+    # logsumexp(log[p_theta(x|z_i, y)] + log[p_psi(z_i|y)] - log[q_phi(z_i|x,y)]) - log(K) =
+    # logsumexp(rec_loss + prior_log_prob - proposal_log_prob) - log(K),
+    # where z_i ~ q_phi(z|x,y).
+    #
+    # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
+    # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+    # param K Integer. The number of samples generated to compute the IWAE for each observation in `batch`.
+    batch_iwae = function(batch, mask, K) {
+      # Compute the latent normal distributions obtained from the full and masked encoder
+      encoders_list <- self$make_latent_distributions(batch = batch, mask = mask)
 
-      # Same explanations here as above, but now for the full_encoder.
-      full_encoder_log_prob <- full_encoder$log_prob(latent)
-      full_encoder_log_prob <- full_encoder_log_prob$view(c(batch$shape[1], -1))
-      full_encoder_log_prob <- full_encoder_log_prob$sum(-1)
+      # Extract the masked and full encoders. These are torch_Normal objects.
+      masked_encoder <- encoders_list$masked_encoder
+      full_encoder <- encoders_list$full_encoder
 
-      # Combine the estimated loss based on the formula from equation 18 on page 18 in Ivanov et al. (2019).
-      # Consists of batch.shape[0] number of values
-      estimate <- reconstruction_loss + masked_encoder_log_prob - full_encoder_log_prob
+      # List to store the estimates.
+      estimates <- list()
 
-      # Make sure that the results are a column vector of height batch_size.
-      estimate <- estimate$unsqueeze(-1)
+      # Iterate over the number of samples/passes through the decoder for each validation observation.
+      for (i in seq(K)) {
+        # See equation 18 on page 18 in Ivanov et al. (2019). Create samples from the
+        # full encoder; z_i ~ q_phi(z|x,y). We get a tensor of dimension batch_size x latent_dim.
+        latent <- full_encoder$rsample()
 
-      # Add the results to the estimates list
-      estimates <- append(estimates, estimate)
+        # Send the latent samples through the decoder and get the batch_size x 2*n_features (in cont case)
+        # where we for each row have a normal dist on each feature The form will be (mu_1, sigma_1, ..., mu_p, sigma_p)
+        reconstruction_params <- self$decoder_network(latent)
+
+        # Compute the reconstruction loss, i.e., the log likelihood of only the masked values in
+        # the batch (true values) given the current reconstruction parameters from the decoder.
+        # We do not consider the log likelihood of observed or missing/nan values.
+        reconstruction_loss <- self$reconstruction_log_prob(batch, reconstruction_params, mask)
+
+        # Compute the log likelihood of observing the sampled latent representations from
+        # the full_encoder when using the normal distribution estimated by the masked_encoder.
+        masked_encoder_log_prob <- masked_encoder$log_prob(latent)
+
+        # Ensure dimensions batch$shape[1] x something.
+        masked_encoder_log_prob <- masked_encoder_log_prob$view(c(batch$shape[1], -1))
+
+        # Sum over the rows (last dimension), i.e., add the log-likelihood for each instance.
+        masked_encoder_log_prob <- masked_encoder_log_prob$sum(-1)
+
+        # Same explanations here as above, but now for the full_encoder.
+        full_encoder_log_prob <- full_encoder$log_prob(latent)
+        full_encoder_log_prob <- full_encoder_log_prob$view(c(batch$shape[1], -1))
+        full_encoder_log_prob <- full_encoder_log_prob$sum(-1)
+
+        # Combine the estimated loss based on the formula from equation 18 on page 18 in Ivanov et al. (2019).
+        # Consists of batch.shape[0] number of values
+        estimate <- reconstruction_loss + masked_encoder_log_prob - full_encoder_log_prob
+
+        # Make sure that the results are a column vector of height batch_size.
+        estimate <- estimate$unsqueeze(-1)
+
+        # Add the results to the estimates list
+        estimates <- append(estimates, estimate)
+      }
+
+      # Convert from list of tensors to a single tensor using colum bind
+      estimates <- torch::torch_cat(estimates, -1)
+
+      # Use the stabilizing trick logsumexp.
+      # We have worked on log-scale above, hence plus and minus and not multiplication and division,
+      # while Eq. 18 in Ivanov et al. (2019) work on regular scale with multiplication and division.
+      # We take the exp of the values to get back to original scale, then sum it and convert back to
+      # log scale. Note that we add -log(K) instead of dividing each term by K.
+      # Take the log sum exp along the rows (validation samples) then subtract log(K).
+      return(torch::torch_logsumexp(estimates, -1) - log(K))
+    },
+
+    # Generate the Parameters of the Generative Distributions
+    #
+    # description Generate the parameters of the generative distributions for samples from the batch.
+    #
+    # details The function makes K latent representation for each object from the batch, send these
+    # latent representations through the decoder to obtain the parameters for the generative distributions.
+    # I.e., means and variances for the normal distributions (continuous features) and probabilities
+    # for the categorical distribution (categorical features).
+    # The second axis is used to index samples for an object, i.e. if the batch shape is [n x D1 x D2], then
+    # the result shape is [n x K x D1 x D2]. It is better to use it inside torch::with_no_grad in order to save
+    # memory. With torch::with_no_grad the method doesn't require extra memory except the memory for the result.
+    #
+    # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
+    # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+    # param K Integer. The number of imputations to be done for each observation in batch.
+    generate_samples_params = function(batch, mask, K = 1) {
+      # Compute the latent normal distributions obtained from only the masked encoder.
+      encoders_list <- self$make_latent_distributions(batch = batch, mask = mask, only_masked_encoder = TRUE)
+
+      # Only extract the masked encoder (torch_Normal object) as we are in the deployment phase.
+      masked_encoder <- encoders_list$masked_encoder
+
+      # Create a list to keep the sampled parameters.
+      samples_params <- list()
+
+      # Iterate over the number of imputations for each observation in the batch.
+      for (i in seq(K)) {
+        latent <- masked_encoder$rsample() # Generate latent representations by using the masked encoder
+        sample_params <- self$decoder_network(latent) # Send the latent representations through the decoder
+        samples_params <- append(samples_params, sample_params$unsqueeze(2)) # Store the inferred Gaussian distributions
+      }
+
+      # Concatenate the list to a 3d-tensor. 2nd dimensions is the imputations.
+      return(torch::torch_cat(samples_params, 2))
     }
-
-    # Convert from list of tensors to a single tensor using colum bind
-    estimates <- torch::torch_cat(estimates, -1)
-
-    # Use the stabilizing trick logsumexp.
-    # We have worked on log-scale above, hence plus and minus and not multiplication and division,
-    # while Eq. 18 in Ivanov et al. (2019) work on regular scale with multiplication and division.
-    # We take the exp of the values to get back to original scale, then sum it and convert back to
-    # log scale. Note that we add -log(K) instead of dividing each term by K.
-    # Take the log sum exp along the rows (validation samples) then subtract log(K).
-    return(torch::torch_logsumexp(estimates, -1) - log(K))
-  },
-
-  # Generate the Parameters of the Generative Distributions
-  #
-  # description Generate the parameters of the generative distributions for samples from the batch.
-  #
-  # details The function makes K latent representation for each object from the batch, send these
-  # latent representations through the decoder to obtain the parameters for the generative distributions.
-  # I.e., means and variances for the normal distributions (continuous features) and probabilities
-  # for the categorical distribution (categorical features).
-  # The second axis is used to index samples for an object, i.e. if the batch shape is [n x D1 x D2], then
-  # the result shape is [n x K x D1 x D2]. It is better to use it inside torch::with_no_grad in order to save
-  # memory. With torch::with_no_grad the method doesn't require extra memory except the memory for the result.
-  #
-  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
-  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
-  # param K Integer. The number of imputations to be done for each observation in batch.
-  generate_samples_params = function(batch, mask, K = 1) {
-    # Compute the latent normal distributions obtained from only the masked encoder.
-    encoders_list <- self$make_latent_distributions(batch = batch, mask = mask, only_masked_encoder = TRUE)
-
-    # Only extract the masked encoder (torch_Normal object) as we are in the deployment phase.
-    masked_encoder <- encoders_list$masked_encoder
-
-    # Create a list to keep the sampled parameters.
-    samples_params <- list()
-
-    # Iterate over the number of imputations for each observation in the batch.
-    for (i in seq(K)) {
-      latent <- masked_encoder$rsample() # Generate latent representations by using the masked encoder
-      sample_params <- self$decoder_network(latent) # Send the latent representations through the decoder
-      samples_params <- append(samples_params, sample_params$unsqueeze(2)) # Store the inferred Gaussian distributions
-    }
-
-    # Concatenate the list to a 3d-tensor. 2nd dimensions is the imputations.
-    return(torch::torch_cat(samples_params, 2))
-  }
-)
+  )
+  return(vaeac_tmp(
+    one_hot_max_sizes = one_hot_max_sizes,
+    width = width,
+    depth = depth,
+    latent_dim = latent_dim,
+    activation_function = activation_function,
+    skip_conn_layer = skip_conn_layer,
+    skip_conn_masked_enc_dec = skip_conn_masked_enc_dec,
+    batch_normalization = batch_normalization,
+    paired_sampling = paired_sampling,
+    mask_generator_name = mask_generator_name,
+    masking_ratio = masking_ratio,
+    mask_gen_coalitions = mask_gen_coalitions,
+    mask_gen_coalitions_prob = mask_gen_coalitions_prob,
+    sigma_mu = sigma_mu,
+    sigma_sigma = sigma_sigma
+  ))
+}
 
 # Dataset Utility Functions ============================================================================================
 #' Compute Featurewise Means and Standard Deviations
@@ -1139,13 +1175,14 @@ paired_sampler <- function(vaeac_dataset_object, shuffle = FALSE) {
 #' @description The layer is used to make skip-connections inside a [torch::nn_sequential] network
 #' or between several [torch::nn_sequential] networks without unnecessary code complication.
 #'
-#' @details If `output = FALSE`, this layer stores its input in a static list `storage` with the key `id`` and then
+#' @details If `output = FALSE`, this layer stores its input in the `shared_env` with the key `id` and then
 #' passes the input to the next layer. I.e., when memory layer is used in the masked encoder. If `output = TRUE`, this
 #' layer takes stored tensor from the storage. I.e., when memory layer is used in the decoder. If `add = TRUE`, it
 #' returns sum of the stored vector and an `input`, otherwise it returns their concatenation. If the tensor with
 #' specified `id` is not in storage when the layer with `output = TRUE` is called, it would cause an exception.
 #'
 #' @param id A unique id to use as a key in the storage list.
+#' @param shared_env A shared environment for all instances of memory_layer where the inputs are stored.
 #' @param output Boolean variable indicating if the memory layer is to store input in storage or extract from storage.
 #' @param add Boolean variable indicating if the extracted value are to be added or concatenated to the input.
 #' Only applicable when `output = TRUE`.
@@ -1156,77 +1193,80 @@ paired_sampler <- function(vaeac_dataset_object, shuffle = FALSE) {
 #'
 #' @examples
 #' \dontrun{
+#' memory_layer_env <- new.env()
 #' net1 <- torch::nn_sequential(
-#'   memory_layer("#1"),
-#'   memory_layer("#0.1"),
+#'   memory_layer("#1", shared_env = memory_layer_env),
+#'   memory_layer("#0.1", shared_env = memory_layer_env),
 #'   torch::nn_linear(512, 256),
-#'   torch::nn_leaky_relu(),
-#'   # here add cannot be TRUE because the dimensions mismatch
-#'   memory_layer("#0.1", output = TRUE, add = FALSE),
+#'   torch::nn_leaky_relu(), # Here add cannot be TRUE because the dimensions mismatch
+#'   memory_layer("#0.1", shared_env = memory_layer_env, output = TRUE, add = FALSE),
 #'   torch::nn_linear(768, 256),
 #'   # the dimension after the concatenation with skip-connection is 512 + 256 = 768
 #' )
 #' net2 <- torch::nn_equential(
 #'   torch::nn_linear(512, 512),
-#'   memory_layer("#1", output = TRUE, add = TRUE),
+#'   memory_layer("#1", shared_env = memory_layer_env, output = TRUE, add = TRUE),
 #'   ...
 #' )
+#' # Here a and c must be of correct dimensions, e.g., a = torch::torch_ones(1,512).
 #' b <- net1(a)
 #' d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
 #' }
-memory_layer <- torch::nn_module(
-  classname = "memory_layer", # field classname Name of the of torch::nn_module object.
+memory_layer <- function(id, shared_env, output = FALSE, add = FALSE, verbose = FALSE) {
+  memory_layer_tmp <- torch::nn_module(
+    classname = "memory_layer", # field classname Name of the of torch::nn_module object.
 
-  # field shared_env A shared environment for all instances of memory_layers.
-  shared_env = new.env(),
+    # description Create a new `memory_layer` object.
+    # param id A unique id to use as a key in the storage list.
+    # param shared_env A shared environment for all instances of memory_layer where the inputs are stored.
+    # param output Boolean variable indicating if the memory layer is to store input in storage or extract from storage.
+    # param add Boolean variable indicating if the extracted value are to be added or concatenated to the input.
+    # Only applicable when `output = TRUE`.
+    # param verbose Boolean variable indicating if we want to give printouts to the user.
+    initialize = function(id, shared_env, output = FALSE, add = FALSE, verbose = FALSE) {
+      self$id <- id
+      self$shared_env <- shared_env
+      self$output <- output
+      self$add <- add
+      self$verbose <- verbose
+    },
+    forward = function(input) {
+      # Check if we are going to insert input into the storage or extract data from the storage.
+      if (!self$output) {
+        if (self$verbose) message(paste0("Inserting data to memory layer `self$id = ", self$id, "`."))
 
-  # description Create a new `memory_layer` object.
-  # param id A unique id to use as a key in the storage list.
-  # param output Boolean variable indicating if the memory layer is to store input in storage or extract from storage.
-  # param add Boolean variable indicating if the extracted value are to be added or concatenated to the input.
-  # Only applicable when `output = TRUE`.
-  # param verbose Boolean variable indicating if we want to give printouts to the user.
-  initialize = function(id, output = FALSE, add = FALSE, verbose = FALSE) {
-    self$id <- id
-    self$output <- output
-    self$add <- add
-    self$verbose <- verbose
-  },
-  forward = function(input) {
-    # Check if we are going to insert input into the storage or extract data from the storage.
-    if (!self$output) {
-      if (self$verbose) message(paste0("Inserting data to memory layer `self$id = ", self$id, "`."))
+        # Insert the input into the storage list which is in the shared environment of the memory_layer class.
+        # Note that we do not check if self$id is unique.
+        self$shared_env[[self$id]] <- input
+        return(input) # Return/send the input to the next layer in the network.
+      } else {
+        # We are to extract data from the storage list.
+        if (self$verbose) {
+          message(paste0(
+            "Extracting data to memory layer `self$id = ", self$id, "`. Using concatination = ", !self$add, "."
+          ))
+        }
 
-      # Insert the input into the storage list which is in the shared environment of the memory_layer class.
-      # Note that we do not check if self$id is unique.
-      self$shared_env$storage[[self$id]] <- input
-      return(input) # Return/send the input to the next layer in the network.
-    } else {
-      # We are to extract data from the storage list.
-      if (self$verbose) {
-        message(paste0(
-          "Extracting data to memory layer `self$id = ", self$id, "`. Using concatination = ", !self$add, "."
-        ))
+        # Check that the memory layer has data is stored in it. If not, then thorw error.
+        if (!self$id %in% names(self$shared_env)) {
+          stop(paste0(
+            "ValueError: Looking for memory layer `self$id = ", self$id, "`, but the only available ",
+            "memory layers are: ", paste(names(self$shared_env), collapse = "`, `"), "`."
+          ))
+        }
+
+        # Extract the stored data for the given memory layer and check if we are to concatenate or add the input
+        stored <- self$shared_env[[self$id]]
+        data <- if (self$add) input + stored else torch::torch_cat(c(input, stored), -1)
+
+        # Return the data
+        return(data)
       }
-
-      # Check that the memory layer has data is stored in it. If not, then thorw error.
-      if (!self$id %in% names(self$shared_env$storage)) {
-        stop(paste0(
-          "ValueError: Looking for memory layer `self$id = ", self$id, "`, but the only available memory layers are: ",
-          paste(names(self$shared_env$storage), collapse = "`, `"), "`."
-        ))
-      }
-
-      # Extract the stored data for the given memory layer and check if we are to concatenate or add the input
-      stored <- self$shared_env$storage[[self$id]]
-      data <- if (self$add) input + stored else torch::torch_cat(c(input, stored), -1)
-
-      # Return the data
-      return(data)
     }
-  }
-)
+  )
 
+  return(memory_layer_tmp(id = id, shared_env = shared_env, output = output, add = add, verbose = verbose))
+}
 
 #' A [torch::nn_module()] Representing a skip connection
 #'
