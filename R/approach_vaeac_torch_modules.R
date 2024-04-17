@@ -1864,7 +1864,7 @@ categorical_to_one_hot_layer <- function(one_hot_max_sizes, add_nans_map_for_col
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-mcar_mask_generator <- function(masking_ratio, paired_sampling = FALSE) {
+mcar_mask_generator <- function(masking_ratio = 0.5, paired_sampling = FALSE) {
   mcar_mask_gen_tmp <- torch::nn_module(
     name = "mcar_mask_generator", # field name Type of mask generator
 
