@@ -438,7 +438,11 @@ vaeac_train_model <- function(x_train,
   best_vlb <- -Inf
 
   # Create a `progressr::progressor()` to keep track of the overall training time of the vaeac approach
-  progressr_bar <- progressr::progressor(steps = epochs_initiation_phase * (n_vaeacs_initialize - 1) + epochs)
+  if (requireNamespace("progressr", quietly = TRUE)) {
+    progressr_bar <- progressr::progressor(steps = epochs_initiation_phase * (n_vaeacs_initialize - 1) + epochs)
+  } else {
+    progressr_bar <- NULL
+  }
 
   # Iterate over the initializations.
   initialization_idx <- 1
@@ -939,7 +943,11 @@ vaeac_train_model_continue <- function(explanation,
   state_list$epochs <- epochs
 
   # Create a `progressr::progressor()` to keep track of the new training
-  progressr_bar <- progressr::progressor(steps = epochs_new)
+  if (requireNamespace("progressr", quietly = TRUE)) {
+    progressr_bar <- progressr::progressor(steps = epochs_new)
+  } else {
+    progressr_bar <- NULL
+  }
 
   # Train the vaeac model for `epochs_new` number of epochs
   vaeac_tmp <- vaeac_train_model_auxiliary(
