@@ -107,5 +107,29 @@
       "x_train_torch"
     )
   )
+
+  if (requireNamespace("torch", quietly = TRUE)) {
+    skip_connection <- torch::nn_module(
+      classname = "skip_connection", # field classname Name of the of torch::nn_module object
+      # description Initialize a new skip_connection module
+      initialize = function(...) self$inner_net <- torch::nn_sequential(...),
+      # description What to do when a skip_connection module is called
+      forward = function(input) {
+        return(input + self$inner_net(input))
+      }
+    )
+  } else {
+    skip_connection <- R6::R6Class(
+      "skip_connection",
+      public = list(
+        initialize = function() {
+          stop("The 'torch' package is required for 'skip_connection'. Please install 'torch'.", call. = FALSE)
+        }
+      )
+    )
+  }
+  assign("skip_connection", skip_connection, envir = .GlobalEnv)
+
   invisible()
+
 }

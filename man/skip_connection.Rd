@@ -5,7 +5,7 @@
 \alias{skip_connection}
 \title{A \code{\link[torch:nn_module]{torch::nn_module()}} Representing a skip connection}
 \format{
-An object of class \code{logical} of length 1.
+An object of class \code{NULL} of length 0.
 }
 \usage{
 skip_connection
@@ -17,8 +17,17 @@ and \code{\link[=memory_layer]{memory_layer()}} objects. See \code{\link[=vaeac]
 \description{
 Skip connection over the sequence of layers in the constructor. The module passes
 input data sequentially through these layers and then adds original data to the result.
+
+This function is only available if the \code{torch} package is installed.
 }
 \author{
 Lars Henry Berge Olsen
 }
+\keyword{#'}
+\keyword{@title}
+\keyword{Depends}
+\keyword{Function}
+\keyword{Torch}
 \keyword{internal}
+\keyword{on}
+\keyword{that}

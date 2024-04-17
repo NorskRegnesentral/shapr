@@ -1225,9 +1225,7 @@ paired_sampler <- ifelse0(!requireNamespace("torch", quietly = TRUE),
 #' b <- net1(a)
 #' d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
 #' }
-memory_layer <- ifelse0(!requireNamespace("torch", quietly = TRUE),
-                       "unavailable",
-                       torch::nn_module(
+memory_layer <- torch::nn_module(
   classname = "memory_layer", # field classname Name of the of torch::nn_module object.
 
   # field shared_env A shared environment for all instances of memory_layers.
@@ -1279,7 +1277,7 @@ memory_layer <- ifelse0(!requireNamespace("torch", quietly = TRUE),
     }
   }
 )
-)
+
 
 ## skip_connection -----------------------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a skip connection
@@ -1292,18 +1290,19 @@ memory_layer <- ifelse0(!requireNamespace("torch", quietly = TRUE),
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-skip_connection <- ifelse0(!requireNamespace("torch", quietly = TRUE),
-                          "unavailable",
-                          torch::nn_module(
-  classname = "skip_connection", # field classname Name of the of torch::nn_module object
-  # description Initialize a new skip_connection module
-  initialize = function(...) self$inner_net <- torch::nn_sequential(...),
-  # description What to do when a skip_connection module is called
-  forward = function(input) {
-    return(input + self$inner_net(input))
-  }
-)
-)
+#' #' @title Function that Depends on Torch
+#' @description This function is only available if the \code{torch} package is installed.
+#' @export
+# if (requireNamespace("torch", quietly = TRUE)) {
+#   myTorchFunction <- function(x) {
+#     # function implementation
+#   }
+# }
+#'
+#'
+skip_connection <- NULL
+
+
 # Training Utility Functions ==========================================================================================
 #' Extends Incomplete Batches by Sampling Extra Data from Dataloader
 #'
