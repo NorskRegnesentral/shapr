@@ -1765,7 +1765,6 @@ categorical_to_one_hot_layer <- torch::nn_module(
 )
 
 # Mask Generators =====================================================================================================
-## mcar_mask_generator ------------------------------------------------------------------------------------------------
 #' Missing Completely at Random (MCAR) Mask Generator
 #'
 #' @description A mask generator which masks the entries in the input completely at random.
@@ -1795,84 +1794,86 @@ categorical_to_one_hot_layer <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-mcar_mask_generator <- torch::nn_module(
-  name = "mcar_mask_generator", # field name Type of mask generator
+mcar_mask_generator <- function(masking_ratio, paired_sampling = FALSE) {
+  mcar_mask_gen_tmp < torch::nn_module(
+    name = "mcar_mask_generator", # field name Type of mask generator
 
-  # description Initialize a missing completely at random mask generator.
-  # param masking_ratio The probability for an entry in the generated mask to be 1 (masked).
-  # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
-  # If TRUE, then batch must be sampled using `paired_sampler` which creates batches where
-  # the first half and second half of the rows are duplicates of each other. That is,
-  # batch = [row1, row1, row2, row2, row3, row3, ...].
-  # return A new `mcar_mask_generator` object.
-  initialize = function(masking_ratio = 0.5, paired_sampling = FALSE) {
-    self$masking_ratio <- masking_ratio
-    self$paired_sampling <- paired_sampling
-  },
+    # description Initialize a missing completely at random mask generator.
+    # param masking_ratio The probability for an entry in the generated mask to be 1 (masked).
+    # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
+    # If TRUE, then batch must be sampled using `paired_sampler` which creates batches where
+    # the first half and second half of the rows are duplicates of each other. That is,
+    # batch = [row1, row1, row2, row2, row3, row3, ...].
+    # return A new `mcar_mask_generator` object.
+    initialize = function(masking_ratio = 0.5, paired_sampling = FALSE) {
+      self$masking_ratio <- masking_ratio
+      self$paired_sampling <- paired_sampling
+    },
 
-  # description Generates a MCAR mask by calling self$mcar_mask_generator_function function.
-  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
-  # entries are missing. If any are missing, then the returned mask will ensure that
-  # these missing entries are masked.
-  forward = function(batch) {
-    self$mcar_mask_generator_function(batch, prob = self$masking_ratio, paired_sampling = self$paired_sampling)
-  },
+    # description Generates a MCAR mask by calling self$mcar_mask_generator_function function.
+    # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+    # entries are missing. If any are missing, then the returned mask will ensure that
+    # these missing entries are masked.
+    forward = function(batch) {
+      self$mcar_mask_generator_function(batch, prob = self$masking_ratio, paired_sampling = self$paired_sampling)
+    },
 
-  # description Missing Completely At Random Mask Generator: A mask generator where the masking
-  # is determined by component-wise independent Bernoulli distribution.
-  #
-  # details Function that takes in a batch of observations and the probability
-  # of masking each element based on a component-wise independent Bernoulli
-  # distribution. Default value is 0.5, so all masks are equally likely to be trained.
-  # Function returns the mask of same shape as batch.
-  # Note that the batch can contain missing values, indicated by the "NaN" token.
-  # The mask will always mask missing values.
-  #
-  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
-  # entries are missing. If any are missing, then the returned mask will ensure that
-  # these missing entries are masked.
-  # param prob Numeric between 0 and 1. The probability that an entry will be masked.
-  # param seed Integer. Used to set the seed for the sampling process such that we
-  # can reproduce the same masks.
-  # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
-  # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
-  # the first half and second half of the rows are duplicates of each other. That is,
-  # batch = [row1, row1, row2, row2, row3, row3, ...].
-  #
-  # examples
-  # mcar_mask_generator_function(torch::torch_rand(c(5, 3)))
-  #
-  # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
-  # observed feature value will be masked. '0' means that the entry is NOT masked,
-  # i.e., the feature value will be observed/given/available.
-  mcar_mask_generator_function = function(batch, prob = 0.5, seed = NULL, paired_sampling = FALSE) {
-    if (!is.null(seed)) set.seed(seed) # If the user specify a seed for reproducibility
-    size <- prod(batch$shape) # Get the number of entries in the batch.
-    nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
+    # description Missing Completely At Random Mask Generator: A mask generator where the masking
+    # is determined by component-wise independent Bernoulli distribution.
+    #
+    # details Function that takes in a batch of observations and the probability
+    # of masking each element based on a component-wise independent Bernoulli
+    # distribution. Default value is 0.5, so all masks are equally likely to be trained.
+    # Function returns the mask of same shape as batch.
+    # Note that the batch can contain missing values, indicated by the "NaN" token.
+    # The mask will always mask missing values.
+    #
+    # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+    # entries are missing. If any are missing, then the returned mask will ensure that
+    # these missing entries are masked.
+    # param prob Numeric between 0 and 1. The probability that an entry will be masked.
+    # param seed Integer. Used to set the seed for the sampling process such that we
+    # can reproduce the same masks.
+    # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
+    # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
+    # the first half and second half of the rows are duplicates of each other. That is,
+    # batch = [row1, row1, row2, row2, row3, row3, ...].
+    #
+    # examples
+    # mcar_mask_generator_function(torch::torch_rand(c(5, 3)))
+    #
+    # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
+    # observed feature value will be masked. '0' means that the entry is NOT masked,
+    # i.e., the feature value will be observed/given/available.
+    mcar_mask_generator_function = function(batch, prob = 0.5, seed = NULL, paired_sampling = FALSE) {
+      if (!is.null(seed)) set.seed(seed) # If the user specify a seed for reproducibility
+      size <- prod(batch$shape) # Get the number of entries in the batch.
+      nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
 
-    # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
-    if (paired_sampling) size <- size / 2
+      # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
+      if (paired_sampling) size <- size / 2
 
-    # # Torch version, but marginally slower than r version when batch_size <= 128 and n_features <= 50
-    # mask = torch::torch_bernoulli(torch::torch_full_like(batch, prob))
-    # Create the Bernoulli mask where an element is masked (1) with probability 'prob'.
-    mask <- torch::torch_tensor(
-      matrix(sample(c(0, 1), size = size, replace = TRUE, prob = c(prob, 1 - prob)), ncol = ncol(batch)),
-      dtype = torch::torch_float()
-    )
+      # # Torch version, but marginally slower than r version when batch_size <= 128 and n_features <= 50
+      # mask = torch::torch_bernoulli(torch::torch_full_like(batch, prob))
+      # Create the Bernoulli mask where an element is masked (1) with probability 'prob'.
+      mask <- torch::torch_tensor(
+        matrix(sample(c(0, 1), size = size, replace = TRUE, prob = c(prob, 1 - prob)), ncol = ncol(batch)),
+        dtype = torch::torch_float()
+      )
 
-    # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
-    if (paired_sampling) {
-      mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
+      # If paired sampling: concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
+      if (paired_sampling) {
+        mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
+      }
+
+      # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
+      return(mask + nan_mask >= 1)
     }
-
-    # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
-    return(mask + nan_mask >= 1)
-  }
-)
+  )
+  return(mcar_mask_gen_tmp(masking_ratio = masking_ratio, paired_sampling = paired_sampling))
+}
 
 
-## specified_prob_mask_generator -------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a specified_prob_mask_generator
 #'
 #' @description A mask generator which masks the entries based on specified probabilities.
@@ -1907,79 +1908,83 @@ mcar_mask_generator <- torch::nn_module(
 #' }
 #'
 #' @keywords internal
-specified_prob_mask_generator <- torch::nn_module(
-  name = "specified_prob_mask_generator", # field name Type of mask generator
+specified_prob_mask_generator <- function(masking_probs, paired_sampling = FALSE) {
+  specified_prob_mask_gen_tmp <- torch::nn_module(
+    name = "specified_prob_mask_generator", # field name Type of mask generator
 
-  # description Initialize a specified_probability mask generator.
-  initialize = function(masking_probs, paired_sampling = FALSE) {
-    self$masking_probs <- masking_probs / sum(masking_probs)
-    self$paired_sampling <- paired_sampling
-  },
+    # description Initialize a specified_probability mask generator.
+    initialize = function(masking_probs, paired_sampling = FALSE) {
+      self$masking_probs <- masking_probs / sum(masking_probs)
+      self$paired_sampling <- paired_sampling
+    },
 
-  # description Generates a specified probability mask by calling the self$specified_prob_mask_generator_function.
-  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the entries are
-  # missing. If any are missing, then the returned mask will ensure that these missing entries are masked.
-  forward = function(batch) {
-    self$specified_prob_mask_generator_function(
-      batch = batch,
-      masking_prob = self$masking_probs,
-      paired_sampling = self$paired_sampling
-    )
-  },
+    # description Generates a specified probability mask by calling the self$specified_prob_mask_generator_function.
+    # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the entries are
+    # missing. If any are missing, then the returned mask will ensure that these missing entries are masked.
+    forward = function(batch) {
+      self$specified_prob_mask_generator_function(
+        batch = batch,
+        masking_prob = self$masking_probs,
+        paired_sampling = self$paired_sampling
+      )
+    },
 
-  # description Specified Probability Mask Generator: A mask generator that first samples the number of entries 'd' to
-  # be masked in the 'M'-dimensional observation 'x' in the batch based on the given M+1 probabilities. The 'd' maskes
-  # are uniformly sampled from the 'M' possible feature indices. The d'th entry of the probability of having d-1 masked
-  # values.
-  #
-  # details Note that mcar_mask_generator with p = 0.5 is the same as using specified_prob_mask_generator
-  # with masking_ratio = choose(M, 0:M), where M is the number of features. This function was initially
-  # created to check if increasing the probability of having a masks with many masked features improved
-  # vaeac's performance by focusing more on these situations during training.
-  #
-  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the entries are missing. If any
-  # are missing, then the returned mask will ensure that these missing entries are masked.
-  # param masking_probs An M+1 numerics containing the probabilities masking 'd' (0,...M) entries for each observation.
-  # param seed Integer. Used to set the seed for the sampling process such that we can reproduce the same masks.
-  # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
-  # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
-  # the first half and second half of the rows are duplicates of each other. That is,
-  # `batch = [row1, row1, row2, row2, row3, row3, ...]`.
-  #
-  # examples specified_prob_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
-  #
-  # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
-  # observed feature value will be masked. '0' means that the entry is NOT masked,
-  # i.e., the feature value will be observed/given/available.
-  specified_prob_mask_generator_function = function(batch, masking_probs, seed = NULL, paired_sampling = FALSE) {
-    if (!is.null(seed)) set.seed(seed) # If the user specify a seed for reproducibility
-    n_features <- ncol(batch) # Get the number of features in the batch
-    size <- nrow(batch) # Get the number of observations in the batch
-    nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
+    # description Specified Probability Mask Generator: A mask generator that first samples the number of entries 'd' to
+    # be masked in the 'M'-dimensional observation 'x' in the batch based on the given M+1 probabilities. The 'd' masks
+    # are uniformly sampled from the 'M' possible feature indices. The d'th entry of the probability of having d-1
+    # masked values.
+    #
+    # details Note that mcar_mask_generator with p = 0.5 is the same as using specified_prob_mask_generator
+    # with masking_ratio = choose(M, 0:M), where M is the number of features. This function was initially
+    # created to check if increasing the probability of having a masks with many masked features improved
+    # vaeac's performance by focusing more on these situations during training.
+    #
+    # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the entries are missing. If any
+    # are missing, then the returned mask will ensure that these missing entries are masked.
+    # param masking_probs An M+1 numerics containing the probabilities masking 'd' (0,...M) entries for each instance.
+    # param seed Integer. Used to set the seed for the sampling process such that we can reproduce the same masks.
+    # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
+    # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
+    # the first half and second half of the rows are duplicates of each other. That is,
+    # `batch = [row1, row1, row2, row2, row3, row3, ...]`.
+    #
+    # examples specified_prob_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
+    #
+    # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
+    # observed feature value will be masked. '0' means that the entry is NOT masked,
+    # i.e., the feature value will be observed/given/available.
+    specified_prob_mask_generator_function = function(batch, masking_probs, seed = NULL, paired_sampling = FALSE) {
+      if (!is.null(seed)) set.seed(seed) # If the user specify a seed for reproducibility
+      n_features <- ncol(batch) # Get the number of features in the batch
+      size <- nrow(batch) # Get the number of observations in the batch
+      nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
 
-    # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
-    if (paired_sampling) size <- size / 2
+      # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
+      if (paired_sampling) size <- size / 2
 
-    # Sample the number of masked features in each row.
-    n_masked_each_row <- sample(x = seq(0, n_features), size = size, replace = TRUE, prob = masking_probs)
+      # Sample the number of masked features in each row.
+      n_masked_each_row <- sample(x = seq(0, n_features), size = size, replace = TRUE, prob = masking_probs)
 
-    # Crate the mask matrix
-    mask <- torch::torch_zeros_like(batch)
-    for (i in seq(size)) {
-      if (n_masked_each_row[i] != 0) mask[i, sample(n_features, size = n_masked_each_row[i], replace = FALSE)] <- 1
+      # Crate the mask matrix
+      mask <- torch::torch_zeros_like(batch)
+      for (i in seq(size)) {
+        if (n_masked_each_row[i] != 0) mask[i, sample(n_features, size = n_masked_each_row[i], replace = FALSE)] <- 1
+      }
+
+      # If paired sampling: concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
+      if (paired_sampling) {
+        mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
+      }
+
+      # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
+      return(mask + nan_mask >= 1)
     }
+  )
 
-    # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
-    if (paired_sampling) {
-      mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
-    }
+  return(specified_prob_mask_gen_tmp(masking_probs = masking_probs, paired_sampling = paired_sampling))
+}
 
-    # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
-    return(mask + nan_mask >= 1)
-  }
-)
 
-## specified_masks_mask_generator -------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a specified_masks_mask_generator
 #'
 #' @description
@@ -2010,72 +2015,78 @@ specified_prob_mask_generator <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-specified_masks_mask_generator <- torch::nn_module(
-  name = "specified_masks_mask_generator", # field name Type of mask generator
+specified_masks_mask_generator <- function(masks, masks_probs, paired_sampling = FALSE) {
+  specified_masks_mask_gen_tmp <- torch::nn_module(
+    name = "specified_masks_mask_generator", # field name Type of mask generator
 
-  # description Initialize a specified masks mask generator.
-  initialize = function(masks, masks_probs, paired_sampling = FALSE) {
-    self$masks <- masks
-    self$masks_probs <- masks_probs / sum(masks_probs)
-    self$paired_sampling <- paired_sampling
-  },
+    # description Initialize a specified masks mask generator.
+    initialize = function(masks, masks_probs, paired_sampling = FALSE) {
+      self$masks <- masks
+      self$masks_probs <- masks_probs / sum(masks_probs)
+      self$paired_sampling <- paired_sampling
+    },
 
-  # description Generates a mask by calling self$specified_masks_mask_generator_function function.
-  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
-  # entries are missing. If any are missing, then the returned mask will ensure that
-  # these missing entries are masked.
-  forward = function(batch) {
-    self$specified_masks_mask_generator_function(
-      batch = batch,
-      masks = self$masks,
-      masks_probs = self$masks_probs,
-      paired_sampling = self$paired_sampling
-    )
-  },
+    # description Generates a mask by calling self$specified_masks_mask_generator_function function.
+    # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+    # entries are missing. If any are missing, then the returned mask will ensure that
+    # these missing entries are masked.
+    forward = function(batch) {
+      self$specified_masks_mask_generator_function(
+        batch = batch,
+        masks = self$masks,
+        masks_probs = self$masks_probs,
+        paired_sampling = self$paired_sampling
+      )
+    },
 
-  # description Sampling Masks from the Provided Masks with the Given Probabilities
-  #
-  # details Function that takes in a 'batch' of observations and matrix of possible/allowed
-  # 'masks' which we are going to sample from based on the provided probability in 'masks_probs'.
-  # Function returns a mask of same shape as batch. Note that the batch can contain missing values,
-  # indicated by the "NaN" token. The mask will always mask missing values.
-  #
-  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
-  # entries are missing. If any are missing, then the returned mask will ensure that
-  # these missing entries are masked.
-  # param masks Matrix/Tensor of possible/allowed 'masks' which we sample from.
-  # param masks_probs Array of 'probabilities' for each of the masks specified in 'masks'.
-  # Note that they do not need to be between 0 and 1. They are scaled, hence, they only need to be positive.
-  # param seed Integer. Used to set the seed for the sampling process such that we
-  # can reproduce the same masks.
-  # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
-  # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
-  # the first half and second half of the rows are duplicates of each other. That is,
-  # batch = [row1, row1, row2, row2, row3, row3, ...].
-  #
-  # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
-  # observed feature value will be masked. '0' means that the entry is NOT masked,
-  # i.e., the feature value will be observed/given/available.
-  specified_masks_mask_generator_function = function(batch, masks, masks_probs, seed = NULL, paired_sampling = FALSE) {
-    if (!is.null(seed)) set.seed(seed) # Set seed if the user specifies a seed for reproducibility.
-    nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
-    n_masks <- nrow(masks) # Get the number of masks to choose from
-    size <- nrow(batch) # Get the number of observations in the batch
+    # description Sampling Masks from the Provided Masks with the Given Probabilities
+    #
+    # details Function that takes in a 'batch' of observations and matrix of possible/allowed
+    # 'masks' which we are going to sample from based on the provided probability in 'masks_probs'.
+    # Function returns a mask of same shape as batch. Note that the batch can contain missing values,
+    # indicated by the "NaN" token. The mask will always mask missing values.
+    #
+    # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+    # entries are missing. If any are missing, then the returned mask will ensure that
+    # these missing entries are masked.
+    # param masks Matrix/Tensor of possible/allowed 'masks' which we sample from.
+    # param masks_probs Array of 'probabilities' for each of the masks specified in 'masks'.
+    # Note that they do not need to be between 0 and 1. They are scaled, hence, they only need to be positive.
+    # param seed Integer. Used to set the seed for the sampling process such that we
+    # can reproduce the same masks.
+    # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
+    # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
+    # the first half and second half of the rows are duplicates of each other. That is,
+    # batch = [row1, row1, row2, row2, row3, row3, ...].
+    #
+    # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
+    # observed feature value will be masked. '0' means that the entry is NOT masked,
+    # i.e., the feature value will be observed/given/available.
+    specified_masks_mask_generator_function =
+      function(batch, masks, masks_probs, seed = NULL, paired_sampling = FALSE) {
+        if (!is.null(seed)) set.seed(seed) # Set seed if the user specifies a seed for reproducibility.
+        nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
+        n_masks <- nrow(masks) # Get the number of masks to choose from
+        size <- nrow(batch) # Get the number of observations in the batch
 
-    # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
-    if (paired_sampling) size <- size / 2
+        # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
+        if (paired_sampling) size <- size / 2
 
-    # Sample 'n_observation' masks from the possible masks by first sampling the row indices
-    # based on the given mask probabilities and then use these indices to extract the masks.
-    mask_rows_indices <- sample.int(n = n_masks, size = size, replace = TRUE, prob = masks_probs)
-    mask <- torch::torch_tensor(masks[mask_rows_indices, ], dtype = torch::torch_float())
+        # Sample 'n_observation' masks from the possible masks by first sampling the row indices
+        # based on the given mask probabilities and then use these indices to extract the masks.
+        mask_rows_indices <- sample.int(n = n_masks, size = size, replace = TRUE, prob = masks_probs)
+        mask <- torch::torch_tensor(masks[mask_rows_indices, ], dtype = torch::torch_float())
 
-    # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
-    if (paired_sampling) {
-      mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
-    }
+        # If paired sampling: concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
+        if (paired_sampling) {
+          mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
+        }
 
-    # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
-    return(mask + nan_mask >= 1)
-  }
-)
+        # Mask all missing or artificially masked entries by the Bernoulli mask. 1 means that the entry is masked.
+        return(mask + nan_mask >= 1)
+      }
+  )
+
+  # Initate the specified_masks_mask_generator and return it
+  return(specified_masks_mask_gen_tmp(masks = masks, masks_probs = masks_probs, paired_sampling = paired_sampling))
+}
