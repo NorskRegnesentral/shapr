@@ -25,7 +25,10 @@ inst/compare_lundberg\.xgb\.obj
 ^rebuild-long-running-vignette\.R$
 ^vignettes/understanding_shapr_vaeac\.Rmd\.orig$
 ^vignettes/understanding_shapr\.Rmd\.orig$
+^vignettes/understanding_shapr_regression\.Rmd\.orig$
 ^vignettes/figure_main/*$
 ^vignettes/cache_main/*$
 ^vignettes/figure_vaeac/*$
 ^vignettes/cache_vaeac/*$
+^vignettes/figure_regression/*$
+^vignettes/cache_regression/*$

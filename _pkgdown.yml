@@ -12,6 +12,8 @@ navbar:
         href: articles/understanding_shapr.html
       - text: "Advanced usage of the `vaeac` approach"
         href: articles/understanding_shapr_vaeac.html
+      - text: "The separate and surrogate regression approches"
+        href: articles/understanding_shapr_regression.html
     news:
       text: News
       href: news/index.html

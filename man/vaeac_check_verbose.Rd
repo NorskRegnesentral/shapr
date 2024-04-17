@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac.R
 \name{vaeac_check_verbose}
 \alias{vaeac_check_verbose}
-\title{Function the checks the verbose parameter}
+\title{Function that checks the verbose parameter}
 \usage{
 vaeac_check_verbose(verbose)
 }
@@ -14,7 +14,7 @@ vaeac_check_verbose(verbose)
 The function does not return anything.
 }
 \description{
-Function the checks the verbose parameter
+Function that checks the verbose parameter
 }
 \author{
 Lars Henry Berge Olsen

@@ -35,6 +35,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
+# Temporary disable all but ubuntu release to reduce compute while debugging
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-20.04,   r: 'devel', http-user-agent: 'release'}
