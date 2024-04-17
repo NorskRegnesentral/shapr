@@ -769,7 +769,7 @@ vaeac <- torch::nn_module(
   }
 )
 
-# Dataset Utility Functions ===========================================================================================
+# Dataset Utility Functions ============================================================================================
 #' Compute Featurewise Means and Standard Deviations
 #'
 #' @description Returns the means and standard deviations for all continuous features in the data set.
@@ -998,7 +998,7 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
   return(data)
 }
 
-## vaeac_dataset ------------------------------------------------------------------------------------------------------
+
 #' Dataset used by the `vaeac` model
 #'
 #' @description
@@ -1047,25 +1047,28 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
 #' vaeac_iterator$.next() # batch2
 #' vaeac_iterator$.next() # Empty
 #' }
-vaeac_dataset <- torch::dataset(
-  name = "vaeac_dataset", # field name The name of the `torch::dataset`.
+vaeac_dataset <- function(X, one_hot_max_sizes) {
+  vaeac_dataset_tmp <- torch::dataset(
+    name = "vaeac_dataset", # field name The name of the `torch::dataset`.
 
-  # description Create a new vaeac_dataset object.
-  # param X A torch_tensor containing the data
-  # param one_hot_max_sizes A torch tensor of dimension p containing the one hot sizes of the p features.
-  # The sizes for the continuous features can either be '0' or '1'.
-  initialize = function(X, one_hot_max_sizes) {
-    # Save the number of observations and features in X, the one hot dummy feature sizes and the dataset
-    self$N <- nrow(X)
-    self$p <- ncol(X)
-    self$one_hot_max_sizes <- one_hot_max_sizes
-    self$X <- X
-  },
-  .getbatch = function(index) self$X[index, , drop = FALSE], # Get a batch of data based on the provided indices
-  .length = function() nrow(self$X) # Get the number of observations in the dataset
-)
+    # description Create a new vaeac_dataset object.
+    # param X A torch_tensor containing the data
+    # param one_hot_max_sizes A torch tensor of dimension p containing the one hot sizes of the p features.
+    # The sizes for the continuous features can either be '0' or '1'.
+    initialize = function(X, one_hot_max_sizes) {
+      # Save the number of observations and features in X, the one hot dummy feature sizes and the dataset
+      self$N <- nrow(X)
+      self$p <- ncol(X)
+      self$one_hot_max_sizes <- one_hot_max_sizes
+      self$X <- X
+    },
+    .getbatch = function(index) self$X[index, , drop = FALSE], # Get a batch of data based on the provided indices
+    .length = function() nrow(self$X) # Get the number of observations in the dataset
+  )
+  return(vaeac_dataset_tmp(X = X, one_hot_max_sizes = one_hot_max_sizes))
+}
 
-## Paired Sampler  ----------------------------------------------------------------------------------------------------
+
 #' Sampling Paired Observations
 #'
 #' @description
@@ -1109,26 +1112,28 @@ vaeac_dataset <- torch::dataset(
 #' }
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-paired_sampler <- torch::sampler(
-  classname = "paired_sampler", # field Name of the paired sampler object
-  # description Initialize the paired_sampler object
-  initialize = function(vaeac_dataset_object, shuffle = FALSE) {
-    self$vaeac_dataset_object <- vaeac_dataset_object
-    self$shuffle <- shuffle
-  },
-  # description Get the number of observations in the datasaet
-  .length = function() length(self$vaeac_dataset_object) * 2, # Multiply by two do to get the actual number
-  # description Function to iterate over the data
-  .iter = function() {
-    n <- length(self$vaeac_dataset_object) # Get the number of observations in the data
-    indices <- if (self$shuffle) sample.int(n) else seq_len(n) # Check if randomly shuffle indices or increasing order
-    return(coro::as_iterator(rep(indices, each = 2))) # Duplicate each index and return an iterator
-  }
-)
+paired_sampler <- function(vaeac_dataset_object, shuffle = FALSE) {
+  paired_sampler_tmp <- torch::sampler(
+    classname = "paired_sampler", # field Name of the paired sampler object
+    # description Initialize the paired_sampler object
+    initialize = function(vaeac_dataset_object, shuffle = FALSE) {
+      self$vaeac_dataset_object <- vaeac_dataset_object
+      self$shuffle <- shuffle
+    },
+    # description Get the number of observations in the datasaet
+    .length = function() length(self$vaeac_dataset_object) * 2, # Multiply by two do to get the actual number
+    # description Function to iterate over the data
+    .iter = function() {
+      n <- length(self$vaeac_dataset_object) # Get the number of observations in the data
+      indices <- if (self$shuffle) sample.int(n) else seq_len(n) # Check if randomly shuffle indices or increasing order
+      return(coro::as_iterator(rep(indices, each = 2))) # Duplicate each index and return an iterator
+    }
+  )
+  return(paired_sampler_tmp(vaeac_dataset_object = vaeac_dataset_object, shuffle = shuffle))
+}
 
 
-# Neural Network Utility Functions ====================================================================================
-##  memory_layer -------------------------------------------------------------------------------------------------------
+# Neural Network Utility Functions =====================================================================================
 #' A [torch::nn_module()] Representing a Memory Layer
 #'
 #' @description The layer is used to make skip-connections inside a [torch::nn_sequential] network
@@ -1222,7 +1227,7 @@ memory_layer <- torch::nn_module(
   }
 )
 
-## skip_connection -----------------------------------------------------------------------------------------------------
+
 #' A [torch::nn_module()] Representing a skip connection
 #'
 #' @description Skip connection over the sequence of layers in the constructor. The module passes
@@ -1233,15 +1238,20 @@ memory_layer <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-skip_connection <- torch::nn_module(
-  classname = "skip_connection", # field classname Name of the of torch::nn_module object
-  # description Initialize a new skip_connection module
-  initialize = function(...) self$inner_net <- torch::nn_sequential(...),
-  # description What to do when a skip_connection module is called
-  forward = function(input) {
-    return(input + self$inner_net(input))
-  }
-)
+skip_connection <- function(...) {
+  skip_connection_tmp <- torch::nn_module(
+    classname = "skip_connection", # field classname Name of the of torch::nn_module object
+    # description Initialize a new skip_connection module
+    initialize = function(...) self$inner_net <- torch::nn_sequential(...),
+    # description What to do when a skip_connection module is called
+    forward = function(input) {
+      return(input + self$inner_net(input))
+    }
+  )
+
+  return(skip_connection_tmp(... = ...))
+}
+
 
 # Training Utility Functions ==========================================================================================
 #' Extends Incomplete Batches by Sampling Extra Data from Dataloader
