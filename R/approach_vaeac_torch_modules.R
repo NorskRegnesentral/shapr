@@ -1172,8 +1172,8 @@ paired_sampler <- function(vaeac_dataset_object, shuffle = FALSE) {
 # Neural Network Utility Functions =====================================================================================
 #' A [torch::nn_module()] Representing a Memory Layer
 #'
-#' @description The layer is used to make skip-connections inside a [torch::nn_sequential] network
-#' or between several [torch::nn_sequential] networks without unnecessary code complication.
+#' @description The layer is used to make skip-connections inside a [torch::nn_sequential()] network
+#' or between several [torch::nn_sequential()] networks without unnecessary code complication.
 #'
 #' @details If `output = FALSE`, this layer stores its input in the `shared_env` with the key `id` and then
 #' passes the input to the next layer. I.e., when memory layer is used in the masked encoder. If `output = TRUE`, this
