@@ -841,7 +841,7 @@ vaeac_train_model_continue <- function(explanation,
 
   # Extract the vaeac list and load the model at the last epoch or the best (default 'best' when path is provided)
   vaeac_model <- explanation$internal$parameters$vaeac
-  vaeac_model_path = if(!is.null(vaeac_model$models$last)) vaeac_model$models$last else vaeac_model$models$best
+  vaeac_model_path <- if (!is.null(vaeac_model$models$last)) vaeac_model$models$last else vaeac_model$models$best
   checkpoint <- torch::torch_load(vaeac_model_path)
 
   # Get which device we are to continue to train the model

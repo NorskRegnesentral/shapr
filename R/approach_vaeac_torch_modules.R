@@ -135,7 +135,6 @@ vaeac <- function(one_hot_max_sizes,
                   mask_gen_coalitions_prob = NULL,
                   sigma_mu = 1e4,
                   sigma_sigma = 1e-4) {
-
   # Check that a valid mask_generator was provided.
   mask_generator_name <- match.arg(mask_generator_name)
 
@@ -159,7 +158,6 @@ vaeac <- function(one_hot_max_sizes,
                           mask_gen_coalitions_prob,
                           sigma_mu,
                           sigma_sigma) {
-
       # Get the number of features
       n_features <- length(one_hot_max_sizes)
 
