@@ -4,7 +4,7 @@
 \alias{vaeac_print_train_summary}
 \title{Function to printout a training summary for the \code{vaeac} model}
 \usage{
-vaeac_print_train_summary(best_epoch, best_epoch_running, last_epoch)
+vaeac_print_train_summary(best_epoch, best_epoch_running, last_state)
 }
 \arguments{
 \item{best_epoch}{Positive integer. The epoch with the lowest validation error.}

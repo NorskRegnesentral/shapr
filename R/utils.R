@@ -7,3 +7,4 @@ errorfun <- function(e) {
   class(ret) <- "error"
   ret
 }
+

@@ -1,6 +1,52 @@
-# The if test here allows installing shapr even if torch is not installed.
-# This is needed as the classes below require torch
-if (requireNamespace("torch", quietly = TRUE)) {
+#' Conditional Element Selection
+#'
+#' @description ifelse returns a value with the same shape as test which is filled with elements selected from either yes or no depending on whether the element of test is TRUE or FALSE.
+#'
+#' @details Copy of base::ifelse, except that the there is no recycling attempt if the length of yes/no is 1.
+#'
+#' @param test an object which can be coerced to logical mode.
+#' @param yes return values for true elements of test.
+#' @param no return values for false elements of test.
+#' @export
+#' @keywords internal
+ifelse0 <- function (test, yes, no) {
+  if (is.atomic(test)) {
+    if (typeof(test) != "logical")
+      storage.mode(test) <- "logical"
+    if (length(test) == 1 && is.null(attributes(test))) {
+      if (is.na(test))
+        return(NA)
+      else if (test) {
+        if (length(yes) == 1) {
+          yat <- attributes(yes)
+          if (is.null(yat) || (is.function(yes) && identical(names(yat),
+                                                             "srcref")))
+            return(yes)
+        }
+      }
+      else if (length(no) == 1) {
+        nat <- attributes(no)
+        if (is.null(nat) || (is.function(no) && identical(names(nat),
+                                                          "srcref")))
+          return(no)
+      }
+    }
+  }
+  else test <- if (isS4(test))
+    methods::as(test, "logical")
+  else as.logical(test)
+  ans <- test
+  len <- length(ans)
+  ypos <- which(test)
+  npos <- which(!test)
+  if (length(ypos) > 1L)  # Modified: 0L -> 1L to work for objects that do not handle rep()
+    ans[ypos] <- rep(yes, length.out = len)[ypos]
+  if (length(npos) > 1L)  # Modified: 0L -> 1L to work for objects that do not handle rep()
+    ans[npos] <- rep(no, length.out = len)[npos]
+  ans
+}
+
+
 # VAEAC Model =========================================================================================================
 ## vaeac --------------------------------------------------------------------------------------------------------------
 #' Initializing a vaeac model
@@ -120,10 +166,11 @@ if (requireNamespace("torch", quietly = TRUE)) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-vaeac <- torch::nn_module(
-
-  # Name of the torch::nn_module object
-  classname = "vaeac",
+vaeac <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                "unavailable",
+                torch::nn_module(
+                  # Name of the torch::nn_module object
+                  classname = "vaeac",
 
   # Initializing a vaeac model
   initialize = function(one_hot_max_sizes,
@@ -771,7 +818,7 @@ vaeac <- torch::nn_module(
     return(torch::torch_cat(samples_params, 2))
   }
 )
-
+)
 # Dataset Utility Functions ===========================================================================================
 #' Compute Featurewise Means and Standard Deviations
 #'
@@ -1050,7 +1097,10 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
 #' vaeac_iterator$.next() # batch2
 #' vaeac_iterator$.next() # Empty
 #' }
-vaeac_dataset <- torch::dataset(
+
+vaeac_dataset <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                        "unavailable",
+                        torch::dataset(
   name = "vaeac_dataset", # field name The name of the `torch::dataset`.
 
   # description Create a new vaeac_dataset object.
@@ -1066,6 +1116,7 @@ vaeac_dataset <- torch::dataset(
   },
   .getbatch = function(index) self$X[index, , drop = FALSE], # Get a batch of data based on the provided indices
   .length = function() nrow(self$X) # Get the number of observations in the dataset
+)
 )
 
 ## Paired Sampler  ----------------------------------------------------------------------------------------------------
@@ -1112,7 +1163,9 @@ vaeac_dataset <- torch::dataset(
 #' }
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-paired_sampler <- torch::sampler(
+paired_sampler <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                         "unavailable",
+                         torch::sampler(
   classname = "paired_sampler", # field Name of the paired sampler object
   # description Initialize the paired_sampler object
   initialize = function(vaeac_dataset_object, shuffle = FALSE) {
@@ -1128,7 +1181,7 @@ paired_sampler <- torch::sampler(
     return(coro::as_iterator(rep(indices, each = 2))) # Duplicate each index and return an iterator
   }
 )
-
+)
 
 # Neural Network Utility Functions ====================================================================================
 ##  memory_layer -------------------------------------------------------------------------------------------------------
@@ -1172,7 +1225,9 @@ paired_sampler <- torch::sampler(
 #' b <- net1(a)
 #' d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
 #' }
-memory_layer <- torch::nn_module(
+memory_layer <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                       "unavailable",
+                       torch::nn_module(
   classname = "memory_layer", # field classname Name of the of torch::nn_module object.
 
   # field shared_env A shared environment for all instances of memory_layers.
@@ -1224,6 +1279,7 @@ memory_layer <- torch::nn_module(
     }
   }
 )
+)
 
 ## skip_connection -----------------------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a skip connection
@@ -1236,7 +1292,9 @@ memory_layer <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-skip_connection <- torch::nn_module(
+skip_connection <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                          "unavailable",
+                          torch::nn_module(
   classname = "skip_connection", # field classname Name of the of torch::nn_module object
   # description Initialize a new skip_connection module
   initialize = function(...) self$inner_net <- torch::nn_sequential(...),
@@ -1245,7 +1303,7 @@ skip_connection <- torch::nn_module(
     return(input + self$inner_net(input))
   }
 )
-
+)
 # Training Utility Functions ==========================================================================================
 #' Extends Incomplete Batches by Sampling Extra Data from Dataloader
 #'
@@ -1442,7 +1500,9 @@ vaeac_kl_normal_normal <- function(p, q) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-gauss_cat_sampler_most_likely <- torch::nn_module(
+gauss_cat_sampler_most_likely <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                                        "unavailable",
+                                        torch::nn_module(
   classname = "gauss_cat_sampler_most_likely", # field classname Type of torch::nn_module
 
   # description Initialize a gauss_cat_sampler_most_likely which generates the most likely
@@ -1484,6 +1544,7 @@ gauss_cat_sampler_most_likely <- torch::nn_module(
     return(torch::torch_cat(sample, -1)) # Create a 2D torch by column binding the vectors in the list
   }
 )
+)
 
 ## gauss_cat_sampler_random -----------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a gauss_cat_sampler_random
@@ -1497,7 +1558,9 @@ gauss_cat_sampler_most_likely <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-gauss_cat_sampler_random <- torch::nn_module(
+gauss_cat_sampler_random <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                                   "unavailable",
+                                   torch::nn_module(
   classname = "gauss_cat_sampler_random", # field classname Type of torch::nn_module
 
   # description Initialize a gauss_cat_sampler_random which generates a sample from the
@@ -1540,7 +1603,7 @@ gauss_cat_sampler_random <- torch::nn_module(
     return(torch::torch_cat(sample, -1)) # Create a 2D torch by column binding the vectors in the list
   }
 )
-
+)
 
 ## gauss_cat_parameters --------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a `gauss_cat_parameters`
@@ -1561,7 +1624,9 @@ gauss_cat_sampler_random <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-gauss_cat_parameters <- torch::nn_module(
+gauss_cat_parameters <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                               "unavailable",
+                               torch::nn_module(
   # field classname Type of torch::nn_module
   classname = "gauss_cat_parameters",
 
@@ -1607,7 +1672,7 @@ gauss_cat_parameters <- torch::nn_module(
     return(torch::torch_cat(parameters, -1)) # Create a 2D torch_tensor by column binding the tensors in the list
   }
 )
-
+)
 ## gauss_cat_loss --------------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a `gauss_cat_loss`
 #'
@@ -1623,7 +1688,9 @@ gauss_cat_parameters <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-gauss_cat_loss <- torch::nn_module(
+gauss_cat_loss <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                         "unavailable",
+                         torch::nn_module(
   classname = "gauss_cat_loss", # field classname Type of torch::nn_module
 
   # description Initialize a `gauss_cat_loss`.
@@ -1681,7 +1748,7 @@ gauss_cat_loss <- torch::nn_module(
     return(torch::torch_cat(log_prob, 2)$sum(-1))
   }
 )
-
+)
 
 ## categorical_to_one_hot_layer ----------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a `categorical_to_one_hot_layer`
@@ -1701,7 +1768,9 @@ gauss_cat_loss <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-categorical_to_one_hot_layer <- torch::nn_module(
+categorical_to_one_hot_layer <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                                       "unavailable",
+                                       torch::nn_module(
   classname = "categorical_to_one_hot_layer", # field classname Type of torch::nn_module
 
   # description Initialize a `categorical_to_one_hot_layer`.
@@ -1766,6 +1835,7 @@ categorical_to_one_hot_layer <- torch::nn_module(
     return(out_cols)
   }
 )
+)
 
 # Mask Generators =====================================================================================================
 ## mcar_mask_generator ------------------------------------------------------------------------------------------------
@@ -1798,7 +1868,9 @@ categorical_to_one_hot_layer <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-mcar_mask_generator <- torch::nn_module(
+mcar_mask_generator <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                              "unavailable",
+                              torch::nn_module(
   name = "mcar_mask_generator", # field name Type of mask generator
 
   # description Initialize a missing completely at random mask generator.
@@ -1873,6 +1945,7 @@ mcar_mask_generator <- torch::nn_module(
     return(mask + nan_mask >= 1)
   }
 )
+)
 
 
 ## specified_prob_mask_generator -------------------------------------------------------------------------------
@@ -1910,7 +1983,9 @@ mcar_mask_generator <- torch::nn_module(
 #' }
 #'
 #' @keywords internal
-specified_prob_mask_generator <- torch::nn_module(
+specified_prob_mask_generator <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                                        "unavailable",
+                                        torch::nn_module(
   name = "specified_prob_mask_generator", # field name Type of mask generator
 
   # description Initialize a specified_probability mask generator.
@@ -1981,6 +2056,7 @@ specified_prob_mask_generator <- torch::nn_module(
     return(mask + nan_mask >= 1)
   }
 )
+)
 
 ## specified_masks_mask_generator -------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a specified_masks_mask_generator
@@ -2013,73 +2089,75 @@ specified_prob_mask_generator <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-specified_masks_mask_generator <- torch::nn_module(
-  name = "specified_masks_mask_generator", # field name Type of mask generator
+specified_masks_mask_generator <- ifelse0(!requireNamespace("torch", quietly = TRUE),
+                                         "unavailable",
+                                         torch::nn_module(
+                                           name = "specified_masks_mask_generator", # field name Type of mask generator
 
-  # description Initialize a specified masks mask generator.
-  initialize = function(masks, masks_probs, paired_sampling = FALSE) {
-    self$masks <- masks
-    self$masks_probs <- masks_probs / sum(masks_probs)
-    self$paired_sampling <- paired_sampling
-  },
+                                           # description Initialize a specified masks mask generator.
+                                           initialize = function(masks, masks_probs, paired_sampling = FALSE) {
+                                             self$masks <- masks
+                                             self$masks_probs <- masks_probs / sum(masks_probs)
+                                             self$paired_sampling <- paired_sampling
+                                           },
 
-  # description Generates a mask by calling self$specified_masks_mask_generator_function function.
-  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
-  # entries are missing. If any are missing, then the returned mask will ensure that
-  # these missing entries are masked.
-  forward = function(batch) {
-    self$specified_masks_mask_generator_function(
-      batch = batch,
-      masks = self$masks,
-      masks_probs = self$masks_probs,
-      paired_sampling = self$paired_sampling
-    )
-  },
+                                           # description Generates a mask by calling self$specified_masks_mask_generator_function function.
+                                           # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+                                           # entries are missing. If any are missing, then the returned mask will ensure that
+                                           # these missing entries are masked.
+                                           forward = function(batch) {
+                                             self$specified_masks_mask_generator_function(
+                                               batch = batch,
+                                               masks = self$masks,
+                                               masks_probs = self$masks_probs,
+                                               paired_sampling = self$paired_sampling
+                                             )
+                                           },
 
-  # description Sampling Masks from the Provided Masks with the Given Probabilities
-  #
-  # details Function that takes in a 'batch' of observations and matrix of possible/allowed
-  # 'masks' which we are going to sample from based on the provided probability in 'masks_probs'.
-  # Function returns a mask of same shape as batch. Note that the batch can contain missing values,
-  # indicated by the "NaN" token. The mask will always mask missing values.
-  #
-  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
-  # entries are missing. If any are missing, then the returned mask will ensure that
-  # these missing entries are masked.
-  # param masks Matrix/Tensor of possible/allowed 'masks' which we sample from.
-  # param masks_probs Array of 'probabilities' for each of the masks specified in 'masks'.
-  # Note that they do not need to be between 0 and 1. They are scaled, hence, they only need to be positive.
-  # param seed Integer. Used to set the seed for the sampling process such that we
-  # can reproduce the same masks.
-  # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
-  # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
-  # the first half and second half of the rows are duplicates of each other. That is,
-  # batch = [row1, row1, row2, row2, row3, row3, ...].
-  #
-  # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
-  # observed feature value will be masked. '0' means that the entry is NOT masked,
-  # i.e., the feature value will be observed/given/available.
-  specified_masks_mask_generator_function = function(batch, masks, masks_probs, seed = NULL, paired_sampling = FALSE) {
-    if (!is.null(seed)) set.seed(seed) # Set seed if the user specifies a seed for reproducibility.
-    nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
-    n_masks <- nrow(masks) # Get the number of masks to choose from
-    size <- nrow(batch) # Get the number of observations in the batch+
+                                           # description Sampling Masks from the Provided Masks with the Given Probabilities
+                                           #
+                                           # details Function that takes in a 'batch' of observations and matrix of possible/allowed
+                                           # 'masks' which we are going to sample from based on the provided probability in 'masks_probs'.
+                                           # Function returns a mask of same shape as batch. Note that the batch can contain missing values,
+                                           # indicated by the "NaN" token. The mask will always mask missing values.
+                                           #
+                                           # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+                                           # entries are missing. If any are missing, then the returned mask will ensure that
+                                           # these missing entries are masked.
+                                           # param masks Matrix/Tensor of possible/allowed 'masks' which we sample from.
+                                           # param masks_probs Array of 'probabilities' for each of the masks specified in 'masks'.
+                                           # Note that they do not need to be between 0 and 1. They are scaled, hence, they only need to be positive.
+                                           # param seed Integer. Used to set the seed for the sampling process such that we
+                                           # can reproduce the same masks.
+                                           # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
+                                           # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
+                                           # the first half and second half of the rows are duplicates of each other. That is,
+                                           # batch = [row1, row1, row2, row2, row3, row3, ...].
+                                           #
+                                           # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
+                                           # observed feature value will be masked. '0' means that the entry is NOT masked,
+                                           # i.e., the feature value will be observed/given/available.
+                                           specified_masks_mask_generator_function = function(batch, masks, masks_probs, seed = NULL, paired_sampling = FALSE) {
+                                             if (!is.null(seed)) set.seed(seed) # Set seed if the user specifies a seed for reproducibility.
+                                             nan_mask <- batch$isnan()$to(torch::torch_float()) # Check for missing values in the batch
+                                             n_masks <- nrow(masks) # Get the number of masks to choose from
+                                             size <- nrow(batch) # Get the number of observations in the batch+
 
-    # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
-    if (paired_sampling) size <- size / 2
+                                             # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
+                                             if (paired_sampling) size <- size / 2
 
-    # Sample 'n_observation' masks from the possible masks by first sampling the row indices
-    # based on the given mask probabilities and then use these indices to extract the masks.
-    mask_rows_indices <- sample.int(n = n_masks, size = size, replace = TRUE, prob = masks_probs)
-    mask <- torch::torch_tensor(masks[mask_rows_indices, ], dtype = torch::torch_float())
+                                             # Sample 'n_observation' masks from the possible masks by first sampling the row indices
+                                             # based on the given mask probabilities and then use these indices to extract the masks.
+                                             mask_rows_indices <- sample.int(n = n_masks, size = size, replace = TRUE, prob = masks_probs)
+                                             mask <- torch::torch_tensor(masks[mask_rows_indices, ], dtype = torch::torch_float())
 
-    # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
-    if (paired_sampling) {
-      mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
-    }
+                                             # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
+                                             if (paired_sampling) {
+                                               mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
+                                             }
 
-    # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
-    return(mask + nan_mask >= 1)
-  }
+                                             # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
+                                             return(mask + nan_mask >= 1)
+                                           }
+                                         )
 )
-}
