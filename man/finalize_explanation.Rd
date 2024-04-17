@@ -49,10 +49,12 @@ Computes dependence-aware Shapley values for observations in \code{x_explain} fr
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
 }
 \details{
-The most important thing to notice is that \code{shapr} has implemented six different
-approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
+The most important thing to notice is that \code{shapr} has implemented eight different
+Monte Carlo-based approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
 \code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"vaeac"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
-In addition, the user also has the option of combining the different approaches.
+\code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"},
+and see the separate vignette on the regression-based approaches for more information.
+In addition, the user also has the option of combining the different Monte Carlo-based approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
@@ -164,11 +166,35 @@ explain_groups <- explain(
 )
 print(explain_groups$shapley_values)
 
+# Separate and surrogate regression approaches with linear regression models.
+# More complex regression models can be used, and we can use CV to
+# tune the hyperparameters of the regression models and preprocess
+# the data before sending it to the model. See the regression vignette
+# (Shapley value explanations using the regression paradigm) for more
+# details about the `regression_separate` and `regression_surrogate` approaches.
+explain_separate_lm <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p,
+  approach = "regression_separate",
+  regression.model = parsnip::linear_reg()
+)
+
+explain_surrogate_lm <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p,
+  approach = "regression_surrogate",
+  regression.model = parsnip::linear_reg()
+)
+
 }
 \references{
 Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
-Martin Jullum
+Martin Jullum, Lars Henry Berge Olsen
 }

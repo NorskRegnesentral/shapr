@@ -119,7 +119,7 @@ vaeac_plot_eval_crit(explanation_list = explanation_list_named)
 
 # The function also works if we have only one method, but then one should only look at the method plot
 vaeac_plot_eval_crit(explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
-                             plot_type = "method")
+                     plot_type = "method")
 
 # Can alter the plot
 vaeac_plot_eval_crit(

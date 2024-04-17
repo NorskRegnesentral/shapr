@@ -178,9 +178,8 @@
         timing = FALSE)
     Condition
       Error in `check_approach()`:
-      ! `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
-       or a vector of length one less than the number of features ( 4 ), with only the above strings.
+      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
+      These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
 
 ---
 
@@ -191,9 +190,8 @@
         timing = FALSE)
     Condition
       Error in `check_approach()`:
-      ! `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
-       or a vector of length one less than the number of features ( 4 ), with only the above strings.
+      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
+      These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
 
 ---
 
@@ -204,9 +202,8 @@
         timing = FALSE)
     Condition
       Error in `check_approach()`:
-      ! `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
-       or a vector of length one less than the number of features ( 4 ), with only the above strings.
+      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
+      These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
 
 # erroneous input: `prediction_zero`
 

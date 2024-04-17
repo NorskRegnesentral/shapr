@@ -139,6 +139,11 @@ implements the `ctree` method from @redelmeier2020explaining, and the
 of @lundberg2017unified is also available. The methods may also be combined,
 such that e.g. one method is used when conditioning on a small number of
 features, while another method is used otherwise.
+The `shapr` package also supports directly estimating the contribution
+function using regression. We briefly introduce the regression-based
+methods below, but we refer to the separate regression vignette
+(Shapley value explanations using the regression paradigm) and
+@olsen2024comparative for an in-depth explanation of the regression paradigm.
 
 <a id="gaussian"></a>
 
@@ -336,11 +341,36 @@ calculated. For example, the expected value of $X_1$ given $X_2 = 1$ and
 $X_3 = 2$ is
 $$E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1, X_3=2)}.$$.
 
+
+<a id="Regression_approaches"></a>
+
+## Separate and Surrogate Regression Approaches
+
+Another paradigm for estimating the contribution function is the regression
+paradigm. In contrast to the methods above, which belong to the Monte Carlo
+paradigm, the regression based-methods use regression models to estimate the
+contribution function $v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]$ directly.
+The separate regression method class fits a separate regression model for
+each coalition $S$, while the surrogate regression method class fits a single
+regression model to simultaneously predict the contribution function for all
+coalitions. We refer to @olsen2024comparative for when one should use the
+different paradigms, method classes, and methods.
+
+In a separate vignette (Shapley value explanations using the regression paradigm),
+we elaborate and demonstrate the regression paradigm.
+We describe how to specify the regression model, enable automatic cross-validation
+of the model's hyperparameters, and apply pre-processing steps to the data before
+fitting the regression models. @olsen2024comparative divides the regression
+paradigm into the separate and surrogate regression method classes. In the
+separate vignette, we briefly introduce the two method classes. For an in-depth
+explanation, we refer the reader to Sections 3.5 and 3.6 in @olsen2024comparative.
+
+
 <a id="ex"></a>
 
 <br>
 
-# Examples
+# Examples {#examples}
 
 `shapr` supports computation of Shapley values with any predictive model
 which takes a set of numeric features and produces a numeric outcome.
@@ -355,6 +385,7 @@ The Gaussian, Gaussian copula, ctree, vaeac, or independence approaches can be
 used instead by setting the argument `approach` to either `"gaussian"`,
 `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"` or `"independence"` in the code
 below.
+
 
 
 ```r
@@ -372,6 +403,9 @@ ind_x_explain <- 1:6
 x_train <- data[-ind_x_explain, ..x_var]
 y_train <- data[-ind_x_explain, get(y_var)]
 x_explain <- data[ind_x_explain, ..x_var]
+
+# Set seed for reproducibility
+set.seed(123)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
@@ -395,6 +429,7 @@ explanation <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> 
 #> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
 #> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
@@ -639,7 +674,7 @@ explanation_timeseries <- explain(
 
 ## MSEv evaluation criterion
 We can use the $\operatorname{MSE}_{v}$ criterion proposed by @frye2020shapley,
-and later used by, e.g., @olsen2022using and @olsen2023comparative, to evaluate
+and later used by, e.g., @olsen2022using and @olsen2024comparative, to evaluate
 and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
 ```{=tex}
 \begin{align}
@@ -689,7 +724,7 @@ First, we can only use the $\operatorname{MSE}_{v}$ criterion to rank the method
 their closeness to the optimum since the minimum value of the $\operatorname{MSE}_{v}$ criterion
 is unknown. Second, the criterion evaluates the contribution functions and not the Shapley values.
 
-Note that @olsen2023comparative observed a relatively linear relationship between the
+Note that @olsen2024comparative observed a relatively linear relationship between the
 $\operatorname{MSE}_{v}$ criterion and the mean absolute error $(\operatorname{MAE})$ between the
 true and estimated Shapley values in extensive simulation studies where the true Shapley values
 were known. That is, a method that achieves a low $\operatorname{MSE}_{v}$ score also tends to
@@ -719,10 +754,10 @@ Start by explaining the predictions by using different methods and combining the
 
 ```r
 # We use more explicands here for more stable confidence intervals
-ind_x_explain <- 1:25
-x_train <- data[-ind_x_explain, ..x_var]
-y_train <- data[-ind_x_explain, get(y_var)]
-x_explain <- data[ind_x_explain, ..x_var]
+ind_x_explain_many <- 1:25
+x_train <- data[-ind_x_explain_many, ..x_var]
+y_train <- data[-ind_x_explain_many, get(y_var)]
+x_explain <- data[ind_x_explain_many, ..x_var]
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
@@ -828,8 +863,7 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 
 # 5 plots are made
 names(MSEv_plots)
-#> [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"   "MSEv_combination_bar"        "MSEv_combination_line_point"
-#> [5] "MSEv_bar"
+#> [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"   "MSEv_combination_bar"        "MSEv_combination_line_point" "MSEv_bar"
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
 we have only averaged over the observations or the combinations (both as bar and line plots).
@@ -1083,9 +1117,9 @@ comes after the last day in the data, this forecast starts from index
 
 
 ```r
-data <- data.table::as.data.table(airquality)
+data_ts2 <- data.table::as.data.table(airquality)
 
-model_ar_temp <- ar(data$Temp, order = 2)
+model_ar_temp <- ar(data_ts2$Temp, order = 2)
 
 predict(model_ar_temp, n.ahead = 2)$pred
 #> Time Series:
@@ -1121,9 +1155,9 @@ variable separately.
 
 
 ```r
-explanation <- explain_forecast(
+explanation_forecast <- explain_forecast(
   model = model_ar_temp,
-  y = data[, "Temp"],
+  y = data_ts2[, "Temp"],
   train_idx = 2:152,
   explain_idx = 153,
   explain_y_lags = 2,
@@ -1137,11 +1171,11 @@ explanation <- explain_forecast(
 #> Note: Feature names extracted from the model contains NA.
 #> Consistency checks between model and data is therefore disabled.
 
-print(explanation)
-#>    explain_idx horizon  none Temp.1  Temp.2
-#>          <num>   <num> <num>  <num>   <num>
-#> 1:         153       1 77.88 -6.622 -0.1788
-#> 2:         153       2 77.88 -6.025 -0.3327
+print(explanation_forecast)
+#>    explain_idx horizon  none Temp.1 Temp.2
+#>          <num>   <num> <num>  <num>  <num>
+#> 1:         153       1 77.79 -6.578 -0.134
+#> 2:         153       2 77.79 -5.980 -0.288
 ```
 
 The results are presented per value of `explain_idx` and forecast
@@ -1160,13 +1194,13 @@ just fit on the 151 first observations, leaving two observations of
 
 
 ```r
-data <- data.table::as.data.table(airquality)
+data_ts3 <- data.table::as.data.table(airquality)
 
-data_fit <- data[seq_len(151), ]
+data_fit <- data_ts3[seq_len(151), ]
 
 model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wind)
 
-newxreg <- data[-seq_len(151), "Wind", drop = FALSE]
+newxreg <- data_ts3[-seq_len(151), "Wind", drop = FALSE]
 
 predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
 #> Time Series:
@@ -1187,10 +1221,10 @@ during the forecasting period.
 
 
 ```r
-explanation <- explain_forecast(
+explanation_forecast <- explain_forecast(
   model = model_ar_temp,
   y = data_fit[, "Temp"],
-  xreg = data[, "Wind"],
+  xreg = data_ts3[, "Wind"],
   train_idx = 2:150,
   explain_idx = 151,
   explain_y_lags = 2,
@@ -1205,7 +1239,7 @@ explanation <- explain_forecast(
 #> Note: Feature names extracted from the model contains NA.
 #> Consistency checks between model and data is therefore disabled.
 
-print(explanation$shapley_values)
+print(explanation_forecast$shapley_values)
 #>    explain_idx horizon  none   Temp.1   Temp.2  Wind.1  Wind.F1  Wind.F2
 #>          <num>   <num> <num>    <num>    <num>   <num>    <num>    <num>
 #> 1:         151       1 77.96 -0.67793 -0.67340 -1.2688 0.493408       NA
@@ -1364,10 +1398,13 @@ models fitted with the following functions:
 -   `ranger::ranger`
 -   `mgcv::gam`
 -   `xgboost::xgboost`/`xgboost::xgb.train`
+-   `workflows::workflow`
 
 Any continuous response regression model or binary classification model
 of these model classes, can be explained with the package directly as
-exemplified above. Moreover, essentially any feature dependent
+exemplified above, while we give an example for the `workflows::workflow`
+in the [`tidymodels`/`workflows`](#workflow_example) section.
+Moreover, essentially any feature dependent
 prediction model can be explained by the package by specifying two (or
 one) simple additional functions for your model.
 
@@ -1485,7 +1522,6 @@ explanation_custom_minimal <- explain(
 )
 #> Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
 #> Consistency checks between model and data is therefore disabled.
-#> 
 #> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
 #> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
@@ -1494,6 +1530,59 @@ plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ```
 
 ![](figure_main/unnamed-chunk-23-2.png)
+
+### Tidymodels and workflows {#workflow_example}
+In this section, we demonstrate how to use `shapr` to explain `tidymodels` models fitted using `workflows`.
+In the example [above](#examples), we directly used the `xgboost` package to fit the `xgboost` model.
+However, we can also fit the `xgboost` model using the `tidymodels` package. These fits will be identical
+as `tidymodels` calls `xgboost` internally. which we demonstrate in the example below. Note that we can replace
+`xgboost` (i.e., `parsnip::boost_tree`) with any other fitted `tidymodels` in the `workflows` procedure outlined below.
+
+
+```r
+# Fitting a basic xgboost model to the training data using tidymodels
+set.seed(123) # Set the same seed as above
+all_var <- c(y_var, x_var)
+train <- data[-ind_x_explain, ..all_var]
+
+# Fitting the `tidymodels` model using `workflows`
+model_tidymodels <- parsnip::fit(
+  workflows::add_recipe(
+    workflows::add_model(
+      workflows::workflow(),
+      parsnip::boost_tree(trees = 20, engine = "xgboost", mode = "regression")
+    ),
+    recipes::recipe(Ozone ~ ., data = train)
+  ),
+  data = train
+)
+
+# # We can also specify the same model using pipes `%>%` by (if pipes are installed/loaded)
+# model_tidymodels <-
+#   workflows::workflow() %>%
+#   workflows::add_model(parsnip::boost_tree(trees = 20, engine = "xgboost", mode = "regression")) %>%
+#   workflows::add_recipe(recipes::recipe(Ozone ~ ., data = train)) %>%
+#   parsnip::fit(data = train)
+
+# See that the output of the two models are identical
+all.equal(predict(model_tidymodels, x_train)$.pred, predict(model, as.matrix(x_train)))
+#> [1] "Mean relative difference: 0.018699"
+
+# Create the Shapley values for the tidymodels version
+explanation_tidymodels <- explain(
+  model = model_tidymodels,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  prediction_zero = p0,
+  n_batches = 4
+)
+
+# See that the Shapley value explanations are identical too
+all.equal(explanation$shapley_values, explanation_tidymodels$shapley_values)
+#> [1] "Different number of rows"
+```
+
 
 ## The parameters of the `vaeac` approach
 

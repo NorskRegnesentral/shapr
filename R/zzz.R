@@ -104,8 +104,11 @@
       "val_dataloader",
       "x_train",
       "x_train_preprocessed",
-      "x_train_torch"
+      "x_train_torch",
+      "..current_comb",
+      "..regression.response_var"
     )
   )
+
   invisible()
 }

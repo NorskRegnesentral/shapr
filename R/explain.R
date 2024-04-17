@@ -18,8 +18,8 @@
 #'
 #' @param approach Character vector of length `1` or one less than the number of features.
 #' All elements should, either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
-#' `"categorical"`, `"timeseries"`, or `"independence"`.
-#' See details for more information.
+#' `"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, or `"regression_surrogate"`.
+#' The two regression approaches can not be combined with any other approach. See details for more information.
 #'
 #' @param prediction_zero Numeric.
 #' The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
@@ -104,12 +104,16 @@
 #' @inheritDotParams setup_approach.ctree
 #' @inheritDotParams setup_approach.vaeac
 #' @inheritDotParams setup_approach.categorical
+#' @inheritDotParams setup_approach.regression_separate
+#' @inheritDotParams setup_approach.regression_surrogate
 #' @inheritDotParams setup_approach.timeseries
 #'
-#' @details The most important thing to notice is that `shapr` has implemented six different
-#' approaches for estimating the conditional distributions of the data, namely `"empirical"`,
+#' @details The most important thing to notice is that `shapr` has implemented eight different
+#' Monte Carlo-based approaches for estimating the conditional distributions of the data, namely `"empirical"`,
 #' `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
-#' In addition, the user also has the option of combining the different approaches.
+#' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`,
+#' and see the separate vignette on the regression-based approaches for more information.
+#' In addition, the user also has the option of combining the different Monte Carlo-based approaches.
 #' E.g., if you're in a situation where you have trained a model that consists of 10 features,
 #' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
 #' the `"empirical"` approach if you condition on 2-5 features, and `"copula"` version
@@ -251,9 +255,33 @@
 #' )
 #' print(explain_groups$shapley_values)
 #'
+#' # Separate and surrogate regression approaches with linear regression models.
+#' # More complex regression models can be used, and we can use CV to
+#' # tune the hyperparameters of the regression models and preprocess
+#' # the data before sending it to the model. See the regression vignette
+#' # (Shapley value explanations using the regression paradigm) for more
+#' # details about the `regression_separate` and `regression_surrogate` approaches.
+#' explain_separate_lm <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   prediction_zero = p,
+#'   approach = "regression_separate",
+#'   regression.model = parsnip::linear_reg()
+#' )
+#'
+#' explain_surrogate_lm <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   prediction_zero = p,
+#'   approach = "regression_surrogate",
+#'   regression.model = parsnip::linear_reg()
+#' )
+#'
 #' @export
 #'
-#' @author Martin Jullum
+#' @author Martin Jullum, Lars Henry Berge Olsen
 #'
 #' @references
 #'   Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
@@ -276,9 +304,7 @@ explain <- function(model,
                     verbose = 0,
                     ...) { # ... is further arguments passed to specific approaches
 
-  timing_list <- list(
-    init_time = Sys.time()
-  )
+  timing_list <- list(init_time = Sys.time())
 
   set.seed(seed)
 
@@ -309,10 +335,7 @@ explain <- function(model,
   timing_list$setup <- Sys.time()
 
   # Gets predict_model (if not passed to explain)
-  predict_model <- get_predict_model(
-    predict_model = predict_model,
-    model = model
-  )
+  predict_model <- get_predict_model(predict_model = predict_model, model = model)
 
   # Checks that predict_model gives correct format
   test_predict_model(
@@ -325,6 +348,12 @@ explain <- function(model,
   timing_list$test_prediction <- Sys.time()
 
 
+  # Add the predicted response of the training and explain data to the internal list for regression-based methods.
+  # Use isTRUE as `regression` is not present (NULL) for non-regression methods (i.e., Monte Carlo-based methods).
+  if (isTRUE(internal$parameters$regression)) {
+    internal <- regression.get_y_hat(internal = internal, model = model, predict_model = predict_model)
+  }
+
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
   # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
@@ -332,28 +361,25 @@ explain <- function(model,
 
   timing_list$setup_computation <- Sys.time()
 
-
   # Compute the v(S):
-  # Get the samples for the conditional distributions with the specified approach
-  # Predict with these samples
-  # Perform MC integration on these to estimate the conditional expectation (v(S))
+  # MC:
+  # 1. Get the samples for the conditional distributions with the specified approach
+  # 2. Predict with these samples
+  # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
+  # Regression:
+  # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
   vS_list <- compute_vS(internal, model, predict_model)
 
   timing_list$compute_vS <- Sys.time()
 
-
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
-  output <- finalize_explanation(
-    vS_list = vS_list,
-    internal = internal
-  )
+  output <- finalize_explanation(vS_list = vS_list, internal = internal)
 
   timing_list$shapley_computation <- Sys.time()
 
-  if (timing == TRUE) {
-    output$timing <- compute_time(timing_list)
-  }
+  # Compute the elapsed time for the different steps
+  if (timing == TRUE) output$timing <- compute_time(timing_list)
 
   # Temporary to avoid failing tests
   output <- remove_outputs_to_pass_tests(output)
@@ -375,6 +401,9 @@ remove_outputs_to_pass_tests <- function(output) {
     output$internal$parameters$vaeac.extra_parameters[c("vaeac.folder_to_save_model", "vaeac.model_description")] <-
       NULL
   }
+
+  # Remove the `regression` parameter from the output list when we are not doing regression
+  if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
 
   return(output)
 }
