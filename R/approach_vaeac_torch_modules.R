@@ -1424,8 +1424,8 @@ vaeac_kl_normal_normal <- function(p, q) {
   return(0.5 * (var_ratio + t1 - 1 - var_ratio$log()))
 }
 
+
 # Neural Network Modules ===============================================================================================
-## gauss_cat_sampler_most_likely -------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a `gauss_cat_sampler_most_likely`
 #'
 #' @description The `gauss_cat_sampler_most_likely` generates the most likely samples from the generative distribution
@@ -1439,50 +1439,56 @@ vaeac_kl_normal_normal <- function(p, q) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-gauss_cat_sampler_most_likely <- torch::nn_module(
-  classname = "gauss_cat_sampler_most_likely", # field classname Type of torch::nn_module
+gauss_cat_sampler_most_likely <- function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
+  gauss_cat_sampler_most_lik_tmp <- torch::nn_module(
+    classname = "gauss_cat_sampler_most_likely", # field classname Type of torch::nn_module
 
-  # description Initialize a gauss_cat_sampler_most_likely which generates the most likely
-  # sample from the generative distribution defined by the output of the neural network.
-  initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
-    self$one_hot_max_sizes <- one_hot_max_sizes
-    self$min_sigma <- min_sigma
-    self$min_prob <- min_prob
-  },
+    # description Initialize a gauss_cat_sampler_most_likely which generates the most likely
+    # sample from the generative distribution defined by the output of the neural network.
+    initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
+      self$one_hot_max_sizes <- one_hot_max_sizes
+      self$min_sigma <- min_sigma
+      self$min_prob <- min_prob
+    },
 
-  # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p), when only considering
-  # continuous features. For categorical features, we do NOT have mu and sigma for the decoder at the end of the vaeac,
-  # but rather logits for the categorical distribution.
-  # return A tensor containing the generated data.
-  forward = function(distr_params) {
-    cur_distr_col <- 1 # A counter to keep track of which column to extract from
-    sample <- list() # List to store the samples sampled from the normal distribution with parameters from distr_params
+    # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p), when only considering
+    # continuous features. For categorical features, we do NOT have mu and sigma for the decoder at the end of the
+    # vaeac, but rather logits for the categorical distribution.
+    # return A tensor containing the generated data.
+    forward = function(distr_params) {
+      cur_distr_col <- 1 # A counter to keep track of which column to extract from
+      sample <- list() # List to store the samples sampled from the normal distr. with parameters from distr_params
 
-    # Iterate over the features
-    for (i in seq_along(self$one_hot_max_sizes)) {
-      size <- self$one_hot_max_sizes[i] # Get the number of one hot dummy features to see if feature is cont or cat
+      # Iterate over the features
+      for (i in seq_along(self$one_hot_max_sizes)) {
+        size <- self$one_hot_max_sizes[i] # Get the number of one hot dummy features to see if feature is cont or cat
 
-      if (size <= 1) {
-        # Continuous feature which are modeled using the Gaussian distribution
-        params <- distr_params[, cur_distr_col:(cur_distr_col + 1), drop = FALSE] # Extract mean and sd, batch_size x 2
-        cur_distr_col <- cur_distr_col + 2 # Update the pointer index by two (mean and sd)
-        distr <- vaeac_normal_parse_params(params, self$min_sigma) # Create a Gaussian distribution based on params
-        col_sample <- distr$mean # We sample the mean (most likely value)
-      } else {
-        # Categorical feature which are modeled using the categorical distribution
-        # Extract the logits for each of the K-classes for the ith feature. The dimension is batch_size x size.
-        params <- distr_params[, cur_distr_col:(cur_distr_col + size - 1)]
-        cur_distr_col <- cur_distr_col + size # Update the pointer index by the number of categorical levels
-        distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
-        col_sample <- torch::torch_argmax(distr$probs, -1)[, NULL]$to(dtype = torch::torch_float()) # Most likely class
+        if (size <= 1) {
+          # Continuous feature which are modeled using the Gaussian distribution
+          params <- distr_params[, cur_distr_col:(cur_distr_col + 1), drop = FALSE] # Extract mean & sd, batch_size x 2
+          cur_distr_col <- cur_distr_col + 2 # Update the pointer index by two (mean and sd)
+          distr <- vaeac_normal_parse_params(params, self$min_sigma) # Create a Gaussian distribution based on params
+          col_sample <- distr$mean # We sample the mean (most likely value)
+        } else {
+          # Categorical feature which are modeled using the categorical distribution
+          # Extract the logits for each of the K-classes for the ith feature. The dimension is batch_size x size.
+          params <- distr_params[, cur_distr_col:(cur_distr_col + size - 1)]
+          cur_distr_col <- cur_distr_col + size # Update the pointer index by the number of categorical levels
+          distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
+          col_sample <- torch::torch_argmax(distr$probs, -1)[, NULL]$to(dtype = torch::torch_float()) # Most lik class
+        }
+        sample <- append(sample, col_sample) # Add the vector of sampled values for the i´th feature to the sample list
       }
-      sample <- append(sample, col_sample) # Add the vector of sampled values for the i´th feature to the sample list
+      return(torch::torch_cat(sample, -1)) # Create a 2D torch by column binding the vectors in the list
     }
-    return(torch::torch_cat(sample, -1)) # Create a 2D torch by column binding the vectors in the list
-  }
-)
+  )
 
-## gauss_cat_sampler_random -----------------------------------------------------------------------------------
+  return(
+    gauss_cat_sampler_most_lik_tmp(one_hot_max_sizes = one_hot_max_sizes, min_sigma = min_sigma, min_prob = min_prob)
+  )
+}
+
+
 #' A [torch::nn_module()] Representing a gauss_cat_sampler_random
 #'
 #' @description The `gauss_cat_sampler_random` generates random samples from the generative distribution defined by the
@@ -1494,52 +1500,56 @@ gauss_cat_sampler_most_likely <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-gauss_cat_sampler_random <- torch::nn_module(
-  classname = "gauss_cat_sampler_random", # field classname Type of torch::nn_module
+gauss_cat_sampler_random <- function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
+  gauss_cat_sampler_random_tmp <- torch::nn_module(
+    classname = "gauss_cat_sampler_random", # field classname Type of torch::nn_module
 
-  # description Initialize a gauss_cat_sampler_random which generates a sample from the
-  # generative distribution defined by the output of the neural network by random sampling.
-  # return A new `gauss_cat_sampler_random` object.
-  initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
-    self$one_hot_max_sizes <- one_hot_max_sizes
-    self$min_sigma <- min_sigma
-    self$min_prob <- min_prob
-  },
+    # description Initialize a gauss_cat_sampler_random which generates a sample from the
+    # generative distribution defined by the output of the neural network by random sampling.
+    # return A new `gauss_cat_sampler_random` object.
+    initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
+      self$one_hot_max_sizes <- one_hot_max_sizes
+      self$min_sigma <- min_sigma
+      self$min_prob <- min_prob
+    },
 
-  # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p), when only considering
-  # continuous features. For categorical features, we do NOT have mu and sigma for the decoder at the end of the vaeac,
-  # but rather logits for the categorical distribution.
-  # return A tensor containing the generated data.
-  forward = function(distr_params) {
-    cur_distr_col <- 1 # A counter to keep track of which column to extract from
-    sample <- list() # List to store the samples sampled from the normal distribution with parameters from distr_params
+    # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p), when only considering
+    # continuous features. For categorical features, we do NOT have mu and sigma for the decoder at the end of the
+    # vaeac, but rather logits for the categorical distribution.
+    # return A tensor containing the generated data.
+    forward = function(distr_params) {
+      cur_distr_col <- 1 # A counter to keep track of which column to extract from
+      sample <- list() # List to store the samples sampled from the normal distr with parameters from distr_params
 
-    # Iterate over the features
-    for (i in seq_along(self$one_hot_max_sizes)) {
-      size <- self$one_hot_max_sizes[i] # Get the number of one hot dummy features to see if feature is cont or cat
+      # Iterate over the features
+      for (i in seq_along(self$one_hot_max_sizes)) {
+        size <- self$one_hot_max_sizes[i] # Get the number of one hot dummy features to see if feature is cont or cat
 
-      if (size <= 1) {
-        # Continuous feature which are modeled using the Gaussian distribution
-        params <- distr_params[, cur_distr_col:(cur_distr_col + 1), drop = FALSE] # Extract mean and sd, batch_size x 2
-        cur_distr_col <- cur_distr_col + 2 # Update the pointer index by two (mean and sd)
-        distr <- vaeac_normal_parse_params(params, self$min_sigma) # Create a Gaussian distribution based on params
-        col_sample <- distr$sample() # Sample from the inferred Gaussian distributions
-      } else {
-        # Categorical feature which are modeled using the categorical distribution
-        # Extract the logits for each of the K-classes for the ith feature. The dimension is batch_size x size.
-        params <- distr_params[, cur_distr_col:(cur_distr_col + size - 1)]
-        cur_distr_col <- cur_distr_col + size # Update the pointer index by the number of categorical levels
-        distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
-        col_sample <- distr$sample()$unsqueeze(-1)$to(dtype = torch::torch_float()) # Sample class based on class prob
+        if (size <= 1) {
+          # Continuous feature which are modeled using the Gaussian distribution
+          params <- distr_params[, cur_distr_col:(cur_distr_col + 1), drop = FALSE] # Extract mean & sd, batch_size x 2
+          cur_distr_col <- cur_distr_col + 2 # Update the pointer index by two (mean and sd)
+          distr <- vaeac_normal_parse_params(params, self$min_sigma) # Create a Gaussian distribution based on params
+          col_sample <- distr$sample() # Sample from the inferred Gaussian distributions
+        } else {
+          # Categorical feature which are modeled using the categorical distribution
+          # Extract the logits for each of the K-classes for the ith feature. The dimension is batch_size x size.
+          params <- distr_params[, cur_distr_col:(cur_distr_col + size - 1)]
+          cur_distr_col <- cur_distr_col + size # Update the pointer index by the number of categorical levels
+          distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
+          col_sample <- distr$sample()$unsqueeze(-1)$to(dtype = torch::torch_float()) # Sample class using class prob
+        }
+        sample <- append(sample, col_sample) # Add the vector of sampled values for the i´th feature to the sample list
       }
-      sample <- append(sample, col_sample) # Add the vector of sampled values for the i´th feature to the sample list
+      return(torch::torch_cat(sample, -1)) # Create a 2D torch by column binding the vectors in the list
     }
-    return(torch::torch_cat(sample, -1)) # Create a 2D torch by column binding the vectors in the list
-  }
-)
+  )
+  return(
+    gauss_cat_sampler_random_tmp(one_hot_max_sizes = one_hot_max_sizes, min_sigma = min_sigma, min_prob = min_prob)
+  )
+}
 
 
-## gauss_cat_parameters --------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a `gauss_cat_parameters`
 #'
 #' @description The `gauss_cat_parameters` module extracts the parameters from the inferred generative Gaussian and
@@ -1558,54 +1568,55 @@ gauss_cat_sampler_random <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-gauss_cat_parameters <- torch::nn_module(
-  # field classname Type of torch::nn_module
-  classname = "gauss_cat_parameters",
+gauss_cat_parameters <- function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
+  gauss_cat_parameters_tmp <- torch::nn_module(
+    # field classname Type of torch::nn_module
+    classname = "gauss_cat_parameters",
 
-  # description Initialize a `gauss_cat_parameters` which extract the parameters from the generative distribution
-  # defined by the output of the neural network.
-  # return A new `gauss_cat_parameters` object.
-  initialize = function(one_hot_max_sizes,
-                        min_sigma = 1e-4,
-                        min_prob = 1e-4) {
-    self$one_hot_max_sizes <- one_hot_max_sizes
-    self$min_sigma <- min_sigma
-    self$min_prob <- min_prob
-  },
+    # description Initialize a `gauss_cat_parameters` which extract the parameters from the generative distribution
+    # defined by the output of the neural network.
+    # return A new `gauss_cat_parameters` object.
+    initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
+      self$one_hot_max_sizes <- one_hot_max_sizes
+      self$min_sigma <- min_sigma
+      self$min_prob <- min_prob
+    },
 
-  # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p), when only
-  # considering continuous features. For categorical features, we do NOT have mu and sigma for the
-  # decoder at the end of the vaeac, but rather logits for the categorical distribution.
-  # return A tensor containing the final parameters of the generative distributions (after transformations).
-  forward = function(distr_params) {
-    cur_distr_col <- 1 # A counter to keep track of which column to extract from
-    parameters <- list() # List to store the generative parameters from the normal and categorical distributions
+    # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p), when only
+    # considering continuous features. For categorical features, we do NOT have mu and sigma for the
+    # decoder at the end of the vaeac, but rather logits for the categorical distribution.
+    # return A tensor containing the final parameters of the generative distributions (after transformations).
+    forward = function(distr_params) {
+      cur_distr_col <- 1 # A counter to keep track of which column to extract from
+      parameters <- list() # List to store the generative parameters from the normal and categorical distributions
 
-    # Iterate over the features
-    for (i in seq_along(self$one_hot_max_sizes)) {
-      size <- self$one_hot_max_sizes[i] # Get the number of one hot dummy features to see if feature is cont or cat
+      # Iterate over the features
+      for (i in seq_along(self$one_hot_max_sizes)) {
+        size <- self$one_hot_max_sizes[i] # Get the number of one hot dummy features to see if feature is cont or cat
 
-      if (size <= 1) {
-        # Continuous feature which are modeled using the Gaussian distribution.
-        params <- distr_params[, cur_distr_col:(cur_distr_col + 1), drop = FALSE] # Extract mean and sd, batch_size x 2
-        cur_distr_col <- cur_distr_col + 2 # Update the pointer index by two (mean and sd)
-        distr <- vaeac_normal_parse_params(params, self$min_sigma) # Create a Gaussian distribution based on params
-        current_parameters <- torch::torch_cat(c(distr$mean, distr$scale), -1) # Combine the current parameters
-      } else {
-        # Categorical feature which are modeled using the categorical distribution
-        # Extract the logits for each of the K-classes for the ith feature. The dimension is batch_size x size.
-        params <- distr_params[, cur_distr_col:(cur_distr_col + size - 1)]
-        cur_distr_col <- cur_distr_col + size # Update the pointer index by the number of categorical levels
-        distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
-        current_parameters <- distr$probs # Extract the current probabilities for each classs
+        if (size <= 1) {
+          # Continuous feature which are modeled using the Gaussian distribution.
+          params <- distr_params[, cur_distr_col:(cur_distr_col + 1), drop = FALSE] # Extract mean & sd, batch_size x 2
+          cur_distr_col <- cur_distr_col + 2 # Update the pointer index by two (mean and sd)
+          distr <- vaeac_normal_parse_params(params, self$min_sigma) # Create a Gaussian distribution based on params
+          current_parameters <- torch::torch_cat(c(distr$mean, distr$scale), -1) # Combine the current parameters
+        } else {
+          # Categorical feature which are modeled using the categorical distribution
+          # Extract the logits for each of the K-classes for the ith feature. The dimension is batch_size x size.
+          params <- distr_params[, cur_distr_col:(cur_distr_col + size - 1)]
+          cur_distr_col <- cur_distr_col + size # Update the pointer index by the number of categorical levels
+          distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
+          current_parameters <- distr$probs # Extract the current probabilities for each classs
+        }
+        parameters <- append(parameters, current_parameters) # Add the i´th feature's parameters to the parameters list
       }
-      parameters <- append(parameters, current_parameters) # Add parameters for the i´th feature to the parameters list
+      return(torch::torch_cat(parameters, -1)) # Create a 2D torch_tensor by column binding the tensors in the list
     }
-    return(torch::torch_cat(parameters, -1)) # Create a 2D torch_tensor by column binding the tensors in the list
-  }
-)
+  )
+  return(gauss_cat_parameters_tmp(one_hot_max_sizes = one_hot_max_sizes, min_sigma = min_sigma, min_prob = min_prob))
+}
 
-## gauss_cat_loss --------------------------------------------------------------------------------------------
+
 #' A [torch::nn_module()] Representing a `gauss_cat_loss`
 #'
 #' @description The `gauss_cat_loss module` layer computes the log probability of the `groundtruth` for each object
@@ -1620,67 +1631,69 @@ gauss_cat_parameters <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-gauss_cat_loss <- torch::nn_module(
-  classname = "gauss_cat_loss", # field classname Type of torch::nn_module
+gauss_cat_loss <- function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
+  gauss_cat_loss_tmp <- torch::nn_module(
+    classname = "gauss_cat_loss", # field classname Type of torch::nn_module
 
-  # description Initialize a `gauss_cat_loss`.
-  # return A new `gauss_cat_loss` object.
-  initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
-    self$one_hot_max_sizes <- one_hot_max_sizes
-    self$min_sigma <- min_sigma
-    self$min_prob <- min_prob
-  },
-  forward = function(groundtruth, distr_params, mask) {
-    cur_distr_col <- 1 # A counter to keep track of which column to extract from
-    log_prob <- list() # List to store the log probabilities
+    # description Initialize a `gauss_cat_loss`.
+    # return A new `gauss_cat_loss` object.
+    initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
+      self$one_hot_max_sizes <- one_hot_max_sizes
+      self$min_sigma <- min_sigma
+      self$min_prob <- min_prob
+    },
+    forward = function(groundtruth, distr_params, mask) {
+      cur_distr_col <- 1 # A counter to keep track of which column to extract from
+      log_prob <- list() # List to store the log probabilities
 
-    # Iterate over the features
-    for (i in seq_along(self$one_hot_max_sizes)) {
-      size <- self$one_hot_max_sizes[i] # Get the number of one hot dummy features to see if feature is cont or cat
-      groundtruth_col <- groundtruth[, i, drop = FALSE] # Get at the ith column of the truth
-      mask_col <- mask[, i, drop = FALSE] # Get the ith column of the mask
-      gt_col_nansafe <- groundtruth_col$clone()$detach() # Copy the ground truth column, can now alter this object
-      nan_mask <- torch::torch_isnan(groundtruth_col) # Check if truth contains any missing values
-      gt_col_nansafe[nan_mask] <- 0 # Set any missing values to 0
+      # Iterate over the features
+      for (i in seq_along(self$one_hot_max_sizes)) {
+        size <- self$one_hot_max_sizes[i] # Get the number of one hot dummy features to see if feature is cont or cat
+        groundtruth_col <- groundtruth[, i, drop = FALSE] # Get at the ith column of the truth
+        mask_col <- mask[, i, drop = FALSE] # Get the ith column of the mask
+        gt_col_nansafe <- groundtruth_col$clone()$detach() # Copy the ground truth column, can now alter this object
+        nan_mask <- torch::torch_isnan(groundtruth_col) # Check if truth contains any missing values
+        gt_col_nansafe[nan_mask] <- 0 # Set any missing values to 0
 
-      # Mask_col masks both the nan/missing values and the artificially masked values. We want to compute the log prob
-      # only over the artificially missing features, so we omit the true missing values. We remove the masking of the
-      # missing values. So those ones in mask_col which are there due to missing values are now turned in to zeros.
-      mask_col <- mask_col * (torch::torch_logical_not(nan_mask))$to(dtype = torch::torch_float())
+        # Mask_col masks both the nan/missing values and the artificially masked values. We want to compute the log prob
+        # only over the artificially missing features, so we omit the true missing values. We remove the masking of the
+        # missing values. So those ones in mask_col which are there due to missing values are now turned in to zeros.
+        mask_col <- mask_col * (torch::torch_logical_not(nan_mask))$to(dtype = torch::torch_float())
 
-      if (size <= 1) {
-        # Continuous feature which are modeled using the Gaussian distribution
-        params <- distr_params[, cur_distr_col:(cur_distr_col + 1), drop = FALSE] # Extract mean and sd, batch_size x 2
-        cur_distr_col <- cur_distr_col + 2 # Update the pointer index by two (mean and sd)
-        distr <- vaeac_normal_parse_params(params, self$min_sigma) # Create a Gaussian distribution based on params
+        if (size <= 1) {
+          # Continuous feature which are modeled using the Gaussian distribution
+          params <- distr_params[, cur_distr_col:(cur_distr_col + 1), drop = FALSE] # Extract mean & sd, batch_size x 2
+          cur_distr_col <- cur_distr_col + 2 # Update the pointer index by two (mean and sd)
+          distr <- vaeac_normal_parse_params(params, self$min_sigma) # Create a Gaussian distribution based on params
 
-        # Get the log-likelihood, but only of the masked values i.e., the ones hat are masked by the masking scheme
-        # MCARGenerator. This one is batch_size x 1 and is the log-lik of observing the ground truth given the current
-        # parameters, for only the artificially masked features.
-        col_log_prob <- distr$log_prob(gt_col_nansafe) * mask_col
-      } else {
-        # Categorical feature which are modeled using the categorical distribution
-        # Extract the probabilities for each of the K-classes for the ith feature. The dimension is batch_size x size.
-        params <- distr_params[, cur_distr_col:(cur_distr_col + size - 1), drop = FALSE]
-        cur_distr_col <- cur_distr_col + size # Update the pointer index by the number of categorical levels
-        distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
-        col_log_prob <- distr$log_prob(gt_col_nansafe$squeeze())[, NULL] * mask_col # Get the log-likelihood
+          # Get the log-likelihood, but only of the masked values i.e., the ones hat are masked by the masking scheme
+          # MCARGenerator. This one is batch_size x 1 and is the log-lik of observing the ground truth given the current
+          # parameters, for only the artificially masked features.
+          col_log_prob <- distr$log_prob(gt_col_nansafe) * mask_col
+        } else {
+          # Categorical feature which are modeled using the categorical distribution
+          # Extract the probabilities for each of the K-classes for the ith feature. The dimension is batch_size x size.
+          params <- distr_params[, cur_distr_col:(cur_distr_col + size - 1), drop = FALSE]
+          cur_distr_col <- cur_distr_col + size # Update the pointer index by the number of categorical levels
+          distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
+          col_log_prob <- distr$log_prob(gt_col_nansafe$squeeze())[, NULL] * mask_col # Get the log-likelihood
+        }
+
+        # Append the column of log probabilities for the i-th feature for those instances that are masked into log_prob.
+        # log_prob is now a list of length n_features, where each element is a tensor batch_size x 1 containing the
+        # log-lik of the parameters of the masked values.
+        log_prob <- append(log_prob, col_log_prob)
       }
 
-      # Append the column of log probabilities for the i-th feature for those instances that are masked into log_prob.
-      # log_prob is now a list of length n_features, where each element is a tensor batch_size x 1 containing the
-      # log-lik of the parameters of the masked values.
-      log_prob <- append(log_prob, col_log_prob)
+      # Concatenate the list into a tensor of dim batch x features. Then sum along the the rows.
+      # That is, for each observation in the batch to get a tensor of length batch size.
+      return(torch::torch_cat(log_prob, 2)$sum(-1))
     }
-
-    # Concatenate the list into a tensor of dim batch x features. Then sum along the the rows.
-    # That is, for each observation in the batch to get a tensor of length batch size.
-    return(torch::torch_cat(log_prob, 2)$sum(-1))
-  }
-)
+  )
+  return(gauss_cat_loss_tmp(one_hot_max_sizes = one_hot_max_sizes, min_sigma = min_sigma, min_prob = min_prob))
+}
 
 
-## categorical_to_one_hot_layer ----------------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a `categorical_to_one_hot_layer`
 #'
 #' @description
@@ -1698,73 +1711,80 @@ gauss_cat_loss <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-categorical_to_one_hot_layer <- torch::nn_module(
-  classname = "categorical_to_one_hot_layer", # field classname Type of torch::nn_module
+categorical_to_one_hot_layer <- function(one_hot_max_sizes, add_nans_map_for_columns = NULL) {
+  cat_to_one_hot_layer_tmp <- torch::nn_module(
+    classname = "categorical_to_one_hot_layer", # field classname Type of torch::nn_module
 
-  # description Initialize a `categorical_to_one_hot_layer`.
-  # return A new `categorical_to_one_hot_layer` object.
-  initialize = function(one_hot_max_sizes, add_nans_map_for_columns = NULL) {
-    # Here one_hot_max_sizes includes zeros at the end of the list: one_hot_max_sizes + [0] * len(one_hot_max_sizes)
-    # Thus, if features have this many categories [1, 2, 3, 1], then one_hot_max_sizes = [1, 2, 3, 1, 0, 0, 0, 0]
-    self$one_hot_max_sizes <- one_hot_max_sizes
+    # description Initialize a `categorical_to_one_hot_layer`.
+    # return A new `categorical_to_one_hot_layer` object.
+    initialize = function(one_hot_max_sizes, add_nans_map_for_columns = NULL) {
+      # Here one_hot_max_sizes includes zeros at the end of the list: one_hot_max_sizes + [0] * len(one_hot_max_sizes)
+      # Thus, if features have this many categories [1, 2, 3, 1], then one_hot_max_sizes = [1, 2, 3, 1, 0, 0, 0, 0]
+      self$one_hot_max_sizes <- one_hot_max_sizes
 
-    # Always an empty column for the Masked Encoder network while it is a list [0, 1, ..., length(one_hot_max_sizes)-1)
-    # for the Full Encoder network. So for the Full Encoder network we apply the nan masks to each column/feature
-    self$add_nans_map_for_columns <- add_nans_map_for_columns
-  },
-  forward = function(input) {
-    # Input is torch::torch_cat(c(batch, mask), -1), so a torch of dimension batch_size x 2*sum(one_hot_max_sizes)
-    # for continuous data where one_hot_max_sizes only consists of ones. Recall that one_hot_max_sizes are padded with
-    # zeros at the end in this function.
-    n <- input$shape[1] # Get the number of instances in the input batch.
-    out_cols <- NULL # variable to store the out columns, i.e., the input columns / one hot encoding + is nan.mask.
+      # Always an empty column for the Masked Encoder network while it's a list [0, 1, ..., length(one_hot_max_sizes)-1)
+      # for the Full Encoder network. So for the Full Encoder network we apply the nan masks to each column/feature
+      self$add_nans_map_for_columns <- add_nans_map_for_columns
+    },
+    forward = function(input) {
+      # Input is torch::torch_cat(c(batch, mask), -1), so a torch of dimension batch_size x 2*sum(one_hot_max_sizes)
+      # for continuous data where one_hot_max_sizes only consists of ones. Recall that one_hot_max_sizes are padded with
+      # zeros at the end in this function.
+      n <- input$shape[1] # Get the number of instances in the input batch.
+      out_cols <- NULL # variable to store the out columns, i.e., the input columns / one hot encoding + is nan.mask.
 
-    # Iterate over the features. Note that i goes from 0 to 2*n_features-1.
-    for (i in seq_along(self$one_hot_max_sizes)) {
-      # Get the number of categories for each feature. For i in [n_features, 2*n_features-1], size <= 1, even for
-      # categorical features.
-      size <- self$one_hot_max_sizes[i]
+      # Iterate over the features. Note that i goes from 0 to 2*n_features-1.
+      for (i in seq_along(self$one_hot_max_sizes)) {
+        # Get the number of categories for each feature. For i in [n_features, 2*n_features-1], size <= 1, even for
+        # categorical features.
+        size <- self$one_hot_max_sizes[i]
 
-      # Distinguish between continuous and categorical features
-      if (size <= 1) {
-        # Continuous feature. Copy it and replace NaNs with either zeros or the last half of self.one_hot_max_sizes
-        # Take the ith column of the input (NOTE THAT THIS IS NOT A DEEP COPY, so changing out_col changes input)
-        out_col <- input[, i:i]
-        nan_mask <- torch::torch_isnan(out_col) # check if any of the values are nan, i.e., missing
-        out_col[nan_mask] <- 0 # set all the missing values to 0. (This changes the input too)
-      } else {
-        # Categorical feature. Get the categories for each instance for the ith feature and start to count at zero.
-        # So if we have 2 cat, then this vector will contains zeros and ones.
-        cat_idx <- input[, i:i]
-        nan_mask <- torch::torch_isnan(cat_idx) # Check if any of the categories are nan / missing
-        cat_idx[nan_mask] <- 0 # Set the nan values to 0
+        # Distinguish between continuous and categorical features
+        if (size <= 1) {
+          # Continuous feature. Copy it and replace NaNs with either zeros or the last half of self.one_hot_max_sizes
+          # Take the ith column of the input (NOTE THAT THIS IS NOT A DEEP COPY, so changing out_col changes input)
+          out_col <- input[, i:i]
+          nan_mask <- torch::torch_isnan(out_col) # check if any of the values are nan, i.e., missing
+          out_col[nan_mask] <- 0 # set all the missing values to 0. (This changes the input too)
+        } else {
+          # Categorical feature. Get the categories for each instance for the ith feature and start to count at zero.
+          # So if we have 2 cat, then this vector will contains zeros and ones.
+          cat_idx <- input[, i:i]
+          nan_mask <- torch::torch_isnan(cat_idx) # Check if any of the categories are nan / missing
+          cat_idx[nan_mask] <- 0 # Set the nan values to 0
 
-        # Create a matrix, where the jth row is the one-hot encoding of the ith feature of the jth instance.
-        out_col <- matrix(0, nrow = n, ncol = size)
-        out_col[cbind(seq(n), as.matrix(cat_idx$cpu()))] <- 1
-        out_col <- torch::torch_tensor(out_col, device = input$device)
+          # Create a matrix, where the jth row is the one-hot encoding of the ith feature of the jth instance.
+          out_col <- matrix(0, nrow = n, ncol = size)
+          out_col[cbind(seq(n), as.matrix(cat_idx$cpu()))] <- 1
+          out_col <- torch::torch_tensor(out_col, device = input$device)
+        }
+
+        # Append this feature column to the result. out_col is n x size = batch_size x n_categories_for_this_feature
+        out_cols <- torch::torch_cat(c(out_cols, out_col), dim = -1)
+
+        # If necessary, append isnan mask of this feature to the result which we always do for the proposal network.
+        # This only happens for the first half of the i's, so for i = 1, ..., n_features.
+        if (i %in% self$add_nans_map_for_columns) {
+          # add the columns of nan_mask
+          out_cols <- torch::torch_cat(c(out_cols, nan_mask$to(dtype = torch::torch_float())), dim = -1)
+        }
       }
 
-      # Append this feature column to the result. out_col is n x size = batch_size x n_categories_for_this_feature
-      out_cols <- torch::torch_cat(c(out_cols, out_col), dim = -1)
-
-      # If necessary, append isnan mask of this feature to the result which we always do for the proposal network.
-      # This only happens for the first half of the i's, so for i = 1, ..., n_features.
-      if (i %in% self$add_nans_map_for_columns) {
-        # add the columns of nan_mask
-        out_cols <- torch::torch_cat(c(out_cols, nan_mask$to(dtype = torch::torch_float())), dim = -1)
-      }
+      # ONLY FOR CONTINUOUS FEATURES: out_cols now is a list of n_features tensors of shape n x size = n x 1 for
+      # continuous variables. We concatenate them to a matrix of dim n x 2*n_features (in cont case) for prior net, but
+      # for proposal net, it is n x 3*n_features, and they take the form
+      # [batch1, is.nan1, batch2, is.nan2, …,  batch12, is.nan12, mask1, mask2, …, mask12]
+      return(out_cols)
     }
+  )
 
-    # ONLY FOR CONTINUOUS FEATURES: out_cols now is a list of n_features tensors of shape n x size = n x 1 for
-    # continuous variables. We concatenate them to a matrix of dim n x 2*n_features (in cont case) for prior net, but
-    # for proposal net, it is n x 3*n_features, and they take the form
-    # [batch1, is.nan1, batch2, is.nan2, …,  batch12, is.nan12, mask1, mask2, …, mask12]
-    return(out_cols)
-  }
-)
+  return(
+    cat_to_one_hot_layer_tmp(one_hot_max_sizes = one_hot_max_sizes, add_nans_map_for_columns = add_nans_map_for_columns)
+  )
+}
 
-# Mask Generators =====================================================================================================
+
+# Mask Generators ======================================================================================================
 #' Missing Completely at Random (MCAR) Mask Generator
 #'
 #' @description A mask generator which masks the entries in the input completely at random.
@@ -1795,7 +1815,7 @@ categorical_to_one_hot_layer <- torch::nn_module(
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 mcar_mask_generator <- function(masking_ratio, paired_sampling = FALSE) {
-  mcar_mask_gen_tmp < torch::nn_module(
+  mcar_mask_gen_tmp <- torch::nn_module(
     name = "mcar_mask_generator", # field name Type of mask generator
 
     # description Initialize a missing completely at random mask generator.
@@ -1866,7 +1886,7 @@ mcar_mask_generator <- function(masking_ratio, paired_sampling = FALSE) {
         mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
       }
 
-      # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
+      # Mask all missing or artificially masked entries by the Bernoulli mask. 1 means that the entry is masked.
       return(mask + nan_mask >= 1)
     }
   )
@@ -1976,7 +1996,7 @@ specified_prob_mask_generator <- function(masking_probs, paired_sampling = FALSE
         mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
       }
 
-      # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
+      # Mask all missing or artificially masked entries by the Bernoulli mask. 1 means that the entry is masked.
       return(mask + nan_mask >= 1)
     }
   )
