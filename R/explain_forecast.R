@@ -58,8 +58,6 @@
 #' are required to "refit" the model at any given time index. This allows the different
 #' approaches to work in the same way they do for time-invariant models.
 #'
-#' @author Martin Jullum
-#'
 #' @examples
 #'
 #' # Load example data
