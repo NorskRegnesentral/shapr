@@ -75,11 +75,13 @@ approximations to the true Shapley values. See the
 Here is an overview of the main functions. You can read their
 documentation and see examples with `?function_name`.
 
-| Function Name      | Description                                                                               |
-|:---------------------|:-------------------------------------------------|
-| `explain`          | Computes kernel SHAP values for test data.                                                |
-| `explain_forecast` | Analogous to `explain`, but for explaining forecasts from time series models.             |
-| `plot.shapr`       | Plots the individual prediction explanations. Uses the `ggplot` and `ggbeeswarm` package. |
+| Function Name                | Description                                                                               |
+|:-----------------------------|:------------------------------------------------------------------------------------------|
+| `explain`                    | Computes kernel SHAP values for test data.                                                |
+| `explain_forecast`           | Analogous to `explain`, but for explaining forecasts from time series models.             |
+| `plot.shapr`                 | Plots the individual prediction explanations. Uses the `ggplot` and `ggbeeswarm` package. |
+| `plot_SV_several_approaches` | Compare the individual prediction explanations obtained from different approaches.        |
+| `plot_MSEv_eval_crit`        | Plots the $\operatorname{MSE}_{v}$ criterion to evaluate the performance of the approach. |
 
 : Main functions in the `shapr` package.
 
