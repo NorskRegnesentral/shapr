@@ -52,6 +52,9 @@
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -559,7 +562,7 @@ training phase.</p>
 <h3 id="progress_bar">Progressr<a class="anchor" aria-label="anchor" href="#progress_bar"></a>
 </h3>
 <p>As discussed in the main vignette, the <code>shapr</code> package
-provides two ways for recieving information about the progress of the
+provides two ways for receiving information about the progress of the
 approach. First, the <code>shapr</code> package provides progress
 updates of the computation of the Shapley values through the
 <code>progressr</code> package. Second, the user can also get
@@ -573,8 +576,7 @@ more detailed information.</p>
 <p>By setting <code>verbose = 2</code>, we get messages about the
 progress of the <code>vaeac</code> approach.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">handlers</span><span class="op">(</span><span class="st">"void"</span><span class="op">)</span> <span class="co"># To silence all progressr updates</span></span>
-<span><span class="va">expl_with_messages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">expl_with_messages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
@@ -635,7 +637,7 @@ final <code>vaeac</code> model. Note that one can set
 vignette for examples for how to change the progress bar.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
-<span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span><span class="st">"cli"</span><span class="op">)</span></span>
+<span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span><span class="st">"cli"</span><span class="op">)</span> <span class="co"># Use `progressr::handlers("void")` to silence all `progressr` updates</span></span>
 <span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">with_progress</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="va">expl_with_progressr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>    model <span class="op">=</span> <span class="va">model</span>,</span>

@@ -35,6 +35,9 @@ model by using the method specified in approach to estimate the conditional expe
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -150,8 +153,8 @@ The forecast horizon to explain. Passed to the <code>predict_model</code> functi
 <dt>approach</dt>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
 All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
-<code>"categorical"</code>, <code>"timeseries"</code>, or <code>"independence"</code>.
-See details for more information.</p></dd>
+<code>"categorical"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or <code>"regression_surrogate"</code>.
+The two regression approaches can not be combined with any other approach. See details for more information.</p></dd>
 
 
 <dt>prediction_zero</dt>
@@ -447,7 +450,7 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
     </div>
     <div id="author">
     <h2>Author</h2>
-    <p>Martin Jullum</p>
+    <p>Martin Jullum, Lars Henry Berge Olsen</p>
     </div>
 
     <div id="ref-examples">

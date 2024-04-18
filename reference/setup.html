@@ -34,6 +34,9 @@
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -112,8 +115,8 @@ Contains the the features, whose predictions ought to be explained.</p></dd>
 <dt>approach</dt>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
 All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
-<code>"categorical"</code>, <code>"timeseries"</code>, or <code>"independence"</code>.
-See details for more information.</p></dd>
+<code>"categorical"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or <code>"regression_surrogate"</code>.
+The two regression approaches can not be combined with any other approach. See details for more information.</p></dd>
 
 
 <dt>prediction_zero</dt>

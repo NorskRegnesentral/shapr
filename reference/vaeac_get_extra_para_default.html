@@ -35,6 +35,9 @@ for approach = "vaeac".'><!-- mathjax --><script src="https://cdnjs.cloudflare.c
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -109,8 +112,9 @@ ensure a valid file name for all operating systems.</p></dd>
 
 <dt>vaeac.folder_to_save_model</dt>
 <dd><p>String (default is <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">base::tempdir()</a></code>). String specifying a path to a folder where
-the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
-<code><a href="explain.html">explain()</a></code> object if <code>vaeac.save_model = FALSE</code>.</p></dd>
+the function is to save the fitted vaeac model. Note that the path will be removed from the returned
+<code><a href="explain.html">explain()</a></code> object if <code>vaeac.save_model = FALSE</code>. Furthermore, the model cannot be moved from its
+original folder if we are to use the <code><a href="vaeac_train_model_continue.html">vaeac_train_model_continue()</a></code> function to continue training the model.</p></dd>
 
 
 <dt>vaeac.pretrained_vaeac_model</dt>

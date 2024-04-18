@@ -35,6 +35,9 @@ model by using the method specified in approach to estimate the conditional expe
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -113,8 +116,8 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 <dt>approach</dt>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
 All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
-<code>"categorical"</code>, <code>"timeseries"</code>, or <code>"independence"</code>.
-See details for more information.</p></dd>
+<code>"categorical"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or <code>"regression_surrogate"</code>.
+The two regression approaches can not be combined with any other approach. See details for more information.</p></dd>
 
 
 <dt>prediction_zero</dt>
@@ -220,7 +223,7 @@ TODO: Make this clearer when we end up fixing this and if they should force a pr
 
 
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="setup_approach.html">setup_approach.empirical</a></code>, <code><a href="setup_approach.html">setup_approach.independence</a></code>, <code><a href="setup_approach.html">setup_approach.gaussian</a></code>, <code><a href="setup_approach.html">setup_approach.copula</a></code>, <code><a href="setup_approach.html">setup_approach.ctree</a></code>, <code><a href="setup_approach.html">setup_approach.vaeac</a></code>, <code><a href="setup_approach.html">setup_approach.categorical</a></code>, <code><a href="setup_approach.html">setup_approach.timeseries</a></code></p><dl><dt><code>empirical.type</code></dt>
+<dd><p>Arguments passed on to <code><a href="setup_approach.html">setup_approach.empirical</a></code>, <code><a href="setup_approach.html">setup_approach.independence</a></code>, <code><a href="setup_approach.html">setup_approach.gaussian</a></code>, <code><a href="setup_approach.html">setup_approach.copula</a></code>, <code><a href="setup_approach.html">setup_approach.ctree</a></code>, <code><a href="setup_approach.html">setup_approach.vaeac</a></code>, <code><a href="setup_approach.html">setup_approach.categorical</a></code>, <code><a href="setup_approach.html">setup_approach.regression_separate</a></code>, <code><a href="setup_approach.html">setup_approach.regression_surrogate</a></code>, <code><a href="setup_approach.html">setup_approach.timeseries</a></code></p><dl><dt><code>empirical.type</code></dt>
 <dd><p>Character. (default = <code>"fixed_sigma"</code>)
 Should be equal to either <code>"independence"</code>,<code>"fixed_sigma"</code>, <code>"AICc_each_k"</code> <code>"AICc_full"</code>.
 TODO: Describe better what the methods do here.</p></dd>
@@ -339,6 +342,50 @@ estimated using <code>x_train</code>. If certain observations occur in <code>x_t
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.</p></dd>
 
+    <dt><code>regression.model</code></dt>
+<dd><p>A <code>tidymodels</code> object of class <code>model_specs</code>. Default is a linear regression model, i.e.,
+<code><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">parsnip::linear_reg()</a></code>. See <a href="https://www.tidymodels.org/find/parsnip/" class="external-link">tidymodels</a> for all possible models,
+and see the vignette for how to add new/own models. Note, to make it easier to call <code>explain()</code> from Python, the
+<code>regression.model</code> parameter can also be a string specifying the model which will be parsed and evaluated. For
+example, <code>"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine = "ranger", mode = "regression")"</code>
+is also a valid input. It is essential to include the package prefix if the package is not loaded.</p></dd>
+
+    <dt><code>regression.tune_values</code></dt>
+<dd><p>Either <code>NULL</code> (default), a data.frame/data.table/tibble, or a function.
+The data.frame must contain the possible hyperparameter value combinations to try.
+The column names must match the names of the tuneable parameters specified in <code>regression.model</code>.
+If <code>regression.tune_values</code> is a function, then it should take one argument <code>x</code> which is the training data
+for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
+Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+vignette for several examples.
+Note, to make it easier to call <code>explain()</code> from Python, the <code>regression.tune_values</code> can also be a string
+containing an R function. For example,
+<code>"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"</code> is also a valid input.
+It is essential to include the package prefix if the package is not loaded.</p></dd>
+
+    <dt><code>regression.vfold_cv_para</code></dt>
+<dd><p>Either <code>NULL</code> (default) or a named list containing
+the parameters to be sent to <code><a href="https://rsample.tidymodels.org/reference/vfold_cv.html" class="external-link">rsample::vfold_cv()</a></code>. See the regression vignette for
+several examples.</p></dd>
+
+    <dt><code>regression.recipe_func</code></dt>
+<dd><p>Either <code>NULL</code> (default) or a function that that takes in a <code><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipes::recipe()</a></code>
+object and returns a modified <code><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipes::recipe()</a></code> with potentially additional recipe steps. See the regression
+vignette for several examples.
+Note, to make it easier to call <code>explain()</code> from Python, the <code>regression.recipe_func</code> can also be a string
+containing an R function. For example,
+<code>"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"</code> is also
+a valid input. It is essential to include the package prefix if the package is not loaded.</p></dd>
+
+    <dt><code>regression.surrogate_n_comb</code></dt>
+<dd><p>Integer (default is <code>internal$parameters$used_n_combinations</code>) specifying the
+number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
+"<code>internal$parameters$used_n_combinations</code> - 2". By default, we use all coalitions, but this can take a lot of memory
+in larger dimensions. Note that by "all", we mean all coalitions chosen by <code>shapr</code> to be used. This will be all
+\(2^{n_{\text{features}}}\) coalitions (minus empty and grand coalition) if <code>shapr</code> is in the exact mode. If the
+user sets a lower value than <code>internal$parameters$used_n_combinations</code>, then we sample this amount of unique
+coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.</p></dd>
+
     <dt><code>timeseries.fixed_sigma_vec</code></dt>
 <dd><p>Numeric. (Default = 2)
 Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?</p></dd>
@@ -395,10 +442,12 @@ such as the mean of the predictions in the training data are also reasonable.</p
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>The most important thing to notice is that <code>shapr</code> has implemented six different
-approaches for estimating the conditional distributions of the data, namely <code>"empirical"</code>,
+    <p>The most important thing to notice is that <code>shapr</code> has implemented eight different
+Monte Carlo-based approaches for estimating the conditional distributions of the data, namely <code>"empirical"</code>,
 <code>"gaussian"</code>, <code>"copula"</code>, <code>"ctree"</code>, <code>"vaeac"</code>, <code>"categorical"</code>, <code>"timeseries"</code>, and <code>"independence"</code>.
-In addition, the user also has the option of combining the different approaches.
+<code>shapr</code> has also implemented two regression-based approaches <code>"regression_separate"</code> and <code>"regression_surrogate"</code>,
+and see the separate vignette on the regression-based approaches for more information.
+In addition, the user also has the option of combining the different Monte Carlo-based approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the <code>"gaussian"</code> approach when you condition on a single feature,
 the <code>"empirical"</code> approach if you condition on 2-5 features, and <code>"copula"</code> version
@@ -420,7 +469,7 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
     </div>
     <div id="author">
     <h2>Author</h2>
-    <p>Martin Jullum</p>
+    <p>Martin Jullum, Lars Henry Berge Olsen</p>
     </div>
 
     <div id="ref-examples">
@@ -542,6 +591,34 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 42.78704 -11.63856 -13.396062</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: 42.78704 -10.36824   5.337683</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: 42.78704 -25.79874  -1.315633</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Separate and surrogate regression approaches with linear regression models.</span></span></span>
+<span class="r-in"><span><span class="co"># More complex regression models can be used, and we can use CV to</span></span></span>
+<span class="r-in"><span><span class="co"># tune the hyperparameters of the regression models and preprocess</span></span></span>
+<span class="r-in"><span><span class="co"># the data before sending it to the model. See the regression vignette</span></span></span>
+<span class="r-in"><span><span class="co"># (Shapley value explanations using the regression paradigm) for more</span></span></span>
+<span class="r-in"><span><span class="co"># details about the `regression_separate` and `regression_surrogate` approaches.</span></span></span>
+<span class="r-in"><span><span class="va">explain_separate_lm</span> <span class="op">&lt;-</span> <span class="fu">explain</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="va">model</span>,</span></span>
+<span class="r-in"><span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span></span>
+<span class="r-in"><span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
+<span class="r-in"><span>  prediction_zero <span class="op">=</span> <span class="va">p</span>,</span></span>
+<span class="r-in"><span>  approach <span class="op">=</span> <span class="st">"regression_separate"</span>,</span></span>
+<span class="r-in"><span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">explain_surrogate_lm</span> <span class="op">&lt;-</span> <span class="fu">explain</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="va">model</span>,</span></span>
+<span class="r-in"><span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span></span>
+<span class="r-in"><span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
+<span class="r-in"><span>  prediction_zero <span class="op">=</span> <span class="va">p</span>,</span></span>
+<span class="r-in"><span>  approach <span class="op">=</span> <span class="st">"regression_surrogate"</span>,</span></span>
+<span class="r-in"><span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

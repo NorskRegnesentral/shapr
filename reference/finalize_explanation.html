@@ -35,6 +35,9 @@ model by using the method specified in approach to estimate the conditional expe
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -126,10 +129,12 @@ such as the mean of the predictions in the training data are also reasonable.</p
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>The most important thing to notice is that <code>shapr</code> has implemented six different
-approaches for estimating the conditional distributions of the data, namely <code>"empirical"</code>,
+    <p>The most important thing to notice is that <code>shapr</code> has implemented eight different
+Monte Carlo-based approaches for estimating the conditional distributions of the data, namely <code>"empirical"</code>,
 <code>"gaussian"</code>, <code>"copula"</code>, <code>"ctree"</code>, <code>"vaeac"</code>, <code>"categorical"</code>, <code>"timeseries"</code>, and <code>"independence"</code>.
-In addition, the user also has the option of combining the different approaches.
+<code>shapr</code> has also implemented two regression-based approaches <code>"regression_separate"</code> and <code>"regression_surrogate"</code>,
+and see the separate vignette on the regression-based approaches for more information.
+In addition, the user also has the option of combining the different Monte Carlo-based approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the <code>"gaussian"</code> approach when you condition on a single feature,
 the <code>"empirical"</code> approach if you condition on 2-5 features, and <code>"copula"</code> version
@@ -151,7 +156,7 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
     </div>
     <div id="author">
     <h2>Author</h2>
-    <p>Martin Jullum</p>
+    <p>Martin Jullum, Lars Henry Berge Olsen</p>
     </div>
 
     <div id="ref-examples">
@@ -273,6 +278,34 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 42.78704 -11.63856 -13.396062</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: 42.78704 -10.36824   5.337683</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: 42.78704 -25.79874  -1.315633</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Separate and surrogate regression approaches with linear regression models.</span></span></span>
+<span class="r-in"><span><span class="co"># More complex regression models can be used, and we can use CV to</span></span></span>
+<span class="r-in"><span><span class="co"># tune the hyperparameters of the regression models and preprocess</span></span></span>
+<span class="r-in"><span><span class="co"># the data before sending it to the model. See the regression vignette</span></span></span>
+<span class="r-in"><span><span class="co"># (Shapley value explanations using the regression paradigm) for more</span></span></span>
+<span class="r-in"><span><span class="co"># details about the `regression_separate` and `regression_surrogate` approaches.</span></span></span>
+<span class="r-in"><span><span class="va">explain_separate_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="va">model</span>,</span></span>
+<span class="r-in"><span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span></span>
+<span class="r-in"><span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
+<span class="r-in"><span>  prediction_zero <span class="op">=</span> <span class="va">p</span>,</span></span>
+<span class="r-in"><span>  approach <span class="op">=</span> <span class="st">"regression_separate"</span>,</span></span>
+<span class="r-in"><span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">explain_surrogate_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="va">model</span>,</span></span>
+<span class="r-in"><span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span></span>
+<span class="r-in"><span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
+<span class="r-in"><span>  prediction_zero <span class="op">=</span> <span class="va">p</span>,</span></span>
+<span class="r-in"><span>  approach <span class="op">=</span> <span class="st">"regression_surrogate"</span>,</span></span>
+<span class="r-in"><span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

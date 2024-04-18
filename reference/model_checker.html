@@ -36,6 +36,9 @@ If x is not a supported model the function will return an error message, otherwi
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -59,7 +62,7 @@ If x is not a supported model the function will return an error message, otherwi
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Check that the type of model is supported by the native implementation of the model class</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model.R" class="external-link"><code>R/model.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_ar.R" class="external-link"><code>R/model_ar.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_arima.R" class="external-link"><code>R/model_arima.R</code></a>, and 5 more</small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model.R" class="external-link"><code>R/model.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_ar.R" class="external-link"><code>R/model_ar.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_arima.R" class="external-link"><code>R/model_arima.R</code></a>, and 6 more</small>
     <div class="hidden name"><code>model_checker.Rd</code></div>
     </div>
 
@@ -94,6 +97,9 @@ If <code>x</code> is not a supported model the function will return an error mes
 <span><span class="fu">model_checker</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for ranger</span></span>
+<span><span class="fu">model_checker</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for workflow</span></span>
 <span><span class="fu">model_checker</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for xgb.Booster</span></span>

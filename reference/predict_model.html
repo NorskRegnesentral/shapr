@@ -3,7 +3,8 @@
 stats::lm(),
 stats::glm(),
 ranger::ranger(),
-mgcv::gam() and
+mgcv::gam(),
+workflows::workflow() (i.e., tidymodels models), and
 xgboost::xgb.train() with binary or continuous
 response. See details for more information.
 NOTE: You should never need to call this function explicitly.
@@ -42,6 +43,9 @@ It is exported just to be easier accessible for users, see details."><!-- mathja
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -65,7 +69,7 @@ It is exported just to be easier accessible for users, see details."><!-- mathja
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Generate predictions for input data with specified model</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model.R" class="external-link"><code>R/model.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_ar.R" class="external-link"><code>R/model_ar.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_arima.R" class="external-link"><code>R/model_arima.R</code></a>, and 5 more</small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model.R" class="external-link"><code>R/model.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_ar.R" class="external-link"><code>R/model_ar.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_arima.R" class="external-link"><code>R/model_arima.R</code></a>, and 6 more</small>
     <div class="hidden name"><code>predict_model.Rd</code></div>
     </div>
 
@@ -74,7 +78,8 @@ It is exported just to be easier accessible for users, see details."><!-- mathja
 <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">stats::lm()</a></code>,
 <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">stats::glm()</a></code>,
 <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>,
-<code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam()</a></code> and
+<code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam()</a></code>,
+<code><a href="https://workflows.tidymodels.org/reference/workflow.html" class="external-link">workflows::workflow()</a></code> (i.e., <code>tidymodels</code> models), and
 <code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgb.train()</a></code> with binary or continuous
 response. See details for more information.</p>
 <p>NOTE: You should never need to call this function explicitly.
@@ -118,6 +123,9 @@ It is exported just to be easier accessible for users, see details.</p>
 <span><span class="co"># S3 method for ranger</span></span>
 <span><span class="fu">predict_model</span><span class="op">(</span><span class="va">x</span>, <span class="va">newdata</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># S3 method for workflow</span></span>
+<span><span class="fu">predict_model</span><span class="op">(</span><span class="va">x</span>, <span class="va">newdata</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># S3 method for xgb.Booster</span></span>
 <span><span class="fu">predict_model</span><span class="op">(</span><span class="va">x</span>, <span class="va">newdata</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -148,6 +156,7 @@ It is exported just to be easier accessible for users, see details.</p>
 <li><p><code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">stats::glm()</a></code></p></li>
 <li><p><code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code></p></li>
 <li><p><code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam()</a></code></p></li>
+<li><p><code><a href="https://workflows.tidymodels.org/reference/workflow.html" class="external-link">workflows::workflow()</a></code></p></li>
 <li><p><code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgb.train()</a></code></p></li>
 </ul><p>If you have a binary classification model we'll always return the probability prediction
 for a single class.</p>

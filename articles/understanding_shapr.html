@@ -52,6 +52,9 @@
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -244,7 +247,13 @@ The package also implements the <code>ctree</code> method from <span class="cita
 (2022)</span>. The original <code>independence</code> approach of <span class="citation">Lundberg and Lee (2017)</span> is also available. The
 methods may also be combined, such that e.g. one method is used when
 conditioning on a small number of features, while another method is used
-otherwise.</p>
+otherwise. The <code>shapr</code> package also supports directly
+estimating the contribution function using regression. We briefly
+introduce the regression-based methods below, but we refer to the
+separate regression vignette (Shapley value explanations using the
+regression paradigm) and <span class="citation">Olsen et al.
+(2024)</span> for an in-depth explanation of the regression
+paradigm.</p>
 <p><a id="gaussian"></a></p>
 <div class="section level3">
 <h3 id="multivariate-gaussian-distribution-approach">Multivariate Gaussian Distribution Approach<a class="anchor" aria-label="anchor" href="#multivariate-gaussian-distribution-approach"></a>
@@ -459,6 +468,30 @@ calculated. For example, the expected value of <span class="math inline">\(X_1\)
 = 1\)</span> and <span class="math inline">\(X_3 = 2\)</span> is <span class="math display">\[E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1,
 X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1,
 X_3=2)}.\]</span>.</p>
+<p><a id="Regression_approaches"></a></p>
+</div>
+<div class="section level3">
+<h3 id="separate-and-surrogate-regression-approaches">Separate and Surrogate Regression Approaches<a class="anchor" aria-label="anchor" href="#separate-and-surrogate-regression-approaches"></a>
+</h3>
+<p>Another paradigm for estimating the contribution function is the
+regression paradigm. In contrast to the methods above, which belong to
+the Monte Carlo paradigm, the regression based-methods use regression
+models to estimate the contribution function <span class="math inline">\(v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S =
+\boldsymbol{x}_S^*]\)</span> directly. The separate regression method
+class fits a separate regression model for each coalition <span class="math inline">\(S\)</span>, while the surrogate regression method
+class fits a single regression model to simultaneously predict the
+contribution function for all coalitions. We refer to <span class="citation">Olsen et al. (2024)</span> for when one should use the
+different paradigms, method classes, and methods.</p>
+<p>In a separate vignette (Shapley value explanations using the
+regression paradigm), we elaborate and demonstrate the regression
+paradigm. We describe how to specify the regression model, enable
+automatic cross-validation of the model’s hyperparameters, and apply
+pre-processing steps to the data before fitting the regression models.
+<span class="citation">Olsen et al. (2024)</span> divides the regression
+paradigm into the separate and surrogate regression method classes. In
+the separate vignette, we briefly introduce the two method classes. For
+an in-depth explanation, we refer the reader to Sections 3.5 and 3.6 in
+<span class="citation">Olsen et al. (2024)</span>.</p>
 <p><a id="ex"></a></p>
 <p><br></p>
 </div>
@@ -497,6 +530,9 @@ setting the argument <code>approach</code> to either
 <span><span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain</span>, <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="va">y_var</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">ind_x_explain</span>, <span class="va">..x_var</span><span class="op">]</span></span>
 <span></span>
+<span><span class="co"># Set seed for reproducibility</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
 <span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span>
@@ -519,6 +555,7 @@ setting the argument <code>approach</code> to either
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
 <span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span></span>
@@ -735,7 +772,7 @@ bounds of the time series if necessary).</p>
 </h3>
 <p>We can use the <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion proposed
 by <span class="citation">Frye et al. (2021)</span>, and later used by,
-e.g., <span class="citation">Olsen et al. (2022)</span> and <span class="citation">Olsen et al. (2023)</span>, to evaluate and rank the
+e.g., <span class="citation">Olsen et al. (2022)</span> and <span class="citation">Olsen et al. (2024)</span>, to evaluate and rank the
 approaches/methods. The <span class="math inline">\(\operatorname{MSE}_{v}\)</span> is given by</p>
 <span class="math display">\[\begin{align}
     \label{eq:MSE_v}
@@ -805,7 +842,7 @@ the methods and not assess their closeness to the optimum since the
 minimum value of the <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion is
 unknown. Second, the criterion evaluates the contribution functions and
 not the Shapley values.</p>
-<p>Note that <span class="citation">Olsen et al. (2023)</span> observed
+<p>Note that <span class="citation">Olsen et al. (2024)</span> observed
 a relatively linear relationship between the <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion and the
 mean absolute error <span class="math inline">\((\operatorname{MAE})\)</span> between the true and
 estimated Shapley values in extensive simulation studies where the true
@@ -844,10 +881,10 @@ combination is a different prediction tasks.</p>
 combining them into lists.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We use more explicands here for more stable confidence intervals</span></span>
-<span><span class="va">ind_x_explain</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">25</span></span>
-<span><span class="va">x_train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain</span>, <span class="va">..x_var</span><span class="op">]</span></span>
-<span><span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain</span>, <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="va">y_var</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">ind_x_explain</span>, <span class="va">..x_var</span><span class="op">]</span></span>
+<span><span class="va">ind_x_explain_many</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">25</span></span>
+<span><span class="va">x_train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain_many</span>, <span class="va">..x_var</span><span class="op">]</span></span>
+<span><span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain_many</span>, <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="va">y_var</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">ind_x_explain_many</span>, <span class="va">..x_var</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
 <span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
@@ -950,8 +987,7 @@ criterion.</p>
 <span></span>
 <span><span class="co"># 5 plots are made</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">MSEv_plots</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"   "MSEv_combination_bar"        "MSEv_combination_line_point"</span></span>
-<span><span class="co">#&gt; [5] "MSEv_bar"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"   "MSEv_combination_bar"        "MSEv_combination_line_point" "MSEv_bar"</span></span></code></pre></div>
 <p>The main plot if interest is the <code>MSEv_bar</code>, which
 displays the <span class="math inline">\(\operatorname{MSE}_{v}\)</span>
 evaluation criterion for each method averaged over both the
@@ -1182,9 +1218,9 @@ also have an impact on that of the day after tomorrow.</p>
 of the temperature of the day that comes after the last day in the data,
 this forecast starts from index 153.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">data_ts2</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">model_ar_temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ar.html" class="external-link">ar</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Temp</span>, order <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">model_ar_temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ar.html" class="external-link">ar</a></span><span class="op">(</span><span class="va">data_ts2</span><span class="op">$</span><span class="va">Temp</span>, order <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model_ar_temp</span>, n.ahead <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">pred</span></span>
 <span><span class="co">#&gt; Time Series:</span></span>
@@ -1216,9 +1252,9 @@ separately. Grouping lags may be more interesting to do in a model with
 multiple variables, as it is then possible to explain each variable
 separately.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain_forecast.html">explain_forecast</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">explanation_forecast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain_forecast.html">explain_forecast</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model_ar_temp</span>,</span>
-<span>  y <span class="op">=</span> <span class="va">data</span><span class="op">[</span>, <span class="st">"Temp"</span><span class="op">]</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">data_ts2</span><span class="op">[</span>, <span class="st">"Temp"</span><span class="op">]</span>,</span>
 <span>  train_idx <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">152</span>,</span>
 <span>  explain_idx <span class="op">=</span> <span class="fl">153</span>,</span>
 <span>  explain_y_lags <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -1232,11 +1268,11 @@ separately.</p>
 <span><span class="co">#&gt; Note: Feature names extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Consistency checks between model and data is therefore disabled.</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    explain_idx horizon  none Temp.1  Temp.2</span></span>
-<span><span class="co">#&gt;          &lt;num&gt;   &lt;num&gt; &lt;num&gt;  &lt;num&gt;   &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:         153       1 77.88 -6.622 -0.1788</span></span>
-<span><span class="co">#&gt; 2:         153       2 77.88 -6.025 -0.3327</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation_forecast</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    explain_idx horizon  none Temp.1 Temp.2</span></span>
+<span><span class="co">#&gt;          &lt;num&gt;   &lt;num&gt; &lt;num&gt;  &lt;num&gt;  &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:         153       1 77.79 -6.578 -0.134</span></span>
+<span><span class="co">#&gt; 2:         153       2 77.79 -5.980 -0.288</span></span></code></pre></div>
 <p>The results are presented per value of <code>explain_idx</code> and
 forecast horizon. We can see that the mean temperature was around 77.9
 degrees. At horizon 1, the first lag in the model caused it to be 6.6
@@ -1251,13 +1287,13 @@ points, the model is just fit on the 151 first observations, leaving two
 observations of <code>Wind</code> to be used as exogenous values during
 the prediction phase.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">data_ts3</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">data_fit</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">151</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">data_fit</span> <span class="op">&lt;-</span> <span class="va">data_ts3</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">151</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="va">model_arimax_temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/arima.html" class="external-link">arima</a></span><span class="op">(</span><span class="va">data_fit</span><span class="op">$</span><span class="va">Temp</span>, order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, xreg <span class="op">=</span> <span class="va">data_fit</span><span class="op">$</span><span class="va">Wind</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">newxreg</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">151</span><span class="op">)</span>, <span class="st">"Wind"</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="va">newxreg</span> <span class="op">&lt;-</span> <span class="va">data_ts3</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">151</span><span class="op">)</span>, <span class="st">"Wind"</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model_arimax_temp</span>, n.ahead <span class="op">=</span> <span class="fl">2</span>, newxreg <span class="op">=</span> <span class="va">newxreg</span><span class="op">)</span><span class="op">$</span><span class="va">pred</span></span>
 <span><span class="co">#&gt; Time Series:</span></span>
@@ -1275,10 +1311,10 @@ possible for <code>shapr</code> to not only explain the effect of the
 first lag of the exogenous variable, but also the contemporary effect
 during the forecasting period.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain_forecast.html">explain_forecast</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">explanation_forecast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain_forecast.html">explain_forecast</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model_ar_temp</span>,</span>
 <span>  y <span class="op">=</span> <span class="va">data_fit</span><span class="op">[</span>, <span class="st">"Temp"</span><span class="op">]</span>,</span>
-<span>  xreg <span class="op">=</span> <span class="va">data</span><span class="op">[</span>, <span class="st">"Wind"</span><span class="op">]</span>,</span>
+<span>  xreg <span class="op">=</span> <span class="va">data_ts3</span><span class="op">[</span>, <span class="st">"Wind"</span><span class="op">]</span>,</span>
 <span>  train_idx <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">150</span>,</span>
 <span>  explain_idx <span class="op">=</span> <span class="fl">151</span>,</span>
 <span>  explain_y_lags <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -1293,7 +1329,7 @@ during the forecasting period.</p>
 <span><span class="co">#&gt; Note: Feature names extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Consistency checks between model and data is therefore disabled.</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation_forecast</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    explain_idx horizon  none   Temp.1   Temp.2  Wind.1  Wind.F1  Wind.F2</span></span>
 <span><span class="co">#&gt;          &lt;num&gt;   &lt;num&gt; &lt;num&gt;    &lt;num&gt;    &lt;num&gt;   &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1:         151       1 77.96 -0.67793 -0.67340 -1.2688 0.493408       NA</span></span>
@@ -1444,12 +1480,15 @@ predictions from models fitted with the following functions:</p>
 <li>
 <code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgb.train</a></code>
 </li>
+<li><code><a href="https://workflows.tidymodels.org/reference/workflow.html" class="external-link">workflows::workflow</a></code></li>
 </ul>
 <p>Any continuous response regression model or binary classification
 model of these model classes, can be explained with the package directly
-as exemplified above. Moreover, essentially any feature dependent
-prediction model can be explained by the package by specifying two (or
-one) simple additional functions for your model.</p>
+as exemplified above, while we give an example for the
+<code><a href="https://workflows.tidymodels.org/reference/workflow.html" class="external-link">workflows::workflow</a></code> in the <a href="#workflow_example"><code>tidymodels</code>/<code>workflows</code></a>
+section. Moreover, essentially any feature dependent prediction model
+can be explained by the package by specifying two (or one) simple
+additional functions for your model.</p>
 <p><em>Note: The below procedure for specifying custom models was
 changed in shapr v0.3.0</em> The first function is
 <code>predict_model</code>, taking the model and data (as a
@@ -1562,13 +1601,70 @@ to the same airquality data set as used above.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().</span></span>
 <span><span class="co">#&gt; Consistency checks between model and data is therefore disabled.</span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
 <span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
 <span></span>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom_minimal</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_main/unnamed-chunk-23-2.png"></p>
+<div class="section level4">
+<h4 id="workflow_example">Tidymodels and workflows<a class="anchor" aria-label="anchor" href="#workflow_example"></a>
+</h4>
+<p>In this section, we demonstrate how to use <code>shapr</code> to
+explain <code>tidymodels</code> models fitted using
+<code>workflows</code>. In the example <a href="#examples">above</a>, we
+directly used the <code>xgboost</code> package to fit the
+<code>xgboost</code> model. However, we can also fit the
+<code>xgboost</code> model using the <code>tidymodels</code> package.
+These fits will be identical as <code>tidymodels</code> calls
+<code>xgboost</code> internally. which we demonstrate in the example
+below. Note that we can replace <code>xgboost</code> (i.e.,
+<code><a href="https://parsnip.tidymodels.org/reference/boost_tree.html" class="external-link">parsnip::boost_tree</a></code>) with any other fitted
+<code>tidymodels</code> in the <code>workflows</code> procedure outlined
+below.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Fitting a basic xgboost model to the training data using tidymodels</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span> <span class="co"># Set the same seed as above</span></span>
+<span><span class="va">all_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="va">x_var</span><span class="op">)</span></span>
+<span><span class="va">train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain</span>, <span class="va">..all_var</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Fitting the `tidymodels` model using `workflows`</span></span>
+<span><span class="va">model_tidymodels</span> <span class="op">&lt;-</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/fit.html" class="external-link">fit</a></span><span class="op">(</span></span>
+<span>  <span class="fu">workflows</span><span class="fu">::</span><span class="fu"><a href="https://workflows.tidymodels.org/reference/add_recipe.html" class="external-link">add_recipe</a></span><span class="op">(</span></span>
+<span>    <span class="fu">workflows</span><span class="fu">::</span><span class="fu"><a href="https://workflows.tidymodels.org/reference/add_model.html" class="external-link">add_model</a></span><span class="op">(</span></span>
+<span>      <span class="fu">workflows</span><span class="fu">::</span><span class="fu"><a href="https://workflows.tidymodels.org/reference/workflow.html" class="external-link">workflow</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>      <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/boost_tree.html" class="external-link">boost_tree</a></span><span class="op">(</span>trees <span class="op">=</span> <span class="fl">20</span>, engine <span class="op">=</span> <span class="st">"xgboost"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="fu">recipes</span><span class="fu">::</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipe</a></span><span class="op">(</span><span class="va">Ozone</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">train</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">train</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># # We can also specify the same model using pipes `%&gt;%` by (if pipes are installed/loaded)</span></span>
+<span><span class="co"># model_tidymodels &lt;-</span></span>
+<span><span class="co">#   workflows::workflow() %&gt;%</span></span>
+<span><span class="co">#   workflows::add_model(parsnip::boost_tree(trees = 20, engine = "xgboost", mode = "regression")) %&gt;%</span></span>
+<span><span class="co">#   workflows::add_recipe(recipes::recipe(Ozone ~ ., data = train)) %&gt;%</span></span>
+<span><span class="co">#   parsnip::fit(data = train)</span></span>
+<span></span>
+<span><span class="co"># See that the output of the two models are identical</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model_tidymodels</span>, <span class="va">x_train</span><span class="op">)</span><span class="op">$</span><span class="va">.pred</span>, <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model</span>, <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Mean relative difference: 0.018699"</span></span>
+<span></span>
+<span><span class="co"># Create the Shapley values for the tidymodels version</span></span>
+<span><span class="va">explanation_tidymodels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model_tidymodels</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
+<span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  n_batches <span class="op">=</span> <span class="fl">4</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># See that the Shapley value explanations are identical too</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values</span>, <span class="va">explanation_tidymodels</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Different number of rows"</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level3">
 <h3 id="the-parameters-of-the-vaeac-approach">The parameters of the <code>vaeac</code> approach<a class="anchor" aria-label="anchor" href="#the-parameters-of-the-vaeac-approach"></a>
@@ -1600,7 +1696,7 @@ parameters are included in a named list called
 <code>vaeac.extra_parameters</code>. However, the <code>vaeac</code>
 approach will try to correct for misplaced and duplicated parameters and
 give warnings to the user.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_vaeac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -1621,7 +1717,7 @@ give warnings to the user.</p>
 <code>vaeac</code> model and see that <code>vaeac.epochs = 3</code> is
 likely to few epochs as it still seems like the <code>vaeac</code> model
 is learning.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Look at the training and validation errors.</span></span>
 <span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_main/vaeac-plot-1-1.png"></p>
@@ -1643,7 +1739,7 @@ and progress updates simultaneously, then the estimated timer remaining
 will obviously be incorrect if early stopping is applied. Furthermore, a
 value of <code>2</code> is too low for real world applications, but we
 set it so low here to make the vignette faster to build.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_vaeac_early_stop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -1663,7 +1759,7 @@ set it so low here to make the vignette faster to build.</p>
 <span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span></code></pre></div>
 <p>Can compare with the previous version and see that the results are
 more stable now.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Look at the training and validation errors.</span></span>
 <span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span>, <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">explanation_vaeac_early_stop</span><span class="op">)</span>,</span>
@@ -1672,7 +1768,7 @@ more stable now.</p>
 <p><img src="figure_main/vaeac-plot-2-1.png"></p>
 <p>Can also compare the <span class="math inline">\(MSE_{v}\)</span>
 evaluation scores.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span>, <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">explanation_vaeac_early_stop</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_main/vaeac-plot-3-1.png"></p>
 <p><a id="scalability"></a></p>
@@ -1709,7 +1805,7 @@ on <code>n_combinations</code> and <code>approach</code>. The
 memory/computation time trade-off is most apparent for models with more
 than say 6-7 features. Below we a basic example where
 <code>n_batches=10</code>:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -1745,7 +1841,7 @@ In the meanwhile, this is all let to the user, and we advice that
 <code>n_batches</code> equals some positive integer multiplied by the
 number of workers. Below is a basic example of a parallelization with
 two workers.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -1796,7 +1892,7 @@ options available with <code>progressr</code>, see the
 <code>progressr</code> <a href="https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html" class="external-link">vignette</a>.
 A full code example of using <code>progressr</code> with
 <code>shapr</code> is shown below:</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span>global <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># If no progression handler is specified, the txtprogressbar is used</span></span>
@@ -1913,10 +2009,10 @@ Autoencoders to Explain Predictive Models with Dependent Mixed
 Features.”</span> <em>Journal of Machine Learning Research</em> 23
 (213): 1–51.
 </div>
-<div id="ref-olsen2023comparative" class="csl-entry">
-———. 2023. <span>“A Comparative Study of Methods for Estimating
-Conditional Shapley Values and When to Use Them.”</span> <em>arXiv
-Preprint arXiv:2305.09536</em>.
+<div id="ref-olsen2024comparative" class="csl-entry">
+———. 2024. <span>“A Comparative Study of Methods for Estimating
+Model-Agnostic Shapley Value Explanations.”</span> <em>Data Mining and
+Knowledge Discovery</em>, 1–48.
 </div>
 <div id="ref-redelmeier2020explaining" class="csl-entry">
 Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020.

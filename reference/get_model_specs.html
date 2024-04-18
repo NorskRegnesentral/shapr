@@ -37,6 +37,9 @@ It is exported just to be easier accessible for users, see details."><!-- mathja
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -60,7 +63,7 @@ It is exported just to be easier accessible for users, see details."><!-- mathja
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Fetches feature information from natively supported models</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model.R" class="external-link"><code>R/model.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_ar.R" class="external-link"><code>R/model_ar.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_arima.R" class="external-link"><code>R/model_arima.R</code></a>, and 5 more</small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model.R" class="external-link"><code>R/model.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_ar.R" class="external-link"><code>R/model_ar.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/model_arima.R" class="external-link"><code>R/model_arima.R</code></a>, and 6 more</small>
     <div class="hidden name"><code>get_model_specs.Rd</code></div>
     </div>
 
@@ -96,6 +99,9 @@ It is exported just to be easier accessible for users, see details.</p>
 <span><span class="fu">get_model_specs</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for ranger</span></span>
+<span><span class="fu">get_model_specs</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for workflow</span></span>
 <span><span class="fu">get_model_specs</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for xgb.Booster</span></span>

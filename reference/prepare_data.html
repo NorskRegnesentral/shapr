@@ -34,6 +34,9 @@
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -57,7 +60,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Generate data used for predictions and Monte Carlo integration</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a>, and 6 more</small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a>, and 8 more</small>
     <div class="hidden name"><code>prepare_data.Rd</code></div>
     </div>
 
@@ -84,6 +87,12 @@
 <span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, <span class="va">index_features</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for independence</span></span>
+<span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, index_features <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for regression_separate</span></span>
+<span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, index_features <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for regression_surrogate</span></span>
 <span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, index_features <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for timeseries</span></span>

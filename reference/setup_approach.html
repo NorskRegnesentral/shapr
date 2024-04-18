@@ -35,6 +35,9 @@ which are forwarded from explain()."><!-- mathjax --><script src="https://cdnjs.
     <li>
       <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
+    <li>
+      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -58,7 +61,7 @@ which are forwarded from explain()."><!-- mathjax --><script src="https://cdnjs.
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Set up the framework chosen approach</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a>, and 6 more</small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a>, and 8 more</small>
     <div class="hidden name"><code>setup_approach.Rd</code></div>
     </div>
 
@@ -111,6 +114,27 @@ which are forwarded from <code><a href="explain.html">explain()</a></code>.</p>
 <span></span>
 <span><span class="co"># S3 method for independence</span></span>
 <span><span class="fu">setup_approach</span><span class="op">(</span><span class="va">internal</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for regression_separate</span></span>
+<span><span class="fu">setup_approach</span><span class="op">(</span></span>
+<span>  <span class="va">internal</span>,</span>
+<span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  regression.tune_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regression.vfold_cv_para <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regression.recipe_func <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for regression_surrogate</span></span>
+<span><span class="fu">setup_approach</span><span class="op">(</span></span>
+<span>  <span class="va">internal</span>,</span>
+<span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  regression.tune_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regression.vfold_cv_para <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regression.recipe_func <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regression.surrogate_n_comb <span class="op">=</span> <span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">used_n_combinations</span> <span class="op">-</span> <span class="fl">2</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for timeseries</span></span>
 <span><span class="fu">setup_approach</span><span class="op">(</span></span>
@@ -255,6 +279,55 @@ Containing the mean of the data generating distribution.
 <dd><p>Numeric matrix. (Optional)
 Containing the covariance matrix of the data generating distribution.
 <code>NULL</code> means it is estimated from the <code>x_train</code>.</p></dd>
+
+
+<dt>regression.model</dt>
+<dd><p>A <code>tidymodels</code> object of class <code>model_specs</code>. Default is a linear regression model, i.e.,
+<code><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">parsnip::linear_reg()</a></code>. See <a href="https://www.tidymodels.org/find/parsnip/" class="external-link">tidymodels</a> for all possible models,
+and see the vignette for how to add new/own models. Note, to make it easier to call <code><a href="explain.html">explain()</a></code> from Python, the
+<code>regression.model</code> parameter can also be a string specifying the model which will be parsed and evaluated. For
+example, <code>"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine = "ranger", mode = "regression")"</code>
+is also a valid input. It is essential to include the package prefix if the package is not loaded.</p></dd>
+
+
+<dt>regression.tune_values</dt>
+<dd><p>Either <code>NULL</code> (default), a data.frame/data.table/tibble, or a function.
+The data.frame must contain the possible hyperparameter value combinations to try.
+The column names must match the names of the tuneable parameters specified in <code>regression.model</code>.
+If <code>regression.tune_values</code> is a function, then it should take one argument <code>x</code> which is the training data
+for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
+Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+vignette for several examples.
+Note, to make it easier to call <code><a href="explain.html">explain()</a></code> from Python, the <code>regression.tune_values</code> can also be a string
+containing an R function. For example,
+<code>"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"</code> is also a valid input.
+It is essential to include the package prefix if the package is not loaded.</p></dd>
+
+
+<dt>regression.vfold_cv_para</dt>
+<dd><p>Either <code>NULL</code> (default) or a named list containing
+the parameters to be sent to <code><a href="https://rsample.tidymodels.org/reference/vfold_cv.html" class="external-link">rsample::vfold_cv()</a></code>. See the regression vignette for
+several examples.</p></dd>
+
+
+<dt>regression.recipe_func</dt>
+<dd><p>Either <code>NULL</code> (default) or a function that that takes in a <code><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipes::recipe()</a></code>
+object and returns a modified <code><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipes::recipe()</a></code> with potentially additional recipe steps. See the regression
+vignette for several examples.
+Note, to make it easier to call <code><a href="explain.html">explain()</a></code> from Python, the <code>regression.recipe_func</code> can also be a string
+containing an R function. For example,
+<code>"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"</code> is also
+a valid input. It is essential to include the package prefix if the package is not loaded.</p></dd>
+
+
+<dt>regression.surrogate_n_comb</dt>
+<dd><p>Integer (default is <code>internal$parameters$used_n_combinations</code>) specifying the
+number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
+"<code>internal$parameters$used_n_combinations</code> - 2". By default, we use all coalitions, but this can take a lot of memory
+in larger dimensions. Note that by "all", we mean all coalitions chosen by <code>shapr</code> to be used. This will be all
+\(2^{n_{\text{features}}}\) coalitions (minus empty and grand coalition) if <code>shapr</code> is in the exact mode. If the
+user sets a lower value than <code>internal$parameters$used_n_combinations</code>, then we sample this amount of unique
+coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.</p></dd>
 
 
 <dt>timeseries.fixed_sigma_vec</dt>

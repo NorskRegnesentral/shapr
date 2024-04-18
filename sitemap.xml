@@ -22,6 +22,9 @@
     <loc>https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr/articles/understanding_shapr_regression.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr/articles/understanding_shapr_vaeac.html</loc>
   </url>
   <url>
@@ -71,6 +74,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/explain_forecast.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/explain_tripledot_docs.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/feature_combinations.html</loc>
@@ -194,6 +200,48 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/reg_forecast_setup.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.check_namespaces.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.check_parameters.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.check_recipe_func.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.check_sur_n_comb.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.check_vfold_cv_para.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.cv_message.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.get_string_to_R.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.get_tune.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.get_y_hat.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.prep_message_batch.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.prep_message_comb.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.separate_time_mess.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.surrogate_aug_data.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/regression.train_model.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/release_questions.html</loc>
