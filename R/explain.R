@@ -103,8 +103,8 @@
 #' @inheritDotParams setup_approach.empirical -internal -model -predict_model
 #' @inheritDotParams setup_approach.gaussian -internal
 #' @inheritDotParams setup_approach.independence -internal
-#' @inheritDotParams setup_approach.regression_separate
-#' @inheritDotParams setup_approach.regression_surrogate
+#' @inheritDotParams setup_approach.regression_separate -internal
+#' @inheritDotParams setup_approach.regression_surrogate -internal
 #' @inheritDotParams setup_approach.timeseries -internal
 #' @inheritDotParams setup_approach.vaeac -internal
 #'

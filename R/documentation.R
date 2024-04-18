@@ -49,12 +49,12 @@ default_doc_explain <- function(internal, index_features) {
 #' are renamed from the form `approach.parameter_name` to `approach_parameter_name`.
 #' That is, an underscore has replaced the dot as the dot is reserved in Python.
 #'
-#' @inheritDotParams setup_approach.independence -internal
-#' @inheritDotParams setup_approach.empirical -internal -predict_model -model
 #' @inheritDotParams setup_approach.categorical -internal
 #' @inheritDotParams setup_approach.copula -internal
 #' @inheritDotParams setup_approach.ctree -internal
+#' @inheritDotParams setup_approach.empirical -internal -model -predict_model
 #' @inheritDotParams setup_approach.gaussian -internal
+#' @inheritDotParams setup_approach.independence -internal
 #' @inheritDotParams setup_approach.regression_separate -internal
 #' @inheritDotParams setup_approach.regression_surrogate -internal
 #' @inheritDotParams setup_approach.timeseries -internal

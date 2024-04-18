@@ -300,5 +300,5 @@ Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictio
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
-Martin Jullum, Lars Henry Berge Olsen
+Martin Jullum
 }
