@@ -40,8 +40,9 @@ then a name will be generated based on \code{\link[base:Sys.time]{base::Sys.time
 ensure a valid file name for all operating systems.}
 
 \item{vaeac.folder_to_save_model}{String (default is \code{\link[base:tempfile]{base::tempdir()}}). String specifying a path to a folder where
-the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
-\code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}.}
+the function is to save the fitted vaeac model. Note that the path will be removed from the returned
+\code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}. Furthermore, the model cannot be moved from its
+original folder if we are to use the \code{\link[=vaeac_train_model_continue]{vaeac_train_model_continue()}} function to continue training the model.}
 
 \item{vaeac.pretrained_vaeac_model}{List or String (default is \code{NULL}). 1) Either a list of class
 \code{vaeac}, i.e., the list stored in \code{explanation$internal$parameters$vaeac} where \code{explanation} is the returned list

@@ -105,6 +105,7 @@
       "x_train",
       "x_train_preprocessed",
       "x_train_torch",
+      "self",
       "..current_comb",
       "..regression.response_var"
     )
