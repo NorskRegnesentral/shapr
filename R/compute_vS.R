@@ -11,18 +11,12 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   S_batch <- internal$objects$S_batch
 
   if (method == "future") {
-    ret <- future_compute_vS_batch(
-      S_batch = S_batch,
-      internal = internal,
-      model = model,
-      predict_model = predict_model
-    )
+    ret <- future_compute_vS_batch(S_batch = S_batch, internal = internal, model = model, predict_model = predict_model)
   } else {
     # Doing the same as above without future without progressbar or paralellization
     ret <- list()
     for (i in seq_along(S_batch)) {
       S <- S_batch[[i]]
-
       ret[[i]] <- batch_compute_vS(
         S = S,
         internal = internal,
@@ -41,7 +35,6 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
   } else {
     p <- NULL
   }
-
   ret <- future.apply::future_lapply(
     X = S_batch,
     FUN = batch_compute_vS,
@@ -54,21 +47,67 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
   return(ret)
 }
 
+#' @keywords internal
+#' @author Martin Jullum, Lars Henry Berge Olsen
+batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
+  regression <- internal$parameters$regression
+
+  # Check if we are to use regression or Monte Carlo integration to compute the contribution function values
+  if (regression) {
+    dt_vS <- batch_prepare_vS_regression(S = S, internal = internal)
+  } else {
+    # Here dt_vS is either only dt_vS or a list containing dt_vS and dt if internal$parameters$keep_samp_for_vS = TRUE
+    dt_vS <- batch_prepare_vS_MC(S = S, internal = internal, model = model, predict_model = predict_model)
+  }
+
+  # Update the progress bar if provided
+  # TODO: Add a message to state what batch has been computed
+  if (!is.null(p)) p(amount = length(S), message = "Estimating v(S)")
+
+  return(dt_vS)
+}
 
 #' @keywords internal
-batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
-  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+#' @author Lars Henry Berge Olsen
+batch_prepare_vS_regression <- function(S, internal) {
+  max_id_comb <- internal$parameters$n_combinations
+  x_explain_y_hat <- internal$data$x_explain_y_hat
+
+  # Compute the contribution functions different based on if the grand coalition is in S or not
+  if (!(max_id_comb %in% S)) {
+    dt <- prepare_data(internal, index_features = S)
+  } else {
+    # Remove the grand coalition. NULL is for the special case for when the batch only includes the grand coalition.
+    dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_comb]) else NULL
+
+    # Add the results for the grand coalition (Need to add names in case the batch only contains the grand coalition)
+    dt <- rbind(dt, data.table(as.integer(max_id_comb), matrix(x_explain_y_hat, nrow = 1)), use.names = FALSE)
+
+    # Need to add column names if batch S only contains the grand coalition
+    if (length(S) == 1) setnames(dt, c("id_combination", paste0("p_hat1_", seq_len(internal$parameters$n_explain))))
+  }
+
+  # Set id_combination to be the key
+  setkey(dt, id_combination)
+
+  return(dt)
+}
+
+#' @keywords internal
+#' @author Martin Jullum, Lars Henry Berge Olsen
+batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
+  output_size <- internal$parameters$output_size
   feature_names <- internal$parameters$feature_names
   type <- internal$parameters$type
   horizon <- internal$parameters$horizon
   n_endo <- internal$data$n_endo
-  output_size <- internal$parameters$output_size
   explain_idx <- internal$parameters$explain_idx
   explain_lags <- internal$parameters$explain_lags
   y <- internal$data$y
   xreg <- internal$data$xreg
+  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
-  dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
+  dt <- batch_prepare_vS_MC_auxiliary(S = S, internal = internal) # Make it optional to store and return the dt_list
 
   pred_cols <- paste0("p_hat", seq_len(output_size))
 
@@ -87,22 +126,13 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
     xreg = xreg
   )
   dt_vS <- compute_MCint(dt, pred_cols)
-  if (!is.null(p)) {
-    p(
-      amount = length(S),
-      message = "Estimating v(S)"
-    ) # TODO: Add a message to state what batch has been computed
-  }
 
-  if (keep_samp_for_vS) {
-    return(list(dt_vS = dt_vS, dt_samp_for_vS = dt))
-  } else {
-    return(dt_vS = dt_vS)
-  }
+  # Also return the dt object if keep_samp_for_vS is TRUE
+  return(if (keep_samp_for_vS) list(dt_vS = dt_vS, dt_samp_for_vS = dt) else dt_vS)
 }
 
 #' @keywords internal
-batch_prepare_vS <- function(S, internal) {
+batch_prepare_vS_MC_auxiliary <- function(S, internal) {
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
@@ -171,5 +201,5 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
   }
   # dt_mat[, id_combination := NULL]
 
-  dt_mat
+  return(dt_mat)
 }

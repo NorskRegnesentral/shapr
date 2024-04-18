@@ -71,33 +71,17 @@ setup <- function(x_train,
 
   # Sets up and organizes data
   if (type == "forecast") {
-    internal$data <- get_data_forecast(
-      y,
-      xreg,
-      train_idx,
-      explain_idx,
-      explain_y_lags,
-      explain_xreg_lags,
-      horizon
-    )
-
-    internal$parameters$output_labels <- cbind(
-      rep(explain_idx, horizon),
-      rep(seq_len(horizon), each = length(explain_idx))
-    )
+    internal$data <- get_data_forecast(y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon)
+    internal$parameters$output_labels <-
+      cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
     colnames(internal$parameters$output_labels) <- c("explain_idx", "horizon")
     internal$parameters$explain_idx <- explain_idx
     internal$parameters$explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
 
     # TODO: Consider handling this parameter update somewhere else (like in get_extra_parameters?)
-    if (group_lags) {
-      internal$parameters$group <- internal$data$group
-    }
+    if (group_lags) internal$parameters$group <- internal$data$group
   } else {
-    internal$data <- get_data(
-      x_train,
-      x_explain
-    )
+    internal$data <- get_data(x_train, x_explain)
   }
 
   internal$objects <- list(feature_specs = feature_specs)
@@ -105,7 +89,6 @@ setup <- function(x_train,
   check_data(internal)
 
   internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
-
 
   internal <- check_and_set_parameters(internal)
 
@@ -123,24 +106,14 @@ check_and_set_parameters <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
   exact <- internal$parameters$exact
 
+  if (!is.null(group)) check_groups(feature_names, group)
 
-  if (!is.null(group)) {
-    check_groups(feature_names, group)
-  }
-
-  if (!exact) {
-    if (!is_groupwise) {
-      internal$parameters$used_n_combinations <- min(2^n_features, n_combinations)
-    } else {
-      internal$parameters$used_n_combinations <- min(2^n_groups, n_combinations)
-    }
-    check_n_combinations(internal)
+  if (exact) {
+    internal$parameters$used_n_combinations <- if (is_groupwise) 2^n_groups else 2^n_features
   } else {
-    if (!is_groupwise) {
-      internal$parameters$used_n_combinations <- 2^n_features
-    } else {
-      internal$parameters$used_n_combinations <- 2^n_groups
-    }
+    internal$parameters$used_n_combinations <-
+      if (is_groupwise) min(2^n_groups, n_combinations) else min(2^n_features, n_combinations)
+    check_n_combinations(internal)
   }
 
   # Check approach
@@ -152,6 +125,35 @@ check_and_set_parameters <- function(internal) {
   # Checking n_batches vs n_combinations etc
   check_n_batches(internal)
 
+  # Check regression if we are doing regression
+  if (internal$parameters$regression) internal <- regression.check(internal)
+
+  return(internal)
+}
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+regression.check <- function(internal) {
+  # Check that the model outputs one-dimensional predictions
+  if (internal$parameters$output_size != 1) {
+    stop("`regression_separate` and `regression_surrogate` only support models with one-dimensional output")
+  }
+
+  # Check that we are NOT explaining a forecast model
+  if (internal$parameters$type == "forecast") {
+    stop("`regression_separate` and `regression_surrogate` does not support `forecast`.")
+  }
+
+  # Check that we are not to keep the Monte Carlo samples
+  if (internal$parameters$keep_samp_for_vS) {
+    stop(paste(
+      "`keep_samp_for_vS` must be `FALSE` for the `regression_separate` and `regression_surrogate`",
+      "approaches as there are no Monte Carlo samples to keep for these approaches."
+    ))
+  }
+
+  # Remove n_samples if we are doing regression, as we are not doing MC sampling
+  internal$parameters$n_samples <- NULL
 
   return(internal)
 }
@@ -191,13 +193,9 @@ check_n_combinations <- function(internal) {
     }
   } else {
     if (!is_groupwise) {
-      if (n_combinations <= n_features) {
-        stop("`n_combinations` has to be greater than the number of features.")
-      }
+      if (n_combinations <= n_features) stop("`n_combinations` has to be greater than the number of features.")
     } else {
-      if (n_combinations <= n_groups) {
-        stop("`n_combinations` has to be greater than the number of groups.")
-      }
+      if (n_combinations <= n_groups) stop("`n_combinations` has to be greater than the number of groups.")
     }
   }
 }
@@ -255,7 +253,6 @@ check_data <- function(internal) {
   NA_classes <- any(is.na(model_feature_specs$classes))
   NA_factor_levels <- any(is.na(model_feature_specs$factor_levels))
 
-
   if (is.null(model_feature_specs)) {
     message(
       "Note: You passed a model to explain() which is not natively supported, and did not supply a ",
@@ -287,7 +284,6 @@ check_data <- function(internal) {
 
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   }
-
 
   # Check model vs x_train (allowing different label ordering in specs from model)
   compare_feature_specs(model_feature_specs, x_train_feature_specs, "model", "x_train", sort_labels = TRUE)
@@ -523,6 +519,9 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
 
+  # Setting that we are using regression based the approach name (any in case several approaches)
+  parameters$regression <- any(grepl("regression", parameters$approach))
+
   return(parameters)
 }
 
@@ -603,8 +602,6 @@ get_data_specs <- function(x) {
   return(feature_specs)
 }
 
-
-
 #' Check that the group parameter has the right form and content
 #'
 #'
@@ -684,12 +681,16 @@ check_approach <- function(internal) {
     all(is.element(approach, supported_approaches)))
   ) {
     stop(
-      paste(
-        "`approach` must be one of the following: \n", paste0(supported_approaches, collapse = ", "), "\n",
-        "or a vector of length one less than the number of features (", n_features - 1, "),",
-        "with only the above strings."
+      paste0(
+        "`approach` must be one of the following: '", paste0(supported_approaches, collapse = "', '"), "'.\n",
+        "These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector ",
+        "of length one less than the number of features (", n_features - 1, ")."
       )
     )
+  }
+
+  if (length(approach) > 1 && any(grepl("regression", approach))) {
+    stop("The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.")
   }
 }
 

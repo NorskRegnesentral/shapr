@@ -456,7 +456,7 @@ rbind(
 
 
 ## Progressr {#progress_bar}
-As discussed in the main vignette, the `shapr` package provides two ways for recieving information about the progress
+As discussed in the main vignette, the `shapr` package provides two ways for receiving information about the progress
 of the approach. First, the `shapr` package provides progress updates of the computation of the Shapley values through
 the `progressr` package. Second, the user can also get information by setting `verbose = 2` in `explain()`, which
 will print out extra information related to the `vaeac` approach. The `verbose` parameter works independently of the
@@ -466,7 +466,6 @@ two examples here, and refer the reader to the main vignette for more detailed i
 By setting `verbose = 2`, we get messages about the progress of the `vaeac` approach.
 
 ```r
-handlers("void") # To silence all progressr updates
 expl_with_messages <- explain(
   model = model,
   x_explain = x_explain,
@@ -528,7 +527,7 @@ approach and only get the progress bars. See the main vignette for examples for 
 
 ```r
 library(progressr)
-progressr::handlers("cli")
+progressr::handlers("cli") # Use `progressr::handlers("void")` to silence all `progressr` updates
 progressr::with_progress({
   expl_with_progressr <- explain(
     model = model,

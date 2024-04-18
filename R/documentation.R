@@ -39,3 +39,28 @@ default_doc <- function(internal, model, predict_model, output_size, extra, ...)
 default_doc_explain <- function(internal, index_features) {
   NULL
 }
+
+
+#' Documentation of the approach-specific parameters in [shapr::explain()]
+#'
+#' @description
+#' This helper function displays the specific arguments applicable to the different
+#' approaches. Note that when calling [shapr::explain()] from Python, the parameters
+#' are renamed from the form `approach.parameter_name` to `approach_parameter_name`.
+#' That is, an underscore has replaced the dot as the dot is reserved in Python.
+#'
+#' @inheritDotParams setup_approach.independence -internal
+#' @inheritDotParams setup_approach.empirical -internal -predict_model -model
+#' @inheritDotParams setup_approach.categorical -internal
+#' @inheritDotParams setup_approach.copula -internal
+#' @inheritDotParams setup_approach.ctree -internal
+#' @inheritDotParams setup_approach.gaussian -internal
+#' @inheritDotParams setup_approach.regression_separate -internal
+#' @inheritDotParams setup_approach.regression_surrogate -internal
+#' @inheritDotParams setup_approach.timeseries -internal
+#' @inheritDotParams setup_approach.vaeac -internal
+#'
+#' @author Lars Henry Berge Olsen and Martin Jullum
+explain_tripledot_docs <- function(...) {
+  NULL
+}

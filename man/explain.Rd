@@ -40,8 +40,8 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
 All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
-\code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
-See details for more information.}
+\code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
+The two regression approaches can not be combined with any other approach. See details for more information.}
 
 \item{prediction_zero}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
@@ -118,7 +118,7 @@ Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} 
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
+  Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
   \describe{
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
@@ -196,6 +196,55 @@ epochs (default is \code{2}) and continue training that one.}
 This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
     \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
 \code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
+    \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
+Containing the joint probability distribution for each combination of feature
+values.
+\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
+    \item{\code{categorical.epsilon}}{Numeric value. (Optional)
+If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
+estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
+then epsilon is used as the proportion of times that these observations occurs in the training data.
+In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
+    \item{\code{regression.model}}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
+\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
+and see the vignette for how to add new/own models. Note, to make it easier to call \code{explain()} from Python, the
+\code{regression.model} parameter can also be a string specifying the model which will be parsed and evaluated. For
+example, \verb{"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine = "ranger", mode = "regression")"}
+is also a valid input. It is essential to include the package prefix if the package is not loaded.}
+    \item{\code{regression.tune_values}}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
+The data.frame must contain the possible hyperparameter value combinations to try.
+The column names must match the names of the tuneable parameters specified in \code{regression.model}.
+If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
+for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
+Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+vignette for several examples.
+Note, to make it easier to call \code{explain()} from Python, the \code{regression.tune_values} can also be a string
+containing an R function. For example,
+\code{"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"} is also a valid input.
+It is essential to include the package prefix if the package is not loaded.}
+    \item{\code{regression.vfold_cv_para}}{Either \code{NULL} (default) or a named list containing
+the parameters to be sent to \code{\link[rsample:vfold_cv]{rsample::vfold_cv()}}. See the regression vignette for
+several examples.}
+    \item{\code{regression.recipe_func}}{Either \code{NULL} (default) or a function that that takes in a \code{\link[recipes:recipe]{recipes::recipe()}}
+object and returns a modified \code{\link[recipes:recipe]{recipes::recipe()}} with potentially additional recipe steps. See the regression
+vignette for several examples.
+Note, to make it easier to call \code{explain()} from Python, the \code{regression.recipe_func} can also be a string
+containing an R function. For example,
+\code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
+a valid input. It is essential to include the package prefix if the package is not loaded.}
+    \item{\code{regression.surrogate_n_comb}}{Integer (default is \code{internal$parameters$used_n_combinations}) specifying the
+number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
+"\code{internal$parameters$used_n_combinations} - 2". By default, we use all coalitions, but this can take a lot of memory
+in larger dimensions. Note that by "all", we mean all coalitions chosen by \code{shapr} to be used. This will be all
+\eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in the exact mode. If the
+user sets a lower value than \code{internal$parameters$used_n_combinations}, then we sample this amount of unique
+coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.}
+    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
+Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
+    \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
+If one or both of these bounds are not NULL, we restrict the sampled time series to be
+between these bounds.
+This is useful if the underlying time series are scaled between 0 and 1, for example.}
   }}
 }
 \value{
@@ -233,10 +282,12 @@ Computes dependence-aware Shapley values for observations in \code{x_explain} fr
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
 }
 \details{
-The most important thing to notice is that \code{shapr} has implemented six different
-approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
+The most important thing to notice is that \code{shapr} has implemented eight different
+Monte Carlo-based approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
 \code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"vaeac"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
-In addition, the user also has the option of combining the different approaches.
+\code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"},
+and see the separate vignette on the regression-based approaches for more information.
+In addition, the user also has the option of combining the different Monte Carlo-based approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
@@ -348,11 +399,35 @@ explain_groups <- explain(
 )
 print(explain_groups$shapley_values)
 
+# Separate and surrogate regression approaches with linear regression models.
+# More complex regression models can be used, and we can use CV to
+# tune the hyperparameters of the regression models and preprocess
+# the data before sending it to the model. See the regression vignette
+# (Shapley value explanations using the regression paradigm) for more
+# details about the `regression_separate` and `regression_surrogate` approaches.
+explain_separate_lm <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p,
+  approach = "regression_separate",
+  regression.model = parsnip::linear_reg()
+)
+
+explain_surrogate_lm <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = p,
+  approach = "regression_surrogate",
+  regression.model = parsnip::linear_reg()
+)
+
 }
 \references{
 Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
-Martin Jullum
+Martin Jullum, Lars Henry Berge Olsen
 }
