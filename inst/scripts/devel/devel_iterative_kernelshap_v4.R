@@ -147,14 +147,27 @@ n_samples <- 1000
 # the number of features
 # Remmeber to always decompose what is left after extracting the shapley values for the features not included int the procedure
 
+actual_feature_translator_func <- function(oldvec,num_feat_vec){
+  newvec <- num_feat_vec[oldvec]
+  return(newvec)
+}
 
-feature_set_sample <- function(feature_sample_prev = NULL, m, n_combinations_sample = 200, unique_sampling = TRUE,paired_sampling = FALSE) {
+rev_actual_feature_translator_func <- function(newvec,num_feat_vec){
+  oldvec <- match(newvec,num_feat_vec) # Check if this is correct
+  return(oldvec)
+}
+
+
+feature_set_sample <- function(feature_sample_prev = NULL, num_feat_vec, n_combinations_sample = 200, unique_sampling = TRUE,paired_sampling = FALSE) {
 
   #n_combinations_sample specifies the number of NEW n_combinations that shoudl be samples (it does not account for the full and zero set).
   # if unique_sampling is TRUE, then the sampling will continue until the number of unique samples is equal to n_combinations_sample
   # if paired_sampling is TRUE, then to the total number of combinations is equal to n_combinations_sample
 
   # Find weights for given number of features ----------
+  m <- length(num_feat_vec)
+
+
   n_features <- seq(m - 1)
   n <- sapply(n_features, choose, n = m)
   w <- shapr:::shapley_weights(m = m, N = n, n_features) * n
@@ -183,10 +196,11 @@ feature_set_sample <- function(feature_sample_prev = NULL, m, n_combinations_sam
       )
 
       # Sample specific set of features -------
-      feature_sample_0 <- shapr:::sample_features_cpp(m, n_features_sample)
+      feature_sample_00 <- shapr:::sample_features_cpp(m, n_features_sample)
+      feature_sample_0 <- lapply(feature_sample_00,actual_feature_translator_func,num_feat_vec = num_feat_vec)
       if(paired_sampling){
         feature_sample_1 <- feature_sample_0
-        feature_sample_2 <- lapply(feature_sample_0, function(x) seq(m)[-x])
+        feature_sample_2 <- lapply(lapply(feature_sample_00, function(x) seq(m)[-x]),actual_feature_translator_func,num_feat_vec = num_feat_vec)
       } else {
         feature_sample_1 <- feature_sample_0[seq_len(n_combinations_sample*0.5)]
         feature_sample_2 <- feature_sample_0[-seq_len(n_combinations_sample*0.5)]
@@ -207,10 +221,11 @@ feature_set_sample <- function(feature_sample_prev = NULL, m, n_combinations_sam
       replace = TRUE,
       prob = p
     )
-    feature_sample_0 <- shapr:::sample_features_cpp(m, n_features_sample)
+    feature_sample_00 <- shapr:::sample_features_cpp(m, n_features_sample)
+    feature_sample_0 <- lapply(feature_sample_00,actual_feature_translator_func,num_feat_vec = num_feat_vec)
     if(paired_sampling){
       feature_sample_1 <- feature_sample_0
-      feature_sample_2 <- lapply(feature_sample_0, function(x) seq(m)[-x])
+      feature_sample_2 <- lapply(lapply(feature_sample_00, function(x) seq(m)[-x]),actual_feature_translator_func,num_feat_vec = num_feat_vec)
     } else {
       feature_sample_1 <- feature_sample_0[seq_len(n_combinations_sample*0.5)]
       feature_sample_2 <- feature_sample_0[-seq_len(n_combinations_sample*0.5)]
@@ -538,11 +553,6 @@ iter <- 1
 paired_sampling <- TRUE
 shapley_reweighting_strategy = "on_N"
 
-# We ignore a feature from further computations once Pr(|\phi_j| > shapley_threshold_val) < shapley_threshold_prob
-avg_contrib <- (pred_to_decompose-p0)/max_cutoff_features
-
-shapley_threshold_val <- 0.5*abs(avg_contrib)
-shapley_threshold_prob <- 0.2
 
 
 full_pred <- rowSums(treeShaps_dt[testObs_computed,])
@@ -553,19 +563,33 @@ p0 <- org_p0 + pred_not_to_decompose
 
 all.equal(p0+pred_to_decompose,full_pred)
 
+
+# We ignore a feature from further computations once Pr(|\phi_j| > shapley_threshold_val) < shapley_threshold_prob
+avg_contrib <- (pred_to_decompose-p0)/max_cutoff_features
+
+shapley_threshold_val <- 0.5*abs(avg_contrib)
+shapley_threshold_prob <- 0.2
+
 feature_sample_all <- feature_sample_prev_1 <- feature_sample_prev_2 <- NULL
 keep_list <- list()
 set.seed(123)
 iter <- 1
 
+num_feat_vec <- seq_len(m)
+#remaining_cutoff_feats <- cutoff_feats[-seq_len(m)]
+
+S_mapper_list <- list()
+S_mapper_list[[1]] <- data.table(feature_numbers = seq(m),
+                                 feature_names = cutoff_feats[seq(m)])
+
 while (converged == FALSE){
 
   # Setup for current iteration
-  these_features <- cutoff_feats[seq_len(m)]
-  remaining_cutoff_feats<- cutoff_feats[-seq_len(m)]
+
+  current_feature_names <- S_mapper_list[[iter]]$feature_names
 
   current_unique_feature_samples <- length(unique(feature_sample_all))
-  remaining_unique_feature_samples <- 2^m-2 -current_unique_feature_samples
+  remaining_unique_feature_samples <- 2^length(num_feat_vec)-2 -current_unique_feature_samples
 
 
   if(unique_sampling == TRUE && remaining_unique_feature_samples < n_combinations_per_iter){
@@ -574,7 +598,7 @@ while (converged == FALSE){
   }
 
 
-  feature_sample_new_list <- feature_set_sample(feature_sample_prev = feature_sample_all, m=m,n_combinations_sample = initial_n_combinations-2,
+  feature_sample_new_list <- feature_set_sample(feature_sample_prev = feature_sample_all, num_feat_vec = num_feat_vec,n_combinations_sample = ifelse(iter==1,initial_n_combinations-2,n_combinations_per_iter),
                                                 unique_sampling = unique_sampling, paired_sampling = paired_sampling)
 
   feature_sample_new_1 <- feature_sample_new_list[[1]]
@@ -585,30 +609,37 @@ while (converged == FALSE){
 
   feature_sample_all <- c(feature_sample_1,feature_sample_2)
 
-  X0 <- X_from_feature_set_v3(feature_sample_all,m=max_cutoff_features,sample_ids=seq_along(feature_sample_all))[]
+
+  X0 <- X_from_feature_set_v3(feature_sample_all,m=length(num_feat_vec),sample_ids=seq_along(feature_sample_all))[]
 
   if(shapley_reweighting_strategy!="none"){
-    X <- shapley_reweighting(X0, strategy = shapley_reweighting_strategy)
+    X <- shapley_reweighting(X0, strategy = shapley_reweighting_strategy) # This probably needs adjustment.
   } else {
     X <- X0
   }
 
-  ## Get feature matrix ---------
-  S <- feature_matrix_cpp(
-    features = X[["S"]],
-    m = max_cutoff_features
-  )
+  # No longer needed
+  # ## Get feature matrix ---------
+  # S <- feature_matrix_cpp(
+  #   features = X[["S"]],
+  #   m = length(num_feat_vec)
+  # )
+
+
 
 
   # Get weighted matrix ----------------
 
-  X[,features:=S] # Since shapr:::weight_matrix needs this name
+  #X[,features:=S] # Since shapr:::weight_matrix needs this name
+  X[,features:= lapply(S,rev_actual_feature_translator_func,num_feat_vec = num_feat_vec)]
+
   W <- shapr:::weight_matrix(
     X = X,
     normalize_W_weights = TRUE,
     is_groupwise = FALSE
   )
 
+  ### CONTINUE HERE #####
 
 
   #### Just doing a basic variant with the feature I got here for now #####
@@ -631,7 +662,6 @@ while (converged == FALSE){
     x_explain_red_here <- x_explain_red[testObs_computed,]
     x_excluded_here <- x_explain[testObs_computed,..excluded_feature_cols]
 
-
     for(i in seq_len(nrow(new_combinations))){
       S_char_here <- new_combinations[i,S_char]
       Sbar_char_here <- new_combinations[i,Sbar_char]
@@ -639,8 +669,6 @@ while (converged == FALSE){
       S_here <- unlist(X[S_char ==S_char_here,S])
 
       tree <- shapr:::create_ctree(S_here, x_train_red, ctree.mincriterion, ctree.minsplit, ctree.minbucket)
-
-
 
       samp_list <- list()
       for(j in seq_along(testObs_computed)){
@@ -698,7 +726,7 @@ while (converged == FALSE){
 
   #### Compute probabilities ####
   kshap_prob_mat <- probfunc(kshap_est_mat,kshap_sd_mat,shapley_threshold_val = shapley_threshold_val)
-  kshap_prob_dt <- data.table(dt_kshap[,"id"],kshap_prob_mat)
+  kshap_prob_dt <- data.table(kshap_est_dt[,"id"],kshap_prob_mat)
 
   keep_list[[iter]] <- list(kshap_est_dt = kshap_est_dt,
                             kshap_sd_dt = kshap_sd_dt,
@@ -724,8 +752,10 @@ while (converged == FALSE){
 
   # Check for exclusion
   if(any(as.vector(kshap_prob_mat)<shapley_threshold_prob)){
-    exclude_feature <- 5#which.min(as.vector(kshap_prob_mat))
-    exclude_feature_name <- feature_names[exclude_feature]
+    exclude_feature <- 5#which.min(as.vector(kshap_prob_mat)[-1]) # 5 # TODO: Need to adjust this when the second features is removed so it picks the right one
+    exclude_feature_name <- current_feature_names[exclude_feature]
+
+    current_feature_names <- setdiff(current_feature_names,exclude_feature_name)
 
 
     X[,S_new:=lapply(S,function(x) x[!(x %in% exclude_feature)])]
@@ -767,17 +797,32 @@ while (converged == FALSE){
                                p_hat_1)])
 
 
+    ### Modify which features we work with
+
+    these_features <- cutoff_feats[-exclude_feature]
+    num_feat_vec <- num_feat_vec[-exclude_feature]
+
+
     # Mofifying the feature_samples as well.
 
     feature_sample_1_char_dt <- data.table(S_char=sapply(feature_sample_1,paste0, collapse = "_"))
     feature_sample_1_char_dt <- merge(feature_sample_1_char_dt,S_mapper,by="S_char")
     feature_sample_1_char_dt[,S_new:=sapply(strsplit(S_char_new, "_"),as.numeric)]
-    feature_sample_1 <- feature_sample_1_char_dt[keep==TRUE,S_new]
+    feature_sample_1_0 <- feature_sample_1_char_dt[keep==TRUE,S_new]
+    feature_sample_1 <- lapply(feature_sample_1_0,match,num_feat_vec)
+
 
     feature_sample_2_char_dt <- data.table(S_char=sapply(feature_sample_2,paste0, collapse = "_"))
     feature_sample_2_char_dt <- merge(feature_sample_2_char_dt,S_mapper,by="S_char")
     feature_sample_2_char_dt[,S_new:=sapply(strsplit(S_char_new, "_"),as.numeric)]
-    feature_sample_2 <- feature_sample_2_char_dt[keep==TRUE,S_new]
+    feature_sample_2_0 <- feature_sample_2_char_dt[keep==TRUE,S_new]
+    feature_sample_2 <- lapply(feature_sample_2_0,match,num_feat_vec)
+
+
+    feature_sample_all <- c(feature_sample_1,feature_sample_2)
+
+
+
 
 
     # TODO:
@@ -795,9 +840,15 @@ while (converged == FALSE){
   }
 
 
+
+
   iter <- iter+1
   feature_sample_prev_1 <- feature_sample_1
   feature_sample_prev_2 <- feature_sample_2
+
+
+  S_mapper_list[[iter]] <- data.table(feature_number = seq_along(current_feature_names),
+                                      feature_name = current_feature_names)
 
 
 }
