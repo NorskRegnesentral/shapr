@@ -58,11 +58,11 @@ prepare_data <- function(internal, index_features = NULL, ...) {
 
   # Check if the user provided one or several approaches.
   if (length(approach) > 1) {
-    # Picks the relevant approach from the internal$objects$X table which list the unique approach of the batch
-    # matches by index_features
+    # Pick the relevant approach from the internal$objects$X table, which lists the unique 
+    # approach of the batch matched by index_features
     class(this_class) <- internal$objects$X[id_combination == index_features[1], approach]
   } else {
-    # Only one approach for all coalitions sizes
+    # Only one approach for all coalition sizes
     class(this_class) <- approach
   }
 
@@ -83,5 +83,5 @@ insert_defaults <- function(internal, defaults) {
 
 #' @keywords internal
 get_factor_approaches <- function() {
-  c("'independence' (not recommended)", "'ctree'", "'vaeac'", "'categorical'")
+  c("'independence' (not recommended)", "'ctree'", "'vaeac'", "'categorical'", "'regression_separate'", "'regression_surrogate'")
 }
