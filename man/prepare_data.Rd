@@ -58,8 +58,6 @@ the contribution function by Monte Carlo integration.
 Generate data used for predictions and Monte Carlo integration
 }
 \author{
-Martin Jullum and Lars Henry Berge Olsen
-
 Lars Henry Berge Olsen
 }
 \keyword{internal}

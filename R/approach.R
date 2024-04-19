@@ -47,8 +47,6 @@ setup_approach.combined <- function(internal, ...) {
 #' @inheritParams default_doc
 #' @inheritParams default_doc_explain
 #'
-#' @author Martin Jullum and Lars Henry Berge Olsen
-#'
 #' @export
 #' @keywords internal
 prepare_data <- function(internal, index_features = NULL, ...) {
