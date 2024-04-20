@@ -41,7 +41,9 @@ prepare_data(internal, index_features = NULL, ...)
 \method{prepare_data}{vaeac}(internal, index_features = NULL, ...)
 }
 \arguments{
-\item{internal}{Not used.}
+\item{internal}{List.
+Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
 \item{index_features}{Positive integer vector. Specifies the indices of combinations to
 apply to the present method. \code{NULL} means all combinations. Only used internally.}

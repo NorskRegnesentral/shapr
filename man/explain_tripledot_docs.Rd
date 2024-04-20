@@ -8,32 +8,8 @@ explain_tripledot_docs(...)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
+  Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
   \describe{
-    \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
-Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
-TODO: Describe better what the methods do here.}
-    \item{\code{empirical.eta}}{Numeric. (default = 0.95)
-Needs to be \verb{0 < eta <= 1}.
-Represents the minimum proportion of the total empirical weight that data samples should use.
-If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
-accounts for 80\\% of the total weight.
-\code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
-    \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
-Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
-Only used when \code{empirical.type = "fixed_sigma"}}
-    \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
-Number of samples to consider in AICc optimization.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.eval_max_aicc}}{Positive integer. (default = 20)
-Maximum number of iterations when optimizing the AICc.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.start_aicc}}{Numeric. (default = 0.1)
-Start value of the \code{sigma} parameter when optimizing the AICc.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional, default = NULL)
-Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
-\code{NULL} means it is estimated from \code{x_train}.}
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.
@@ -59,6 +35,30 @@ If FALSE and the number of observations in the leaf node is more than \code{n_sa
 the method will sample \code{n_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+    \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
+Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
+TODO: Describe better what the methods do here.}
+    \item{\code{empirical.eta}}{Numeric. (default = 0.95)
+Needs to be \verb{0 < eta <= 1}.
+Represents the minimum proportion of the total empirical weight that data samples should use.
+If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
+accounts for 80\% of the total weight.
+\code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
+    \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
+Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
+Only used when \code{empirical.type = "fixed_sigma"}}
+    \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
+Number of samples to consider in AICc optimization.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.eval_max_aicc}}{Positive integer. (default = 20)
+Maximum number of iterations when optimizing the AICc.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.start_aicc}}{Numeric. (default = 0.1)
+Start value of the \code{sigma} parameter when optimizing the AICc.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional, default = NULL)
+Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
+\code{NULL} means it is estimated from \code{x_train}.}
     \item{\code{gaussian.mu}}{Numeric vector. (Optional)
 Containing the mean of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}

@@ -72,10 +72,10 @@ the function is to save the fitted vaeac model. Note that  the path will be remo
 \code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}.}
 
 \item{train_indices}{Numeric array (optional) containing the indices of the training observations.
-There are conducted no checks to validdate the indices.}
+There are conducted no checks to validate the indices.}
 
 \item{val_indices}{Numeric array (optional) containing the indices of the validation observations.
-#' There are conducted no checks to validdate the indices.}
+There are conducted no checks to validate the indices.}
 }
 \value{
 List of objects needed to train the \code{vaeac} model
@@ -83,3 +83,4 @@ List of objects needed to train the \code{vaeac} model
 \description{
 Function to set up data loaders and save file names
 }
+\keyword{internal}

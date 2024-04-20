@@ -118,39 +118,17 @@ Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} 
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
+  Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
   \describe{
-    \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
-Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
-TODO: Describe better what the methods do here.}
-    \item{\code{empirical.eta}}{Numeric. (default = 0.95)
-Needs to be \verb{0 < eta <= 1}.
-Represents the minimum proportion of the total empirical weight that data samples should use.
-If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
-accounts for 80\\% of the total weight.
-\code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
-    \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
-Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
-Only used when \code{empirical.type = "fixed_sigma"}}
-    \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
-Number of samples to consider in AICc optimization.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.eval_max_aicc}}{Positive integer. (default = 20)
-Maximum number of iterations when optimizing the AICc.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.start_aicc}}{Numeric. (default = 0.1)
-Start value of the \code{sigma} parameter when optimizing the AICc.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional, default = NULL)
-Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
-\code{NULL} means it is estimated from \code{x_train}.}
-    \item{\code{internal}}{Not used.}
-    \item{\code{gaussian.mu}}{Numeric vector. (Optional)
-Containing the mean of the data generating distribution.
-\code{NULL} means it is estimated from the \code{x_train}.}
-    \item{\code{gaussian.cov_mat}}{Numeric matrix. (Optional)
-Containing the covariance matrix of the data generating distribution.
-\code{NULL} means it is estimated from the \code{x_train}.}
+    \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
+Containing the joint probability distribution for each combination of feature
+values.
+\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
+    \item{\code{categorical.epsilon}}{Numeric value. (Optional)
+If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
+estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
+then epsilon is used as the proportion of times that these observations occurs in the training data.
+In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
     \item{\code{ctree.mincriterion}}{Numeric scalar or vector. (default = 0.95)
 Either a scalar or vector of length equal to the number of features in the model.
 Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
@@ -167,30 +145,36 @@ If FALSE and the number of observations in the leaf node is more than \code{n_sa
 the method will sample \code{n_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
-    \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
-in the neural networks of the masked encoder, full encoder, and decoder.}
-    \item{\code{vaeac.width}}{Positive integer (default is \code{32}). The number of neurons in each
-hidden layer in the neural networks of the masked encoder, full encoder, and decoder.}
-    \item{\code{vaeac.latent_dim}}{Positive integer (default is \code{8}). The number of dimensions in the latent space.}
-    \item{\code{vaeac.lr}}{Positive numeric (default is \code{0.001}). The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
-    \item{\code{vaeac.activation_function}}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
-\code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
-    \item{\code{vaeac.n_vaeacs_initialize}}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
-in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
-epochs (default is \code{2}) and continue training that one.}
-    \item{\code{vaeac.epochs}}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
-This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
-    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
-\code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
-    \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
-Containing the joint probability distribution for each combination of feature
-values.
-\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
-    \item{\code{categorical.epsilon}}{Numeric value. (Optional)
-If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
-estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
-then epsilon is used as the proportion of times that these observations occurs in the training data.
-In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
+    \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
+Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
+TODO: Describe better what the methods do here.}
+    \item{\code{empirical.eta}}{Numeric. (default = 0.95)
+Needs to be \verb{0 < eta <= 1}.
+Represents the minimum proportion of the total empirical weight that data samples should use.
+If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
+accounts for 80\% of the total weight.
+\code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
+    \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
+Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
+Only used when \code{empirical.type = "fixed_sigma"}}
+    \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
+Number of samples to consider in AICc optimization.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.eval_max_aicc}}{Positive integer. (default = 20)
+Maximum number of iterations when optimizing the AICc.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.start_aicc}}{Numeric. (default = 0.1)
+Start value of the \code{sigma} parameter when optimizing the AICc.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional, default = NULL)
+Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
+\code{NULL} means it is estimated from \code{x_train}.}
+    \item{\code{gaussian.mu}}{Numeric vector. (Optional)
+Containing the mean of the data generating distribution.
+\code{NULL} means it is estimated from the \code{x_train}.}
+    \item{\code{gaussian.cov_mat}}{Numeric matrix. (Optional)
+Containing the covariance matrix of the data generating distribution.
+\code{NULL} means it is estimated from the \code{x_train}.}
     \item{\code{regression.model}}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
 \code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
 and see the vignette for how to add new/own models. Note, to make it easier to call \code{explain()} from Python, the
@@ -231,6 +215,21 @@ Represents the kernel bandwidth in the distance computation. TODO: What length s
 If one or both of these bounds are not NULL, we restrict the sampled time series to be
 between these bounds.
 This is useful if the underlying time series are scaled between 0 and 1, for example.}
+    \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
+in the neural networks of the masked encoder, full encoder, and decoder.}
+    \item{\code{vaeac.width}}{Positive integer (default is \code{32}). The number of neurons in each
+hidden layer in the neural networks of the masked encoder, full encoder, and decoder.}
+    \item{\code{vaeac.latent_dim}}{Positive integer (default is \code{8}). The number of dimensions in the latent space.}
+    \item{\code{vaeac.lr}}{Positive numeric (default is \code{0.001}). The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
+    \item{\code{vaeac.activation_function}}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
+\code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
+    \item{\code{vaeac.n_vaeacs_initialize}}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
+in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
+epochs (default is \code{2}) and continue training that one.}
+    \item{\code{vaeac.epochs}}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
+This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
+    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
+\code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
   }}
 }
 \value{

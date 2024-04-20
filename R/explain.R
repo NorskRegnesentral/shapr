@@ -97,16 +97,16 @@
 #'
 #' @param ... Further arguments passed to specific approaches
 #'
-#' @inheritDotParams setup_approach.empirical
-#' @inheritDotParams setup_approach.independence
-#' @inheritDotParams setup_approach.gaussian
-#' @inheritDotParams setup_approach.copula
-#' @inheritDotParams setup_approach.ctree
-#' @inheritDotParams setup_approach.vaeac
-#' @inheritDotParams setup_approach.categorical
-#' @inheritDotParams setup_approach.regression_separate
-#' @inheritDotParams setup_approach.regression_surrogate
-#' @inheritDotParams setup_approach.timeseries
+#' @inheritDotParams setup_approach.categorical -internal
+#' @inheritDotParams setup_approach.copula -internal
+#' @inheritDotParams setup_approach.ctree -internal
+#' @inheritDotParams setup_approach.empirical -internal -model -predict_model
+#' @inheritDotParams setup_approach.gaussian -internal
+#' @inheritDotParams setup_approach.independence -internal
+#' @inheritDotParams setup_approach.regression_separate -internal
+#' @inheritDotParams setup_approach.regression_surrogate -internal
+#' @inheritDotParams setup_approach.timeseries -internal
+#' @inheritDotParams setup_approach.vaeac -internal
 #'
 #' @details The most important thing to notice is that `shapr` has implemented eight different
 #' Monte Carlo-based approaches for estimating the conditional distributions of the data, namely `"empirical"`,

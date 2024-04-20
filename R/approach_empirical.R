@@ -8,7 +8,7 @@
 #' Needs to be `0 < eta <= 1`.
 #' Represents the minimum proportion of the total empirical weight that data samples should use.
 #' If e.g. `eta = .8` we will choose the `K` samples with the largest weight so that the sum of the weights
-#' accounts for 80\% of the total weight.
+#' accounts for 80% of the total weight.
 #' `eta` is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
 #'
 #' @param empirical.fixed_sigma Positive numeric scalar. (default = 0.1)
