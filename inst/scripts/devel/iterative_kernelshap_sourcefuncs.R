@@ -1,147 +1,4 @@
-#source("/nr/project/stat/BigInsight//Projects//Explanations//EffektivShapley//helpFunctions.R")
 
-#library(treeshap)
-library(xgboost)
-library(data.table)
-
-# Install the github version of the shapr pacakge
-#remotes::install_github("NorskRegnesentral/shapr")
-
-library(shapr)
-
-#library(progressr)
-#progressr::handlers(global = TRUE) # To get progress updates
-
-#library(future)
-#future::plan(multisession, workers = 10) # for paralellization (on both linux and windows)
-
-
-plotFig <- 0
-
-datafolder <- "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/NHANES-data/"
-#datafolder <- "M:/BigInsight/Projects/Explanations/EffektivShapley/NHANES-data/"
-
-x_explain <- fread(file.path(datafolder,"newdata/Xtest_imp.csv"))
-y_test    <- fread(file.path(datafolder,"newdata/ytest.csv"))$V1
-x_train   <- fread(file.path(datafolder,"newdata/Xtrain_imp.csv"))
-y_train   <- fread(file.path(datafolder,"newdata/ytrain.csv"))$V1
-
-names(x_train)[52:55]   <- c("urine_albumin_is_gt_30","urine_albumin_is_gt_100","urine_albumin_is_get_300", "urine_albumin_is_gt_1000")
-names(x_explain)[52:55] <- c("urine_albumin_is_gt_30","urine_albumin_is_gt_100","urine_albumin_is_get_300", "urine_albumin_is_gt_1000")
-
-model <- xgboost::xgb.load(file.path(datafolder,"newdata/xgb_model_imp.json"))
-
-preds <- predict(model,as.matrix(x_explain),outputmargin = TRUE)
-preds_train <- predict(model,as.matrix(x_train),outputmargin = TRUE)
-
-pred_mod_xgb <- function(model,newdata){
-  xgboost:::predict.xgb.Booster(model,as.matrix(newdata),outputmargin = TRUE)
-}
-
-#preds <- log(predict(model,as.matrix(x_explain)))
-
-#ind   <- rev(order(preds))[1:2]
-#ind   <- rev(order(preds))[9:10]
-#x_explain <- x_explain[ind,]
-
-
-treeShaps=predict(model,as.matrix(x_explain),predcontrib = TRUE)
-
-prediction_zero <- treeShaps[1,"BIAS"]
-feature_names <- colnames(x_train)
-
-
-#### testing here
-
-# TODO:
-# 1. Check that the order of the features is correct such that the correct id combinations are used in the shapley value
-# computations later on.
-# 2. Control the computed shapley values with what you get with the standard approach in th nhanes-shapr-reduced setting e.g. all but 2, 3 or 4 features
-# to zero. should be about the same if the procedure works.
-
-
-n_features <- ncol(x_train)
-abscorMat <- abs(cor(x_train))
-max_cutoff_features <- 6
-max_cutoff_remaining_imp <- 0.10
-p0 <- treeShaps[1,"BIAS"]
-S_replacement_for_remaining_cutoff_feats <- 1 # 1 for conditioning on these, 0 for marginalizing them out
-
-
-
-fix_zero_and_full_prediction <- TRUE
-
-# For a specific testObs:
-
-testObs <- 24
-testObs <- 5
-
-org_imp <- abs(treeShaps[testObs,-(n_features+1)]) # absolute value of treeshap values
-norm_org_imp <- org_imp/sum(org_imp)
-cor_imp <- as.vector(org_imp%*%abscorMat)
-names(cor_imp) <- names(x_train)
-norm_cor_imp <- cor_imp/sum(cor_imp)
-plot(norm_cor_imp,type="l",ylim=c(0,0.25))
-lines(org_imp/sum(org_imp),col="red")
-
-sorted_norm_cor_imp <- sort(norm_cor_imp,decreasing = TRUE)
-cumsum_sorted_norm_cor_imp <- cumsum(sorted_norm_cor_imp)
-
-
-cutoff0 <- which(cumsum_sorted_norm_cor_imp<=1-max_cutoff_remaining_imp)
-cutoff <- ifelse(length(cutoff0)>=max_cutoff_features,cutoff0[max_cutoff_features],cutoff0[length(cutoff)])
-cutoff_imp <- sorted_norm_cor_imp[1:cutoff]
-cutoff_feats <- names(cutoff_imp)
-
-
-ctree.mincriterion = 0.95
-ctree.minsplit = 20
-ctree.minbucket = 7
-ctree.sample = TRUE
-n_samples <- 1000
-
-#
-# X_full <- shapr:::feature_combinations(
-#   m = max_comp_features,
-#   exact = TRUE,
-#   n_combinations = NULL,
-#   weight_zero_m = 10^6,
-#   group_num = NULL
-# )
-#
-# ## Get feature matrix ---------
-# S_full <- feature_matrix_cpp(
-#   features = X_full[["features"]],
-#   m = max_comp_features
-# )
-#
-# S_full <- cbind(S_full,matrix(S_replacement_for_remaining_cutoff_feats,ncol=max_cutoff_features-max_comp_features,nrow=nrow(S_full)))
-#
-# S_full_dt <- as.data.table(S_full)
-# S_full_dt[,id_combination_full:=.I]
-# S_full_dt[,computed_in_loop:=as.numeric(NA)]
-#
-# S_full_dt[.N,computed_in_loop:=0] # We don't need to compute the full model
-# S_full_dt[.N, p_hat_1:=preds[testObs]] # Already computed
-
-# Not sure if this should be included here or not, as the smallest model now condiitonal on some features
-# so is not really the same as the zero model
-# I think it is best to model this every time, yes
-
-
-#S_full_dt[1,computed_in_loop:=0] # We don't need to compute the zero model
-#S_full_dt[1, p_hat_1:=prediction_zero]
-
-
-
-#### TODO:
-
-
-# Start with some samples of the largest model
-# Compute variance of this model
-# Cut out the ones that with a certain probability is within an epsilon from zero, to reduce
-# the number of features
-# Remmeber to always decompose what is left after extracting the shapley values for the features not included int the procedure
 
 actual_feature_translator_func <- function(oldvec,num_feat_vec){
   newvec <- num_feat_vec[oldvec]
@@ -504,65 +361,6 @@ probfunc <- function(est,sd,shapley_threshold_val){
 }
 
 
-treeShaps_dt <- as.data.table(treeShaps)
-# Assume we are sampling say 20 coalitions at a time,
-
-# Here we try start out sampling based on fewer features, but we add the full cutoff features afterwords.
-# And run kernelshap with the full set of features
-
-# TRUE
-
-
-# TODO:
-# 1. use exact shapley value to check whether it matters whether you change the prediction or the phi0 as long
-# as you adjust the other one, i.e. that what is distributed is the difference between the two
-# Yes, I have done this and it is only the difference between the full pred phi0 which is distributed in the features.
-# when doing exact kernelshap
-# 1.5. Allow multiple testObs to be evaluated with this approach, assuming the same set of features are used for all
-# DONE
-
-# THIS IS NEXT ##### 2. set a threshold for what when to discard a value. I think that when maxval is below 0.10 or 0.15, we can discard it
-# One issue might be that when this is used, the shapley value of the excluded ones are biased towards zero,
-# since that is the point at which they are being cut off. think about whether we can adjust for this.
-# In any case, I should then remove the features from the kernelshap computation, and subtract the sum of their
-# values from the full prediction value
-# Further, I should have differnet options for reusing the v(S) from that full model.
-# Assume first that we remove one feature at a time:
-#   #a) reuse those who condition on the removed feature (i.e. S=1)
-#   #b) reuse those who does not condition on the remove feature (i.e. S=0)
-#   #c) take the mean of those in a and b
-# When we iteratively remove more features, it might be wise to use some kind of weighted mean of all those
-# who are removed.
-
-#n_var_est_groups <- 5
-#n_var_est_reps <- 10
-#redistribute_shapley_weight <- TRUE
-
-cutoff_feats <- c("age", "systolic_blood_pressure", "pulse_pressure","cholesterol","sex_isFemale")
-cutoff_feats <- c("age", "systolic_blood_pressure", "pulse_pressure","sex_isFemale")
-
-
-testObs_computed <- 5
-initial_n_combinations <- min(20,2^length(cutoff_feats)-2)
-n_combinations_per_iter <- 10
-n_boot_ests <- 50
-unique_sampling <- TRUE
-paired_sampling <- TRUE
-shapley_reweighting_strategy = "on_N"
-
-full_pred <- rowSums(treeShaps_dt[testObs_computed,])
-pred_not_to_decompose <- rowSums(treeShaps_dt[testObs_computed,setdiff(names(x_train),cutoff_feats),with=FALSE])
-org_p0 <- treeShaps_dt[testObs_computed,BIAS][1]
-p0 <- org_p0 + pred_not_to_decompose
-
-
-pred_to_decompose <- rowSums(treeShaps_dt[testObs_computed,..cutoff_feats])
-all.equal(p0+pred_to_decompose,full_pred)
-
-avg_contrib <- (pred_to_decompose-p0)/max_cutoff_features
-
-shapley_threshold_val <- 0.5*abs(avg_contrib)
-shapley_threshold_prob <- 0.00
 
 
 iterative_kshap_func <- function(model,
@@ -585,6 +383,7 @@ iterative_kshap_func <- function(model,
 
   m <- length(cutoff_feats)#max_cutoff_features-0
 
+  feature_names <- names(x_train)
 
   excluded_feature_cols <- setdiff(names(x_train),cutoff_feats)
 
@@ -880,8 +679,6 @@ iterative_kshap_func <- function(model,
 
       ### Modify which features we work with
 
-      these_features <- cutoff_feats[-exclude_feature]
-      num_feat_vec <- num_feat_vec[-exclude_feature]
 
       # Converting to the new format for the next iteration
       X_dt_vS[,S_new_newformat:=sapply(S_new,match,num_feat_vec)]
@@ -895,6 +692,8 @@ iterative_kshap_func <- function(model,
                                  p_hat_1)])
 
 
+      # These needs to be placed here, after the X_dt_vS stuff, I think, as they might need the old one...
+      num_feat_vec <- num_feat_vec[-exclude_feature]
 
 
       # Mofifying the feature_samples as well.
@@ -976,165 +775,4 @@ iterative_kshap_func <- function(model,
   )
 
 }
-
-
-
-run <- iterative_kshap_func(model,x_explain,x_train,
-                            testObs_computed = 5,
-                            cutoff_feats = cutoff_feats,
-                            full_pred = full_pred,
-                            pred_not_to_decompose = pred_not_to_decompose,
-                            p0 = p0,
-                            predict_model = pred_mod_xgb)
-
-
-# > rbindlist(kshap_est_dt_list)
-# id       none        age systolic_blood_pressure pulse_pressure cholesterol sex_isFemale
-# <num>      <num>      <num>                   <num>          <num>       <num>        <num>
-#   1:     5 -0.2363602 -1.0324196              -0.1781393     -0.3543366  0.06134782   -0.2264046
-# 2:     5 -0.2363602 -1.0208127              -0.1703291     -0.3363762  0.06526367   -0.2098054
-# 3:     5 -0.2363602 -0.9342698              -0.3268114     -0.2672583  0.06246510   -0.1982597
-# 4:     5 -0.2363602 -0.9039752              -0.3601522     -0.2459947  0.04721183   -0.2141459
-# 5:     5 -0.2363602 -0.9148729              -0.3779553     -0.2252278  0.05646760   -0.2229283
-# 6:     5 -0.2363602 -0.9158867              -0.3790719     -0.2325314  0.06220265   -0.2119778
-# sedimentation_rate
-# <num>
-#   1:        -0.05300468
-# 2:        -0.11089728
-# 3:        -0.11882282
-# 4:        -0.10590079
-# 5:        -0.09844023
-# 6:        -0.10569169
-
-#id       none        age systolic_blood_pressure pulse_pressure cholesterol sex_isFemale
-#<num>      <num>      <num>                   <num>          <num>       <num>        <num>
-#  1:     5 -0.2363602 -1.0324196              -0.1781393     -0.3543366  0.06134782   -0.2264046
-#2:     5 -0.2363602 -0.9307354              -0.3629497     -0.2451795  0.03561040   -0.2266980
-#3:     5 -0.2363603 -0.6323135              -0.5460737     -0.3050392          NA   -0.2821362
-#sedimentation_rate
-#<num>
-#  1:        -0.05300468
-#2:                 NA
-#3:                 NA
-
-# TODO:
-
-# Check that the estimation is stopped when all features are sampled (and the variance set to 0) DONE
-
-
-# Adjust the total prediction when a feature is removed DONE
-# check that the  correct feature is excluded when a feature is exc luded DONE (I think)
-# Include the removed features in the printout (+ the total prediction and what is distributed on the features or so) # DONE
-
-# Check why the function always fails on inter=3 with the error:
-# Error: Not compatible with requested type: [type=NULL; target=double].
-
-
-#[1] 3
-#id             none              age systolic_blood_pressure   pulse_pressure             cholesterol     sex_isFemale
-#<num>           <char>           <char>                  <char>           <char>                  <char>           <char>
-#  1:     5 -0.236 ( 0) [ 0] -0.731 ( 0) [ 0]        -0.394 ( 0) [ 0] -0.272 ( 0) [ 0] 0.006 [done estimating] -0.339 ( 0) [ 0]
-#sedimentation_rate other_features
-#<char>         <char>
-#  1: -0.053 [done estimating]         -0.176
-#
-
-
-
-
-
-################
-
-cutoff_feats <- c("age", "systolic_blood_pressure", "pulse_pressure","sex_isFemale")
-#cutoff_feats <- c("age", "systolic_blood_pressure", "pulse_pressure","cholesterol","sex_isFemale")
-#cutoff_feats <- c("age", "systolic_blood_pressure", "pulse_pressure","cholesterol","sex_isFemale","sedimentation_rate" )
-excluded_feature_cols <- setdiff(colnames(x_train),cutoff_feats)
-
-model_shapr <- model
-class(model_shapr) <- "blabla"
-x_explain_excluded <- x_explain[testObs_computed,..excluded_feature_cols]
-
-predict_model_shapr <<- function(model_shapr,newdata){
-
-  newdata_excluded <- unlist(x_explain_excluded)
-
-  newdata_excluded <- matrix(rep(newdata_excluded,each=dim(newdata)[1]),nrow=dim(newdata)[1])
-  colnames(newdata_excluded) <- colnames(x_explain_excluded)
-  newdata_full <- as.data.table(cbind(newdata_excluded,as.matrix(newdata)))
-  setcolorder(newdata_full,names(x_train))
-
-  class(model_shapr) = "xgb.Booster"
-
-  xgboost:::predict.xgb.Booster(model_shapr,as.matrix(newdata_full),outputmargin =TRUE)
-}
-
-aa=predict_model_shapr(model_shapr,x_explain[testObs_computed,..cutoff_feats])
-bb = predict(model,as.matrix(x_explain[testObs_computed,]),outputmargin = TRUE)
-aa
-bb
-
-full_pred <- rowSums(treeShaps_dt[testObs_computed,])
-pred_to_decompose <- rowSums(treeShaps_dt[testObs_computed,..cutoff_feats])
-pred_not_to_decompose <- rowSums(treeShaps_dt[testObs_computed,..excluded_feature_cols])
-org_p0 <- treeShaps_dt[testObs_computed,BIAS][1]
-p0 <- org_p0 + pred_not_to_decompose
-
-
-expl <- shapr::explain(model = model_shapr,
-                       x_explain= x_explain[testObs_computed,..cutoff_feats],
-                       x_train = x_train[,..cutoff_feats],
-                       approach = "ctree",
-                       prediction_zero = p0,
-                       predict_model = predict_model_shapr)
-
-expl$shapley_values
-#none        age systolic_blood_pressure pulse_pressure sex_isFemale
-#<num>      <num>                   <num>          <num>        <num>
-#  1: -0.3117251 -0.9014703              -0.4400504     -0.3003352   -0.3021037
-#none        age systolic_blood_pressure pulse_pressure cholesterol sex_isFemale
-#<num>      <num>                   <num>          <num>       <num>        <num>
-#  1: -0.2746173 -0.9903395              -0.4304803     -0.2968699  0.01581737   -0.2791949
-#none        age systolic_blood_pressure pulse_pressure cholesterol sex_isFemale sedimentation_rate
-#<num>      <num>                   <num>          <num>       <num>        <num>              <num>
-#  1: -0.2363602 -0.9538142               -0.415132     -0.2640743  0.01415042   -0.2701904         -0.1302638
-
-
-
-
-
-
-aa=merge(expl$internal$objects$X,expl$internal$output$dt_vS,by="id_combination")
-aa[,S_char:=sapply(features,paste0, collapse = "_")]
-
-bb <- merge(aa[,.(id_combination,S_char,shapr_est=p_hat1_1)],dt_vS[,.(S_char,iter_est=p_hat_1)],by="S_char")
-
-setorder(bb,id_combination)
-bb
-# OK, seems there are only some minor differences in the predictions (which is expected due to randomness in the ctree sampling)
-
-
-t(expl$internal$objects$W%*%as.matrix(bb[,iter_est]))
-expl$shapley_values
-kshap_est_dt
-W
-expl$internal$objects$W
-##############
-
-### TODO:
-
-#Figure out what is wrong with the shapley_weights when doing on_all as they are not giving the same as when calling feature_exact(current_m) and looking at the shapley_weights there
-
-X_shapr <-shapr:::feature_exact(6)[]
-
-X0[,shapley_weight := shapr:::shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m=10^6)]
-
-X0 <- X_from_feature_set_v3(feature_sample_all,m=current_m,sample_ids=seq_along(feature_sample_all))[]
-
-aa=shapley_reweighting(X0, strategy = "on_all")[]$shapley_weight
-
-all.equal(aa,X_shapr$shapley_weight)
-
-X0$shapley_weight
-
-
 
