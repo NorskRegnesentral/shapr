@@ -409,7 +409,7 @@ iterative_kshap_func <- function(model,
   current_x_explain_red <- x_explain[,..cutoff_feats]
 
   fixed_kshap_est_dt <- NULL
-  kshap_est_dt_list <- list()
+  kshap_est_dt_list <- kshap_sd_dt_list <- kshap_prob_dt_list <- kshap_est_sd_prob_dt_list <- list()
 
   while (converged == FALSE){
 
@@ -590,22 +590,11 @@ iterative_kshap_func <- function(model,
     }
 
 
-    keep_list[[iter]] <- list(kshap_est_dt = kshap_est_dt,
-                              kshap_sd_dt = kshap_sd_dt,
-                              kshap_prob_dt = kshap_prob_dt,
-                              dt_vS = dt_vS,
-                              X = X,
-                              feature_sample_1 = feature_sample_1,
-                              feature_sample_2 = feature_sample_2,
-                              full_pred = full_pred,
-                              p0 = p0)
-
-    kshap_est_dt_list[[iter]] <- kshap_est_dt
 
 
-    matrix1 <- format(round(kshap_est_mat,3),width=2,justify = "right")
-    matrix2 <- format(round(kshap_sd_mat,2),width=2,justify = "right")
-    matrix3 <- format(round(kshap_prob_mat,2),width=2,justify = "right")
+    matrix1 <- format(round(kshap_est_mat,3),nsmall=2,justify = "right")
+    matrix2 <- format(round(kshap_sd_mat,2),nsmall=2,justify = "right")
+    matrix3 <- format(round(kshap_prob_mat,2),nsmall=2,justify = "right")
 
 
     kshap_est_sd_prob_dt <- cbind(kshap_est_dt[,"id"],as.data.table(matrix(paste(matrix1, " (", matrix2,") [", matrix3,"]", sep = ""), nrow = length(testObs_computed))))
@@ -619,6 +608,22 @@ iterative_kshap_func <- function(model,
 
     print(iter)
     print(kshap_est_sd_prob_dt[])
+
+    keep_list[[iter]] <- list(kshap_est_dt = kshap_est_dt,
+                              kshap_sd_dt = kshap_sd_dt,
+                              kshap_prob_dt = kshap_prob_dt,
+                              dt_vS = dt_vS,
+                              X = X,
+                              feature_sample_1 = feature_sample_1,
+                              feature_sample_2 = feature_sample_2,
+                              full_pred = full_pred,
+                              p0 = p0)
+
+    kshap_est_dt_list[[iter]] <- kshap_est_dt
+    kshap_sd_dt_list[[iter]] <- kshap_sd_dt
+    kshap_prob_dt_list[[iter]] <- kshap_prob_dt
+    kshap_est_sd_prob_dt_list[[iter]] <- kshap_est_sd_prob_dt
+
 
     # Check for exclusion
     if(converged==FALSE && any(as.vector(kshap_prob_mat)<shapley_threshold_prob)){
@@ -888,8 +893,15 @@ iterative_kshap_func <- function(model,
   kshap_it_est_dt <- rbindlist(kshap_est_dt_list,fill=TRUE)
 
   return(list(kshap_est_dt_list = kshap_it_est_dt,
+              kshap_sd_dt_list = kshap_sd_dt_list,
+              kshap_prob_dt_list = kshap_prob_dt_list,
+              kshap_est_sd_prob_dt_list = kshap_est_sd_prob_dt_list,
               keep_list = keep_list)
   )
 
 }
 
+#TODO:
+
+# Use a simulation example and check the performance of the method compared to using as many v(S) with sampling-based regular kernelSHAP
+# Try out the ajdusted sampling approach (adjust the sampling weights when the sampling space is reduced by adjusting the probabilities based on what we already have). I might do this in a controlled environment first, I guess.

@@ -126,7 +126,7 @@ n_samples <- 1000
 
 
 
-#cutoff_feats <- c("age", "systolic_blood_pressure", "pulse_pressure","cholesterol","sex_isFemale")
+cutoff_feats <- c("age", "systolic_blood_pressure", "pulse_pressure","cholesterol","sex_isFemale")
 #cutoff_feats <- c("age", "systolic_blood_pressure", "pulse_pressure","sex_isFemale")
 
 
@@ -152,6 +152,8 @@ avg_contrib <- (pred_to_decompose-p0)/max_cutoff_features
 shapley_threshold_val <- 0.5*abs(avg_contrib)
 shapley_threshold_prob <- 0.1
 
+# P(shapleyval > shapley_threshold_val). If smaller than shapley_threshold_prob, cutoff
+
 source("inst/scripts/devel/iterative_kernelshap_sourcefuncs.R")
 
 
@@ -161,7 +163,7 @@ run <- iterative_kshap_func(model,x_explain,x_train,
                             full_pred = full_pred,
                             pred_not_to_decompose = pred_not_to_decompose,
                             p0 = p0,
-                            predict_model = pred_mod_xgb,shapley_threshold_val = 0)
+                            predict_model = pred_mod_xgb,shapley_threshold_val = 0.05)
 
 
 # > run$kshap_est_dt_list
@@ -203,6 +205,18 @@ run <- iterative_kshap_func(model,x_explain,x_train,
 # 15:           -0.3467456   -0.09017149          NA         NA          NA -0.131327688
 # 16:           -0.3526648   -0.09751468          NA         NA          NA -0.123553522
 # 17:           -0.3541978   -0.09218908          NA         NA          NA -0.114635210
+
+
+# [1] 131
+# id               none                age systolic_blood_pressure     pulse_pressure        cholesterol       sex_isFemale
+# <num>             <char>             <char>                  <char>             <char>             <char>             <char>
+#   1:     5 -0.049 (0.00) [ 1] -0.836 (0.01) [ 1]      -0.306 (0.01) [ 1] -0.151 (0.00) [ 1]  0.078 (0.01) [ 1] -0.184 (0.00) [ 1]
+# sedimentation_rate alkaline_phosphatase      serum_albumin         hematocrit                bmi          uric_acid
+# <char>               <char>             <char>             <char>             <char>             <char>
+#   1: -0.075 (0.01) [ 1]   -0.332 (0.01) [ 1] -0.120 (0.01) [ 1] -0.041 (0.01) [ 1] -0.128 (0.01) [ 1] -0.010 (0.01) [ 1]
+# hemoglobin other_features
+# <char>         <char>
+#   1: -0.102 (0.01) [ 1]          0.011
 
 
 # > rbindlist(kshap_est_dt_list)
