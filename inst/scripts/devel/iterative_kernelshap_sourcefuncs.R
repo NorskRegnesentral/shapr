@@ -642,102 +642,219 @@ iterative_kshap_func <- function(model,
       current_feature_names <- setdiff(current_feature_names,exclude_feature_name)
       current_excluded_feature_cols <- c(current_excluded_feature_cols,exclude_feature_name)
 
+      # The point with the below code is to map the current S and Sbar to the updated feature numbers for
+      # the next iteration
+      # I also need the S_mapper to have control over this
 
-      X[,S_new:=lapply(S,function(x) x[!(x %in% exclude_feature)])]
-      X[,Sbar_new:=lapply(Sbar,function(x) x[!(x %in% exclude_feature)])]
+      next_S_mapper <- S_mapper_list[[iter]][-exclude_feature]
 
-      X[, S_char_new := sapply(S_new, paste0, collapse = "_")]
-      X[, Sbar_char_new := sapply(Sbar_new, paste0, collapse = "_")]
+      Xtmp <- X[,.(S,Sbar,id_combination,n_features)]
+
+      # For S
+      Xtmp[,S_next:=lapply(S,function(x) x[!(x %in% exclude_feature)])] # Removing the excluded feature
+      Xtmp[,S_next:=sapply(S_next,match,next_S_mapper$feature_numbers)] # mapping to the new feature numbers
+      Xtmp[, S_next_char := sapply(S_next, paste0, collapse = "_")] # Making character representation of the new S
+
+      # For Sbar (for completeness, but maybe not needed(?))
+      Xtmp[,Sbar_next:=lapply(Sbar,function(x) x[!(x %in% exclude_feature)])] # Removing the excluded feature
+      Xtmp[,Sbar_next:=sapply(Sbar_next,match,next_S_mapper$feature_numbers)] # mapping to the new feature numbers
+      Xtmp[, Sbar_next_char := sapply(Sbar_next, paste0, collapse = "_")] # Making character representation of the new S
+
+      # Needed for the merging with dt_vS
+      Xtmp[, S_char := sapply(S, paste0, collapse = "_")] # Making character representation of the new S
+      Xtmp[, Sbar_char := sapply(Sbar, paste0, collapse = "_")] # Making character representation of the new S
+
 
       reduction_strategy = "by_S"
       if(reduction_strategy == "by_S"){
         # Uses 12|345 as replacement for 12|34, if 5 is removed
-        setorder(X,n_features)
-        X[,keep:=!duplicated(S_char_new)] #
+        setorder(Xtmp,id_combination)
+        Xtmp[,keep:=!duplicated(S_next_char)] #
       } else if(reduction_strategy == "by_Sbar"){
         # Uses 125|34 as replacement for 12|34, if 5 is removed
-        setorder(X,-n_features)
-        X[,keep:=duplicated(S_char_new)]
+        setorder(Xtmp,-id_combination)
+        Xtmp[,keep:=duplicated(S_next_char)]
       } else {
         # Uses the mean of 125|34 and 12|345 as replacement for 12|34, if 5 is removed
-        X[,keep:=TRUE]
+        Xtmp[,keep:=TRUE]
       }
-      setorder(X,id_combination)
+      setorder(Xtmp,id_combination)
 
-      X[,id_combination_new := .GRP,by=S_char_new]
+      Xtmp[,id_combination_next := .GRP,by=S_next_char]
 
-      # Always keep the zero and full set
-      id_combination_new_keepers <- X[c(1,.N),id_combination_new]
-      X[id_combination_new %in% id_combination_new_keepers,keep:=FALSE]
-      X[c(1,.N),keep:=TRUE]
 
-      S_mapper <- X[,.(S_char,S_char_new,keep)]
+      # I don't think I actually need this (is overwritten later on anyway), so I comment it out
+      ## Always keep the zero and full set
+      # id_combination_new_keepers <- Xtmp[c(1,.N),id_combination_next]
+      # Xtmp[id_combination_next %in% id_combination_new_keepers,keep:=FALSE]
+      # Xtmp[c(1,.N),keep:=TRUE]
 
-      X_dt_vS <- merge(X,dt_vS,by=c("S_char","Sbar_char"))
+
+      X_dt_vS <- merge(Xtmp,dt_vS,by=c("S_char","Sbar_char"))
       X_dt_vS <- X_dt_vS[keep==TRUE]
-      X_dt_vS[,p_hat_1 := mean(p_hat_1),by=id_combination_new]
+      X_dt_vS[,p_hat_1 := mean(p_hat_1),by=id_combination_next]
 
-      ### Modify which features we work with
-
-
-      # Converting to the new format for the next iteration
-      X_dt_vS[,S_new_newformat:=sapply(S_new,match,num_feat_vec)]
-      X_dt_vS[,Sbar_new_newformat:=sapply(Sbar_new,match,num_feat_vec)]
-      X_dt_vS[, S_char_new_newformat := sapply(S_new_newformat, paste0, collapse = "_")]
-      X_dt_vS[, Sbar_char_new_newformat := sapply(Sbar_new_newformat, paste0, collapse = "_")]
+      head(X_dt_vS[,.(S,S_next,id_combination,id_combination_next,p_hat_1)],15)
 
       setorder(X_dt_vS,id_combination)
-      dt_vS <- unique(X_dt_vS[,.(S_char = S_char_new_newformat,
-                                 Sbar_char = Sbar_char_new_newformat,
+      dt_vS <- unique(X_dt_vS[,.(S_char = S_next_char,
+                                 Sbar_char = Sbar_next_char,
                                  p_hat_1)])
 
 
-      # These needs to be placed here, after the X_dt_vS stuff, I think, as they might need the old one...
-      num_feat_vec <- num_feat_vec[-exclude_feature]
+#
+#
+#       X[,Sbar_new:=lapply(Sbar,function(x) x[!(x %in% exclude_feature)])]
+#
+#       X[, S_char_new := sapply(S_new, paste0, collapse = "_")]
+#       X[, Sbar_char_new := sapply(Sbar_new, paste0, collapse = "_")]
+#
+#       reduction_strategy = "by_S"
+#       if(reduction_strategy == "by_S"){
+#         # Uses 12|345 as replacement for 12|34, if 5 is removed
+#         setorder(X,n_features)
+#         X[,keep:=!duplicated(S_char_new)] #
+#       } else if(reduction_strategy == "by_Sbar"){
+#         # Uses 125|34 as replacement for 12|34, if 5 is removed
+#         setorder(X,-n_features)
+#         X[,keep:=duplicated(S_char_new)]
+#       } else {
+#         # Uses the mean of 125|34 and 12|345 as replacement for 12|34, if 5 is removed
+#         X[,keep:=TRUE]
+#       }
+#       setorder(X,id_combination)
+#
+#       X[,id_combination_new := .GRP,by=S_char_new]
+#
+#       # Always keep the zero and full set
+#       id_combination_new_keepers <- X[c(1,.N),id_combination_new]
+#       X[id_combination_new %in% id_combination_new_keepers,keep:=FALSE]
+#       X[c(1,.N),keep:=TRUE]
+#
+#       S_mapper <- X[,.(S_char,S_char_new,keep)]
+#
+#       X_dt_vS <- merge(X,dt_vS,by=c("S_char","Sbar_char"))
+#       X_dt_vS <- X_dt_vS[keep==TRUE]
+#       X_dt_vS[,p_hat_1 := mean(p_hat_1),by=id_combination_new]
+#
+#       ### Modify which features we work with
+#
+#       num_feat_vec <- num_feat_vec[-exclude_feature]
+#
+#
+#       # Converting to the new format for the next iteration
+#       X_dt_vS[,S_new_newformat:=sapply(S_new,match,num_feat_vec)]
+#       X_dt_vS[,Sbar_new_newformat:=sapply(Sbar_new,match,num_feat_vec)]
+#       X_dt_vS[, S_char_new_newformat := sapply(S_new_newformat, paste0, collapse = "_")]
+#       X_dt_vS[, Sbar_char_new_newformat := sapply(Sbar_new_newformat, paste0, collapse = "_")]
+#
+#       setorder(X_dt_vS,id_combination)
+#       dt_vS <- unique(X_dt_vS[,.(S_char = S_char_new_newformat,
+#                                  Sbar_char = Sbar_char_new_newformat,
+#                                  p_hat_1)])
+#
+#
+#       # These needs to be placed here, after the X_dt_vS stuff, I think, as they might need the old one...
+#
+      feature_samples_to_delete <- Xtmp[keep==FALSE,S_char]
+      feature_sample_1_next <- feature_sample_1[!(sapply(feature_sample_1,paste0,collapse="_") %in% feature_samples_to_delete)]
+      feature_sample_1_next <- lapply(feature_sample_1_next,function(x) x[!(x %in% exclude_feature)]) # Removing the excluded feature
+      feature_sample_1_next <- lapply(feature_sample_1_next,match,next_S_mapper$feature_numbers) # mapping to the new feature numbers
+      feature_sample_1_next <- feature_sample_1_next[!(sapply(feature_sample_1_next,length) %in% c(0,length(current_feature_names)))] # Remove full and empty set
 
+      feature_sample_2_next <- feature_sample_2[!(sapply(feature_sample_2,paste0,collapse="_") %in% feature_samples_to_delete)]
+      feature_sample_2_next <- lapply(feature_sample_2_next,function(x) x[!(x %in% exclude_feature)]) # Removing the excluded feature
+      feature_sample_2_next <- lapply(feature_sample_2_next,match,next_S_mapper$feature_numbers) # mapping to the new feature numbers
+      feature_sample_2_next <- feature_sample_2_next[!(sapply(feature_sample_2_next,length) %in% c(0,length(current_feature_names)))] # Remove full and empty set
 
-      # Mofifying the feature_samples as well.
+      feature_sample_all_next <- c(feature_sample_1_next,feature_sample_2_next)
 
-      feature_sample_1_char_dt <- data.table(S_char=sapply(feature_sample_1,paste0, collapse = "_"))
-      feature_sample_1_char_dt <- S_mapper[feature_sample_1_char_dt,on="S_char"] #merge(feature_sample_1_char_dt,S_mapper,by="S_char")
-      feature_sample_1_char_dt[,S_new:=sapply(strsplit(S_char_new, "_"),as.numeric)]
-      feature_sample_1_char_dt[,rowno:=.I]
-      delrows_1 <- feature_sample_1_char_dt[keep==FALSE,rowno]
+      feature_sample_all_paired_next <- lapply(feature_sample_all_next, function(x) seq_along(current_feature_names)[-x])
 
-      feature_sample_2_char_dt <- data.table(S_char=sapply(feature_sample_2,paste0, collapse = "_"))
-      feature_sample_2_char_dt <- S_mapper[feature_sample_2_char_dt,on="S_char"] #merge(feature_sample_2_char_dt,S_mapper,by="S_char")
-      feature_sample_2_char_dt[,S_new:=sapply(strsplit(S_char_new, "_"),as.numeric)]
-      feature_sample_2_char_dt[,rowno:=.I]
-      delrows_2 <- feature_sample_2_char_dt[keep==FALSE,rowno]
+      feature_sample_all_comb_next <- list()
+      feature_sample_all_comb_next[seq(1,2*length(feature_sample_all_next),by=2)] <- feature_sample_all_next
+      feature_sample_all_comb_next[seq(2,2*length(feature_sample_all_next),by=2)] <- feature_sample_all_paired_next
 
+      feature_sample_all_comb_next_dt <- data.table(features=feature_sample_all_comb_next)
+      feature_sample_all_comb_next_dt[,features_char := sapply(features,paste0, collapse = "_")]
+      feature_sample_all_comb_next_dt[,dups:=duplicated(features_char)]
+      feature_sample_all_comb_next_dt <- feature_sample_all_comb_next_dt[dups==FALSE]
 
-      feature_sample_1_0 <- feature_sample_1_char_dt[keep==TRUE,S_new]
-      feature_sample_1 <- lapply(feature_sample_1_0,match,num_feat_vec)
-
-
-      feature_sample_2_0 <- feature_sample_2_char_dt[keep==TRUE,S_new]
-      feature_sample_2 <- lapply(feature_sample_2_0,match,num_feat_vec)
-
-      # Here I need to redistribute the feature_sample_1 and feature_sample_2 such that they are paired copies of each other
-
-      # Very brute for method for ensuring that all feature_sample_1 and 2 are paried copies of each other (which is needed) for the bootstrappign procedure in the next iteration
+      feature_sample_1 <- feature_sample_all_comb_next_dt[seq(1,.N,by=2),features]
+      feature_sample_2 <- feature_sample_all_comb_next_dt[seq(2,.N,by=2),features]
 
       feature_sample_all <- c(feature_sample_1,feature_sample_2)
+#      feature_sample_1_next <- feature_sample_1[sapply(feature_sample_1,function(x) !(exclude_feature %in% x))] # exclude samples that contain the excluded feature
+#      feature_sample_1_next <- lapply(feature_sample_1_next,match,next_S_mapper$feature_numbers) # mapping to the new feature numbers
+
+#      feature_sample_2_next <- feature_sample_2[sapply(feature_sample_2,function(x) !(exclude_feature %in% x))] # exclude samples that contain the excluded feature
+#      feature_sample_2_next <- lapply(feature_sample_2_next,match,next_S_mapper$feature_numbers) # mapping to the new feature numbers
 
 
-      feature_sample_all_paired <- lapply(feature_sample_all, function(x) seq_along(current_feature_names)[-x])
 
-      feature_sample_all_comb <- list()
-      feature_sample_all_comb[seq(1,2*length(feature_sample_all),by=2)] <- feature_sample_all
-      feature_sample_all_comb[seq(2,2*length(feature_sample_all),by=2)] <- feature_sample_all_paired
-
-      feature_sample_all_comb_dt <- data.table(features=feature_sample_all_comb)
-      feature_sample_all_comb_dt[,features_char := sapply(features,paste0, collapse = "_")]
-      feature_sample_all_comb_dt[,dups:=duplicated(features_char)]
-      feature_sample_all_comb_dt <- feature_sample_all_comb_dt[dups==FALSE]
-
-      feature_sample_1 <- feature_sample_all_comb_dt[seq(1,.N,by=2),features]
-      feature_sample_2 <- feature_sample_all_comb_dt[seq(2,.N,by=2),features]
+#
+#
+#
+#       feature_sample_1_0 <- lapply(feature_sample_1,function(x) x[!(x %in% exclude_feature)]) # Removing the excluded feature
+#       feature_sample_1_0 <- lapply(feature_sample_1_0,match,next_S_mapper$feature_numbers) # mapping to the new feature numbers
+#       feature_sample_1_0_char <- sapply(feature_sample_1_0,paste0, collapse = "_") # Making character representation of the new S
+#       which(feature_sample_1_0_char %in% Xtmp[keep==TRUE,S_next_char])
+#
+#       feature_sample_2_0 <- lapply(feature_sample_2,function(x) x[!(x %in% exclude_feature)]) # Removing the excluded feature
+#       feature_sample_2_0 <- lapply(feature_sample_2_0,match,next_S_mapper$feature_numbers) # mapping to the new feature numbers
+#       feature_sample_2_0_char <- sapply(feature_sample_2_0,paste0, collapse = "_") # Making character representation of the new S
+#       which(feature_sample_2_0_char %in% Xtmp[keep==TRUE,S_next_char])
+#
+#
+#       # Mofifying the feature_samples as well.
+#       feature_sample_1_char_dt <- data.table(S =feature_sample_1)
+#       feature_sample_1_char_dt[,S_next:=lapply(S,function(x) x[!(x %in% exclude_feature)])] # Removing the excluded feature
+#       feature_sample_1_char_dt[,S_next:=sapply(S_next,match,next_S_mapper$feature_numbers)] # mapping to the new feature numbers
+#       feature_sample_1_char_dt[, S_next_char := sapply(S_next, paste0, collapse = "_")] # Making character representation of the new S
+#
+#
+#
+#
+#       feature_sample_1_char_dt <- data.table(S_char=sapply(feature_sample_1,paste0, collapse = "_"))
+#       feature_sample_1_char_dt <- S_mapper[feature_sample_1_char_dt,on="S_char"] #merge(feature_sample_1_char_dt,S_mapper,by="S_char")
+#       feature_sample_1_char_dt[,S_new:=sapply(strsplit(S_char_new, "_"),as.numeric)]
+#       feature_sample_1_char_dt[,rowno:=.I]
+#       delrows_1 <- feature_sample_1_char_dt[keep==FALSE,rowno]
+#
+#       feature_sample_2_char_dt <- data.table(S_char=sapply(feature_sample_2,paste0, collapse = "_"))
+#       feature_sample_2_char_dt <- S_mapper[feature_sample_2_char_dt,on="S_char"] #merge(feature_sample_2_char_dt,S_mapper,by="S_char")
+#       feature_sample_2_char_dt[,S_new:=sapply(strsplit(S_char_new, "_"),as.numeric)]
+#       feature_sample_2_char_dt[,rowno:=.I]
+#       delrows_2 <- feature_sample_2_char_dt[keep==FALSE,rowno]
+#
+#
+#       feature_sample_1_0 <- feature_sample_1_char_dt[keep==TRUE,S_new]
+#       feature_sample_1 <- lapply(feature_sample_1_0,match,num_feat_vec)
+#
+#
+#       feature_sample_2_0 <- feature_sample_2_char_dt[keep==TRUE,S_new]
+#       feature_sample_2 <- lapply(feature_sample_2_0,match,num_feat_vec)
+#
+#       # Here I need to redistribute the feature_sample_1 and feature_sample_2 such that they are paired copies of each other
+#
+#       # Very brute for method for ensuring that all feature_sample_1 and 2 are paried copies of each other (which is needed) for the bootstrappign procedure in the next iteration
+#
+#       feature_sample_all <- c(feature_sample_1,feature_sample_2)
+#
+#
+#       feature_sample_all_paired <- lapply(feature_sample_all, function(x) seq_along(current_feature_names)[-x])
+#
+#       feature_sample_all_comb <- list()
+#       feature_sample_all_comb[seq(1,2*length(feature_sample_all),by=2)] <- feature_sample_all
+#       feature_sample_all_comb[seq(2,2*length(feature_sample_all),by=2)] <- feature_sample_all_paired
+#
+#       feature_sample_all_comb_dt <- data.table(features=feature_sample_all_comb)
+#       feature_sample_all_comb_dt[,features_char := sapply(features,paste0, collapse = "_")]
+#       feature_sample_all_comb_dt[,dups:=duplicated(features_char)]
+#       feature_sample_all_comb_dt <- feature_sample_all_comb_dt[dups==FALSE]
+#
+#       feature_sample_1 <- feature_sample_all_comb_dt[seq(1,.N,by=2),features]
+#       feature_sample_2 <- feature_sample_all_comb_dt[seq(2,.N,by=2),features]
 
       # TODO:
       # 1. Modify m, the sampling function and the X_dt-creator in order to not sample the excluded feature

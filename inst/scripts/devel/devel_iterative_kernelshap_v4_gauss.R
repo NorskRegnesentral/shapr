@@ -22,6 +22,9 @@ set.seed(123)
 x_train <- as.data.table(MASS::mvrnorm(n_train,mu,Sigma))
 x_explain <- as.data.table(MASS::mvrnorm(n_explain,mu,Sigma))
 
+names(x_train) <- paste0("VV",1:m)
+names(x_explain) <- paste0("VV",1:m)
+
 beta <- c(4:1, rep(0, m - 4))
 alpha <- 1
 y_train <- as.vector(alpha + as.matrix(x_train) %*% beta + rnorm(n_train, 0, 1))
@@ -40,16 +43,25 @@ expl <- shapr::explain(model = model,
                        approach = "gaussian",
                        prediction_zero = p0,Sigma=Sigma,mu=mu)
 
-cutoff_feats <- paste0("V",1:7)
+expl_ctree <- shapr::explain(model = model,
+                       x_explain= x_explain[5,],
+                       x_train = x_train,
+                       approach = "ctree",
+                       prediction_zero = p0,Sigma=Sigma,mu=mu)
+
+
+cutoff_feats <- paste0("VV",1:8)
 testObs_computed <- 5
 
 full_pred <- predict(model,x_explain)[5]
 p0 <- mean(y_train)
-pred_not_to_decompose <- sum(expl$shapley_values[5,V8:V9])
+pred_not_to_decompose <- sum(expl$shapley_values[5,V9])
 
 ### Need to create an lm analogoue to pred_mod_xgb here
 
+source("inst/scripts/devel/iterative_kernelshap_sourcefuncs.R")
 
+set.seed(123)
 run <- iterative_kshap_func(model,x_explain,x_train,
                             testObs_computed = 5,
                             cutoff_feats = cutoff_feats,
@@ -57,15 +69,29 @@ run <- iterative_kshap_func(model,x_explain,x_train,
                             pred_not_to_decompose = pred_not_to_decompose,
                             p0 = p0,
                             predict_model = predict.lm)
+run$kshap_est_dt_list
 
-### en eller annen bug her, finn ut av det...
+cutoff_feats <- paste0("VV",1:6)
+testObs_computed <- 5
+
+full_pred <- predict(model,x_explain)[5]
+p0 <- mean(y_train)
+pred_not_to_decompose <- sum(expl$shapley_values[5,VV7:VV9])
 
 
-run <- iterative_kshap_func(model,x_explain,x_train,
+run_minor <- iterative_kshap_func(model,x_explain,x_train,
                             testObs_computed = 5,
                             cutoff_feats = cutoff_feats,
                             full_pred = full_pred,
                             pred_not_to_decompose = pred_not_to_decompose,
                             p0 = p0,
-                            predict_model = predict.lm)
+                            predict_model = predict.lm,shapley_threshold_val = 0)
 
+
+aa=run$keep_list[[8]]$dt_vS
+
+bb=run_minor$keep_list[[6]]$dt_vS
+setnames(bb,"p_hat_1","p_hat_1_approx")
+
+cc=merge(aa,bb)
+cc[,diff:=p_hat_1-p_hat_1_approx]
