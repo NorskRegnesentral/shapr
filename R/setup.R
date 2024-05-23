@@ -30,6 +30,8 @@ setup <- function(x_train,
                   keep_samp_for_vS,
                   feature_specs,
                   MSEv_uniform_comb_weights = TRUE,
+                  causal_ordering = NULL,
+                  causal_confounding = FALSE,
                   type = "normal",
                   horizon = NULL,
                   y = NULL,
@@ -63,6 +65,8 @@ setup <- function(x_train,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+    causal_ordering = causal_ordering,
+    causal_confounding = causal_confounding,
     timing = timing,
     verbose = verbose,
     is_python = is_python,
@@ -128,6 +132,79 @@ check_and_set_parameters <- function(internal) {
   # Check regression if we are doing regression
   if (internal$parameters$regression) internal <- regression.check(internal)
 
+  # Check and set parameters related to Causal Shapley values, if we are doing Causal Shapley values
+  if (internal$parameters$causal) internal <- check_causal(internal)
+
+  return(internal)
+}
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+check_causal <- function(internal) {
+  causal_ordering = internal$parameters$causal_ordering
+  causal_confounding = internal$parameters$causal_confounding
+  n_approaches = internal$parameters$n_approaches
+  n_features = internal$parameters$n_features
+  n_combinations = internal$parameters$n_combinations
+  regression = internal$parameters$regression
+  labels = internal$objects$feature_specs$labels
+  is_groupwise = internal$parameters$is_groupwise
+
+  # TODO: Make it work for groups to. Need to check group names and that each group is just inside its own component
+  if (is_groupwise) stop("Causal Shapley values does not currently support group explanations.")
+
+  # Check that we only have one approach and that it is not regression
+  if (regression) stop("Causal Shapley values is not applicable for regression approaches.\n")
+  if (n_approaches > 1) stop("Causal Shapley values is not applicable for combined approaches.\n")
+
+  # Check that causal_confounding is either specified globally or locally
+  if (length(causal_confounding) > 1 && length(causal_confounding) != length(causal_ordering)) {
+    stop(paste0("`causal_confounding` must either be a single logical or a vector of logicals of the same length as ",
+                "the number of components in `causal_ordering` (", length(causal_ordering), ").\n"))
+  }
+
+  # Replicate the global confounding value across all components
+  if (length(causal_confounding) == 1) causal_confounding <- rep(causal_confounding, length(causal_ordering))
+
+  # Ensure that causal_ordering represents the causal ordering using the feature index representation
+  if (is.character(unlist(causal_ordering))) causal_ordering = convert_feature_name_to_idx(causal_ordering, labels)
+  if (!is.numeric(unlist(causal_ordering))) {
+    stop(paste0("`causal_ordering` must be a list containg either only integers representing the feature ",
+                "indices or the feature names as strings. See the documentation for more details.\n"))
+  }
+
+  # Ensure that causal_ordering_names represents the causal ordering using the feature name representation
+  causal_ordering_names = relist(labels[unlist(causal_ordering)], causal_ordering)
+
+  # Check that the we have n_features elements and that they are 1 through n_features (i.e., no duplicates).
+  causal_ordering_vec_sort = sort(unlist(causal_ordering))
+  if (length(causal_ordering_vec_sort) != n_features || any(causal_ordering_vec_sort != seq(n_features))) {
+    stop("`causal_ordering` is incomplete/incorrect. It must contain all features or feature indices exactly once.\n")
+  }
+
+  # Get the number of combinations hat respects the (partial) causal ordering
+  n_combinations_causal_max = get_n_comb_max_causal_ordering(causal_ordering = causal_ordering)
+
+  # # Check that we have a legit number of combinations
+  # if (n_combinations < 2 || n_combinations > n_combinations_causal_max) {
+  #   stop(paste0(
+  #     "`n_combinations` (", n_combinations, ") must be a strictly postive integer larger than or equal to ",
+  #     "two and less than the number of coalitions respecting the causal ordering (", n_combinations_causal_max, ")."
+  #   ))
+  # }
+
+  # TODO: this is maybe not the best place to have it. I do not want to create them if there are many of them
+  # Get the combinations/coalitions that respects the (partial) causal ordering
+  legit_causal_combinations = get_legit_causal_combinations(causal_ordering = causal_ordering)
+
+  # Update the parameters in the internal list
+  internal$parameters$causal_confounding = causal_confounding
+  internal$parameters$causal_ordering = causal_ordering
+  internal$parameters$causal_ordering_names = causal_ordering_names
+  internal$parameters$n_combinations_causal_max = n_combinations_causal_max
+  internal$objects$legit_causal_combinations = legit_causal_combinations
+
+  # Return the updated internal list
   return(internal)
 }
 
@@ -379,14 +456,17 @@ get_extra_parameters <- function(internal) {
   internal$parameters$n_approaches <- length(internal$parameters$approach)
   internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
 
+  # Set that we are to compute Causal Shapley Values (checks are done later)
+  internal$parameters$causal <- length(internal$parameters$causal_ordering[[1]]) != internal$parameters$n_features
+
   return(internal)
 }
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
-                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing, verbose,
-                           is_python, ...) {
+                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, causal_ordering,
+                           causal_confounding, timing, verbose, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -481,6 +561,10 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     stop("`MSEv_uniform_comb_weights` must be single logical.")
   }
 
+  # Parameter used in Causal Shapley values (more in-depth checks later)
+  if (!is.logical(causal_confounding)) stop("`causal_confounding` must be a logical (vector).\n")
+  if (!is.list(causal_ordering)) stop("`causal_ordering` must be a list.\n")
+
   #### Tests combining more than one parameter ####
   # prediction_zero vs output_size
   if (!all((is.numeric(prediction_zero)) &&
@@ -509,6 +593,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     horizon = horizon,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+    causal_ordering = causal_ordering,
+    causal_confounding = causal_confounding,
     timing = timing,
     verbose = verbose
   )
@@ -519,7 +605,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
 
-  # Setting that we are using regression based the approach name (any in case several approaches)
+  # Set that we are using regression based the approach name (any in case of several approaches)
   parameters$regression <- any(grepl("regression", parameters$approach))
 
   return(parameters)
