@@ -129,6 +129,10 @@ shapley_setup <- function(internal) {
   n_features0 <- internal$parameters$n_features
   n_combinations <- internal$parameters$n_combinations
   is_groupwise <- internal$parameters$is_groupwise
+  #legit_causal_combinations = internal$objects$legit_causal_combinations # NULL for non-Causal Shapley
+  causal = internal$parameters$causal
+  causal_ordering = internal$parameters$causal_ordering
+  causal_confounding = internal$parameters$causal_confounding
 
   group_num <- internal$objects$group_num
 
@@ -137,7 +141,9 @@ shapley_setup <- function(internal) {
     exact = exact,
     n_combinations = n_combinations,
     weight_zero_m = 10^6,
-    group_num = group_num
+    group_num = group_num,
+    causal = causal,
+    causal_ordering = causal_ordering
   )
 
   # Get weighted matrix ----------------
@@ -171,6 +177,14 @@ shapley_setup <- function(internal) {
   internal$objects$S <- S
   internal$objects$S_batch <- create_S_batch_new(internal)
 
+  # If we are doing causal Shapley values, then get the step-wise data generating process for each combination
+  if (causal) {
+    internal$objects$S_causal =
+      get_S_causal(S = S, causal_ordering = causal_ordering, causal_confounding = causal_confounding)
+    internal$objects$S_causal_strings =
+      get_S_causal(S = S, causal_ordering = causal_ordering, causal_confounding = causal_confounding, as_strings = TRUE)
+    # TODO: Remove the latter. Included it just to make it easier for me to read the chains
+  }
 
   return(internal)
 }
@@ -187,6 +201,9 @@ shapley_setup <- function(internal) {
 #' weights when doing numerical operations.
 #' @param group_num List. Contains vector of integers indicating the feature numbers for the
 #' different groups.
+#' @param legit_causal_combinations List. Contains vectors of integers indicating the feature combinations
+#' that respects the (partial) causal ordering.
+#' @param causal_ordering List containing the causal ordering. Default is `NULL` here, as
 #'
 #' @return A data.table that contains the following columns:
 #' \describe{
@@ -203,7 +220,7 @@ shapley_setup <- function(internal) {
 #'
 #' @export
 #'
-#' @author Nikolai Sellereite, Martin Jullum
+#' @author Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen
 #'
 #' @examples
 #' # All combinations
@@ -212,7 +229,8 @@ shapley_setup <- function(internal) {
 #'
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL) {
+feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL,
+                                 causal = FALSE, causal_ordering = NULL) {
   m_group <- length(group_num) # The number of groups
 
   # Force user to use a natural number for n_combinations if m > 13
@@ -278,26 +296,20 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   if (m_group == 0) {
     # Here if feature-wise Shapley values
     if (exact) {
-      dt <- feature_exact(m, weight_zero_m)
+      dt <- feature_exact(m, causal, causal_ordering, weight_zero_m)
     } else {
       dt <- feature_not_exact(m, n_combinations, weight_zero_m)
-      stopifnot(
-        data.table::is.data.table(dt),
-        !is.null(dt[["p"]])
-      )
+      stopifnot(data.table::is.data.table(dt), !is.null(dt[["p"]]))
       p <- NULL # due to NSE notes in R CMD check
       dt[, p := NULL]
     }
   } else {
     # Here if group-wise Shapley values
     if (exact) {
-      dt <- feature_group(group_num, weight_zero_m)
+      dt <- feature_group(group_num, causal_ordering, weight_zero_m)
     } else {
       dt <- feature_group_not_exact(group_num, n_combinations, weight_zero_m)
-      stopifnot(
-        data.table::is.data.table(dt),
-        !is.null(dt[["p"]])
-      )
+      stopifnot(data.table::is.data.table(dt), !is.null(dt[["p"]]))
       p <- NULL # due to NSE notes in R CMD check
       dt[, p := NULL]
     }
@@ -305,11 +317,40 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   return(dt)
 }
 
+#' Create all possible feature combinations
+#'
+#' @param m
+#' @param causal_ordering
+#' @param weight_zero_m
+#'
+#' @examples
+#' m <- 5
+#' causal_ordering <- list(1:2, 3:4, 5)
+#' X <- feature_not_exact_causal(m = m, causal_ordering = causal_ordering, n_combinations = 5)
+#' X
+#'
 #' @keywords internal
-feature_exact <- function(m, weight_zero_m = 10^6) {
-  dt <- data.table::data.table(id_combination = seq(2^m))
-  combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
-  dt[, features := unlist(combinations, recursive = FALSE)]
+#' @author Martin Jullum and Lars Henry Berge Olsen
+feature_exact <- function(m, causal = FALSE, causal_ordering = list(1:m), weight_zero_m = 10^6) {
+  # TODO: I have verified that we get the same combinations and weights as Heskes with their version.
+  # TODO: talk with Martin. We do not need the split here as `causal_ordering` is going to be
+  # list(1:m) when no ordering is provided and then `get_legit_causal_combinations` will produce
+  # The same. However, it takes longer time (10x ish)
+  # m = 10
+  # rbenchmark::benchmark(direct = {unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)},
+  # indirect = {get_legit_causal_combinations(list(1:m))},
+  # replications = 5)
+
+  # Create the combinations based on if we are doing regular or causal Shapley values
+  if (causal) {
+    # Causal Shapley values: get only the combinations that respect the causal ordering
+    combinations <- get_legit_causal_combinations(causal_ordering)
+  } else {
+    # Regular Shapley values: get all 2^m combinations
+    combinations <- unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
+  }
+  dt <- data.table::data.table(id_combination = seq(length(combinations)))
+  dt[, features := combinations]
   dt[, n_features := length(features[[1]]), id_combination]
   dt[, N := .N, n_features]
   dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m)]
@@ -450,17 +491,37 @@ helper_feature <- function(m, feature_sample) {
 #' @return data.table with all feature group combinations, shapley weights etc.
 #'
 #' @keywords internal
-feature_group <- function(group_num, weight_zero_m = 10^6) {
+feature_group <- function(group_num, causal_ordering = list(1:length(group_num)), weight_zero_m = 10^6) {
   m <- length(group_num)
-  dt <- data.table::data.table(id_combination = seq(2^m))
-  combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
 
-  dt[, groups := unlist(combinations, recursive = FALSE)]
+
+  # OLD
+  # dt <- data.table::data.table(id_combination = seq(2^m))
+  # combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
+  #
+  # dt[, groups := unlist(combinations, recursive = FALSE)]
+  # dt[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
+  # dt[, n_groups := length(groups[[1]]), id_combination]
+  # dt[, n_features := length(features[[1]]), id_combination]
+  # dt[, N := .N, n_groups]
+  # dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_groups, weight_zero_m)]
+  #
+
+  # TODO: Verify, but is should work if
+  if (length(causal_ordering[[1]]) == m) { # Regular Group Shapley values
+    combinations <- unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
+  } else { # Causal Gorup Shapley values
+    combinations <- get_legit_causal_combinations(causal_ordering) #
+  }
+
+  dt <- data.table::data.table(id_combination = seq(length(combinations)))
+  dt[, groups := combinations]
   dt[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
   dt[, n_groups := length(groups[[1]]), id_combination]
   dt[, n_features := length(features[[1]]), id_combination]
   dt[, N := .N, n_groups]
   dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_groups, weight_zero_m)]
+
 
   return(dt)
 }
