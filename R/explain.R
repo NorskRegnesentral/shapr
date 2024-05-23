@@ -95,6 +95,23 @@
 #' Use `0` (default) for no verbosity, `1` for low verbose, and `2` for high verbose.
 #' TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.
 #'
+#' @param causal_ordering List of vectors containing the components of the partial causal ordering.
+#' The features in each component are given by the feature indices of the feature names.
+#' If `list(1:n_features)` (default), then no causal ordering is assumed, i.e., a causal ordering with
+#' a single component containing all features. If the user specify the features
+#' by their names (strings), then `shapr` will convert them to the feature indices.
+#' The elements in the `causal_ordering` list represents the components in the causal ordering and can either
+#' be a single feature index or several, that is, a vector. For example,
+#' `list(c(1, 2), c(3, 4))` implies that `1,2 -> 3` and `1,2 -> 4`, i.e., one and
+#' two are the ancestors of three and four, but three and four are not related.
+#' Not that all features must be included in `causal_ordering` without any duplicates.
+#'
+#' @param causal_confounding Logical (vector) specifying whether confounding for
+#' each component in `causal_ordering` is assumed or not. If `confounding` is a single logical,
+#' i.e., `FALSE` (default) or `TRUE`, then this assumption is set globally for all components.
+#' Otherwise, `confounding` must be a vector of logicals of the same length as `causal_ordering`
+#´ indicating the confounding assumption within each component.
+#'
 #' @param ... Further arguments passed to specific approaches
 #'
 #' @inheritDotParams setup_approach.empirical
@@ -300,6 +317,8 @@ explain <- function(model,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     MSEv_uniform_comb_weights = TRUE,
+                    causal_ordering = list(1:ncol(x_train)),
+                    causal_confounding = FALSE,
                     timing = TRUE,
                     verbose = 0,
                     ...) { # ... is further arguments passed to specific approaches
@@ -327,6 +346,8 @@ explain <- function(model,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+    causal_ordering = causal_ordering,
+    causal_confounding = causal_confounding,
     timing = timing,
     verbose = verbose,
     ...
