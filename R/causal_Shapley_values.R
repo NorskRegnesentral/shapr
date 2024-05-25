@@ -3,8 +3,8 @@
 mixedsort <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE, numeric.type = c("decimal", "roman"),
                       roman.case = c("upper", "lower", "both"), scientific = TRUE) {
   x[mixedorder(x,
-    decreasing = decreasing, na.last = na.last, blank.last = blank.last, numeric.type = numeric.type,
-    roman.case = roman.case, scientific = scientific
+               decreasing = decreasing, na.last = na.last, blank.last = blank.last, numeric.type = numeric.type,
+               roman.case = roman.case, scientific = scientific
   )]
 }
 
@@ -74,16 +74,16 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   # Recall that here, index_features is a vector of id_combinations, i.e., indicating which rows in S to use.
   # Also note that we are guaranteed that index_features does not include the empty or grand coalition
 
-  approach <- internal$parameters$approach # Can only be single approach
-  n_samples <- internal$parameters$n_samples
-  n_explain <- internal$parameters$n_explain
-  n_features <- internal$parameters$n_features
-  feature_names <- internal$parameters$feature_names
-
-  # Extract the causal related variables
+  # Extract the needed variables
   S <- internal$objects$S
   S_causal <- internal$objects$S_causal
   S_causal_batch <- S_causal[index_features]
+  approach <- internal$parameters$approach # Can only be single approach
+  x_explain <- internal$data$x_explain
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
 
   # Create a list to store the populated data tables with the MC samples
   dt_list <- list()
@@ -97,11 +97,12 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   # lapply over the coalitions in the batch
   index_feature_idx <- 1
   for (index_feature_idx in seq_along(index_features)) {
-    print(index_feature_idx)
+    # print(index_feature_idx)
     # Reset the internal_copy list for each new combination
     if (index_feature_idx > 1) {
-      internal_copy$data$x_explain <- internal$data$x_explain
-      internal_copy$parameters[c("n_explain", "n_samples")] <- internal$parameters[c("n_explain", "n_samples")]
+      internal_copy$data$x_explain <- x_explain
+      internal_copy$parameters$n_explain <- n_explain
+      internal_copy$parameters$n_samples <- n_samples
     }
 
     # Extract the index of the current combination
@@ -119,9 +120,14 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
     S_causal_now <- S_causal[[index_feature]]
 
     # Loop over the steps in the iterative sampling process to generate MC samples for the unconditional features
-    sampling_step_idx <- 1
+    sampling_step_idx <- 2
     for (sampling_step_idx in seq_along(S_causal_now)) {
-      print(sampling_step_idx)
+      # print(sampling_step_idx)
+
+      # Set flag indicating whether or not we are in the first sampling step, as the the gaussian and copula
+      # approaches need to know this to change their sampling procedure to ensure correctly generated MC samples
+      internal_copy$parameters$causal_first_step = sampling_step_idx == 1
+
       # Get the S (the conditional features) and Sbar (the unconditional features) in the current sampling step
       S_now <- S_causal_now[[sampling_step_idx]]$S # The features to condition on in this sampling step
       Sbar_now <- S_causal_now[[sampling_step_idx]]$Sbar # The features to sample in this sampling step
@@ -144,24 +150,30 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         S_row_now <- which(apply(S, 1, function(x) identical(x, S_now_binary)))
 
         # Generate the MC samples conditioning on S_now
-        print("Generate samples")
-        print(system.time({
-          dt_new <- prepare_data(internal_copy, index_features = S_row_now, ...)
-        }))
+        # print("Generate samples")
+        # print(system.time({
+        dt_new <- prepare_data(internal_copy, index_features = S_row_now, ...)
+
+        #dt_new <- prepare_data(internal_copy, index_features = S_row_now)
+        # }))
+        #fd
+        #print(dt_new)
+        #if (sampling_step_idx > 1) dt_new = dt_new[, .SD[sample(.N, 1)], by = id]
+        #print(dt_new)
 
         if (approach %in% c("independence", "empirical", "ctree")) {
           # These approaches produce weighted MC samples, i.e., the do not necessarily generate n_samples MC samples.
           # We ensure n_samples by weighted sampling with replacements those ids with less than n_samples MC samples.
-          print("Ensure n_samples")
-          print(system.time({
-            dt_new <- dt_new[, .SD[if (.N >= n_samples) {
-              seq(.N)
-            } else {
-              sample(.N, internal_copy$parameters$n_samples, replace = TRUE, prob = w)
-            }], by = id]
-          }))
+          # print("Ensure n_samples")
+          # print(system.time({
+          dt_new <- dt_new[, .SD[if (.N >= n_samples) {
+            seq(.N)
+          } else {
+            sample(.N, internal_copy$parameters$n_samples, replace = TRUE, prob = w)
+          }], by = id]
+          # }))
 
-          if (nrow(dt_new) != n_explain * n_samples) stop("SOMETHING IS WRONG")
+          # if (nrow(dt_new) != n_explain * n_samples) stop("`dt_new` does not have the right number of rows.\n")
         }
 
         # Insert/keep only the features in Sbar_now into dt
@@ -170,7 +182,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
       # Update the x_explain in internal_copy such that in the next sampling step use the values in dt
       # as the conditional feature values. Furthermore, we set n_samples to 1 such that we in the next
-      # step generate one new value for the n_samples MC samples we have begun to generate.
+      # step generate one new value for each of the n_samples MC samples we have begun to generate.
       internal_copy$data$x_explain <- dt
       internal_copy$parameters$n_explain <- nrow(dt)
       internal_copy$parameters$n_samples <- 1
@@ -429,20 +441,23 @@ get_legit_causal_combinations <- function(causal_ordering, sort_features_in_coal
 #' causal_confounding <- c(TRUE, TRUE, FALSE)
 #' get_S_causal(S, causal_ordering, causal_confounding, as_strings = TRUE)
 #'
+#' # Look at the effect of changing the confounding assumptions
 #' SS1 <- get_S_causal(S, causal_ordering, causal_confounding = c(FALSE, FALSE, FALSE), as_strings = TRUE)
 #' SS2 <- get_S_causal(S, causal_ordering, causal_confounding = c(TRUE, FALSE, FALSE), as_strings = TRUE)
 #' SS3 <- get_S_causal(S, causal_ordering, causal_confounding = c(TRUE, TRUE, FALSE), as_strings = TRUE)
 #' SS4 <- get_S_causal(S, causal_ordering, causal_confounding = c(TRUE, TRUE, TRUE), as_strings = TRUE)
 #'
 #' all.equal(SS1, SS2)
-#' SS1[[2]]
-#' SS2[[2]]
+#' SS1[[2]] # Condition on 1 as there is no confounding in the first component
+#' SS2[[2]] # Do NOT condition on 1 as there is confounding in the first component
 #' SS1[[3]]
 #' SS2[[3]]
 #'
 #' all.equal(SS1, SS3)
-#' SS1[[5]]
-#' SS3[[5]]
+#' SS1[[2]] # Condition on 1 as there is no confounding in the first component
+#' SS3[[2]] # Do NOT condition on 1 as there is confounding in the first component
+#' SS1[[5]] # Condition on 3 as there is no confounding in the second component
+#' SS3[[5]] # Do NOT condition on 3 as there is confounding in the second component
 #' SS1[[6]]
 #' SS3[[6]]
 #'
@@ -451,6 +466,8 @@ get_legit_causal_combinations <- function(causal_ordering, sort_features_in_coal
 #' SS3[[5]]
 #' SS2[[6]]
 #' SS3[[6]]
+#'
+#' all.equal(SS3, SS4) # No difference as the last component is a singleton
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal

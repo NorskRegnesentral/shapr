@@ -60,22 +60,26 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   x_explain_mat <- as.matrix(internal$data$x_explain)
   mu <- internal$parameters$gaussian.mu
   cov_mat <- internal$parameters$gaussian.cov_mat
+  causal = internal$parameters$causal
+  causal_first_step = isTRUE(internal$parameters$causal_first_step) # Only set when called from `prepdare_data_causal`
+
+  # For causal Shapley values in not the first step, we update the number of samples
+  n_samples_updated = if (causal && !causal_first_step) n_explain else n_samples
 
   # Generate the MC samples from N(0, 1)
-  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+  MC_samples_mat <- matrix(rnorm(n_samples_updated * n_features), nrow = n_samples_updated, ncol = n_features)
+
+  # Determine which gaussian data generating function to use
+  prepare_gauss = if (causal && !causal_first_step) prepare_data_gaussian_cpp_caus else prepare_data_gaussian_cpp
 
   # Use Cpp to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
-  # The object `dt` is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features).
-  dt <- prepare_data_gaussian_cpp(
-    MC_samples_mat = MC_samples_mat,
-    x_explain_mat = x_explain_mat,
-    S = S,
-    mu = mu,
-    cov_mat = cov_mat
-  )
+  # The object `dt` is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features) for regular
+  # Shapley and in the first step for causal Shapley values. For later steps in the causal Shapley value framework,
+  # the `dt` object is a matrix of dimension (n_explain * n_coalitions, n_features).
+  dt <- prepare_gauss(MC_samples_mat = MC_samples_mat, x_explain_mat = x_explain_mat, S = S, mu = mu, cov_mat = cov_mat)
 
-  # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
-  dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features) if needed
+  if (!causal || causal_first_step) dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)
