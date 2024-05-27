@@ -73,7 +73,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   prepare_gauss = if (causal && !causal_first_step) prepare_data_gaussian_cpp_caus else prepare_data_gaussian_cpp
 
   # Use Cpp to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
-  # The object `dt` is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features) for regular
+  # The `dt` object is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features) for regular
   # Shapley and in the first step for causal Shapley values. For later steps in the causal Shapley value framework,
   # the `dt` object is a matrix of dimension (n_explain * n_coalitions, n_features).
   dt <- prepare_gauss(MC_samples_mat = MC_samples_mat, x_explain_mat = x_explain_mat, S = S, mu = mu, cov_mat = cov_mat)

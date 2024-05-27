@@ -101,7 +101,7 @@ arma::cube prepare_data_gaussian_cpp(const arma::mat& MC_samples_mat,
 //' between all pairs of features.
 //'
 //' @return An arma::mat/2D array of dimension (`n_explain` * `n_coalitions`, `n_features`),
-//' where the rows (n_explain * S_ind, n_explain * (S_ind + 1) - 1) containins the single
+//' where the rows (n_explain * S_ind, n_explain * (S_ind + 1) - 1) contains the single
 //' conditional Gaussian MC samples for each explicand and `S_ind` coalition.
 //'
 //' @export
