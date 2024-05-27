@@ -95,6 +95,11 @@
 #' Use `0` (default) for no verbosity, `1` for low verbose, and `2` for high verbose.
 #' TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.
 #'
+#' @param asymmetric Logical. If `FALSE` (default), we compute symmetric Shapley values,
+#' If `TRUE`, then we compute asymmetric Shapley values based on the (partial) causal ordering
+#' given by `causal_ordering`. That is, we only use the feature combinations/coalitions that
+#' respect the causal ordering when computing the asymmetric Shapley values.
+#'
 #' @param causal_ordering List of vectors containing the components of the partial causal ordering.
 #' The features in each component are given by the feature indices of the feature names.
 #' If `list(1:n_features)` (default), then no causal ordering is assumed, i.e., a causal ordering with
@@ -106,7 +111,7 @@
 #' two are the ancestors of three and four, but three and four are not related.
 #' Not that all features must be included in `causal_ordering` without any duplicates.
 #'
-#' @param causal_confounding Logical (vector) specifying whether confounding for
+#' @param confounding Logical (vector) specifying whether confounding for
 #' each component in `causal_ordering` is assumed or not. If `confounding` is a single logical,
 #' i.e., `FALSE` (default) or `TRUE`, then this assumption is set globally for all components.
 #' Otherwise, `confounding` must be a vector of logicals of the same length as `causal_ordering`
@@ -129,7 +134,7 @@
 #' Monte Carlo-based approaches for estimating the conditional distributions of the data, namely `"empirical"`,
 #' `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
 #' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`,
-#' and see the separate vignette on the regression-based approaches for more information.
+#' and see Olsen et al. (2024) and the separate vignette on the regression-based approaches for more information.
 #' In addition, the user also has the option of combining the different Monte Carlo-based approaches.
 #' E.g., if you're in a situation where you have trained a model that consists of 10 features,
 #' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
@@ -139,6 +144,13 @@
 #' `"approach[i]" = "gaussian"` means that you'd like to use the `"gaussian"` approach
 #' when conditioning on `i` features. Conditioning on all features needs no approach as that is given
 #' by the complete prediction itself, and should thus not be part of the vector.
+#'
+#' `shapr` also supports the computation of causal and asymmetric Shapley values as introduced by
+#' Heskes et al. (2020) and Frye et al. (2020). Asymmetric Shapley values were proposed by Heskes et al. (2020)
+#' as a way to incorporate causal knowledge in the real world by restricting the possible feature
+#' combinations/coalitions when computing the Shapley values to those consistent with a (partial) causal ordering.
+#' Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
+#' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
 #' For `approach="ctree"`, `n_samples` corresponds to the number of samples
 #' from the leaf node (see an exception related to the `sample` argument).
@@ -301,8 +313,20 @@
 #' @author Martin Jullum, Lars Henry Berge Olsen
 #'
 #' @references
-#'   Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
-#'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+#' Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
+#' More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+#'
+#' Frye, C., Rowat, C., & Feige, I. (2020).
+#' Asymmetric Shapley values: incorporating causal knowledge into model-agnostic explainability.
+#' Advances in Neural Information Processing Systems, 33.
+#'
+#' Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020).
+#' Causal Shapley Values: Exploiting Causal Knowledge to Explain Individual Predictions of Complex Models.
+#' Advances in Neural Information Processing Systems, 33.
+#'
+#' Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024).
+#' A comparative study of methods for estimating model-agnostic Shapley value explanations.
+#' Data Mining and Knowledge Discovery, 1-48.
 explain <- function(model,
                     x_explain,
                     x_train,
@@ -316,9 +340,10 @@ explain <- function(model,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
-                    MSEv_uniform_comb_weights = TRUE,
+                    asymmetric = FALSE,
                     causal_ordering = list(1:ncol(x_train)),
-                    causal_confounding = FALSE,
+                    confounding = FALSE,
+                    MSEv_uniform_comb_weights = TRUE,
                     timing = TRUE,
                     verbose = 0,
                     ...) { # ... is further arguments passed to specific approaches
@@ -345,9 +370,10 @@ explain <- function(model,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
-    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+    asymmetric = asymmetric,
     causal_ordering = causal_ordering,
-    causal_confounding = causal_confounding,
+    confounding = confounding,
+    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
     verbose = verbose,
     ...

@@ -438,14 +438,14 @@ get_legit_causal_combinations <- function(causal_ordering, sort_features_in_coal
 #' m <- 5
 #' causal_ordering <- list(1:2, 3:4, 5)
 #' S <- shapr::feature_matrix_cpp(get_legit_causal_combinations(causal_ordering = causal_ordering), m = m)
-#' causal_confounding <- c(TRUE, TRUE, FALSE)
-#' get_S_causal(S, causal_ordering, causal_confounding, as_strings = TRUE)
+#' confounding <- c(TRUE, TRUE, FALSE)
+#' get_S_causal(S, causal_ordering, confounding, as_strings = TRUE)
 #'
 #' # Look at the effect of changing the confounding assumptions
-#' SS1 <- get_S_causal(S, causal_ordering, causal_confounding = c(FALSE, FALSE, FALSE), as_strings = TRUE)
-#' SS2 <- get_S_causal(S, causal_ordering, causal_confounding = c(TRUE, FALSE, FALSE), as_strings = TRUE)
-#' SS3 <- get_S_causal(S, causal_ordering, causal_confounding = c(TRUE, TRUE, FALSE), as_strings = TRUE)
-#' SS4 <- get_S_causal(S, causal_ordering, causal_confounding = c(TRUE, TRUE, TRUE), as_strings = TRUE)
+#' SS1 <- get_S_causal(S, causal_ordering, confounding = c(FALSE, FALSE, FALSE), as_strings = TRUE)
+#' SS2 <- get_S_causal(S, causal_ordering, confounding = c(TRUE, FALSE, FALSE), as_strings = TRUE)
+#' SS3 <- get_S_causal(S, causal_ordering, confounding = c(TRUE, TRUE, FALSE), as_strings = TRUE)
+#' SS4 <- get_S_causal(S, causal_ordering, confounding = c(TRUE, TRUE, TRUE), as_strings = TRUE)
 #'
 #' all.equal(SS1, SS2)
 #' SS1[[2]] # Condition on 1 as there is no confounding in the first component
@@ -471,7 +471,7 @@ get_legit_causal_combinations <- function(causal_ordering, sort_features_in_coal
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-get_S_causal <- function(S, causal_ordering, causal_confounding, as_strings = FALSE) {
+get_S_causal <- function(S, causal_ordering, confounding, as_strings = FALSE) {
 
   # List to store the sampling process
   results = vector("list", nrow(S))
@@ -491,9 +491,9 @@ get_S_causal <- function(S, causal_ordering, causal_confounding, as_strings = FA
       if (length(to_sample) > 0) {
         to_condition <- unlist(causal_ordering[0:(i - 1)]) # Condition on all features in ancestor components
 
-        # If causal_confounding is FALSE, add intervened features in the same component to the `to_condition` set.
-        # If causal_confounding is TRUE, then no extra conditioning.
-        if (!causal_confounding[i]) to_condition <- union(intersect(causal_ordering[[i]], index_given), to_condition)
+        # If confounding is FALSE, add intervened features in the same component to the `to_condition` set.
+        # If confounding is TRUE, then no extra conditioning.
+        if (!confounding[i]) to_condition <- union(intersect(causal_ordering[[i]], index_given), to_condition)
 
         # Save Sbar and S (sorting is for the visual)
         to_sample <- sort(to_sample)

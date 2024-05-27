@@ -160,7 +160,7 @@ batch_prepare_vS_MC_auxiliary <- function(S, internal) {
 }
 
 #' @keywords internal
-#' @author Martin Jullum, Lars Henry Berge Olsen
+#' @author Lars Henry Berge Olsen and Martin Jullum
 batch_prepare_vS_MC_aux_causal <- function(S, internal, causal) {
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$data$x_explain
