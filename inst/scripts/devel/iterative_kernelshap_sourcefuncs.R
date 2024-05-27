@@ -455,12 +455,11 @@ iterative_kshap_func <- function(model,
       X <- shapley_reweighting(X0, strategy = "on_all") # To get the weights corresponding to exact computation
     }
 
-    # No longer needed
-    # ## Get feature matrix ---------
-    # S <- feature_matrix_cpp(
-    #   features = X[["S"]],
-    #   m = length(num_feat_vec)
-    # )
+    # Needed for gaussian method
+     S <- feature_matrix_cpp(
+       features = X[["S"]],
+       m = current_m
+     )
 
 
 
@@ -500,36 +499,84 @@ iterative_kshap_func <- function(model,
       x_explain_red_here <- current_x_explain_red[testObs_computed,]
       x_excluded_here <- x_explain[testObs_computed,..current_excluded_feature_cols]
 
-      for(i in seq_len(nrow(new_combinations))){
-        S_char_here <- new_combinations[i,S_char]
-        Sbar_char_here <- new_combinations[i,Sbar_char]
 
-        S_here <- unlist(X[S_char ==S_char_here,S])
+      if(approach=="gaussian"){
 
-        tree <- shapr:::create_ctree(S_here, current_x_train_red, ctree.mincriterion, ctree.minsplit, ctree.minbucket)
+        S_char_here <- new_combinations[,S_char]
+        these <- X[,which(S_char %in% S_char_here)]
+        new_combinations[, id_combination := these]
 
-        samp_list <- list()
-        for(j in seq_along(testObs_computed)){
-          samp_list[[j]] <- shapr:::sample_ctree(
-            tree,
-            n_samples = n_samples,
-            x_explain = x_explain_red_here[j,],
-            x_train = current_x_train_red,
-            n_features = length(current_x_train_red),
-            sample = ctree.sample
-          )
+        S_here <- S[these,]
+
+        mu <- gaussian.mu[feature_names %in% current_feature_names]
+        cov_mat <- gaussian.cov_mat[feature_names %in% current_feature_names,feature_names %in% current_feature_names]
+        n_features <- length(current_x_train_red)
+        x_explain_mat <- as.matrix(x_explain_red_here)
+        n_combinations_now <- nrow(S_here)
+
+        # Generate the MC samples from N(0, 1)
+        MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+        # Use Cpp to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
+        # The object `dt` is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features).
+        dt <- prepare_data_gaussian_cpp(
+          MC_samples_mat = MC_samples_mat,
+          x_explain_mat = x_explain_mat,
+          S = S_here,
+          mu = mu,
+          cov_mat = cov_mat
+        )
+
+        # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
+        dim(dt) <- c(n_combinations_now * 1 * n_samples, n_features)
+
+        # Convert to a data.table and add extra identification columns
+        dt0 <- data.table::as.data.table(dt)
+        data.table::setnames(dt0, current_feature_names)
+        dt0[, id_combination := rep(seq_len(nrow(S_here)), each = n_samples * 1)]
+        dt0[, id := rep(seq(1), each = n_samples, times = nrow(S_here))]
+        dt0[, w := 1 / n_samples]
+        dt0[, id_combination := these[id_combination]]
+        data.table::setcolorder(dt0, c("id_combination", "id", current_feature_names))
+
+        vS_feature_dt <- merge(dt0,new_combinations,by="id_combination")
+
+      } else if(approach=="ctree"){
+        for(i in seq_len(nrow(new_combinations))){
+
+
+          S_char_here <- new_combinations[i,S_char]
+          Sbar_char_here <- new_combinations[i,Sbar_char]
+
+          S_here <- unlist(X[S_char ==S_char_here,S])
+
+          tree <- shapr:::create_ctree(S_here, current_x_train_red, ctree.mincriterion, ctree.minsplit, ctree.minbucket)
+
+          samp_list <- list()
+          for(j in seq_along(testObs_computed)){
+            samp_list[[j]] <- shapr:::sample_ctree(
+              tree,
+              n_samples = n_samples,
+              x_explain = x_explain_red_here[j,],
+              x_train = current_x_train_red,
+              n_features = length(current_x_train_red),
+              sample = ctree.sample
+            )
+          }
+
+          vS_feature_list[[i]] <- rbindlist(samp_list,idcol="id")
+          #      vS_feature_list[[i]][,id:=testObs_computed]
+          vS_feature_list[[i]][,S_char := S_char_here]
+          vS_feature_list[[i]][,Sbar_char := Sbar_char_here]
+          vS_feature_list[[i]][,id_combination := i] # This is just temporary and only used as it is needed by compute_MCint
+
         }
 
 
-        vS_feature_list[[i]] <- rbindlist(samp_list,idcol="id")
-        #      vS_feature_list[[i]][,id:=testObs_computed]
-        vS_feature_list[[i]][,S_char := S_char_here]
-        vS_feature_list[[i]][,Sbar_char := Sbar_char_here]
-        vS_feature_list[[i]][,id_combination := i] # This is just temporary and only used as it is needed by compute_MCint
+        vS_feature_dt <- rbindlist(vS_feature_list,fill=TRUE)
 
       }
 
-      vS_feature_dt <- rbindlist(vS_feature_list,fill=TRUE)
 
       dt <- cbind(vS_feature_dt,x_excluded_here)
       setcolorder(dt,names(x_train))
@@ -892,7 +939,8 @@ iterative_kshap_func <- function(model,
 
   kshap_it_est_dt <- rbindlist(kshap_est_dt_list,fill=TRUE)
 
-  return(list(kshap_est_dt_list = kshap_it_est_dt,
+  return(list(kshap_it_est_dt = kshap_it_est_dt,
+              kshap_est_dt_list = kshap_est_dt_list,
               kshap_sd_dt_list = kshap_sd_dt_list,
               kshap_prob_dt_list = kshap_prob_dt_list,
               kshap_est_sd_prob_dt_list = kshap_est_sd_prob_dt_list,

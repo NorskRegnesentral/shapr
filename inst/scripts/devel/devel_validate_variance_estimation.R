@@ -669,6 +669,51 @@ for(aa in seq_along(n_combinations_vec)){
 }
 
 
+library(ggplot2)
+dt_sdkshap_sim_all0 <- copy(dt_sdkshap_sim_all)
+dt_sdkshap_sim_all0[sd_type=="boot_paired",sd_type:="boot_not_paired"]
+dt_sdkshap_sim_all0[sd_type=="boot_unpaired",sd_type:="boot_paired"]
+
+
+ggplot(dt_sdkshap_sim_all0[reweighting_strategy !="on_n_features" &id==1,.(age=mean(age)),by=.(sd_type,reweighting_strategy,n_comb)],
+       aes(x=n_comb,y=age,col=sd_type,linetype=reweighting_strategy))+
+  geom_line()+
+  geom_line(data=sd[id==1],col="black")
+
+dt_sdkshap_sim_all0[reweighting_strategy=="none"&id==1]
+
+aa <- c(cutoff_feats,"n_comb")
+n_comb_vec <- c(50,100,200,400,800)
+
+for(i in 1:5){
+  print(mean(colMeans(dt_sdkshap_sim_all0[sd_type=="sample_separate" & reweighting_strategy=="none" & id==5&n_comb ==n_comb_vec[i],..cutoff_feats]-
+    sd[reweighting_strategy=="none" & id==5&n_comb==n_comb_vec[i],][rep(1,each=100)][,..cutoff_feats])))
+
+}
+
+library(patchwork)
+
+p1=ggplot(dt_sdkshap_sim_all0[reweighting_strategy =="none" &id==1,.(age=mean(age)),by=.(sd_type,reweighting_strategy,n_comb)],
+       aes(x=n_comb,y=age,col=sd_type,linetype=reweighting_strategy))+
+  geom_line()+
+  geom_line(data=sd[id==1&reweighting_strategy=="none"],col="black")
+
+p2=ggplot(dt_sdkshap_sim_all0[reweighting_strategy =="none" &id==2,.(age=mean(age)),by=.(sd_type,reweighting_strategy,n_comb)],
+       aes(x=n_comb,y=age,col=sd_type,linetype=reweighting_strategy))+
+  geom_line()+
+  geom_line(data=sd[id==2&reweighting_strategy=="none"],col="black")
+
+p3=ggplot(dt_sdkshap_sim_all0[reweighting_strategy =="none" &id==3,.(age=mean(age)),by=.(sd_type,reweighting_strategy,n_comb)],
+       aes(x=n_comb,y=age,col=sd_type,linetype=reweighting_strategy))+
+  geom_line()+
+  geom_line(data=sd[id==3&reweighting_strategy=="none"],col="black")
+
+p4=ggplot(dt_sdkshap_sim_all0[reweighting_strategy =="none" &id==4,.(age=mean(age)),by=.(sd_type,reweighting_strategy,n_comb)],
+       aes(x=n_comb,y=age,col=sd_type,linetype=reweighting_strategy))+
+  geom_line()+
+  geom_line(data=sd[id==4&reweighting_strategy=="none"],col="black")
+
+(p1+p2)/(p3+p4)
 
 
 resres_list <- list()
@@ -872,8 +917,8 @@ aaa=MAE[n_comb==100,lapply(.SD,mean),by=.(n_comb,reweighting_strategy),.SDcols=c
 bbb=sd_est_MAE[n_comb==100&sd_type=="boot",lapply(.SD,mean),by=reweighting_strategy,.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=reweighting_strategy]
 
 
-MAE[lapply(.SD,mean),by=.(n_comb,reweighting_strategy),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(n_comb,reweighting_strategy)]
-RMSE[lapply(.SD,mean),by=.(n_comb,reweighting_strategy),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(n_comb,reweighting_strategy)]
+MAE[,lapply(.SD,mean),by=.(n_comb,reweighting_strategy),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(n_comb,reweighting_strategy)]
+RMSE[,lapply(.SD,mean),by=.(n_comb,reweighting_strategy),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(n_comb,reweighting_strategy)]
 coverage[sd_type=="boot",lapply(.SD,mean),by=.(CI_level,reweighting_strategy),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(CI_level,reweighting_strategy)]
 coverage[sd_type=="boot" & reweighting_strategy=="on_N",lapply(.SD,mean),by=.(CI_level,n_comb),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(CI_level,n_comb)]
 coverage[sd_type=="boot" & CI_level==0.95,lapply(.SD,mean),by=.(reweighting_strategy,n_comb),.SDcols=cutoff_feats][,rowMeans(abs(.SD)),.SDcols=cutoff_feats,by=.(reweighting_strategy,n_comb)]
