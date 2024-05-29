@@ -17,6 +17,6 @@
 
 - Simulations:
   - Use some simulation example and check the performance of the method compared to using as many v(S) with sampling-based regular kernelSHAP
-  - Linear model with Gaussian features
-- Nonlinear (e.g. xgboost based) model with Gaussian features
+  -X Linear model with Gaussian features 
+  - Nonlinear (e.g. xgboost based) model with Gaussian features
 - 4 real data examples from Kjersti

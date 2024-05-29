@@ -986,5 +986,4 @@ iterative_kshap_func <- function(model,
 
 }
 
-#TODO:
 
