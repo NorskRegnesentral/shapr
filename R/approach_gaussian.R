@@ -116,3 +116,20 @@ get_cov_mat <- function(x_train, min_eigen_value = 1e-06) {
 get_mu_vec <- function(x_train) {
   unname(colMeans(x_train))
 }
+
+#' Generate marginal Gaussian data
+#'
+#' Given a multivariate Gaussian distribution, this function creates data from specified marginals of said distribution.
+#'
+#' @param n_samples Integer. The number of samples to generate.
+#' @param Sbar_now Vector of integers indicating which marginals to sample from.
+#' @param mu Numeric vector containing the expected values for all features in the multivariate Gaussian distribution.
+#' @param cov_mat Numeric matrix containing the covariance between all features
+#' in the multivariate Gaussian distribution.
+#'
+#' @return
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+create_marginal_data_gaussian = function(n_samples, Sbar_now, mu, cov_mat) {
+  return(data.table(mvnfast::rmvn(n = n_samples, mu = mu[Sbar_now], sigma = cov_mat[Sbar_now, Sbar_now])))
+}
