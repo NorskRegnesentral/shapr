@@ -99,12 +99,14 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   X <- internal$objects$X
   S <- internal$objects$S
 
+  # TODO: Remove `features` below as they are not used in this function, the same with `X` above.
   if (is.null(index_features)) { # 2,3
     features <- X$features # list of [1], [2], [2, 3]
   } else {
     features <- X$features[index_features] # list of [1],
   }
   feature_names <- internal$parameters$feature_names
+
 
   # 3 id columns: id, id_combination, and id_all
   # id: for each x_explain observation
