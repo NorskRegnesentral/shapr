@@ -144,7 +144,6 @@ shapley_setup <- function(internal) {
     weight_zero_m = 10^6,
     group_num = group_num,
     asymmetric = asymmetric,
-    causal = causal,
     causal_ordering = causal_ordering
   )
 
@@ -180,12 +179,22 @@ shapley_setup <- function(internal) {
   internal$objects$S_batch <- create_S_batch_new(internal)
 
   # If we are doing asymmetric Shapley values, then get the step-wise data generating process for each combination
-  if (asymmetric) {
-    internal$objects$S_causal =
-      get_S_causal(S = S, causal_ordering = causal_ordering, confounding = confounding)
-    internal$objects$S_causal_strings =
+  if (causal) {
+    S_causal = get_S_causal(S = S, causal_ordering = causal_ordering, confounding = confounding)
+    S_causal_strings =
       get_S_causal(S = S, causal_ordering = causal_ordering, confounding = confounding, as_strings = TRUE)
-    # TODO: Remove the latter. Included it just to make it easier for me to read the chains
+
+    # Also find all unique set of features to condition on
+    S_causal_unlist = do.call(c, unlist(S_causal, recursive=FALSE))
+    S_causal_unique_combinations = unique(S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)])
+    S_causal_unique_combinations =
+      c(list(integer(0)), sort_feature_list(S_causal_unique_combinations), list(seq(n_features0)))
+
+    # Insert into the internal list
+    internal$objects$S_causal = S_causal
+    internal$objects$S_causal_strings = S_causal_strings
+    internal$objects$S_causal_unique_combinations = S_causal_unique_combinations
+    internal$objects$S_causal_unique_S = feature_matrix_cpp(features = S_causal_unique_combinations, m = n_features0)
   }
 
   return(internal)
