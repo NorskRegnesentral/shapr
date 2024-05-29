@@ -605,9 +605,10 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     type = type,
     horizon = horizon,
     group_lags = group_lags,
-    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+    asymmetric = asymmetric,
     causal_ordering = causal_ordering,
     confounding = confounding,
+    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
     verbose = verbose
   )
