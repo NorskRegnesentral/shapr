@@ -1,4 +1,4 @@
-
+library(shapr)
 
 actual_feature_translator_func <- function(oldvec,num_feat_vec){
   newvec <- num_feat_vec[oldvec]
@@ -368,18 +368,21 @@ iterative_kshap_func <- function(model,
                                  x_train,
                                  predict_model,
                                  testObs_computed, # Only a single test observation for now
-                                 cutoff_feats,
-                                 initial_n_combinations = min(20,2^length(cutoff_feats)-2),
-                                 n_combinations_per_iter = 10,
-                                 n_boot_ests = 50,
-                                 unique_sampling = TRUE,
-                                 paired_sampling = TRUE,
-                                 shapley_reweighting_strategy = "on_N",
-                                 full_pred,
-                                 pred_not_to_decompose,
-                                 p0,
-                                 shapley_threshold_val = 0.1,
-                                 shapley_threshold_prob = 0.1){
+                                 cutoff_feats, # Vector of feature names to be included in the estimation (features in x_explain/x_train which are not in cutoff_feats are fixed to the value in x_explain)
+                                 initial_n_combinations = min(20,2^length(cutoff_feats)-2), # Number of features combinations to be used in the first iteration
+                                 n_combinations_per_iter = 10, # Number of feature combination per iteration (where shapley values + variance is estimated and we test for reduction)
+                                 n_boot_ests = 50, # Number of bootstrap datasets to be used to estimate the variance of the shapley values
+                                 unique_sampling = TRUE, # Whether to initial_n_combinations and n_combinations_per_iter refert to the number of unique samples (TRUE) or the total number of samples (FALSE)
+                                 paired_sampling = TRUE, # whether the feature combinations should be sampled in a paired way (this also effects the bootstrap estimation)
+                                 shapley_reweighting_strategy = "on_N", # How to reweight the shapley values ("on_N", "on_n_features", "on_all", "none" are the differnet options. See the shapley_reweighting function for details)
+                                 full_pred, # The full prediction value to decompose
+                                 shapsum_other_features, # The sum of the shapley values of the features not in cutoff_feats (this is excluded from the decomposition onto the cutoff_feats
+                                 p0, # The mean prediction not decomposed to any features
+                                 shapley_threshold_val = 0.1, # Upper threshold for when to remove a feature value from further shapley computation
+                                 shapley_threshold_prob = 0.1, # Required certainty that the shapley value exceeds shapley_threshold_val when cutting it off. (I.e. a feature j is removed if # Reduce if P(\phi_j > shapley_threshold_val) < shapley_threshold_prob) )
+                                 approach ="ctree"){ # Approach used to estimate the shapley values
+
+  ### SOME SETUP ###
 
   m <- length(cutoff_feats)#max_cutoff_features-0
 
@@ -394,6 +397,7 @@ iterative_kshap_func <- function(model,
   set.seed(123)
   iter <- 1
   converged = FALSE
+  shap_it_excluded_features <- 0
 
   #remaining_cutoff_feats <- cutoff_feats[-seq_len(m)]
 
@@ -411,14 +415,16 @@ iterative_kshap_func <- function(model,
   fixed_kshap_est_dt <- NULL
   kshap_est_dt_list <- kshap_sd_dt_list <- kshap_prob_dt_list <- kshap_est_sd_prob_dt_list <- list()
 
+
   while (converged == FALSE){
 
-    # Setup for current iteration
+    ##### UNLESS ESTIMATION IS DONE ####
+
+    ## Setup for current iteration
 
     current_feature_names <- S_mapper_list[[iter]]$feature_names
     current_m <- S_mapper_list[[iter]][,.N]
 
-    # SOmething is odd here as X is complete. check how 0 and full is added
     current_unique_feature_samples <- length(unique(feature_sample_all))+2
     remaining_unique_feature_samples <- 2^current_m -current_unique_feature_samples
 
@@ -427,6 +433,8 @@ iterative_kshap_func <- function(model,
       n_combinations_per_iter <- remaining_unique_feature_samples
       converged = TRUE
     }
+
+    #### Sampling of new feature combinations (this is done with 2 lists which are paried duplicates if paired_sampling == TRUE) ####
 
     if(remaining_unique_feature_samples>0){
       feature_sample_new_list <- feature_set_sample(feature_sample_prev = feature_sample_all, m = current_m,n_combinations_sample = ifelse(iter==1,initial_n_combinations-2,n_combinations_per_iter),
@@ -443,8 +451,10 @@ iterative_kshap_func <- function(model,
     }
 
 
+    ### Transforming sampled features to the X data.table used in shapr
     X0 <- X_from_feature_set_v3(feature_sample_all,m=current_m,sample_ids=seq_along(feature_sample_all))[]
 
+    # Reweighting shapley values #
     if(shapley_reweighting_strategy!="none"){
       X <- shapley_reweighting(X0, strategy = shapley_reweighting_strategy) # This probably needs adjustment.
     } else {
@@ -452,10 +462,10 @@ iterative_kshap_func <- function(model,
     }
 
     if(converged==TRUE){
-      X <- shapley_reweighting(X0, strategy = "on_all") # To get the weights corresponding to exact computation
+      X <- shapley_reweighting(X0, strategy = "on_all") # To get the weights corresponding to exact computation (always used when we have all feature combinations)
     }
 
-    # Needed for gaussian method
+    # Only Needed for gaussian method
      S <- feature_matrix_cpp(
        features = X[["S"]],
        m = current_m
@@ -469,6 +479,7 @@ iterative_kshap_func <- function(model,
     X[,features:=S] # Since shapr:::weight_matrix needs this name
 
 
+    # Weight matrix used in the shapley value computation
     W <- shapr:::weight_matrix(
       X = X,
       normalize_W_weights = TRUE,
@@ -485,15 +496,18 @@ iterative_kshap_func <- function(model,
       dt_vS <- X[c(1,.N),.(S_char,Sbar_char)]
     }
 
+    # (Re)set the full and zero prediction
     # This is only has an effect on iter=1, and when pred_to_decompose has changed (on feature removal)
     for(i in seq_along(testObs_computed)){
       this = paste0("p_hat_",i)
-      dt_vS[c(1,.N),(this):=c(p0[1],full_pred[i])]
+      dt_vS[c(1,.N),(this):=c(p0[1]+shap_it_excluded_features,full_pred[i])]
     }
 
 
+    # Extract which feature combinations are new
     new_combinations <- X[,.(S_char,Sbar_char)][!(X[,S_char] %in% dt_vS[,S_char])]
 
+    # Estimates v(S) for the new combinations
     vS_feature_list <- list()
     if(nrow(new_combinations)>0){
       x_explain_red_here <- current_x_explain_red[testObs_computed,]
@@ -578,6 +592,8 @@ iterative_kshap_func <- function(model,
       }
 
 
+      #### Merging the samples for the new combinations and doing monte carlo interation to get v(S)
+
       dt <- cbind(vS_feature_dt,x_excluded_here)
       setcolorder(dt,names(x_train))
 
@@ -592,21 +608,26 @@ iterative_kshap_func <- function(model,
 
       dt_vS <- rbind(dt_vS,
                      dt_vS0)
-      dt_vS <- dt_vS[X[,.(S_char)],,on="S_char"] # reordering dt_vS to match the order given in X
 
     }
+
+    dt_vS <- dt_vS[X[,.(S_char)],,on="S_char"] # reordering dt_vS to match the order given in X
 
     ### COmpute shapley values ####
     kshap <- t(W %*% as.matrix(dt_vS[, -c("S_char","Sbar_char")]))
     kshap_est_dt <- data.table::as.data.table(kshap)
     colnames(kshap_est_dt) <- c("none", current_feature_names)
     kshap_est_dt[,id:=testObs_computed]
+    kshap_est_dt[,none:=p0] # Overwrite this with the original p0 value
     setcolorder(kshap_est_dt,"id")
 
     kshap_est_mat <- as.matrix(kshap_est_dt[,-"id"])
 
 
     if(remaining_unique_feature_samples>0){
+      #### Variance computation ####
+
+
       #sample_sd_dt_seperate <- sample_cov_estimator(feature_sample_all,dt_vS=copy(dt_vS_relevant),testObs_computed,n_var_est_reps = 10,n_var_est_groups = 10,m,comp_strategy = "separate",return="sd_mat",paired_sampling = paired_sampling)
       kshap_sd_dt <- boot_cov_estimator(feature_sample_1,feature_sample_2,dt_vS=dt_vS,testObs_computed,n_boot_ests = n_boot_ests,m=current_m,
                                         shapley_reweighting_strategy = shapley_reweighting_strategy,return="sd_mat",paired_sampling = paired_sampling,
@@ -637,7 +658,7 @@ iterative_kshap_func <- function(model,
     }
 
 
-
+  #### Just lots of formatting for the iterative printouts ####
 
     matrix1 <- format(round(kshap_est_mat,3),nsmall=2,justify = "right")
     matrix2 <- format(round(kshap_sd_mat,2),nsmall=2,justify = "right")
@@ -649,14 +670,16 @@ iterative_kshap_func <- function(model,
 
     kshap_est_sd_prob_dt <- cbind(kshap_est_sd_prob_dt,fixed_kshap_est_dt)
 
-    kshap_est_sd_prob_dt[,other_features:=format(round(pred_not_to_decompose,3),width=2,justify = "right")]
+    kshap_est_sd_prob_dt[,it_excluded_features:=format(round(shap_it_excluded_features,3),width=2,justify = "right")]
+    kshap_est_sd_prob_dt[,other_features:=format(round(shapsum_other_features,3),width=2,justify = "right")]
+
 
     setcolorder(kshap_est_sd_prob_dt,c("id","none",cutoff_feats))
 
     print(iter)
     print(kshap_est_sd_prob_dt[])
 
-    keep_list[[iter]] <- list(kshap_est_dt = kshap_est_dt,
+    keep_list[[iter]] <- list(kshap_est_dt = copy(kshap_est_dt),
                               kshap_sd_dt = kshap_sd_dt,
                               kshap_prob_dt = kshap_prob_dt,
                               dt_vS = dt_vS,
@@ -664,7 +687,9 @@ iterative_kshap_func <- function(model,
                               feature_sample_1 = feature_sample_1,
                               feature_sample_2 = feature_sample_2,
                               full_pred = full_pred,
-                              p0 = p0)
+                              p0 = p0,
+                              shap_it_excluded_features = shap_it_excluded_features,
+                              no_computed_combinations = nrow(new_combinations))
 
     kshap_est_dt_list[[iter]] <- kshap_est_dt
     kshap_sd_dt_list[[iter]] <- kshap_sd_dt
@@ -672,19 +697,25 @@ iterative_kshap_func <- function(model,
     kshap_est_sd_prob_dt_list[[iter]] <- kshap_est_sd_prob_dt
 
 
-    # Check for exclusion
+    #### Check for exclusion ####
     if(converged==FALSE && any(as.vector(kshap_prob_mat)<shapley_threshold_prob)){
+
+      #### Sorry, the following is a bit of a mess and hard to understand -- will have to clean it up later. I suggest not spending time trying to understand it ####
+      # What we do is simply to remove the feature with the smallest shapley value fulfills the threshold condition #
+      # Then, there is a lot of bookeeping to adjust the feature numbering, and align the computed v(S) to the reduced feature space #
+
 
       exclude_feature <- which.min(as.vector(kshap_prob_mat)[-1]) # 5 # TODO: Need to adjust this when the second features is removed so it picks the right one
       exclude_feature_name <- current_feature_names[exclude_feature]
 
-      excluded_shap_value <- kshap_est_mat[-1][exclude_feature]
+      #excluded_shap_value <- kshap_est_mat[-1][exclude_feature]
 
-      #    full_pred <- full_pred-excluded_shap_value
-      p0 <- p0+excluded_shap_value
 
 
       keep <- kshap_est_dt[,..exclude_feature_name]
+      # Updates the sum of the shap values for the iteratively exlcuded features
+      shap_it_excluded_features <- shap_it_excluded_features+unlist(keep)
+
       cols <- names(keep)
       keep[,(cols):=lapply(.SD,function(x) format(round(x,3),width=2,justify = "right"))]
       keep[,(cols):=lapply(.SD,function(x) paste0(x, " [done estimating]"))]
@@ -938,18 +969,22 @@ iterative_kshap_func <- function(model,
 
 
   kshap_it_est_dt <- rbindlist(kshap_est_dt_list,fill=TRUE)
+  kshap_final0 <- copy(kshap_it_est_dt[,-1])
+  setnafill(kshap_final0,"locf")
+  kshap_final <- kshap_final0[.N,] # final estimate
+  kshap_final[,other_features := shapsum_other_features]
 
-  return(list(kshap_it_est_dt = kshap_it_est_dt,
-              kshap_est_dt_list = kshap_est_dt_list,
-              kshap_sd_dt_list = kshap_sd_dt_list,
-              kshap_prob_dt_list = kshap_prob_dt_list,
-              kshap_est_sd_prob_dt_list = kshap_est_sd_prob_dt_list,
-              keep_list = keep_list)
+
+  return(list(kshap_final = kshap_final, # The final estimates
+              kshap_it_est_dt = kshap_it_est_dt, # The iterative estimates (NA for those who are removed)
+              kshap_est_dt_list = kshap_est_dt_list, # The estimates at each iteration
+              kshap_sd_dt_list = kshap_sd_dt_list, # The standard deviations at each iteration
+              kshap_prob_dt_list = kshap_prob_dt_list, # The probabilities at each iteration
+              kshap_est_sd_prob_dt_list = kshap_est_sd_prob_dt_list, # The estimates, standard deviations and probabilities at each iteration
+              keep_list = keep_list) # List of information we keep from each iteration
   )
 
 }
 
 #TODO:
 
-# Use a simulation example and check the performance of the method compared to using as many v(S) with sampling-based regular kernelSHAP
-# Try out the ajdusted sampling approach (adjust the sampling weights when the sampling space is reduced by adjusting the probabilities based on what we already have). I might do this in a controlled environment first, I guess.
