@@ -30,7 +30,7 @@ setup <- function(x_train,
                   keep_samp_for_vS,
                   feature_specs,
                   asymmetric = FALSE,
-                  causal_ordering = list(1:ncol(x_train)),
+                  causal_ordering = NULL,
                   confounding = FALSE,
                   MSEv_uniform_comb_weights = TRUE,
                   type = "normal",
@@ -171,6 +171,7 @@ check_causal <- function(internal) {
   if (length(confounding) == 1) confounding <- rep(confounding, length(causal_ordering))
 
   # Ensure that causal_ordering represents the causal ordering using the feature index representation
+  if (is.null(causal_ordering)) causal_ordering = list(1:n_features)
   if (is.character(unlist(causal_ordering))) causal_ordering = convert_feature_name_to_idx(causal_ordering, labels)
   if (!is.numeric(unlist(causal_ordering))) {
     stop(paste0("`causal_ordering` must be a list containg either only integers representing the feature ",
@@ -469,7 +470,9 @@ get_extra_parameters <- function(internal) {
   internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
 
   # Set that we are to compute Causal Shapley Values (checks are done later)
-  internal$parameters$causal <- length(internal$parameters$causal_ordering[[1]]) != internal$parameters$n_features
+  internal$parameters$causal = !is.null(internal$parameters$causal_ordering) &&
+      length(internal$parameters$causal_ordering[[1]]) != internal$parameters$n_features ||
+      !isFALSE(internal$parameters$confounding)
 
   return(internal)
 }
@@ -576,7 +579,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   # Parameter used in Causal Shapley values (more in-depth checks later)
   if (!is.logical(asymmetric)) stop("`asymmetric` must be a logical.\n")
   if (!is.logical(confounding)) stop("`confounding` must be a logical (vector).\n")
-  if (!is.list(causal_ordering)) stop("`causal_ordering` must be a list.\n")
+  if (!is.null(causal_ordering) && !is.list(causal_ordering)) stop("`causal_ordering` must be a list.\n")
 
   #### Tests combining more than one parameter ####
   # prediction_zero vs output_size
