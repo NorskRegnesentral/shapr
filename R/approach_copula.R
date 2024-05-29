@@ -64,6 +64,18 @@ prepare_data.copula <- function(internal, index_features, ...) {
   # For causal Shapley values in not the first step, we update the number of samples
   n_samples_updated = if (causal && !causal_first_step) n_explain else n_samples
 
+  # For causal Shapley values in not the first step, we also need to update the `copula.x_explain_gaussian_mat`
+  if (causal && !causal_first_step) {
+    copula.x_explain_gaussian <- apply(
+      X = rbind(x_explain_mat, x_train_mat),
+      MARGIN = 2,
+      FUN = gaussian_transform_separate,
+      n_y = nrow(x_explain_mat)
+    )
+    if (is.null(dim(copula.x_explain_gaussian))) copula.x_explain_gaussian <- t(as.matrix(copula.x_explain_gaussian))
+    copula.x_explain_gaussian_mat = as.matrix(copula.x_explain_gaussian)
+  }
+
   # Generate the MC samples from N(0, 1)
   MC_samples_mat <- matrix(rnorm(n_samples_updated * n_features), nrow = n_samples_updated, ncol = n_features)
 
@@ -75,7 +87,7 @@ prepare_data.copula <- function(internal, index_features, ...) {
   # The `dt` object is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features) for regular
   # Shapley and in the first step for causal Shapley values. For later steps in the causal Shapley value framework,
   # the `dt` object is a matrix of dimension (n_explain * n_coalitions, n_features).
-  dt <- prepare_data_copula_cpp(
+  dt <- prepare_data_copula(
     MC_samples_mat = MC_samples_mat,
     x_explain_mat = x_explain_mat,
     x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
