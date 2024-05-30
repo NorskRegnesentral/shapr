@@ -11,6 +11,7 @@ explain(
   approach,
   prediction_zero,
   n_combinations = NULL,
+  adaptive = TRUE,
   group = NULL,
   n_samples = 1000,
   n_batches = NULL,
