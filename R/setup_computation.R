@@ -129,6 +129,8 @@ shapley_setup <- function(internal) {
   n_features0 <- internal$parameters$n_features
   n_combinations <- internal$parameters$n_combinations
   is_groupwise <- internal$parameters$is_groupwise
+  paired_shap_sampling = internal$parameters$paired_shap_sampling
+  prev_feature_sample = internal$parameters$prev_feature_sample
 
   group_num <- internal$objects$group_num
 
@@ -137,8 +139,13 @@ shapley_setup <- function(internal) {
     exact = exact,
     n_combinations = n_combinations,
     weight_zero_m = 10^6,
-    group_num = group_num
+    group_num = group_num,
+    paired_shap_sampling = paired_shap_sampling,
+    prev_feature_sample = prev_feature_sample
   )
+
+  id_comb_feature_map <- X[, .(id_combination,
+                               features_str = sapply(features, paste, collapse = " "))]
 
   # Get weighted matrix ----------------
   W <- weight_matrix(
@@ -169,8 +176,8 @@ shapley_setup <- function(internal) {
   internal$objects$X <- X
   internal$objects$W <- W
   internal$objects$S <- S
+  internal$objects$id_comb_feature_map <- id_comb_feature_map
   internal$objects$S_batch <- create_S_batch_new(internal)
-
 
   return(internal)
 }
@@ -212,7 +219,8 @@ shapley_setup <- function(internal) {
 #'
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL) {
+feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL,
+                                 paired_shap_sampling = TRUE, prev_feature_sample = NULL) {
   m_group <- length(group_num) # The number of groups
 
   # Force user to use a natural number for n_combinations if m > 13
@@ -280,7 +288,11 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     if (exact) {
       dt <- feature_exact(m, weight_zero_m)
     } else {
-      dt <- feature_not_exact(m, n_combinations, weight_zero_m)
+      dt <- feature_not_exact(m,
+                              n_combinations,
+                              weight_zero_m,
+                              paired_shap_sampling = paired_shap_sampling,
+                              prev_feature_sample = prev_feature_sample)
       stopifnot(
         data.table::is.data.table(dt),
         !is.null(dt[["p"]])
@@ -318,30 +330,52 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 }
 
 #' @keywords internal
-feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, unique_sampling = TRUE) {
+feature_not_exact <- function(m,
+                              n_combinations = 200,
+                              weight_zero_m = 10^6,
+                              unique_sampling = TRUE,
+                              paired_shap_sampling = TRUE,
+                              prev_feature_sample = NULL) {
   # Find weights for given number of features ----------
   n_features <- seq(m - 1)
   n <- sapply(n_features, choose, n = m)
   w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
-  feature_sample_all <- list()
-  unique_samples <- 0
+  if(!is.null(prev_feature_sample)){
+    feature_sample_all <- prev_feature_sample
+    unique_samples <- length(unique(prev_feature_sample))
+    n_combinations <- min(2^m,n_combinations + unique_samples + 2) # Adjusts for the the unique samples, zero and m samples
+      } else {
+    feature_sample_all <- list()
+    unique_samples <- 0
+  }
 
 
   if (unique_sampling) {
     while (unique_samples < n_combinations - 2) {
+      if(paired_shap_sampling==TRUE){
+        n_samps <- ceiling((n_combinations - unique_samples - 2)/2) # Sample -2 as we add zero and m samples below
+      } else {
+        n_samps <- n_combinations - unique_samples - 2 # Sample -2 as we add zero and m samples below
+      }
+
       # Sample number of chosen features ----------
       n_features_sample <- sample(
         x = n_features,
-        size = n_combinations - unique_samples - 2, # Sample -2 as we add zero and m samples below
+        size = n_samps,
         replace = TRUE,
         prob = p
       )
 
       # Sample specific set of features -------
       feature_sample <- sample_features_cpp(m, n_features_sample)
-      feature_sample_all <- c(feature_sample_all, feature_sample)
+      if(paired_shap_sampling==TRUE){
+        feature_sample_paired <- lapply(feature_sample, function(x) seq(m)[-x])
+        feature_sample_all <- c(feature_sample_all, feature_sample,feature_sample_paired)
+      } else {
+        feature_sample_all <- c(feature_sample_all, feature_sample)
+      }
       unique_samples <- length(unique(feature_sample_all))
     }
   } else {
@@ -366,7 +400,8 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, uni
 
   # When we sample combinations the Shapley weight is equal
   # to the frequency of the given combination
-  X[, shapley_weight := r[["sample_frequence"]]]
+  X[, sample_freq := r[["sample_frequence"]]] # We keep an unscaled version of the sampling frequency for later bootstrapping usage
+  X[, shapley_weight := sample_freq]
 
   # Populate table and remove duplicated rows -------
   X[, features := feature_sample_all]
@@ -376,6 +411,9 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, uni
   X[, is_duplicate := NULL]
   data.table::setkeyv(X, "n_features")
 
+
+  #### TODO: Check if this could be removed: ####
+  ### Start of possible removal ###
   # Make feature list into character
   X[, features_tmp := sapply(features, paste, collapse = " ")]
 
@@ -383,10 +421,13 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, uni
   X <- X[, .(
     n_features = data.table::first(n_features),
     shapley_weight = sum(shapley_weight),
+    sample_freq = sum(sample_freq),
     features = features[1]
   ), features_tmp]
 
   X[, features_tmp := NULL]
+  #### End of possible removal ####
+
   data.table::setorder(X, n_features)
 
   # Add shapley weight and number of combinations
@@ -400,7 +441,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, uni
   data.table::setkeyv(X, "n_features")
   X[, id_combination := .I]
   X[, N := as.integer(N)]
-  nms <- c("id_combination", "features", "n_features", "N", "shapley_weight", "p")
+  nms <- c("id_combination", "features", "n_features", "N", "shapley_weight", "p", "sample_freq")
   data.table::setcolorder(X, nms)
 
   return(X)
@@ -614,16 +655,25 @@ create_S_batch_new <- function(internal, seed = NULL) {
   approach0 <- internal$parameters$approach
   n_combinations <- internal$parameters$n_combinations
   n_batches <- internal$parameters$n_batches
+  prev_id_comb_feature_map <- internal$objects$prev_id_comb_feature_map
+  id_comb_feature_map <- internal$objects$id_comb_feature_map
 
-  X <- internal$objects$X
+
+  X0 <- copy(internal$objects$X)
+
+  if(!is.null(prev_id_comb_feature_map)){
+    new_id_combinations <- id_comb_feature_map[!(features_str %in% prev_id_comb_feature_map[-c(1,.N),features_str,]),id_combination]
+    X0 <- X0[id_combination %in% new_id_combinations]
+  }
+
 
   if (!is.null(seed)) set.seed(seed)
 
   if (length(approach0) > 1) {
-    X[!(n_features %in% c(0, n_features0)), approach := approach0[n_features]]
+    X0[!(n_features %in% c(0, n_features0)), approach := approach0[n_features]]
 
     # Finding the number of batches per approach
-    batch_count_dt <- X[!is.na(approach), list(
+    batch_count_dt <- X0[!is.na(approach), list(
       n_batches_per_approach =
         pmax(1, round(.N / (n_combinations - 2) * n_batches)),
       n_S_per_approach = .N
@@ -658,32 +708,32 @@ create_S_batch_new <- function(internal, seed = NULL) {
 
     # Randomize order before ordering spreading the batches on the different approaches as evenly as possible
     # with respect to shapley_weight
-    X[, randomorder := sample(.N)]
-    data.table::setorder(X, randomorder) # To avoid smaller id_combinations always proceeding large ones
-    data.table::setorder(X, shapley_weight)
+    X0[, randomorder := sample(.N)]
+    data.table::setorder(X0, randomorder) # To avoid smaller id_combinations always proceeding large ones
+    data.table::setorder(X0, shapley_weight)
 
     batch_counter <- 0
     for (i in seq_along(approach_vec)) {
-      X[approach == approach_vec[i], batch := ceiling(.I / .N * n_batch_vec[i]) + batch_counter]
-      batch_counter <- X[approach == approach_vec[i], max(batch)]
+      X0[approach == approach_vec[i], batch := ceiling(.I / .N * n_batch_vec[i]) + batch_counter]
+      batch_counter <- X0[approach == approach_vec[i], max(batch)]
     }
   } else {
-    X[!(n_features %in% c(0, n_features0)), approach := approach0]
+    X0[!(n_features %in% c(0, n_features0)), approach := approach0]
 
     # Spreading the batches
-    X[, randomorder := sample(.N)]
-    data.table::setorder(X, randomorder)
-    data.table::setorder(X, shapley_weight)
-    X[!(n_features %in% c(0, n_features0)), batch := ceiling(.I / .N * n_batches)]
+    X0[, randomorder := sample(.N)]
+    data.table::setorder(X0, randomorder)
+    data.table::setorder(X0, shapley_weight)
+    X0[!(n_features %in% c(0, n_features0)), batch := ceiling(.I / .N * n_batches)]
   }
 
   # Assigning batch 1 (which always is the smallest) to the full prediction.
-  X[, randomorder := NULL]
-  X[id_combination == max(id_combination), batch := 1]
-  setkey(X, id_combination)
+  X0[, randomorder := NULL]
+  X0[id_combination == max(id_combination), batch := 1]
+  setkey(X0, id_combination)
 
   # Create a list of the batch splits
-  S_groups <- split(X[id_combination != 1, id_combination], X[id_combination != 1, batch])
+  S_groups <- split(X0[id_combination != 1, id_combination], X0[id_combination != 1, batch])
 
   return(S_groups)
 }

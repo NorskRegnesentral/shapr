@@ -290,8 +290,10 @@ explain <- function(model,
                     x_explain,
                     x_train,
                     approach,
+                    paired_shap_sampling = TRUE,
                     prediction_zero,
                     n_combinations = NULL,
+                    adaptive = TRUE,
                     group = NULL,
                     n_samples = 1e3,
                     n_batches = NULL,
@@ -318,6 +320,7 @@ explain <- function(model,
     x_train = x_train,
     x_explain = x_explain,
     approach = approach,
+    paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
     group = group,
@@ -329,6 +332,7 @@ explain <- function(model,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
     verbose = verbose,
+    adaptive = adaptive,
     ...
   )
 
@@ -354,32 +358,149 @@ explain <- function(model,
     internal <- regression.get_y_hat(internal = internal, model = model, predict_model = predict_model)
   }
 
-  # Sets up the Shapley (sampling) framework and prepares the
-  # conditional expectation computation for the chosen approach
-  # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-  internal <- setup_computation(internal, model, predict_model)
+  # Adaptive approach
+  # TODO: The below should probably be moved to a separate function in the end
+  if(isTRUE(internal$parameters$adaptive)){
+    ### for now we just some of the parameters here
+    initial_n_combinations <- 100
+    convergence_tolerance <- 0.05 # max sd must be smaller than this proportion of max difference features shapley values
+    reduction_factor <- 0.3 # Proportion of estimated remaining samples to use in next iteration
+    converged <- FALSE
 
-  timing_list$setup_computation <- Sys.time()
 
-  # Compute the v(S):
-  # MC:
-  # 1. Get the samples for the conditional distributions with the specified approach
-  # 2. Predict with these samples
-  # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
-  # Regression:
-  # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
-  vS_list <- compute_vS(internal, model, predict_model)
+    internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
-  timing_list$compute_vS <- Sys.time()
 
-  # Compute Shapley values based on conditional expectations (v(S))
-  # Organize function output
-  output <- finalize_explanation(vS_list = vS_list, internal = internal)
+    internal$parameters$n_combinations <- initial_n_combinations
+    internal$parameters$new_n_combinations <- initial_n_combinations
 
-  timing_list$shapley_computation <- Sys.time()
+    keep_list <- list()
+    iter <- 1
 
-  # Compute the elapsed time for the different steps
-  if (timing == TRUE) output$timing <- compute_time(timing_list)
+    while(converged==FALSE){
+
+      # setup the Shapley framework
+      internal <- shapley_setup(internal)
+
+      vS_list <- compute_vS(internal, model, predict_model)
+
+
+      if(!is.null(internal$objects$prev_vS_list)){
+
+        ### Need to map the old id_combinations to the new numbers for this merging to work out
+        id_combination_mapper <- merge(internal$objects$prev_id_comb_feature_map,
+                                       internal$objects$id_comb_feature_map,
+                                       by="features_str",
+                                       suffixes = c("","_new"))
+        for(k in seq_along(internal$objects$prev_vS_list)){
+          internal$objects$prev_vS_list[[k]] <- merge(internal$objects$prev_vS_list[[k]],
+                                                          id_combination_mapper[,.(id_combination,id_combination_new)],
+                                                          by="id_combination")
+          internal$objects$prev_vS_list[[k]][,id_combination:=id_combination_new]
+          internal$objects$prev_vS_list[[k]][,id_combination_new:=NULL]
+        }
+
+        vS_list <- c(internal$objects$prev_vS_list, vS_list)
+      }
+
+      processed_vS_list <- postprocess_vS_list(
+        vS_list = vS_list,
+        internal = internal
+      )
+
+      dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+
+      if(internal$objects$X[,.N]==2^internal$parameters$n_features){
+        dt_shapley_sd <- dt_shapley_est*0 # If all combinations have been sampled, the variance is zero and we get convergence
+      } else {
+        dt_shapley_sd <- bootstrap_shapley(internal,processed_vS_list$dt_vS)
+      }
+
+      convergence_res <-  check_convergence(internal,dt_shapley_est, dt_shapley_sd, convergence_tolerance)
+
+
+      converged <- convergence_res$converged
+      estimated_remaining_samples <- ceiling(convergence_res$estimated_required_samples)
+
+      if(converged==FALSE){
+        cat(paste0("Not converged after ", internal$parameters$n_combinations, " samples.\n",
+                   "Estimated remaining samples: ", estimated_remaining_samples, "\n"))
+
+        # Updating parameters etc for the next iteration of the process
+
+        internal$parameters$n_combinations <- ceiling(estimated_remaining_samples*reduction_factor)
+        unique_feature_samples <- internal$objects$X[-c(1,.N),features]
+
+        internal$objects$prev_id_comb_feature_map <- internal$objects$id_comb_feature_map
+        internal$objects$prev_vS_list <- vS_list
+
+        if((length(unique_feature_samples)+internal$parameters$n_combinations)>=2^internal$parameters$n_features){
+          internal$parameters$exact = TRUE # Use all coalitions in the last iteration as the estimated number of samples is more than what remains
+        } else { # Else, sample more keeping the current samples
+          repetitions <- internal$objects$X[-c(1,.N),sample_freq]
+          internal$parameters$prev_feature_sample <- unlist(lapply(seq_along(unique_feature_samples),
+                                                                       function(i) rep(list(unique_feature_samples[[i]]),
+                                                                                       repetitions[i])),
+                                                                recursive = FALSE)
+        }
+
+      } else {
+        cat("Convergence reached!\n")
+      }
+
+      # Printing the current Shapley values
+      matrix1 <- format(round(dt_shapley_est,3),nsmall=2,justify = "right")
+      matrix2 <- format(round(dt_shapley_sd,2),nsmall=2,justify = "right")
+
+      cat("Current estimated Shapley values [sd]:\n")
+        print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2,") ", sep = ""), nrow = internal$parameters$n_explain))
+        names(print_dt) <- names(dt_shapley_est)
+        print(print_dt)
+
+
+
+
+        keep_list[[iter]] <- list(dt_shapley_est = copy(dt_shapley_est),
+                                  dt_shapley_sd = copy(dt_shapley_sd),
+                                  convergence_res = copy(convergence_res))
+        iter <- iter + 1
+    }
+
+    internal$objects$keep_list <- keep_list
+
+    # Rerun after convergence to get the same output format as for the non-adaptive approach
+    output <- finalize_explanation(vS_list = vS_list, internal = internal)
+
+
+  } else {
+    # Sets up the Shapley (sampling) framework and prepares the
+    # conditional expectation computation for the chosen approach
+    # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
+    internal <- setup_computation(internal, model, predict_model)
+
+    timing_list$setup_computation <- Sys.time()
+
+    # Compute the v(S):
+    # MC:
+    # 1. Get the samples for the conditional distributions with the specified approach
+    # 2. Predict with these samples
+    # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
+    # Regression:
+    # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
+    vS_list <- compute_vS(internal, model, predict_model)
+
+    timing_list$compute_vS <- Sys.time()
+
+    # Compute Shapley values based on conditional expectations (v(S))
+    # Organize function output
+    output <- finalize_explanation(vS_list = vS_list, internal = internal)
+
+    timing_list$shapley_computation <- Sys.time()
+
+    # Compute the elapsed time for the different steps
+    if (timing == TRUE) output$timing <- compute_time(timing_list)
+
+  }
 
   # Temporary to avoid failing tests
   output <- remove_outputs_to_pass_tests(output)

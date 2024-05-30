@@ -88,6 +88,8 @@ postprocess_vS_list <- function(vS_list, internal) {
 
   data.table::setorder(dt_vS, id_combination)
 
+  dt_vS <- unique(dt_vS, by = id_combination) # To remove duplicated full pred row in the iterative procedure
+
   output <- list(
     dt_vS = dt_vS,
     dt_samp_for_vS = dt_samp_for_vS
@@ -108,6 +110,113 @@ get_p <- function(dt_vS, internal) {
 
   return(p)
 }
+
+
+bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
+
+  set.seed(seed)
+
+  X_org <- copy(internal$objects$X)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  shap_names <- internal$parameters$feature_names
+  paired_shap_sampling <- internal$parameters$paired_shap_sampling
+
+  boot_sd_array <- array(NA,dim=c(n_explain,n_features+1,n_boot_samps))
+
+  X_keep <- X_org[c(1,.N),.(id_combination,features,n_features,N,shapley_weight)]
+  X_samp <- X_org[-c(1,.N),.(id_combination,features,n_features,N,shapley_weight,sample_freq)]
+  X_samp[, features_tmp := sapply(features, paste, collapse = " ")]
+
+  n_combinations_boot <- X_samp[,sum(sample_freq)]
+
+  for (i in seq_len(n_boot_samps)){
+
+    if(paired_shap_sampling){
+
+        # Sample with replacement
+      X_boot00 <- X_samp[sample.int(n=.N,
+                                   size=ceiling(n_combinations_boot/2),
+                                                replace = TRUE,
+                                                prob=sample_freq),
+                                   .(id_combination,features,n_features,N)]
+
+      X_boot00[, features_tmp := sapply(features, paste, collapse = " ")]
+      # Not sure why I have to two the next two lines in two steps, but I don't get it to work otherwise
+      boot_features_dup <- lapply(X_boot00$features, function(x) seq(n_features)[-x])
+      X_boot00[, features_dup := boot_features_dup]
+      X_boot00[, features_dup_tmp := sapply(features_dup, paste, collapse = " ")]
+
+      # Extract the paired coalitions from X_samp
+      X_boot00_paired <- merge(X_boot00[,.(features_dup_tmp)],
+                              X_samp[,.(id_combination,features,n_features,N,features_tmp)],
+                              by.x = "features_dup_tmp",by.y="features_tmp")
+      X_boot0 <- rbind(X_boot00[,.(id_combination, features, n_features, N)],
+                       X_boot00_paired[,.(id_combination, features, n_features, N)])
+    } else {
+      X_boot0 <- X_samp[sample.int(n=.N,
+                                   size=n_combinations_boot,
+                                   replace = TRUE,
+                                   prob=sample_freq),
+                        .(id_combination,features,n_features,N)]
+
+    }
+
+
+    X_boot0[,shapley_weight:=.N,by="id_combination"]
+    X_boot0 <- unique(X_boot0,by="id_combination")
+
+    X_boot <- rbind(X_keep,X_boot0)
+    data.table::setorder(X_boot,id_combination)
+
+
+    W_boot <- shapr:::weight_matrix(
+      X = X_boot,
+      normalize_W_weights = TRUE,
+      is_groupwise = FALSE
+    )
+
+    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_combination %in% X_boot[,id_combination], -"id_combination"]))
+
+    boot_sd_array[,,i] <- copy(kshap_boot)
+
+  }
+
+  std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
+
+  dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
+  colnames(dt_kshap_boot_sd) <- c("none", shap_names)
+
+  return(dt_kshap_boot_sd)
+
+}
+
+
+check_convergence <- function(internal,dt_shapley_est, dt_shapley_sd, convergence_tolerance=0.1){
+
+  n_combinations <- internal$parameters$n_combinations
+
+  max_sd <- max(dt_shapley_sd)
+  max_sd0 <- max_sd*sqrt(n_combinations)
+
+  dt_shapley_est0 <- copy(dt_shapley_est)
+
+  dt_shapley_est0[,maxval:=max(.SD),.SDcols=-1,by=.I]
+  dt_shapley_est0[,minval:=min(.SD),.SDcols=-1,by=.I]
+  dt_shapley_est0[,req_samples:=(max_sd0/((maxval-minval)*convergence_tolerance))^2]
+  estimated_required_samples <- dt_shapley_est0[,max(req_samples)]
+
+  converged <- estimated_required_samples <= n_combinations
+
+  return(
+    list(converged=converged,
+         estimated_required_samples = estimated_required_samples)
+  )
+
+}
+
+
+
 
 #' Compute shapley values
 #' @param dt_vS The contribution matrix.
