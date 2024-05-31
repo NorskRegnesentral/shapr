@@ -1335,6 +1335,8 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #' @description
 #' Make plots to visualize and compare the estimated Shapley values for a list of
 #' [shapr::explain()] objects applied to the same data and model.
+#' For group-wise Shapley values, the features values plotted are the mean
+#' feature values for all features in each group.
 #'
 #' @param explanation_list A list of [shapr::explain()] objects applied to the same data and model.
 #' If the entries in the list is named, then the function use these names. Otherwise, it defaults to
@@ -1368,6 +1370,8 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #' ("`free_x`", "`free_y`")? The user has to change the latter manually depending on the value of `horizontal_bars`.
 #' @param facet_ncol  Integer. The number of columns in the facet grid. Default is `facet_ncol = 2`.
 #' @param geom_col_width Numeric. Bar width. By default, set to 85% of the [ggplot2::resolution()] of the data.
+#' @param groupwise_feature_means Logical. If `FALSE` (default), then we do not include the feature values of
+#' the explicand on the y-axis. If `TRUE`, then we include the mean of the features in each group.
 #'
 #' @return A [ggplot2::ggplot()] object.
 #' @export
@@ -1516,7 +1520,8 @@ plot_SV_several_approaches <- function(explanation_list,
                                        facet_scales = "free",
                                        facet_ncol = 2,
                                        geom_col_width = 0.85,
-                                       brewer_palette = NULL) {
+                                       brewer_palette = NULL,
+                                       groupwise_feature_means = FALSE) {
   # Setup and checks ----------------------------------------------------------------------------
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -1553,7 +1558,6 @@ plot_SV_several_approaches <- function(explanation_list,
   # Update the index_explicands to be all explicands if not specified
   if (is.null(index_explicands)) index_explicands <- seq(explanation_list[[1]]$internal$parameters$n_explain)
 
-
   # Creating data.tables --------------------------------------------------------------------------------------------
   # Update the `only_these_features` parameter vector based on `plot_phi0` or in case it is NULL
   only_these_features <- update_only_these_features(
@@ -1578,10 +1582,11 @@ plot_SV_several_approaches <- function(explanation_list,
     only_these_features_wo_none = only_these_features_wo_none,
     index_explicands = index_explicands,
     horizontal_bars = horizontal_bars,
-    digits = digits
+    digits = digits,
+    groupwise_feature_means = groupwise_feature_means
   )
 
-  # Melt `dt_Shapley_values` and merge with `dt_desc_long` to creat data.table ready to be plotted with ggplot2
+  # Melt `dt_Shapley_values` and merge with `dt_desc_long` to create data.table ready to be plotted with ggplot2
   dt_Shapley_values_long <- create_Shapley_value_figure_dt(
     dt_Shapley_values = dt_Shapley_values,
     dt_desc_long = dt_desc_long,
@@ -1782,28 +1787,61 @@ create_feature_descriptions_dt <- function(explanation_list,
                                            only_these_features_wo_none,
                                            index_explicands,
                                            horizontal_bars,
-                                           digits) {
-  # Get the explicands
-  x_explain <-
-    explanation_list[[1]]$internal$data$x_explain[index_explicands, only_these_features_wo_none, with = FALSE]
+                                           digits,
+                                           groupwise_feature_means) {
+
+  # Check if are dealing with group-wise or feature-wise Shapley values
+  if (explanation_list[[1]]$internal$parameters$is_groupwise) {
+    # Group-wise Shapley values
+
+    if (groupwise_feature_means && any(explanation_list[[1]]$internal$objects$feature_specs$classes != "numeric")) {
+      stop("`groupwise_feature_means` cannot be `TRUE` for datasets with non-numerical features.")
+    }
+
+    # Get the relevant explicands
+    x_explain <- explanation_list[[1]]$internal$data$x_explain[index_explicands]
+
+    # Check if we are to compute the mean feature value within each group for each explicand
+    if (groupwise_feature_means) {
+      feature_groups = explanation_list[[1]]$internal$parameters$group
+      x_explain <-
+        x_explain[, lapply(feature_groups, function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE))]
+
+      # Extract only the relevant columns
+      x_explain = x_explain[, only_these_features_wo_none, with = FALSE]
+
+      # Create the description matrix
+      desc_mat <- trimws(format(x_explain, digits = digits))
+      for (i in seq_len(ncol(desc_mat))) desc_mat[, i] <- paste0(colnames(desc_mat)[i], " = ", desc_mat[, i])
+
+    } else {
+      # Create the description matrix
+      desc_mat = matrix(rep(only_these_features_wo_none, each = nrow(x_explain)), nrow = nrow(x_explain))
+      colnames(desc_mat) = only_these_features_wo_none
+    }
+  } else {
+    # Feature-wise Shapley values
+
+    # Get the relevant explicands
+    x_explain <-
+      explanation_list[[1]]$internal$data$x_explain[index_explicands, only_these_features_wo_none, with = FALSE]
+
+    # Create the description matrix
+    desc_mat <- trimws(format(x_explain, digits = digits))
+    for (i in seq_len(ncol(desc_mat))) desc_mat[, i] <- paste0(colnames(desc_mat)[i], " = ", desc_mat[, i])
+  }
 
   # Converting and melting the explicands
-  desc_mat <- trimws(format(x_explain, digits = digits))
-  for (i in seq_len(ncol(desc_mat))) desc_mat[, i] <- paste0(colnames(desc_mat)[i], " = ", desc_mat[, i])
   dt_desc <- data.table::as.data.table(cbind(none = "None", desc_mat))
   dt_desc_long <- data.table::melt(dt_desc[, .id := index_explicands],
-    id.vars = ".id",
-    variable.name = ".feature",
-    value.name = ".description"
-  )
+                                   id.vars = ".id",
+                                   variable.name = ".feature",
+                                   value.name = ".description")
 
   # Make the description into an ordered factor such that the features in the
   # bar plots follow the same order of features as in the training data.
   levels <- if (horizontal_bars) rev(unique(dt_desc_long$.description)) else unique(dt_desc_long$.description)
-  dt_desc_long$.description <- factor(dt_desc_long$.description,
-    levels = levels,
-    ordered = TRUE
-  )
+  dt_desc_long$.description <- factor(dt_desc_long$.description, levels = levels, ordered = TRUE)
 
   return(dt_desc_long)
 }
