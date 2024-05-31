@@ -1,0 +1,163 @@
+---
+title: "Asymmetric and causal Shapley value explanations"
+author: "Lars Henry Berge Olsen"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    fig_caption: yes
+bibliography: ../inst/REFERENCES.bib
+vignette: >
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Asymmetric and causal Shapley value explanations}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+  markdown:
+    wrap: 72
+    toc: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.cap = "",
+  fig.width = 7,
+  fig.height = 5,
+  fig.path = "figure_asymmetric_causal/", # Ensure that figures are saved in the right folder (build vignette manually)
+  cache.path = "cache_asymmetric_causal/", # Ensure that cached objects are saved in the right folder
+  warning = FALSE,
+  message = TRUE
+)
+```
+
+
+# Overview of the vignette {#Vignette}
+
+This vignette elaborates and demonstrates the asymmetric and 
+causal Shapley value frameworks introduced by @frye2020asymmetric
+and @heskes2020causal, respectively. We demonstrate the two frameworks
+on the [bike Sharing](https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset.zip)
+dataset from the UCI Machine Learning Repository. The setup is
+based on the `CauSHAPley` package, which is is the 
+[code supplement](https://proceedings.neurips.cc/paper/2020/hash/32e54441e6382a7fbacbbbaf3c450059-Abstract.html) 
+to the @heskes2020causal paper. Note the `CauSHAPley` package was based
+on an old version of `shapr` and was restricted to the `gaussian` approach.
+We have extended the causal Shapley value framework to work for all
+Monte Carlo-based approaches, while the asymmetric Shapley value framework
+also works for the regression-based approaches. 
+Our generalization is of uttermost importance, as many real-world data sets
+are from the Gaussian distribution.
+
+
+
+
+# Asymmetric Shapley values {#AsymSV}
+
+Asymmetric Shapley values were proposed by @frye2020asymmetric as
+a way to incorporate causal knowledge in the real world by restricting
+the possible permutations of the features when computing the
+Shapley values to those consistent with a (partial) causal ordering.
+See the figure below for schematic overview of the causal ordering
+we are going to use in the examples in this vignette.
+
+That is, instead of considering the $2^M$ possible coalitions,
+where $M$ is the number of features, asymmetric Shapley values only
+consider the subset of coalitions which respects the causal ordering.
+Meaning that if the ordering specifies that feature $X_1$ is the 
+ancestor of $X_2$, then asymmetric Shapley values skips the coalitions
+where $X_2$ is included but $X_1$ is \textit{not} included. 
+
+We can use all approaches in \texttt{shapr}, both Monte Carlo-based and
+regression based methods, to compute the asymmetric Shapley values.
+This is because the asymmetric Shapley value framework does not change
+how we compute the contribution functions $v(S)$, but rather which of
+the coalitions $S$ that are used to compute the Shapley value explanations.
+
+Instead of the number of coalitions being $O(2^M)$, we now get
+$O(2^{C_{largest}})$, where $C_{largest}$ is the number of features in
+the largest component in the causal ordering. 
+
+Furthermore, asymmetric Shapley values supports groups of features, but then the 
+causal ordering must be given on the group level instead of the individual features.
+The asymmetric Shapley value framework also supports sampling of combinations/coalitions where
+the sampling is done from the set of combinations that respects the causal ordering.
+
+```{r asymmetric_ordering, echo=FALSE, fig.cap="Schematic overview of the causal ordering used in this vignette.", fig.align='center', out.width = '50%'}
+knitr::include_graphics("figure_asymmetric_causal/Asymmetric_ordering.png")
+```
+
+
+# Causal Shapley values {#CausSV}
+
+Causal Shapley values were proposed by @heskes2020causal as a way
+to explain the total effect of features on the prediction, taking
+into account their causal relationships, by adapting the sampling
+procedure in `shapr`. More precisely, they propose to employ Pearl’s
+do-calculus to to circumvent the independence assumption, made by
+@lundberg2017unified, without sacrificing any of their desirable
+properties of the Shapley value framework. The causal Shapley value
+explanation framework can also separate the the contribution of direct
+and indirect effects, which makes them principally different from
+marginal and conditional Shapley values. They also provide a more 
+direct and robust way to incorporate causal knowledge, compared to
+asymmetric Shapley values.
+
+To compute causal Shapley values, we have to specify a (partial) causal
+ordering and make an assumption about the confounding in each component.
+Together, they form a causal chain graph which has directed and undirected
+edges. All features that are treated on an equal footing are linked
+together with undirected edges and become part of the same chain component.
+Edges between chain components are directed and represent causal relationships.
+In the figure below, we have the same causal ordering as above, but we
+have in addition made the assumption that we have confounding in the 
+second component, but no confounding in the first and third components.
+This allows us to correctly distinguishes between dependencies that are
+due to confounding and mutual interactions. That is, in the figure,
+the dependencies in chain component $\tau_2$ are assumed to be the result
+of a common confounder, and those in $\tau_3$ of mutual interactions, while
+we have no mutual interactions in $\tau_1$ as it is a singleton.
+
+Computing the effect of an intervention depends on how we interpret the
+generative process that lead to the feature dependencies within each component.
+If they are the result of marginalizing out a common confounder,
+then intervention on a particular feature will break the dependency
+with the other features, and we denote the set of these chain components 
+by $\mathcal{T}_{\text{confounding}}$. For the components with mutual
+feature interactions, setting the value of a feature does affect the
+distribution of the variables within the same component. We denote
+the set of these components by $\mathcal{T}_{\,\overline{\text{confounding}}}$.
+
+@heskes2020causal described how any expectation by intervention needed
+to compute the causal Shapley values can be translated to an expectation
+by observation, by using the interventional formula for causal chain graphs:
+\begin{align} 
+P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) 
+= &
+\prod_{\tau \in \mathcal{T}_{\,\text{confounding}}}
+P(X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}(\tau) \cap \bar{\mathcal{S}}}, x_{\text{pa}(\tau) \cap \mathcal{S}}) \times \\
+& \quad 
+\prod_{\tau \in \mathcal{T}_{\,\overline{\text{confounding}}}}
+P(X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}(\tau) \cap \bar{\mathcal{S}}}, x_{\text{pa}(\tau) \cap \mathcal{S}}, x_{\tau \cap \mathcal{S}}).
+\end{align}
+Here, any of the Monte Carlo-based approaches in `shapr` can be used to to compute the observational expectations.
+The marginals are estimated from the training data for all approaches except `gaussian`, for which we use the 
+marginals of the Gaussian distribution instead.
+
+
+For specific causal chain graphs, the causal Shapley value framework simplifies to 
+symmetric conditional, asymmetric conditional, and marginal Shapley values,
+see Corollary 1 to 3 in the supplement of @heskes2020causal.
+
+
+
+```{r pressure, echo=FALSE, fig.cap="A causal chain graph", out.width = '50%'}
+knitr::include_graphics("figure_asymmetric_causal/causal_ordering.png")
+```
+
+
+# Marginal Shapley values {#MarginaSV}
+Special case
+
+# Code example
+
+# References
