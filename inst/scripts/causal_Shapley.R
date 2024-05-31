@@ -35,7 +35,7 @@ x_train <- data.table(matrix(MASS::mvrnorm(100, mu, cov_mat), ncol = m))
 S <- shapr::feature_matrix_cpp(unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE), m = m)
 S <- shapr::feature_matrix_cpp(get_legit_causal_combinations(causal_ordering = causal_ordering), m = m)
 
-get_S_causal(S, causal_ordering, confounding, as_string = TRUE)[[38]]
+get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)[[38]]
 
 
 
@@ -177,134 +177,149 @@ if (explanation_group$internal$parameters$is_groupwise) {
 causal_ordering
 
 
-#' #' Sample conditional Gaussian variables following a causal chain graph with do-calculus.
-#' #'
-#' #' @inheritParams sample_copula
-#' #'
-#' #' @param causal_ordering List of vectors specifying (partial) causal ordering. Each element in
-#' #' the list is a component in the order, which can contain one or more variable indices in a vector.
-#' #' For example, in list(1, c(2, 3)), 2 > 1 and 3 > 1, but 2 and 3 are not comparable.
-#' #' @param confounding Logical vector specifying which variables are affected by confounding.
-#' #' Confounding must be specified globally with a single TRUE / FALSE value for all components,
-#' #' or separately for each causal component in the causal ordering.
-#' #'
-#' #' @return data.table
-#' #'
-#' #' @keywords internal
-#' #'
-#' #' @author Tom Heskes, Ioan Gabriel Bucur
-#' #'
-#' #' @examples
-#' #' m <- 10
-#' #' n_samples <- 50
-#' #' mu <- rep(1, m)
-#' #' cov_mat <- cov(matrix(rnorm(n_samples * m), n_samples, m))
-#' #' x_test <- matrix(MASS::mvrnorm(1, mu, cov_mat), nrow = 1)
-#' #' cnms <- paste0("x", seq(m))
-#' #' colnames(x_test) <- cnms
-#' #' index_given <- c(4, 7)
-#' #' causal_ordering <- list(c(1:3), c(4:6), c(7:10))
-#' #' confounding <- c(TRUE, FALSE, TRUE)
-#' #' r <- shapr:::sample_causal(
-#' #'   index_given, n_samples, mu, cov_mat, m, x_test,
-#' #'   causal_ordering, confounding
-#' #' )
-#' sample_causal <- function(index_given, n_samples, mu, cov_mat, m, x_test, causal_ordering, confounding) {
-#'   # Check input
-#'   stopifnot(is.matrix(x_test))
-#'   stopifnot(is.list(causal_ordering))
-#'   stopifnot(is.logical(confounding))
+#' Sample conditional Gaussian variables following a causal chain graph with do-calculus.
 #'
-#'   if (length(confounding) > 1 && length(confounding) != length(causal_ordering)) {
-#'     stop("Confounding must be specified globally (one value for all components), or separately for each component in the causal ordering.")
-#'   }
+#' @inheritParams sample_copula
 #'
-#'   # In case of global confounding value, replicate it across components.
-#'   if (length(confounding) == 1) {
-#'     confounding <- rep(confounding, length(causal_ordering))
-#'   }
+#' @param causal_ordering List of vectors specifying (partial) causal ordering. Each element in
+#' the list is a component in the order, which can contain one or more variable indices in a vector.
+#' For example, in list(1, c(2, 3)), 2 > 1 and 3 > 1, but 2 and 3 are not comparable.
+#' @param confounding Logical vector specifying which variables are affected by confounding.
+#' Confounding must be specified globally with a single TRUE / FALSE value for all components,
+#' or separately for each causal component in the causal ordering.
 #'
-#'   if (!base::setequal(unlist(causal_ordering), seq(m))) {
-#'     stop(paste("Incomplete or incorrect partial causal_ordering specified for", m, "variables"))
-#'   }
+#' @return data.table
 #'
-#'   # Handles the unconditional and full conditional separately when predicting
-#'   if (length(index_given) %in% c(0, m)) {
-#'     return(data.table::as.data.table(x_test))
-#'   }
+#' @keywords internal
 #'
+#' @author Tom Heskes, Ioan Gabriel Bucur
 #'
-#'   # index_given = c(1, 6, 9)
-#'   # dependent_ind <- setdiff(1:ncol(S), index_given)
-#'   dependent_ind <- setdiff(seq(m), index_given)
-#'   xall <- data.table(matrix(ncol = m, nrow = n_samples))
-#'   xall[, (index_given) := lapply(x_test[index_given], rep, n_samples)] # Add values from x_test to specified columns in xall
-#'
-#'   what_kind <- rep(NA, m)
-#'   what_kind[index_given] <- "given"
-#'
-#'   for (i in seq(length(causal_ordering))) {
-#'     # print(what_kind)
-#'
-#'     # check overlap between dependent_ind and component
-#'     to_be_sampled <- intersect(causal_ordering[[i]], dependent_ind)
-#'
-#'     if (length(to_be_sampled) > 0) {
-#'       # condition upon all variables in ancestor components
-#'       to_be_conditioned <- unlist(causal_ordering[0:(i - 1)])
-#'
-#'       # back to conditioning if confounding is FALSE or no conditioning if confounding is TRUE
-#'       if (!confounding[i]) {
-#'         # add intervened variables in the same component
-#'         to_be_conditioned <- union(intersect(causal_ordering[[i]], index_given), to_be_conditioned)
-#'       }
-#'
-#'       if (length(to_be_conditioned) == 0) {
-#'         # draw new samples from marginal distribution
-#'         newsamples <- mvnfast::rmvn(n_samples, mu = mu[to_be_sampled], sigma = as.matrix(cov_mat[to_be_sampled, to_be_sampled]))
-#'         newsamples <- create_marginal_data(x_train = x_train, Sbar_features = to_be_sampled, n_samples = 50)
-#'
-#'
-#'         what_kind[to_be_sampled] <- "marginal"
-#'       } else {
-#'         # compute conditional Gaussian
-#'         C <- cov_mat[to_be_sampled, to_be_conditioned, drop = FALSE]
-#'         D <- cov_mat[to_be_conditioned, to_be_conditioned]
-#'         CDinv <- C %*% solve(D)
-#'         cVar <- cov_mat[to_be_sampled, to_be_sampled] - CDinv %*% t(C)
-#'         if (!isSymmetric(cVar)) {
-#'           cVar <- Matrix::symmpart(cVar)
-#'         }
-#'
-#'         # draw new samples from conditional distribution
-#'         mu_sample <- matrix(rep(mu[to_be_sampled], each = n_samples), nrow = n_samples)
-#'         mu_cond <- matrix(rep(mu[to_be_conditioned], each = n_samples), nrow = n_samples)
-#'         cMU <- mu_sample + t(CDinv %*% t(xall[, to_be_conditioned] - mu_cond))
-#'         newsamples <- mvnfast::rmvn(n_samples, mu = matrix(0, 1, length(to_be_sampled)), sigma = as.matrix(cVar))
-#'         newsamples <- newsamples + cMU
-#'
-#'         what_kind[to_be_sampled] <- "conditional"
-#'       }
-#'
-#'
-#'       xall[, (to_be_sampled) := newsamples] # Data table to data table
-#'       # xall[, (to_be_sampled) := split(newsamples, seq_len(ncol(newsamples)))] matrix to data table
-#'
-#'       # xall[,to_be_sampled] <- newsamples Matrix version
-#'       # print(c(to_be_sampled, c(0,0,0), to_be_conditioned))
-#'       print(as.data.table(xall))
-#'     }
-#'   }
-#'   what_kind
-#'
-#'   # return(what_kind)
-#'
-#'   colnames(xall) <- colnames(x_test)
-#'   return(as.data.table(xall))
-#' }
-#'
-#' explanation$internal$objects$S
-#' explanation$internal$objects$S
+#' @examples
+#' m <- 10
+#' n_samples <- 50
+#' mu <- rep(1, m)
+#' cov_mat <- cov(matrix(rnorm(n_samples * m), n_samples, m))
+#' x_test <- matrix(MASS::mvrnorm(1, mu, cov_mat), nrow = 1)
+#' cnms <- paste0("x", seq(m))
+#' colnames(x_test) <- cnms
+#' index_given <- c(4, 7)
+#' causal_ordering <- list(c(1:3), c(4:6), c(7:10))
+#' confounding <- c(TRUE, FALSE, TRUE)
+#' r <- shapr:::sample_causal(
+#'   index_given, n_samples, mu, cov_mat, m, x_test,
+#'   causal_ordering, confounding
+#' )
+sample_causal <- function(index_given, n_samples, mu, cov_mat, m, x_test, causal_ordering, confounding) {
+  # Check input
+  stopifnot(is.matrix(x_test))
+  stopifnot(is.list(causal_ordering))
+  stopifnot(is.logical(confounding))
+
+  if (length(confounding) > 1 && length(confounding) != length(causal_ordering)) {
+    stop("Confounding must be specified globally (one value for all components), or separately for each component in the causal ordering.")
+  }
+
+  # In case of global confounding value, replicate it across components.
+  if (length(confounding) == 1) {
+    confounding <- rep(confounding, length(causal_ordering))
+  }
+
+  if (!base::setequal(unlist(causal_ordering), seq(m))) {
+    stop(paste("Incomplete or incorrect partial causal_ordering specified for", m, "variables"))
+  }
+
+  # Handles the unconditional and full conditional separately when predicting
+  if (length(index_given) %in% c(0, m)) {
+    return(data.table::as.data.table(x_test))
+  }
+
+
+  # index_given = c(1, 6, 9)
+  # dependent_ind <- setdiff(1:ncol(S), index_given)
+  dependent_ind <- setdiff(seq(m), index_given)
+  xall <- data.table(matrix(ncol = m, nrow = n_samples))
+  xall[, (index_given) := lapply(x_test[index_given], rep, n_samples)] # Add values from x_test to specified columns in xall
+
+  what_kind <- rep(NA, m)
+  what_kind[index_given] <- "given"
+
+  for (i in seq(length(causal_ordering))) {
+    print(what_kind)
+
+    # check overlap between dependent_ind and component
+    to_be_sampled <- intersect(causal_ordering[[i]], dependent_ind)
+
+    if (length(to_be_sampled) > 0) {
+      # condition upon all variables in ancestor components
+      to_be_conditioned <- unlist(causal_ordering[0:(i - 1)])
+
+      # back to conditioning if confounding is FALSE or no conditioning if confounding is TRUE
+      if (!confounding[i]) {
+        # add intervened variables in the same component
+        to_be_conditioned <- union(intersect(causal_ordering[[i]], index_given), to_be_conditioned)
+      }
+
+      if (length(to_be_conditioned) == 0) {
+        # draw new samples from marginal distribution
+        newsamples <- as.data.table(mvnfast::rmvn(n_samples, mu = mu[to_be_sampled], sigma = as.matrix(cov_mat[to_be_sampled, to_be_sampled])))
+        #newsamples <- create_marginal_data_training(n_explain = nrow(x_test), x_train = x_train, Sbar_features = to_be_sampled, n_samples = 50)
+
+
+        what_kind[to_be_sampled] <- "marginal"
+      } else {
+        # compute conditional Gaussian
+        C <- cov_mat[to_be_sampled, to_be_conditioned, drop = FALSE]
+        D <- cov_mat[to_be_conditioned, to_be_conditioned]
+        CDinv <- C %*% solve(D)
+        cVar <- cov_mat[to_be_sampled, to_be_sampled] - CDinv %*% t(C)
+        if (!isSymmetric(cVar)) {
+          cVar <- Matrix::symmpart(cVar)
+        }
+
+        # draw new samples from conditional distribution
+        mu_sample <- matrix(rep(mu[to_be_sampled], each = n_samples), nrow = n_samples)
+        mu_cond <- matrix(rep(mu[to_be_conditioned], each = n_samples), nrow = n_samples)
+        cMU <- mu_sample + t(CDinv %*% t(xall[, to_be_conditioned] - mu_cond))
+        newsamples <- mvnfast::rmvn(n_samples, mu = matrix(0, 1, length(to_be_sampled)), sigma = as.matrix(cVar))
+        newsamples <- newsamples + cMU
+
+        what_kind[to_be_sampled] <- "conditional"
+      }
+
+
+      xall[, (to_be_sampled) := newsamples] # Data table to data table
+      # xall[, (to_be_sampled) := split(newsamples, seq_len(ncol(newsamples)))] matrix to data table
+
+      # xall[,to_be_sampled] <- newsamples Matrix version
+      # print(c(to_be_sampled, c(0,0,0), to_be_conditioned))
+      print(as.data.table(xall))
+    }
+  }
+  what_kind
+
+  # return(what_kind)
+
+  colnames(xall) <- colnames(x_test)
+  return(as.data.table(xall))
+}
+
+m <- 10
+n_samples <- 50
+mu <- rep(1, m)
+cov_mat <- cov(matrix(rnorm(n_samples * m), n_samples, m))
+x_test <- matrix(MASS::mvrnorm(1, mu, cov_mat), nrow = 1)
+cnms <- paste0("x", seq(m))
+colnames(x_test) <- cnms
+index_given <- c(4, 7)
+causal_ordering <- list(c(1:3), c(4:6), c(7:10))
+confounding <- c(TRUE, FALSE, TRUE)
+r <- sample_causal(
+  index_given, n_samples, mu, cov_mat, m, x_test,
+  causal_ordering, confounding
+)
+
+explanation$internal$objects$S
+explanation$internal$objects$S
 
 
 
@@ -337,7 +352,7 @@ S <- feature_matrix_cpp(get_legit_causal_combinations(causal_ordering = causal_o
 confounding <- c(TRUE, TRUE, FALSE)
 a1 <- what_type(S, causal_ordering, confounding)
 a1
-SS <- get_S_causal(S, causal_ordering, confounding, as_string = TRUE)
+SS <- get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)
 S[3, ]
 SS[[3]]
 
@@ -447,14 +462,14 @@ causal_ordering <- list(1:2, 3:4, 5)
 S <- feature_matrix_cpp(get_legit_causal_combinations(causal_ordering = causal_ordering), m = m)
 S
 confounding <- c(TRUE, FALSE, FALSE)
-get_S_causal(S, causal_ordering, confounding, as_string = TRUE)
+get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)
 
-sort(unique(unlist(get_S_causal(S, causal_ordering, confounding, as_string = TRUE))))
+sort(unique(unlist(get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE))))
 
-SS1 <- get_S_causal(S, causal_ordering, confounding = c(FALSE, FALSE, FALSE), as_string = TRUE)
-SS2 <- get_S_causal(S, causal_ordering, confounding = c(TRUE, FALSE, FALSE), as_string = TRUE)
-SS3 <- get_S_causal(S, causal_ordering, confounding = c(TRUE, TRUE, FALSE), as_string = TRUE)
-SS4 <- get_S_causal(S, causal_ordering, confounding = c(TRUE, TRUE, TRUE), as_string = TRUE)
+SS1 <- get_S_causal_steps(S, causal_ordering, confounding = c(FALSE, FALSE, FALSE), as_string = TRUE)
+SS2 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, FALSE, FALSE), as_string = TRUE)
+SS3 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, FALSE), as_string = TRUE)
+SS4 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, TRUE), as_string = TRUE)
 
 all.equal(SS1, SS2)
 SS1[[2]]
@@ -502,7 +517,7 @@ causal_ordering <- list(1:4)
 confounding <- FALSE
 S <- feature_matrix_cpp(get_legit_causal_combinations(causal_ordering = causal_ordering), m = m)
 S
-get_S_causal(S, causal_ordering, confounding, as_string = TRUE)
+get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)
 
 
 data("airquality")
@@ -524,8 +539,8 @@ create_marginal_data(x_train = x_train, Sbar_features = c(1, 4), n_samples = 10)
 
 id_comb_now <- 2
 
-chain_components_all <- get_S_causal(S, causal_ordering, confounding, as_string = TRUE)
-chain_components <- get_S_causal(S, causal_ordering, confounding, as_string = FALSE)
+chain_components_all <- get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)
+chain_components <- get_S_causal_steps(S, causal_ordering, confounding, as_string = FALSE)
 chain_components_batch <- chain_components[[id_comb_now]]
 
 n_samples <- 5

@@ -129,9 +129,8 @@ shapley_setup <- function(internal) {
   n_features0 <- internal$parameters$n_features
   n_combinations <- internal$parameters$n_combinations
   is_groupwise <- internal$parameters$is_groupwise
-  #legit_causal_combinations = internal$objects$legit_causal_combinations # NULL for non-Causal Shapley
   asymmetric = internal$parameters$asymmetric
-  causal = internal$parameters$causal
+  causal_sampling = internal$parameters$causal_sampling
   causal_ordering = internal$parameters$causal_ordering
   confounding = internal$parameters$confounding
 
@@ -179,22 +178,22 @@ shapley_setup <- function(internal) {
   internal$objects$S_batch <- create_S_batch_new(internal)
 
   # If we are doing asymmetric Shapley values, then get the step-wise data generating process for each combination
-  if (causal) {
-    S_causal = get_S_causal(S = S, causal_ordering = causal_ordering, confounding = confounding)
-    S_causal_strings =
-      get_S_causal(S = S, causal_ordering = causal_ordering, confounding = confounding, as_strings = TRUE)
+  if (causal_sampling) {
+    S_causal_steps = get_S_causal_steps(S = S, causal_ordering = causal_ordering, confounding = confounding)
+    S_causal_steps_strings =
+      get_S_causal_steps(S = S, causal_ordering = causal_ordering, confounding = confounding, as_string = TRUE)
 
     # Also find all unique set of features to condition on
-    S_causal_unlist = do.call(c, unlist(S_causal, recursive=FALSE))
-    S_causal_unique_combinations = unique(S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)])
-    S_causal_unique_combinations =
-      c(list(integer(0)), sort_feature_list(S_causal_unique_combinations), list(seq(n_features0)))
+    S_causal_unlist = do.call(c, unlist(S_causal_steps, recursive=FALSE))
+    S_causal_steps_unique = unique(S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)])
+    S_causal_steps_unique = c(list(integer(0)), sort_feature_list(S_causal_steps_unique), list(seq(n_features0)))
+    S_causal_steps_unique_S = feature_matrix_cpp(features = S_causal_steps_unique, m = n_features0)
 
     # Insert into the internal list
-    internal$objects$S_causal = S_causal
-    internal$objects$S_causal_strings = S_causal_strings
-    internal$objects$S_causal_unique_combinations = S_causal_unique_combinations
-    internal$objects$S_causal_unique_S = feature_matrix_cpp(features = S_causal_unique_combinations, m = n_features0)
+    internal$objects$S_causal_steps = S_causal_steps
+    internal$objects$S_causal_steps_strings = S_causal_steps_strings
+    internal$objects$S_causal_steps_unique = S_causal_steps_unique
+    internal$objects$S_causal_steps_unique_S = S_causal_steps_unique_S
   }
 
   return(internal)
@@ -212,8 +211,6 @@ shapley_setup <- function(internal) {
 #' weights when doing numerical operations.
 #' @param group_num List. Contains vector of integers indicating the feature numbers for the
 #' different groups.
-#' @param legit_causal_combinations List. Contains vectors of integers indicating the feature combinations
-#' that respects the (partial) causal ordering.
 #' @param causal_ordering List containing the causal ordering. Default is `NULL` here, as
 #'
 #' @return A data.table that contains the following columns:
@@ -240,8 +237,13 @@ shapley_setup <- function(internal) {
 #'
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL,
-                                 asymmetric = FALSE, causal_ordering = NULL) {
+feature_combinations <- function(m,
+                                 exact = TRUE,
+                                 n_combinations = 200,
+                                 weight_zero_m = 10^6,
+                                 group_num = NULL,
+                                 asymmetric = FALSE,
+                                 causal_ordering = NULL) {
   m_group <- length(group_num) # The number of groups
 
   # Force user to use a natural number for n_combinations if m > 13
@@ -319,7 +321,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     if (exact) {
       dt <- feature_group(group_num, asymmetric, causal_ordering, weight_zero_m)
     } else {
-      dt <- feature_group_not_exact(group_num, n_combinations, weight_zero_m)
+      dt <- feature_group_not_exact(group_num, asymmetric, causal_ordering, n_combinations, weight_zero_m)
       stopifnot(data.table::is.data.table(dt), !is.null(dt[["p"]]))
       p <- NULL # due to NSE notes in R CMD check
       dt[, p := NULL]
@@ -358,20 +360,27 @@ feature_exact <- function(m, asymmetric = FALSE, causal_ordering = list(1:m), we
 }
 
 #' @keywords internal
-feature_not_exact <- function(m, asymmetric = FALSE, causal_ordering = list(1:m), n_combinations = 200,
-                              weight_zero_m = 10^6, unique_sampling = TRUE) {
+feature_not_exact <- function(m,
+                              asymmetric = FALSE,
+                              causal_ordering = list(1:m),
+                              n_combinations = 200,
+                              weight_zero_m = 10^6,
+                              unique_sampling = TRUE) {
 
   # Split in whether we do asymmetric or symmetric/regular Shapley values
   if (asymmetric) {
     # TODO: Talk with Martin if this is the best way to do it.
     # TODO: Also change to an if-else, so we have only one return. Did it like this, to get less changes on Github for
     #       Martin to read through.
+
     # Create all combinations respecting the causal ordering and then sample based on Shapley kernel weights
     X = feature_exact(m = m, asymmetric = asymmetric, causal_ordering = causal_ordering, weight_zero_m = weight_zero_m)
     X = rbind(X[1], X[-c(1,.N)][sort(sample(.N, n_combinations - 2, prob = shapley_weight))], X[.N])
     X[, id_combination := .I] # Update the indices
     X[, p := NA] # Just needed as `feature_combinations()` requires there to be a p-column that it removes.
     return(X)
+
+
   }
 
   # Find weights for given number of features ----------
@@ -501,29 +510,22 @@ helper_feature <- function(m, feature_sample) {
 #' @param group_num List. Contains vector of integers indicating the feature numbers for the
 #' different groups.
 #'
-#' @return data.table with all feature group combinations, shapley weights etc.
+#' @return data.table with all feature group combinations, Shapley weights etc.
 #'
 #' @keywords internal
-feature_group <- function(group_num, causal_ordering = list(1:length(group_num)), weight_zero_m = 10^6) {
+feature_group <- function(group_num,
+                          asymmetric = FALSE,
+                          causal_ordering = list(1:length(group_num)),
+                          weight_zero_m = 10^6) {
   m <- length(group_num)
 
-  # OLD
-  # dt <- data.table::data.table(id_combination = seq(2^m))
-  # combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
-  #
-  # dt[, groups := unlist(combinations, recursive = FALSE)]
-  # dt[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
-  # dt[, n_groups := length(groups[[1]]), id_combination]
-  # dt[, n_features := length(features[[1]]), id_combination]
-  # dt[, N := .N, n_groups]
-  # dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_groups, weight_zero_m)]
-  #
-
-  # TODO: Verify, but is should work if
-  if (length(causal_ordering[[1]]) == m) { # Regular Group Shapley values
+  # Create the combinations based on if we are doing regular/symmetric or asymmetric Shapley values
+  if (asymmetric) {
+    # Asymmetric Shapley values: get only the combinations that respect the causal ordering
+    combinations <- get_legit_causal_combinations(causal_ordering)
+  } else {
+    # Regular/symmetric Shapley values: get all 2^m combinations
     combinations <- unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
-  } else { # Asymmetric Group Shapley values
-    combinations <- get_legit_causal_combinations(causal_ordering) #
   }
 
   dt <- data.table::data.table(id_combination = seq(length(combinations)))
@@ -554,10 +556,33 @@ group_fun <- function(x, group_num) {
 #' @inheritParams shapley_weights
 #' @inheritParams feature_group
 #'
-#' @return data.table with all feature group combinations, shapley weights etc.
+#' @return data.table with all feature group combinations, Shapley weights etc.
 #'
 #' @keywords internal
-feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero_m = 10^6) {
+feature_group_not_exact <- function(group_num,
+                                    asymmetric = FALSE,
+                                    causal_ordering = list(1:length(group_num)),
+                                    n_combinations = 200,
+                                    weight_zero_m = 10^6) {
+
+  # Split in whether we do asymmetric or symmetric/regular Shapley values
+  if (asymmetric) {
+    # TODO: Talk with Martin if this is the best way to do it.
+    # TODO: Also change to an if-else, so we have only one return. Did it like this, to get less changes on Github for
+    #       Martin to read through.
+
+    # Create all combinations respecting the causal ordering and then sample based on Shapley kernel weights
+    X = feature_group(group_num = group_num,
+                      asymmetric = asymmetric,
+                      causal_ordering = causal_ordering,
+                      weight_zero_m = weight_zero_m)
+    X = rbind(X[1], X[-c(1,.N)][sort(sample(.N, n_combinations - 2, prob = shapley_weight))], X[.N])
+    X[, id_combination := .I] # Update the indices
+    X[, p := NA] # Just needed as `feature_combinations()` requires there to be a p-column that it removes.
+    return(X)
+  }
+
+
   # Find weights for given number of features ----------
   m <- length(group_num)
   n_groups <- seq(m - 1)

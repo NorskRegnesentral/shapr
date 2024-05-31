@@ -98,24 +98,31 @@
 #' @param asymmetric Logical. If `FALSE` (default), we compute symmetric Shapley values,
 #' If `TRUE`, then we compute asymmetric Shapley values based on the (partial) causal ordering
 #' given by `causal_ordering`. That is, we only use the feature combinations/coalitions that
-#' respect the causal ordering when computing the asymmetric Shapley values.
+#' respect the causal ordering when computing the asymmetric Shapley values. If `confounding` is
+#' provided, i.e., not `NULL`, then we compute asymmetric/symmetric causal Shapley values, otherwise,
+#' we compute asymmetric/symmetric conditional Shapley values.
 #'
-#' @param causal_ordering List of vectors containing the components of the partial causal ordering.
-#' The features in each component are given by the feature indices of the feature names.
-#' If `list(1:n_features)` (default), then no causal ordering is assumed, i.e., a causal ordering with
-#' a single component containing all features. If the user specify the features
-#' by their names (strings), then `shapr` will convert them to the feature indices.
-#' The elements in the `causal_ordering` list represents the components in the causal ordering and can either
+#' @param causal_ordering List of vectors specifying the components of the partial causal ordering.
+#' The features in each component are given by the feature/group names or their indices.
+#' The default is `NULL`, which implies that no causal ordering is assumed. That is, a causal ordering with
+#' a single component containing all features `list(1:n_features)` or groups `list(1:n_groups)` for
+#' feature-wise and group-wise Shapley values, respectively. If the user specify the features/groups
+#' by their names (strings), then `shapr` will convert them to the feature/group indices specified by the
+#' order in `get_model_specs` for features and `groups` for groups. For feature-wise Shapley values,
+#' the elements in the `causal_ordering` list represents the components in the causal ordering and can either
 #' be a single feature index or several, that is, a vector. For example,
 #' `list(c(1, 2), c(3, 4))` implies that `1,2 -> 3` and `1,2 -> 4`, i.e., one and
 #' two are the ancestors of three and four, but three and four are not related.
-#' Not that all features must be included in `causal_ordering` without any duplicates.
+#' Not that all features/groups must be included in `causal_ordering` without any duplicates.
 #'
 #' @param confounding Logical (vector) specifying whether confounding for
-#' each component in `causal_ordering` is assumed or not. If `confounding` is a single logical,
-#' i.e., `FALSE` (default) or `TRUE`, then this assumption is set globally for all components.
-#' Otherwise, `confounding` must be a vector of logicals of the same length as `causal_ordering`
-#´ indicating the confounding assumption within each component.
+#' each component in `causal_ordering` is assumed or not. If `NULL` (default), then we do not make any
+#' assumption about the confounding stucture and compute asymmetric/symmetric conditional Shapley values.
+#' If `confounding` is a single logical, i.e., `FALSE` or `TRUE`, then this assumption is set globally
+#' for all components. Otherwise, `confounding` must be a vector of logicals of the same length as `causal_ordering`
+#' indicating the confounding assumption within each component. When `confounding` is specified, we compute
+#' asymmetric/symmetric causal Shapley values. The regression-based approaches are not applicable in the causal
+#' Shapley value framework.
 #'
 #' @param ... Further arguments passed to specific approaches
 #'
@@ -341,8 +348,8 @@ explain <- function(model,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     asymmetric = FALSE,
-                    causal_ordering = list(1:ncol(x_train)),
-                    confounding = FALSE,
+                    causal_ordering = NULL,
+                    confounding = NULL,
                     MSEv_uniform_comb_weights = TRUE,
                     timing = TRUE,
                     verbose = 0,

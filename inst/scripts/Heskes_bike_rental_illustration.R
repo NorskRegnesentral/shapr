@@ -716,4 +716,246 @@ sina_plot(explanation_causal_sampled)
 
 
 
+# 7 - Group -------------------------------------------------------------------------------------------------------
+# It makes sense to group the "temp" and "atemp" due to their high correlation
+cor(x_train[,4], x_train[,5])
+plot(x_train[,4], x_train[,5])
+pairs(x_train)
 
+group_list <- list(
+  trend = "trend",
+  cosyear = "cosyear",
+  sinyear = "sinyear",
+  temp_group = c("temp", "atemp"),
+  windspeed = "windspeed",
+  hum = "hum")
+causal_ordering = list("trend", c("cosyear", "sinyear"), c("temp_group", "windspeed", "hum"))
+causal_ordering = list(1, 2:3, 4:6) # Equivalent to using the names (verified)
+confounding = c(FALSE, TRUE, FALSE)
+asymmetric = TRUE
+
+progressr::handlers("cli")
+explanation_group_asymmetric_causal_time = system.time({
+  explanation_group_asymmetric_causal <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = TRUE,
+        causal_ordering = list(1, 2:3, 4:6),
+        confounding = c(FALSE, TRUE, FALSE),
+        group = group_list,
+        seed = 2020,
+        n_samples = 1000
+      )
+    })
+})
+
+explanation_group_asymmetric_causal$shapley_values
+sina_plot(explanation_group_asymmetric_causal)
+
+# Now we compute the group Shapley values based on only half of the coalitions
+explanation_group_asymmetric_causal_sampled_time = system.time({
+  explanation_group_asymmetric_causal_sampled <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = TRUE,
+        causal_ordering = list(1, 2:3, 4:6),
+        confounding = confounding,
+        group = group_list,
+        n_combinations = explanation_group_asymmetric_causal$internal$parameters$n_combinations_causal_max/2 + 1,
+        seed = 2020,
+        n_samples = 1000
+      )
+    })
+})
+
+
+# Now we compute the group symmetric causal Shapley values
+explanation_group_symmetric_causal_time = system.time({
+  explanation_group_symmetric_causal <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = FALSE,
+        causal_ordering = list(1, 2:3, 4:6), #FORTSETT HER MED Å ENDRE OG SE HVA SOM KRÆSJER
+        confounding = confounding,
+        group = group_list,
+        seed = 2020,
+        n_samples = 1000
+      )
+    })
+})
+
+explanation_group_symmetric_causal_sampled_time = system.time({
+  explanation_group_symmetric_causal_sampled <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = FALSE,
+        causal_ordering = causal_ordering,
+        confounding = confounding,
+        group = group_list,
+        n_combinations = 30,
+        seed = 2020,
+        n_samples = 1000
+      )
+    })
+})
+
+# Symmetric Conditional
+progressr::handlers("cli")
+explanation_group_symmetric_conditional_time = system.time({
+  explanation_group_symmetric_conditional <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = FALSE,
+        causal_ordering = NULL,
+        confounding = FALSE,
+        group = group_list,
+        seed = 2020,
+        n_samples = 1000
+      )
+    })
+})
+
+explanation_group_symmetric_conditional_sampled_time = system.time({
+  explanation_group_symmetric_conditional_sampled <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = FALSE,
+        causal_ordering = NULL,
+        confounding = FALSE,
+        group = group_list,
+        n_combinations = 30,
+        seed = 2020,
+        n_samples = 1000
+      )
+    })
+})
+
+explanation_group_asymmetric_conditional_time = system.time({
+  explanation_group_asymmetric_conditional <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = TRUE,
+        causal_ordering = list(seq_along(group_list)),
+        confounding = FALSE,
+        group = group_list,
+        seed = 2020,
+        n_samples = 1000
+      )
+    })
+})
+explanation_group_asymmetric_conditional$internal$objects$X
+
+explanation_group_asymmetric_causal_time = system.time({
+  explanation_group_asymmetric_causal <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = TRUE,
+        causal_ordering = causal_ordering,
+        confounding = c(FALSE, TRUE, FALSE),
+        group = group_list,
+        seed = 2020,
+        n_samples = 1000
+      )
+    })
+})
+explanation_group_asymmetric_causal$internal$objects$X
+
+explanation_group_asymmetric_conditional$internal$objects$S_causal_strings
+explanation_group_asymmetric_causal$internal$objects$S_causal_strings
+all.equal(explanation_group_asymmetric_causal$internal$objects$S_causal_strings,
+          explanation_group_asymmetric_conditional$internal$objects$S_causal_strings)
+
+explanation_group_asymmetric_conditional_sampled_time = system.time({
+  explanation_group_asymmetric_conditional_sampled <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = TRUE,
+        causal_ordering = causal_ordering,
+        confounding = FALSE,
+        n_combinations = 7,
+        group = group_list,
+        seed = 2020,
+        n_samples = 1000
+      )
+    })
+})
+
+
+sina_plot(explanation_asymmetric_causal)
+sina_plot(explanation_group_asymmetric_causal)
+sina_plot(explanation_group_asymmetric_causal_sampled)
+
+n_index_x_explain = 6
+index_x_explain = order(y_explain)[seq(1, length(y_explain), length.out = n_index_x_explain)]
+plot(explanation_group_asymmetric_causal, index_x_explain = index_x_explain)
+plot(explanation_group_asymmetric_causal_sampled, index_x_explain = index_x_explain)
+
+plot(explanation_asymmetric_causal, plot_type = "beeswarm")
+
+
+plot_SV_several_approaches(list(feature = explanation_asymmetric_causal),
+                           index_explicands = index_x_explain)
+plot_SV_several_approaches(list(exact = explanation_group_asymmetric_causal,
+                                non_exact = explanation_group_asymmetric_causal_sampled),
+                           index_explicands = index_x_explain,
+                           groupwise_feature_means = TRUE)
+
+plot_SV_several_approaches(
+  list(
+    GrAsymCau_exact = explanation_group_asymmetric_causal,
+    GrAsymCau_non_exact = explanation_group_asymmetric_causal_sampled,
+    GrSymCau_exact = explanation_group_symmetric_causal,
+    GrSymCau_non_exact = explanation_group_symmetric_causal_sampled,
+    GrAsymCon_exact = explanation_group_asymmetric_conditional,
+    GrAsymCon_non_exact = explanation_group_asymmetric_conditional_sampled,
+    GrSymCon_exact = explanation_group_symmetric_conditional,
+    GrSymCon_non_exact = explanation_group_symmetric_conditional_sampled
+  ),
+  index_explicands = index_x_explain,
+  brewer_palette = "Paired",
+  groupwise_feature_means = FALSE)
