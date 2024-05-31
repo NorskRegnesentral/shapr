@@ -360,21 +360,32 @@ explain <- function(model,
 
   # Adaptive approach
   # TODO: The below should probably be moved to a separate function in the end
+
+  n_boot_samps <- 100 # 100
+  converged <- FALSE
+  print_shapleyres <- TRUE
+  shapley_reweighting <- "on_N"
+
+
   if(isTRUE(internal$parameters$adaptive)){
     ### for now we just some of the parameters here
     initial_n_combinations <- min(200,(2^internal$parameters$n_features)/10)
-    convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
+    max_iter <- 20
     reduction_factor <- seq(0.1,1,by=0.1) # Proportion of estimated remaining samples to use in next iteration
-    n_boot_samps <- 100 # 100
-    converged <- FALSE
-    print_shapleyres <- TRUE
-    shapley_reweighting <- "on_N"
-
-
-    internal <- setup_approach(internal, model = model, predict_model = predict_model)
+    convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
 
 
     internal$parameters$n_combinations <- initial_n_combinations
+
+
+  } else {
+    # The regular, non-iterative approach
+    max_iter <- 1
+
+
+  }
+
+    internal <- setup_approach(internal, model = model, predict_model = predict_model)
     internal$parameters$shapley_reweighting <- shapley_reweighting
 
     keep_list <- list()
@@ -388,7 +399,7 @@ explain <- function(model,
       vS_list <- compute_vS(internal, model, predict_model)
 
 
-      if(!is.null(internal$objects$prev_vS_list)){
+      if(iter>1){ # Update the vS_list
 
         ### Need to map the old id_combinations to the new numbers for this merging to work out
         id_combination_mapper <- merge(internal$objects$prev_id_comb_feature_map,
@@ -406,6 +417,7 @@ explain <- function(model,
         vS_list <- c(internal$objects$prev_vS_list, vS_list)
       }
 
+
       processed_vS_list <- postprocess_vS_list(
         vS_list = vS_list,
         internal = internal
@@ -421,7 +433,7 @@ explain <- function(model,
 
 
 
-      convergence_res <-  check_convergence(internal,dt_shapley_est, dt_shapley_sd, convergence_tolerance)
+      convergence_res <-  check_convergence(internal,dt_shapley_est, dt_shapley_sd, convergence_tolerance,iter)
 
 
       converged <- convergence_res$converged

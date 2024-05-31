@@ -194,9 +194,10 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
 }
 
 
-check_convergence <- function(internal,dt_shapley_est, dt_shapley_sd, convergence_tolerance=0.1){
+check_convergence <- function(internal,dt_shapley_est, dt_shapley_sd, convergence_tolerance=0.1,iter){
 
   n_current_samples <- internal$parameters$n_combinations-2
+  max_iter <- internal$parameters$max_iter
 
   max_sd <- dt_shapley_sd[,max(.SD),.SDcols=-1,by=.I]$V1 # Max per prediction
   max_sd0 <- max_sd*sqrt(n_current_samples)
@@ -210,7 +211,7 @@ check_convergence <- function(internal,dt_shapley_est, dt_shapley_sd, convergenc
   estimated_required_samples <- ceiling(dt_shapley_est0[,median(req_samples)]) # TODO: Consider other ways to do this
   estimated_remaining_samples <- estimated_required_samples - n_current_samples
 
-  converged <- estimated_remaining_samples <= 0
+  converged <- (estimated_remaining_samples <= 0) | (iter >= max_iter)
 
   estimated_required_samples_per_explain_id <- dt_shapley_est0[,req_samples]
   names(estimated_required_samples_per_explain_id) <- paste0("req_samples_explain_id_",seq_along(estimated_required_samples_per_explain_id))
