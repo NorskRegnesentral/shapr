@@ -121,6 +121,7 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
   n_features <- internal$parameters$n_features
   shap_names <- internal$parameters$feature_names
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
+  shapley_reweighting <- internal$parameters$shapley_reweighting
 
   boot_sd_array <- array(NA,dim=c(n_explain,n_features+1,n_boot_samps))
 
@@ -169,6 +170,7 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
     X_boot <- rbind(X_keep,X_boot0)
     data.table::setorder(X_boot,id_combination)
 
+    shapley_reweighting(X_boot, reweight=shapley_reweighting) # reweights the shapley weights by reference
 
     W_boot <- shapr:::weight_matrix(
       X = X_boot,
@@ -194,23 +196,32 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
 
 check_convergence <- function(internal,dt_shapley_est, dt_shapley_sd, convergence_tolerance=0.1){
 
-  n_combinations <- internal$parameters$n_combinations
+  n_current_samples <- internal$parameters$n_combinations-2
 
-  max_sd <- max(dt_shapley_sd)
-  max_sd0 <- max_sd*sqrt(n_combinations)
+  max_sd <- dt_shapley_sd[,max(.SD),.SDcols=-1,by=.I]$V1 # Max per prediction
+  max_sd0 <- max_sd*sqrt(n_current_samples)
 
   dt_shapley_est0 <- copy(dt_shapley_est)
+
 
   dt_shapley_est0[,maxval:=max(.SD),.SDcols=-1,by=.I]
   dt_shapley_est0[,minval:=min(.SD),.SDcols=-1,by=.I]
   dt_shapley_est0[,req_samples:=(max_sd0/((maxval-minval)*convergence_tolerance))^2]
-  estimated_required_samples <- dt_shapley_est0[,max(req_samples)]
+  estimated_required_samples <- ceiling(dt_shapley_est0[,median(req_samples)]) # TODO: Consider other ways to do this
+  estimated_remaining_samples <- estimated_required_samples - n_current_samples
 
-  converged <- estimated_required_samples <= n_combinations
+  converged <- estimated_remaining_samples <= 0
+
+  estimated_required_samples_per_explain_id <- dt_shapley_est0[,req_samples]
+  names(estimated_required_samples_per_explain_id) <- paste0("req_samples_explain_id_",seq_along(estimated_required_samples_per_explain_id))
 
   return(
-    list(converged=converged,
-         estimated_required_samples = estimated_required_samples)
+    c(list(converged=converged,
+      n_current_samples = n_current_samples,
+      estimated_required_samples = estimated_required_samples,
+      estimated_remaining_samples = estimated_remaining_samples),
+      as.list(estimated_required_samples_per_explain_id)
+    )
   )
 
 }

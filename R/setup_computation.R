@@ -124,6 +124,23 @@ shapley_setup_forecast <- function(internal) {
 
 
 #' @keywords internal
+shapley_reweighting <- function(X,reweight = "on_N"){
+  # Updates the shapley weights in X based on the reweighting strategy BY REFERENCE
+
+  m <- X[.N,n_features]
+
+  if(reweight=="on_N"){
+    X[,shapley_weight:=mean(shapley_weight),by=N]
+  } else if(reweight=="on_n_features"){
+    X[,shapley_weight:=mean(shapley_weight),by=n_features]
+  } else if(reweight=="on_all"){
+    X[,shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m=10^6)]
+  } # strategy= "none" or something else do nothing
+  return(NULL)
+}
+
+
+#' @keywords internal
 shapley_setup <- function(internal) {
   exact <- internal$parameters$exact
   n_features0 <- internal$parameters$n_features
@@ -131,6 +148,7 @@ shapley_setup <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling = internal$parameters$paired_shap_sampling
   prev_feature_sample = internal$parameters$prev_feature_sample
+  shapley_reweighting = internal$parameters$shapley_reweighting
 
   group_num <- internal$objects$group_num
 
@@ -146,6 +164,8 @@ shapley_setup <- function(internal) {
 
   id_comb_feature_map <- X[, .(id_combination,
                                features_str = sapply(features, paste, collapse = " "))]
+
+  shapley_reweighting(X, reweight = shapley_reweighting) # Reweights the shapley weights in X by reference
 
   # Get weighted matrix ----------------
   W <- weight_matrix(
@@ -401,7 +421,7 @@ feature_not_exact <- function(m,
   # When we sample combinations the Shapley weight is equal
   # to the frequency of the given combination
   X[, sample_freq := r[["sample_frequence"]]] # We keep an unscaled version of the sampling frequency for later bootstrapping usage
-  X[, shapley_weight := sample_freq]
+  X[, shapley_weight := as.numeric(sample_freq)] # Convert to double for later calculations
 
   # Populate table and remove duplicated rows -------
   X[, features := feature_sample_all]
@@ -566,7 +586,7 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
 
   # When we sample combinations the Shapley weight is equal
   # to the frequency of the given combination
-  X[, shapley_weight := r[["sample_frequence"]]]
+  X[, shapley_weight := as.numeric(r[["sample_frequence"]])]
 
   # Populate table and remove duplicated rows -------
   X[, groups := feature_sample_all]
