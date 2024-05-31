@@ -197,5 +197,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   # dt[n_features %in% c(0, ncol(x_explain)), w := 1.0]
   dt[id_combination %in% c(1, 2^ncol(x_explain)), w := 1.0]
   ret_col <- c("id_combination", "id", feature_names, "w")
+
+  # TODO: Update function such that we only compute the relevant combinations above
   return(dt[id_combination %in% index_features, mget(ret_col)])
 }
