@@ -35,7 +35,9 @@ knitr::opts_chunk$set(
 
 This vignette elaborates and demonstrates the asymmetric and 
 causal Shapley value frameworks introduced by @frye2020asymmetric
-and @heskes2020causal, respectively. We demonstrate the two frameworks
+and @heskes2020causal, respectively. We also consider the marginal
+and conditional Shapley value frameworks, see @lundberg2017unified
+and @aas2019explaining, respectively. We demonstrate the frameworks
 on the [bike Sharing](https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset.zip)
 dataset from the UCI Machine Learning Repository. The setup is
 based on the `CauSHAPley` package, which is is the 
@@ -51,9 +53,9 @@ are from the Gaussian distribution.
 
 
 
-# Asymmetric Shapley values {#AsymSV}
+# Asymmetric (conditional) Shapley values {#AsymSV}
 
-Asymmetric Shapley values were proposed by @frye2020asymmetric as
+Asymmetric (condtional) Shapley values were proposed by @frye2020asymmetric as
 a way to incorporate causal knowledge in the real world by restricting
 the possible permutations of the features when computing the
 Shapley values to those consistent with a (partial) causal ordering.
@@ -77,10 +79,17 @@ Instead of the number of coalitions being $O(2^M)$, we now get
 $O(2^{C_{largest}})$, where $C_{largest}$ is the number of features in
 the largest component in the causal ordering. 
 
-Furthermore, asymmetric Shapley values supports groups of features, but then the 
-causal ordering must be given on the group level instead of the individual features.
-The asymmetric Shapley value framework also supports sampling of combinations/coalitions where
-the sampling is done from the set of combinations that respects the causal ordering.
+Furthermore, asymmetric Shapley values supports groups of features, but
+then the causal ordering must be given on the group level instead of the
+individual features. The asymmetric Shapley value framework also supports
+sampling of combinations/coalitions where the sampling is done from the
+set of combinations that respects the causal ordering.
+
+Finally, we want make a remark that asymmetric conditional Shapley are
+equivalent to asymmetric causal Shapley values (see below) when we only
+use the combinations respecting the causal ordering and assuming that all
+dependencies within chain components are induced by mutual interactions.
+
 
 ```{r asymmetric_ordering, echo=FALSE, fig.cap="Schematic overview of the causal ordering used in this vignette.", fig.align='center', out.width = '50%'}
 knitr::include_graphics("figure_asymmetric_causal/Asymmetric_ordering.png")
@@ -131,22 +140,24 @@ the set of these components by $\mathcal{T}_{\,\overline{\text{confounding}}}$.
 to compute the causal Shapley values can be translated to an expectation
 by observation, by using the interventional formula for causal chain graphs:
 \begin{align} 
+\label{eq:do}
 P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) 
 = &
 \prod_{\tau \in \mathcal{T}_{\,\text{confounding}}}
-P(X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}(\tau) \cap \bar{\mathcal{S}}}, x_{\text{pa}(\tau) \cap \mathcal{S}}) \times \\
+P(X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}(\tau) \cap \bar{\mathcal{S}}}, x_{\text{pa}(\tau) \cap \mathcal{S}}) \times \tag{1} \\
 & \quad 
 \prod_{\tau \in \mathcal{T}_{\,\overline{\text{confounding}}}}
 P(X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}(\tau) \cap \bar{\mathcal{S}}}, x_{\text{pa}(\tau) \cap \mathcal{S}}, x_{\tau \cap \mathcal{S}}).
 \end{align}
-Here, any of the Monte Carlo-based approaches in `shapr` can be used to to compute the observational expectations.
-The marginals are estimated from the training data for all approaches except `gaussian`, for which we use the 
-marginals of the Gaussian distribution instead.
+Here, any of the Monte Carlo-based approaches in `shapr` can be
+used to to compute the observational expectations. The marginals
+are estimated from the training data for all approaches except
+`gaussian`, for which we use the marginals of the Gaussian
+distribution instead.
 
-
-For specific causal chain graphs, the causal Shapley value framework simplifies to 
-symmetric conditional, asymmetric conditional, and marginal Shapley values,
-see Corollary 1 to 3 in the supplement of @heskes2020causal.
+For specific causal chain graphs, the causal Shapley value framework
+simplifies to symmetric conditional, asymmetric conditional, and marginal
+Shapley values, see Corollary 1 to 3 in the supplement of @heskes2020causal.
 
 
 
@@ -156,8 +167,139 @@ knitr::include_graphics("figure_asymmetric_causal/causal_ordering.png")
 
 
 # Marginal Shapley values {#MarginaSV}
-Special case
+Causal Shapley values are equivalent to marginal Shapley values when all $M$
+features combined in a single component $\tau = \mathcal{M} = \{1,2,...,M\}$ and
+all dependencies are induced by confounding. Then $\text{pa}(\tau) = \emptyset$, and 
+$P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))$ in Equation (\ref{eq:do})
+simplifies to $P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) = P(X_{\bar{\mathcal{S}}})$,
+as specified in @lundberg2017unified.
+
+The Monte Carlo samples for the marginals are generated by sampling from the
+training data, except for the `gaussian` approach where we use the marginals
+of the modeled multivariate Gaussian distribution. This means that for all
+other approaches, this is the same as using the `independence` approach 
+in the conditional Shapley value framework. 
+
+# Conditioal Shapley values {#ConditionalSV}
+Causal Shapley values are equivalent to conditional Shapley values when all $M$
+features combined in a single component $\tau = \mathcal{M} = \{1,2,...,M\}$ and
+all dependencies are induced by mutual interaction. Then $\text{pa}(\tau) = \emptyset$,
+and $P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))$ in Equation
+(\ref{eq:do}) simplifies to
+$P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) = P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})$,
+as specified in @aas2019explaining.
+
+
 
 # Code example
+## Overview
+We demonstrate the frameworks on the [bike Sharing](https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset.zip)
+dataset from the UCI Machine Learning Repository.
+
+In the table below, we highlight the Shapley value explanation frameworks introduced above
+and how to access them by changing the arguments `asymmetric`, `ordering`, and `confounding` in `explain()`.
+Note that symmetric conditional Shapley values are the default version, i.e., by default
+`asymmetric = FALSE`, `ordering = NULL`, `confounding = NULL`.
+
+| Framework          | Sampling               | Approaches           | `asymmetric` | `ordering`  | `confounding` |
+|:-------------------|:-----------------------|:---------------------|:-------------|:------------|:--------------|
+| Sym. Conditional   | $P(X_{\bar{\mathcal{S}}} \mid (X_\mathcal{S} = x_\mathcal{S})$    | All                  | `FALSE`      | `NULL`      | `NULL`        |
+| Asym. Conditional  | $P(X_{\bar{\mathcal{S}}} \mid (X_\mathcal{S} = x_\mathcal{S})$    | All                  | `TRUE`       | `list(...)` | `NULL`        |
+| Sym. Marginal      | $P(X_{\bar{\mathcal{S}}})$                                        | `indep.`, `gaussian` | `FALSE`      | `NULL`      | `TRUE`        | 
+| Asym. Marginal     | $P(X_{\bar{\mathcal{S}}})$                                        | `indep.`, `gaussian` | `TRUE`       | `NULL`      | `TRUE`        |
+| Sym. Causal        | $P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))$ |  All MC-based        | `FALSE`      | `list(...)` | `c(...)`      |
+| Asym. Causal       | $P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))$ |  All MC-based        | `TRUE`       | `list(...)` | `c(...)`      |
+
+
+## Code setup
+First, we load the needed libraries.
+```{r libraries}
+library(xgboost)
+library(shapr)
+library(ggplot2)
+library(GGally)
+```
+
+Second, we set up the training/explicand data, plot the data, and train an `xgboost` model.
+```{r setup}
+bike <- read.csv("../inst/extdata/day.csv")
+# Difference in days, which takes DST into account
+bike$trend <- as.numeric(difftime(bike$dteday, bike$dteday[1], units = "days"))
+bike$cosyear <- cospi(bike$trend/365*2)
+bike$sinyear <- sinpi(bike$trend/365*2)
+# Unnormalize variables (see data set information in link above)
+bike$temp <- bike$temp * (39 - (-8)) + (-8)
+bike$atemp <- bike$atemp * (50 - (-16)) + (-16)
+bike$windspeed <- 67 * bike$windspeed
+bike$hum <- 100 * bike$hum
+
+# Plot the data
+ggplot(bike, aes(x = trend, y = cnt, color = temp)) +
+  geom_point(size = 0.75) + scale_color_gradient(low = "blue", high = "red") +
+  labs(colour = "temp") +
+  xlab( "Days since 1 January 2011") + ylab("Number of bikes rented") +
+  theme_minimal() +
+  theme(legend.position = "right", legend.title = element_text(size = 10))
+
+# Define the features and the response variable
+x_var <- c("trend", "cosyear", "sinyear", "temp", "atemp", "windspeed", "hum")
+y_var <- "cnt"
+
+# NOTE: Encountered RNG reproducibility issues across different systems,
+# Load the training-test split.
+train_index <- readRDS("../inst/extdata/train_index.rds")
+
+# Training data
+x_train <- as.matrix(bike[train_index, x_var])
+y_train_nc <- as.matrix(bike[train_index, y_var]) # not centered
+y_train <- y_train_nc - mean(y_train_nc)
+
+# Plot pairs plot
+ggpairs(x_train)
+
+# Test data
+x_explain <- as.matrix(bike[-train_index, x_var])
+y_explain_nc <- as.matrix(bike[-train_index, y_var]) # not centered
+y_explain <- y_explain_nc - mean(y_train_nc)
+
+# Fit an XGBoost model to the training data
+model <- xgboost(
+  data = x_train,
+  label = y_train,
+  nround = 100,
+  verbose = FALSE
+)
+
+# Save the phi0
+prediction_zero <- mean(y_train)
+
+# Look at the root mean squared error 
+sqrt(mean((predict(model, x_explain) - y_explain)^2))
+```
+
+
+## Conditional Shapley values
+```{r}
+explanation_sym_con_gaussian <-
+  progressr::with_progress({
+    explain(
+      model = model,
+      x_train = x_train,
+      x_explain = x_explain,
+      approach = "gaussian",
+      prediction_zero = prediction_zero,
+      asymmetric = FALSE, # Default value
+      causal_ordering = NULL, # Default value
+      confounding = FALSE # Default value
+    )
+  })
+```
+
+
+
+
+## Asym
+
+
 
 # References

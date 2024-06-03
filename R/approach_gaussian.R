@@ -80,7 +80,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   dt <- prepare_gauss(MC_samples_mat = MC_samples_mat, x_explain_mat = x_explain_mat, S = S, mu = mu, cov_mat = cov_mat)
 
   # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features) if needed
-  if (!causal || causal_first_step) dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  if (!causal_sampling || causal_first_step) dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)
