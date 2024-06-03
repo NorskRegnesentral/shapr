@@ -58,14 +58,14 @@ prepare_data.copula <- function(internal, index_features, ...) {
   copula.mu <- internal$parameters$copula.mu
   copula.cov_mat <- internal$parameters$copula.cov_mat
   copula.x_explain_gaussian_mat <- as.matrix(internal$data$copula.x_explain_gaussian)
-  causal = internal$parameters$causal
-  causal_first_step = isTRUE(internal$parameters$causal_first_step) # Only set when called from `prepdare_data_causal`
+  causal_sampling <- internal$parameters$causal_sampling
+  causal_first_step <- isTRUE(internal$parameters$causal_first_step) # Only set when called from `prepdare_data_causal`
 
   # For causal Shapley values in not the first step, we update the number of samples
-  n_samples_updated = if (causal && !causal_first_step) n_explain else n_samples
+  n_samples_updated <- if (causal_sampling && !causal_first_step) n_explain else n_samples
 
   # For causal Shapley values in not the first step, we also need to update the `copula.x_explain_gaussian_mat`
-  if (causal && !causal_first_step) {
+  if (causal_sampling && !causal_first_step) {
     copula.x_explain_gaussian <- apply(
       X = rbind(x_explain_mat, x_train_mat),
       MARGIN = 2,
@@ -73,14 +73,15 @@ prepare_data.copula <- function(internal, index_features, ...) {
       n_y = nrow(x_explain_mat)
     )
     if (is.null(dim(copula.x_explain_gaussian))) copula.x_explain_gaussian <- t(as.matrix(copula.x_explain_gaussian))
-    copula.x_explain_gaussian_mat = as.matrix(copula.x_explain_gaussian)
+    copula.x_explain_gaussian_mat <- as.matrix(copula.x_explain_gaussian)
   }
 
   # Generate the MC samples from N(0, 1)
   MC_samples_mat <- matrix(rnorm(n_samples_updated * n_features), nrow = n_samples_updated, ncol = n_features)
 
   # Determine which gaussian data generating function to use
-  prepare_data_copula = if (causal && !causal_first_step) prepare_data_copula_cpp_caus else prepare_data_copula_cpp
+  prepare_data_copula <-
+    if (causal_sampling && !causal_first_step) prepare_data_copula_cpp_caus else prepare_data_copula_cpp
 
   # Use C++ to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}), for all coalitions and explicands,
   # and then transforming them back to the original scale using the inverse Gaussian transform in C++.
@@ -98,7 +99,7 @@ prepare_data.copula <- function(internal, index_features, ...) {
   )
 
   # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features) if needed
-  if (!causal || causal_first_step) dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  if (!causal_sampling || causal_first_step) dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)

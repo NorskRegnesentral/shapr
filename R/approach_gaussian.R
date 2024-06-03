@@ -60,17 +60,18 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   x_explain_mat <- as.matrix(internal$data$x_explain)
   mu <- internal$parameters$gaussian.mu
   cov_mat <- internal$parameters$gaussian.cov_mat
-  causal = internal$parameters$causal
-  causal_first_step = isTRUE(internal$parameters$causal_first_step) # Only set when called from `prepdare_data_causal`
+  causal_sampling <- internal$parameters$causal_sampling
+  causal_first_step <- isTRUE(internal$parameters$causal_first_step) # Only set when called from `prepdare_data_causal`
 
   # For causal Shapley values in not the first step, we update the number of samples
-  n_samples_updated = if (causal && !causal_first_step) n_explain else n_samples
+  n_samples_updated <- if (causal_sampling && !causal_first_step) n_explain else n_samples
 
   # Generate the MC samples from N(0, 1)
   MC_samples_mat <- matrix(rnorm(n_samples_updated * n_features), nrow = n_samples_updated, ncol = n_features)
 
   # Determine which gaussian data generating function to use
-  prepare_gauss = if (causal && !causal_first_step) prepare_data_gaussian_cpp_caus else prepare_data_gaussian_cpp
+  prepare_gauss <-
+    if (causal_sampling && !causal_first_step) prepare_data_gaussian_cpp_caus else prepare_data_gaussian_cpp
 
   # Use Cpp to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
   # The `dt` object is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features) for regular
@@ -130,6 +131,6 @@ get_mu_vec <- function(x_train) {
 #' @return
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-create_marginal_data_gaussian = function(n_samples, Sbar_now, mu, cov_mat) {
+create_marginal_data_gaussian <- function(n_samples, Sbar_now, mu, cov_mat) {
   return(data.table(mvnfast::rmvn(n = n_samples, mu = mu[Sbar_now], sigma = cov_mat[Sbar_now, Sbar_now])))
 }
