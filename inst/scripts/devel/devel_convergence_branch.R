@@ -44,7 +44,11 @@ explanation_adaptive <- explain(
   approach = "gaussian",
   n_combinations = 20,
   prediction_zero = p0,
-  adaptive = TRUE
+  adaptive = TRUE,
+  n_boot_samps = 100, # tmp
+  print_shapleyres = TRUE, # tmp
+  print_iter_info = TRUE, # tmp
+  shapley_reweighting = "on_N"
 )
 
 explanation_nonadaptive <- explain(

@@ -8,10 +8,11 @@
 #'
 #' @export
 compute_vS <- function(internal, model, predict_model, method = "future") {
-  S_batch <- internal$objects$S_batch
   iter <- length(internal$iter_list)
   iter_list <- internal$iter_list
-  current_id_comb_feature_map <- internal$objects$id_comb_feature_map
+
+  S_batch <- internal$iter_list[[iter]]$S_batch
+
 
   if (method == "future") {
     vS_list <- future_compute_vS_batch(S_batch = S_batch, internal = internal, model = model, predict_model = predict_model)
@@ -34,6 +35,9 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   if(iter>1){
     prev_id_comb_feature_map <- iter_list[[iter-1]]$id_comb_feature_map
     prev_vS_list <- this_iter_list[[iter-1]]$vS_list
+
+    current_id_comb_feature_map <- iter_list[[iter]]$id_comb_feature_map
+
 
     # Creates a mapper from the last id_combination to the new id_combination numbering
     id_combination_mapper <- merge(prev_id_comb_feature_map,

@@ -196,11 +196,11 @@ shapley_setup <- function(internal) {
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
 
-  internal$iter_list[[iter]] <- list(X = X,
-                                     W = W,
-                                     S = S,
-                                     id_comb_feature_map = id_comb_feature_map,
-                                     S_batch = create_S_batch_new(internal))
+  internal$iter_list[[iter]]$X = X
+  internal$iter_list[[iter]]$W = W
+  internal$iter_list[[iter]]$S = S
+  internal$iter_list[[iter]]$id_comb_feature_map = id_comb_feature_map
+  internal$iter_list[[iter]]$S_batch = create_S_batch_new(internal)
 
   return(internal)
 }

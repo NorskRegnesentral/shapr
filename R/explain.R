@@ -402,6 +402,7 @@ explain <- function(model,
 
     while(converged==FALSE){
 
+      internal$parameters$n_combinations <- internal$iter_list[[iter]]$n_combinations # to simplify internal function extracting this parameter
 
       # setup the Shapley framework
       internal <- shapley_setup(internal)
