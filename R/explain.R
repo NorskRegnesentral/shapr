@@ -290,10 +290,10 @@ explain <- function(model,
                     x_explain,
                     x_train,
                     approach,
-                    paired_shap_sampling = TRUE,
+                    paired_shap_sampling = FALSE, #TODO: Make TRUE the default later on
                     prediction_zero,
                     n_combinations = NULL,
-                    adaptive = TRUE,
+                    adaptive = FALSE,
                     group = NULL,
                     n_samples = 1e3,
                     n_batches = NULL,
@@ -363,9 +363,9 @@ explain <- function(model,
 
   n_boot_samps <- 100 # 100
   converged <- FALSE
-  print_shapleyres <- TRUE
-  shapley_reweighting <- "on_N"
-
+  print_shapleyres <- print_iter_info <- FALSE
+  shapley_reweighting <- "none"#"on_N"
+  compute_sd <- FALSE #ifelse(internal$parameters$exact==FALSE,TRUE,FALSE)
 
   if(isTRUE(internal$parameters$adaptive)){
     ### for now we just some of the parameters here
@@ -381,65 +381,49 @@ explain <- function(model,
   } else {
     # The regular, non-iterative approach
     max_iter <- 1
+    convergence_tolerance <- NULL
 
 
   }
 
-    internal <- setup_approach(internal, model = model, predict_model = predict_model)
+#    internal <- setup_approach(internal, model = model, predict_model = predict_model)
     internal$parameters$shapley_reweighting <- shapley_reweighting
 
-    keep_list <- list()
-    iter <- 1
+    internal$parameters$max_iter <- max_iter
+    internal$parameters$compute_sd <- compute_sd
+    internal$parameters$n_boot_samps <- n_boot_samps
+
+    internal$objects$raw_iter_objects <- list()
+    iter <- 0
 
     while(converged==FALSE){
 
+      iter <- iter + 1
+
       # setup the Shapley framework
       internal <- shapley_setup(internal)
+      internal <- setup_approach(internal, model = model, predict_model = predict_model)
+
+
+      #browser()
 
       vS_list <- compute_vS(internal, model, predict_model)
 
+      internal <- compute_estimates(internal, vS_list, iter)
 
-      if(iter>1){ # Update the vS_list
-
-        ### Need to map the old id_combinations to the new numbers for this merging to work out
-        id_combination_mapper <- merge(internal$objects$prev_id_comb_feature_map,
-                                       internal$objects$id_comb_feature_map,
-                                       by="features_str",
-                                       suffixes = c("","_new"))
-        for(k in seq_along(internal$objects$prev_vS_list)){
-          internal$objects$prev_vS_list[[k]] <- merge(internal$objects$prev_vS_list[[k]],
-                                                          id_combination_mapper[,.(id_combination,id_combination_new)],
-                                                          by="id_combination")
-          internal$objects$prev_vS_list[[k]][,id_combination:=id_combination_new]
-          internal$objects$prev_vS_list[[k]][,id_combination_new:=NULL]
-        }
-
-        vS_list <- c(internal$objects$prev_vS_list, vS_list)
-      }
-
-
-      processed_vS_list <- postprocess_vS_list(
-        vS_list = vS_list,
-        internal = internal
-      )
-
-      dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
-
-      if(internal$objects$X[,.N]==2^internal$parameters$n_features){
-        dt_shapley_sd <- dt_shapley_est*0 # If all combinations have been sampled, the variance is zero and we get convergence
-      } else {
-        dt_shapley_sd <- bootstrap_shapley(internal,n_boot_samps = n_boot_samps,processed_vS_list$dt_vS)
-      }
-
-
-
-      convergence_res <-  check_convergence(internal,dt_shapley_est, dt_shapley_sd, convergence_tolerance,iter)
+      convergence_res <-  check_convergence(internal, convergence_tolerance, iter)
 
 
       converged <- convergence_res$converged
       estimated_remaining_samples <- convergence_res$estimated_remaining_samples
       estimated_required_samples <- convergence_res$estimated_required_samples
       n_current_samples <- convergence_res$n_current_samples
+
+
+      ### just temporary setting results here, before I make the below into a function ###
+
+      dt_shapley_est <- internal$objects$raw_iter_objects[[iter]]$dt_shapley_est
+      dt_shapley_sd <- internal$objects$raw_iter_objects[[iter]]$dt_shapley_sd
 
       if(converged==FALSE){
 
@@ -452,25 +436,35 @@ explain <- function(model,
         internal$objects$prev_vS_list <- vS_list
 
         if((n_current_samples+internal$parameters$n_combinations)>=2^internal$parameters$n_features){
+          # Settings for next iteration
           internal$parameters$exact = TRUE # Use all coalitions in the last iteration as the estimated number of samples is more than what remains
           internal$parameters$n_combinations <- 2^internal$parameters$n_features - n_current_samples
+          internal$parameters$compute_sd <- FALSE
         } else { # Else, sample more keeping the current samples
           repetitions <- internal$objects$X[-c(1,.N),sample_freq]
           internal$parameters$prev_feature_sample <- unlist(lapply(seq_along(unique_feature_samples),
-                                                                       function(i) rep(list(unique_feature_samples[[i]]),
-                                                                                       repetitions[i])),
-                                                                recursive = FALSE)
+                                                                   function(i) rep(list(unique_feature_samples[[i]]),
+                                                                                   repetitions[i])),
+                                                            recursive = FALSE)
+        }
+
+        if(print_iter_info){
+          cat(paste0("\nIteration ", iter, "\n",
+                     "Not converged after ", n_current_samples, " samples.\n",
+                     "Estimated remaining samples: ", estimated_remaining_samples, "\n",
+                     "Estimated required samples: ", estimated_required_samples, "\n",
+                     "Adding ", internal$parameters$n_combinations, " new samples in the next iteration.\n"))
+        }
+
+        if(iter>= length(reduction_factor)){
+          reduction_factor[iter+1] <- reduction_factor[iter]
         }
 
 
-        cat(paste0("Iteration ", iter, "\n",
-                   "Not converged after ", n_current_samples, " samples.\n",
-                   "Estimated remaining samples: ", estimated_remaining_samples, "\n",
-                   "Estimated required samples: ", estimated_required_samples, "\n",
-                   "Adding ", internal$parameters$n_combinations, " new samples in the next iteration.\n"))
-
       } else {
-        cat("Convergence reached!\n")
+        if(print_iter_info){
+          cat("\nConvergence reached!\n")
+        }
       }
 
 
@@ -484,75 +478,70 @@ explain <- function(model,
         names(print_dt) <- names(dt_shapley_est)
         print(print_dt)
       }
-      cat("\n")
 
 
-        # Adding explain_id to the output dt
-        dt_shapley_est[,explain_id:=.I]
-        setcolorder(dt_shapley_est,"explain_id")
-        dt_shapley_sd[,explain_id:=.I]
-        setcolorder(dt_shapley_sd,"explain_id")
+      # Adding explain_id to the output dt
+      dt_shapley_est[,explain_id:=.I]
+      setcolorder(dt_shapley_est,"explain_id")
+      dt_shapley_sd[,explain_id:=.I]
+      setcolorder(dt_shapley_sd,"explain_id")
 
 
-        keep_list[[iter]] <- list(dt_shapley_est = copy(dt_shapley_est),
-                                  dt_shapley_sd = copy(dt_shapley_sd),
-                                  convergence_res = copy(convergence_res),
-                                  X = copy(internal$objects$X),
-                                  dt_vS = copy(processed_vS_list$dt_vS),
-                                  id_comb_feature_map = copy(internal$objects$id_comb_feature_map)
-        )
+      internal$objects$raw_iter_objects[[iter]] <- c(internal$objects$raw_iter_objects[[iter]],
+                                                     list(convergence_res = copy(convergence_res),
+                                                          X = copy(internal$objects$X),
+                                                          id_comb_feature_map = copy(internal$objects$id_comb_feature_map),
+                                                          vS_list = copy(vS_list)
+                                                     )
+      )
 
-        iter <- iter + 1
-        if(iter> length(reduction_factor)){
-          reduction_factor[iter] <- reduction_factor[iter-1]
-        }
     }
 
 
     # Rerun after convergence to get the same output format as for the non-adaptive approach
-    output <- finalize_explanation(vS_list = vS_list, internal = internal)
+    output <- finalize_explanation(internal = internal)
 
     iter_list <- list(
-      dt_iter_shapley_est = rbindlist(lapply(keep_list, `[[`, "dt_shapley_est"),idcol = "iter"),
-      dt_iter_shapley_sd = rbindlist(lapply(keep_list, `[[`, "dt_shapley_sd"),idcol = "iter"),
-      dt_iter_convergence_res = rbindlist(lapply(keep_list, `[[`, "convergence_res"),idcol = "iter"),
-      X_list = lapply(keep_list, `[[`, "X"),
-      dt_vS = lapply(keep_list, `[[`, "dt_vS"),
-      id_comb_feature_map = lapply(keep_list, `[[`, "id_comb_feature_map")
+      dt_iter_shapley_est = rbindlist(lapply(internal$objects$raw_iter_objects, `[[`, "dt_shapley_est"),idcol = "iter"),
+      dt_iter_shapley_sd = rbindlist(lapply(internal$objects$raw_iter_objects, `[[`, "dt_shapley_sd"),idcol = "iter"),
+      #dt_iter_convergence_res = rbindlist(lapply(internal$objects$raw_iter_objects, `[[`, "convergence_res"),idcol = "iter"),
+      X_list = lapply(internal$objects$raw_iter_objects, `[[`, "X"),
+      dt_vS = lapply(internal$objects$raw_iter_objects, `[[`, "dt_vS"),
+      id_comb_feature_map = lapply(internal$objects$raw_iter_objects, `[[`, "id_comb_feature_map")
     )
 
     output$internal$output$iter_objects <- iter_list
 
+#
+#     # Previous non-adaptive stuff below here
+#
+#     # Sets up the Shapley (sampling) framework and prepares the
+#     # conditional expectation computation for the chosen approach
+#     # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
+#     internal <- setup_computation(internal, model, predict_model)
+#
+#     timing_list$setup_computation <- Sys.time()
+#
+#     # Compute the v(S):
+#     # MC:
+#     # 1. Get the samples for the conditional distributions with the specified approach
+#     # 2. Predict with these samples
+#     # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
+#     # Regression:
+#     # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
+#     vS_list <- compute_vS(internal, model, predict_model)
+#
+#     timing_list$compute_vS <- Sys.time()
+#
+#     # Compute Shapley values based on conditional expectations (v(S))
+#     # Organize function output
+#     output <- finalize_explanation(vS_list = vS_list, internal = internal)
+#
+#     timing_list$shapley_computation <- Sys.time()
+#
+#     # Compute the elapsed time for the different steps
+#     if (timing == TRUE) output$timing <- compute_time(timing_list)
 
-  } else {
-    # Sets up the Shapley (sampling) framework and prepares the
-    # conditional expectation computation for the chosen approach
-    # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-    internal <- setup_computation(internal, model, predict_model)
-
-    timing_list$setup_computation <- Sys.time()
-
-    # Compute the v(S):
-    # MC:
-    # 1. Get the samples for the conditional distributions with the specified approach
-    # 2. Predict with these samples
-    # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
-    # Regression:
-    # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
-    vS_list <- compute_vS(internal, model, predict_model)
-
-    timing_list$compute_vS <- Sys.time()
-
-    # Compute Shapley values based on conditional expectations (v(S))
-    # Organize function output
-    output <- finalize_explanation(vS_list = vS_list, internal = internal)
-
-    timing_list$shapley_computation <- Sys.time()
-
-    # Compute the elapsed time for the different steps
-    if (timing == TRUE) output$timing <- compute_time(timing_list)
-
-  }
 
   # Temporary to avoid failing tests
   output <- remove_outputs_to_pass_tests(output)
@@ -566,6 +555,7 @@ remove_outputs_to_pass_tests <- function(output) {
   output$internal$objects$id_combination_mapper_dt <- NULL
   output$internal$objects$cols_per_horizon <- NULL
   output$internal$objects$W_list <- NULL
+  output$shapley_values[,explain_id:=NULL]
 
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters[c(

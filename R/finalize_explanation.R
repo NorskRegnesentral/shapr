@@ -6,31 +6,64 @@
 #' Output from [compute_vS()]
 #'
 #' @export
-finalize_explanation <- function(vS_list, internal) {
-  MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
+compute_estimates <- function(internal, vS_list, iter) {
+
+  compute_sd <- internal$parameters$compute_sd # TODO: add this parameter
+  n_boot_samps <- internal$parameters$n_boot_samps
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,
     internal = internal
   )
 
-  # Extract the predictions we are explaining
-  p <- get_p(processed_vS_list$dt_vS, internal)
-
-  # internal$timing$postprocessing <- Sys.time()
 
   # Compute the Shapley values
-  dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+  dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+
+  if(compute_sd){
+    dt_shapley_sd <- bootstrap_shapley(internal,n_boot_samps = n_boot_samps,processed_vS_list$dt_vS)
+  } else {
+    dt_shapley_sd <- dt_shapley_est*0
+  }
+
+
+  internal$objects$raw_iter_objects[[iter]] <- list(
+    dt_shapley_est = dt_shapley_est,
+    dt_shapley_sd = dt_shapley_sd,
+    vS_list = vS_list,
+    dt_vS = processed_vS_list$dt_vS
+  )
 
   # internal$timing$shapley_computation <- Sys.time()
 
   # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
-  internal$tmp <- NULL
-
   internal$output <- processed_vS_list
 
+  return(internal)
+}
+
+
+#' Finalizes the explanation object
+#'
+#' @inherit explain
+#' @inheritParams default_doc
+#'
+#' @export
+finalize_explanation <- function(internal) {
+  MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
+  dt_vS <- internal$output$dt_vS
+  dt_shapley_est <- internal$objects$raw_iter_objects[[length(internal$objects$raw_iter_objects)]]$dt_shapley_est
+  dt_shapley_sd <- internal$objects$raw_iter_objects[[length(internal$objects$raw_iter_objects)]]$dt_shapley_sd
+
+  # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
+  internal$tmp <- NULL
+
+  # Extract the predictions we are explaining
+  p <- get_p(dt_vS, internal)
+
   output <- list(
-    shapley_values = dt_shapley,
+    shapley_values = dt_shapley_est,
+    shapley_values_sd = dt_shapley_sd,
     internal = internal,
     pred_explain = p
   )
@@ -41,7 +74,7 @@ finalize_explanation <- function(vS_list, internal) {
   if (internal$parameters$output_size == 1) {
     output$MSEv <- compute_MSEv_eval_crit(
       internal = internal,
-      dt_vS = processed_vS_list$dt_vS,
+      dt_vS = dt_vS,
       MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
     )
   }
@@ -194,7 +227,10 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
 }
 
 
-check_convergence <- function(internal,dt_shapley_est, dt_shapley_sd, convergence_tolerance=0.1,iter){
+check_convergence <- function(internal, convergence_tolerance=0.1,iter){
+
+  dt_shapley_est <- internal$objects$raw_iter_objects[[iter]]$dt_shapley_est
+  dt_shapley_sd <- internal$objects$raw_iter_objects[[iter]]$dt_shapley_sd
 
   n_current_samples <- internal$parameters$n_combinations-2
   max_iter <- internal$parameters$max_iter
@@ -204,23 +240,32 @@ check_convergence <- function(internal,dt_shapley_est, dt_shapley_sd, convergenc
 
   dt_shapley_est0 <- copy(dt_shapley_est)
 
+  if(!is.null(convergence_tolerance)){
+    dt_shapley_est0[,maxval:=max(.SD),.SDcols=-1,by=.I]
+    dt_shapley_est0[,minval:=min(.SD),.SDcols=-1,by=.I]
+    dt_shapley_est0[,req_samples:=(max_sd0/((maxval-minval)*convergence_tolerance))^2]
+    estimated_required_samples <- ceiling(dt_shapley_est0[,median(req_samples)]) # TODO: Consider other ways to do this
+    estimated_remaining_samples <- estimated_required_samples - n_current_samples
 
-  dt_shapley_est0[,maxval:=max(.SD),.SDcols=-1,by=.I]
-  dt_shapley_est0[,minval:=min(.SD),.SDcols=-1,by=.I]
-  dt_shapley_est0[,req_samples:=(max_sd0/((maxval-minval)*convergence_tolerance))^2]
-  estimated_required_samples <- ceiling(dt_shapley_est0[,median(req_samples)]) # TODO: Consider other ways to do this
-  estimated_remaining_samples <- estimated_required_samples - n_current_samples
+    converged_sd <- (estimated_remaining_samples <= 0)
 
-  converged <- (estimated_remaining_samples <= 0) | (iter >= max_iter)
+    estimated_required_samples_per_explain_id <- dt_shapley_est0[,req_samples]
+    names(estimated_required_samples_per_explain_id) <- paste0("req_samples_explain_id_",seq_along(estimated_required_samples_per_explain_id))
 
-  estimated_required_samples_per_explain_id <- dt_shapley_est0[,req_samples]
-  names(estimated_required_samples_per_explain_id) <- paste0("req_samples_explain_id_",seq_along(estimated_required_samples_per_explain_id))
+  } else {
+    estimated_required_samples_per_explain_id <- estimated_required_samples <- estimated_remaining_samples <- NULL
+    converged_sd <- FALSE
+  }
+  converged_max_iter <- (iter >= max_iter)
+
+  converged <- converged_sd || converged_max_iter
+
 
   return(
     c(list(converged=converged,
-      n_current_samples = n_current_samples,
-      estimated_required_samples = estimated_required_samples,
-      estimated_remaining_samples = estimated_remaining_samples),
+           n_current_samples = n_current_samples,
+           estimated_required_samples = estimated_required_samples,
+           estimated_remaining_samples = estimated_remaining_samples),
       as.list(estimated_required_samples_per_explain_id)
     )
   )

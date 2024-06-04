@@ -9,15 +9,17 @@
 #' @export
 compute_vS <- function(internal, model, predict_model, method = "future") {
   S_batch <- internal$objects$S_batch
+  raw_iter_objects <- internal$objects$raw_iter_objects
+  current_id_comb_feature_map <- internal$objects$id_comb_feature_map
 
   if (method == "future") {
-    ret <- future_compute_vS_batch(S_batch = S_batch, internal = internal, model = model, predict_model = predict_model)
+    vS_list <- future_compute_vS_batch(S_batch = S_batch, internal = internal, model = model, predict_model = predict_model)
   } else {
     # Doing the same as above without future without progressbar or paralellization
-    ret <- list()
+    vS_list <- list()
     for (i in seq_along(S_batch)) {
       S <- S_batch[[i]]
-      ret[[i]] <- batch_compute_vS(
+      vS_list[[i]] <- batch_compute_vS(
         S = S,
         internal = internal,
         model = model,
@@ -26,7 +28,36 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
     }
   }
 
-  return(ret)
+  #### Adds v_S output above to any vS_list already computed ####
+  ### Need to map the old id_combinations to the new numbers for this merging to work out
+  if(length(raw_iter_objects)>0){
+    prev_id_comb_feature_map <- raw_iter_objects[[length(raw_iter_objects)]]$id_comb_feature_map
+    prev_vS_list <- raw_iter_objects[[length(raw_iter_objects)]]$vS_list
+
+    # Creates a mapper from the last id_combination to the new id_combination numbering
+    id_combination_mapper <- merge(prev_id_comb_feature_map,
+                                   current_id_comb_feature_map,
+                                   by="features_str",
+                                   suffixes = c("","_new"))
+    prev_vS_list_new <- list()
+
+    # Applies the mapper to update the prev_vS_list ot the new id_combination numbering
+    for(k in seq_along(internal$objects$prev_vS_list)){
+      prev_vS_list_new[[k]] <- merge(prev_vS_list[[k]],
+                                                  id_combination_mapper[,.(id_combination,id_combination_new)],
+                                                  by="id_combination")
+      prev_vS_list_new[[k]][,id_combination:=id_combination_new]
+      prev_vS_list_new[[k]][,id_combination_new:=NULL]
+    }
+
+    # Merge the new vS_list with the old vS_list
+    vS_list <- c(prev_vS_list_new, vS_list)
+
+  }
+
+
+
+  return(vS_list)
 }
 
 future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
