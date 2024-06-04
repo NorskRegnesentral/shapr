@@ -39,6 +39,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
   # Extract the objects we will use later
   S <- internal$objects$S
+  S_causal = internal$objects$S_causal_steps_unique_S # NULL if not causal sampling
   X <- internal$objects$X
   parameters <- internal$parameters
 
@@ -62,10 +63,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   vaeac_main_para <- mget(vaeac_main_para_names)
 
   # Add the default extra parameter values for the non-user specified extra parameters
-  parameters$vaeac.extra_parameters <- utils::modifyList(vaeac_get_extra_para_default(),
-    parameters$vaeac.extra_parameters,
-    keep.null = TRUE
-  )
+  parameters$vaeac.extra_parameters <-
+    utils::modifyList(vaeac_get_extra_para_default(), parameters$vaeac.extra_parameters, keep.null = TRUE)
 
   # Add the default main parameter values for the non-user specified main parameters
   parameters <- utils::modifyList(vaeac_main_para, parameters, keep.null = TRUE)
@@ -74,7 +73,18 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters <- c(parameters[(length(vaeac_main_para) + 1):length(parameters)], parameters[seq_along(vaeac_main_para)])
 
   # Check if vaeac is to be applied on a subset of coalitions.
-  if (!parameters$exact || parameters$is_groupwise || combined_approaches) {
+  if (!is.null(S_causal)) {
+    # We are doing causal Shapley values. Then we do not want to train on the full
+    # combinations, but rather the combinations in the chain of sampling steps used
+    # to generate the full MC sample. Casual Shapley does not support combined
+    # approaches, so we do not cannot have to check for that. All combinations are
+    # done by vaeac, and we give them equal importance. Skip the empty and grand combinations.
+    parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions = S_causal[-c(1, nrow(S_causal))]
+    parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob <-
+      rep(1, nrow(parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions)) /
+      nrow(parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions)
+
+  } else if (!parameters$exact || parameters$is_groupwise || combined_approaches) {
     # We have either:
     # 1) sampled `n_combinations` different subsets of coalitions (i.e., not exact),
     # 2) using the coalitions which respects the groups in group Shapley values, and/or
