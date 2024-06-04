@@ -1344,6 +1344,7 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #' @param index_explicands Integer vector. Which of the explicands (test observations) to plot.
 #' E.g. if you have explained 10 observations using [shapr::explain()], you can generate a plot for the
 #' first 5 observations/explicands and the 10th by setting `index_x_explain = c(1:5, 10)`.
+#' Set `index_explicands_sort` to `FALSE` if one wants to keep plot the explicands in the provided order.
 #' @param only_these_features String vector. Containing the names of the features which
 #' are to be included in the bar plots.
 #' @param plot_phi0 Boolean. If we are to include the \eqn{\phi_0} in the bar plots or not.
@@ -1372,6 +1373,9 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #' @param geom_col_width Numeric. Bar width. By default, set to 85% of the [ggplot2::resolution()] of the data.
 #' @param groupwise_feature_means Logical. If `FALSE` (default), then we do not include the feature values of
 #' the explicand on the y-axis. If `TRUE`, then we include the mean of the features in each group.
+#' @param index_explicands_sort Boolean. If `TRUE` (default), then we sort the explicands in increasing order.
+#' If `FALSE`, then we keep the order that was provided in `index_explicands`. This can be useful when wanting
+#' to have the plots in such that the explicands have, e.g., increasing predicted response.
 #'
 #' @return A [ggplot2::ggplot()] object.
 #' @export
@@ -1510,6 +1514,7 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #' @author Lars Henry Berge Olsen
 plot_SV_several_approaches <- function(explanation_list,
                                        index_explicands = NULL,
+                                       index_explicands_sort = TRUE,
                                        only_these_features = NULL,
                                        plot_phi0 = FALSE,
                                        digits = 4,
@@ -1585,6 +1590,12 @@ plot_SV_several_approaches <- function(explanation_list,
     digits = digits,
     groupwise_feature_means = groupwise_feature_means
   )
+
+  # Set the explicands to the same order as they were given
+  if (!index_explicands_sort) {
+    dt_Shapley_values[, .id := factor(.id, levels = index_explicands, ordered = TRUE)]
+    dt_desc_long[, .id := factor(.id, levels = index_explicands, ordered = TRUE)]
+  }
 
   # Melt `dt_Shapley_values` and merge with `dt_desc_long` to create data.table ready to be plotted with ggplot2
   dt_Shapley_values_long <- create_Shapley_value_figure_dt(
@@ -1712,10 +1723,7 @@ extract_Shapley_values_dt <- function(explanation_list,
   )
 
   # Convert to factors
-  dt_Shapley_values$.method <- factor(dt_Shapley_values$.method,
-    levels = names(explanation_list),
-    ordered = TRUE
-  )
+  dt_Shapley_values$.method <- factor(dt_Shapley_values$.method, levels = names(explanation_list), ordered = TRUE)
 
   # Set the keys and change the order of the columns
   data.table::setkeyv(dt_Shapley_values, c(".id", ".method"))
