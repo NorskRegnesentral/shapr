@@ -126,16 +126,17 @@ sort_feature_list = function(features_list, sort_features = TRUE, sort_size = TR
 #' @author Lars Henry Berge Olsen
 prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
-  message(paste0("In prepare_data_causal with index_features = ", paste0(index_features, collapse = ","), "."))
+  # TODO: Remove
+  # message(paste0("In prepare_data_causal with index_features = ", paste0(index_features, collapse = ","), "."))
 
   # Recall that here, index_features is a vector of id_combinations, i.e., indicating which rows in S to use.
   # Also note that we are guaranteed that index_features does not include the empty or grand coalition
 
   # Extract the needed variables
+  x_train = internal$data$x_train
   X = internal$objects$X
   S <- internal$objects$S
-  S_causal <- internal$objects$S_causal
-  S_causal_batch <- S_causal[index_features]
+  S_causal_steps <- internal$objects$S_causal_steps
   approach <- internal$parameters$approach # Can only be single approach
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
@@ -152,10 +153,11 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   # the S and Sbar changes in the iterative process. So those also the number of MC samples we need to generate.
   internal_copy <- copy(internal)
 
-  # lapply over the coalitions in the batch
+  # Loop over the coalitions in the batch
   index_feature_idx <- 1
   for (index_feature_idx in seq_along(index_features)) {
-    message(paste0("index_features_idx: ", index_feature_idx))
+    # TODO: Remove
+    # message(paste0("index_features_idx: ", index_feature_idx))
 
     # Reset the internal_copy list for each new combination
     if (index_feature_idx > 1) {
@@ -176,21 +178,22 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
     dt[, (S_names) := x_explain[rep(seq(n_explain), each = n_samples), .SD, .SDcols = S_names]]
 
     # Get the iterative sampling process for the current combination
-    S_causal_now <- S_causal[[index_feature]]
+    S_causal_steps_now <- S_causal_steps[[index_feature]]
 
     # Loop over the steps in the iterative sampling process to generate MC samples for the unconditional features
     sampling_step_idx <- 2
-    for (sampling_step_idx in seq_along(S_causal_now)) {
-      message(paste0("sampling_step_idx: ", sampling_step_idx))
-      message(S_causal_now[[sampling_step_idx]])
+    for (sampling_step_idx in seq_along(S_causal_steps_now)) {
+      # TODO: Remove
+      # message(paste0("sampling_step_idx: ", sampling_step_idx))
+      # message(S_causal_steps_now[[sampling_step_idx]])
 
       # Set flag indicating whether or not we are in the first sampling step, as the the gaussian and copula
       # approaches need to know this to change their sampling procedure to ensure correctly generated MC samples
       internal_copy$parameters$causal_first_step = sampling_step_idx == 1
 
       # Get the S (the conditional features) and Sbar (the unconditional features) in the current sampling step
-      S_now <- S_causal_now[[sampling_step_idx]]$S # The features to condition on in this sampling step
-      Sbar_now <- S_causal_now[[sampling_step_idx]]$Sbar # The features to sample in this sampling step
+      S_now <- S_causal_steps_now[[sampling_step_idx]]$S # The features to condition on in this sampling step
+      Sbar_now <- S_causal_steps_now[[sampling_step_idx]]$Sbar # The features to sample in this sampling step
       Sbar_now_names <- feature_names[Sbar_now]
 
       # Check if we are to sample from the marginal or conditional distribution
@@ -198,7 +201,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         # Marginal distribution as there are no variables to condition on
 
         # Generate the marginal data either form the Gaussian distribution or the training data
-        # TODO: Can extend to also sample from the marginals of the (gaussian) copula
+        # TODO: Can extend to also sample from the marginals of the (gaussian) copula and vaeac
         if (approach == "gaussian") {
           dt_Sbar_now_marginal_values = create_marginal_data_gaussian(n_samples = n_samples * n_explain,
                                                                       Sbar_now = Sbar_now,
@@ -230,30 +233,18 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         internal_copy$objects$X = data.table(id_combination = 1, features = list(S_now), n_features = length(S_now))
 
         # Generate the MC samples conditioning on S_now
-        message("Generate samples")
-        # print(system.time({
         dt_new <- prepare_data(internal_copy, index_features = 1, ...)
-        message("Done Generate samples")
-
-        #dt_new <- prepare_data(internal_copy, index_features = S_row_now)
-        # }))
-        #fd
-        #print(dt_new)
-        #if (sampling_step_idx > 1) dt_new = dt_new[, .SD[sample(.N, 1)], by = id]
-        #print(dt_new)
 
         if (approach %in% c("independence", "empirical", "ctree")) {
           # These approaches produce weighted MC samples, i.e., the do not necessarily generate n_samples MC samples.
           # We ensure n_samples by weighted sampling with replacements those ids with less than n_samples MC samples.
           # message("Ensure n_samples")
           # print(system.time({
-          dt_new <- dt_new[, .SD[if (.N >= n_samples) {
-            seq(.N)
-          } else {
-            sample(.N, internal_copy$parameters$n_samples, replace = TRUE, prob = w)
-          }], by = id]
-          # }))
+          dt_new <- dt_new[, .SD[
+            if (.N >= n_samples) seq(.N) else sample(.N, internal_copy$parameters$n_samples, replace = TRUE, prob = w)
+          ], by = id]
 
+          # TODO: remove
           # if (nrow(dt_new) != n_explain * n_samples) stop("`dt_new` does not have the right number of rows.\n")
         }
 
@@ -280,11 +271,14 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   dt[, w := 1 / n_samples]
   data.table::setcolorder(dt, c("id_combination", "id", feature_names))
 
-  # Aggregate the weights for the non-unique rows such that we only return a data table with unique rows
-  dt_final <- dt[, sum(w), by = c("id_combination", "id", feature_names)]
-  data.table::setnames(dt_final, "V1", "w")
+  # Aggregate the weights for the non-unique rows such that we only return a data table with unique rows.
+  # Only done for these approaches as they are the only approaches that are likely to return duplicates.
+  if (approach %in% c("independence", "empirical", "ctree")) {
+    dt <- dt[, sum(w), by = c("id_combination", "id", feature_names)]
+    data.table::setnames(dt, "V1", "w")
+  }
 
-  return(dt_final)
+  return(dt)
 }
 
 #' Auxiliary function that verifies that the number of combinations is possible
@@ -435,9 +429,6 @@ check_coalitions_respect_order_slow <- function(coalitions, causal_ordering) {
 get_n_comb_max_causal_ordering <- function(causal_ordering) {
   return(sum(2^sapply(causal_ordering, length)) - length(causal_ordering) + 1)
 }
-
-
-
 
 #' Get all coalitions satisfying the causal ordering
 #'
