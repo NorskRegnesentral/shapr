@@ -159,13 +159,16 @@ check_and_set_asymmetric = function(internal) {
   # Get the combinations/coalitions that respects the (partial) causal ordering
   internal$objects$legit_causal_combinations = get_legit_causal_combinations(causal_ordering = causal_ordering)
 
-  # Check that we have a legit number of combinations that does not exceed the maximum
+  # Check that we have a legit number of combinations that does not exceed the maximum (user have provided n_comb)
   if (!exact && n_combinations >= n_combinations_causal_max) {
     internal$parameters$exact = TRUE
     internal$parameters$used_n_combinations <- n_combinations_causal_max
     warning(paste0("`n_combinations` (", n_combinations, ") is larger or equal to the number of combinations ",
                    "respecting the causal ordering (", n_combinations_causal_max, "). Enter exact mode instead.\n"))
   }
+
+  # In case the user has not provided the n_combinations
+  internal$parameters$used_n_combinations <- min(internal$parameters$used_n_combinations, n_combinations_causal_max)
 
   return(internal)
 }
@@ -502,18 +505,6 @@ get_extra_parameters <- function(internal) {
   # Get the number of unique approaches
   internal$parameters$n_approaches <- length(internal$parameters$approach)
   internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
-
-  # # Set that we are to compute Causal Shapley Values (checks are done later)
-  # internal$parameters$causal = !is.null(internal$parameters$causal_ordering) &&
-  #     length(internal$parameters$causal_ordering[[1]]) != internal$parameters$n_features ||
-  #     !isFALSE(internal$parameters$confounding)
-
-  # # If `causal_ordering` is NULL, then convert it to a list with a single component containing all features/groups
-  # if (is.null(internal$parameters$causal_ordering)) {
-  #   internal$parameters$causal_ordering = list(seq(ifelse(internal$parameters$is_groupwise,
-  #                                                         internal$parameters$n_groups,
-  #                                                         internal$parameters$n_features)))
-  # }
 
   return(internal)
 }
