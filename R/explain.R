@@ -365,7 +365,7 @@ explain <- function(model,
   converged <- FALSE
   print_shapleyres <- print_iter_info <- FALSE
   shapley_reweighting <- "none"#"on_N"
-  compute_sd <- FALSE #ifelse(internal$parameters$exact==FALSE,TRUE,FALSE)
+  compute_sd <- ifelse(internal$parameters$exact==FALSE,TRUE,FALSE)
 
   if(isTRUE(internal$parameters$adaptive)){
     ### for now we just some of the parameters here
@@ -386,7 +386,7 @@ explain <- function(model,
 
   }
 
-#    internal <- setup_approach(internal, model = model, predict_model = predict_model)
+    internal <- setup_approach(internal, model = model, predict_model = predict_model)
     internal$parameters$shapley_reweighting <- shapley_reweighting
 
     internal$parameters$max_iter <- max_iter
@@ -402,7 +402,7 @@ explain <- function(model,
 
       # setup the Shapley framework
       internal <- shapley_setup(internal)
-      internal <- setup_approach(internal, model = model, predict_model = predict_model)
+      #internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make tests pass for nonadaptive approach
 
 
       #browser()
