@@ -53,7 +53,7 @@ are from the Gaussian distribution.
 
 
 
-# Asymmetric (conditional) Shapley values {#AsymSV}
+# Asymmetric conditional Shapley values {#AsymSV}
 
 Asymmetric (condtional) Shapley values were proposed by @frye2020asymmetric as
 a way to incorporate causal knowledge in the real world by restricting
@@ -180,14 +180,14 @@ of the modeled multivariate Gaussian distribution. This means that for all
 other approaches, this is the same as using the `independence` approach 
 in the conditional Shapley value framework. 
 
-# Conditioal Shapley values {#ConditionalSV}
-Causal Shapley values are equivalent to conditional Shapley values when all $M$
+# Symmetric conditioal Shapley values {#ConditionalSV}
+Causal Shapley values are equivalent to symmetric conditional Shapley values when all $M$
 features combined in a single component $\tau = \mathcal{M} = \{1,2,...,M\}$ and
 all dependencies are induced by mutual interaction. Then $\text{pa}(\tau) = \emptyset$,
 and $P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))$ in Equation
 (\ref{eq:do}) simplifies to
 $P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) = P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})$,
-as specified in @aas2019explaining.
+as specified in @aas2019explaining. Symmetric means that we consider all coalitions.
 
 
 
@@ -205,10 +205,11 @@ Note that symmetric conditional Shapley values are the default version, i.e., by
 |:-------------------|:-----------------------|:---------------------|:-------------|:------------|:--------------|
 | Sym. Conditional   | $P(X_{\bar{\mathcal{S}}} \mid (X_\mathcal{S} = x_\mathcal{S})$    | All                  | `FALSE`      | `NULL`      | `NULL`        |
 | Asym. Conditional  | $P(X_{\bar{\mathcal{S}}} \mid (X_\mathcal{S} = x_\mathcal{S})$    | All                  | `TRUE`       | `list(...)` | `NULL`        |
-| Sym. Marginal      | $P(X_{\bar{\mathcal{S}}})$                                        | `indep.`, `gaussian` | `FALSE`      | `NULL`      | `TRUE`        | 
-| Asym. Marginal     | $P(X_{\bar{\mathcal{S}}})$                                        | `indep.`, `gaussian` | `TRUE`       | `NULL`      | `TRUE`        |
 | Sym. Causal        | $P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))$ |  All MC-based        | `FALSE`      | `list(...)` | `c(...)`      |
 | Asym. Causal       | $P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))$ |  All MC-based        | `TRUE`       | `list(...)` | `c(...)`      |
+| Sym. Marginal      | $P(X_{\bar{\mathcal{S}}})$                                        | `indep.`, `gaussian` | `FALSE`      | `NULL`      | `TRUE`        | 
+
+ <! -- | Asym. Marginal     | $P(X_{\bar{\mathcal{S}}})$                                        | `indep.`, `gaussian` | `TRUE`       | `NULL`      | `TRUE`        | -->
 
 
 ## Code setup
@@ -218,6 +219,9 @@ library(xgboost)
 library(shapr)
 library(ggplot2)
 library(GGally)
+
+library(progressr) # Just to get progress
+progressr::handlers("cli")
 ```
 
 Second, we set up the training/explicand data, plot the data, and train an `xgboost` model.
@@ -262,6 +266,11 @@ x_explain <- as.matrix(bike[-train_index, x_var])
 y_explain_nc <- as.matrix(bike[-train_index, y_var]) # not centered
 y_explain <- y_explain_nc - mean(y_train_nc)
 
+# Get 6 explicands to plot the Shapley values of with a wide spread in their predicted outcome
+n_index_x_explain = 6
+index_x_explain = order(y_explain)[seq(1, length(y_explain), length.out = n_index_x_explain)]
+y_explain[index_x_explain]
+
 # Fit an XGBoost model to the training data
 model <- xgboost(
   data = x_train,
@@ -275,31 +284,467 @@ prediction_zero <- mean(y_train)
 
 # Look at the root mean squared error 
 sqrt(mean((predict(model, x_explain) - y_explain)^2))
+plot(predict(model, x_explain), y_explain)
 ```
 
 
-## Conditional Shapley values
+We are going to use the `causal_ordering` and `confounding` illustrated in the figures above.
+For `causal_ordering`, we can either provide the index of feature or the feature names.
+Thus, the following two versions of `causal_ordering` will produce equivalent results.
+
 ```{r}
-explanation_sym_con_gaussian <-
-  progressr::with_progress({
-    explain(
-      model = model,
-      x_train = x_train,
-      x_explain = x_explain,
-      approach = "gaussian",
-      prediction_zero = prediction_zero,
-      asymmetric = FALSE, # Default value
-      causal_ordering = NULL, # Default value
-      confounding = FALSE # Default value
-    )
-  })
+causal_ordering = list(1, c(2, 3), c(4:7))
+causal_ordering = list("trend", c("cosyear", "sinyear"), c("temp", "atemp", "windspeed", "hum"))
+confounding = c(FALSE, TRUE, FALSE)
+```
+
+
+
+## Symmetric conditional Shapley values (default)
+We start by demonstrating how to compute symmetric conditional Shapley values.
+This is the default version in `shapr` and there is no need to specify the arguments below.
+We have done it for the sake of clarity. We use the `gaussian` approach.
+```{r}
+explanation_sym_con_gaussian <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    prediction_zero = prediction_zero,
+    asymmetric = FALSE, # Default value (TRUE will give the same as `causal_ordering = NULL`)
+    causal_ordering = NULL, # Default value
+    confounding = NULL, # Default value
+      keep_samp_for_vS = TRUE
+  )
+})
+
+# Look at the number of combinations considered
+explanation_sym_con_gaussian$internal$parameters$n_combinations
+
+# Look at the elapsed time
+explanation_sym_con_gaussian$timing$timing_secs
+
+# Plot a beeswarm plot of the Shapley values
+plot(explanation_sym_con_gaussian, plot_type = "beeswarm")
+```
+We can also use regression-based approaches. 
+```{r}
+explanation_sym_con_xgboost <- progressr::with_progress({
+ explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = prediction_zero,
+  approach = "regression_separate",
+  regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
+    asymmetric = FALSE, # Default value (TRUE will give the same as `causal_ordering = NULL`)
+    causal_ordering = NULL, # Default value
+    confounding = NULL # Default value
+)
+})
+# Look at the number of combinations considered
+explanation_sym_con_xgboost$internal$parameters$n_combinations
+
+# Look at the elapsed time
+explanation_sym_con_xgboost$timing$timing_secs
+
+# Plot a beeswarm plot of the Shapley values
+plot(explanation_asym_con_xgboost, plot_type = "beeswarm")
+```
+
+```{r}
+explanation_sym_con_xgboost_cv <- progressr::with_progress({
+ explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  prediction_zero = prediction_zero,
+  n_batches = 10,
+  approach = "regression_separate",
+  regression.model =
+    parsnip::boost_tree(trees = hardhat::tune(), engine = "xgboost", mode = "regression"),
+  regression.tune_values = expand.grid(trees = c(10, 15, 25, 50, 100)),
+  regression.vfold_cv_para = list(v = 4),
+    asymmetric = FALSE, # Default value (TRUE will give the same as `causal_ordering = NULL`)
+    causal_ordering = NULL, # Default value
+    confounding = NULL # Default value
+)
+})
+# Look at the number of combinations considered
+explanation_sym_con_xgboost_cv$internal$parameters$n_combinations
+
+# Look at the elapsed time
+explanation_sym_con_xgboost_cv$timing$timing_secs
+
+# Plot a beeswarm plot of the Shapley values
+plot(explanation_sym_con_xgboost_cv, plot_type = "beeswarm")
 ```
 
 
 
 
-## Asym
+## Asymmetric conditional Shapley values
+The we look at the asymmetric conditional Shapley values. To obtain these
+types of Shapley values, we have to specify that `asymmetric = TRUE` and a
+`causal_ordering`. We use `causal_ordering = list(1, c(2, 3), c(4:7))`, which
+implies that we consider $20$ combinations (including empty and grand coalition)
+instead of all 128 coalitions.
+
+```{r}
+explanation_asym_con_gaussian <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    prediction_zero = prediction_zero,
+    approach = "gaussian",
+    asymmetric = TRUE,
+    causal_ordering = causal_ordering,
+    confounding = NULL # Default value
+  )
+})
+# Look at the number of combinations considered. Only 20 instead of 128.
+explanation_asym_con_gaussian$internal$parameters$n_combinations_causal_max
+
+# Here we can see the 20 combinations that respects the causal ordering
+explanation_asym_con_gaussian$internal$objects$legit_causal_combinations
+
+# Look at the elapsed time
+explanation_asym_con_gaussian$timing$timing_secs
+
+# Plot a beeswarm plot of the Shapley values
+plot(explanation_asym_con_gaussian, plot_type = "beeswarm")
+```
+We can also use a regression-based approach to compute asymmetirc conditional Shapley values.
+
+```{r}
+explanation_asym_con_xgboost <- progressr::with_progress({
+ explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    prediction_zero = prediction_zero,
+    approach = "regression_separate",
+    regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
+    asymmetric = TRUE,
+    causal_ordering = causal_ordering,
+    confounding = NULL # Default value
+)
+})
+# Look at the number of combinations considered. Only 20 instead of 128.
+explanation_asym_con_xgboost$internal$parameters$n_combinations_causal_max
+
+# Look at the elapsed time
+explanation_asym_con_xgboost$timing$timing_secs
+
+# Plot a beeswarm plot of the Shapley values
+plot(explanation_asym_con_xgboost, plot_type = "beeswarm")
+```
 
 
+## Symmetric marginal Shapley values
+For marginal Shapley values, we can only consider the symmetric version as we must set
+`causal_ordering = list(1:7)` (or `NULL`) and `confounding = TRUE`. Setting `asymmetric = TRUE`
+will have no effect, as the causal ordering consists of only a single component containing all features,
+i.e., all coalitions respect the causal ordering. As stated above, `shapr` will generate the 
+Monte Carlos samples from the marginals either from the Gaussian marginals if `approach = "gaussian"`, 
+while for all other Monte Carlo approaches the marginals are estimated from the training data, i.e.,
+assuming feature independence. Furthermore, we also obtain marginal Shapley values by using the
+conditional Shapley value framework with the `independence` approach. However, note that there will
+be a minuscule difference in the produced Shapley values due to different sampling setups/orders.
+
+```{r}
+# Here we sample from the estimated Gaussian marginals
+explanation_sym_marg_gaussian <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    prediction_zero = prediction_zero,
+    asymmetric = FALSE, 
+    causal_ordering = list(1:7), 
+    confounding = TRUE 
+  )
+})
+
+# Here we sample from the marginals of the training data
+explanation_sym_marg_any_other_approach <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "independence",
+    prediction_zero = prediction_zero,
+    asymmetric = FALSE, 
+    causal_ordering = list(1:7), 
+    confounding = TRUE 
+  )
+})
+
+# Here we use the conditional Shapley value framework with the `independence` approach
+explanation_sym_marg_independence <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "independence",
+    prediction_zero = prediction_zero
+  )
+})
+
+# Plot beeswarms plot of the Shapley values. All three are very similar.
+plot(explanation_sym_marg_gaussian, plot_type = "beeswarm")
+plot(explanation_sym_marg_any_other_approach, plot_type = "beeswarm")
+plot(explanation_sym_marg_independence, plot_type = "beeswarm")
+sina_plot(explanation_sym_marg_independence)
+```
+
+
+
+
+
+## Causal Shapley values
+To compute (symmetric/asymmetric) causal Shapley values, we have to provide
+the `causal_ordering` and `confounding` objects. We set them to be 
+`causal_ordering = list(1, 2:3, 4:7)` and `confounding = c(FALSE, TRUE, FALSE)`.
+
+The causal framework takes longer than the other framework, as generating the 
+
+For example, for $\mathcal{S} = {2}$, we must generate $X_1,X_3,X_4,X_5,X_6,X_7 \mid X_2$. However, we cannot do this
+directly due to the `causal_ordering` and `confounding` specified above. To generate the Monte Carlo samples, we have
+to follow a chain of sampling steps. More precisely, we first need to generate $X_1$ from the marginal,
+then $X_3 \mid X_1$, and finally $X_4,X_5,X_6,X_7 \mid X_1,X_2,X_3$. The latter two steps are done by 
+using the provided `approach` to model the conditional distributions.
+
+The `internal$objects$S_causal_steps_strings` object contains the sampling steps needed for the different combinations.
+
+### Symmetric 
+```{r}
+explanation_sym_cau_gaussian <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    prediction_zero = prediction_zero,
+    asymmetric = FALSE, 
+    causal_ordering = list(1, 2:3, 4:7),
+    confounding = c(FALSE, TRUE, FALSE),
+    keep_samp_for_vS = TRUE
+  )
+})
+
+# Look at the sampling steps for the third combination (S = {2})
+explanation_sym_cau_gaussian$internal$objects$S_causal_steps_strings$id_combination_3
+
+# Use the copula approach
+explanation_sym_cau_copula <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "copula",
+    prediction_zero = prediction_zero,
+    asymmetric = FALSE, 
+    causal_ordering = list(1, 2:3, 4:7),
+    confounding = c(FALSE, TRUE, FALSE),
+    keep_samp_for_vS = TRUE
+  )
+})
+
+# Plot beeswarms plot of the Shapley values. Both are very similar.
+plot(explanation_sym_cau_gaussian, plot_type = "beeswarm")
+plot(explanation_sym_cau_copula, plot_type = "beeswarm")
+```
+
+
+
+### Asymmetric
+We now turn to asymmetric causal Shapley values. That is, we only use the combinations
+that respects the causal ordering. Thus, the computations are faster as the number of
+combinations are reduced. We 
+
+```{r}
+explanation_asym_cau_gaussian <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    prediction_zero = prediction_zero,
+    asymmetric = TRUE, 
+    causal_ordering = list(1, 2:3, 4:7),
+    confounding = c(FALSE, TRUE, FALSE),
+    keep_samp_for_vS = TRUE
+  )
+})
+
+# Use the copula approach
+explanation_asym_cau_copula <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "copula",
+    prediction_zero = prediction_zero,
+    asymmetric = TRUE, 
+    causal_ordering = list(1, 2:3, 4:7),
+    confounding = c(FALSE, TRUE, FALSE),
+    keep_samp_for_vS = TRUE
+  )
+})
+
+# Plot beeswarms plot of the Shapley values. Both are very similar.
+plot(explanation_asym_cau_gaussian, plot_type = "beeswarm")
+plot(explanation_asym_cau_copula, plot_type = "beeswarm")
+
+# Plot the Shapley values 
+plot_SV_several_approaches(list(gaussian = explanation_asym_cau_gaussian,
+                                copula = explanation_asym_cau_copula),
+                           index_explicands = index_x_explain,
+                           index_explicands_sort = FALSE)
+
+```
+
+
+We can also use the other Monte Carlo-based approaches.
+We demonstrate for `ctree`. Note that `independence`, 
+
+
+## Compare them all
+Plot the Shapley values for the six explicands. We see that the different 
+frameworks provide different explanations. The largest difference are between
+whether we use the symmetric or asymmetric version,
+
+```{r}
+# Plot the Shapley values 
+plot_SV_several_approaches(
+  list(
+    symmetric_marginal = explanation_sym_marg_gaussian,
+    symmetric_conditional = explanation_sym_con_gaussian,
+    symmetric_causal = explanation_sym_cau_gaussian,
+    asymmetric_conditional = explanation_asym_con_gaussian,
+    asymmetric_causal = explanation_asym_cau_gaussian),
+  index_explicands = index_x_explain,
+  index_explicands_sort = FALSE)
+```
+
+
+
+## Groups of features
+In this section, we demonstrate that we can compute marginal, asymmetric 
+conditional, and symmetric/asymmetric Shapley values for groups of features, too.
+The causal ordering has then has to specified on the group order and not on the 
+feature level.
+
+In the pairs plot above (and below), we see that it can be natural to group the
+features `temp` and `atemp` due to their similarity/correlation. 
+
+```{r}
+# It makes sense to group the "temp" and "atemp" due to their high correlation
+cor(x_train[,4], x_train[,5])
+plot(x_train[,4], x_train[,5])
+```
+
+We then set up the groups and update the causal ordering to be on the group level.
+```{r}
+group_list <- list(
+  trend = "trend",
+  cosyear = "cosyear",
+  sinyear = "sinyear",
+  temp_group = c("temp", "atemp"),
+  windspeed = "windspeed",
+  hum = "hum")
+
+causal_ordering_group = list("trend", c("cosyear", "sinyear"), c("temp_group", "windspeed", "hum"))
+```
+
+
+We illustrate 
+```{r}
+explanation_asym_cau_gaussian_group <-
+    progressr::with_progress({
+      explain(
+        model = model,
+        x_train = x_train,
+        x_explain = x_explain,
+        approach = "gaussian",
+        prediction_zero = prediction_zero,
+        asymmetric = TRUE,
+        causal_ordering = causal_ordering_group,
+        confounding = confounding,
+        group = group_list
+      )
+    })
+
+
+index_x_explain
+
+explanation_asym_cau_gaussian_group$internal$objects$X
+sina_plot(explanation_asym_cau_gaussian_group)
+plot(explanation_asym_cau_gaussian_group, index_x_explain = 1:6)
+```
+
+
+
+
+
+## Implementation details
+
+The marginal Shapley value explanation framework can be extended to
+support modeling the marginal distributions using the `copula` and
+`vaeac` approaches as both of these methods support unconditional sampling.
+
+The `shapr` package is built to estimate conditional Shapley values, thus,
+it parallelize over the combinations. This makes perfect sense for said
+framework as each batch of combinations are independent of other batches,
+which means that it is easy to parallelize. Furthermore, by using many
+batches we drastically reduce the memory usage as `shapr` does not need
+to store the Monte Carlo samples for all combinations. 
+
+This setup is not optimal for the causal Shapley value framework as the
+chains of sampling steps for two coalition $\mathcal{S}$ and $\mathcal{S}^*$
+can contain many of the same steps. Ideally, each unique sampling step
+should only be modeled once to save computation times, but, some of the
+sampling steps will occur in many of the chains. Thus, we would then have
+to store the Monte Carlo samples for all combinations where this sampling
+step was included, and we can therefor run into memory consumption problems.
+Thus, in the current implementation, we treat each coalition $\mathcal{S}$
+independent and remodel the needed sampling steps for each combination.
+
+Furthermore, in the conditional Shapley value framework, we have that
+$\bar{\mathcal{S}} = \mathcal{M} \backslash \mathcal{S}$, thus `shapr`
+will by default generate Monte Carlo samples for all features not in
+$\mathcal{S}$. For the causal Shapley value framework, this is not the
+case, i.e., $\bar{\mathcal{S}} \neq \mathcal{M} \backslash \mathcal{S}$ 
+in general. To reuse the code, we generate Monte Carlo samples for all
+features not in $\mathcal{S}$, but only keep the samples for the features
+in $\bar{\mathcal{S}}$. To speed up `shapr` further, one could rewrite 
+all the approaches to support that $\bar{\mathcal{S}}$ could not be
+the complement of $\mathcal{S}$.
+
+In the code below, we see the unique combinations/set of features to condition
+on to generate the Monte Carlo samples for all combinations and the number of 
+times that set of conditional features is needed in the symmetric causal Shapley
+value framework for the set up above. We see that most of the conditional
+distributions will now be remodeled eights times. For the `gaussian` approach,
+which is very fast to estimate the conditional distributions, this does not 
+have a major impact on the time. However, for, e.g., the `ctree` approach which
+is much slower, this will take a significant amount of extra time.
+```{r}
+S_causal_steps = explanation_sym_cau_gaussian$internal$objects$S_causal_steps
+S_causal_unlist = do.call(c, unlist(S_causal_steps, recursive=FALSE))
+S_causal_steps_freq = S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)]
+S_causal_steps_freq <- S_causal_steps_freq[!sapply(S_causal_steps_freq, is.null)] # Remove NULLs
+S_causal_steps_freq <- S_causal_steps_freq[sapply(S_causal_steps_freq, length) > 0] # Remove extra integer(0)
+table(sapply(S_causal_steps_freq, paste0, collapse = ","))
+```
+
+The `independence`, `empirical`, and `ctree` produce weighted Monte Carlo samples.
+That means that they do not necessarily generate `n_samples`. To ensure `n_samples`, 
+we sample `n_samples` samples using weighted sampling with replacements where
+the weights are the weights returned by the approaches. 
 
 # References
