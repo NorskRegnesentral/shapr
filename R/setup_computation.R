@@ -185,7 +185,9 @@ shapley_setup <- function(internal) {
 
     # Also find all unique set of features to condition on
     S_causal_unlist = do.call(c, unlist(S_causal_steps, recursive=FALSE))
-    S_causal_steps_unique = unique(S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)])
+    S_causal_steps_unique <- unique(S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)]) # Get S
+    S_causal_steps_unique <- S_causal_steps_unique[!sapply(S_causal_steps_unique, is.null)] # Remove NULLs
+    S_causal_steps_unique <- S_causal_steps_unique[sapply(S_causal_steps_unique, length) > 0] # Remove extra integer(0)
     S_causal_steps_unique = c(list(integer(0)), sort_feature_list(S_causal_steps_unique), list(seq(n_features0)))
     S_causal_steps_unique_S = feature_matrix_cpp(features = S_causal_steps_unique, m = n_features0)
 
