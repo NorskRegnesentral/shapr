@@ -6,7 +6,9 @@
 #' Output from [compute_vS()]
 #'
 #' @export
-compute_estimates <- function(internal, vS_list, iter) {
+compute_estimates <- function(internal, vS_list) {
+
+  iter <- length(internal$iter_list)
 
   compute_sd <- internal$parameters$compute_sd # TODO: add this parameter
   n_boot_samps <- internal$parameters$n_boot_samps
@@ -27,12 +29,10 @@ compute_estimates <- function(internal, vS_list, iter) {
   }
 
 
-  internal$objects$raw_iter_objects[[iter]] <- list(
-    dt_shapley_est = dt_shapley_est,
-    dt_shapley_sd = dt_shapley_sd,
-    vS_list = vS_list,
-    dt_vS = processed_vS_list$dt_vS
-  )
+  internal$iter_list[[iter]]$dt_shapley_est = dt_shapley_est
+  internal$iter_list[[iter]]$dt_shapley_sd = dt_shapley_sd
+  internal$iter_list[[iter]]$vS_list = vS_list
+  internal$iter_list[[iter]]$dt_vS = processed_vS_list$dt_vS
 
   # internal$timing$shapley_computation <- Sys.time()
 
@@ -52,8 +52,10 @@ compute_estimates <- function(internal, vS_list, iter) {
 finalize_explanation <- function(internal) {
   MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
   dt_vS <- internal$output$dt_vS
-  dt_shapley_est <- internal$objects$raw_iter_objects[[length(internal$objects$raw_iter_objects)]]$dt_shapley_est
-  dt_shapley_sd <- internal$objects$raw_iter_objects[[length(internal$objects$raw_iter_objects)]]$dt_shapley_sd
+
+  iter <- length(internal$iter_list)
+  dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
+  dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
   # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
   internal$tmp <- NULL
@@ -227,10 +229,12 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
 }
 
 
-check_convergence <- function(internal, convergence_tolerance=0.1,iter){
+check_convergence <- function(internal, convergence_tolerance=0.1){
 
-  dt_shapley_est <- internal$objects$raw_iter_objects[[iter]]$dt_shapley_est
-  dt_shapley_sd <- internal$objects$raw_iter_objects[[iter]]$dt_shapley_sd
+  iter <- length(internal$iter_list)
+
+  dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
+  dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
   n_current_samples <- internal$parameters$n_combinations-2
   max_iter <- internal$parameters$max_iter

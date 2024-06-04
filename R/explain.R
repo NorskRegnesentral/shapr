@@ -304,6 +304,10 @@ explain <- function(model,
                     MSEv_uniform_comb_weights = TRUE,
                     timing = TRUE,
                     verbose = 0,
+                    n_boot_samps = 100, # tmp
+                    print_shapleyres = FALSE, # tmp
+                    print_iter_info = FALSE, # tmp
+                    shapley_reweighting = "none", # tmp # "on_N"
                     ...) { # ... is further arguments passed to specific approaches
 
   timing_list <- list(init_time = Sys.time())
@@ -361,15 +365,11 @@ explain <- function(model,
   # Adaptive approach
   # TODO: The below should probably be moved to a separate function in the end
 
-  n_boot_samps <- 100 # 100
   converged <- FALSE
-  print_shapleyres <- print_iter_info <- FALSE
-  shapley_reweighting <- "none"#"on_N"
-  compute_sd <- ifelse(internal$parameters$exact==FALSE,TRUE,FALSE)
 
   if(isTRUE(internal$parameters$adaptive)){
     ### for now we just some of the parameters here
-    initial_n_combinations <- min(200,(2^internal$parameters$n_features)/10)
+    initial_n_combinations <- min(200,ceiling((2^internal$parameters$n_features)/10))
     max_iter <- 20
     reduction_factor <- seq(0.1,1,by=0.1) # Proportion of estimated remaining samples to use in next iteration
     convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
@@ -390,29 +390,33 @@ explain <- function(model,
     internal$parameters$shapley_reweighting <- shapley_reweighting
 
     internal$parameters$max_iter <- max_iter
-    internal$parameters$compute_sd <- compute_sd
     internal$parameters$n_boot_samps <- n_boot_samps
 
-    internal$objects$raw_iter_objects <- list()
-    iter <- 0
+    internal$iter_list <- list()
+    iter <- 1
+    internal$iter_list[[iter]] <- list(
+      converged = FALSE,
+      n_combinations = initial_n_combinations,
+      compute_sd = ifelse(internal$parameters$exact==FALSE,TRUE,FALSE)
+    )
 
     while(converged==FALSE){
 
-      iter <- iter + 1
 
       # setup the Shapley framework
       internal <- shapley_setup(internal)
       #internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make tests pass for nonadaptive approach
 
 
-      #browser()
+      browser()
 
       vS_list <- compute_vS(internal, model, predict_model)
 
-      internal <- compute_estimates(internal, vS_list, iter)
+      internal <- compute_estimates(internal, vS_list)
 
-      convergence_res <-  check_convergence(internal, convergence_tolerance, iter)
+      convergence_res <-  check_convergence(internal, convergence_tolerance)
 
+      internal$iter_list[[iter]]$convergence_res = convergence_res
 
       converged <- convergence_res$converged
       estimated_remaining_samples <- convergence_res$estimated_remaining_samples
@@ -422,8 +426,8 @@ explain <- function(model,
 
       ### just temporary setting results here, before I make the below into a function ###
 
-      dt_shapley_est <- internal$objects$raw_iter_objects[[iter]]$dt_shapley_est
-      dt_shapley_sd <- internal$objects$raw_iter_objects[[iter]]$dt_shapley_sd
+      dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
+      dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
       if(converged==FALSE){
 
@@ -487,13 +491,9 @@ explain <- function(model,
       setcolorder(dt_shapley_sd,"explain_id")
 
 
-      internal$objects$raw_iter_objects[[iter]] <- c(internal$objects$raw_iter_objects[[iter]],
-                                                     list(convergence_res = copy(convergence_res),
-                                                          X = copy(internal$objects$X),
-                                                          id_comb_feature_map = copy(internal$objects$id_comb_feature_map),
-                                                          vS_list = copy(vS_list)
-                                                     )
-      )
+
+
+      iter <- iter + 1
 
     }
 
@@ -501,16 +501,15 @@ explain <- function(model,
     # Rerun after convergence to get the same output format as for the non-adaptive approach
     output <- finalize_explanation(internal = internal)
 
-    iter_list <- list(
-      dt_iter_shapley_est = rbindlist(lapply(internal$objects$raw_iter_objects, `[[`, "dt_shapley_est"),idcol = "iter"),
-      dt_iter_shapley_sd = rbindlist(lapply(internal$objects$raw_iter_objects, `[[`, "dt_shapley_sd"),idcol = "iter"),
+    output$internal$output$iter_results <- list(
+      dt_iter_shapley_est = rbindlist(lapply(internal$iter_list, `[[`, "dt_shapley_est"),idcol = "iter"),
+      dt_iter_shapley_sd = rbindlist(lapply(internal$iter_list, `[[`, "dt_shapley_sd"),idcol = "iter"),
       #dt_iter_convergence_res = rbindlist(lapply(internal$objects$raw_iter_objects, `[[`, "convergence_res"),idcol = "iter"),
-      X_list = lapply(internal$objects$raw_iter_objects, `[[`, "X"),
-      dt_vS = lapply(internal$objects$raw_iter_objects, `[[`, "dt_vS"),
-      id_comb_feature_map = lapply(internal$objects$raw_iter_objects, `[[`, "id_comb_feature_map")
+      X_list = lapply(internal$iter_list, `[[`, "X"),
+      dt_vS = lapply(internal$iter_list, `[[`, "dt_vS"),
+      id_comb_feature_map = lapply(internal$iter_list, `[[`, "id_comb_feature_map")
     )
 
-    output$internal$output$iter_objects <- iter_list
 
 #
 #     # Previous non-adaptive stuff below here
