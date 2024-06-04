@@ -1514,7 +1514,7 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #' @author Lars Henry Berge Olsen
 plot_SV_several_approaches <- function(explanation_list,
                                        index_explicands = NULL,
-                                       index_explicands_sort = TRUE,
+                                       index_explicands_sort = FALSE,
                                        only_these_features = NULL,
                                        plot_phi0 = FALSE,
                                        digits = 4,
