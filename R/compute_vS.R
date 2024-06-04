@@ -9,7 +9,8 @@
 #' @export
 compute_vS <- function(internal, model, predict_model, method = "future") {
   S_batch <- internal$objects$S_batch
-  raw_iter_objects <- internal$objects$raw_iter_objects
+  iter <- length(internal$iter_list)
+  iter_list <- internal$iter_list
   current_id_comb_feature_map <- internal$objects$id_comb_feature_map
 
   if (method == "future") {
@@ -30,9 +31,9 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
 
   #### Adds v_S output above to any vS_list already computed ####
   ### Need to map the old id_combinations to the new numbers for this merging to work out
-  if(length(raw_iter_objects)>0){
-    prev_id_comb_feature_map <- raw_iter_objects[[length(raw_iter_objects)]]$id_comb_feature_map
-    prev_vS_list <- raw_iter_objects[[length(raw_iter_objects)]]$vS_list
+  if(iter>1){
+    prev_id_comb_feature_map <- iter_list[[iter-1]]$id_comb_feature_map
+    prev_vS_list <- this_iter_list[[iter-1]]$vS_list
 
     # Creates a mapper from the last id_combination to the new id_combination numbering
     id_combination_mapper <- merge(prev_id_comb_feature_map,
@@ -42,7 +43,7 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
     prev_vS_list_new <- list()
 
     # Applies the mapper to update the prev_vS_list ot the new id_combination numbering
-    for(k in seq_along(internal$objects$prev_vS_list)){
+    for(k in seq_along(prev_vS_list)){
       prev_vS_list_new[[k]] <- merge(prev_vS_list[[k]],
                                                   id_combination_mapper[,.(id_combination,id_combination_new)],
                                                   by="id_combination")

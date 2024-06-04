@@ -144,11 +144,14 @@ shapley_reweighting <- function(X,reweight = "on_N"){
 shapley_setup <- function(internal) {
   exact <- internal$parameters$exact
   n_features0 <- internal$parameters$n_features
-  n_combinations <- internal$parameters$n_combinations
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling = internal$parameters$paired_shap_sampling
   prev_feature_sample = internal$parameters$prev_feature_sample
   shapley_reweighting = internal$parameters$shapley_reweighting
+  iter <- length(internal$iter_list)
+
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
+
 
   group_num <- internal$objects$group_num
 
@@ -193,11 +196,11 @@ shapley_setup <- function(internal) {
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
 
-  internal$objects$X <- X
-  internal$objects$W <- W
-  internal$objects$S <- S
-  internal$objects$id_comb_feature_map <- id_comb_feature_map
-  internal$objects$S_batch <- create_S_batch_new(internal)
+  internal$iter_list[[iter]] <- list(X = X,
+                                     W = W,
+                                     S = S,
+                                     id_comb_feature_map = id_comb_feature_map,
+                                     S_batch = create_S_batch_new(internal))
 
   return(internal)
 }
@@ -675,13 +678,15 @@ create_S_batch_new <- function(internal, seed = NULL) {
   approach0 <- internal$parameters$approach
   n_combinations <- internal$parameters$n_combinations
   n_batches <- internal$parameters$n_batches
-  prev_id_comb_feature_map <- internal$objects$prev_id_comb_feature_map
-  id_comb_feature_map <- internal$objects$id_comb_feature_map
+  iter <- length(internal$iter_list)
+
+  id_comb_feature_map <- internal$iter_list[[iter]]$id_comb_feature_map
 
 
-  X0 <- copy(internal$objects$X)
+  X0 <- copy(internal$iter_list[[iter]]$X)
 
-  if(!is.null(prev_id_comb_feature_map)){
+  if(iter>1){
+    prev_id_comb_feature_map <- internal$iter_list[[iter-1]]$id_comb_feature_map
     new_id_combinations <- id_comb_feature_map[!(features_str %in% prev_id_comb_feature_map[-c(1,.N),features_str,]),id_combination]
     X0 <- X0[id_combination %in% new_id_combinations]
   }

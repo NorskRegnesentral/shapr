@@ -504,7 +504,6 @@ explain <- function(model,
     output$internal$output$iter_results <- list(
       dt_iter_shapley_est = rbindlist(lapply(internal$iter_list, `[[`, "dt_shapley_est"),idcol = "iter"),
       dt_iter_shapley_sd = rbindlist(lapply(internal$iter_list, `[[`, "dt_shapley_sd"),idcol = "iter"),
-      #dt_iter_convergence_res = rbindlist(lapply(internal$objects$raw_iter_objects, `[[`, "convergence_res"),idcol = "iter"),
       X_list = lapply(internal$iter_list, `[[`, "X"),
       dt_vS = lapply(internal$iter_list, `[[`, "dt_vS"),
       id_comb_feature_map = lapply(internal$iter_list, `[[`, "id_comb_feature_map")
