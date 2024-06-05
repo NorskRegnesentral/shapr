@@ -239,6 +239,7 @@ library(GGally)
 devtools::load_all(".")
 
 library(progressr) # Just to get progress
+progressr::handlers("cli") # To get progressr bar
 
 
 ```
@@ -346,10 +347,10 @@ print_time <- function(explanation_list) {
 }
 
 # Make beeswarm plots
-plot_beeswarms = function(explanation_list, title = "") {
+plot_beeswarms = function(explanation_list, title = "", ...) {
   # Make the beeswarm plots
   grobs = lapply(seq(length(explanation_list)), function(explanation_idx) {
-    gg = plot(explanation_list[[explanation_idx]], plot_type = "beeswarm") +
+    gg = plot(explanation_list[[explanation_idx]], plot_type = "beeswarm", ...) +
       ggtitle(names(explanation_list)[[explanation_idx]])
     
     # Flip the order such that the features comes in the right order
@@ -385,7 +386,6 @@ but any other approach can also be used.
 # list to store the results
 explanation_sym_con = list()
 
-progressr::handlers("cli") # To get progressr bar
 explanation_sym_con[["gaussian"]] <- progressr::with_progress({
   explain(
     model = model,
@@ -782,10 +782,12 @@ plot_SV_several_approaches(explanation_gaussian, index_x_explain)
 In this section, we demonstrate that we can compute marginal, asymmetric 
 conditional, and symmetric/asymmetric Shapley values for groups of features, too.
 The causal ordering has then has to specified on the group order and not on the 
-feature level.
+feature level. We demonstrate using the `gaussian` approach, but other approaches
+are applicable, too.
 
 In the pairs plot above (and below), we see that it can be natural to group the
-features `temp` and `atemp` due to their similarity/correlation. 
+features `temp` and `atemp` due to their (conceptual) similarity and high correlation. 
+
 
 ```{r group_cor, cache = TRUE}
 # It makes sense to group the "temp" and "atemp" due to their high correlation
@@ -793,7 +795,7 @@ cor(x_train[,4], x_train[,5])
 plot(x_train[,4], x_train[,5])
 ```
 
-We then set up the groups and update the causal ordering to be on the group level.
+We set up the groups and update the causal ordering to be on the group level.
 ```{r group_group, cache = TRUE}
 group_list <- list(
   trend = "trend",
@@ -804,33 +806,100 @@ group_list <- list(
   hum = "hum")
 
 causal_ordering_group = list("trend", c("cosyear", "sinyear"), c("temp_group", "windspeed", "hum"))
+confounding = c(FALSE, TRUE, FALSE)
 ```
 
 
-We illustrate 
-```{r asym_cau_group, cache = TRUE}
-explanation_asym_cau_group_gaussian <-
-    progressr::with_progress({
-      explain(
-        model = model,
-        x_train = x_train,
-        x_explain = x_explain,
-        approach = "gaussian",
-        prediction_zero = prediction_zero,
-        asymmetric = TRUE,
-        causal_ordering = causal_ordering_group,
-        confounding = confounding,
-        group = group_list
-      )
-    })
+We can then compute the Shapley values using the different Shapley value frameworks.
+```{r group_gaussian, cache = TRUE}
+explanation_group_gaussian = list()
 
+explanation_group_gaussian[["symmetric_marginal"]] <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    prediction_zero = prediction_zero,
+    asymmetric = FALSE, 
+    causal_ordering = list(seq(length(group_list))), # or `NULL`
+    confounding = TRUE,
+    group = group_list
+  )
+})
 
-index_x_explain
+explanation_group_gaussian[["symmetric_conditional"]] <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    prediction_zero = prediction_zero,
+    asymmetric = FALSE,
+    causal_ordering = list(seq(length(group_list))), # or `NULL` 
+    confounding = NULL,
+    group = group_list
+  )
+})
 
-explanation_asym_cau_group_gaussian$internal$objects$X
-sina_plot(explanation_asym_cau_group_gaussian)
-plot(explanation_asym_cau_group_gaussian, index_x_explain = 1:6)
+explanation_group_gaussian[["asymmetric_conditional"]] <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    prediction_zero = prediction_zero,
+    asymmetric = TRUE,
+    causal_ordering = causal_ordering_group,
+    confounding = NULL,
+    group = group_list
+  )
+})
+
+explanation_group_gaussian[["symmetric_causal"]] <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    prediction_zero = prediction_zero,
+    asymmetric = FALSE,
+    causal_ordering = causal_ordering_group,
+    confounding = confounding,
+    group = group_list
+  )
+})
+
+explanation_group_gaussian[["asymmetric_causal"]] <- progressr::with_progress({
+  explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    prediction_zero = prediction_zero,
+    asymmetric = TRUE,
+    causal_ordering = causal_ordering_group,
+    confounding = confounding,
+    group = group_list
+  )
+})
+
+# Look at the elapsed times
+print_time(explanation_group_gaussian)
 ```
+
+We then make the beeswarm plots and Shapley values plots for the six selected explicands.
+For the beeswarm plots, we set `groupwise_feature_means = TRUE` to make the plots. This means that
+we the plot function use the mean of the features in the groups.
+
+
+
+```{r group_gaussian_plot_SV, cache = TRUE, fig.height = 8, fig.width = 9}
+plot_beeswarms(explanation_group_gaussian, title = "Group Shapley values (gaussian)", groupwise_feature_means = TRUE)
+plot_SV_several_approaches(explanation_group_gaussian, index_x_explain, groupwise_feature_means = TRUE)
+```
+
+
 
 
 

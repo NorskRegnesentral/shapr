@@ -62,6 +62,8 @@
 #' Only used for `plot_type = "scatter"`.
 #' Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note that the
 #' bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.
+#' @param groupwise_feature_means Logical. If `FALSE` (default), then we do not include the feature values of
+#' the explicand on the y-axis. If `TRUE`, then we include the mean of the features in each group.
 #' @param ... Currently not used.
 #'
 #' @details See the examples below, or `vignette("understanding_shapr", package = "shapr")` for an examples of
@@ -167,6 +169,7 @@ plot.shapr <- function(x,
                        bar_plot_order = "largest_first",
                        scatter_features = NULL,
                        scatter_hist = TRUE,
+                       groupwise_feature_means = FALSE,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -184,6 +187,32 @@ plot.shapr <- function(x,
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
 
   is_groupwise <- x$internal$parameters$is_groupwise
+
+  # For groupwise Shapley values, we check if we are to take the mean over grouped features
+  if (is_groupwise) {
+    if (is.na(groupwise_feature_means) || !is.logical(groupwise_feature_means) || length(groupwise_feature_means) > 1){
+      stop("`groupwise_feature_means` must be single logical.")
+    }
+    if (!groupwise_feature_means && plot_type %in% c("scatter", "beeswarm")) {
+      stop(paste0("`shapr` cannot make a `", plot_type, "` plot for group-wise Shapley values, as the plot needs a ",
+                  "single feature value for the whole group.\n",
+                  "For numerical data, the user can set `groupwise_feature_means = TRUE` to use the mean of all ",
+                  "grouped features. The user should use this option cautiously."))
+    }
+
+    if (any(x$internal$objects$feature_specs$classes != "numeric")) {
+      stop("`groupwise_feature_means` cannot be `TRUE` for datasets with non-numerical features.")
+    }
+
+    # Take the mean over the grouped features and update the feature name to the group name
+    x$internal$data$x_explain <-
+      x$internal$data$x_explain[, lapply(x$internal$parameters$group,
+                                         function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE))]
+
+    x$internal$data$x_train <-
+      x$internal$data$x_train[, lapply(x$internal$parameters$group,
+                                         function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE))]
+  }
 
   # melting Kshap
   shap_names <- colnames(x$shapley_values)[-1]
