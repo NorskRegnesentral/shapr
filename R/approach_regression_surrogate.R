@@ -3,7 +3,7 @@
 #'
 #' @inheritParams default_doc_explain
 #' @inheritParams setup_approach.regression_separate
-#' @param regression.surrogate_n_comb Integer (default is `internal$parameters$used_n_combinations`) specifying the
+#' @param regression.surrogate_n_comb Integer (default is `internal$parameters$used_n_combinations - 2`) specifying the
 #' number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
 #' "`internal$parameters$used_n_combinations` - 2". By default, we use all coalitions, but this can take a lot of memory
 #' in larger dimensions. Note that by "all", we mean all coalitions chosen by `shapr` to be used. This will be all
