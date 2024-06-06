@@ -207,8 +207,9 @@ We demonstrate the frameworks on the [bike Sharing](https://archive.ics.uci.edu/
 dataset from the UCI Machine Learning Repository. We let the features be the
 number of days since January 2011 (`trend`), two cyclical variables representing
 the season (`cosyear`, `sinyear`), temperature (`temp`), feeling temperature
-(`atemp`), wind speed (`windspeed`), and humidity (`hum`). The bike rental is
-strongly seasonal and shows an upward trend, as illustrated in the figure below.
+(`atemp`), wind speed (`windspeed`), and humidity (`hum`). The first three features
+are considered to be a potential cause of the four weather-related features.
+The bike rental is strongly seasonal and shows an upward trend, as illustrated in the figure below.
 The bike data is split randomly into a training (80%) and test/explicand (20%) set.
 We trained an `XGBoost` model for 100 rounds with default variables to act as the model
 we want to explain.
@@ -343,7 +344,7 @@ print_MSEv_scores_and_time <- function(explanation_list) {
 
 # Print the full time information
 print_time <- function(explanation_list) {
-  t(sapply(explanation_asym_cau, function(explanation) explanation$timing$timing_secs))
+  t(sapply(explanation_list, function(explanation) explanation$timing$timing_secs))
 }
 
 # Make beeswarm plots
@@ -776,6 +777,195 @@ explanation_gaussian = list(
 plot_SV_several_approaches(explanation_gaussian, index_x_explain)
 ```
 
+## Scatter plots: marginal vs. causal Shapley values
+In this section, we produce scatter plots comparing the symmetric marginal
+and symmetric causal Shapley values for the temperature feature `temp` and
+the seasonal feature `cosyear` for all explicands. The plots shows that the
+marginal Shapley values almost purely explain the predictions based on
+temperature, while the causal Shapley values also give credit to season. 
+We can change the features and frameworks in the code below, but we chose
+these values to replicate Figure 3 in @heskes2020causal.
+
+
+```{r scatter_plots, cache = TRUE, fig.height=6, fig.width = 6}
+# The color of the points
+color = "temp"
+
+# The features we want to compare
+feature_1 = "cosyear"
+feature_2 = "temp"
+
+# The Shapley value frameworks we want to compare
+sv_framework_1 = explanation_sym_marg[["gaussian"]]
+sv_framework_1_str = "Marginal SV"
+sv_framework_2 = explanation_sym_cau[["gaussian"]]
+sv_framework_2_str = "Causal SV"
+
+# Set up the data.frame we are going to plot
+sv_correlation_df <- data.frame(
+  color = x_explain[, color],
+  sv_framework_1_feature_1 = sv_framework_1$shapley_values[[feature_1]],
+  sv_framework_2_feature_1 = sv_framework_2$shapley_values[[feature_1]],
+  sv_framework_1_feature_2 = sv_framework_1$shapley_values[[feature_2]],
+  sv_framework_2_feature_2 = sv_framework_2$shapley_values[[feature_2]]
+)
+
+# Make the plots
+scatterplot_topleft <-
+  ggplot(sv_correlation_df, aes(x = sv_framework_1_feature_2, y = sv_framework_1_feature_1, color = color)) +
+  geom_point(size = 1) +
+  xlab(paste(sv_framework_1_str, feature_2)) +
+  ylab(paste(sv_framework_1_str, feature_1))+
+  scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
+  scale_y_continuous(limits = c(-500, 500), breaks = c(-500, 0, 500))  +
+  scale_color_gradient(low="blue", high="red") +
+  theme_minimal() +
+  theme(text = element_text(size = 12),
+        axis.text.x = element_blank(), axis.text.y = element_text(size = 12),
+        axis.ticks.x = element_blank(), axis.title.x = element_blank())
+
+scatterplot_topright <-
+  ggplot(sv_correlation_df, aes(x = sv_framework_2_feature_1, y = sv_framework_1_feature_1, color = color)) +
+  geom_point(size = 1) + scale_color_gradient(low="blue", high="red") +
+  xlab(paste(sv_framework_2_str, feature_1)) +
+  ylab(paste(sv_framework_1_str, feature_1)) +
+  scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
+  scale_y_continuous(limits = c(-500, 500), breaks = c(-500, 0, 500)) +
+  theme_minimal() +
+  theme(text = element_text(size=12), axis.title.x = element_blank(), axis.title.y=element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+scatterplot_bottomleft <-
+  ggplot(sv_correlation_df, aes(x = sv_framework_1_feature_2, y = sv_framework_2_feature_2, color = color)) +
+  geom_point(size = 1) + scale_color_gradient(low="blue", high="red") +
+  xlab(paste(sv_framework_1_str, feature_2)) +
+  ylab(paste(sv_framework_2_str, feature_2)) +
+  scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
+  scale_y_continuous(limits = c(-1000, 1000), breaks = c(-500, 0, 500))  +
+  theme_minimal() +
+  theme(text = element_text(size=12),
+        axis.text.x = element_text(size=12), axis.text.y = element_text(size=12))
+
+scatterplot_bottomright <-
+  ggplot(sv_correlation_df, aes(x = sv_framework_2_feature_1, y = sv_framework_2_feature_2, color = color)) +
+  geom_point(size = 1) +
+  xlab(paste(sv_framework_2_str, feature_1)) +
+  ylab(paste(sv_framework_2_str, feature_2)) +
+  scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
+  scale_y_continuous(limits = c(-1000, 1000), breaks = c(-500, 0, 500))  +
+  scale_color_gradient(low="blue", high="red")+
+  theme_minimal() +
+  theme(text = element_text(size=12), axis.text.x=element_text(size=12),
+        axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+# Plot of the trend of the data
+bike_plot_new <- ggplot(bike, aes(x = trend, y = cnt, color = get(color))) +
+  geom_point(size = 0.75) + scale_color_gradient(low = "blue", high = "red") +
+  labs(color = color) +
+  xlab( "Days since 1 January 2011") + ylab("Number of bikes rented") +
+  theme_minimal() +
+  theme(legend.position = "right", legend.title = element_text(size = 10))
+
+# Combine the plots
+plot(ggpubr::ggarrange(
+  bike_plot_new,
+  ggpubr::ggarrange(
+    scatterplot_topleft,
+    scatterplot_topright,
+    scatterplot_bottomleft,
+    scatterplot_bottomright,
+    legend = "none"),
+  nrow = 2, heights = c(1,2)))
+```
+
+## Looking at two dates
+
+We investigate the difference between symmetric/asymmetric conditional, symmetric/asymmetric causal, and
+marginal Shapley values  for two days: October 10 and December 3, 2012. They have more or less the same
+temperature of 13 and 13.27 degrees Celsius, and predicted bike counts of 6117 and 6241, respectively.
+The figure below is an extension of Figure 4 in @heskes2020causal, as they only included asymmetric
+conditional, symmetric causal, and marginal Shapley values.
+
+We plot the various Shapley values for the `cosyear` and `temp` features below. We obtain the same results
+as @heskes2020causal obtained, namely, that the marginal Shapley values similar explanation for both days.
+I.e., it only considers the direct effect of `temp`. The asymmetric conditional and causal Shapley values
+are almost indistinguishable and put the most weight on the ‘root’ cause `cosyear`. @heskes2020causal
+states that the symmetric causal Shapley values provides a sensible balance the two extremes and gives
+credit to both season and temperature, but still different explanation for the two days.
+
+However, as we also include symmetric conditional Shapley values, we see that they are extremely similar
+to symmetric causal Shapley values. I.e., conditional Shapley values also provides a sensible balance
+between marginal and asymmetric Shapley values. To summarize: asymmetric conditional/causal Shapley
+values focus on the root cause, marginal Shapley values on the more direct effect, and symmetric 
+conditional/causal Shapley consider both for a more natural explanation.
+
+```{r two_dates_1, cache = TRUE, fig.height = 7, fig.width = 7}
+# Features of interest
+features = c("cosyear", "temp")
+
+# Get explicands with similar temperature: 2012-10-09 (October) and 2012-12-03 (December)
+dates = c("2012-10-09", "2012-12-03")
+dates_idx = sapply(dates, function(data) which(as.integer(row.names(x_explain)) == which(bike$dteday == data)))
+# predict(model, x_explain)[dates_idx] + mean(y_train_nc) # predicted values for the two points
+
+# List of the Shapley value explanations
+explanations = list("Sym. Mar." = explanation_sym_marg[["gaussian"]],
+                    "Sym. Con." = explanation_sym_con[["gaussian"]],
+                    "Sym. Cau." = explanation_sym_cau[["gaussian"]],
+                    "Asym. Con." = explanation_asym_con[["gaussian"]],
+                    "Asym. Cau." = explanation_asym_cau[["gaussian"]])
+
+# Extract the relevant Shapley values
+explanations_extracted = data.table::rbindlist(lapply(seq_along(explanations), function(idx) {
+  explanations[[idx]]$shapley_values[dates_idx, ..features][, `:=` (Date = dates, type = names(explanations)[idx])]
+}))
+
+# Set type to be a ordered factor
+explanations_extracted[, type := factor(type, levels = names(explanations), ordered = TRUE)]
+
+# Convert from wide to long data table
+dt_all = data.table::melt(explanations_extracted, id.vars = c("Date", "type"), variable.name = "feature")
+
+# Make the plot
+ggplot(dt_all, aes(x = feature, y = value, group = interaction(Date, feature),
+                                fill = Date, label = round(value, 2))) +
+  geom_col(position = "dodge") +
+  theme_classic() + ylab("Shapley value") +
+  facet_wrap(vars(type)) + theme(axis.title.x = element_blank()) +
+  scale_fill_manual(values = c('indianred4', 'ivory4')) +
+  theme(legend.position.inside = c(0.75, 0.25), axis.title = element_text(size = 20),
+        legend.title = element_text(size = 16), legend.text = element_text(size = 14),
+        axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 12),
+        strip.text.x = element_text(size = 14))
+```
+
+
+
+We can also make a similar plot using the `plot_SV_several_approaches` function in `shapr`,
+but then we get each explicand in a separate facet instead of a facet for each framework.
+```{r two_dates_2, cache = TRUE, fig.height = 7, fig.width = 7}
+# Here 2012-10-09 is the left facet and 2012-12-03 the right facet
+plot_SV_several_approaches(explanations,
+                           index_explicands = dates_idx,
+                           only_these_features = features, # Can include more features.
+                           facet_scales = "free_x", 
+                           horizontal_bars = FALSE, 
+                           axis_labels_n_dodge = 1)
+```
+
+Furthermore, instead of doing as @heskes2020causal and only considering the features
+`cosyear` and `temp`, we can plot all features, too, to get a more complete overview.
+```{r two_dates_3, cache = TRUE, fig.height = 5, fig.width = 10}
+# Here 2012-10-09 is the left facet and 2012-12-03 the right facet
+plot_SV_several_approaches(explanations,
+                           index_explicands = dates_idx,
+                           facet_scales = "free_x", 
+                           horizontal_bars = FALSE, 
+                           axis_labels_n_dodge = 2,
+                           digits = 2)
+```
+
 
 
 ## Groups of features
@@ -791,8 +981,7 @@ features `temp` and `atemp` due to their (conceptual) similarity and high correl
 
 ```{r group_cor, cache = TRUE}
 # It makes sense to group the "temp" and "atemp" due to their high correlation
-cor(x_train[,4], x_train[,5])
-plot(x_train[,4], x_train[,5])
+ggpairs(x_train[,4:5])
 ```
 
 We set up the groups and update the causal ordering to be on the group level.
@@ -884,22 +1073,33 @@ explanation_group_gaussian[["asymmetric_causal"]] <- progressr::with_progress({
   )
 })
 
-# Look at the elapsed times
+# Look at the elapsed times (symmetric takes the longest time)
 print_time(explanation_group_gaussian)
 ```
 
-We then make the beeswarm plots and Shapley values plots for the six selected explicands.
-For the beeswarm plots, we set `groupwise_feature_means = TRUE` to make the plots. This means that
-we the plot function use the mean of the features in the groups.
+We can then make the beeswarm plots and Shapley values plots for the six selected explicands.
+For the beeswarm plots, we set `groupwise_feature_means = TRUE` to make the plots.
+This means that the plot function use the mean of the `temp` and `atemp` features as the feature
+value. This only makes sense due to the high correlation between the two features.
 
+The main difference between the feature-wise and group-wise Shapley values 
+is that we now see a much wider spread in the Shapley values for `temp_group`
+then we did for `temp` and `atemp`.
+For example, for the symmetric causal framework, we saw above that the `temp` and `atemp`
+obtained Shapley values between (around) $-500$ to $500$, while the grouped version
+`temp_group` obtains shapley values between $-1000$ to $1000$
 
 
 ```{r group_gaussian_plot_SV, cache = TRUE, fig.height = 8, fig.width = 9}
 plot_beeswarms(explanation_group_gaussian, title = "Group Shapley values (gaussian)", groupwise_feature_means = TRUE)
-plot_SV_several_approaches(explanation_group_gaussian, index_x_explain, groupwise_feature_means = TRUE)
+plot_SV_several_approaches(explanation_group_gaussian, index_x_explain) +
+  ggtitle("Shapley value prediction explanation (gaussian)")
 ```
 
 
+
+
+## Sampling 
 
 
 
