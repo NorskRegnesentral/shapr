@@ -202,6 +202,7 @@ check_and_set_causal_ordering = function(internal) {
   causal_ordering = internal$parameters$causal_ordering
   is_groupwise = internal$parameters$is_groupwise
   group = internal$parameters$group
+  group_num = unname(internal$objects$group_num)
   labels = internal$objects$feature_specs$labels
 
   # Get the labels of the features or groups, and the number of them
@@ -225,6 +226,14 @@ check_and_set_causal_ordering = function(internal) {
   causal_ordering_vec_sort = sort(unlist(causal_ordering))
   if (length(causal_ordering_vec_sort) != m || any(causal_ordering_vec_sort != seq(m))) {
     stop("`causal_ordering` is incomplete/incorrect. It must contain all features or feature indices exactly once.\n")
+  }
+
+  # For groups we need to convert from group level to feature level
+  if (is_groupwise) {
+    causal_ordering_features = lapply(causal_ordering, function(component_i) unlist(group_num[component_i]))
+    causal_ordering_features_names = relist(labels[unlist(causal_ordering_features)], causal_ordering_features)
+    internal$parameters$causal_ordering_features = causal_ordering_features
+    internal$parameters$causal_ordering_features_names = causal_ordering_features_names
   }
 
   # Update the parameters in the internal list
@@ -253,6 +262,9 @@ check_and_set_causal_sampling <- function(internal) {
   if (internal$parameters$causal_sampling) {
     if (internal$parameters$regression) stop("Causal Shapley values is not applicable for regression approaches.\n")
     if (internal$parameters$n_approaches > 1) stop("Causal Shapley values is not applicable for combined approaches.\n")
+    if (internal$parameters$approach == "categorical") {
+      stop("Causal Shapley values is not applicable for the `categorical` approach.\n")
+    }
   }
 
   return(internal)

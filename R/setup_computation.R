@@ -132,6 +132,7 @@ shapley_setup <- function(internal) {
   asymmetric = internal$parameters$asymmetric
   causal_sampling = internal$parameters$causal_sampling
   causal_ordering = internal$parameters$causal_ordering
+  causal_ordering_features = internal$parameters$causal_ordering_features
   confounding = internal$parameters$confounding
 
   group_num <- internal$objects$group_num
@@ -179,6 +180,11 @@ shapley_setup <- function(internal) {
 
   # If we are doing asymmetric Shapley values, then get the step-wise data generating process for each combination
   if (causal_sampling) {
+    # TODO: could also do this mapping in prepare_data_causal, but then we would have to map many times.
+    # Now we do it once, and we are done with it.
+    # For groupwise, causal_ordering is on the group level, but for the steps we want to know which features
+    # to include in
+    causal_ordering = if (is_groupwise) causal_ordering_features else causal_ordering
     S_causal_steps = get_S_causal_steps(S = S, causal_ordering = causal_ordering, confounding = confounding)
     S_causal_steps_strings =
       get_S_causal_steps(S = S, causal_ordering = causal_ordering, confounding = confounding, as_string = TRUE)
