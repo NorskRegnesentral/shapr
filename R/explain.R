@@ -365,13 +365,12 @@ explain <- function(model,
   # Adaptive approach
   # TODO: The below should probably be moved to a separate function in the end
 
-  converged <- FALSE
 
   if(isTRUE(internal$parameters$adaptive)){
     ### for now we just some of the parameters here
     initial_n_combinations <- min(200,ceiling((2^internal$parameters$n_features)/10))
     max_iter <- 20
-    reduction_factor <- seq(0.1,1,by=0.1) # Proportion of estimated remaining samples to use in next iteration
+    reduction_factor_vec <- c(seq(0.1,1,by=0.1),rep(1,max_iter-10)) # Proportion of estimated remaining samples to use in next iteration
     convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
 
 
@@ -380,136 +379,64 @@ explain <- function(model,
 
   } else {
     # The regular, non-iterative approach
+    initial_n_combinations <- internal$parameters$n_combinations
     max_iter <- 1
     convergence_tolerance <- NULL
+    reduction_factor_vec <- NULL
 
 
   }
 
-    internal <- setup_approach(internal, model = model, predict_model = predict_model)
-    internal$parameters$shapley_reweighting <- shapley_reweighting
+  converged <- FALSE
 
-    internal$parameters$max_iter <- max_iter
-    internal$parameters$n_boot_samps <- n_boot_samps
+  #internal <- setup_approach(internal, model = model, predict_model = predict_model)
+  internal$parameters$shapley_reweighting <- shapley_reweighting
 
-    internal$iter_list <- list()
-    iter <- 1
-    internal$iter_list[[iter]] <- list(
-      converged = FALSE,
-      n_combinations = initial_n_combinations,
-      compute_sd = ifelse(internal$parameters$exact==FALSE,TRUE,FALSE)
-    )
+  internal$parameters$max_iter <- max_iter
+  internal$parameters$n_boot_samps <- n_boot_samps
+  internal$parameters$reduction_factor_vec <- reduction_factor_vec
+
+  internal$iter_list <- list()
+  iter <- 0
+  internal$iter_list[[1]] <- list(
+    n_combinations = initial_n_combinations,
+    exact = FALSE,
+    compute_sd = ifelse(internal$parameters$exact==FALSE,TRUE,FALSE),
+    reduction_factor = internal$parameters$reduction_factor_vec[1]
+  )
 
     while(converged==FALSE){
+      iter <- iter + 1
 
       internal$parameters$n_combinations <- internal$iter_list[[iter]]$n_combinations # to simplify internal function extracting this parameter
 
       # setup the Shapley framework
       internal <- shapley_setup(internal)
-      #internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make tests pass for nonadaptive approach
+      internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make all tests pass for nonadaptive approach
 
-
-      browser()
-
+      # Compute the vS
       vS_list <- compute_vS(internal, model, predict_model)
 
+      # Compute shapley value estimated and bootstrapped standard deviations
       internal <- compute_estimates(internal, vS_list)
 
-      convergence_res <-  check_convergence(internal, convergence_tolerance)
+      # Check convergence based on estimates and standard deviations (and thresholds)
+      internal <-  check_convergence(internal, convergence_tolerance)
 
-      internal$iter_list[[iter]]$convergence_res = convergence_res
+      # Preparing parameters for next iteration (does not do anything if already converged)
+      internal <- prepare_next_iteration(internal)
 
-      converged <- convergence_res$converged
-      estimated_remaining_samples <- convergence_res$estimated_remaining_samples
-      estimated_required_samples <- convergence_res$estimated_required_samples
-      n_current_samples <- convergence_res$n_current_samples
+      # Printing iteration information
+      print_iter(internal,print_iter_info,print_shapleyres)
 
-
-      ### just temporary setting results here, before I make the below into a function ###
-
-      dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
-      dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
-
-      if(converged==FALSE){
-
-        # Updating parameters etc for the next iteration of the process
-
-        internal$parameters$n_combinations <- ceiling(estimated_remaining_samples*reduction_factor[iter])
-        unique_feature_samples <- internal$objects$X[-c(1,.N),features]
-
-        internal$objects$prev_id_comb_feature_map <- internal$objects$id_comb_feature_map
-        internal$objects$prev_vS_list <- vS_list
-
-        if((n_current_samples+internal$parameters$n_combinations)>=2^internal$parameters$n_features){
-          # Settings for next iteration
-          internal$parameters$exact = TRUE # Use all coalitions in the last iteration as the estimated number of samples is more than what remains
-          internal$parameters$n_combinations <- 2^internal$parameters$n_features - n_current_samples
-          internal$parameters$compute_sd <- FALSE
-        } else { # Else, sample more keeping the current samples
-          repetitions <- internal$objects$X[-c(1,.N),sample_freq]
-          internal$parameters$prev_feature_sample <- unlist(lapply(seq_along(unique_feature_samples),
-                                                                   function(i) rep(list(unique_feature_samples[[i]]),
-                                                                                   repetitions[i])),
-                                                            recursive = FALSE)
-        }
-
-        if(print_iter_info){
-          cat(paste0("\nIteration ", iter, "\n",
-                     "Not converged after ", n_current_samples, " samples.\n",
-                     "Estimated remaining samples: ", estimated_remaining_samples, "\n",
-                     "Estimated required samples: ", estimated_required_samples, "\n",
-                     "Adding ", internal$parameters$n_combinations, " new samples in the next iteration.\n"))
-        }
-
-        if(iter>= length(reduction_factor)){
-          reduction_factor[iter+1] <- reduction_factor[iter]
-        }
-
-
-      } else {
-        if(print_iter_info){
-          cat("\nConvergence reached!\n")
-        }
-      }
-
-
-      # Printing the current Shapley values
-      matrix1 <- format(round(dt_shapley_est,3),nsmall=2,justify = "right")
-      matrix2 <- format(round(dt_shapley_sd,2),nsmall=2,justify = "right")
-
-      if(print_shapleyres){
-        cat("Current estimated Shapley values [sd]:\n")
-        print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2,") ", sep = ""), nrow = internal$parameters$n_explain))
-        names(print_dt) <- names(dt_shapley_est)
-        print(print_dt)
-      }
-
-
-      # Adding explain_id to the output dt
-      dt_shapley_est[,explain_id:=.I]
-      setcolorder(dt_shapley_est,"explain_id")
-      dt_shapley_sd[,explain_id:=.I]
-      setcolorder(dt_shapley_sd,"explain_id")
-
-
-
-
-      iter <- iter + 1
+      ### Setting globals for to simplify the loop
+      converged <- internal$iter_list[[iter]]$converged
 
     }
 
 
     # Rerun after convergence to get the same output format as for the non-adaptive approach
     output <- finalize_explanation(internal = internal)
-
-    output$internal$output$iter_results <- list(
-      dt_iter_shapley_est = rbindlist(lapply(internal$iter_list, `[[`, "dt_shapley_est"),idcol = "iter"),
-      dt_iter_shapley_sd = rbindlist(lapply(internal$iter_list, `[[`, "dt_shapley_sd"),idcol = "iter"),
-      X_list = lapply(internal$iter_list, `[[`, "X"),
-      dt_vS = lapply(internal$iter_list, `[[`, "dt_vS"),
-      id_comb_feature_map = lapply(internal$iter_list, `[[`, "id_comb_feature_map")
-    )
-
 
 #
 #     # Previous non-adaptive stuff below here

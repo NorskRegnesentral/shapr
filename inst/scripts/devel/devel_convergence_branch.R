@@ -1,5 +1,5 @@
 library(xgboost)
-library(shapr)
+#library(shapr)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -13,7 +13,7 @@ data[,new6 :=rnorm(.N)]
 data[,new7 :=rnorm(.N)]
 
 
-x_var <- c("Solar.R", "Wind", "Temp", "Month","Day","new1")#"new2","new3","new4","new5","new6","new7")
+x_var <- c("Solar.R", "Wind", "Temp", "Month","Day","new1")#,"new2","new3","new4","new5","new6","new7")
 y_var <- "Ozone"
 
 ind_x_explain <- 1:20

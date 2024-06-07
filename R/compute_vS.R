@@ -9,7 +9,6 @@
 #' @export
 compute_vS <- function(internal, model, predict_model, method = "future") {
   iter <- length(internal$iter_list)
-  iter_list <- internal$iter_list
 
   S_batch <- internal$iter_list[[iter]]$S_batch
 
@@ -33,10 +32,10 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   #### Adds v_S output above to any vS_list already computed ####
   ### Need to map the old id_combinations to the new numbers for this merging to work out
   if(iter>1){
-    prev_id_comb_feature_map <- iter_list[[iter-1]]$id_comb_feature_map
-    prev_vS_list <- this_iter_list[[iter-1]]$vS_list
+    prev_id_comb_feature_map <- internal$iter_list[[iter-1]]$id_comb_feature_map
+    prev_vS_list <- internal$iter_list[[iter-1]]$vS_list
 
-    current_id_comb_feature_map <- iter_list[[iter]]$id_comb_feature_map
+    current_id_comb_feature_map <- internal$iter_list[[iter]]$id_comb_feature_map
 
 
     # Creates a mapper from the last id_combination to the new id_combination numbering

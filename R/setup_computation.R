@@ -142,15 +142,16 @@ shapley_reweighting <- function(X,reweight = "on_N"){
 
 #' @keywords internal
 shapley_setup <- function(internal) {
-  exact <- internal$parameters$exact
   n_features0 <- internal$parameters$n_features
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling = internal$parameters$paired_shap_sampling
-  prev_feature_sample = internal$parameters$prev_feature_sample
   shapley_reweighting = internal$parameters$shapley_reweighting
+
   iter <- length(internal$iter_list)
 
   n_combinations <- internal$iter_list[[iter]]$n_combinations
+  exact <- internal$iter_list[[iter]]$exact
+  prev_feature_samples = internal$iter_list[[iter]]$prev_feature_samples
 
 
   group_num <- internal$objects$group_num
@@ -162,7 +163,7 @@ shapley_setup <- function(internal) {
     weight_zero_m = 10^6,
     group_num = group_num,
     paired_shap_sampling = paired_shap_sampling,
-    prev_feature_sample = prev_feature_sample
+    prev_feature_samples = prev_feature_samples
   )
 
   id_comb_feature_map <- X[, .(id_combination,
@@ -187,7 +188,7 @@ shapley_setup <- function(internal) {
 
   # Updating parameters$exact as done in feature_combinations
   if (!exact && n_combinations >= 2^n_features0) {
-    internal$parameters$exact <- TRUE
+    internal$iter_list[[iter]]$exact <- TRUE
   }
 
   internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used.
@@ -196,11 +197,16 @@ shapley_setup <- function(internal) {
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
 
-  internal$iter_list[[iter]]$X = X
-  internal$iter_list[[iter]]$W = W
-  internal$iter_list[[iter]]$S = S
-  internal$iter_list[[iter]]$id_comb_feature_map = id_comb_feature_map
-  internal$iter_list[[iter]]$S_batch = create_S_batch_new(internal)
+  internal$iter_list[[iter]]$X <- X
+  internal$iter_list[[iter]]$W <- W
+  internal$iter_list[[iter]]$S <- S
+  internal$iter_list[[iter]]$id_comb_feature_map <- id_comb_feature_map
+  internal$iter_list[[iter]]$S_batch <- create_S_batch_new(internal)
+
+  # Just temporary copies before I rewrite the code which uses these
+  internal$objects$X <- X
+  internal$objects$S <- S
+  internal$objects$W <- W
 
   return(internal)
 }
@@ -243,7 +249,7 @@ shapley_setup <- function(internal) {
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL,
-                                 paired_shap_sampling = TRUE, prev_feature_sample = NULL) {
+                                 paired_shap_sampling = TRUE, prev_feature_samples = NULL) {
   m_group <- length(group_num) # The number of groups
 
   # Force user to use a natural number for n_combinations if m > 13
@@ -315,7 +321,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
                               n_combinations,
                               weight_zero_m,
                               paired_shap_sampling = paired_shap_sampling,
-                              prev_feature_sample = prev_feature_sample)
+                              prev_feature_samples = prev_feature_samples)
       stopifnot(
         data.table::is.data.table(dt),
         !is.null(dt[["p"]])
@@ -358,16 +364,16 @@ feature_not_exact <- function(m,
                               weight_zero_m = 10^6,
                               unique_sampling = TRUE,
                               paired_shap_sampling = TRUE,
-                              prev_feature_sample = NULL) {
+                              prev_feature_samples = NULL) {
   # Find weights for given number of features ----------
   n_features <- seq(m - 1)
   n <- sapply(n_features, choose, n = m)
   w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
-  if(!is.null(prev_feature_sample)){
-    feature_sample_all <- prev_feature_sample
-    unique_samples <- length(unique(prev_feature_sample))
+  if(!is.null(prev_feature_samples)){
+    feature_sample_all <- prev_feature_samples
+    unique_samples <- length(unique(prev_feature_samples))
     n_combinations <- min(2^m,n_combinations + unique_samples + 2) # Adjusts for the the unique samples, zero and m samples
       } else {
     feature_sample_all <- list()
