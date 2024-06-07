@@ -365,7 +365,6 @@ explain <- function(model,
   # Adaptive approach
   # TODO: The below should probably be moved to a separate function in the end
 
-
   if(isTRUE(internal$parameters$adaptive)){
     ### for now we just some of the parameters here
     initial_n_combinations <- min(200,ceiling((2^internal$parameters$n_features)/10))
@@ -436,36 +435,6 @@ explain <- function(model,
 
     # Rerun after convergence to get the same output format as for the non-adaptive approach
     output <- finalize_explanation(internal = internal)
-
-#
-#     # Previous non-adaptive stuff below here
-#
-#     # Sets up the Shapley (sampling) framework and prepares the
-#     # conditional expectation computation for the chosen approach
-#     # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-#     internal <- setup_computation(internal, model, predict_model)
-#
-#     timing_list$setup_computation <- Sys.time()
-#
-#     # Compute the v(S):
-#     # MC:
-#     # 1. Get the samples for the conditional distributions with the specified approach
-#     # 2. Predict with these samples
-#     # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
-#     # Regression:
-#     # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
-#     vS_list <- compute_vS(internal, model, predict_model)
-#
-#     timing_list$compute_vS <- Sys.time()
-#
-#     # Compute Shapley values based on conditional expectations (v(S))
-#     # Organize function output
-#     output <- finalize_explanation(vS_list = vS_list, internal = internal)
-#
-#     timing_list$shapley_computation <- Sys.time()
-#
-#     # Compute the elapsed time for the different steps
-#     if (timing == TRUE) output$timing <- compute_time(timing_list)
 
 
   # Temporary to avoid failing tests
