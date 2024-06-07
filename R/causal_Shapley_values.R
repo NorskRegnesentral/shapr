@@ -171,7 +171,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
     # Create the empty data table which we are to populate with the Monte Carlo samples for each combination
     dt <- data.table(matrix(nrow = n_explain * n_samples, ncol = n_features))
-    dt[, names(dt) := lapply(.SD, as.factor)] # Needed for the categorical approach
+    if (approach == "categorical") dt[, names(dt) := lapply(.SD, as.factor)] # Needed for the categorical approach
     colnames(dt) <- feature_names
 
     # Populate the data table with the features we condition on
@@ -228,7 +228,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         internal_copy$objects$S[1, S_now] = 1
         internal_copy$objects$X = data.table(id_combination = 1, features = list(S_now), n_features = length(S_now))
 
-        if (apporach == "categorical") {
+        if (approach == "categorical") {
           # # Find which row in S the current set of conditional features corresponds to
           # # This will be the value of index_features in the prepare_data function
           S_now_binary <- rep(0, n_features)
