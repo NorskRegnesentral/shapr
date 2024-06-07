@@ -171,6 +171,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
     # Create the empty data table which we are to populate with the Monte Carlo samples for each combination
     dt <- data.table(matrix(nrow = n_explain * n_samples, ncol = n_features))
+    dt[, names(dt) := lapply(.SD, as.factor)] # Needed for the categorical approach
     colnames(dt) <- feature_names
 
     # Populate the data table with the features we condition on
@@ -221,21 +222,29 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
       } else {
         # Conditional distribution as there are variables to condition on
 
-        # # Find which row in S the current set of conditional features corresponds to
-        # # This will be the value of index_features in the prepare_data function
-        # S_now_binary <- rep(0, n_features)
-        # S_now_binary[S_now] <- 1
-        # S_row_now <- which(apply(S, 1, function(x) identical(x, S_now_binary)))
 
         # Create dummy versions of S and X only containing the current conditional features, and index_features is 1.
         internal_copy$objects$S = matrix(0, ncol = n_features, nrow = 1)
         internal_copy$objects$S[1, S_now] = 1
         internal_copy$objects$X = data.table(id_combination = 1, features = list(S_now), n_features = length(S_now))
 
+        if (apporach == "categorical") {
+          # # Find which row in S the current set of conditional features corresponds to
+          # # This will be the value of index_features in the prepare_data function
+          S_now_binary <- rep(0, n_features)
+          S_now_binary[S_now] <- 1
+          S_row_now <- which(apply(S, 1, function(x) identical(x, S_now_binary)))
+
+          internal_copy$objects$X = internal$objects$X[c(1, S_row_now, nrow(internal$objects$X)),]
+          internal_copy$objects$S = internal$objects$S[c(1, S_row_now, nrow(internal$objects$X)),]
+          internal_copy$data$x_explain = dt
+        }
+
         # Generate the MC samples conditioning on S_now
         dt_new <- prepare_data(internal_copy, index_features = 1, ...)
+        # dt_new[,.N, by = list(id, id_combination)]
 
-        if (approach %in% c("independence", "empirical", "ctree")) {
+        if (approach %in% c("independence", "empirical", "ctree", "categorical")) { #TODO. Include categorical or not?
           # These approaches produce weighted MC samples, i.e., the do not necessarily generate n_samples MC samples.
           # We ensure n_samples by weighted sampling with replacements those ids with less than n_samples MC samples.
           # message("Ensure n_samples")
