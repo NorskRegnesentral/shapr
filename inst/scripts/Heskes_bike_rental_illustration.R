@@ -335,16 +335,18 @@ gridExtra::grid.arrange(save_explanation_asymmetric_causal$plot + ggplot2::ggtit
 # 3 - Shapley value scatter plots (Figure 3) ------------------------------
 message("3. Producing scatter plots comparing marginal and causal Shapley values on the test set")
 sv_correlation_df <- data.frame(
-  valtemp = x_explain[, "temp"],
+  temp = x_explain[, "temp"],
   sv_marg_cosyear = explanation_marginal$shapley_values$cosyear,
   sv_caus_cosyear = explanation_causal$shapley_values$cosyear,
   sv_marg_temp = explanation_marginal$shapley_values$temp,
   sv_caus_temp = explanation_causal$shapley_values$temp
 )
 
+
+
 scatterplot_topleft <-
-  ggplot(sv_correlation_df, aes(x = sv_marg_temp, y = sv_marg_cosyear, color = valtemp)) +
-  geom_point(size = 1)+xlab("MSV temp")+ylab( "MSV cosyear")+
+  ggplot(sv_correlation_df, aes(x = sv_marg_temp, y = sv_marg_cosyear, color = temp)) +
+  geom_point(size = 1)+xlab("MargSV temp")+ylab( "MargSV cosyear")+
   scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
   scale_y_continuous(limits = c(-500, 500), breaks = c(-500, 0, 500))  +
   scale_color_gradient(low="blue", high="red") +
@@ -354,9 +356,9 @@ scatterplot_topleft <-
         axis.ticks.x = element_blank(), axis.title.x = element_blank())
 
 scatterplot_topright <-
-  ggplot(sv_correlation_df, aes(x = sv_caus_cosyear, y = sv_marg_cosyear, color = valtemp)) +
+  ggplot(sv_correlation_df, aes(x = sv_caus_cosyear, y = sv_marg_cosyear, color = temp)) +
   geom_point(size = 1) + scale_color_gradient(low="blue", high="red") +
-  xlab("CSV cosyear") + ylab("MSV cosyear") +
+  xlab("CauSV cosyear") + ylab("MargSV cosyear") +
   scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
   scale_y_continuous(limits = c(-500, 500), breaks = c(-500, 0, 500)) +
   theme_minimal() +
@@ -365,9 +367,9 @@ scatterplot_topright <-
         axis.text.y = element_blank(), axis.ticks.y = element_blank())
 
 scatterplot_bottomleft <-
-  ggplot(sv_correlation_df, aes(x = sv_marg_temp, y = sv_caus_temp, color = valtemp)) +
+  ggplot(sv_correlation_df, aes(x = sv_marg_temp, y = sv_caus_temp, color = temp)) +
   geom_point(size = 1) + scale_color_gradient(low="blue", high="red") +
-  ylab( "CSV temp") + xlab("MSV temp") +
+  ylab( "CauSV temp") + xlab("MargSV temp") +
   scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
   scale_y_continuous(limits = c(-1000, 1000), breaks = c(-500, 0, 500))  +
   theme_minimal() +
@@ -375,8 +377,8 @@ scatterplot_bottomleft <-
         axis.text.x = element_text(size=12), axis.text.y = element_text(size=12))
 
 scatterplot_bottomright <-
-  ggplot(sv_correlation_df, aes(x = sv_caus_cosyear, y = sv_caus_temp, color = valtemp)) +
-  geom_point(size = 1) + ylab("CSV temp") + xlab( "CSV cosyear") +
+  ggplot(sv_correlation_df, aes(x = sv_caus_cosyear, y = sv_caus_temp, color = temp)) +
+  geom_point(size = 1) + ylab("CauSV temp") + xlab( "CauSV cosyear") +
   scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
   scale_y_continuous(limits = c(-1000, 1000), breaks = c(-500, 0, 500))  +
   scale_color_gradient(low="blue", high="red")+
@@ -384,14 +386,32 @@ scatterplot_bottomright <-
   theme(text = element_text(size=12), axis.text.x=element_text(size=12),
         axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
 
-grid_top <- ggarrange(scatterplot_topleft, scatterplot_topright, legend = "none")
-grid_bottom <- ggarrange(scatterplot_bottomleft, scatterplot_bottomright, legend = "none")
+grid_top <- gridExtra::grid.arrange(scatterplot_topleft, scatterplot_topright, ncol = 2)
+grid_bottom <- gridExtra::grid.arrange(scatterplot_bottomleft, scatterplot_bottomright, legend = "none")
+
+grid_top <- ggpubr::ggarrange(scatterplot_topleft, scatterplot_topright, legend = "none")
+grid_bottom <- ggpubr::ggarrange(scatterplot_bottomleft, scatterplot_bottomright, legend = "none")
+
+bike_plot <- ggplot(bike, aes(x = trend, y = cnt, color = temp)) +
+  geom_point(size = 0.75) + scale_color_gradient(low = "blue", high = "red") +
+  labs(colour = "temp") +
+  xlab( "Days since 1 January 2011") + ylab("Number of bikes rented") +
+  theme_minimal() +
+  theme(legend.position = "right", legend.title = element_text(size = 10))
+
+p1 = ggpubr::ggarrange(scatterplot_topleft,
+                  scatterplot_topright,
+                  scatterplot_bottomleft,
+                  scatterplot_bottomright,
+                  legend = "none")
+
+ggpubr::ggarrange(bike_plot, p1, nrow = 2, heights = c(1,2))
 
 if (save_plots) {
   ggsave("figures/scatter_plots_top.pdf", grid_top, width = 5, height = 1)
   ggsave("figures/scatter_plots_bottom.pdf", grid_bottom, width = 5, height = 2)
 } else {
-  print(ggarrange(grid_top, grid_bottom, nrow = 2))
+  print(ggpubr::ggarrange(grid_top, grid_bottom, nrow = 2))
 }
 
 
@@ -401,34 +421,20 @@ message("4. Producing bar plots comparing marginal, causal, and asymmetric condi
 # Get test set index for two data points with similar temperature
 # 1. 2012-10-09 (October)
 # 2. 2012-12-03 (December)
-
-october <- which(as.integer(row.names(x_explain)) == which(bike$dteday == "2012-10-09"))
-december <- which(as.integer(row.names(x_explain)) == which(bike$dteday == "2012-12-03"))
-
+features = c("cosyear", "temp")
+dates = c("2012-10-09", "2012-12-03")
+dates_idx = sapply(dates, function(data) which(as.integer(row.names(x_explain)) == which(bike$dteday == data)))
 # predicted values for the two points
-# predict(model, x_explain)[c(october, december)] + mean(y_train_nc)
+# predict(model, x_explain)[dates_idx] + mean(y_train_nc)
 
-dt_marginal <- explanation_marginal$shapley_values %>%
-  dplyr::slice(c(october, december)) %>%
-  select(cosyear, temp) %>%
-  mutate(date = c("2012-10-09", "2012-12-03"), type = 'Marginal')
+explanations = list("Marginal" = explanation_marginal, "Causal" = explanation_causal)
+explanations_extracted = data.table::rbindlist(lapply(seq_along(explanations), function(idx) {
+  explanations[[idx]]$shapley_values[dates_idx, ..features][, `:=` (Date = dates, type = names(explanations)[idx])]
+}))
 
-dt_causal <- explanation_causal$shapley_values %>%
-  dplyr::slice(c(october, december)) %>%
-  select(cosyear, temp) %>%
-  mutate(date = c("2012-10-09", "2012-12-03"), type = 'Causal')
-
-dt_asymmetric <- explanation_asymmetric$shapley_values %>%
-  dplyr::slice(c(october, december)) %>%
-  select(cosyear, temp) %>%
-  mutate(date = c("2012-10-09", "2012-12-03"), type = 'Asymmetric')
-
-dt_all <- dt_marginal %>% pivot_longer(c(cosyear, temp)) %>%
-  rbind(dt_causal %>% pivot_longer(c(cosyear, temp))) %>%
-  rbind(dt_asymmetric %>% pivot_longer(c(cosyear, temp)))
-
-bar_plots <- ggplot(dt_all, aes(x = name, y = value, group = interaction(date, name),
-                                fill = date, label = round(value, 2))) +
+dt_all = data.table::melt(explanations_extracted, id.vars = c("Date", "type"), variable.name = "feature")
+bar_plots <- ggplot(dt_all, aes(x = feature, y = value, group = interaction(Date, feature),
+                                fill = Date, label = round(value, 2))) +
   geom_col(position = "dodge") +
   theme_classic() + ylab("Shapley value") +
   facet_wrap(vars(type)) + theme(axis.title.x = element_blank()) +
@@ -446,6 +452,8 @@ if (save_plots) {
 }
 
 
+plot_SV_several_approaches(explanations, index_explicands = dates_idx, only_these_features = features, facet_ncol = 1,
+                           facet_scales = "free_y")
 
 
 
