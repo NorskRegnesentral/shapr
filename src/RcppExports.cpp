@@ -121,6 +121,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// prepare_data_copula_cpp_caus
+arma::mat prepare_data_copula_cpp_caus(const arma::mat& MC_samples_mat, const arma::mat& x_explain_mat, const arma::mat& x_explain_gaussian_mat, const arma::mat& x_train_mat, const arma::mat& S, const arma::vec& mu, const arma::mat& cov_mat);
+RcppExport SEXP _shapr_prepare_data_copula_cpp_caus(SEXP MC_samples_matSEXP, SEXP x_explain_matSEXP, SEXP x_explain_gaussian_matSEXP, SEXP x_train_matSEXP, SEXP SSEXP, SEXP muSEXP, SEXP cov_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type MC_samples_mat(MC_samples_matSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x_explain_mat(x_explain_matSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x_explain_gaussian_mat(x_explain_gaussian_matSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x_train_mat(x_train_matSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type cov_mat(cov_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(prepare_data_copula_cpp_caus(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat));
+    return rcpp_result_gen;
+END_RCPP
+}
 // prepare_data_gaussian_cpp
 arma::cube prepare_data_gaussian_cpp(const arma::mat& MC_samples_mat, const arma::mat& x_explain_mat, const arma::mat& S, const arma::vec& mu, const arma::mat& cov_mat);
 RcppExport SEXP _shapr_prepare_data_gaussian_cpp(SEXP MC_samples_matSEXP, SEXP x_explain_matSEXP, SEXP SSEXP, SEXP muSEXP, SEXP cov_matSEXP) {
@@ -133,6 +150,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type mu(muSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type cov_mat(cov_matSEXP);
     rcpp_result_gen = Rcpp::wrap(prepare_data_gaussian_cpp(MC_samples_mat, x_explain_mat, S, mu, cov_mat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// prepare_data_gaussian_cpp_caus
+arma::mat prepare_data_gaussian_cpp_caus(const arma::mat& MC_samples_mat, const arma::mat& x_explain_mat, const arma::mat& S, const arma::vec& mu, const arma::mat& cov_mat);
+RcppExport SEXP _shapr_prepare_data_gaussian_cpp_caus(SEXP MC_samples_matSEXP, SEXP x_explain_matSEXP, SEXP SSEXP, SEXP muSEXP, SEXP cov_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type MC_samples_mat(MC_samples_matSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x_explain_mat(x_explain_matSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type cov_mat(cov_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(prepare_data_gaussian_cpp_caus(MC_samples_mat, x_explain_mat, S, mu, cov_mat));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -214,7 +246,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_quantile_type7_cpp", (DL_FUNC) &_shapr_quantile_type7_cpp, 2},
     {"_shapr_inv_gaussian_transform_cpp", (DL_FUNC) &_shapr_inv_gaussian_transform_cpp, 2},
     {"_shapr_prepare_data_copula_cpp", (DL_FUNC) &_shapr_prepare_data_copula_cpp, 7},
+    {"_shapr_prepare_data_copula_cpp_caus", (DL_FUNC) &_shapr_prepare_data_copula_cpp_caus, 7},
     {"_shapr_prepare_data_gaussian_cpp", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp, 5},
+    {"_shapr_prepare_data_gaussian_cpp_caus", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp_caus, 5},
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
     {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},

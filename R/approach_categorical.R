@@ -99,12 +99,14 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   X <- internal$objects$X
   S <- internal$objects$S
 
+  # TODO: Remove `features` below as they are not used in this function, the same with `X` above.
   if (is.null(index_features)) { # 2,3
     features <- X$features # list of [1], [2], [2, 3]
   } else {
     features <- X$features[index_features] # list of [1],
   }
   feature_names <- internal$parameters$feature_names
+
 
   # 3 id columns: id, id_combination, and id_all
   # id: for each x_explain observation
@@ -195,5 +197,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   # dt[n_features %in% c(0, ncol(x_explain)), w := 1.0]
   dt[id_combination %in% c(1, 2^ncol(x_explain)), w := 1.0]
   ret_col <- c("id_combination", "id", feature_names, "w")
+
+  # TODO: Update function such that we only compute the relevant combinations above
   return(dt[id_combination %in% index_features, mget(ret_col)])
 }
