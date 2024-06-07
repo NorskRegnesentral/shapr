@@ -387,7 +387,7 @@ explain <- function(model,
 
   converged <- FALSE
 
-  #internal <- setup_approach(internal, model = model, predict_model = predict_model)
+  internal <- setup_approach(internal, model = model, predict_model = predict_model)
   internal$parameters$shapley_reweighting <- shapley_reweighting
 
   internal$parameters$max_iter <- max_iter
@@ -410,7 +410,7 @@ explain <- function(model,
 
       # setup the Shapley framework
       internal <- shapley_setup(internal)
-      internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make all tests pass for nonadaptive approach
+#      internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make all tests pass for nonadaptive approach
 
       # Compute the vS
       vS_list <- compute_vS(internal, model, predict_model)
