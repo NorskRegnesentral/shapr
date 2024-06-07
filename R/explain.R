@@ -373,7 +373,6 @@ explain <- function(model,
     reduction_factor_vec <- c(seq(0.1,1,by=0.1),rep(1,max_iter-10)) # Proportion of estimated remaining samples to use in next iteration
     convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
 
-
     internal$parameters$n_combinations <- initial_n_combinations
 
 
@@ -400,7 +399,7 @@ explain <- function(model,
   iter <- 0
   internal$iter_list[[1]] <- list(
     n_combinations = initial_n_combinations,
-    exact = FALSE,
+    exact = internal$parameters$exact,
     compute_sd = ifelse(internal$parameters$exact==FALSE,TRUE,FALSE),
     reduction_factor = internal$parameters$reduction_factor_vec[1]
   )

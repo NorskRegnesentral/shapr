@@ -9,9 +9,10 @@ explain(
   x_explain,
   x_train,
   approach,
+  paired_shap_sampling = FALSE,
   prediction_zero,
   n_combinations = NULL,
-  adaptive = TRUE,
+  adaptive = FALSE,
   group = NULL,
   n_samples = 1000,
   n_batches = NULL,
@@ -22,6 +23,10 @@ explain(
   MSEv_uniform_comb_weights = TRUE,
   timing = TRUE,
   verbose = 0,
+  n_boot_samps = 100,
+  print_shapleyres = FALSE,
+  print_iter_info = FALSE,
+  shapley_reweighting = "none",
   ...
 )
 }
