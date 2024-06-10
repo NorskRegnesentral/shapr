@@ -78,12 +78,6 @@ approach = "gaussian"
 gaussian.mu <- mu
 gaussian.cov_mat <- Sigma
 
-ctree.mincriterion = 0.95
-ctree.minsplit = 20
-ctree.minbucket = 7
-ctree.sample = TRUE
-
-
 # Reduce if < 10% prob of shapval > 0.2
 shapley_threshold_val <-  0.2
 shapley_threshold_prob <- 0.1
