@@ -67,16 +67,22 @@ cutoff_feats <- paste0("VV",1:12)
 ### Need to create an lm analogoue to pred_mod_xgb here
 
 
-# ctree.mincriterion = 0.95
-# ctree.minsplit = 20
-# ctree.minbucket = 7
-# ctree.sample = TRUE
+set.seed(123)
 
 
-# n_samples <- 1000
-# approach = "gaussian"
-# gaussian.mu <- mu
-# gaussian.cov_mat <- Sigma
+
+# These are the parameters for for interative_kshap_func
+n_samples <- 1000
+approach = "gaussian"
+
+gaussian.mu <- mu
+gaussian.cov_mat <- Sigma
+
+ctree.mincriterion = 0.95
+ctree.minsplit = 20
+ctree.minbucket = 7
+ctree.sample = TRUE
+
 
 # Reduce if < 10% prob of shapval > 0.2
 shapley_threshold_val <-  0.2
