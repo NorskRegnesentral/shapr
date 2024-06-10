@@ -372,15 +372,23 @@ iterative_kshap_func <- function(model,
                                  initial_n_combinations = min(20,2^length(cutoff_feats)-2), # Number of features combinations to be used in the first iteration
                                  n_combinations_per_iter = 10, # Number of feature combination per iteration (where shapley values + variance is estimated and we test for reduction)
                                  n_boot_ests = 50, # Number of bootstrap datasets to be used to estimate the variance of the shapley values
-                                 unique_sampling = TRUE, # Whether to initial_n_combinations and n_combinations_per_iter refert to the number of unique samples (TRUE) or the total number of samples (FALSE)
+                                 unique_sampling = TRUE, # Whether to initial_n_combinations and n_combinations_per_iter refer to the number of unique samples (TRUE) or the total number of samples (FALSE)
                                  paired_sampling = TRUE, # whether the feature combinations should be sampled in a paired way (this also effects the bootstrap estimation)
-                                 shapley_reweighting_strategy = "on_N", # How to reweight the shapley values ("on_N", "on_n_features", "on_all", "none" are the differnet options. See the shapley_reweighting function for details)
+                                 shapley_reweighting_strategy = "on_N", # How to reweight the shapley values ("on_N", "on_n_features", "on_all", "none" are the different options. See the shapley_reweighting function for details)
                                  full_pred, # The full prediction value to decompose
                                  shapsum_other_features, # The sum of the shapley values of the features not in cutoff_feats (this is excluded from the decomposition onto the cutoff_feats
                                  p0, # The mean prediction not decomposed to any features
                                  shapley_threshold_val = 0.1, # Upper threshold for when to remove a feature value from further shapley computation
                                  shapley_threshold_prob = 0.1, # Required certainty that the shapley value exceeds shapley_threshold_val when cutting it off. (I.e. a feature j is removed if # Reduce if P(\phi_j > shapley_threshold_val) < shapley_threshold_prob) )
-                                 approach ="ctree"){ # Approach used to estimate the shapley values
+                                 approach ="ctree", # Approach used to estimate the shapley values
+                                 n_samples = 1000, # Number of samples used in the Gaussian method
+                                 gaussian.mu = NULL, # The mean of the Gaussian distribution used in the Gaussian method
+                                 gaussian.cov_mat = NULL, # The covariance matrix of the Gaussian distribution used in the Gaussian method
+                                 ctree.mincriterion = 0.95, # The minimum criterion for the ctree method
+                                 ctree.minsplit = 20, # The minimum split for the ctree method
+                                 ctree.minbucket = 7, # The minimum bucket for the ctree method
+                                 ctree.sample = TRUE # Whether to sample in the ctree method
+                                 ){
 
   ### SOME SETUP ###
 
