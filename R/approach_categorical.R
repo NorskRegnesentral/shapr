@@ -68,9 +68,9 @@ setup_approach.categorical <- function(internal,
 
     # Check that dt contains a `joint_prob` col all entries are probabilities between 0 and 1 (inclusive) and add to 1.
     if (!("joint_prob" %in% names(joint_probability_dt)) ||
-        !all(joint_probability_dt$joint_prob <= 1) ||
-        !all(joint_probability_dt$joint_prob >= 0) ||
-        (round(sum(joint_probability_dt$joint_prob), 3) != 1)) {
+      !all(joint_probability_dt$joint_prob <= 1) ||
+      !all(joint_probability_dt$joint_prob >= 0) ||
+      (round(sum(joint_probability_dt$joint_prob), 3) != 1)) {
       stop('joint_probability_dt must include a column of joint probabilities called "joint_prob".
       joint_prob must all be greater or equal to 0 and less than or equal to 1.
       sum(joint_prob) must equal to 1.')
@@ -205,14 +205,17 @@ prepare_data.categorical_old <- function(internal, index_features = NULL, ...) {
 }
 
 
-
-
 #' @inheritParams default_doc
 #'
 #' @rdname prepare_data
 #' @export
 #' @keywords internal
+#' @author Annabelle Redelmeier and Lars Henry Berge Olsen
 prepare_data.categorical <- function(internal, index_features = NULL, ...) {
+  # Use a faster function when index_feature is only a single coalition, as in causal Shapley values.
+  if (length(index_features) == 1) {
+    return(prepare_data_single_coalition(internal, index_features))
+  }
 
   # 3 id columns: id, id_combination, and id_all
   # id: for each x_explain observation
@@ -298,4 +301,51 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   return(dt[, mget(c("id_combination", "id", feature_names, "w"))])
 }
 
+#' Compute the conditional probabilities for a single coalition for the categorical approach
+#'
+#' The [shapr::prepare_data.categorical()] function is slow when evaluated for a single coalition.
+#' This is a bottleneck for Causal Shapley values which call said function a lot with single coalitions.
+#'
+#' @inheritParams default_doc
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+prepare_data_single_coalition <- function(internal, index_features) {
+  # if (length(index_features) != 1) stop("`index_features` must be single integer.")
 
+  # Extract the needed objects
+  S <- internal$objects$S
+  x_explain <- internal$data$x_explain
+  feature_names <- internal$parameters$feature_names
+  joint_probability_dt <- internal$parameters$categorical.joint_prob_dt
+
+  # Add an id column to x_explain (copy as this changes `x_explain` outside the function)
+  x_explain <- data.table::copy(x_explain)[, id := .I]
+
+  # Extract the feature names of the features we are to condition on
+  cond_cols <- feature_names[S[index_features, ] == 1]
+  cond_cols_with_id <- c("id", cond_cols)
+
+  # Extract the feature values to condition and including the id column
+  dt_conditional_feature_values <- x_explain[, ..cond_cols_with_id]
+
+  # Merge (right outer join) the joint_probability_dt data with the conditional feature values
+  results_id_combination <- data.table::merge.data.table(joint_probability_dt,
+    dt_conditional_feature_values,
+    by = cond_cols,
+    allow.cartesian = TRUE
+  )
+
+  # Get the weights/conditional probabilities for each valid X_sbar conditioned on X_s for all explicands
+  results_id_combination[, w := joint_prob / sum(joint_prob), by = id]
+  results_id_combination[, c("id_all", "joint_prob") := NULL]
+
+  # Set the index_features to their correct value
+  results_id_combination[, id_combination := index_features]
+
+  # Set id_combination and id to be the keys and the two first columns for consistency with other approaches
+  data.table::setkeyv(results_id_combination, c("id_combination", "id"))
+  data.table::setcolorder(results_id_combination, c("id_combination", "id", feature_names))
+
+  return(results_id_combination)
+}
