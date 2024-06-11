@@ -4,7 +4,7 @@
 \alias{compute_vS}
 \title{Computes \code{v(S)} for all features subsets \code{S}.}
 \usage{
-compute_vS(internal, model, predict_model, method = "future")
+compute_vS(internal, model, predict_model, method = "00future")
 }
 \arguments{
 \item{internal}{List.

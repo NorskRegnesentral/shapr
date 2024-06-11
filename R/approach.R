@@ -49,6 +49,11 @@ setup_approach.combined <- function(internal, ...) {
 #' @export
 #' @keywords internal
 prepare_data <- function(internal, index_features = NULL, ...) {
+
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
   # Extract the used approach(es)
   approach <- internal$parameters$approach
 
@@ -57,9 +62,9 @@ prepare_data <- function(internal, index_features = NULL, ...) {
 
   # Check if the user provided one or several approaches.
   if (length(approach) > 1) {
-    # Picks the relevant approach from the internal$objects$X table which list the unique approach of the batch
+    # Picks the relevant approach from the X table which list the unique approach of the batch
     # matches by index_features
-    class(this_class) <- internal$objects$X[id_combination == index_features[1], approach]
+    class(this_class) <- X[id_combination == index_features[1], approach]
   } else {
     # Only one approach for all coalitions sizes
     class(this_class) <- approach

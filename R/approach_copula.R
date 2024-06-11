@@ -47,7 +47,6 @@ setup_approach.copula <- function(internal, ...) {
 #' @author Lars Henry Berge Olsen
 prepare_data.copula <- function(internal, index_features, ...) {
   # Extract used variables
-  S <- internal$objects$S[index_features, , drop = FALSE]
   feature_names <- internal$parameters$feature_names
   n_explain <- internal$parameters$n_explain
   n_samples <- internal$parameters$n_samples
@@ -58,6 +57,10 @@ prepare_data.copula <- function(internal, index_features, ...) {
   copula.mu <- internal$parameters$copula.mu
   copula.cov_mat <- internal$parameters$copula.cov_mat
   copula.x_explain_gaussian_mat <- as.matrix(internal$data$copula.x_explain_gaussian)
+
+  iter <- length(internal$iter_list)
+
+  S <- internal$iter_list[[iter]]$S[index_features, , drop = FALSE]
 
   # Generate the MC samples from N(0, 1)
   MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)

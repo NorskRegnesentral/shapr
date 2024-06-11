@@ -48,8 +48,10 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
   timeseries.upper_bound <- internal$parameters$timeseries.bounds[1]
   timeseries.lower_bound <- internal$parameters$timeseries.bounds[2]
 
-  X <- internal$objects$X
-  S <- internal$objects$S
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
 
   if (is.null(index_features)) {
     features <- X$features

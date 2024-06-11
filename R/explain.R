@@ -290,8 +290,10 @@ explain <- function(model,
                     x_explain,
                     x_train,
                     approach,
+                    paired_shap_sampling = FALSE, #TODO: Make TRUE the default later on
                     prediction_zero,
                     n_combinations = NULL,
+                    adaptive = FALSE,
                     group = NULL,
                     n_samples = 1e3,
                     n_batches = NULL,
@@ -302,6 +304,10 @@ explain <- function(model,
                     MSEv_uniform_comb_weights = TRUE,
                     timing = TRUE,
                     verbose = 0,
+                    n_boot_samps = 100, # tmp
+                    print_shapleyres = FALSE, # tmp
+                    print_iter_info = FALSE, # tmp
+                    shapley_reweighting = "none", # tmp # "on_N"
                     ...) { # ... is further arguments passed to specific approaches
 
   timing_list <- list(init_time = Sys.time())
@@ -318,6 +324,7 @@ explain <- function(model,
     x_train = x_train,
     x_explain = x_explain,
     approach = approach,
+    paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
     group = group,
@@ -329,6 +336,7 @@ explain <- function(model,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
     verbose = verbose,
+    adaptive = adaptive,
     ...
   )
 
@@ -354,32 +362,78 @@ explain <- function(model,
     internal <- regression.get_y_hat(internal = internal, model = model, predict_model = predict_model)
   }
 
-  # Sets up the Shapley (sampling) framework and prepares the
-  # conditional expectation computation for the chosen approach
-  # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-  internal <- setup_computation(internal, model, predict_model)
+  # Adaptive approach
+  # TODO: The below should probably be moved to a separate function in the end
 
-  timing_list$setup_computation <- Sys.time()
+  if(isTRUE(internal$parameters$adaptive)){
+    ### for now we just some of the parameters here
+    initial_n_combinations <- min(200,ceiling((2^internal$parameters$n_features)/10))
+    max_iter <- 20
+    reduction_factor_vec <- c(seq(0.1,1,by=0.1),rep(1,max_iter-10)) # Proportion of estimated remaining samples to use in next iteration
+    convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
 
-  # Compute the v(S):
-  # MC:
-  # 1. Get the samples for the conditional distributions with the specified approach
-  # 2. Predict with these samples
-  # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
-  # Regression:
-  # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
-  vS_list <- compute_vS(internal, model, predict_model)
 
-  timing_list$compute_vS <- Sys.time()
+  } else {
+    # The regular, non-iterative approach
+    initial_n_combinations <- internal$parameters$n_combinations
+    max_iter <- 1
+    convergence_tolerance <- NULL
+    reduction_factor_vec <- NULL
 
-  # Compute Shapley values based on conditional expectations (v(S))
-  # Organize function output
-  output <- finalize_explanation(vS_list = vS_list, internal = internal)
 
-  timing_list$shapley_computation <- Sys.time()
+  }
 
-  # Compute the elapsed time for the different steps
-  if (timing == TRUE) output$timing <- compute_time(timing_list)
+  converged <- FALSE
+
+#  internal <- setup_approach(internal, model = model, predict_model = predict_model)
+  internal$parameters$shapley_reweighting <- shapley_reweighting
+
+  internal$parameters$max_iter <- max_iter
+  internal$parameters$n_boot_samps <- n_boot_samps
+  internal$parameters$reduction_factor_vec <- reduction_factor_vec
+
+  internal$iter_list <- list()
+  iter <- 0
+  internal$iter_list[[1]] <- list(
+    n_combinations = initial_n_combinations,
+    exact = internal$parameters$exact,
+    compute_sd = ifelse(internal$parameters$exact==FALSE,TRUE,FALSE),
+    reduction_factor = internal$parameters$reduction_factor_vec[1]
+  )
+
+    while(converged==FALSE){
+      iter <- iter + 1
+
+      #internal$parameters$n_combinations <- internal$iter_list[[iter]]$n_combinations # to simplify internal function extracting this parameter
+
+      # setup the Shapley framework
+      internal <- shapley_setup(internal)
+      internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make all tests pass for nonadaptive approach
+
+      # Compute the vS
+      vS_list <- compute_vS(internal, model, predict_model)
+
+      # Compute shapley value estimated and bootstrapped standard deviations
+      internal <- compute_estimates(internal, vS_list)
+
+      # Check convergence based on estimates and standard deviations (and thresholds)
+      internal <-  check_convergence(internal, convergence_tolerance)
+
+      # Preparing parameters for next iteration (does not do anything if already converged)
+      internal <- prepare_next_iteration(internal)
+
+      # Printing iteration information
+      print_iter(internal,print_iter_info,print_shapleyres)
+
+      ### Setting globals for to simplify the loop
+      converged <- internal$iter_list[[iter]]$converged
+
+    }
+
+
+    # Rerun after convergence to get the same output format as for the non-adaptive approach
+    output <- finalize_explanation(internal = internal)
+
 
   # Temporary to avoid failing tests
   output <- remove_outputs_to_pass_tests(output)
@@ -393,6 +447,7 @@ remove_outputs_to_pass_tests <- function(output) {
   output$internal$objects$id_combination_mapper_dt <- NULL
   output$internal$objects$cols_per_horizon <- NULL
   output$internal$objects$W_list <- NULL
+  output$shapley_values[,explain_id:=NULL]
 
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters[c(

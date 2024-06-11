@@ -96,8 +96,11 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 
   joint_probability_dt <- internal$parameters$categorical.joint_prob_dt
 
-  X <- internal$objects$X
-  S <- internal$objects$S
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
+
 
   if (is.null(index_features)) { # 2,3
     features <- X$features # list of [1], [2], [2, 3]

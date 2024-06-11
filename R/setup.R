@@ -20,6 +20,7 @@
 setup <- function(x_train,
                   x_explain,
                   approach,
+                  paired_shap_sampling,
                   prediction_zero,
                   output_size = 1,
                   n_combinations,
@@ -41,12 +42,14 @@ setup <- function(x_train,
                   group_lags = NULL,
                   timing,
                   verbose,
+                  adaptive,
                   is_python = FALSE,
                   ...) {
   internal <- list()
 
   internal$parameters <- get_parameters(
     approach = approach,
+    paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
     output_size = output_size,
     n_combinations = n_combinations,
@@ -65,6 +68,7 @@ setup <- function(x_train,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
     verbose = verbose,
+    adaptive = adaptive,
     is_python = is_python,
     ...
   )
@@ -383,13 +387,17 @@ get_extra_parameters <- function(internal) {
 }
 
 #' @keywords internal
-get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
+get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
                            explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing, verbose,
                            is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
+  if (!is.logical(paired_shap_sampling)) {
+    stop("`paired_shap_sampling` must be a logical.")
+  }
+
 
   # n_combinations
   if (!is.null(n_combinations) &&
@@ -496,6 +504,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   # Getting basic input parameters
   parameters <- list(
     approach = approach,
+    paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
     group = group,

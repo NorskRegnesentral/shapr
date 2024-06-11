@@ -54,7 +54,9 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   ctree.sample <- internal$parameters$ctree.sample
   labels <- internal$objects$feature_specs$labels
 
-  X <- internal$objects$X
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
 
 
   dt_l <- list()

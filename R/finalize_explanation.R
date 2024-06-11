@@ -1,3 +1,104 @@
+print_iter <- function(internal,print_iter_info,print_shapleyres){
+
+  iter <- length(internal$iter_list)-1 # This function is called after the preparation of the next iteration
+
+  if(print_iter_info){
+
+    converged <- internal$iter_list[[iter]]$converged
+    estimated_remaining_samples <- internal$iter_list[[iter]]$estimated_remaining_samples
+    estimated_required_samples <- internal$iter_list[[iter]]$estimated_required_samples
+    n_current_samples <- internal$iter_list[[iter]]$n_current_samples
+
+    next_n_combinations <- internal$iter_list[[iter+1]]$n_combinations
+
+    if(converged==FALSE){
+
+      cat(paste0("\nIteration ", iter, "\n",
+                 "Not converged after ", n_current_samples, " samples.\n",
+                 "Estimated remaining samples: ", estimated_remaining_samples, "\n",
+                 "Estimated required samples: ", estimated_required_samples, "\n",
+                 "Using ", next_n_combinations, " new samples in the next iteration.\n"))
+
+    } else {
+      cat("\nConvergence reached!\n")
+    }
+  }
+
+  if(print_shapleyres){
+    n_explain <- internal$parameters$n_explain
+
+    dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[,-1]
+    dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[,-1]
+
+    # Printing the current Shapley values
+    matrix1 <- format(round(dt_shapley_est,3),nsmall=2,justify = "right")
+    matrix2 <- format(round(dt_shapley_sd,2),nsmall=2,justify = "right")
+
+    if(print_shapleyres){
+      cat("Current estimated Shapley values [sd]:\n")
+      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2,") ", sep = ""), nrow = n_explain))
+      names(print_dt) <- names(dt_shapley_est)
+      print(print_dt)
+    }
+  }
+}
+
+prepare_next_iteration <- function(internal){
+
+  iter <- length(internal$iter_list)
+  converged <-internal$iter_list[[iter]]$converged
+
+
+  if(converged==FALSE){
+    next_iter_list <- list()
+
+    n_features <- internal$parameters$n_features
+    reduction_factor_vec <- internal$parameters$reduction_factor_vec
+
+    estimated_remaining_samples <- internal$iter_list[[iter]]$estimated_remaining_samples
+    reduction_factor <- internal$iter_list[[iter]]$reduction_factor
+    n_current_samples <- internal$iter_list[[iter]]$n_current_samples
+
+    X <- internal$iter_list[[iter]]$X
+
+    proposal_next_n_combinations <- ceiling(estimated_remaining_samples*reduction_factor)
+
+    if((n_current_samples+proposal_next_n_combinations)>=2^n_features){
+      # Use all coalitions in the last iteration as the estimated number of samples is more than what remains
+      next_iter_list$exact <- TRUE
+      next_iter_list$n_combinations <- 2^n_features - n_current_samples
+      next_iter_list$compute_sd <- FALSE
+    } else {
+      # Sample more keeping the current samples
+      next_iter_list$exact <- FALSE
+      next_iter_list$n_combinations <- proposal_next_n_combinations
+      next_iter_list$compute_sd <- TRUE
+    }
+
+    next_iter_list$reduction_factor <- reduction_factor_vec[iter]
+
+    # Storing the feature samples I have from before (not sure I need these if I run exact).
+    # Could also be moved to shapley_setup as it is computed based on X only, and that is stored in previous iter_list anyway
+    repetitions <- X[-c(1,.N),sample_freq]
+    unique_feature_samples <- X[-c(1,.N),features]
+
+    next_iter_list$prev_feature_samples <- unlist(lapply(seq_along(unique_feature_samples),
+                                                         function(i) rep(list(unique_feature_samples[[i]]),
+                                                                         repetitions[i])),
+                                                  recursive = FALSE)
+
+  } else {
+    next_iter_list <- NULL
+  }
+
+  internal$iter_list[[iter+1]] <- next_iter_list
+
+  return(internal)
+
+}
+
+
+
 #' Computes the Shapley values given `v(S)`
 #'
 #' @inherit explain
@@ -6,48 +107,124 @@
 #' Output from [compute_vS()]
 #'
 #' @export
-finalize_explanation <- function(vS_list, internal) {
-  MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
+compute_estimates <- function(internal, vS_list) {
+
+  iter <- length(internal$iter_list)
+  compute_sd <- internal$iter_list[[iter]]$compute_sd
+
+  n_boot_samps <- internal$parameters$n_boot_samps
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,
     internal = internal
   )
 
-  # Extract the predictions we are explaining
-  p <- get_p(processed_vS_list$dt_vS, internal)
-
-  # internal$timing$postprocessing <- Sys.time()
 
   # Compute the Shapley values
-  dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+  dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+
+  if(compute_sd){
+    dt_shapley_sd <- bootstrap_shapley(internal,n_boot_samps = n_boot_samps,processed_vS_list$dt_vS)
+  } else {
+    dt_shapley_sd <- dt_shapley_est*0
+  }
+
+  # Adding explain_id to the output dt
+  dt_shapley_est[,explain_id:=.I]
+  setcolorder(dt_shapley_est,"explain_id")
+  dt_shapley_sd[,explain_id:=.I]
+  setcolorder(dt_shapley_sd,"explain_id")
+
+
+  internal$iter_list[[iter]]$dt_shapley_est = dt_shapley_est
+  internal$iter_list[[iter]]$dt_shapley_sd = dt_shapley_sd
+  internal$iter_list[[iter]]$vS_list = vS_list
+  internal$iter_list[[iter]]$dt_vS = processed_vS_list$dt_vS
 
   # internal$timing$shapley_computation <- Sys.time()
 
   # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
-  internal$tmp <- NULL
-
   internal$output <- processed_vS_list
 
-  output <- list(
-    shapley_values = dt_shapley,
-    internal = internal,
-    pred_explain = p
-  )
-  attr(output, "class") <- c("shapr", "list")
+  return(internal)
+}
+
+
+#' Finalizes the explanation object
+#'
+#' @inherit explain
+#' @inheritParams default_doc
+#'
+#' @export
+finalize_explanation <- function(internal) {
+  MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
+  output_size <- internal$parameters$output_size
+  dt_vS <- internal$output$dt_vS
+
+  iter <- length(internal$iter_list)
+  dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
+  dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
+
+  # Setting parameters and objects used in the end from the last iteration
+  internal$parameters$n_combinations <- internal$iter_list[[iter]]$X[,.N]
+  internal$objects$X <- internal$iter_list[[iter]]$X
+  internal$objects$S <- internal$iter_list[[iter]]$S
+  internal$objects$W <- internal$iter_list[[iter]]$W
+
+
+
+
+  # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
+  internal$tmp <- NULL
+
+  # Extract the predictions we are explaining
+  p <- get_p(dt_vS, internal)
+
 
   # Compute the MSEv evaluation criterion if the output of the predictive model is a scalar.
   # TODO: check if it makes sense for output_size > 1.
-  if (internal$parameters$output_size == 1) {
-    output$MSEv <- compute_MSEv_eval_crit(
+  if (output_size == 1) {
+    MSEv <- compute_MSEv_eval_crit(
       internal = internal,
-      dt_vS = processed_vS_list$dt_vS,
+      dt_vS = dt_vS,
       MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
     )
+  } else {
+    MSEv <- NULL
   }
+
+  # Extract iterative results in a simplified format
+  internal$iter_results <- get_iter_results(internal$iter_list)
+
+  output <- list(
+    shapley_values = dt_shapley_est,
+    shapley_values_sd = dt_shapley_sd,
+    internal = internal,
+    pred_explain = p,
+    MSEv = MSEv
+  )
+  attr(output, "class") <- c("shapr", "list")
 
   return(output)
 }
+
+get_iter_results <- function(iter_list){
+
+  ret <- list()
+  ret$dt_iter_shapley_est = rbindlist(lapply(iter_list, `[[`, "dt_shapley_est"),idcol = "iter")
+  ret$dt_iter_shapley_sd = rbindlist(lapply(iter_list, `[[`, "dt_shapley_sd"),idcol = "iter")
+  ret$iter_info_dt = iter_list_to_dt(iter_list)
+  return(ret)
+}
+
+iter_list_to_dt <- function(iter_list,what = c("exact","n_combinations","compute_sd","reduction_factor",
+                                               "converged","n_current_samples","estimated_required_samples",
+                                               "estimated_remaining_samples")){
+  extracted=lapply(iter_list,function(x) x[what])
+  ret <- do.call(rbind, lapply(extracted, as.data.table))
+  return(ret)
+}
+
 
 
 #' @keywords internal
@@ -88,6 +265,8 @@ postprocess_vS_list <- function(vS_list, internal) {
 
   data.table::setorder(dt_vS, id_combination)
 
+  dt_vS <- unique(dt_vS, by = id_combination) # To remove duplicated full pred row in the iterative procedure
+
   output <- list(
     dt_vS = dt_vS,
     dt_samp_for_vS = dt_samp_for_vS
@@ -109,6 +288,141 @@ get_p <- function(dt_vS, internal) {
   return(p)
 }
 
+
+bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
+
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
+  set.seed(seed)
+
+  X_org <- copy(X)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  shap_names <- internal$parameters$feature_names
+  paired_shap_sampling <- internal$parameters$paired_shap_sampling
+  shapley_reweighting <- internal$parameters$shapley_reweighting
+
+  boot_sd_array <- array(NA,dim=c(n_explain,n_features+1,n_boot_samps))
+
+  X_keep <- X_org[c(1,.N),.(id_combination,features,n_features,N,shapley_weight)]
+  X_samp <- X_org[-c(1,.N),.(id_combination,features,n_features,N,shapley_weight,sample_freq)]
+  X_samp[, features_tmp := sapply(features, paste, collapse = " ")]
+
+  n_combinations_boot <- X_samp[,sum(sample_freq)]
+
+  for (i in seq_len(n_boot_samps)){
+
+    if(paired_shap_sampling){
+
+        # Sample with replacement
+      X_boot00 <- X_samp[sample.int(n=.N,
+                                   size=ceiling(n_combinations_boot/2),
+                                                replace = TRUE,
+                                                prob=sample_freq),
+                                   .(id_combination,features,n_features,N)]
+
+      X_boot00[, features_tmp := sapply(features, paste, collapse = " ")]
+      # Not sure why I have to two the next two lines in two steps, but I don't get it to work otherwise
+      boot_features_dup <- lapply(X_boot00$features, function(x) seq(n_features)[-x])
+      X_boot00[, features_dup := boot_features_dup]
+      X_boot00[, features_dup_tmp := sapply(features_dup, paste, collapse = " ")]
+
+      # Extract the paired coalitions from X_samp
+      X_boot00_paired <- merge(X_boot00[,.(features_dup_tmp)],
+                              X_samp[,.(id_combination,features,n_features,N,features_tmp)],
+                              by.x = "features_dup_tmp",by.y="features_tmp")
+      X_boot0 <- rbind(X_boot00[,.(id_combination, features, n_features, N)],
+                       X_boot00_paired[,.(id_combination, features, n_features, N)])
+    } else {
+      X_boot0 <- X_samp[sample.int(n=.N,
+                                   size=n_combinations_boot,
+                                   replace = TRUE,
+                                   prob=sample_freq),
+                        .(id_combination,features,n_features,N)]
+
+    }
+
+
+    X_boot0[,shapley_weight:=.N,by="id_combination"]
+    X_boot0 <- unique(X_boot0,by="id_combination")
+
+    X_boot <- rbind(X_keep,X_boot0)
+    data.table::setorder(X_boot,id_combination)
+
+    shapley_reweighting(X_boot, reweight=shapley_reweighting) # reweights the shapley weights by reference
+
+    W_boot <- shapr:::weight_matrix(
+      X = X_boot,
+      normalize_W_weights = TRUE,
+      is_groupwise = FALSE
+    )
+
+    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_combination %in% X_boot[,id_combination], -"id_combination"]))
+
+    boot_sd_array[,,i] <- copy(kshap_boot)
+
+  }
+
+  std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
+
+  dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
+  colnames(dt_kshap_boot_sd) <- c("none", shap_names)
+
+  return(dt_kshap_boot_sd)
+
+}
+
+
+check_convergence <- function(internal, convergence_tolerance=0.1){
+
+  iter <- length(internal$iter_list)
+
+  dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
+  dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
+
+  n_current_samples <- internal$iter_list[[iter]]$n_combinations-2
+  max_iter <- internal$parameters$max_iter
+
+  max_sd <- dt_shapley_sd[,max(.SD),.SDcols=-1,by=.I]$V1 # Max per prediction
+  max_sd0 <- max_sd*sqrt(n_current_samples)
+
+  dt_shapley_est0 <- copy(dt_shapley_est)
+
+  if(!is.null(convergence_tolerance)){
+    dt_shapley_est0[,maxval:=max(.SD),.SDcols=-1,by=.I]
+    dt_shapley_est0[,minval:=min(.SD),.SDcols=-1,by=.I]
+    dt_shapley_est0[,req_samples:=(max_sd0/((maxval-minval)*convergence_tolerance))^2]
+    estimated_required_samples <- ceiling(dt_shapley_est0[,median(req_samples)]) # TODO: Consider other ways to do this
+    estimated_remaining_samples <- estimated_required_samples - n_current_samples
+
+    converged_sd <- (estimated_remaining_samples <= 0)
+
+    estimated_required_samples_per_explain_id <- dt_shapley_est0[,req_samples]
+    names(estimated_required_samples_per_explain_id) <- paste0("req_samples_explain_id_",seq_along(estimated_required_samples_per_explain_id))
+
+  } else {
+    estimated_required_samples_per_explain_id <- estimated_required_samples <- estimated_remaining_samples <- NULL
+    converged_sd <- FALSE
+  }
+  converged_max_iter <- (iter >= max_iter)
+
+  converged <- converged_sd || converged_max_iter
+
+  internal$iter_list[[iter]]$converged <- converged
+  internal$iter_list[[iter]]$n_current_samples <- n_current_samples
+  internal$iter_list[[iter]]$estimated_required_samples <- estimated_required_samples
+  internal$iter_list[[iter]]$estimated_remaining_samples <- estimated_remaining_samples
+  internal$iter_list[[iter]]$estimated_required_samples_per_explain_id <- as.list(estimated_required_samples_per_explain_id)
+
+  return(internal)
+
+}
+
+
+
+
 #' Compute shapley values
 #' @param dt_vS The contribution matrix.
 #'
@@ -120,8 +434,11 @@ get_p <- function(dt_vS, internal) {
 compute_shapley_new <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
   feature_names <- internal$parameters$feature_names
-  W <- internal$objects$W
   type <- internal$parameters$type
+
+  iter <- length(internal$iter_list)
+
+  W <- internal$iter_list[[iter]]$W
 
   if (!is_groupwise) {
     shap_names <- feature_names
@@ -217,7 +534,9 @@ compute_MSEv_eval_crit <- function(internal,
   n_combinations <- internal$parameters$n_combinations
   id_combination_indices <- if (MSEv_skip_empty_full_comb) seq(2, n_combinations - 1) else seq(1, n_combinations)
   n_combinations_used <- length(id_combination_indices)
-  features <- internal$objects$X$features[id_combination_indices]
+
+  X <- internal$objects$X
+  features <- X$features[id_combination_indices]
 
   # Extract the predicted responses f(x)
   p <- unlist(dt_vS[id_combination == n_combinations, -"id_combination"])
@@ -229,7 +548,7 @@ compute_MSEv_eval_crit <- function(internal,
   dt_squared_diff_original <- sweep(vS, 2, p)^2
 
   # Get the weights
-  averaging_weights <- if (MSEv_uniform_comb_weights) rep(1, n_combinations) else internal$objects$X$shapley_weight
+  averaging_weights <- if (MSEv_uniform_comb_weights) rep(1, n_combinations) else X$shapley_weight
   averaging_weights <- averaging_weights[id_combination_indices]
   averaging_weights_scaled <- averaging_weights / sum(averaging_weights)
 

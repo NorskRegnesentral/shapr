@@ -67,8 +67,12 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
   # Load `workflows`, needed when parallelized as we call predict with a workflow object. Checked installed above.
   requireNamespace("workflows", quietly = TRUE)
 
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
   # Get the features in the batch
-  features <- internal$objects$X$features[index_features]
+  features <- X$features[index_features]
 
   # Small printout to the user about which batch that are currently worked on
   if (internal$parameters$verbose == 2) regression.prep_message_batch(internal, index_features)
@@ -450,8 +454,13 @@ regression.separate_time_mess <- function() {
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.prep_message_batch <- function(internal, index_features) {
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
+
   message(paste0(
-    "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
+    "Working on batch ", X[id_combination == index_features[1]]$batch, " of ",
     internal$parameters$n_batches, " in `prepare_data.", internal$parameters$approach, "()`."
   ))
 }
@@ -463,8 +472,13 @@ regression.prep_message_batch <- function(internal, index_features) {
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.prep_message_comb <- function(internal, index_features, comb_idx) {
+
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
   message(paste0(
-    "Working on combination with id ", internal$objects$X$id_combination[index_features[comb_idx]],
+    "Working on combination with id ", X$id_combination[index_features[comb_idx]],
     " of ", internal$parameters$used_n_combinations, "."
   ))
 }
