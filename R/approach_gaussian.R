@@ -51,7 +51,6 @@ setup_approach.gaussian <- function(internal,
 #' @author Lars Henry Berge Olsen
 prepare_data.gaussian <- function(internal, index_features, ...) {
   # Extract used variables
-  S <- internal$objects$S[index_features, , drop = FALSE]
   feature_names <- internal$parameters$feature_names
   n_explain <- internal$parameters$n_explain
   n_features <- internal$parameters$n_features
@@ -60,6 +59,10 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   x_explain_mat <- as.matrix(internal$data$x_explain)
   mu <- internal$parameters$gaussian.mu
   cov_mat <- internal$parameters$gaussian.cov_mat
+
+  iter <- length(internal$iter_list)
+
+  S <- internal$iter_list[[iter]]$S[index_features, , drop = FALSE]
 
   # Generate the MC samples from N(0, 1)
   MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)

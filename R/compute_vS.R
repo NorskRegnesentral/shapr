@@ -7,7 +7,7 @@
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS <- function(internal, model, predict_model, method = "future") {
+compute_vS <- function(internal, model, predict_model, method = "sadfuture") {
   iter <- length(internal$iter_list)
 
   S_batch <- internal$iter_list[[iter]]$S_batch
@@ -105,7 +105,11 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 batch_prepare_vS_regression <- function(S, internal) {
-  max_id_comb <- internal$parameters$n_combinations
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
+  max_id_comb <- X[,.N]
   x_explain_y_hat <- internal$data$x_explain_y_hat
 
   # Compute the contribution functions different based on if the grand coalition is in S or not
@@ -168,7 +172,11 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
 
 #' @keywords internal
 batch_prepare_vS_MC_auxiliary <- function(S, internal) {
-  max_id_combination <- internal$parameters$n_combinations
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
+  max_id_combination <- X[,.N]
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
 

@@ -38,8 +38,10 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   if (!torch::torch_is_installed()) stop("`torch` is not properly installed. Please run `torch::install_torch()`.")
 
   # Extract the objects we will use later
-  S <- internal$objects$S
-  X <- internal$objects$X
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
   parameters <- internal$parameters
 
   # Small printout to user
@@ -185,11 +187,16 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
+
+  iter <- length(internal$iter_list)
+
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  S <- internal$iter_list[[iter]]$S
+
   # If not provided, then set `index_features` to all non trivial coalitions
-  if (is.null(index_features)) index_features <- seq(2, internal$parameters$n_combinations - 1)
+  if (is.null(index_features)) index_features <- seq(2, n_combinations - 1)
 
   # Extract objects we are going to need later
-  S <- internal$objects$S
   seed <- internal$parameters$seed
   verbose <- internal$parameters$verbose
   x_explain <- internal$data$x_explain
@@ -2437,7 +2444,11 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 vaeac_prep_message_batch <- function(internal, index_features) {
-  id_batch <- internal$objects$X[id_combination == index_features[1]]$batch
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
+  id_batch <- X[id_combination == index_features[1]]$batch
   n_batches <- internal$parameters$n_batches
   message(paste0("Generating Monte Carlo samples using `vaeac` for batch ", id_batch, " of ", n_batches, "."))
 }

@@ -24,8 +24,10 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   n_train <- internal$parameters$n_train
   n_explain <- internal$parameters$n_explain
 
-  X <- internal$objects$X
-  S <- internal$objects$S
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
 
   if (is.null(index_features)) {
     # Use all feature combinations/coalitions (only applies if a single approach is used)

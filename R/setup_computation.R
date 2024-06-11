@@ -203,10 +203,6 @@ shapley_setup <- function(internal) {
   internal$iter_list[[iter]]$id_comb_feature_map <- id_comb_feature_map
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
 
-  # Just temporary copies before I rewrite the code which uses these
-  internal$objects$X <- X
-  internal$objects$S <- S
-  internal$objects$W <- W
 
   return(internal)
 }

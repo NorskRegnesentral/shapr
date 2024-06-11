@@ -106,7 +106,7 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 #' @param augment_comb_prob Array of numerics (default is `NULL`). The length of the array must match the number of
 #' combinations being considered, where each entry specifies the probability of sampling the corresponding coalition.
 #' This is useful if we want to generate more training data for some specific coalitions. One possible choice would be
-#' `augment_comb_prob = if (use_Shapley_weights) internal$objects$X$shapley_weight[2:actual_n_combinations] else NULL`.
+#' `augment_comb_prob = if (use_Shapley_weights) internal$iter_list[[iter]]$X$shapley_weight[2:actual_n_combinations] else NULL`.
 #' @param augment_weights String (optional). Specifying which type of weights to add to the observations.
 #' If `NULL` (default), then no weights are added. If `"Shapley"`, then the Shapley weights for the different
 #' combinations are added to corresponding observations where the coalitions was applied. If `uniform`, then
@@ -124,8 +124,13 @@ regression.surrogate_aug_data <- function(internal,
                                           augment_add_id_comb = FALSE,
                                           augment_comb_prob = NULL,
                                           augment_weights = NULL) {
+
+  iter <- length(internal$iter_list)
+
+
   # Get some of the parameters
-  S <- internal$objects$S
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
   actual_n_combinations <- internal$parameters$used_n_combinations - 2 # Remove empty and grand coalitions
   regression.surrogate_n_comb <- internal$parameters$regression.surrogate_n_comb
   if (!is.null(index_features)) regression.surrogate_n_comb <- length(index_features) # Applicable from prep_data()
@@ -209,7 +214,7 @@ regression.surrogate_aug_data <- function(internal,
 
   # Add either uniform weights or Shapley kernel weights
   if (!is.null(augment_weights)) {
-    x_augmented[, "weight" := if (augment_weights == "Shapley") internal$objects$X$shapley_weight[id_comb] else 1]
+    x_augmented[, "weight" := if (augment_weights == "Shapley") X$shapley_weight[id_comb] else 1]
   }
 
   # Add the id_comb as a factor

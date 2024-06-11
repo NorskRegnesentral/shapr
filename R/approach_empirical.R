@@ -116,8 +116,11 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
   x_explain <- internal$data$x_explain
 
   empirical.cov_mat <- internal$parameters$empirical.cov_mat
-  X <- internal$objects$X
-  S <- internal$objects$S
+
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
 
   n_explain <- internal$parameters$n_explain
   empirical.type <- internal$parameters$empirical.type
@@ -362,14 +365,17 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   n_train <- internal$parameters$n_train
   n_explain <- internal$parameters$n_explain
   empirical.n_samples_aicc <- internal$parameters$empirical.n_samples_aicc
-  n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
   labels <- internal$objects$feature_specs$labels
   empirical.start_aicc <- internal$parameters$empirical.start_aicc
   empirical.eval_max_aicc <- internal$parameters$empirical.eval_max_aicc
 
-  X <- internal$objects$X
-  S <- internal$objects$S
+  iter <- length(internal$iter_list)
+
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
+
 
   stopifnot(
     data.table::is.data.table(X),
@@ -477,14 +483,16 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
   n_train <- internal$parameters$n_train
   n_explain <- internal$parameters$n_explain
   empirical.n_samples_aicc <- internal$parameters$empirical.n_samples_aicc
-  n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
   labels <- internal$objects$feature_specs$labels
   empirical.start_aicc <- internal$parameters$empirical.start_aicc
   empirical.eval_max_aicc <- internal$parameters$empirical.eval_max_aicc
 
-  X <- internal$objects$X
-  S <- internal$objects$S
+  iter <- length(internal$iter_list)
+
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
 
 
   ntest <- n_explain

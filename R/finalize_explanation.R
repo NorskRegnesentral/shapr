@@ -165,6 +165,15 @@ finalize_explanation <- function(internal) {
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
+  # Setting parameters and objects used in the end from the last iteration
+  internal$parameters$n_combinations <- internal$iter_list[[iter]]$X[,.N]
+  internal$objects$X <- internal$iter_list[[iter]]$X
+  internal$objects$S <- internal$iter_list[[iter]]$S
+  internal$objects$W <- internal$iter_list[[iter]]$W
+
+
+
+
   # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
   internal$tmp <- NULL
 
@@ -282,9 +291,13 @@ get_p <- function(dt_vS, internal) {
 
 bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
 
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
   set.seed(seed)
 
-  X_org <- copy(internal$objects$X)
+  X_org <- copy(X)
   n_explain <- internal$parameters$n_explain
   n_features <- internal$parameters$n_features
   shap_names <- internal$parameters$feature_names
@@ -369,7 +382,7 @@ check_convergence <- function(internal, convergence_tolerance=0.1){
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
-  n_current_samples <- internal$parameters$n_combinations-2
+  n_current_samples <- internal$iter_list[[iter]]$n_combinations-2
   max_iter <- internal$parameters$max_iter
 
   max_sd <- dt_shapley_sd[,max(.SD),.SDcols=-1,by=.I]$V1 # Max per prediction
@@ -421,8 +434,11 @@ check_convergence <- function(internal, convergence_tolerance=0.1){
 compute_shapley_new <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
   feature_names <- internal$parameters$feature_names
-  W <- internal$objects$W
   type <- internal$parameters$type
+
+  iter <- length(internal$iter_list)
+
+  W <- internal$iter_list[[iter]]$W
 
   if (!is_groupwise) {
     shap_names <- feature_names
@@ -518,7 +534,9 @@ compute_MSEv_eval_crit <- function(internal,
   n_combinations <- internal$parameters$n_combinations
   id_combination_indices <- if (MSEv_skip_empty_full_comb) seq(2, n_combinations - 1) else seq(1, n_combinations)
   n_combinations_used <- length(id_combination_indices)
-  features <- internal$objects$X$features[id_combination_indices]
+
+  X <- internal$objects$X
+  features <- X$features[id_combination_indices]
 
   # Extract the predicted responses f(x)
   p <- unlist(dt_vS[id_combination == n_combinations, -"id_combination"])
@@ -530,7 +548,7 @@ compute_MSEv_eval_crit <- function(internal,
   dt_squared_diff_original <- sweep(vS, 2, p)^2
 
   # Get the weights
-  averaging_weights <- if (MSEv_uniform_comb_weights) rep(1, n_combinations) else internal$objects$X$shapley_weight
+  averaging_weights <- if (MSEv_uniform_comb_weights) rep(1, n_combinations) else X$shapley_weight
   averaging_weights <- averaging_weights[id_combination_indices]
   averaging_weights_scaled <- averaging_weights / sum(averaging_weights)
 

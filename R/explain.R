@@ -372,8 +372,6 @@ explain <- function(model,
     reduction_factor_vec <- c(seq(0.1,1,by=0.1),rep(1,max_iter-10)) # Proportion of estimated remaining samples to use in next iteration
     convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
 
-    internal$parameters$n_combinations <- initial_n_combinations
-
 
   } else {
     # The regular, non-iterative approach
@@ -387,7 +385,7 @@ explain <- function(model,
 
   converged <- FALSE
 
-  internal <- setup_approach(internal, model = model, predict_model = predict_model)
+#  internal <- setup_approach(internal, model = model, predict_model = predict_model)
   internal$parameters$shapley_reweighting <- shapley_reweighting
 
   internal$parameters$max_iter <- max_iter
@@ -406,11 +404,11 @@ explain <- function(model,
     while(converged==FALSE){
       iter <- iter + 1
 
-      internal$parameters$n_combinations <- internal$iter_list[[iter]]$n_combinations # to simplify internal function extracting this parameter
+      #internal$parameters$n_combinations <- internal$iter_list[[iter]]$n_combinations # to simplify internal function extracting this parameter
 
       # setup the Shapley framework
       internal <- shapley_setup(internal)
-#      internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make all tests pass for nonadaptive approach
+      internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make all tests pass for nonadaptive approach
 
       # Compute the vS
       vS_list <- compute_vS(internal, model, predict_model)
