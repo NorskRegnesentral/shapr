@@ -262,9 +262,10 @@ check_and_set_causal_sampling <- function(internal) {
   if (internal$parameters$causal_sampling) {
     if (internal$parameters$regression) stop("Causal Shapley values is not applicable for regression approaches.\n")
     if (internal$parameters$n_approaches > 1) stop("Causal Shapley values is not applicable for combined approaches.\n")
-    if (internal$parameters$approach == "categorical") {
-      stop("Causal Shapley values is not applicable for the `categorical` approach.\n")
-    }
+    # TODO: Remove when support for categorical is fixed.
+    # if (internal$parameters$approach == "categorical") {
+    #   stop("Causal Shapley values is not applicable for the `categorical` approach.\n")
+    # }
   }
 
   return(internal)
