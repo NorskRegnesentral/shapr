@@ -201,7 +201,7 @@ shapley_setup <- function(internal) {
   internal$iter_list[[iter]]$W <- W
   internal$iter_list[[iter]]$S <- S
   internal$iter_list[[iter]]$id_comb_feature_map <- id_comb_feature_map
-  internal$iter_list[[iter]]$S_batch <- create_S_batch_new(internal)
+  internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
 
   # Just temporary copies before I rewrite the code which uses these
   internal$objects$X <- X
@@ -679,12 +679,16 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 }
 
 #' @keywords internal
-create_S_batch_new <- function(internal, seed = NULL) {
+create_S_batch <- function(internal, seed = NULL) {
   n_features0 <- internal$parameters$n_features
   approach0 <- internal$parameters$approach
-  n_combinations <- internal$parameters$n_combinations
   n_batches <- internal$parameters$n_batches
+
   iter <- length(internal$iter_list)
+
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  exact <- internal$iter_list[[iter]]$exact
+
 
   id_comb_feature_map <- internal$iter_list[[iter]]$id_comb_feature_map
 
