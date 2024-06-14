@@ -526,8 +526,6 @@ iterative_kshap_func <- function(model,
       x_explain_red_here <- current_x_explain_red[testObs_computed,]
       x_excluded_here <- x_explain[testObs_computed,..current_excluded_feature_cols]
 
-      browser()
-
       if(approach=="gaussian"){
 
         S_char_here <- new_combinations[,S_char]
