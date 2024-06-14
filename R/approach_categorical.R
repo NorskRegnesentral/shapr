@@ -38,7 +38,7 @@ setup_approach.categorical <- function(internal,
     joint_prob_dt0 <- x_train[, .N, eval(feature_names)]
 
     # Get the feature value combinations in the explicands that are NOT in the training data and their frequency
-    explain_not_in_train <- data.table::setkeyv(data.table::setDT(x_explain), feature_names)[!x_train]
+    explain_not_in_train <- data.table::setkeyv(data.table::setDT(data.table::copy(x_explain)), feature_names)[!x_train]
     N_explain_not_in_train <- nrow(unique(explain_not_in_train))
 
     # Add these feature value combinations, and their corresponding frequency, to joint_prob_dt0
@@ -320,14 +320,14 @@ prepare_data_single_coalition <- function(internal, index_features) {
   joint_probability_dt <- internal$parameters$categorical.joint_prob_dt
 
   # Add an id column to x_explain (copy as this changes `x_explain` outside the function)
-  x_explain <- data.table::copy(x_explain)[, id := .I]
+  x_explain_copy <- data.table::copy(x_explain)[, id := .I]
 
   # Extract the feature names of the features we are to condition on
   cond_cols <- feature_names[S[index_features, ] == 1]
   cond_cols_with_id <- c("id", cond_cols)
 
   # Extract the feature values to condition and including the id column
-  dt_conditional_feature_values <- x_explain[, ..cond_cols_with_id]
+  dt_conditional_feature_values <- x_explain_copy[, ..cond_cols_with_id]
 
   # Merge (right outer join) the joint_probability_dt data with the conditional feature values
   results_id_combination <- data.table::merge.data.table(joint_probability_dt,
