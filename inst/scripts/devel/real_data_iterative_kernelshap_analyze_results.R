@@ -81,3 +81,10 @@ p <- ggplot(df, aes(n_rows)) +
     geom_histogram()
 ggsave(paste0(sim_results_folder, "n_rows.png"), plot = p)
 
+n_dropped = vector("numeric", length(run_obj_list))
+
+for (i in 1:100){
+  final_est = run_obj_list[[i]]$kshap_it_est_dt
+  final_est = final_est[nrow(final_est)]
+  n_dropped[i] = sum(is.na(final_est))
+}
