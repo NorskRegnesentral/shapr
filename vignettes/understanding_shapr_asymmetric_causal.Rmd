@@ -161,7 +161,7 @@ P(X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}(\tau) \cap \bar{\mathcal{S}}
 P(X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}(\tau) \cap \bar{\mathcal{S}}}, x_{\text{pa}(\tau) \cap \mathcal{S}}, x_{\tau \cap \mathcal{S}}).
 \end{align}
 Here, any of the Monte Carlo-based approaches in `shapr` can be
-used to compute the observational expectations. The marginals
+used to compute the conditional distributions/observational expectations. The marginals
 are estimated from the training data for all approaches except
 `gaussian`, for which we use the marginals of the Gaussian
 distribution instead.
@@ -356,20 +356,20 @@ plot_beeswarms = function(explanation_list, title = "", ...) {
   # Make the beeswarm plots
   grobs = lapply(seq(length(explanation_list)), function(explanation_idx) {
     gg = plot(explanation_list[[explanation_idx]], plot_type = "beeswarm", ...) +
-      ggtitle(names(explanation_list)[[explanation_idx]])
+      ggplot2::ggtitle(names(explanation_list)[[explanation_idx]])
     
     # Flip the order such that the features comes in the right order
     gg = gg + 
-      scale_x_discrete(limits = rev(levels(gg$data$variable)[levels(gg$data$variable) != "none"]))
+      ggplot2::scale_x_discrete(limits = rev(levels(gg$data$variable)[levels(gg$data$variable) != "none"]))
       
   })
   
   # Get the limits
-  ylim = sapply(grobs, function(grob) ggplot_build(grob)$layout$panel_scales_y[[1]]$range$range)
+  ylim = sapply(grobs, function(grob) ggplot2::ggplot_build(grob)$layout$panel_scales_y[[1]]$range$range)
   ylim = c(min(ylim), max(ylim))
 
   # Update the limits
-  grobs = suppressMessages(lapply(grobs, function(grob) grob + coord_flip(ylim = ylim)))
+  grobs = suppressMessages(lapply(grobs, function(grob) grob + ggplot2::coord_flip(ylim = ylim)))
 
   # Make the combined plot
   gridExtra::grid.arrange(grobs = grobs, ncol = 1,
@@ -1121,7 +1121,7 @@ is that we now see a much wider spread in the Shapley values for `temp_group`
 then we did for `temp` and `atemp`.
 For example, for the symmetric causal framework, we saw above that the `temp` and `atemp`
 obtained Shapley values between (around) $-500$ to $500$, while the grouped version
-`temp_group` obtains shapley values between $-1000$ to $1000$
+`temp_group` obtains Shapley values between $-1000$ to $1000$
 
 
 ```{r group_gaussian_plot_beeswarm, cache = TRUE, fig.height = 15, fig.width = 7.2}
@@ -1132,16 +1132,11 @@ plot_beeswarms(explanation_group_gaussian,
 ```
 
 
-
 ```{r group_gaussian_plot_SV, cache = TRUE, fig.height = 8, fig.width = 7.2}
 plot_SV_several_approaches(explanation_group_gaussian, index_x_explain) +
   ggtitle("Shapley value prediction explanation (gaussian)") +
   theme(legend.position = "bottom") + guides(fill = guide_legend(nrow = 2))
 ```
-
-
-
-
 
 
 
