@@ -351,6 +351,25 @@ test_that("output_mixed_asymmetric_causal_confounding_mixed", {
   )
 })
 
+test_that("output_mixed_asymmetric_causal_confounding_mixed_2", {
+  expect_snapshot_rds(
+    shapr::explain(
+      model = model_lm_mixed,
+      x_explain = x_explain_mixed,
+      x_train = x_train_mixed,
+      approach = "ctree",
+      prediction_zero = p0,
+      n_batches = 1,
+      timing = FALSE,
+      asymmetric = TRUE,
+      causal_ordering = list(1:2, 3, 4:5),
+      confounding = c(FALSE, TRUE, TRUE),
+      n_samples = 5 # Just for speed
+    ),
+    "output_mixed_symmetric_causal_confounding_mixed_2"
+  )
+})
+
 
 test_that("output_mixed_asymmetric_conditional_regression", {
   expect_snapshot_rds(
@@ -374,23 +393,40 @@ test_that("output_mixed_asymmetric_conditional_regression", {
 
 
 # Categorical data ------------------------------------------------------------------------------------------------
-# test_that("output_categorical_asymmetric_causal_mixed", {
-#   expect_snapshot_rds(
-#     shapr::explain(
-#       model = model_lm_categorical,
-#       x_explain = x_explain_categorical,
-#       x_train = x_train_categorical,
-#       approach = "categorical",
-#       prediction_zero = p0,
-#       n_batches = 1,
-#       timing = FALSE,
-#       asymmetric = FALSE,
-#       causal_ordering = list(1:2, 3:4),
-#       confounding = c(TRUE, FALSE),
-#       n_samples = 5 # Just for speed
-#     ),
-#     "output_categorical_asymmetric_causal_mixed"
-#   )
-# })
+test_that("output_categorical_asymmetric_causal_mixed_categorical", {
+  expect_snapshot_rds(
+    shapr::explain(
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical,
+      x_train = x_train_categorical,
+      approach = "categorical",
+      prediction_zero = p0,
+      n_batches = 1,
+      timing = FALSE,
+      asymmetric = FALSE,
+      causal_ordering = list(3:4, 2, 1),
+      confounding = c(TRUE, FALSE, FALSE),
+      n_samples = 5 # Just for speed
+    ),
+    "output_categorical_asymmetric_causal_mixed_categorical"
+  )
+})
 
-
+test_that("output_categorical_asymmetric_causal_mixed_ctree", {
+  expect_snapshot_rds(
+    shapr::explain(
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical,
+      x_train = x_train_categorical,
+      approach = "ctree",
+      prediction_zero = p0,
+      n_batches = 1,
+      timing = FALSE,
+      asymmetric = FALSE,
+      causal_ordering = list(3:4, 2, 1),
+      confounding = c(TRUE, FALSE, FALSE),
+      n_samples = 5 # Just for speed
+    ),
+    "output_categorical_asymmetric_causal_mixed_ctree"
+  )
+})

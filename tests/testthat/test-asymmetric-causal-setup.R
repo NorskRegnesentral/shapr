@@ -1,4 +1,4 @@
-causal_ordering = list(1:2, 3:4, 5)
+causal_ordering <- list(1:2, 3:4, 5)
 
 test_that("asymmetric erroneous input: `causal_ordering`", {
   set.seed(123)

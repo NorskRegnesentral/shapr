@@ -102,22 +102,22 @@
     Code
       (out <- code)
     Output
-          none Solar.R   Wind   Temp  Month     Day
-         <num>   <num>  <num>  <num>  <num>   <num>
-      1: 42.44 -10.139  10.60 17.194 -4.136 -0.9212
-      2: 42.44  14.257 -16.52 -8.046 -1.904 -1.6682
-      3: 42.44  -9.657 -15.72  6.533 -2.499  3.7785
+          none Solar.R   Wind    Temp  Month     Day
+         <num>   <num>  <num>   <num>  <num>   <num>
+      1: 42.44 -10.341  10.96 17.0426 -4.136 -0.9212
+      2: 42.44  13.580 -15.33 -8.5532 -1.904 -1.6682
+      3: 42.44  -5.309 -10.54 -0.5374 -3.702  2.5207
 
 # output_asymmetric_causal_confounding_mix_ctree
 
     Code
       (out <- code)
     Output
-          none Solar.R   Wind   Temp  Month     Day
-         <num>   <num>  <num>  <num>  <num>   <num>
-      1: 42.44 -10.139  10.60 17.194 -4.136 -0.9212
-      2: 42.44  14.257 -16.52 -8.046 -1.904 -1.6682
-      3: 42.44  -9.657 -15.72  6.533 -2.499  3.7785
+          none Solar.R   Wind    Temp  Month     Day
+         <num>   <num>  <num>   <num>  <num>   <num>
+      1: 42.44 -10.341  10.96 17.0426 -4.136 -0.9212
+      2: 42.44  13.580 -15.33 -8.5532 -1.904 -1.6682
+      3: 42.44  -5.309 -10.54 -0.5374 -3.702  2.5207
 
 # output_symmetric_causal_confounding_TRUE
 
@@ -179,22 +179,33 @@
     Code
       (out <- code)
     Output
-          none Solar.R    Wind    Temp     Day Month_factor
-         <num>   <num>   <num>   <num>   <num>        <num>
-      1: 42.44  -8.015  11.287 12.8650 -0.8496       -4.704
-      2: 42.44   5.976  -8.033 -3.8028 -0.1990       -9.325
-      3: 42.44   4.665 -18.673  0.1671 -0.2035        3.444
+          none Solar.R    Wind   Temp    Day Month_factor
+         <num>   <num>   <num>  <num>  <num>        <num>
+      1: 42.44  -5.169  17.833  8.668 -2.091       -8.658
+      2: 42.44   3.678  -8.256 -5.562 -2.501       -2.742
+      3: 42.44   5.128 -20.493  1.140  2.320        1.305
 
 # output_mixed_asymmetric_causal_confounding_mixed
 
     Code
       (out <- code)
     Output
-          none Solar.R   Wind   Temp    Day Month_factor
-         <num>   <num>  <num>  <num>  <num>        <num>
-      1: 42.44  -5.335  16.30  7.285 -2.758       -4.907
-      2: 42.44  15.730 -16.44 -9.009 -3.202       -2.462
-      3: 42.44  -6.451 -19.04  6.221  1.505        7.167
+          none Solar.R   Wind   Temp     Day Month_factor
+         <num>   <num>  <num>  <num>   <num>        <num>
+      1: 42.44 -11.467  26.92  3.575 -2.2544       -6.189
+      2: 42.44   8.537 -20.22  4.100  0.8014       -8.599
+      3: 42.44  -5.759 -13.85 -2.387  2.6100        8.781
+
+# output_mixed_asymmetric_causal_confounding_mixed_2
+
+    Code
+      (out <- code)
+    Output
+          none Solar.R    Wind   Temp    Day Month_factor
+         <num>   <num>   <num>  <num>  <num>        <num>
+      1: 42.44  -13.29  23.179  9.774 -3.298       -5.780
+      2: 42.44   -4.87   1.639 -6.104 -2.333       -3.714
+      3: 42.44   18.00 -32.233 -4.901  1.520        7.013
 
 # output_mixed_asymmetric_conditional_regression
 
@@ -206,4 +217,26 @@
       1: 42.44 -11.285  15.100 14.260 -2.2860       -5.205
       2: 42.44   5.489  -6.318 -4.626 -1.6414       -8.287
       3: 42.44   9.635 -32.764  7.441  0.8993        4.188
+
+# output_categorical_asymmetric_causal_mixed_categorical
+
+    Code
+      (out <- code)
+    Output
+          none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+         <num>        <num>              <num>          <num>       <num>
+      1: 42.44       -9.474             15.511        -10.661       4.115
+      2: 42.44       -2.873             -9.282         15.684     -18.361
+      3: 42.44       18.027            -19.980          9.701     -26.111
+
+# output_categorical_asymmetric_causal_mixed_ctree
+
+    Code
+      (out <- code)
+    Output
+          none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+         <num>        <num>              <num>          <num>       <num>
+      1: 42.44       -6.398              18.61         -2.660     -10.060
+      2: 42.44       -3.707             -15.99         22.695     -17.825
+      3: 42.44        7.951             -26.33          7.584      -7.568
 
