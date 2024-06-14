@@ -570,7 +570,6 @@ iterative_kshap_func <- function(model,
       } else if(approach=="ctree"){
         for(i in seq_len(nrow(new_combinations))){
 
-
           S_char_here <- new_combinations[i,S_char]
           Sbar_char_here <- new_combinations[i,Sbar_char]
 
@@ -787,12 +786,15 @@ iterative_kshap_func <- function(model,
 
       Xtmp[,id_combination_next := .GRP,by=S_next_char]
 
+      #browser()
 
+
+      # # YES; I DO NEED THIS !!!!
       # I don't think I actually need this (is overwritten later on anyway), so I comment it out
       ## Always keep the zero and full set
-      # id_combination_new_keepers <- Xtmp[c(1,.N),id_combination_next]
-      # Xtmp[id_combination_next %in% id_combination_new_keepers,keep:=FALSE]
-      # Xtmp[c(1,.N),keep:=TRUE]
+       id_combination_new_keepers <- Xtmp[c(1,.N),id_combination_next]
+       Xtmp[id_combination_next %in% id_combination_new_keepers,keep:=FALSE]
+       Xtmp[c(1,.N),keep:=TRUE]
 
 
       X_dt_vS <- merge(Xtmp,dt_vS,by=c("S_char","Sbar_char"))
