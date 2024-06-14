@@ -79,7 +79,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # to generate the full MC sample. Casual Shapley does not support combined
     # approaches, so we do not cannot have to check for that. All combinations are
     # done by vaeac, and we give them equal importance. Skip the empty and grand combinations.
-    parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions = S_causal[-c(1, nrow(S_causal))]
+    parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions = S_causal[-c(1, nrow(S_causal)), , drop = FALSE]
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob <-
       rep(1, nrow(parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions)) /
       nrow(parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions)
