@@ -13,7 +13,7 @@ library(future)
 library(xgboost)
 
 shapley_threshold_prob <- 0.2
-shapley_threshold_val <- 0.2
+shapley_threshold_val <- 0.1
 
 m <- 12
 n_train <- 5000
@@ -85,7 +85,7 @@ p0 <- mean(y_train)
 
 ### First run proper shapr call on this
 
-sim_results_saving_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/sim_nonlingauss/"#"../effektiv_shapley_output/"
+sim_results_saving_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/sim_nonlingauss_v2/"#"../effektiv_shapley_output/"
 shapley_reweighting_strategy = "none"
 
 set.seed(465132)
@@ -94,8 +94,8 @@ progressr::handlers(global = TRUE)
 expl <- shapr::explain(model = model,
                        x_explain= x_explain[inds,],
                        x_train = x_train,
-                       approach = "ctree",
-                       prediction_zero = p0)
+                       approach = "gaussian",
+                       prediction_zero = p0,Sigma=Sigma,mu=mu)
 
 fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
 
@@ -112,7 +112,7 @@ set.seed(123)
 
 # These are the parameters for for interative_kshap_func
 n_samples <- 1000
-approach = "ctree"
+approach = "gaussian"
 
 # Reduce if < 10% prob of shapval > 0.2
 
@@ -143,6 +143,8 @@ for(kk in testObs_computed_vec){
                               shapley_threshold_prob = shapley_threshold_prob,
                               approach = approach,
                               n_samples = n_samples,
+                              gaussian.mu = mu,
+                              gaussian.cov_mat = Sigma,
                               shapley_reweighting_strategy = shapley_reweighting_strategy)
   runres_list[[kk]] <- run$kshap_final
   runcomps_list[[kk]] <- sum(sapply(run$keep_list,"[[","no_computed_combinations"))
@@ -164,9 +166,10 @@ for (i in testObs_computed_vec){
   expl_approx_obj <- shapr::explain(model = model,
                                     x_explain= x_explain[inds[i],],
                                     x_train = x_train,
-                                    approach = "ctree",
+                                    approach = "gaussian",
                                     prediction_zero = p0,
-                                    n_combinations = runcomps_list[[i]])
+                                    n_combinations = runcomps_list[[i]],
+                                    Sigma=Sigma,mu=mu)
   expl_approx[i,] = unlist(expl_approx_obj$shapley_values)
   expl_approx_obj_list[[i]] <- expl_approx_obj
 }

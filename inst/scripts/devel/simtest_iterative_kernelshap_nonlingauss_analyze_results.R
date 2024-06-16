@@ -4,7 +4,7 @@ shapley_threshold_val <- 0.2
 
 
 
-sim_results_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/sim_lingauss_v2/"
+sim_results_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/sim_nonlingauss/"
 
 load(paste0(sim_results_folder,"iterative_kernelshap_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".RData"))
 
@@ -21,6 +21,9 @@ mae_vec <- colMeans(abs(exact_vals - iterative_vals))
 bias_vec_approx <- colMeans(exact_vals - approx_vals)
 rmse_vec_approx <- sqrt(colMeans((exact_vals - approx_vals)^2))
 mae_vec_approx <- colMeans(abs(exact_vals - approx_vals))
+
+mean(mae_vec[-1])
+mean(mae_vec_approx[-1])
 
 library(ggplot2)
 

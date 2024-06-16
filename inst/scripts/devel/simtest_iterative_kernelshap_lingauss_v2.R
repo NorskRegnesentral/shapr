@@ -13,7 +13,7 @@ library(future)
 library(xgboost)
 
 shapley_threshold_prob <- 0.2
-shapley_threshold_val <- 0.2
+shapley_threshold_val <- 0.1
 
 m <- 12
 n_train <- 5000
@@ -40,35 +40,18 @@ names(x_train) <- paste0("VV",1:m)
 names(x_explain) <- paste0("VV",1:m)
 
 
-g <- function(a,b){
-  a*b+a*b^2+a^2*b
-}
-
-beta <- c(0.2, -0.8, 1.0, 0.5, -0.8, rep(0, m - 5))
-gamma <- c(0.8,-1)
+beta <- c(5:1, rep(0, m - 5))
 alpha <- 1
-y_train <- alpha +
-  as.vector(as.matrix(cos(x_train))%*%beta) +
-  unlist(gamma[1]*g(x_train[,1],x_train[,2])) +
-  unlist(gamma[1]*g(x_train[,3],x_train[,4])) +
-  rnorm(n_train, 0, 1)
-y_explain <- alpha +
-  as.vector(as.matrix(cos(x_explain))%*%beta) +
-  unlist(gamma[1]*g(x_explain[,1],x_explain[,2])) +
-  unlist(gamma[1]*g(x_explain[,3],x_explain[,4])) +
-  rnorm(n_train, 0, 1)
+y_train <- as.vector(alpha + as.matrix(x_train) %*% beta + rnorm(n_train, 0, 1))
+y_explain <- alpha + as.matrix(x_explain) %*% beta + rnorm(n_explain, 0, 1)
 
 xy_train <- cbind(y_train, x_train)
 
 set.seed(123)
-model <- xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
-  nround = 50,
-  verbose = FALSE
-)
 
-pred_train <- predict(model, as.matrix(x_train))
+model <- lm(y_train ~ .,data = xy_train)
+
+pred_train <- predict(model, x_train)
 plot(unlist(x_train[,1]),pred_train)
 plot(unlist(x_train[,2]),pred_train)
 plot(unlist(x_train[,3]),pred_train)
@@ -85,7 +68,7 @@ p0 <- mean(y_train)
 
 ### First run proper shapr call on this
 
-sim_results_saving_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/sim_nonlingauss/"#"../effektiv_shapley_output/"
+sim_results_saving_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/sim_lingauss_v2/"#"../effektiv_shapley_output/"
 shapley_reweighting_strategy = "none"
 
 set.seed(465132)
@@ -94,8 +77,8 @@ progressr::handlers(global = TRUE)
 expl <- shapr::explain(model = model,
                        x_explain= x_explain[inds,],
                        x_train = x_train,
-                       approach = "ctree",
-                       prediction_zero = p0)
+                       approach = "gaussian",
+                       prediction_zero = p0,Sigma=Sigma,mu=mu)
 
 fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
 
@@ -112,22 +95,19 @@ set.seed(123)
 
 # These are the parameters for for interative_kshap_func
 n_samples <- 1000
-approach = "ctree"
+approach = "gaussian"
 
 # Reduce if < 10% prob of shapval > 0.2
 
 source("inst/scripts/devel/iterative_kernelshap_sourcefuncs.R")
 
 testObs_computed_vec <- inds# seq_len(n_explain)
-predict_model_xgb <- function(object,newdata){
-  xgboost:::predict.xgb.Booster(object,as.matrix(newdata))
-}
 
 # Using threshold: 0.1
 runres_list <- runcomps_list <- list()
 for(kk in testObs_computed_vec){
   testObs_computed <- testObs_computed_vec[kk]
-  full_pred <- predict(model,as.matrix(x_explain))[testObs_computed]
+  full_pred <- predict(model,x_explain)[testObs_computed]
   shapsum_other_features <- 0
 
 
@@ -138,11 +118,13 @@ for(kk in testObs_computed_vec){
                               full_pred = full_pred,
                               shapsum_other_features = shapsum_other_features,
                               p0 = p0,
-                              predict_model = predict_model_xgb,
+                              predict_model = predict.lm,
                               shapley_threshold_val = shapley_threshold_val,
                               shapley_threshold_prob = shapley_threshold_prob,
                               approach = approach,
                               n_samples = n_samples,
+                              gaussian.mu = mu,
+                              gaussian.cov_mat = Sigma,
                               shapley_reweighting_strategy = shapley_reweighting_strategy)
   runres_list[[kk]] <- run$kshap_final
   runcomps_list[[kk]] <- sum(sapply(run$keep_list,"[[","no_computed_combinations"))
@@ -164,9 +146,10 @@ for (i in testObs_computed_vec){
   expl_approx_obj <- shapr::explain(model = model,
                                     x_explain= x_explain[inds[i],],
                                     x_train = x_train,
-                                    approach = "ctree",
+                                    approach = "gaussian",
                                     prediction_zero = p0,
-                                    n_combinations = runcomps_list[[i]])
+                                    n_combinations = runcomps_list[[i]],
+                                    Sigma=Sigma,mu=mu)
   expl_approx[i,] = unlist(expl_approx_obj$shapley_values)
   expl_approx_obj_list[[i]] <- expl_approx_obj
 }
