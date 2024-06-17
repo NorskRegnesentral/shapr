@@ -1,9 +1,9 @@
 library(data.table)
 shapley_reweighting_strategy = "none"
 
-load(paste0("/nr/samba/user/fsaase/Documents/effektiv_shapley_output/gmc_data/iterative_kernelshap_lingauss_p12", shapley_reweighting_strategy, ".RData"))
+load(paste0("/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/gmc_data/iterative_kernelshap_lingauss_p12", shapley_reweighting_strategy, ".RData"))
 
-sim_results_folder = "../effektiv_shapley_output/gmc_data/"
+sim_results_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/gmc_data/"
 
 
 exact_vals = fread(paste0(sim_results_folder,"exact_shapley_values", shapley_reweighting_strategy, ".csv"))
@@ -81,10 +81,21 @@ p <- ggplot(df, aes(n_rows)) +
     geom_histogram()
 ggsave(paste0(sim_results_folder, "n_rows.png"), plot = p)
 
-n_dropped = vector("numeric", length(run_obj_list))
+#### Just looking at the largest predictions
 
-for (i in 1:100){
-  final_est = run_obj_list[[i]]$kshap_it_est_dt
-  final_est = final_est[nrow(final_est)]
-  n_dropped[i] = sum(is.na(final_est))
-}
+preds <- rowSums(exact_vals)
+
+these <- head(order(-preds),10)
+
+preds[these]-rowSums(iterative_vals)[these]
+
+bias_vec <- colMeans(exact_vals[these] - iterative_vals[these])
+rmse_vec <- sqrt(colMeans((exact_vals[these] - iterative_vals[these])^2))
+mae_vec <- colMeans(abs(exact_vals[these] - iterative_vals[these]))
+
+bias_vec_approx <- colMeans(exact_vals[these] - approx_vals[these])
+rmse_vec_approx <- sqrt(colMeans((exact_vals[these] - approx_vals[these])^2))
+mae_vec_approx <- colMeans(abs(exact_vals[these] - approx_vals[these]))
+
+
+

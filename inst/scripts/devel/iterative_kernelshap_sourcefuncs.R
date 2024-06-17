@@ -387,8 +387,8 @@ iterative_kshap_func <- function(model,
                                  ctree.mincriterion = 0.95, # The minimum criterion for the ctree method
                                  ctree.minsplit = 20, # The minimum split for the ctree method
                                  ctree.minbucket = 7, # The minimum bucket for the ctree method
-                                 ctree.sample = TRUE # Whether to sample in the ctree method
-                                 ){
+                                 ctree.sample = TRUE, # Whether to sample in the ctree method
+                                 all_trees = NULL){ # list of trees to reuse in the ctree method. This feature
 
   ### SOME SETUP ###
 
@@ -419,6 +419,11 @@ iterative_kshap_func <- function(model,
 
   current_x_train_red <- x_train[,..cutoff_feats]
   current_x_explain_red <- x_explain[,..cutoff_feats]
+
+  if(!is.null(all_trees)){
+    S_all_trees <- lapply(all_trees,"[[","given_ind")
+    feat_names_all_trees <- sapply(S_all_trees, function(x)paste0(cutoff_feats[x],collapse="_"))
+  }
 
   fixed_kshap_est_dt <- NULL
   kshap_est_dt_list <- kshap_sd_dt_list <- kshap_prob_dt_list <- kshap_est_sd_prob_dt_list <- list()
@@ -521,7 +526,6 @@ iterative_kshap_func <- function(model,
       x_explain_red_here <- current_x_explain_red[testObs_computed,]
       x_excluded_here <- x_explain[testObs_computed,..current_excluded_feature_cols]
 
-
       if(approach=="gaussian"){
 
         S_char_here <- new_combinations[,S_char]
@@ -566,13 +570,22 @@ iterative_kshap_func <- function(model,
       } else if(approach=="ctree"){
         for(i in seq_len(nrow(new_combinations))){
 
-
           S_char_here <- new_combinations[i,S_char]
           Sbar_char_here <- new_combinations[i,Sbar_char]
 
           S_here <- unlist(X[S_char ==S_char_here,S])
 
-          tree <- shapr:::create_ctree(S_here, current_x_train_red, ctree.mincriterion, ctree.minsplit, ctree.minbucket)
+          # Created solely to extract the right tree below
+          S_feat_names <- paste0(S_mapper_list[[iter]][feature_numbers %in% S_here,feature_names],collapse="_")
+
+          if(!is.null(all_trees) && (S_feat_names %in% feat_names_all_trees)){             # In order for this to work properly, I also need to check Sbar_feat_names here
+
+            tree <- all_trees[[which(feat_names_all_trees==S_feat_names)]]
+          } else {
+            # Optimally, trained trees should be added to all_trees for use in later calls to this function. BUt then I need to currect the feature numbering too, so that becomes harder
+            tree <- shapr:::create_ctree(S_here, current_x_train_red, ctree.mincriterion, ctree.minsplit, ctree.minbucket)
+
+          }
 
           samp_list <- list()
           for(j in seq_along(testObs_computed)){
@@ -773,12 +786,15 @@ iterative_kshap_func <- function(model,
 
       Xtmp[,id_combination_next := .GRP,by=S_next_char]
 
+      #browser()
 
+
+      # # YES; I DO NEED THIS !!!!
       # I don't think I actually need this (is overwritten later on anyway), so I comment it out
       ## Always keep the zero and full set
-      # id_combination_new_keepers <- Xtmp[c(1,.N),id_combination_next]
-      # Xtmp[id_combination_next %in% id_combination_new_keepers,keep:=FALSE]
-      # Xtmp[c(1,.N),keep:=TRUE]
+       id_combination_new_keepers <- Xtmp[c(1,.N),id_combination_next]
+       Xtmp[id_combination_next %in% id_combination_new_keepers,keep:=FALSE]
+       Xtmp[c(1,.N),keep:=TRUE]
 
 
       X_dt_vS <- merge(Xtmp,dt_vS,by=c("S_char","Sbar_char"))
