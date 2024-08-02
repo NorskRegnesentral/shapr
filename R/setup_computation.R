@@ -662,6 +662,7 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
 #' @return Numeric matrix. See [weight_matrix_cpp()] for more information.
 #' @keywords internal
 #'
+#' @export
 #' @author Nikolai Sellereite, Martin Jullum
 weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
   # Fetch weights
