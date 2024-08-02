@@ -361,7 +361,7 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
   dt[, n_features := length(features[[1]]), id_combination]
   dt[, N := .N, n_features]
   dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m)]
-
+  dt[, sample_freq := NA]
   return(dt)
 }
 
