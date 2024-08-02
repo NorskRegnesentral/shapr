@@ -197,6 +197,7 @@ shapley_setup <- function(internal) {
   # Updating parameters$exact as done in feature_combinations
   if (!exact && n_combinations >= 2^n_features0) {
     internal$iter_list[[iter]]$exact <- TRUE
+    internal$parameters$exact <- TRUE # Since this means that all combinations have been sampled
   }
 
   # Updating these parameters in the end based on what is actually used -- can probably remove some of this redundancy
