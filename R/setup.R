@@ -42,7 +42,7 @@ setup <- function(x_train,
                   group_lags = NULL,
                   timing,
                   verbose,
-                  adaptive,
+                  adaptive = FALSE,
                   is_python = FALSE,
                   ...) {
   internal <- list()
