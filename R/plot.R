@@ -1006,8 +1006,10 @@ plot_MSEv_eval_crit <- function(explanation_list,
   MSEv_check_explanation_list(explanation_list)
 
   # Get the number of observations and combinations and the quantile of the T distribution
+  iter <- length(explanation_list[[1]]$internal$iter_list)
+  n_combinations <- explanation_list[[1]]$internal$iter_list[[iter]]$n_combinations
+
   n_explain <- explanation_list[[1]]$internal$parameters$n_explain
-  n_combinations <- explanation_list[[1]]$internal$parameters$n_combinations
   tfrac <- if (is.null(CI_level)) NULL else qt((1 + CI_level) / 2, n_explain - 1)
 
   # Create data.tables of the MSEv values

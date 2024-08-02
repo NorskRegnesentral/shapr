@@ -11,7 +11,7 @@ feature_combinations(
   weight_zero_m = 10^6,
   group_num = NULL,
   paired_shap_sampling = TRUE,
-  prev_feature_sample = NULL
+  prev_feature_samples = NULL
 )
 }
 \arguments{

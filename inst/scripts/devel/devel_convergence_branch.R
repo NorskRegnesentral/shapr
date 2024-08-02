@@ -13,7 +13,7 @@ data[,new6 :=rnorm(.N)]
 data[,new7 :=rnorm(.N)]
 
 
-x_var <- c("Solar.R", "Wind", "Temp", "Month","Day","new1")#,"new2","new3","new4","new5","new6","new7")
+x_var <- c("Solar.R", "Wind", "Temp", "Month","Day","new1","new2","new3","new4","new5")#"new6","new7")
 y_var <- "Ozone"
 
 ind_x_explain <- 1:20
@@ -42,7 +42,7 @@ explanation_adaptive <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  n_combinations = 20,
+  n_combinations = 500,
   prediction_zero = p0,
   adaptive = TRUE,
   n_boot_samps = 100, # tmp
@@ -56,10 +56,20 @@ explanation_nonadaptive <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  n_combinations = 20,
+  n_combinations = 400,
   prediction_zero = p0,
   adaptive = FALSE
 )
+
+
+
+
+
+
+
+
+
+
 
 
 plot(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,

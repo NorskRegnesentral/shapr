@@ -106,7 +106,7 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 #' @param augment_comb_prob Array of numerics (default is `NULL`). The length of the array must match the number of
 #' combinations being considered, where each entry specifies the probability of sampling the corresponding coalition.
 #' This is useful if we want to generate more training data for some specific coalitions. One possible choice would be
-#' `augment_comb_prob = if (use_Shapley_weights) internal$iter_list[[iter]]$X$shapley_weight[2:actual_n_combinations] else NULL`.
+#' `augment_comb_prob = if (use_Shapley_weights) internal$objects$X$shapley_weight[2:actual_n_combinations] else NULL`.
 #' @param augment_weights String (optional). Specifying which type of weights to add to the observations.
 #' If `NULL` (default), then no weights are added. If `"Shapley"`, then the Shapley weights for the different
 #' combinations are added to corresponding observations where the coalitions was applied. If `uniform`, then

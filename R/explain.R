@@ -369,8 +369,8 @@ explain <- function(model,
     ### for now we just some of the parameters here
     initial_n_combinations <- min(200,ceiling((2^internal$parameters$n_features)/10))
     max_iter <- 20
-    reduction_factor_vec <- c(seq(0.1,1,by=0.1),rep(1,max_iter-10)) # Proportion of estimated remaining samples to use in next iteration
     convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
+    reduction_factor_vec <- c(seq(0.1,1,by=0.1),rep(1,max_iter-10)) # Proportion of estimated remaining samples to use in next iteration
 
 
   } else {
@@ -385,7 +385,9 @@ explain <- function(model,
 
   converged <- FALSE
 
-#  internal <- setup_approach(internal, model = model, predict_model = predict_model)
+  # NOTE: To make tests pass for non-adaptive approach, comment L390 (setup approach) and uncommnet L412 (setup_approach)
+
+ # internal <- setup_approach(internal, model = model, predict_model = predict_model)
   internal$parameters$shapley_reweighting <- shapley_reweighting
 
   internal$parameters$max_iter <- max_iter
@@ -397,14 +399,13 @@ explain <- function(model,
   internal$iter_list[[1]] <- list(
     n_combinations = initial_n_combinations,
     exact = internal$parameters$exact,
-    compute_sd = ifelse(internal$parameters$exact==FALSE,TRUE,FALSE),
+    compute_sd = ifelse(isFALSE(internal$parameters$exact),TRUE,FALSE),
     reduction_factor = internal$parameters$reduction_factor_vec[1]
   )
 
     while(converged==FALSE){
       iter <- iter + 1
 
-      #internal$parameters$n_combinations <- internal$iter_list[[iter]]$n_combinations # to simplify internal function extracting this parameter
 
       # setup the Shapley framework
       internal <- shapley_setup(internal)

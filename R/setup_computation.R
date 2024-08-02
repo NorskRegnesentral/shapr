@@ -191,7 +191,10 @@ shapley_setup <- function(internal) {
     internal$iter_list[[iter]]$exact <- TRUE
   }
 
-  internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used.
+  # Updating these parameters in the end based on what is actually used -- can probably remove some of this redundancy
+  internal$parameters$n_combinations <- nrow(S)
+  internal$parameters$used_n_combinations <- nrow(S)
+  internal$iter_list[[iter]]$n_combinations <- nrow(S)
 
   # This will be obsolete later
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
