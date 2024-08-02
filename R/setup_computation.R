@@ -111,7 +111,7 @@ shapley_setup_forecast <- function(internal) {
   internal$objects$X <- X
   internal$objects$W <- W
   internal$objects$S <- S
-  internal$objects$S_batch <- create_S_batch_new(internal)
+  internal$objects$S_batch <- create_S_batch(internal)
 
   internal$objects$id_combination_mapper_dt <- id_combination_mapper_dt
   internal$objects$cols_per_horizon <- cols_per_horizon
