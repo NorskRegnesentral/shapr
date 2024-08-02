@@ -20,7 +20,7 @@
 setup <- function(x_train,
                   x_explain,
                   approach,
-                  paired_shap_sampling,
+                  paired_shap_sampling = FALSE,
                   prediction_zero,
                   output_size = 1,
                   n_combinations,
