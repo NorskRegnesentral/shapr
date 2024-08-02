@@ -143,6 +143,7 @@ shapley_reweighting <- function(X,reweight = "on_N"){
 #' @keywords internal
 shapley_setup <- function(internal) {
   n_features0 <- internal$parameters$n_features
+  approach0 <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling = internal$parameters$paired_shap_sampling
   shapley_reweighting = internal$parameters$shapley_reweighting
@@ -165,6 +166,13 @@ shapley_setup <- function(internal) {
     paired_shap_sampling = paired_shap_sampling,
     prev_feature_samples = prev_feature_samples
   )
+
+  # Adding approach to X (needed for the combined approaches)
+  if (length(approach0) > 1) {
+    X[!(n_features %in% c(0, n_features0)), approach := approach0[n_features]]
+  } else {
+    X[, approach := approach0]
+  }
 
   id_comb_feature_map <- X[, .(id_combination,
                                features_str = sapply(features, paste, collapse = " "))]
