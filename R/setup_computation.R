@@ -111,7 +111,7 @@ shapley_setup_forecast <- function(internal) {
   internal$objects$X <- X
   internal$objects$W <- W
   internal$objects$S <- S
-  internal$objects$S_batch <- create_S_batch(internal)
+  internal$objects$S_batch <- create_S_batch_forecast(internal)
 
   internal$objects$id_combination_mapper_dt <- id_combination_mapper_dt
   internal$objects$cols_per_horizon <- cols_per_horizon
@@ -675,6 +675,86 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
   }
 
   return(W)
+}
+
+#' @keywords internal
+create_S_batch_forecast <- function(internal, seed = NULL) { # This is temporary used for forecast only. Will be removed in the future
+  n_features0 <- internal$parameters$n_features
+  approach0 <- internal$parameters$approach
+  n_combinations <- internal$parameters$n_combinations
+  n_batches <- internal$parameters$n_batches
+
+  X <- internal$objects$X
+
+  if (!is.null(seed)) set.seed(seed)
+
+  if (length(approach0) > 1) {
+    X[!(n_features %in% c(0, n_features0)), approach := approach0[n_features]]
+
+    # Finding the number of batches per approach
+    batch_count_dt <- X[!is.na(approach), list(
+      n_batches_per_approach =
+        pmax(1, round(.N / (n_combinations - 2) * n_batches)),
+      n_S_per_approach = .N
+    ), by = approach]
+
+    # Ensures that the number of batches corresponds to `n_batches`
+    if (sum(batch_count_dt$n_batches_per_approach) != n_batches) {
+      # Ensure that the number of batches is not larger than `n_batches`.
+      # Remove one batch from the approach with the most batches.
+      while (sum(batch_count_dt$n_batches_per_approach) > n_batches) {
+        batch_count_dt[
+          which.max(n_batches_per_approach),
+          n_batches_per_approach := n_batches_per_approach - 1
+        ]
+      }
+
+      # Ensure that the number of batches is not lower than `n_batches`.
+      # Add one batch to the approach with most coalitions per batch
+      while (sum(batch_count_dt$n_batches_per_approach) < n_batches) {
+        batch_count_dt[
+          which.max(n_S_per_approach / n_batches_per_approach),
+          n_batches_per_approach := n_batches_per_approach + 1
+        ]
+      }
+    }
+
+    batch_count_dt[, n_leftover_first_batch := n_S_per_approach %% n_batches_per_approach]
+    data.table::setorder(batch_count_dt, -n_leftover_first_batch)
+
+    approach_vec <- batch_count_dt[, approach]
+    n_batch_vec <- batch_count_dt[, n_batches_per_approach]
+
+    # Randomize order before ordering spreading the batches on the different approaches as evenly as possible
+    # with respect to shapley_weight
+    X[, randomorder := sample(.N)]
+    data.table::setorder(X, randomorder) # To avoid smaller id_combinations always proceeding large ones
+    data.table::setorder(X, shapley_weight)
+
+    batch_counter <- 0
+    for (i in seq_along(approach_vec)) {
+      X[approach == approach_vec[i], batch := ceiling(.I / .N * n_batch_vec[i]) + batch_counter]
+      batch_counter <- X[approach == approach_vec[i], max(batch)]
+    }
+  } else {
+    X[!(n_features %in% c(0, n_features0)), approach := approach0]
+
+    # Spreading the batches
+    X[, randomorder := sample(.N)]
+    data.table::setorder(X, randomorder)
+    data.table::setorder(X, shapley_weight)
+    X[!(n_features %in% c(0, n_features0)), batch := ceiling(.I / .N * n_batches)]
+  }
+
+  # Assigning batch 1 (which always is the smallest) to the full prediction.
+  X[, randomorder := NULL]
+  X[id_combination == max(id_combination), batch := 1]
+  setkey(X, id_combination)
+
+  # Create a list of the batch splits
+  S_groups <- split(X[id_combination != 1, id_combination], X[id_combination != 1, batch])
+
+  return(S_groups)
 }
 
 #' @keywords internal

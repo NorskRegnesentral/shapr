@@ -177,17 +177,25 @@ explain_forecast <- function(model,
   timing_list$setup_computation <- Sys.time()
 
 
+  ### Temporary solution for forecast
+
+  internal$iter_list <- list(list(X=internal$objects$X,
+                                  S=internal$objects$S,
+                                  n_combinations=internal$parameters$n_combinations))
+  ####
+
+
   # Compute the v(S):
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model, method = "regular")
+  vS_list <- compute_vS_forecast(internal, model, predict_model, method = "regular")
 
   timing_list$compute_vS <- Sys.time()
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
-  output <- finalize_explanation(
+  output <- finalize_explanation_forecast(
     vS_list = vS_list,
     internal = internal
   )

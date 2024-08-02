@@ -602,3 +602,56 @@ compute_MSEv_eval_crit <- function(internal,
     MSEv_combination = MSEv_combination
   ))
 }
+
+
+#' Computes the Shapley values given `v(S)`
+#'
+#' @inherit explain
+#' @inheritParams default_doc
+#' @param vS_list List
+#' Output from [compute_vS()]
+#'
+#' @export
+finalize_explanation_forecast <- function(vS_list, internal) { # Temporary used for forecast only (the old function)
+  MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
+
+  processed_vS_list <- postprocess_vS_list(
+    vS_list = vS_list,
+    internal = internal
+  )
+
+  # Extract the predictions we are explaining
+  p <- get_p(processed_vS_list$dt_vS, internal)
+
+  # internal$timing$postprocessing <- Sys.time()
+
+  # Compute the Shapley values
+  dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+
+  # internal$timing$shapley_computation <- Sys.time()
+
+  # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
+  internal$tmp <- NULL
+
+  internal$output <- processed_vS_list
+
+  output <- list(
+    shapley_values = dt_shapley,
+    internal = internal,
+    pred_explain = p
+  )
+  attr(output, "class") <- c("shapr", "list")
+
+  # Compute the MSEv evaluation criterion if the output of the predictive model is a scalar.
+  # TODO: check if it makes sense for output_size > 1.
+  if (internal$parameters$output_size == 1) {
+    output$MSEv <- compute_MSEv_eval_crit(
+      internal = internal,
+      dt_vS = processed_vS_list$dt_vS,
+      MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
+    )
+  }
+
+  return(output)
+}
+
