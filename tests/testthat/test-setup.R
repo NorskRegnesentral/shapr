@@ -1807,7 +1807,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
   # Check that the used number of batches corresponds with the provided `n_batches`
   expect_equal(
     explanation_1$internal$parameters$n_batches,
-    length(explanation_1$internal$objects$S_batch)
+    length(explanation_1$internal$iter_list[[1]]$S_batch)
   )
 
   explanation_2 <- explain(
@@ -1824,7 +1824,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
   # Check that the used number of batches corresponds with the provided `n_batches`
   expect_equal(
     explanation_2$internal$parameters$n_batches,
-    length(explanation_2$internal$objects$S_batch)
+    length(explanation_2$internal$iter_list[[1]]$S_batch)
   )
 
   # Check for the default value for `n_batch`
@@ -1842,7 +1842,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
   # Check that the used number of batches corresponds with the `n_batches`
   expect_equal(
     explanation_3$internal$parameters$n_batches,
-    length(explanation_3$internal$objects$S_batch)
+    length(explanation_3$internal$iter_list[[1]]$S_batch)
   )
 })
 

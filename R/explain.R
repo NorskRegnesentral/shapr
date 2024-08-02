@@ -399,7 +399,10 @@ explain <- function(model,
   internal$iter_list[[1]] <- list(
     n_combinations = initial_n_combinations,
     exact = internal$parameters$exact,
-    compute_sd = ifelse(isFALSE(internal$parameters$exact),TRUE,FALSE),
+    compute_sd = ifelse(isFALSE(internal$parameters$exact) &&
+                          isFALSE(internal$parameters$is_groupwise) &&
+                          internal$parameters$n_combinations < 2^internal$parameters$n_features, # As exact is not reset before shapley_setup
+                        TRUE,FALSE),
     reduction_factor = internal$parameters$reduction_factor_vec[1]
   )
 
