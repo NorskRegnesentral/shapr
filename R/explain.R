@@ -387,7 +387,10 @@ explain <- function(model,
 
   # NOTE: To make tests pass for non-adaptive approach, comment L390 (setup approach) and uncommnet L412 (setup_approach)
 
- # internal <- setup_approach(internal, model = model, predict_model = predict_model)
+
+  if(approach!="regression_surrogate"){ # Already done for regression_surrogate
+    internal <- setup_approach(internal, model = model, predict_model = predict_model)
+  }
   internal$parameters$shapley_reweighting <- shapley_reweighting
 
   internal$parameters$max_iter <- max_iter
@@ -409,10 +412,13 @@ explain <- function(model,
     while(converged==FALSE){
       iter <- iter + 1
 
-
       # setup the Shapley framework
       internal <- shapley_setup(internal)
-      internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make all tests pass for nonadaptive approach
+
+      if(approach=="regression_surrogate"){ # Since setup_approach for regression_surrogate requires shapley_setup to be called first, it will be called in here
+        internal <- setup_approach(internal, model = model, predict_model = predict_model)
+      }
+      #internal <- setup_approach(internal, model = model, predict_model = predict_model) # uncomment to make all tests pass for nonadaptive approach
 
       # Compute the vS
       vS_list <- compute_vS(internal, model, predict_model)
