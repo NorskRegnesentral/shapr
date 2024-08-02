@@ -8,7 +8,7 @@ setup(
   x_train,
   x_explain,
   approach,
-  paired_shap_sampling,
+  paired_shap_sampling = FALSE,
   prediction_zero,
   output_size = 1,
   n_combinations,
@@ -30,7 +30,7 @@ setup(
   group_lags = NULL,
   timing,
   verbose,
-  adaptive,
+  adaptive = FALSE,
   is_python = FALSE,
   ...
 )
