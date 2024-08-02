@@ -407,6 +407,10 @@ explain <- function(model,
     reduction_factor = internal$parameters$reduction_factor_vec[1]
   )
 
+  set.seed(seed) # Set seed again to get reproducability for the shapley_setup regardless of whether setup_approach
+                 # had randomness in it (i.e. such that changing approach would not give differnet samples combinations
+                 # (before any convergence stopping)
+
     while(converged==FALSE){
       iter <- iter + 1
 
