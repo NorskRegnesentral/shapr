@@ -232,6 +232,10 @@ shapley_setup <- function(internal) {
 #' @param group_num List. Contains vector of integers indicating the feature numbers for the
 #' different groups.
 #'
+#' @param paired_shap_sampling TODO: document
+#'
+#' @param prev_feature_samples TODO: document
+#'
 #' @return A data.table that contains the following columns:
 #' \describe{
 #' \item{id_combination}{Positive integer. Represents a unique key for each combination. Note that the table

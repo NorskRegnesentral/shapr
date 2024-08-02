@@ -29,6 +29,10 @@ weights when doing numerical operations.}
 
 \item{group_num}{List. Contains vector of integers indicating the feature numbers for the
 different groups.}
+
+\item{paired_shap_sampling}{TODO: document}
+
+\item{prev_feature_samples}{TODO: document}
 }
 \value{
 A data.table that contains the following columns:

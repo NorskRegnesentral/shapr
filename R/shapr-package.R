@@ -25,6 +25,8 @@
 #'
 #' @importFrom stats rnorm
 #'
+#' @importFrom stats median
+#'
 #' @importFrom Rcpp sourceCpp
 #'
 #' @keywords internal

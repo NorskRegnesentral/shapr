@@ -356,7 +356,7 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
 
     shapley_reweighting(X_boot, reweight=shapley_reweighting) # reweights the shapley weights by reference
 
-    W_boot <- shapr:::weight_matrix(
+    W_boot <- shapr::weight_matrix(
       X = X_boot,
       normalize_W_weights = TRUE,
       is_groupwise = FALSE

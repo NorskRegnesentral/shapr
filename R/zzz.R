@@ -107,7 +107,16 @@
       "x_train_torch",
       "self",
       "..current_comb",
-      "..regression.response_var"
+      "..regression.response_var",
+      "sample_freq",
+      "features_dup",
+      "features_dup_tmp",
+      "maxval",
+      "minval",
+      "req_samples",
+      "explain_id",
+      "id_combination_new",
+      "features_str"
     )
   )
 

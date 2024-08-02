@@ -49,6 +49,8 @@ All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empiri
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
 The two regression approaches can not be combined with any other approach. See details for more information.}
 
+\item{paired_shap_sampling}{TODO: document}
+
 \item{prediction_zero}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
 features.
@@ -60,6 +62,8 @@ If \code{group = NULL}, \code{n_combinations} represents the number of unique fe
 If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
 If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
 The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.}
+
+\item{adaptive}{TODO: document}
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
@@ -122,6 +126,14 @@ Whether the timing of the different parts of the \code{explain()} should saved i
 If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
 Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
+
+\item{n_boot_samps}{TODO: document}
+
+\item{print_shapleyres}{TODO: document}
+
+\item{print_iter_info}{TODO: document}
+
+\item{shapley_reweighting}{TODO: document}
 
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}

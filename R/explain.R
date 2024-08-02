@@ -95,6 +95,18 @@
 #' Use `0` (default) for no verbosity, `1` for low verbose, and `2` for high verbose.
 #' TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.
 #'
+#' @param paired_shap_sampling TODO: document
+#'
+#' @param adaptive TODO: document
+#'
+#' @param n_boot_samps TODO: document
+#'
+#' @param print_shapleyres TODO: document
+#'
+#' @param print_iter_info TODO: document
+#'
+#' @param shapley_reweighting TODO: document
+#'
 #' @param ... Further arguments passed to specific approaches
 #'
 #' @inheritDotParams setup_approach.empirical

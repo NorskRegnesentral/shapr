@@ -48,6 +48,8 @@ All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empiri
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
 The two regression approaches can not be combined with any other approach. See details for more information.}
 
+\item{paired_shap_sampling}{TODO: document}
+
 \item{prediction_zero}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
 features.
@@ -145,6 +147,8 @@ Whether the timing of the different parts of the \code{explain()} should saved i
 If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
 Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
+
+\item{adaptive}{TODO: document}
 
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
