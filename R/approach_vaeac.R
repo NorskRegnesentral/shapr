@@ -187,7 +187,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
-
   iter <- length(internal$iter_list)
 
   n_combinations <- internal$iter_list[[iter]]$n_combinations

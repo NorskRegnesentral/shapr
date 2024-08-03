@@ -124,7 +124,6 @@ regression.surrogate_aug_data <- function(internal,
                                           augment_add_id_comb = FALSE,
                                           augment_comb_prob = NULL,
                                           augment_weights = NULL) {
-
   iter <- length(internal$iter_list)
 
 

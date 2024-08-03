@@ -1,55 +1,52 @@
-print_iter <- function(internal,print_iter_info,print_shapleyres){
+print_iter <- function(internal, print_iter_info, print_shapleyres) {
+  iter <- length(internal$iter_list) - 1 # This function is called after the preparation of the next iteration
 
-  iter <- length(internal$iter_list)-1 # This function is called after the preparation of the next iteration
-
-  if(print_iter_info){
-
+  if (print_iter_info) {
     converged <- internal$iter_list[[iter]]$converged
     estimated_remaining_combinations <- internal$iter_list[[iter]]$estimated_remaining_combinations
     estimated_required_combinations <- internal$iter_list[[iter]]$estimated_required_combinations
     current_n_combinations <- internal$iter_list[[iter]]$n_combinations
 
-    next_n_combinations <- internal$iter_list[[iter+1]]$n_combinations
+    next_n_combinations <- internal$iter_list[[iter + 1]]$n_combinations
 
-    if(converged==FALSE){
-
-      cat(paste0("\nIteration ", iter, "\n",
-                 "Not converged after ", current_n_combinations, " coalitions.\n",
-                 "Estimated remaining coalitions: ", estimated_remaining_combinations, "\n",
-                 "Estimated required coalitions: ", estimated_required_combinations, "\n",
-                 "Using ", next_n_combinations, " new coalitions in the next iteration.\n"))
-
+    if (converged == FALSE) {
+      cat(paste0(
+        "\nIteration ", iter, "\n",
+        "Not converged after ", current_n_combinations, " coalitions.\n",
+        "Estimated remaining coalitions: ", estimated_remaining_combinations, "\n",
+        "Estimated required coalitions: ", estimated_required_combinations, "\n",
+        "Using ", next_n_combinations, " new coalitions in the next iteration.\n"
+      ))
     } else {
       cat("\nConvergence reached!\n")
     }
   }
 
-  if(print_shapleyres){
+  if (print_shapleyres) {
     n_explain <- internal$parameters$n_explain
 
-    dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[,-1]
-    dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[,-1]
+    dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, -1]
+    dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, -1]
 
     # Printing the current Shapley values
-    matrix1 <- format(round(dt_shapley_est,3),nsmall=2,justify = "right")
-    matrix2 <- format(round(dt_shapley_sd,2),nsmall=2,justify = "right")
+    matrix1 <- format(round(dt_shapley_est, 3), nsmall = 2, justify = "right")
+    matrix2 <- format(round(dt_shapley_sd, 2), nsmall = 2, justify = "right")
 
-    if(print_shapleyres){
+    if (print_shapleyres) {
       cat("Current estimated Shapley values (sd):\n")
-      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2,") ", sep = ""), nrow = n_explain))
+      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = n_explain))
       names(print_dt) <- names(dt_shapley_est)
       print(print_dt)
     }
   }
 }
 
-prepare_next_iteration <- function(internal){
-
+prepare_next_iteration <- function(internal) {
   iter <- length(internal$iter_list)
-  converged <-internal$iter_list[[iter]]$converged
+  converged <- internal$iter_list[[iter]]$converged
 
 
-  if(converged==FALSE){
+  if (converged == FALSE) {
     next_iter_list <- list()
 
     n_features <- internal$parameters$n_features
@@ -61,9 +58,9 @@ prepare_next_iteration <- function(internal){
 
     X <- internal$iter_list[[iter]]$X
 
-    proposal_next_n_combinations <- ceiling(estimated_remaining_combinations*reduction_factor)
+    proposal_next_n_combinations <- ceiling(estimated_remaining_combinations * reduction_factor)
 
-    if((current_n_combinations+proposal_next_n_combinations)>=2^n_features){
+    if ((current_n_combinations + proposal_next_n_combinations) >= 2^n_features) {
       # Use all coalitions in the last iteration as the estimated number of samples is more than what remains
       next_iter_list$exact <- TRUE
       next_iter_list$n_combinations <- 2^n_features - current_n_combinations + 2
@@ -79,22 +76,28 @@ prepare_next_iteration <- function(internal){
 
     # Storing the feature samples I have from before (not sure I need these if I run exact).
     # Could also be moved to shapley_setup as it is computed based on X only, and that is stored in previous iter_list anyway
-    repetitions <- X[-c(1,.N),sample_freq]
-    unique_feature_samples <- X[-c(1,.N),features]
+    repetitions <- X[-c(1, .N), sample_freq]
+    unique_feature_samples <- X[-c(1, .N), features]
 
-    next_iter_list$prev_feature_samples <- unlist(lapply(seq_along(unique_feature_samples),
-                                                         function(i) rep(list(unique_feature_samples[[i]]),
-                                                                         repetitions[i])),
-                                                  recursive = FALSE)
-
+    next_iter_list$prev_feature_samples <- unlist(
+      lapply(
+        seq_along(unique_feature_samples),
+        function(i) {
+          rep(
+            list(unique_feature_samples[[i]]),
+            repetitions[i]
+          )
+        }
+      ),
+      recursive = FALSE
+    )
   } else {
     next_iter_list <- NULL
   }
 
-  internal$iter_list[[iter+1]] <- next_iter_list
+  internal$iter_list[[iter + 1]] <- next_iter_list
 
   return(internal)
-
 }
 
 
@@ -108,7 +111,6 @@ prepare_next_iteration <- function(internal){
 #'
 #' @export
 compute_estimates <- function(internal, vS_list) {
-
   iter <- length(internal$iter_list)
   compute_sd <- internal$iter_list[[iter]]$compute_sd
 
@@ -123,23 +125,23 @@ compute_estimates <- function(internal, vS_list) {
   # Compute the Shapley values
   dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
 
-  if(compute_sd){
-    dt_shapley_sd <- bootstrap_shapley(internal,n_boot_samps = n_boot_samps,processed_vS_list$dt_vS)
+  if (compute_sd) {
+    dt_shapley_sd <- bootstrap_shapley(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
   } else {
-    dt_shapley_sd <- dt_shapley_est*0
+    dt_shapley_sd <- dt_shapley_est * 0
   }
 
   # Adding explain_id to the output dt
-  dt_shapley_est[,explain_id:=.I]
-  setcolorder(dt_shapley_est,"explain_id")
-  dt_shapley_sd[,explain_id:=.I]
-  setcolorder(dt_shapley_sd,"explain_id")
+  dt_shapley_est[, explain_id := .I]
+  setcolorder(dt_shapley_est, "explain_id")
+  dt_shapley_sd[, explain_id := .I]
+  setcolorder(dt_shapley_sd, "explain_id")
 
 
-  internal$iter_list[[iter]]$dt_shapley_est = dt_shapley_est
-  internal$iter_list[[iter]]$dt_shapley_sd = dt_shapley_sd
-  internal$iter_list[[iter]]$vS_list = vS_list
-  internal$iter_list[[iter]]$dt_vS = processed_vS_list$dt_vS
+  internal$iter_list[[iter]]$dt_shapley_est <- dt_shapley_est
+  internal$iter_list[[iter]]$dt_shapley_sd <- dt_shapley_sd
+  internal$iter_list[[iter]]$vS_list <- vS_list
+  internal$iter_list[[iter]]$dt_vS <- processed_vS_list$dt_vS
 
   # internal$timing$shapley_computation <- Sys.time()
 
@@ -207,20 +209,20 @@ finalize_explanation <- function(internal) {
   return(output)
 }
 
-get_iter_results <- function(iter_list){
-
+get_iter_results <- function(iter_list) {
   ret <- list()
-  ret$dt_iter_shapley_est = rbindlist(lapply(iter_list, `[[`, "dt_shapley_est"),idcol = "iter")
-  ret$dt_iter_shapley_sd = rbindlist(lapply(iter_list, `[[`, "dt_shapley_sd"),idcol = "iter")
-  ret$iter_info_dt = iter_list_to_dt(iter_list)
+  ret$dt_iter_shapley_est <- rbindlist(lapply(iter_list, `[[`, "dt_shapley_est"), idcol = "iter")
+  ret$dt_iter_shapley_sd <- rbindlist(lapply(iter_list, `[[`, "dt_shapley_sd"), idcol = "iter")
+  ret$iter_info_dt <- iter_list_to_dt(iter_list)
   return(ret)
 }
 
-iter_list_to_dt <- function(iter_list,what = c("exact","compute_sd","reduction_factor","n_combinations",
-                                               "converged","converged_sd","converged_max_iter",
-                                               "estimated_required_combinations","estimated_remaining_combinations")
-                            ){
-  extracted=lapply(iter_list,function(x) x[what])
+iter_list_to_dt <- function(iter_list, what = c(
+                              "exact", "compute_sd", "reduction_factor", "n_combinations",
+                              "converged", "converged_sd", "converged_max_iter",
+                              "estimated_required_combinations", "estimated_remaining_combinations"
+                            )) {
+  extracted <- lapply(iter_list, function(x) x[what])
   ret <- do.call(rbind, lapply(extracted, as.data.table))
   return(ret)
 }
@@ -292,8 +294,7 @@ get_p <- function(dt_vS, internal) {
 }
 
 
-bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
-
+bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   iter <- length(internal$iter_list)
 
   X <- internal$iter_list[[iter]]$X
@@ -307,24 +308,26 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweighting <- internal$parameters$shapley_reweighting
 
-  boot_sd_array <- array(NA,dim=c(n_explain,n_features+1,n_boot_samps))
+  boot_sd_array <- array(NA, dim = c(n_explain, n_features + 1, n_boot_samps))
 
-  X_keep <- X_org[c(1,.N),.(id_combination,features,n_features,N,shapley_weight)]
-  X_samp <- X_org[-c(1,.N),.(id_combination,features,n_features,N,shapley_weight,sample_freq)]
+  X_keep <- X_org[c(1, .N), .(id_combination, features, n_features, N, shapley_weight)]
+  X_samp <- X_org[-c(1, .N), .(id_combination, features, n_features, N, shapley_weight, sample_freq)]
   X_samp[, features_tmp := sapply(features, paste, collapse = " ")]
 
-  n_combinations_boot <- X_samp[,sum(sample_freq)]
+  n_combinations_boot <- X_samp[, sum(sample_freq)]
 
-  for (i in seq_len(n_boot_samps)){
-
-    if(paired_shap_sampling){
-
-        # Sample with replacement
-      X_boot00 <- X_samp[sample.int(n=.N,
-                                   size=ceiling(n_combinations_boot/2),
-                                                replace = TRUE,
-                                                prob=sample_freq),
-                                   .(id_combination,features,n_features,N)]
+  for (i in seq_len(n_boot_samps)) {
+    if (paired_shap_sampling) {
+      # Sample with replacement
+      X_boot00 <- X_samp[
+        sample.int(
+          n = .N,
+          size = ceiling(n_combinations_boot / 2),
+          replace = TRUE,
+          prob = sample_freq
+        ),
+        .(id_combination, features, n_features, N)
+      ]
 
       X_boot00[, features_tmp := sapply(features, paste, collapse = " ")]
       # Not sure why I have to two the next two lines in two steps, but I don't get it to work otherwise
@@ -333,28 +336,34 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
       X_boot00[, features_dup_tmp := sapply(features_dup, paste, collapse = " ")]
 
       # Extract the paired coalitions from X_samp
-      X_boot00_paired <- merge(X_boot00[,.(features_dup_tmp)],
-                              X_samp[,.(id_combination,features,n_features,N,features_tmp)],
-                              by.x = "features_dup_tmp",by.y="features_tmp")
-      X_boot0 <- rbind(X_boot00[,.(id_combination, features, n_features, N)],
-                       X_boot00_paired[,.(id_combination, features, n_features, N)])
+      X_boot00_paired <- merge(X_boot00[, .(features_dup_tmp)],
+        X_samp[, .(id_combination, features, n_features, N, features_tmp)],
+        by.x = "features_dup_tmp", by.y = "features_tmp"
+      )
+      X_boot0 <- rbind(
+        X_boot00[, .(id_combination, features, n_features, N)],
+        X_boot00_paired[, .(id_combination, features, n_features, N)]
+      )
     } else {
-      X_boot0 <- X_samp[sample.int(n=.N,
-                                   size=n_combinations_boot,
-                                   replace = TRUE,
-                                   prob=sample_freq),
-                        .(id_combination,features,n_features,N)]
-
+      X_boot0 <- X_samp[
+        sample.int(
+          n = .N,
+          size = n_combinations_boot,
+          replace = TRUE,
+          prob = sample_freq
+        ),
+        .(id_combination, features, n_features, N)
+      ]
     }
 
 
-    X_boot0[,shapley_weight:=.N,by="id_combination"]
-    X_boot0 <- unique(X_boot0,by="id_combination")
+    X_boot0[, shapley_weight := .N, by = "id_combination"]
+    X_boot0 <- unique(X_boot0, by = "id_combination")
 
-    X_boot <- rbind(X_keep,X_boot0)
-    data.table::setorder(X_boot,id_combination)
+    X_boot <- rbind(X_keep, X_boot0)
+    data.table::setorder(X_boot, id_combination)
 
-    shapley_reweighting(X_boot, reweight=shapley_reweighting) # reweights the shapley weights by reference
+    shapley_reweighting(X_boot, reweight = shapley_reweighting) # reweights the shapley weights by reference
 
     W_boot <- shapr::weight_matrix(
       X = X_boot,
@@ -362,10 +371,9 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
       is_groupwise = FALSE
     )
 
-    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_combination %in% X_boot[,id_combination], -"id_combination"]))
+    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_combination %in% X_boot[, id_combination], -"id_combination"]))
 
-    boot_sd_array[,,i] <- copy(kshap_boot)
-
+    boot_sd_array[, , i] <- copy(kshap_boot)
   }
 
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
@@ -374,37 +382,34 @@ bootstrap_shapley <- function(internal,dt_vS,n_boot_samps = 100,seed = 123){
   colnames(dt_kshap_boot_sd) <- c("none", shap_names)
 
   return(dt_kshap_boot_sd)
-
 }
 
 
-check_convergence <- function(internal, convergence_tolerance=0.1){
-
+check_convergence <- function(internal, convergence_tolerance = 0.1) {
   iter <- length(internal$iter_list)
 
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
-  n_sampled_combinations <- internal$iter_list[[iter]]$n_combinations-2 # Subtract the zero and full predictions
+  n_sampled_combinations <- internal$iter_list[[iter]]$n_combinations - 2 # Subtract the zero and full predictions
   max_iter <- internal$parameters$max_iter
 
-  max_sd <- dt_shapley_sd[,max(.SD),.SDcols=-1,by=.I]$V1 # Max per prediction
-  max_sd0 <- max_sd*sqrt(n_sampled_combinations)
+  max_sd <- dt_shapley_sd[, max(.SD), .SDcols = -1, by = .I]$V1 # Max per prediction
+  max_sd0 <- max_sd * sqrt(n_sampled_combinations)
 
   dt_shapley_est0 <- copy(dt_shapley_est)
 
-  if(!is.null(convergence_tolerance)){
-    dt_shapley_est0[,maxval:=max(.SD),.SDcols=-1,by=.I]
-    dt_shapley_est0[,minval:=min(.SD),.SDcols=-1,by=.I]
-    dt_shapley_est0[,req_samples:=(max_sd0/((maxval-minval)*convergence_tolerance))^2]
-    estimated_required_combinations <- ceiling(dt_shapley_est0[,median(req_samples)]) # TODO: Consider other ways to do this
-    estimated_remaining_combinations <- max(0,estimated_required_combinations - n_sampled_combinations)
+  if (!is.null(convergence_tolerance)) {
+    dt_shapley_est0[, maxval := max(.SD), .SDcols = -1, by = .I]
+    dt_shapley_est0[, minval := min(.SD), .SDcols = -1, by = .I]
+    dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tolerance))^2]
+    estimated_required_combinations <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO: Consider other ways to do this
+    estimated_remaining_combinations <- max(0, estimated_required_combinations - n_sampled_combinations)
 
     converged_sd <- (estimated_remaining_combinations == 0)
 
-    estimated_required_combinations_per_explain_id <- dt_shapley_est0[,req_samples]
-    names(estimated_required_combinations_per_explain_id) <- paste0("req_samples_explain_id_",seq_along(estimated_required_combinations_per_explain_id))
-
+    estimated_required_combinations_per_explain_id <- dt_shapley_est0[, req_samples]
+    names(estimated_required_combinations_per_explain_id) <- paste0("req_samples_explain_id_", seq_along(estimated_required_combinations_per_explain_id))
   } else {
     estimated_required_combinations_per_explain_id <- estimated_required_combinations <- estimated_remaining_combinations <- NULL
     converged_sd <- FALSE
@@ -421,7 +426,6 @@ check_convergence <- function(internal, convergence_tolerance=0.1){
   internal$iter_list[[iter]]$estimated_required_combinations_per_explain_id <- as.list(estimated_required_combinations_per_explain_id)
 
   return(internal)
-
 }
 
 
@@ -534,8 +538,6 @@ compute_MSEv_eval_crit <- function(internal,
                                    dt_vS,
                                    MSEv_uniform_comb_weights,
                                    MSEv_skip_empty_full_comb = TRUE) {
-
-
   iter <- length(internal$iter_list)
   n_combinations <- internal$iter_list[[iter]]$n_combinations
 
@@ -654,4 +656,3 @@ finalize_explanation_forecast <- function(vS_list, internal) { # Temporary used 
 
   return(output)
 }
-

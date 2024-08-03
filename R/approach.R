@@ -49,7 +49,6 @@ setup_approach.combined <- function(internal, ...) {
 #' @export
 #' @keywords internal
 prepare_data <- function(internal, index_features = NULL, ...) {
-
   iter <- length(internal$iter_list)
 
   X <- internal$iter_list[[iter]]$X

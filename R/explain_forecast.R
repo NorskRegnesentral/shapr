@@ -179,9 +179,11 @@ explain_forecast <- function(model,
 
   ### Temporary solution for forecast
 
-  internal$iter_list <- list(list(X=internal$objects$X,
-                                  S=internal$objects$S,
-                                  n_combinations=internal$parameters$n_combinations))
+  internal$iter_list <- list(list(
+    X = internal$objects$X,
+    S = internal$objects$S,
+    n_combinations = internal$parameters$n_combinations
+  ))
   ####
 
 

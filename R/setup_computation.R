@@ -124,17 +124,17 @@ shapley_setup_forecast <- function(internal) {
 
 
 #' @keywords internal
-shapley_reweighting <- function(X,reweight = "on_N"){
+shapley_reweighting <- function(X, reweight = "on_N") {
   # Updates the shapley weights in X based on the reweighting strategy BY REFERENCE
 
-  m <- X[.N,n_features]
+  m <- X[.N, n_features]
 
-  if(reweight=="on_N"){
-    X[,shapley_weight:=mean(shapley_weight),by=N]
-  } else if(reweight=="on_n_features"){
-    X[,shapley_weight:=mean(shapley_weight),by=n_features]
-  } else if(reweight=="on_all"){
-    X[,shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m=10^6)]
+  if (reweight == "on_N") {
+    X[, shapley_weight := mean(shapley_weight), by = N]
+  } else if (reweight == "on_n_features") {
+    X[, shapley_weight := mean(shapley_weight), by = n_features]
+  } else if (reweight == "on_all") {
+    X[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m = 10^6)]
   } # strategy= "none" or something else do nothing
   return(NULL)
 }
@@ -145,14 +145,14 @@ shapley_setup <- function(internal) {
   n_features0 <- internal$parameters$n_features
   approach0 <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
-  paired_shap_sampling = internal$parameters$paired_shap_sampling
-  shapley_reweighting = internal$parameters$shapley_reweighting
+  paired_shap_sampling <- internal$parameters$paired_shap_sampling
+  shapley_reweighting <- internal$parameters$shapley_reweighting
 
   iter <- length(internal$iter_list)
 
   n_combinations <- internal$iter_list[[iter]]$n_combinations
   exact <- internal$iter_list[[iter]]$exact
-  prev_feature_samples = internal$iter_list[[iter]]$prev_feature_samples
+  prev_feature_samples <- internal$iter_list[[iter]]$prev_feature_samples
 
 
   group_num <- internal$objects$group_num
@@ -175,7 +175,8 @@ shapley_setup <- function(internal) {
   }
 
   id_comb_feature_map <- X[, .(id_combination,
-                               features_str = sapply(features, paste, collapse = " "))]
+    features_str = sapply(features, paste, collapse = " ")
+  )]
 
   shapley_reweighting(X, reweight = shapley_reweighting) # Reweights the shapley weights in X by reference
 
@@ -330,10 +331,11 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       dt <- feature_exact(m, weight_zero_m)
     } else {
       dt <- feature_not_exact(m,
-                              n_combinations,
-                              weight_zero_m,
-                              paired_shap_sampling = paired_shap_sampling,
-                              prev_feature_samples = prev_feature_samples)
+        n_combinations,
+        weight_zero_m,
+        paired_shap_sampling = paired_shap_sampling,
+        prev_feature_samples = prev_feature_samples
+      )
       stopifnot(
         data.table::is.data.table(dt),
         !is.null(dt[["p"]])
@@ -383,11 +385,11 @@ feature_not_exact <- function(m,
   w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
-  if(!is.null(prev_feature_samples)){
+  if (!is.null(prev_feature_samples)) {
     feature_sample_all <- prev_feature_samples
     unique_samples <- length(unique(prev_feature_samples))
-    n_combinations <- min(2^m,n_combinations + unique_samples + 2) # Adjusts for the the unique samples, zero and m samples
-      } else {
+    n_combinations <- min(2^m, n_combinations + unique_samples + 2) # Adjusts for the the unique samples, zero and m samples
+  } else {
     feature_sample_all <- list()
     unique_samples <- 0
   }
@@ -395,8 +397,8 @@ feature_not_exact <- function(m,
 
   if (unique_sampling) {
     while (unique_samples < n_combinations - 2) {
-      if(paired_shap_sampling==TRUE){
-        n_samps <- ceiling((n_combinations - unique_samples - 2)/2) # Sample -2 as we add zero and m samples below
+      if (paired_shap_sampling == TRUE) {
+        n_samps <- ceiling((n_combinations - unique_samples - 2) / 2) # Sample -2 as we add zero and m samples below
       } else {
         n_samps <- n_combinations - unique_samples - 2 # Sample -2 as we add zero and m samples below
       }
@@ -411,9 +413,9 @@ feature_not_exact <- function(m,
 
       # Sample specific set of features -------
       feature_sample <- sample_features_cpp(m, n_features_sample)
-      if(paired_shap_sampling==TRUE){
+      if (paired_shap_sampling == TRUE) {
         feature_sample_paired <- lapply(feature_sample, function(x) seq(m)[-x])
-        feature_sample_all <- c(feature_sample_all, feature_sample,feature_sample_paired)
+        feature_sample_all <- c(feature_sample_all, feature_sample, feature_sample_paired)
       } else {
         feature_sample_all <- c(feature_sample_all, feature_sample)
       }
@@ -788,9 +790,9 @@ create_S_batch <- function(internal, seed = NULL) {
 
   X0 <- copy(internal$iter_list[[iter]]$X)
 
-  if(iter>1){
-    prev_id_comb_feature_map <- internal$iter_list[[iter-1]]$id_comb_feature_map
-    new_id_combinations <- id_comb_feature_map[!(features_str %in% prev_id_comb_feature_map[-c(1,.N),features_str,]),id_combination]
+  if (iter > 1) {
+    prev_id_comb_feature_map <- internal$iter_list[[iter - 1]]$id_comb_feature_map
+    new_id_combinations <- id_comb_feature_map[!(features_str %in% prev_id_comb_feature_map[-c(1, .N), features_str, ]), id_combination]
     X0 <- X0[id_combination %in% new_id_combinations]
   }
 

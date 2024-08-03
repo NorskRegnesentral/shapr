@@ -302,7 +302,7 @@ explain <- function(model,
                     x_explain,
                     x_train,
                     approach,
-                    paired_shap_sampling = FALSE, #TODO: Make TRUE the default later on
+                    paired_shap_sampling = FALSE, # TODO: Make TRUE the default later on
                     prediction_zero,
                     n_combinations = NULL,
                     adaptive = FALSE,
@@ -377,28 +377,24 @@ explain <- function(model,
   # Adaptive approach
   # TODO: The below should probably be moved to a separate function in the end
 
-  if(isTRUE(internal$parameters$adaptive)){
+  if (isTRUE(internal$parameters$adaptive)) {
     ### for now we just some of the parameters here
-    initial_n_combinations <- min(200,ceiling((2^internal$parameters$n_features)/10))
+    initial_n_combinations <- min(200, ceiling((2^internal$parameters$n_features) / 10))
     max_iter <- 20
     convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
-    reduction_factor_vec <- c(seq(0.1,1,by=0.1),rep(1,max_iter-10)) # Proportion of estimated remaining samples to use in next iteration
-
-
+    reduction_factor_vec <- c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)) # Proportion of estimated remaining samples to use in next iteration
   } else {
     # The regular, non-iterative approach
     initial_n_combinations <- internal$parameters$n_combinations
     max_iter <- 1
     convergence_tolerance <- NULL
     reduction_factor_vec <- NULL
-
-
   }
 
   converged <- FALSE
 
 
-  if(!("regression_surrogate" %in% approach)){ # Called after shapley_setup of regression_surrogate
+  if (!("regression_surrogate" %in% approach)) { # Called after shapley_setup of regression_surrogate
     internal <- setup_approach(internal, model = model, predict_model = predict_model)
   }
   internal$parameters$shapley_reweighting <- shapley_reweighting
@@ -413,49 +409,49 @@ explain <- function(model,
     n_combinations = initial_n_combinations,
     exact = internal$parameters$exact,
     compute_sd = ifelse(isFALSE(internal$parameters$exact) &&
-                          isFALSE(internal$parameters$is_groupwise) &&
-                          internal$parameters$n_combinations < 2^internal$parameters$n_features, # As exact is not reset before shapley_setup
-                        TRUE,FALSE),
+      isFALSE(internal$parameters$is_groupwise) &&
+      internal$parameters$n_combinations < 2^internal$parameters$n_features, # As exact is not reset before shapley_setup
+    TRUE, FALSE
+    ),
     reduction_factor = internal$parameters$reduction_factor_vec[1]
   )
 
   set.seed(seed) # Set seed again to get reproducability for the shapley_setup regardless of whether setup_approach
-                 # had randomness in it (i.e. such that changing approach would not give differnet samples combinations
-                 # (before any convergence stopping)
+  # had randomness in it (i.e. such that changing approach would not give differnet samples combinations
+  # (before any convergence stopping)
 
-    while(converged==FALSE){
-      iter <- iter + 1
+  while (converged == FALSE) {
+    iter <- iter + 1
 
-      # setup the Shapley framework
-      internal <- shapley_setup(internal)
+    # setup the Shapley framework
+    internal <- shapley_setup(internal)
 
-      if("regression_surrogate" %in% approach){ # Since setup_approach for regression_surrogate requires shapley_setup to be called first, it will be called in here
-        internal <- setup_approach(internal, model = model, predict_model = predict_model)
-      }
-
-      # Compute the vS
-      vS_list <- compute_vS(internal, model, predict_model)
-
-      # Compute shapley value estimated and bootstrapped standard deviations
-      internal <- compute_estimates(internal, vS_list)
-
-      # Check convergence based on estimates and standard deviations (and thresholds)
-      internal <-  check_convergence(internal, convergence_tolerance)
-
-      # Preparing parameters for next iteration (does not do anything if already converged)
-      internal <- prepare_next_iteration(internal)
-
-      # Printing iteration information
-      print_iter(internal,print_iter_info,print_shapleyres)
-
-      ### Setting globals for to simplify the loop
-      converged <- internal$iter_list[[iter]]$converged
-
+    if ("regression_surrogate" %in% approach) { # Since setup_approach for regression_surrogate requires shapley_setup to be called first, it will be called in here
+      internal <- setup_approach(internal, model = model, predict_model = predict_model)
     }
 
+    # Compute the vS
+    vS_list <- compute_vS(internal, model, predict_model)
 
-    # Rerun after convergence to get the same output format as for the non-adaptive approach
-    output <- finalize_explanation(internal = internal)
+    # Compute shapley value estimated and bootstrapped standard deviations
+    internal <- compute_estimates(internal, vS_list)
+
+    # Check convergence based on estimates and standard deviations (and thresholds)
+    internal <- check_convergence(internal, convergence_tolerance)
+
+    # Preparing parameters for next iteration (does not do anything if already converged)
+    internal <- prepare_next_iteration(internal)
+
+    # Printing iteration information
+    print_iter(internal, print_iter_info, print_shapleyres)
+
+    ### Setting globals for to simplify the loop
+    converged <- internal$iter_list[[iter]]$converged
+  }
+
+
+  # Rerun after convergence to get the same output format as for the non-adaptive approach
+  output <- finalize_explanation(internal = internal)
 
 
   # Temporary to avoid failing tests
@@ -470,7 +466,7 @@ remove_outputs_to_pass_tests <- function(output) {
   output$internal$objects$id_combination_mapper_dt <- NULL
   output$internal$objects$cols_per_horizon <- NULL
   output$internal$objects$W_list <- NULL
-  output$shapley_values[,explain_id:=NULL]
+  output$shapley_values[, explain_id := NULL]
 
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters[c(
@@ -483,7 +479,7 @@ remove_outputs_to_pass_tests <- function(output) {
   # Remove the `regression` parameter from the output list when we are not doing regression
   if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
 
-  if("regression_surrogate" %in% output$internal$parameters$approach){
+  if ("regression_surrogate" %in% output$internal$parameters$approach) {
     # Deletes the fit_times for approach = regression_surrogate to make tests pass.
     # In the future we could delete this only when a new argument in explain called testing is TRUE
     output$internal$objects$regression.surrogate_model$pre$mold$blueprint$recipe$fit_times <- NULL

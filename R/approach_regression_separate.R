@@ -472,7 +472,6 @@ regression.prep_message_batch <- function(internal, index_features) {
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.prep_message_comb <- function(internal, index_features, comb_idx) {
-
   iter <- length(internal$iter_list)
 
   X <- internal$iter_list[[iter]]$X
