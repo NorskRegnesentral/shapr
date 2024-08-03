@@ -27,7 +27,7 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Language: en-US
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Depends: R (>= 3.5.0)
 Imports: 
     stats,
