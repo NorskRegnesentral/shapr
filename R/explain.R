@@ -483,5 +483,11 @@ remove_outputs_to_pass_tests <- function(output) {
   # Remove the `regression` parameter from the output list when we are not doing regression
   if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
 
+  if("regression_surrogate" %in% output$internal$parameters$approach){
+    # Deletes the fit_times for approach = regression_surrogate to make tests pass.
+    # In the future we could delete this only when a new argument in explain called testing is TRUE
+    output$internal$objects$regression.surrogate_model$pre$mold$blueprint$recipe$fit_times <- NULL
+  }
+
   return(output)
 }
