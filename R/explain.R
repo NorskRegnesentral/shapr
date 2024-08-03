@@ -381,8 +381,9 @@ explain <- function(model,
     ### for now we just some of the parameters here
     initial_n_combinations <- min(200, ceiling((2^internal$parameters$n_features) / 10))
     max_iter <- 20
-    convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max difference features shapley values
-    reduction_factor_vec <- c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)) # Proportion of estimated remaining samples to use in next iteration
+    convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max diff features shapley values
+    reduction_factor_vec <- c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))
+    # Proportion of estimated remaining samples to use in next iteration
   } else {
     # The regular, non-iterative approach
     initial_n_combinations <- internal$parameters$n_combinations
@@ -410,7 +411,7 @@ explain <- function(model,
     exact = internal$parameters$exact,
     compute_sd = ifelse(isFALSE(internal$parameters$exact) &&
       isFALSE(internal$parameters$is_groupwise) &&
-      internal$parameters$n_combinations < 2^internal$parameters$n_features, # As exact is not reset before shapley_setup
+      internal$parameters$n_combinations < 2^internal$parameters$n_features, # As exact isnt reset before shapley_setup
     TRUE, FALSE
     ),
     reduction_factor = internal$parameters$reduction_factor_vec[1]
@@ -426,7 +427,8 @@ explain <- function(model,
     # setup the Shapley framework
     internal <- shapley_setup(internal)
 
-    if ("regression_surrogate" %in% approach) { # Since setup_approach for regression_surrogate requires shapley_setup to be called first, it will be called in here
+    if ("regression_surrogate" %in% approach) { # Since setup_approach for regression_surrogate requires shapley_setup
+      # to be called first, it will be called in here
       internal <- setup_approach(internal, model = model, predict_model = predict_model)
     }
 

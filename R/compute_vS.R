@@ -14,7 +14,12 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
 
 
   if (method == "future") {
-    vS_list <- future_compute_vS_batch(S_batch = S_batch, internal = internal, model = model, predict_model = predict_model)
+    vS_list <- future_compute_vS_batch(
+      S_batch = S_batch,
+      internal = internal,
+      model = model,
+      predict_model = predict_model
+    )
   } else {
     # Doing the same as above without future without progressbar or paralellization
     vS_list <- list()
@@ -258,7 +263,8 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS_forecast <- function(internal, model, predict_model, method = "future") { # old function used only for forecast temporary
+compute_vS_forecast <- function(internal, model, predict_model, method = "future") {
+  # old function used only for forecast temporary
   S_batch <- internal$objects$S_batch
 
 

@@ -388,7 +388,8 @@ feature_not_exact <- function(m,
   if (!is.null(prev_feature_samples)) {
     feature_sample_all <- prev_feature_samples
     unique_samples <- length(unique(prev_feature_samples))
-    n_combinations <- min(2^m, n_combinations + unique_samples + 2) # Adjusts for the the unique samples, zero and m samples
+    n_combinations <- min(2^m, n_combinations + unique_samples + 2)
+    # Adjusts for the the unique samples, zero and m samples
   } else {
     feature_sample_all <- list()
     unique_samples <- 0
@@ -443,7 +444,7 @@ feature_not_exact <- function(m,
 
   # When we sample combinations the Shapley weight is equal
   # to the frequency of the given combination
-  X[, sample_freq := r[["sample_frequence"]]] # We keep an unscaled version of the sampling frequency for later bootstrapping usage
+  X[, sample_freq := r[["sample_frequence"]]] # We keep an unscaled version of the sampling frequency for bootstrapping
   X[, shapley_weight := as.numeric(sample_freq)] # Convert to double for later calculations
 
   # Populate table and remove duplicated rows -------
@@ -694,7 +695,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 }
 
 #' @keywords internal
-create_S_batch_forecast <- function(internal, seed = NULL) { # This is temporary used for forecast only. Will be removed in the future
+create_S_batch_forecast <- function(internal, seed = NULL) { # This is temporary used for forecast only. to be removed
   n_features0 <- internal$parameters$n_features
   approach0 <- internal$parameters$approach
   n_combinations <- internal$parameters$n_combinations
@@ -792,7 +793,10 @@ create_S_batch <- function(internal, seed = NULL) {
 
   if (iter > 1) {
     prev_id_comb_feature_map <- internal$iter_list[[iter - 1]]$id_comb_feature_map
-    new_id_combinations <- id_comb_feature_map[!(features_str %in% prev_id_comb_feature_map[-c(1, .N), features_str, ]), id_combination]
+    new_id_combinations <- id_comb_feature_map[
+      !(features_str %in% prev_id_comb_feature_map[-c(1, .N), features_str, ]),
+      id_combination
+    ]
     X0 <- X0[id_combination %in% new_id_combinations]
   }
 

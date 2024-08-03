@@ -387,10 +387,10 @@ get_extra_parameters <- function(internal) {
 }
 
 #' @keywords internal
-get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
-                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing, verbose,
-                           is_python, ...) {
+get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, n_combinations, group,
+                           n_samples, n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
+                           explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing,
+                           verbose, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
