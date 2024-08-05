@@ -11,6 +11,8 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
       est_required_combinations <- internal$iter_list[[iter]]$est_required_combinations
       current_n_combinations <- internal$iter_list[[iter]]$n_combinations
 
+
+
       next_n_combinations <- internal$iter_list[[iter + 1]]$n_combinations
 
 
@@ -27,6 +29,7 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
   }
 
   if (print_shapleyres) {
+
     n_explain <- internal$parameters$n_explain
 
     dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, -1]
@@ -404,13 +407,14 @@ check_convergence <- function(internal) {
   n_sampled_combinations <- internal$iter_list[[iter]]$n_combinations - 2 # Subtract the zero and full predictions
 
   max_sd <- dt_shapley_sd[, max(.SD), .SDcols = -1, by = .I]$V1 # Max per prediction
-  max_sd0 <- max_sd * sqrt(n_sampled_combinations)
+  max_sd0 <- max_sd * sqrt(n_sampled_combinations) # Scales UP the sd as it scales
 
   dt_shapley_est0 <- copy(dt_shapley_est)
 
   if (!is.null(convergence_tolerance)) {
-    dt_shapley_est0[, maxval := max(.SD), .SDcols = -1, by = .I]
-    dt_shapley_est0[, minval := min(.SD), .SDcols = -1, by = .I]
+    dt_shapley_est0[, maxval := max(.SD), .SDcols = -c(1,2), by = .I]
+    dt_shapley_est0[, minval := min(.SD), .SDcols = -c(1,2), by = .I]
+    dt_shapley_est0[, max_sd0 := max_sd0]
     dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tolerance))^2]
     est_required_combinations <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO: Consider other ways to do this
     est_remaining_combinations <- max(0, est_required_combinations - n_sampled_combinations)

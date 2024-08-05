@@ -45,7 +45,7 @@ explanation_adaptive <- explain(
   n_combinations = 500,
   prediction_zero = p0,
   adaptive = TRUE,
-  print_shapleyres = FALSE, # tmp
+  print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
   shapley_reweighting = "on_N"
 )
@@ -61,6 +61,19 @@ explanation_nonadaptive <- explain(
 )
 
 
+explanation_adaptive <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  n_combinations = 500,
+  prediction_zero = p0,
+  adaptive = TRUE,
+  adaptive_arguments = list(initial_n_combinations=10,convergence_tolerance=0.0001),
+  print_shapleyres = TRUE, # tmp
+  print_iter_info = TRUE, # tmp
+  shapley_reweighting = "on_N"
+)
 
 
 
