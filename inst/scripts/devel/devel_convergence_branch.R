@@ -45,8 +45,7 @@ explanation_adaptive <- explain(
   n_combinations = 500,
   prediction_zero = p0,
   adaptive = TRUE,
-  n_boot_samps = 100, # tmp
-  print_shapleyres = TRUE, # tmp
+  print_shapleyres = FALSE, # tmp
   print_iter_info = TRUE, # tmp
   shapley_reweighting = "on_N"
 )

@@ -1,15 +1,19 @@
 print_iter <- function(internal, print_iter_info, print_shapleyres) {
-  iter <- length(internal$iter_list) - 1 # This function is called after the preparation of the next iteration
 
   if (print_iter_info) {
-    converged <- internal$iter_list[[iter]]$converged
-    est_remaining_combinations <- internal$iter_list[[iter]]$est_remaining_combinations
-    est_required_combinations <- internal$iter_list[[iter]]$est_required_combinations
-    current_n_combinations <- internal$iter_list[[iter]]$n_combinations
 
-    next_n_combinations <- internal$iter_list[[iter + 1]]$n_combinations
+    iter <- length(internal$iter_list) - 1 # This function is called after the preparation of the next iteration
+
+    converged <- internal$iter_list[[iter]]$converged
 
     if (converged == FALSE) {
+      est_remaining_combinations <- internal$iter_list[[iter]]$est_remaining_combinations
+      est_required_combinations <- internal$iter_list[[iter]]$est_required_combinations
+      current_n_combinations <- internal$iter_list[[iter]]$n_combinations
+
+      next_n_combinations <- internal$iter_list[[iter + 1]]$n_combinations
+
+
       cat(paste0(
         "\nIteration ", iter, "\n",
         "Not converged after ", current_n_combinations, " coalitions.\n",
@@ -32,12 +36,10 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
     matrix1 <- format(round(dt_shapley_est, 3), nsmall = 2, justify = "right")
     matrix2 <- format(round(dt_shapley_sd, 2), nsmall = 2, justify = "right")
 
-    if (print_shapleyres) {
-      cat("Current estimated Shapley values (sd):\n")
-      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = n_explain))
-      names(print_dt) <- names(dt_shapley_est)
-      print(print_dt)
-    }
+    cat("Current estimated Shapley values (sd):\n")
+    print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = n_explain))
+    names(print_dt) <- names(dt_shapley_est)
+    print(print_dt)
   }
 }
 
@@ -50,7 +52,7 @@ prepare_next_iteration <- function(internal) {
     next_iter_list <- list()
 
     n_features <- internal$parameters$n_features
-    reduction_factor_vec <- internal$parameters$reduction_factor_vec
+    reduction_factor_vec <- internal$parameters$adaptive_arguments$reduction_factor_vec
 
     est_remaining_combinations <- internal$iter_list[[iter]]$est_remaining_combinations
     reduction_factor <- internal$iter_list[[iter]]$reduction_factor
@@ -92,7 +94,7 @@ prepare_next_iteration <- function(internal) {
       recursive = FALSE
     )
   } else {
-    next_iter_list <- NULL
+    next_iter_list <- list()
   }
 
   internal$iter_list[[iter + 1]] <- next_iter_list
@@ -114,7 +116,7 @@ compute_estimates <- function(internal, vS_list) {
   iter <- length(internal$iter_list)
   compute_sd <- internal$iter_list[[iter]]$compute_sd
 
-  n_boot_samps <- internal$parameters$n_boot_samps
+  n_boot_samps <- internal$parameters$adaptive_arguments$n_boot_samps
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,
@@ -159,11 +161,15 @@ compute_estimates <- function(internal, vS_list) {
 #'
 #' @export
 finalize_explanation <- function(internal) {
+
   MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
   output_size <- internal$parameters$output_size
   dt_vS <- internal$output$dt_vS
 
-  iter <- length(internal$iter_list)
+  # Extracting iter (and deleting the last temporary empty list of iter_list)
+  iter <- length(internal$iter_list)-1
+  internal$iter_list[[iter+1]] <- NULL
+
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
@@ -385,14 +391,17 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
 }
 
 
-check_convergence <- function(internal, convergence_tolerance = 0.1) {
+check_convergence <- function(internal) {
   iter <- length(internal$iter_list)
+
+  convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
+  max_iter <- internal$parameters$adaptive_arguments$max_iter
+
 
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
   n_sampled_combinations <- internal$iter_list[[iter]]$n_combinations - 2 # Subtract the zero and full predictions
-  max_iter <- internal$parameters$max_iter
 
   max_sd <- dt_shapley_sd[, max(.SD), .SDcols = -1, by = .I]$V1 # Max per prediction
   max_sd0 <- max_sd * sqrt(n_sampled_combinations)

@@ -99,7 +99,6 @@
 #'
 #' @param adaptive TODO: document
 #'
-#' @param n_boot_samps TODO: document
 #'
 #' @param print_shapleyres TODO: document
 #'
@@ -316,7 +315,7 @@ explain <- function(model,
                     MSEv_uniform_comb_weights = TRUE,
                     timing = TRUE,
                     verbose = 0,
-                    n_boot_samps = 100, # tmp
+                    adaptive_arguments = list(),
                     print_shapleyres = FALSE, # tmp
                     print_iter_info = FALSE, # tmp
                     shapley_reweighting = "none", # tmp # "on_N"
@@ -349,6 +348,7 @@ explain <- function(model,
     timing = timing,
     verbose = verbose,
     adaptive = adaptive,
+    shapley_reweighting = shapley_reweighting,
     ...
   )
 
@@ -374,52 +374,16 @@ explain <- function(model,
     internal <- regression.get_y_hat(internal = internal, model = model, predict_model = predict_model)
   }
 
+
   # Adaptive approach
-  # TODO: The below should probably be moved to a separate function in the end
-
-  if (isTRUE(internal$parameters$adaptive)) {
-    ### for now we just some of the parameters here
-    initial_n_combinations <- min(200, ceiling((2^internal$parameters$n_features) / 10))
-    max_iter <- 20
-    convergence_tolerance <- 0.02 # max sd must be smaller than this proportion of max diff features shapley values
-    reduction_factor_vec <- c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))
-    # Proportion of estimated remaining samples to use in next iteration
-  } else {
-    # The regular, non-iterative approach
-    initial_n_combinations <- internal$parameters$n_combinations
-    max_iter <- 1
-    convergence_tolerance <- NULL
-    reduction_factor_vec <- NULL
-  }
-
-  converged <- FALSE
-
-
   if (!("regression_surrogate" %in% approach)) { # Called after shapley_setup of regression_surrogate
     internal <- setup_approach(internal, model = model, predict_model = predict_model)
   }
-  internal$parameters$shapley_reweighting <- shapley_reweighting
 
-  internal$parameters$max_iter <- max_iter
-  internal$parameters$n_boot_samps <- n_boot_samps
-  internal$parameters$reduction_factor_vec <- reduction_factor_vec
-
-  internal$iter_list <- list()
   iter <- 0
-  internal$iter_list[[1]] <- list(
-    n_combinations = initial_n_combinations,
-    exact = internal$parameters$exact,
-    compute_sd = ifelse(isFALSE(internal$parameters$exact) &&
-      isFALSE(internal$parameters$is_groupwise) &&
-      internal$parameters$n_combinations < 2^internal$parameters$n_features, # As exact isnt reset before shapley_setup
-    TRUE, FALSE
-    ),
-    reduction_factor = internal$parameters$reduction_factor_vec[1]
-  )
+  converged <- FALSE
 
-  set.seed(seed) # Set seed again to get reproducability for the shapley_setup regardless of whether setup_approach
-  # had randomness in it (i.e. such that changing approach would not give differnet samples combinations
-  # (before any convergence stopping)
+  set.seed(seed)
 
   while (converged == FALSE) {
     iter <- iter + 1
@@ -439,7 +403,7 @@ explain <- function(model,
     internal <- compute_estimates(internal, vS_list)
 
     # Check convergence based on estimates and standard deviations (and thresholds)
-    internal <- check_convergence(internal, convergence_tolerance)
+    internal <- check_convergence(internal)
 
     # Preparing parameters for next iteration (does not do anything if already converged)
     internal <- prepare_next_iteration(internal)

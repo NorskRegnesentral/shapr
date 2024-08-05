@@ -43,6 +43,7 @@ setup <- function(x_train,
                   timing,
                   verbose,
                   adaptive = FALSE,
+                  shapley_reweighting = "none",
                   is_python = FALSE,
                   ...) {
   internal <- list()
@@ -69,6 +70,7 @@ setup <- function(x_train,
     timing = timing,
     verbose = verbose,
     adaptive = adaptive,
+    shapley_reweighting = shapley_reweighting,
     is_python = is_python,
     ...
   )
@@ -94,9 +96,95 @@ setup <- function(x_train,
 
   internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
 
+  internal <- set_adaptive_parameters(internal)
+
   internal <- check_and_set_parameters(internal)
 
   return(internal)
+}
+
+
+#' @keywords internal
+set_adaptive_parameters <- function(internal){
+
+  adaptive <- internal$parameters$adaptive
+
+  adaptive_arguments = internal$parameters$adaptive_arguments # Gets the set a
+
+  if (is.null(adaptive_arguments)) adaptive_arguments <- list()
+  if (!is.list(adaptive_arguments)) stop("`adaptive_arguments` must be a list.")
+
+  adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
+                                            adaptive_arguments,
+                                            keep.null = TRUE)
+
+  internal$parameters$adaptive_arguments <- adaptive_arguments
+
+
+  internal$iter_list <- list()
+  internal$iter_list[[1]] <- list(
+    n_combinations = adaptive_arguments$initial_n_combinations,
+    exact = internal$parameters$exact,
+    compute_sd = adaptive_arguments$compute_sd,
+    reduction_factor = adaptive_arguments$reduction_factor_vec[1]
+  )
+
+
+  return(internal)
+
+}
+
+# Get functions ========================================================================================================
+#' Function to specify arguments of the adaptive estimation procedure
+#'
+#' @details The functions sets default values for the adaptive estimation procedure, according to the function defaults.
+#' If the argument `adaptive` of [shapr::explain()] is FALSE, it sets parameters corresponding to the use of a
+#' non-adaptive estimation procedure
+#'
+#' @param max_iter TODO: Specify
+#' @param initial_n_combinations TODO: Specify
+#' @param convergence_tolerance TODO: Specify
+#' @param reduction_factor_vec TODO: Specify
+#' @param n_boot_samps TODO: Specify
+#' @param compute_sd TODO: Specify
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
+#' @author Martin Jullum
+get_adaptive_arguments_default <- function(internal,
+                                           max_iter = 20,
+                                           initial_n_combinations = min(200,
+                                                                        ceiling((2^internal$parameters$n_features) / 10)),
+                                           convergence_tolerance = 0.02,
+                                           reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
+                                           n_boot_samps = 100,
+                                           compute_sd = ifelse(internal$parameters$exact,FALSE,TRUE)){
+
+  adaptive <- internal$parameters$adaptive
+
+  if(isTRUE(adaptive)){
+    ret_list <- mget(
+      c("initial_n_combinations",
+        "max_iter",
+        "convergence_tolerance",
+        "reduction_factor_vec",
+        "n_boot_samps",
+        "compute_sd")
+    )
+  } else {
+
+    ret_list <- list(initial_n_combinations = internal$parameters$n_combinations,
+                     max_iter = 1,
+                     convergence_tolerance = NULL,
+                     reduction_factor_vec = NULL,
+                     n_boot_samps = n_boot_samps,
+                     compute_sd = isFALSE(internal$parameters$exact) &&
+                       isFALSE(internal$parameters$is_groupwise))
+  }
+
+  return(ret_list)
+
 }
 
 #' @keywords internal
@@ -390,14 +478,17 @@ get_extra_parameters <- function(internal) {
 get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, n_combinations, group,
                            n_samples, n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
                            explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing,
-                           verbose, is_python, ...) {
+                           verbose, adaptive = FALSE, shapley_reweighting = "none", is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
-  if (!is.logical(paired_shap_sampling)) {
-    stop("`paired_shap_sampling` must be a logical.")
+  if (!is.logical(paired_shap_sampling) && length(paired_shap_sampling)) {
+    stop("`paired_shap_sampling` must be a single logical.")
   }
 
+  if (!is.logical(adaptive) && length(adaptive)) {
+    stop("`adaptive` must be a single logical.")
+  }
 
   # n_combinations
   if (!is.null(n_combinations) &&
@@ -501,6 +592,12 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     ))
   }
 
+  # type
+  if (!(length(shapley_reweighting) == 1 && shapley_reweighting %in% c("none", "on_N", "on_all"))) {
+    stop("`shapley_reweighting` must be one of `none`, `on_N` or `on_all`.\n")
+  }
+
+
   # Getting basic input parameters
   parameters <- list(
     approach = approach,
@@ -519,7 +616,9 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
-    verbose = verbose
+    verbose = verbose,
+    shapley_reweighting = shapley_reweighting,
+    adaptive = adaptive
   )
 
   # Getting additional parameters from ...
