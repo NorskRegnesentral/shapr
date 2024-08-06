@@ -196,7 +196,7 @@
         regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1)
     Condition
       Error in `regression.check_sur_n_comb()`:
-      ! `regression.surrogate_n_comb` (31) must be a positive integer less than or equal to `used_n_combinations` minus two (30).
+      ! `regression.surrogate_n_comb` (31) must be a positive integer less than or equal to `n_combinations` minus two (30).
 
 ---
 
@@ -206,5 +206,5 @@
         regression.surrogate_n_comb = 0)
     Condition
       Error in `regression.check_sur_n_comb()`:
-      ! `regression.surrogate_n_comb` (0) must be a positive integer less than or equal to `used_n_combinations` minus two (30).
+      ! `regression.surrogate_n_comb` (0) must be a positive integer less than or equal to `n_combinations` minus two (30).
 

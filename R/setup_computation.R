@@ -203,7 +203,7 @@ shapley_setup <- function(internal) {
 
   # Updating these parameters in the end based on what is actually used -- can probably remove some of this redundancy
   internal$parameters$n_combinations <- nrow(S)
-  internal$parameters$used_n_combinations <- nrow(S)
+  internal$parameters$n_combinations <- nrow(S)
   internal$iter_list[[iter]]$n_combinations <- nrow(S)
 
   # This will be obsolete later

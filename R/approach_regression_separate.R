@@ -347,7 +347,7 @@ regression.check_parameters <- function(internal) {
   # Check that `regression.check_sur_n_comb` is a valid value (only applicable for surrogate regression)
   regression.check_sur_n_comb(
     regression.surrogate_n_comb = internal$parameters$regression.surrogate_n_comb,
-    used_n_combinations = internal$parameters$used_n_combinations
+    n_combinations = internal$parameters$n_combinations
   )
 
   # Check and get if we are to tune the hyperparameters of the regression model
@@ -478,7 +478,7 @@ regression.prep_message_comb <- function(internal, index_features, comb_idx) {
 
   message(paste0(
     "Working on combination with id ", X$id_combination[index_features[comb_idx]],
-    " of ", internal$parameters$used_n_combinations, "."
+    " of ", internal$parameters$n_combinations, "."
   ))
 }
 

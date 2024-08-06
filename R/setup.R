@@ -98,9 +98,9 @@ setup <- function(x_train,
 
   internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
 
-  internal <- set_adaptive_parameters(internal)
-
   internal <- check_and_set_parameters(internal)
+
+  internal <- set_adaptive_parameters(internal)
 
   return(internal)
 }
@@ -200,9 +200,9 @@ check_and_set_parameters <- function(internal) {
   if (!is.null(group)) check_groups(feature_names, group)
 
   if (exact) {
-    internal$parameters$used_n_combinations <- if (is_groupwise) 2^n_groups else 2^n_features
+    internal$parameters$n_combinations <- if (is_groupwise) 2^n_groups else 2^n_features
   } else {
-    internal$parameters$used_n_combinations <-
+    internal$parameters$n_combinations <-
       if (is_groupwise) min(2^n_groups, n_combinations) else min(2^n_features, n_combinations)
     check_n_combinations(internal)
   }
@@ -813,12 +813,12 @@ set_defaults <- function(internal) {
 
   approach <- internal$parameters$approach
   n_unique_approaches <- internal$parameters$n_unique_approaches
-  used_n_combinations <- internal$parameters$used_n_combinations
+  n_combinations <- internal$parameters$n_combinations
   n_batches <- internal$parameters$n_batches
 
   # n_batches
   if (is.null(n_batches)) {
-    internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, used_n_combinations)
+    internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, n_combinations)
   }
 
   return(internal)

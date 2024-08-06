@@ -3,12 +3,12 @@
 #'
 #' @inheritParams default_doc_explain
 #' @inheritParams setup_approach.regression_separate
-#' @param regression.surrogate_n_comb Integer (default is `internal$parameters$used_n_combinations`) specifying the
+#' @param regression.surrogate_n_comb Integer (default is `internal$parameters$n_combinations`) specifying the
 #' number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
-#' "`internal$parameters$used_n_combinations` - 2". By default, we use all coalitions, but this can take a lot of memory
+#' "`internal$parameters$n_combinations` - 2". By default, we use all coalitions, but this can take a lot of memory
 #' in larger dimensions. Note that by "all", we mean all coalitions chosen by `shapr` to be used. This will be all
 #' \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if `shapr` is in the exact mode. If the
-#' user sets a lower value than `internal$parameters$used_n_combinations`, then we sample this amount of unique
+#' user sets a lower value than `internal$parameters$n_combinations`, then we sample this amount of unique
 #' coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.
 #'
 #' @export
@@ -19,7 +19,7 @@ setup_approach.regression_surrogate <- function(internal,
                                                 regression.vfold_cv_para = NULL,
                                                 regression.recipe_func = NULL,
                                                 regression.surrogate_n_comb =
-                                                  internal$parameters$used_n_combinations - 2,
+                                                  internal$parameters$n_combinations - 2,
                                                 ...) {
   # Check that required libraries are installed
   regression.check_namespaces()
@@ -130,7 +130,7 @@ regression.surrogate_aug_data <- function(internal,
   # Get some of the parameters
   X <- internal$iter_list[[iter]]$X
   S <- internal$iter_list[[iter]]$S
-  actual_n_combinations <- internal$parameters$used_n_combinations - 2 # Remove empty and grand coalitions
+  actual_n_combinations <- internal$parameters$n_combinations - 2 # Remove empty and grand coalitions
   regression.surrogate_n_comb <- internal$parameters$regression.surrogate_n_comb
   if (!is.null(index_features)) regression.surrogate_n_comb <- length(index_features) # Applicable from prep_data()
   if (augment_include_grand) {
@@ -233,16 +233,16 @@ regression.surrogate_aug_data <- function(internal,
 #' Check that `regression.surrogate_n_comb` is either NULL or a valid integer.
 #'
 #' @inheritParams setup_approach.regression_surrogate
-#' @param used_n_combinations Integer. The number of used combinations (including the empty and grand coalitions).
+#' @param n_combinations Integer. The number of used combinations (including the empty and grand coalitions).
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression.check_sur_n_comb <- function(regression.surrogate_n_comb, used_n_combinations) {
+regression.check_sur_n_comb <- function(regression.surrogate_n_comb, n_combinations) {
   if (!is.null(regression.surrogate_n_comb)) {
-    if (regression.surrogate_n_comb < 1 || used_n_combinations - 2 < regression.surrogate_n_comb) {
+    if (regression.surrogate_n_comb < 1 || n_combinations - 2 < regression.surrogate_n_comb) {
       stop(paste0(
         "`regression.surrogate_n_comb` (", regression.surrogate_n_comb, ") must be a positive integer less than or ",
-        "equal to `used_n_combinations` minus two (", used_n_combinations - 2, ")."
+        "equal to `n_combinations` minus two (", n_combinations - 2, ")."
       ))
     }
   }
