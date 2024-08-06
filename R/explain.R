@@ -348,6 +348,7 @@ explain <- function(model,
     timing = timing,
     verbose = verbose,
     adaptive = adaptive,
+    adaptive_arguments = adaptive_arguments,
     shapley_reweighting = shapley_reweighting,
     ...
   )

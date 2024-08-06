@@ -43,6 +43,7 @@ setup <- function(x_train,
                   timing,
                   verbose,
                   adaptive = FALSE,
+                  adaptive_arguments = list(),
                   shapley_reweighting = "none",
                   is_python = FALSE,
                   ...) {
@@ -70,6 +71,7 @@ setup <- function(x_train,
     timing = timing,
     verbose = verbose,
     adaptive = adaptive,
+    adaptive_arguments = adaptive_arguments,
     shapley_reweighting = shapley_reweighting,
     is_python = is_python,
     ...
@@ -109,10 +111,7 @@ set_adaptive_parameters <- function(internal){
 
   adaptive <- internal$parameters$adaptive
 
-  adaptive_arguments = internal$parameters$adaptive_arguments # Gets the set a
-
-  if (is.null(adaptive_arguments)) adaptive_arguments <- list()
-  if (!is.list(adaptive_arguments)) stop("`adaptive_arguments` must be a list.")
+  adaptive_arguments <- internal$parameters$adaptive_arguments
 
   adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
                                             adaptive_arguments,
@@ -478,7 +477,8 @@ get_extra_parameters <- function(internal) {
 get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, n_combinations, group,
                            n_samples, n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
                            explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing,
-                           verbose, adaptive = FALSE, shapley_reweighting = "none", is_python, ...) {
+                           verbose, adaptive = FALSE, adaptive_arguments = adaptive_arguments,
+                           shapley_reweighting = "none", is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -489,6 +489,10 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   if (!is.logical(adaptive) && length(adaptive)) {
     stop("`adaptive` must be a single logical.")
   }
+  if (!is.list(adaptive_arguments)) {
+    stop("`adaptive_arguments` must be a list.")
+  }
+
 
   # n_combinations
   if (!is.null(n_combinations) &&
@@ -618,7 +622,8 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     timing = timing,
     verbose = verbose,
     shapley_reweighting = shapley_reweighting,
-    adaptive = adaptive
+    adaptive = adaptive,
+    adaptive_arguments = adaptive_arguments
   )
 
   # Getting additional parameters from ...

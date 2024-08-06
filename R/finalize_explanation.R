@@ -1,20 +1,21 @@
 print_iter <- function(internal, print_iter_info, print_shapleyres) {
 
+  iter <- length(internal$iter_list) - 1 # This function is called after the preparation of the next iteration
+
+  converged <- internal$iter_list[[iter]]$converged
+  converged_exact <- internal$iter_list[[iter]]$converged_exact
+  converged_sd <- internal$iter_list[[iter]]$converged_sd
+  converged_max_iter <- internal$iter_list[[iter]]$converged_max_iter
+
   if (print_iter_info) {
 
-    iter <- length(internal$iter_list) - 1 # This function is called after the preparation of the next iteration
+    current_n_combinations <- internal$iter_list[[iter]]$n_combinations
+    est_remaining_combinations <- internal$iter_list[[iter]]$est_remaining_combinations
+    est_required_combinations <- internal$iter_list[[iter]]$est_required_combinations
 
-    converged <- internal$iter_list[[iter]]$converged
+    next_n_combinations <- internal$iter_list[[iter + 1]]$n_combinations
 
-    if (converged == FALSE) {
-      est_remaining_combinations <- internal$iter_list[[iter]]$est_remaining_combinations
-      est_required_combinations <- internal$iter_list[[iter]]$est_required_combinations
-      current_n_combinations <- internal$iter_list[[iter]]$n_combinations
-
-
-
-      next_n_combinations <- internal$iter_list[[iter + 1]]$n_combinations
-
+    if (isFALSE(converged)) {
 
       cat(paste0(
         "\nIteration ", iter, "\n",
@@ -24,7 +25,25 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
         "Using ", next_n_combinations, " new coalitions in the next iteration.\n"
       ))
     } else {
-      cat("\nConvergence reached!\n")
+      cat(paste0(
+        "\nIteration ", iter, "\n",
+        "Estimation stopped!\n"
+      ))
+      if(isTRUE(converged_exact)){
+        cat(paste0(
+          "All (", current_n_combinations,") coalitions used.\n"
+        ))
+      }
+      if(isTRUE(converged_sd)){
+        cat(paste0(
+          "Convergence tolerance reached after ", current_n_combinations, " coalitions.\n"
+        ))
+      }
+      if(isTRUE(converged_max_iter)){
+        cat(paste0(
+          "Maximum number iterations reached after ", current_n_combinations, " coalitions.\n"
+        ))
+      }
     }
   }
 
@@ -39,10 +58,23 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
     matrix1 <- format(round(dt_shapley_est, 3), nsmall = 2, justify = "right")
     matrix2 <- format(round(dt_shapley_sd, 2), nsmall = 2, justify = "right")
 
-    cat("Current estimated Shapley values (sd):\n")
-    print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = n_explain))
-    names(print_dt) <- names(dt_shapley_est)
-    print(print_dt)
+    if(isTRUE(converged)){
+      cat("Final ")
+    } else {
+      cat("Current ")
+    }
+
+    if(converged_exact){
+      cat("estimated Shapley values:\n")
+      print_dt <- as.data.table(matrix1)
+      names(print_dt) <- names(dt_shapley_est)
+      print(print_dt)
+    } else {
+      cat("estimated Shapley values (sd):\n")
+      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = n_explain))
+      names(print_dt) <- names(dt_shapley_est)
+      print(print_dt)
+    }
   }
 }
 
@@ -228,7 +260,7 @@ get_iter_results <- function(iter_list) {
 
 iter_list_to_dt <- function(iter_list, what = c(
                               "exact", "compute_sd", "reduction_factor", "n_combinations",
-                              "converged", "converged_sd", "converged_max_iter",
+                              "converged", "converged_exact", "converged_sd", "converged_max_iter",
                               "est_required_combinations", "est_remaining_combinations"
                             )) {
   extracted <- lapply(iter_list, function(x) x[what])
@@ -400,6 +432,7 @@ check_convergence <- function(internal) {
   convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
   max_iter <- internal$parameters$adaptive_arguments$max_iter
 
+  exact <- internal$iter_list[[iter]]$exact
 
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
@@ -407,34 +440,43 @@ check_convergence <- function(internal) {
   n_sampled_combinations <- internal$iter_list[[iter]]$n_combinations - 2 # Subtract the zero and full predictions
 
   max_sd <- dt_shapley_sd[, max(.SD), .SDcols = -1, by = .I]$V1 # Max per prediction
-  max_sd0 <- max_sd * sqrt(n_sampled_combinations) # Scales UP the sd as it scales
+  max_sd0 <- max_sd * sqrt(n_sampled_combinations) # Scales UP the sd as it scales at this rate
 
   dt_shapley_est0 <- copy(dt_shapley_est)
 
-  if (!is.null(convergence_tolerance)) {
-    dt_shapley_est0[, maxval := max(.SD), .SDcols = -c(1,2), by = .I]
-    dt_shapley_est0[, minval := min(.SD), .SDcols = -c(1,2), by = .I]
-    dt_shapley_est0[, max_sd0 := max_sd0]
-    dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tolerance))^2]
-    est_required_combinations <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO: Consider other ways to do this
-    est_remaining_combinations <- max(0, est_required_combinations - n_sampled_combinations)
+  est_required_combs_per_ex_id <- est_required_combinations <- est_remaining_combinations <- NA
 
-    converged_sd <- (est_remaining_combinations == 0)
-
-    est_required_combs_per_ex_id <- dt_shapley_est0[, req_samples]
-    names(est_required_combs_per_ex_id) <- paste0(
-      "req_samples_explain_id_",
-      seq_along(est_required_combs_per_ex_id)
-    )
-  } else {
-    est_required_combs_per_ex_id <- est_required_combinations <- est_remaining_combinations <- NULL
+  if(isTRUE(exact)){
+    converged_exact <- TRUE
     converged_sd <- FALSE
+  } else {
+    converged_exact <- FALSE
+    if (!is.null(convergence_tolerance)) {
+      dt_shapley_est0[, maxval := max(.SD), .SDcols = -c(1,2), by = .I]
+      dt_shapley_est0[, minval := min(.SD), .SDcols = -c(1,2), by = .I]
+      dt_shapley_est0[, max_sd0 := max_sd0]
+      dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tolerance))^2]
+      est_required_combinations <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO: Consider other ways to do this
+      est_remaining_combinations <- max(0, est_required_combinations - n_sampled_combinations)
+
+      converged_sd <- (est_remaining_combinations == 0)
+
+      est_required_combs_per_ex_id <- dt_shapley_est0[, req_samples]
+      names(est_required_combs_per_ex_id) <- paste0(
+        "req_samples_explain_id_",
+        seq_along(est_required_combs_per_ex_id)
+      )
+    } else {
+      converged_sd <- FALSE
+    }
   }
+
   converged_max_iter <- (iter >= max_iter)
 
-  converged <- converged_sd || converged_max_iter
+  converged <- converged_exact || converged_sd || converged_max_iter
 
   internal$iter_list[[iter]]$converged <- converged
+  internal$iter_list[[iter]]$converged_exact <- converged_exact
   internal$iter_list[[iter]]$converged_sd <- converged_sd
   internal$iter_list[[iter]]$converged_max_iter <- converged_max_iter
   internal$iter_list[[iter]]$est_required_combinations <- est_required_combinations
