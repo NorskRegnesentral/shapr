@@ -12,7 +12,7 @@ test_that("adaptive_arguments are respected", {
                               convergence_tolerance = 0.001,
                               reduction_factor_vec = rep(10^(-5),10),
                               max_iter = 8),
-    timing = FALSE,
+      
     adaptive = TRUE,
     print_shapleyres = FALSE,
     print_iter_info = FALSE

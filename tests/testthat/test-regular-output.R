@@ -2,7 +2,7 @@
 
 test_that("output_lm_numeric_independence", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -17,14 +17,14 @@ test_that("output_lm_numeric_independence", {
 
 test_that("output_lm_numeric_independence_MSEv_Shapley_weights", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
       n_batches = 1,
-      timing = FALSE,
+        
       MSEv_uniform_comb_weights = FALSE
     ),
     "output_lm_numeric_independence_MSEv_Shapley_weights"
@@ -33,7 +33,7 @@ test_that("output_lm_numeric_independence_MSEv_Shapley_weights", {
 
 test_that("output_lm_numeric_empirical", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -48,7 +48,7 @@ test_that("output_lm_numeric_empirical", {
 
 test_that("output_lm_numeric_empirical_n_combinations", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -65,7 +65,7 @@ test_that("output_lm_numeric_empirical_n_combinations", {
 test_that("output_lm_numeric_empirical_independence", {
   set.seed(123)
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -82,7 +82,7 @@ test_that("output_lm_numeric_empirical_independence", {
 test_that("output_lm_numeric_empirical_AICc_each", {
   set.seed(123)
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -100,7 +100,7 @@ test_that("output_lm_numeric_empirical_AICc_each", {
 test_that("output_lm_numeric_empirical_AICc_full", {
   set.seed(123)
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -117,7 +117,7 @@ test_that("output_lm_numeric_empirical_AICc_full", {
 
 test_that("output_lm_numeric_gaussian", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -132,7 +132,7 @@ test_that("output_lm_numeric_gaussian", {
 
 test_that("output_lm_numeric_copula", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -147,7 +147,7 @@ test_that("output_lm_numeric_copula", {
 
 test_that("output_lm_numeric_ctree", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -162,14 +162,14 @@ test_that("output_lm_numeric_ctree", {
 
 test_that("output_lm_numeric_vaeac", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
       approach = "vaeac",
       prediction_zero = p0,
       n_batches = 1,
-      timing = FALSE,
+        
       n_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
@@ -184,7 +184,7 @@ test_that("output_lm_numeric_vaeac", {
 
 test_that("output_lm_categorical_ctree", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_categorical,
       x_explain = x_explain_categorical,
       x_train = x_train_categorical,
@@ -199,14 +199,14 @@ test_that("output_lm_categorical_ctree", {
 
 test_that("output_lm_categorical_vaeac", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_categorical,
       x_explain = x_explain_categorical,
       x_train = x_train_categorical,
       approach = "vaeac",
       prediction_zero = p0,
       n_batches = 1,
-      timing = FALSE,
+        
       n_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
@@ -221,7 +221,7 @@ test_that("output_lm_categorical_vaeac", {
 
 test_that("output_lm_categorical_categorical", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_categorical,
       x_explain = x_explain_categorical,
       x_train = x_train_categorical,
@@ -236,7 +236,7 @@ test_that("output_lm_categorical_categorical", {
 
 test_that("output_lm_categorical_independence", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_categorical,
       x_explain = x_explain_categorical,
       x_train = x_train_categorical,
@@ -267,7 +267,7 @@ test_that("output_lm_ts_timeseries", {
 
 test_that("output_lm_numeric_comb1", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -282,7 +282,7 @@ test_that("output_lm_numeric_comb1", {
 
 test_that("output_lm_numeric_comb2", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -297,7 +297,7 @@ test_that("output_lm_numeric_comb2", {
 
 test_that("output_lm_numeric_comb3", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -315,7 +315,7 @@ test_that("output_lm_numeric_comb3", {
 
 test_that("output_lm_mixed_independence", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_mixed,
       x_explain = x_explain_mixed,
       x_train = x_train_mixed,
@@ -330,7 +330,7 @@ test_that("output_lm_mixed_independence", {
 
 test_that("output_lm_mixed_ctree", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_mixed,
       x_explain = x_explain_mixed,
       x_train = x_train_mixed,
@@ -345,14 +345,14 @@ test_that("output_lm_mixed_ctree", {
 
 test_that("output_lm_mixed_vaeac", {
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_mixed,
       x_explain = x_explain_mixed,
       x_train = x_train_mixed,
       approach = "vaeac",
       prediction_zero = p0,
       n_batches = 1,
-      timing = FALSE,
+        
       n_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
@@ -368,7 +368,7 @@ test_that("output_lm_mixed_vaeac", {
 test_that("output_lm_mixed_comb", {
   set.seed(123)
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_mixed,
       x_explain = x_explain_mixed,
       x_train = x_train_mixed,
@@ -395,7 +395,7 @@ test_that("output_custom_lm_numeric_independence_1", {
   model_custom_lm_numeric <- model_lm_numeric
 
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_custom_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -508,7 +508,7 @@ test_that("output_lm_numeric_interaction", {
   x_train_interaction <- x_train_numeric[, mget(all.vars(formula(model_lm_interaction))[-1])]
   x_explain_interaction <- x_explain_numeric[, mget(all.vars(formula(model_lm_interaction))[-1])]
   expect_snapshot_rds(
-    explain(
+    explain(testing = TRUE,
       model = model_lm_interaction,
       x_explain = x_explain_interaction,
       x_train = x_train_interaction,
@@ -525,7 +525,7 @@ test_that("output_lm_numeric_ctree_parallelized", {
   future::plan("multisession", workers = 2)
   expect_snapshot_rds(
     {
-      explain(
+      explain(testing = TRUE,testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -543,7 +543,7 @@ test_that("output_lm_numeric_ctree_parallelized", {
 test_that("output_lm_numeric_independence_more_batches", {
   expect_snapshot_rds(
     {
-      explain(
+      explain(testing = TRUE,testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -564,7 +564,7 @@ test_that("output_lm_numeric_empirical_progress", {
   expect_snapshot_rds(
     {
       progressr::with_progress({
-        explain(
+        explain(testing = TRUE,testing = TRUE,
           model = model_lm_numeric,
           x_explain = x_explain_numeric,
           x_train = x_train_numeric,
@@ -590,7 +590,7 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
       approach = "independence",
       prediction_zero = p0,
       n_batches = 1,
-      timing = FALSE,
+        
       keep_samp_for_vS = TRUE
     )),
     "output_lm_numeric_independence_keep_samp_for_vS"

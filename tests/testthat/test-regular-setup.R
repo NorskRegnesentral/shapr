@@ -9,7 +9,7 @@ test_that("error with custom model without providing predict_model", {
       model_custom_lm_mixed <- model_lm_mixed
       class(model_custom_lm_mixed) <- "whatever"
 
-      explain(
+      explain(testing = TRUE,
         model = model_custom_lm_mixed,
         x_train = x_train_mixed,
         x_explain = x_explain_mixed,
@@ -37,7 +37,7 @@ test_that("messages with missing detail in get_model_specs", {
 
   expect_snapshot({
     # Custom model with no get_model_specs
-    explain(
+    explain(testing = TRUE,
       model = model_custom_lm_mixed,
       x_train = x_train_mixed,
       x_explain = x_explain_mixed,
@@ -58,6 +58,7 @@ test_that("messages with missing detail in get_model_specs", {
     }
 
     explain(
+      testing = TRUE,
       model = model_custom_lm_mixed,
       x_train = x_train_mixed,
       x_explain = x_explain_mixed,
@@ -77,7 +78,7 @@ test_that("messages with missing detail in get_model_specs", {
       feature_specs <- list(labels = labels(x$terms), classes = NA, factor_levels = NA)
     }
 
-    explain(
+    explain(testing = TRUE,
       model = model_custom_lm_mixed,
       x_train = x_train_mixed,
       x_explain = x_explain_mixed,
@@ -101,7 +102,7 @@ test_that("messages with missing detail in get_model_specs", {
       )
     }
 
-    explain(
+    explain(testing = TRUE,
       model = model_custom_lm_mixed,
       x_train = x_train_mixed,
       x_explain = x_explain_mixed,
@@ -123,7 +124,7 @@ test_that("erroneous input: `x_train/x_explain`", {
       # not matrix or data.table 1
       x_train_wrong_format <- c(a = 1, b = 2)
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_wrong_format,
@@ -141,7 +142,7 @@ test_that("erroneous input: `x_train/x_explain`", {
       # not matrix or data.table 2
       x_explain_wrong_format <- c(a = 1, b = 2)
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_wrong_format,
         x_train = x_train_numeric,
@@ -160,7 +161,7 @@ test_that("erroneous input: `x_train/x_explain`", {
       x_train_wrong_format <- c(a = 1, b = 2)
       x_explain_wrong_format <- c(a = 3, b = 4)
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_wrong_format,
         x_train = x_train_wrong_format,
@@ -180,7 +181,7 @@ test_that("erroneous input: `x_train/x_explain`", {
       x_train_no_column_names <- as.data.frame(x_train_numeric)
       names(x_train_no_column_names) <- NULL
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_no_column_names,
@@ -199,7 +200,7 @@ test_that("erroneous input: `x_train/x_explain`", {
       x_explain_no_column_names <- as.data.frame(x_explain_numeric)
       names(x_explain_no_column_names) <- NULL
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_no_column_names,
         x_train = x_train_numeric,
@@ -219,7 +220,7 @@ test_that("erroneous input: `x_train/x_explain`", {
       x_explain_no_column_names <- as.data.frame(x_explain_numeric)
       names(x_explain_no_column_names) <- NULL
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_no_column_names,
         x_train = x_train_no_column_names,
@@ -239,7 +240,7 @@ test_that("erroneous input: `model`", {
   expect_snapshot(
     {
       # no model passed
-      explain(
+      explain(testing = TRUE,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
@@ -260,7 +261,7 @@ test_that("erroneous input: `approach`", {
       # not a character (vector)
       approach_non_character <- 1
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -278,7 +279,7 @@ test_that("erroneous input: `approach`", {
       # incorrect length
       approach_incorrect_length <- c("empirical", "gaussian")
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -296,7 +297,7 @@ test_that("erroneous input: `approach`", {
       # incorrect character
       approach_incorrect_character <- "bla"
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -318,7 +319,7 @@ test_that("erroneous input: `prediction_zero`", {
       # non-numeric 1
       p0_non_numeric_1 <- "bla"
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -336,7 +337,7 @@ test_that("erroneous input: `prediction_zero`", {
       # non-numeric 2
       p0_non_numeric_2 <- NULL
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -355,7 +356,7 @@ test_that("erroneous input: `prediction_zero`", {
       # length > 1
       p0_too_long <- c(1, 2)
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -373,7 +374,7 @@ test_that("erroneous input: `prediction_zero`", {
       # NA-numeric
       p0_is_NA <- as.numeric(NA)
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -395,7 +396,7 @@ test_that("erroneous input: `n_combinations`", {
       # non-numeric 1
       n_combinations_non_numeric_1 <- "bla"
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -414,7 +415,7 @@ test_that("erroneous input: `n_combinations`", {
       # non-numeric 2
       n_combinations_non_numeric_2 <- TRUE
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -434,7 +435,7 @@ test_that("erroneous input: `n_combinations`", {
       # non-integer
       n_combinations_non_integer <- 10.5
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -455,7 +456,7 @@ test_that("erroneous input: `n_combinations`", {
       # length > 1
       n_combinations_too_long <- c(1, 2)
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -474,7 +475,7 @@ test_that("erroneous input: `n_combinations`", {
       # NA-numeric
       n_combinations_is_NA <- as.numeric(NA)
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -493,7 +494,7 @@ test_that("erroneous input: `n_combinations`", {
       # Non-positive
       n_combinations_non_positive <- 0
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -512,7 +513,7 @@ test_that("erroneous input: `n_combinations`", {
       # Too low n_combinations (smaller than # features
       n_combinations <- ncol(x_explain_numeric) - 1
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -538,7 +539,7 @@ test_that("erroneous input: `n_combinations`", {
 
       n_combinations <- length(groups) - 1
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -562,7 +563,7 @@ test_that("erroneous input: `group`", {
       # not a list
       group_non_list <- "bla"
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -581,7 +582,7 @@ test_that("erroneous input: `group`", {
       # non-characters in list
       group_with_non_characters <- list(A = 1, B = 2)
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -602,7 +603,7 @@ test_that("erroneous input: `group`", {
         A = c("Solar.R", "Wind", "not_a_data_feature"),
         B = c("Temp", "Month", "Day")
       )
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -623,7 +624,7 @@ test_that("erroneous input: `group`", {
         A = c("Solar.R"),
         B = c("Temp", "Month", "Day")
       )
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -644,7 +645,7 @@ test_that("erroneous input: `group`", {
         A = c("Solar.R", "Solar.R", "Wind"),
         B = c("Temp", "Month", "Day")
       )
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -662,7 +663,7 @@ test_that("erroneous input: `group`", {
     {
       # a single group only
       single_group <- list(A = c("Solar.R", "Wind", "Temp", "Month", "Day"))
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -685,7 +686,7 @@ test_that("erroneous input: `n_samples`", {
       # non-numeric 1
       n_samples_non_numeric_1 <- "bla"
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -704,7 +705,7 @@ test_that("erroneous input: `n_samples`", {
       # non-numeric 2
       n_samples_non_numeric_2 <- TRUE
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -722,7 +723,7 @@ test_that("erroneous input: `n_samples`", {
     {
       # non-integer
       n_samples_non_integer <- 10.5
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -740,7 +741,7 @@ test_that("erroneous input: `n_samples`", {
   expect_snapshot(
     {
       n_samples_too_long <- c(1, 2)
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -758,7 +759,7 @@ test_that("erroneous input: `n_samples`", {
   expect_snapshot(
     {
       n_samples_is_NA <- as.numeric(NA)
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -776,7 +777,7 @@ test_that("erroneous input: `n_samples`", {
   expect_snapshot(
     {
       n_samples_non_positive <- 0
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -798,7 +799,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot(
     {
       n_batches_non_numeric_1 <- "bla"
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -815,7 +816,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot(
     {
       n_batches_non_numeric_2 <- TRUE
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -832,7 +833,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot(
     {
       n_batches_non_integer <- 10.5
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -849,7 +850,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot(
     {
       n_batches_too_long <- c(1, 2)
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -866,7 +867,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot(
     {
       n_batches_is_NA <- as.numeric(NA)
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -883,7 +884,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot(
     {
       n_batches_non_positive <- 0
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -901,7 +902,7 @@ test_that("erroneous input: `n_batches`", {
     {
       n_combinations <- 10
       n_batches_too_large <- 11
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -919,7 +920,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot(
     {
       n_batches_too_large_2 <- 32
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -940,7 +941,7 @@ test_that("erroneous input: `seed`", {
   expect_snapshot(
     {
       seed_not_integer_interpretable <- "bla"
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -962,7 +963,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
   expect_snapshot(
     {
       keep_samp_for_vS_non_logical_1 <- "bla"
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -980,7 +981,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
   expect_snapshot(
     {
       keep_samp_for_vS_non_logical_2 <- NULL
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -998,7 +999,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
   expect_snapshot(
     {
       keep_samp_for_vS_too_long <- c(TRUE, FALSE)
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1020,7 +1021,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
   expect_snapshot(
     {
       MSEv_uniform_comb_weights_nl_1 <- "bla"
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1038,7 +1039,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
   expect_snapshot(
     {
       MSEv_uniform_comb_weights_nl_2 <- NULL
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1056,7 +1057,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
   expect_snapshot(
     {
       MSEv_uniform_comb_weights_long <- c(TRUE, FALSE)
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1079,7 +1080,7 @@ test_that("erroneous input: `predict_model`", {
     {
       predict_model_nonfunction <- "bla"
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1100,7 +1101,7 @@ test_that("erroneous input: `predict_model`", {
         "bla"
       }
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1121,7 +1122,7 @@ test_that("erroneous input: `predict_model`", {
         rep(1, nrow(x) + 1)
       }
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1142,7 +1143,7 @@ test_that("erroneous input: `predict_model`", {
         rep(1, nrow(x))
       }
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1163,7 +1164,7 @@ test_that("erroneous input: `predict_model`", {
         1 + "bla"
       }
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1186,7 +1187,7 @@ test_that("erroneous input: `get_model_specs`", {
       # not a function
       get_model_specs_nonfunction <- "bla"
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1208,7 +1209,7 @@ test_that("erroneous input: `get_model_specs`", {
         "bla"
       }
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1229,7 +1230,7 @@ test_that("erroneous input: `get_model_specs`", {
         list(1, 2, 3, 4)
       }
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1254,7 +1255,7 @@ test_that("erroneous input: `get_model_specs`", {
         )
       }
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1275,7 +1276,7 @@ test_that("erroneous input: `get_model_specs`", {
         1 + "bla"
       }
 
-      explain(
+      explain(testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1297,7 +1298,7 @@ test_that("incompatible input: `data/approach`", {
     {
       # factor model/data with approach gaussian
       non_factor_approach_1 <- "gaussian"
-      explain(
+      explain(testing = TRUE,
         model = model_lm_mixed,
         x_explain = x_explain_mixed,
         x_train = x_explain_mixed,
@@ -1314,7 +1315,7 @@ test_that("incompatible input: `data/approach`", {
     {
       # factor model/data with approach empirical
       non_factor_approach_2 <- "empirical"
-      explain(
+      explain(testing = TRUE,
         model = model_lm_mixed,
         x_explain = x_explain_mixed,
         x_train = x_explain_mixed,
@@ -1331,7 +1332,7 @@ test_that("incompatible input: `data/approach`", {
     {
       # factor model/data with approach copula
       non_factor_approach_3 <- "copula"
-      explain(
+      explain(testing = TRUE,
         model = model_lm_mixed,
         x_explain = x_explain_mixed,
         x_train = x_explain_mixed,
@@ -1367,6 +1368,7 @@ test_that("Error with too low `n_combinations`", {
 
   expect_error(
     explain(
+      testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_explain_numeric,
@@ -1389,6 +1391,7 @@ test_that("Error with too low `n_combinations`", {
 
   expect_error(
     explain(
+      testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_explain_numeric,
@@ -1411,7 +1414,8 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
   # No message as n_combination = NULL sets exact mode
   expect_no_message(
     object = {
-      explanation_exact <- explain(
+      explanation_exact <-     explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1721,7 +1725,7 @@ test_that("gaussian approach use the user provided parameters", {
     x_train = x_train_numeric,
     approach = "gaussian",
     prediction_zero = p0,
-    timing = FALSE,
+
     gaussian.mu = gaussian.provided_mu,
     gaussian.cov_mat = gaussian.provided_cov_mat
   )
@@ -1752,6 +1756,7 @@ test_that("Shapr sets a valid default value for `n_batches`", {
   # `get_default_n_batches()`, I am not certain why. Ask Martin about the logic behind that.
   expect_no_error(
     explain(
+      testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
@@ -1768,13 +1773,13 @@ test_that("Error with to low `n_batches` compared to the number of unique approa
   # `n_batches` (3) must be larger than the number of unique approaches in `approach` (4).
   expect_error(
     object = explain(
+      testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
       approach = c("independence", "empirical", "gaussian", "copula"),
       prediction_zero = p0,
       n_batches = 3,
-      timing = FALSE,
       seed = 1
     )
   )
@@ -1788,7 +1793,7 @@ test_that("Error with to low `n_batches` compared to the number of unique approa
       approach = c("independence", "empirical", "gaussian", "copula"),
       prediction_zero = p0,
       n_batches = NULL,
-      timing = FALSE,
+
       seed = 1
     )
   )
@@ -1802,7 +1807,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     approach = c("independence", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = 2,
-    timing = FALSE,
+
     seed = 1
   )
 
@@ -1819,7 +1824,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     approach = c("independence", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = 15,
-    timing = FALSE,
+
     seed = 1
   )
 
@@ -1837,7 +1842,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     approach = c("independence", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = NULL,
-    timing = FALSE,
+
     seed = 1
   )
 
@@ -1858,7 +1863,7 @@ test_that("setting the seed for combined approaches works", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-    timing = FALSE,
+
     seed = 1
   )
 
@@ -1868,7 +1873,7 @@ test_that("setting the seed for combined approaches works", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-    timing = FALSE,
+
     seed = 1
   )
 
@@ -1883,7 +1888,7 @@ test_that("setting the seed for combined approaches works", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-    timing = FALSE,
+
     seed = 1
   )
 
@@ -1893,7 +1898,7 @@ test_that("setting the seed for combined approaches works", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-    timing = FALSE,
+
     seed = 1
   )
 
@@ -1912,7 +1917,7 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-    timing = FALSE,
+
     seed = 1
   )
   expect_equal(explanation_combined_1$internal$parameters$n_approaches, 4)
@@ -1924,7 +1929,7 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("empirical"),
     prediction_zero = p0,
-    timing = FALSE,
+
     seed = 1
   )
   expect_equal(explanation_combined_2$internal$parameters$n_approaches, 1)
@@ -1936,7 +1941,7 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("gaussian", "gaussian", "gaussian", "gaussian"),
     prediction_zero = p0,
-    timing = FALSE,
+
     seed = 1
   )
   expect_equal(explanation_combined_3$internal$parameters$n_approaches, 4)
@@ -1948,7 +1953,7 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "independence", "empirical"),
     prediction_zero = p0,
-    timing = FALSE,
+
     seed = 1
   )
   expect_equal(explanation_combined_4$internal$parameters$n_approaches, 4)
@@ -1961,7 +1966,7 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "independence", "empirical"),
     prediction_zero = p0,
-    timing = FALSE,
+
     seed = 1
   )
   expect_equal(explanation_combined_5$internal$parameters$n_approaches, 4)

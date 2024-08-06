@@ -186,7 +186,7 @@ plot.shapr <- function(x,
   is_groupwise <- x$internal$parameters$is_groupwise
 
   # melting Kshap
-  shap_names <- colnames(x$shapley_values)[-1]
+  shap_names <- colnames(x$shapley_values)[-c(1,2)]
   dt_shap <- round(data.table::copy(x$shapley_values), digits = digits)
   dt_shap[, id := .I]
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
@@ -1650,7 +1650,7 @@ update_only_these_features <- function(explanation_list,
   # Update the `only_these_features` parameter vector based on `plot_phi0` or in case it is NULL
 
   # Get the common feature names for all explanation objects (including `none`) and one without `none`
-  feature_names_with_none <- colnames(explanation_list[[1]]$shapley_values)
+  feature_names_with_none <- colnames(explanation_list[[1]]$shapley_values)[-1]
   feature_names_without_none <- feature_names_with_none[feature_names_with_none != "none"]
 
   # Only keep the desired features/columns

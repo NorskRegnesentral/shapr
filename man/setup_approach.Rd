@@ -71,7 +71,7 @@ setup_approach(internal, ...)
   regression.tune_values = NULL,
   regression.vfold_cv_para = NULL,
   regression.recipe_func = NULL,
-  regression.surrogate_n_comb = internal$parameters$used_n_combinations - 2,
+  regression.surrogate_n_comb = internal$parameters$n_combinations - 2,
   ...
 )
 
@@ -209,12 +209,12 @@ containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}
 
-\item{regression.surrogate_n_comb}{Integer (default is \code{internal$parameters$used_n_combinations}) specifying the
+\item{regression.surrogate_n_comb}{Integer (default is \code{internal$parameters$n_combinations}) specifying the
 number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
-"\code{internal$parameters$used_n_combinations} - 2". By default, we use all coalitions, but this can take a lot of memory
+"\code{internal$parameters$n_combinations} - 2". By default, we use all coalitions, but this can take a lot of memory
 in larger dimensions. Note that by "all", we mean all coalitions chosen by \code{shapr} to be used. This will be all
 \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in the exact mode. If the
-user sets a lower value than \code{internal$parameters$used_n_combinations}, then we sample this amount of unique
+user sets a lower value than \code{internal$parameters$n_combinations}, then we sample this amount of unique
 coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.}
 
 \item{timeseries.fixed_sigma_vec}{Numeric. (Default = 2)

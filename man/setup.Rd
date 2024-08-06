@@ -28,10 +28,12 @@ setup(
   explain_y_lags = NULL,
   explain_xreg_lags = NULL,
   group_lags = NULL,
-  timing,
   verbose,
   adaptive = FALSE,
+  adaptive_arguments = list(),
+  shapley_reweighting = "none",
   is_python = FALSE,
+  testing = FALSE,
   ...
 )
 }
@@ -140,15 +142,14 @@ If \code{xreg != NULL}, denotes the number of lags that should be used for each 
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
 If \code{FALSE} all lags of each variable are explained individually.}
 
-\item{timing}{Logical.
-Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
-
 \item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
 If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
 Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
 \item{adaptive}{TODO: document}
+
+\item{shapley_reweighting}{TODO: document}
 
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow

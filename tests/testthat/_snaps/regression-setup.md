@@ -1,8 +1,8 @@
 # regression erroneous input: `approach`
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = c(
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = c(
           "regression_surrogate", "gaussian", "independence", "empirical"), )
     Condition
       Error in `check_approach()`:
@@ -11,8 +11,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = c(
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = c(
           "regression_separate", "gaussian", "independence", "empirical"), )
     Condition
       Error in `check_approach()`:
@@ -21,8 +21,8 @@
 # regression erroneous input: `regression.model`
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = NULL)
     Condition
       Error in `regression.get_tune()`:
@@ -31,8 +31,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = lm)
     Condition
       Error in `regression.get_tune()`:
@@ -41,8 +41,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"))
     Condition
@@ -52,8 +52,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(num_terms = c(1, 2,
           3)))
@@ -64,8 +64,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
           3), num_terms = c(1, 2, 3)))
@@ -76,8 +76,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = 2, engine = "rpart",
           mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1,
           2, 3)))
@@ -88,8 +88,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_surrogate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_surrogate",
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)))
     Condition
       Error in `regression.get_tune()`:
@@ -98,8 +98,8 @@
 # regression erroneous input: `regression.tune_values`
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = 2, engine = "rpart",
           mode = "regression"), regression.tune_values = as.matrix(data.frame(
           tree_depth = c(1, 2, 3))))
@@ -110,8 +110,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = function(x) c(1, 2, 3))
     Condition
@@ -121,8 +121,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = function(x) data.frame(
           wrong_name = c(1, 2, 3)))
@@ -133,8 +133,8 @@
 # regression erroneous input: `regression.vfold_cv_para`
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
           3)), regression.vfold_cv_para = 10)
@@ -145,8 +145,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
           3)), regression.vfold_cv_para = list(10))
@@ -157,8 +157,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
           3)), regression.vfold_cv_para = list(hey = 10))
@@ -169,8 +169,8 @@
 # regression erroneous input: `regression.recipe_func`
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_separate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_separate",
         regression.recipe_func = 3)
     Condition
       Error in `regression.check_recipe_func()`:
@@ -179,8 +179,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_surrogate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_surrogate",
         regression.recipe_func = function(x) {
           return(2)
         })
@@ -191,8 +191,8 @@
 # regression erroneous input: `regression.surrogate_n_comb`
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_surrogate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_surrogate",
         regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1)
     Condition
       Error in `regression.check_sur_n_comb()`:
@@ -201,8 +201,8 @@
 ---
 
     Code
-      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, n_batches = 1, timing = FALSE, approach = "regression_surrogate",
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, n_batches = 1, approach = "regression_surrogate",
         regression.surrogate_n_comb = 0)
     Condition
       Error in `regression.check_sur_n_comb()`:

@@ -93,7 +93,7 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1:3],
     group_lags = FALSE,
     n_batches = 1,
-    timing = FALSE, n_combinations = 50
+       n_combinations = 50
   )
 
 
@@ -110,7 +110,7 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1:2],
     group_lags = FALSE,
     n_batches = 1,
-    timing = FALSE, n_combinations = 50
+       n_combinations = 50
   )
 
   h1 <- explain_forecast(
@@ -126,7 +126,7 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1],
     group_lags = FALSE,
     n_batches = 1,
-    timing = FALSE, n_combinations = 50
+       n_combinations = 50
   )
 
   cols_horizon1 <- h2$internal$objects$cols_per_horizon[[1]]
@@ -161,7 +161,7 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     prediction_zero = p0_ar[1:3],
     group_lags = TRUE,
     n_batches = 1,
-    timing = FALSE, n_combinations = 50
+       n_combinations = 50
   )
 
 
@@ -178,7 +178,7 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     prediction_zero = p0_ar[1:2],
     group_lags = TRUE,
     n_batches = 1,
-    timing = FALSE, n_combinations = 50
+       n_combinations = 50
   )
 
   h1 <- explain_forecast(
@@ -194,7 +194,7 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     prediction_zero = p0_ar[1],
     group_lags = TRUE,
     n_batches = 1,
-    timing = FALSE, n_combinations = 50
+       n_combinations = 50
   )
 
   expect_equal(
