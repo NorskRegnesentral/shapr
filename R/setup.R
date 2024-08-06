@@ -40,12 +40,12 @@ setup <- function(x_train,
                   explain_y_lags = NULL,
                   explain_xreg_lags = NULL,
                   group_lags = NULL,
-                  timing,
                   verbose,
                   adaptive = FALSE,
                   adaptive_arguments = list(),
                   shapley_reweighting = "none",
                   is_python = FALSE,
+                  testing = FALSE,
                   ...) {
   internal <- list()
 
@@ -68,12 +68,12 @@ setup <- function(x_train,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
-    timing = timing,
     verbose = verbose,
     adaptive = adaptive,
     adaptive_arguments = adaptive_arguments,
     shapley_reweighting = shapley_reweighting,
     is_python = is_python,
+    testing = testing,
     ...
   )
 
@@ -476,9 +476,9 @@ get_extra_parameters <- function(internal) {
 #' @keywords internal
 get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, n_combinations, group,
                            n_samples, n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
-                           explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing,
+                           explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights,
                            verbose, adaptive = FALSE, adaptive_arguments = adaptive_arguments,
-                           shapley_reweighting = "none", is_python, ...) {
+                           shapley_reweighting = "none", testing, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -523,13 +523,6 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
       !is.na(n_batches) &&
       n_batches > 0)) {
     stop("`n_batches` must be NULL or a single positive integer.")
-  }
-
-  # seed is already set, so we know it works
-  # keep_samp_for_vS
-  if (!(is.logical(timing) &&
-    length(timing) == 1)) {
-    stop("`timing` must be single logical.")
   }
 
   # keep_samp_for_vS
@@ -619,11 +612,11 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     horizon = horizon,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
-    timing = timing,
     verbose = verbose,
     shapley_reweighting = shapley_reweighting,
     adaptive = adaptive,
-    adaptive_arguments = adaptive_arguments
+    adaptive_arguments = adaptive_arguments,
+    testing = testing
   )
 
   # Getting additional parameters from ...

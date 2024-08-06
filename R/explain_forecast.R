@@ -103,7 +103,6 @@ explain_forecast <- function(model,
                              keep_samp_for_vS = FALSE,
                              predict_model = NULL,
                              get_model_specs = NULL,
-                             timing = TRUE,
                              verbose = 0,
                              ...) { # ... is further arguments passed to specific approaches
   timing_list <- list(
@@ -144,7 +143,6 @@ explain_forecast <- function(model,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     group = group,
-    timing = timing,
     verbose = verbose,
     ...
   )
@@ -202,33 +200,18 @@ explain_forecast <- function(model,
     internal = internal
   )
 
-  if (timing == TRUE) {
-    output$timing <- compute_time(timing_list)
-  }
+  output$timing <- compute_time(timing_list)
 
-  # Temporary to avoid failing tests
-  output <- remove_outputs_pass_tests_fore(output)
+
+  # Some cleanup when doing testing
+  testing <- internal$parameters$testing
+  if(isTRUE(testing)){
+    output <- testing_cleanup(output)
+  }
 
   return(output)
 }
 
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-remove_outputs_pass_tests_fore <- function(output) {
-  # Temporary to avoid failing tests related to vaeac approach
-  if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
-    output$internal$parameters[c(
-      "vaeac", "vaeac.sampler", "vaeac.model", "vaeac.activation_function", "vaeac.checkpoint"
-    )] <- NULL
-    output$internal$parameters$vaeac.extra_parameters[c("vaeac.folder_to_save_model", "vaeac.model_description")] <-
-      NULL
-  }
-
-  # Remove the `regression` parameter from the output list when we are not doing regression
-  if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
-
-  return(output)
-}
 
 #' Set up data for explain_forecast
 #'

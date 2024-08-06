@@ -87,9 +87,6 @@
 #' weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
 #' sampling frequency when not all combinations are considered.
 #'
-#' @param timing Logical.
-#' Whether the timing of the different parts of the `explain()` should saved in the model object.
-#'
 #' @param verbose An integer specifying the level of verbosity. If `0`, `shapr` will stay silent.
 #' If `1`, it will print information about performance. If `2`, some additional information will be printed out.
 #' Use `0` (default) for no verbosity, `1` for low verbose, and `2` for high verbose.
@@ -313,7 +310,6 @@ explain <- function(model,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     MSEv_uniform_comb_weights = TRUE,
-                    timing = TRUE,
                     verbose = 0,
                     adaptive_arguments = list(),
                     print_shapleyres = FALSE, # tmp
@@ -345,7 +341,6 @@ explain <- function(model,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
-    timing = timing,
     verbose = verbose,
     adaptive = adaptive,
     adaptive_arguments = adaptive_arguments,
@@ -416,25 +411,34 @@ explain <- function(model,
     converged <- internal$iter_list[[iter]]$converged
   }
 
+  timing_list$adaptive_estimation <- Sys.time()
+
 
   # Rerun after convergence to get the same output format as for the non-adaptive approach
   output <- finalize_explanation(internal = internal)
 
+  timing_list$finalize_explanation <- Sys.time()
 
-  # Temporary to avoid failing tests
-  output <- remove_outputs_to_pass_tests(output)
+  output$timing <- compute_time(timing_list)
+
+
+  # Some cleanup when doing testing
+  testing <- internal$parameters$testing
+  if(isTRUE(testing)){
+    output <- testing_cleanup(output)
+  }
 
   return(output)
 }
 
 #' @keywords internal
-#' @author Lars Henry Berge Olsen
-remove_outputs_to_pass_tests <- function(output) {
-  output$internal$objects$id_combination_mapper_dt <- NULL
-  output$internal$objects$cols_per_horizon <- NULL
-  output$internal$objects$W_list <- NULL
-  output$shapley_values[, explain_id := NULL]
+#' @author Lars Henry Berge Olsen, Martin Jullum
+testing_cleanup <- function(output) {
 
+  # Removing the timing of different function calls
+  output$timing <- NULL
+
+  # Removing paths to non-reproducable vaeac model objects
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters[c(
       "vaeac", "vaeac.sampler", "vaeac.model", "vaeac.activation_function", "vaeac.checkpoint"
@@ -443,9 +447,7 @@ remove_outputs_to_pass_tests <- function(output) {
       NULL
   }
 
-  # Remove the `regression` parameter from the output list when we are not doing regression
-  if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
-
+  # Removing the fit times for regression surrogate models
   if ("regression_surrogate" %in% output$internal$parameters$approach) {
     # Deletes the fit_times for approach = regression_surrogate to make tests pass.
     # In the future we could delete this only when a new argument in explain called testing is TRUE
