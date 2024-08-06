@@ -2,6 +2,7 @@
 test_that("adaptive_arguments are respected", {
 
   ex <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -12,7 +13,6 @@ test_that("adaptive_arguments are respected", {
                               convergence_tolerance = 0.001,
                               reduction_factor_vec = rep(10^(-5),10),
                               max_iter = 8),
-      
     adaptive = TRUE,
     print_shapleyres = FALSE,
     print_iter_info = FALSE

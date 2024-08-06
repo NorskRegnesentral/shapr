@@ -1,53 +1,53 @@
 set.seed(123) #
 
 explain_mixed <- explain(
+  testing = TRUE,
   model = model_lm_mixed,
   x_explain = x_explain_mixed,
   x_train = x_train_mixed,
   approach = "independence",
   prediction_zero = p0,
-  n_batches = 1,
-  timing = FALSE
+  n_batches = 1
 )
 
 explain_numeric_empirical <- explain(
+  testing = TRUE,
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "empirical",
   prediction_zero = p0,
-  n_batches = 1,
-  timing = FALSE
+  n_batches = 1
 )
 
 explain_numeric_gaussian <- explain(
+  testing = TRUE,
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "gaussian",
   prediction_zero = p0,
-  n_batches = 1,
-  timing = FALSE
+  n_batches = 1
 )
 
 explain_numeric_ctree <- explain(
+  testing = TRUE,
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "ctree",
   prediction_zero = p0,
-  n_batches = 1,
-  timing = FALSE
+  n_batches = 1
 )
 
 explain_numeric_combined <- explain(
+  testing = TRUE,
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = c("empirical", "ctree", "gaussian", "ctree"),
   prediction_zero = p0,
-  n_batches = 10,
-  timing = FALSE
+  n_batches = 10
 )
 
 # Create a list of explanations with names

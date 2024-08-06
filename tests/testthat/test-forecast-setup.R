@@ -9,6 +9,7 @@ test_that("error with custom model without providing predict_model", {
       class(model_custom_arima_temp) <- "whatever"
 
       explain_forecast(
+        testing = TRUE,
         model = model_custom_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -36,6 +37,7 @@ test_that("erroneous input: `x_train/x_explain`", {
       y_wrong_format <- data[, c("Temp", "Wind")]
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = y_wrong_format,
         xreg = data[, "Wind"],
@@ -58,6 +60,7 @@ test_that("erroneous input: `x_train/x_explain`", {
       xreg_wrong_format <- data[, c("Temp", "Wind")]
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = xreg_wrong_format,
@@ -81,6 +84,7 @@ test_that("erroneous input: `x_train/x_explain`", {
       names(xreg_no_column_names) <- NULL
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = xreg_no_column_names,
@@ -105,6 +109,7 @@ test_that("erroneous input: `model`", {
     {
       # no model passed
       explain_forecast(
+        testing = TRUE,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
         train_idx = 2:148,
@@ -131,6 +136,7 @@ test_that("erroneous input: `prediction_zero`", {
       p0_wrong_length <- p0_ar[1:2]
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -161,6 +167,7 @@ test_that("erroneous input: `n_combinations`", {
       n_combinations <- horizon + explain_y_lags + explain_xreg_lags - 1
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -190,6 +197,7 @@ test_that("erroneous input: `n_combinations`", {
       n_combinations <- 1 + 1
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -219,6 +227,7 @@ test_that("erroneous input: `train_idx`", {
       train_idx_too_short <- 2
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -242,6 +251,7 @@ test_that("erroneous input: `train_idx`", {
       train_idx_not_integer <- c(3:5) + 0.1
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -264,6 +274,7 @@ test_that("erroneous input: `train_idx`", {
       train_idx_out_of_range <- 1:5
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -290,6 +301,7 @@ test_that("erroneous input: `explain_idx`", {
       explain_idx_not_integer <- c(3:5) + 0.1
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -312,6 +324,7 @@ test_that("erroneous input: `explain_idx`", {
       explain_idx_out_of_range <- 1:5
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -338,6 +351,7 @@ test_that("erroneous input: `explain_y_lags`", {
       explain_y_lags_negative <- -1
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -360,6 +374,7 @@ test_that("erroneous input: `explain_y_lags`", {
       explain_y_lags_not_integer <- 2.1
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -382,6 +397,7 @@ test_that("erroneous input: `explain_y_lags`", {
       explain_y_lags_more_than_one <- c(1, 2)
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -405,6 +421,7 @@ test_that("erroneous input: `explain_y_lags`", {
       explain_y_lags_zero <- 0
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp_noxreg,
         y = data[1:150, "Temp"],
         train_idx = 2:148,
@@ -430,6 +447,7 @@ test_that("erroneous input: `explain_x_lags`", {
       explain_xreg_lags_negative <- -2
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -452,6 +470,7 @@ test_that("erroneous input: `explain_x_lags`", {
       explain_xreg_lags_not_integer <- 2.1
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -474,6 +493,7 @@ test_that("erroneous input: `explain_x_lags`", {
       explain_x_lags_wrong_length <- c(1, 2) # only 1 xreg variable defined
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -500,6 +520,7 @@ test_that("erroneous input: `horizon`", {
       horizon_negative <- -2
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],
@@ -522,6 +543,7 @@ test_that("erroneous input: `horizon`", {
       horizon_not_integer <- 2.1
 
       explain_forecast(
+        testing = TRUE,
         model = model_arima_temp,
         y = data[1:150, "Temp"],
         xreg = data[, "Wind"],

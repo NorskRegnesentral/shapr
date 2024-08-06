@@ -6,6 +6,7 @@ test_that("bug with column name ordering in edge case is fixed", {
   # See news item 5 in v1.12.2 for options to control this message.
   expect_silent({ # Apparently, expect_no_message() does not react to the data.table message/warning
     e.one_subset_per_batch <- explain(
+      testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,

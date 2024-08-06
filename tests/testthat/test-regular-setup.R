@@ -1350,6 +1350,7 @@ test_that("Correct dimension of S when sampling combinations", {
   n_combinations <- 10
 
   res <- explain(
+    testing = TRUE,
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_explain_mixed,
@@ -1435,6 +1436,7 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
   expect_message(
     object = {
       explanation_equal <- explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1456,6 +1458,7 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
   expect_message(
     object = {
       explanation_larger <- explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1503,6 +1506,7 @@ test_that("Correct dimension of S when sampling combinations with groups", {
   )
 
   res <- explain(
+    testing = TRUE,
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_explain_mixed,
@@ -1519,6 +1523,7 @@ test_that("Correct dimension of S when sampling combinations with groups", {
 
 test_that("data feature ordering is output_lm_numeric_column_order", {
   explain.original <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1529,6 +1534,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
   )
 
   explain.new_data_feature_order <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = rev(x_explain_numeric),
     x_train = rev(x_train_numeric),
@@ -1539,6 +1545,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
   )
 
   explain.new_model_feat_order <- explain(
+    testing = TRUE,
     model = model_lm_numeric_col_order,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1565,6 +1572,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 test_that("parallelization gives same output for any approach", {
   # Empirical is seed independent
   explain.empirical_sequential <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1576,6 +1584,7 @@ test_that("parallelization gives same output for any approach", {
 
   future::plan("multisession", workers = 2) # Parallelized with 2 cores
   explain.empirical_multisession <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1607,6 +1616,7 @@ test_that("parallelization gives same output for any approach", {
 
   future::plan("multisession", workers = 2) # Parallelized with 2 cores
   explain.ctree_multisession <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1628,6 +1638,7 @@ test_that("parallelization gives same output for any approach", {
 test_that("different n_batches gives same/different shapley values for different approaches", {
   # approach "empirical" is seed independent
   explain.empirical_n_batches_5 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1638,6 +1649,7 @@ test_that("different n_batches gives same/different shapley values for different
   )
 
   explain.empirical_n_batches_10 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1660,6 +1672,7 @@ test_that("different n_batches gives same/different shapley values for different
 
   # approach "ctree" is seed dependent
   explain.ctree_n_batches_5 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1670,6 +1683,7 @@ test_that("different n_batches gives same/different shapley values for different
   )
 
   explain.ctree_n_batches_10 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1694,6 +1708,7 @@ test_that("different n_batches gives same/different shapley values for different
 test_that("gaussian approach use the user provided parameters", {
   # approach "gaussian" with default parameter estimation, i.e., sample mean and covariance
   e.gaussian_samp_mean_cov <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1787,13 +1802,13 @@ test_that("Error with to low `n_batches` compared to the number of unique approa
   # Except that shapr sets a valid `n_batches` and get no errors
   expect_no_error(
     object = explain(
+      testing = TRUE,
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
       approach = c("independence", "empirical", "gaussian", "copula"),
       prediction_zero = p0,
       n_batches = NULL,
-
       seed = 1
     )
   )
@@ -1801,13 +1816,13 @@ test_that("Error with to low `n_batches` compared to the number of unique approa
 
 test_that("the used number of batches mathces the provided `n_batches` for combined approaches", {
   explanation_1 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = c("independence", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = 2,
-
     seed = 1
   )
 
@@ -1818,6 +1833,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
   )
 
   explanation_2 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1836,6 +1852,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
 
   # Check for the default value for `n_batch`
   explanation_3 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1858,6 +1875,7 @@ test_that("setting the seed for combined approaches works", {
   # Here `n_batches` is set to `4`, so one batch for each method,
   # i.e., no randomness.
   explanation_combined_1 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1868,6 +1886,7 @@ test_that("setting the seed for combined approaches works", {
   )
 
   explanation_combined_2 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1883,6 +1902,7 @@ test_that("setting the seed for combined approaches works", {
   # Here `n_batches` is set to `10`, so NOT one batch for each method,
   # i.e., randomness in assigning the batches.
   explanation_combined_3 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1893,6 +1913,7 @@ test_that("setting the seed for combined approaches works", {
   )
 
   explanation_combined_4 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1912,6 +1933,7 @@ test_that("counting the number of unique approaches", {
   # Recall that the last approach is not counted in `n_unique_approaches` as
   # we do not use it as we then condition on all features.
   explanation_combined_1 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1924,6 +1946,7 @@ test_that("counting the number of unique approaches", {
   expect_equal(explanation_combined_1$internal$parameters$n_unique_approaches, 4)
 
   explanation_combined_2 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1936,6 +1959,7 @@ test_that("counting the number of unique approaches", {
   expect_equal(explanation_combined_2$internal$parameters$n_unique_approaches, 1)
 
   explanation_combined_3 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1948,6 +1972,7 @@ test_that("counting the number of unique approaches", {
   expect_equal(explanation_combined_3$internal$parameters$n_unique_approaches, 1)
 
   explanation_combined_4 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1961,6 +1986,7 @@ test_that("counting the number of unique approaches", {
 
   # Check that the last one is not counted
   explanation_combined_5 <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1978,6 +2004,7 @@ test_that("counting the number of unique approaches", {
 test_that("vaeac_set_seed_works", {
   # Train two vaeac models with the same seed
   explanation_vaeac_1 <- explain(
+    testing = TRUE,
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -1994,6 +2021,7 @@ test_that("vaeac_set_seed_works", {
   )
 
   explanation_vaeac_2 <- explain(
+    testing = TRUE,
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2018,6 +2046,7 @@ test_that("vaeac_pretreained_vaeac_model", {
   # have trained it in a previous shapr::explain object.
 
   explanation_vaeac_1 <- explain(
+    testing = TRUE,
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2039,6 +2068,7 @@ test_that("vaeac_pretreained_vaeac_model", {
 
   # send the pre-trained vaeac model to the explain function
   explanation_pretrained_vaeac <- explain(
+    testing = TRUE,
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2061,6 +2091,7 @@ test_that("vaeac_pretreained_vaeac_model", {
 
   # send the pre-trained vaeac model to the explain function
   explanation_pretrained_vaeac <- explain(
+    testing = TRUE,
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
