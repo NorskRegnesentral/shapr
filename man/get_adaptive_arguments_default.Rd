@@ -7,7 +7,9 @@
 get_adaptive_arguments_default(
   internal,
   max_iter = 20,
-  initial_n_combinations = min(200, ceiling((2^internal$parameters$n_features)/10)),
+  initial_n_combinations = ceiling(min(200, max(internal$parameters$n_features,
+    (2^internal$parameters$n_features)/10))),
+  fixed_n_combinations_per_iter = NULL,
   convergence_tolerance = 0.02,
   reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
   n_boot_samps = 100,
@@ -17,17 +19,28 @@ get_adaptive_arguments_default(
 \arguments{
 \item{internal}{Not used.}
 
-\item{max_iter}{TODO: Specify}
+\item{max_iter}{Integer. Maximum number of estimation iterations}
 
-\item{initial_n_combinations}{TODO: Specify}
+\item{initial_n_combinations}{Integer. Number of coalitions to use in the first estimation iteration.}
 
-\item{convergence_tolerance}{TODO: Specify}
+\item{fixed_n_combinations_per_iter}{Integer. Number of \code{n_combinations} to use in each iteration.
+\code{NULL} (default) means setting it based on estimates based on a set convergence threshold.}
 
-\item{reduction_factor_vec}{TODO: Specify}
+\item{convergence_tolerance}{Numeric. The t variable in the convergence threshold formula on page 6 in the paper
+Covert and Lee (2021), 'Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression'
+https://arxiv.org/pdf/2012.01536. Smaller values requires more coalitions before convergence is reached.}
 
-\item{n_boot_samps}{TODO: Specify}
+\item{reduction_factor_vec}{Numeric vector. The number of \code{n_combinations} that must be used to reach convergence
+in the next iteration is estimated.
+The number of \code{n_combinations} actually used in the next iteration is set to this estimate multiplied by
+\code{reduction_factor_vec[i]} for iteration \code{i}.
+It is wise to start with smaller numbers to avoid using too many \code{n_combinations} due to uncertain estimates in
+the first iterations.}
 
-\item{compute_sd}{TODO: Specify}
+\item{n_boot_samps}{Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
+coalitions used to estimate the standard deviations of the Shapley value estimates.}
+
+\item{compute_sd}{Logical. Whether to estimate the standard deviations of the Shapley value estimates.}
 }
 \description{
 Function to specify arguments of the adaptive estimation procedure
