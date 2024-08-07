@@ -315,7 +315,7 @@ explain <- function(model,
                     adaptive_arguments = list(),
                     print_shapleyres = FALSE, # tmp
                     print_iter_info = FALSE, # tmp
-                    shapley_reweighting = "none", # tmp # "on_N"
+                    shapley_reweighting = "none", # tmp # "on_N" # TODO: Make "on_N" the default later on.
                     ...) { # ... is further arguments passed to specific approaches
 
   timing_list <- list(init_time = Sys.time())

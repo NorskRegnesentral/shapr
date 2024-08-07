@@ -149,6 +149,8 @@ TODO: Make this clearer when we end up fixing this and if they should force a pr
 
 \item{adaptive}{TODO: document}
 
+\item{adaptive_arguments}{TODO: document}
+
 \item{shapley_reweighting}{TODO: document}
 
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is

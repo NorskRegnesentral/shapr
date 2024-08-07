@@ -123,9 +123,11 @@ If \code{1}, it will print information about performance. If \code{2}, some addi
 Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
-\item{print_shapleyres}{TODO: document}
+\item{adaptive_arguments}{TODO: document}
 
-\item{print_iter_info}{TODO: document}
+\item{print_shapleyres}{TODO: move to verbose}
+
+\item{print_iter_info}{TODO: move to verbose}
 
 \item{shapley_reweighting}{TODO: document}
 
