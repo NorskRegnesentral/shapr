@@ -61,7 +61,7 @@ m = ncol(x_train)
 p0 <- mean(y_train)
 
 
-sim_results_saving_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/fico_data/"#"../effektiv_shapley_output/"
+sim_results_saving_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/fico_data_v2/"#"../effektiv_shapley_output/"
 shapley_reweighting_strategy = "none"
 
 preds_explain <- predict(model, as.matrix(x_explain))
@@ -70,9 +70,9 @@ inds_1 <- head(order(-preds_explain),50)
 set.seed(123)
 inds_2 <- sample(which(preds_explain>quantile(preds_explain,0.9) & preds_explain<min(preds_explain[inds_1])),size = 50,replace = FALSE)
 inds <- c(inds_1,inds_2)
-
 set.seed(465132)
 #inds = 1:100
+
 # expl <- shapr::explain(model = model,
 #                        x_explain= x_explain[inds,],
 #                        x_train = x_train,
@@ -84,7 +84,6 @@ set.seed(465132)
 # print(Sys.time())
 
 # These are the parameters for for iterative_kshap_func
-n_samples <- 1000
 approach = "ctree"
 
 # Reduce if < 10% prob of shapval > 0.05
@@ -104,37 +103,45 @@ predict_model <- function(model, newdata){
 
 predict_model(model,x_explain[2,])
 
-set.seed(1298)
-run_obj_list <- list()
-for(kk in seq_along(testObs_computed_vec)){
-  testObs_computed <- testObs_computed_vec[kk]
-  full_pred <- predict(model,as.matrix(x_explain))[testObs_computed]
-  shapsum_other_features <- 0
+# load(paste0("/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/fico_data_v2/iterative_kernelshap_lingauss_p12", shapley_reweighting_strategy, ".RData"))
+
+# set.seed(1298)
+# run_obj_list <- list()
+# for(kk in seq_along(testObs_computed_vec)){
+#   testObs_computed <- testObs_computed_vec[kk]
+#   full_pred <- predict(model,as.matrix(x_explain))[testObs_computed]
+#   shapsum_other_features <- 0
 
 
-  run <- iterative_kshap_func(model,x_explain,x_train,
-                              testObs_computed = testObs_computed,
-                              cutoff_feats = cutoff_feats,
-                              initial_n_combinations = 50,
-                              full_pred = full_pred,
-                              shapsum_other_features = shapsum_other_features,
-                              p0 = p0,
-                              predict_model = predict_model,
-                              shapley_threshold_val = shapley_threshold_val,
-                              shapley_threshold_prob = shapley_threshold_prob,
-                              approach = approach,
-                              shapley_reweighting_strategy = shapley_reweighting_strategy)
+#   run <- iterative_kshap_func(model,x_explain,x_train,
+#                               testObs_computed = testObs_computed,
+#                               cutoff_feats = cutoff_feats,
+#                               initial_n_combinations = 50,
+#                               full_pred = full_pred,
+#                               shapsum_other_features = shapsum_other_features,
+#                               p0 = p0,
+#                               predict_model = predict_model,
+#                               shapley_threshold_val = shapley_threshold_val,
+#                               shapley_threshold_prob = shapley_threshold_prob,
+#                               approach = approach,
+#                               shapley_reweighting_strategy = shapley_reweighting_strategy)
 
-  runres_list[[kk]] <- run$kshap_final
-  runcomps_list[[kk]] <- sum(sapply(run$keep_list,"[[","no_computed_combinations"))
-  run_obj_list[[kk]] <- run
-  print(kk)
-  print(Sys.time())
-}
+#   runres_list[[kk]] <- run$kshap_final
+#   runcomps_list[[kk]] <- sum(sapply(run$keep_list,"[[","no_computed_combinations"))
+#   write.table(runcomps_list, file = paste0(sim_results_saving_folder,"runcomps_list_", shapley_reweighting_strategy, ".txt"))
+#   run_obj_list[[kk]] <- run
 
-est <- rbindlist(runres_list)
-est[,other_features:=NULL]
-fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_", shapley_reweighting_strategy, ".csv"))
+#   print(kk)
+#   print(Sys.time())
+# }
+
+# est <- rbindlist(runres_list)
+# est[,other_features:=NULL]
+# fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_", shapley_reweighting_strategy, ".csv"))
+
+
+runcomps_list = fread(paste0(sim_results_saving_folder,"runcomps_list_", shapley_reweighting_strategy, ".txt"))
+runcomp_list = as.list(runcomps_list)
 
 set.seed(832)
 expl_approx <- matrix(0, nrow = length(inds), ncol = m+1)
@@ -148,11 +155,13 @@ for (i in seq_along(testObs_computed_vec)){
                         n_combinations = runcomps_list[[i]])
   expl_approx[i,] = unlist(expl_approx_obj$shapley_values)
   expl_approx_obj_list[[i]] <- expl_approx_obj
+  print(i)
+  print(Sys.time())
 }
 expl_approx <- as.data.table(expl_approx)
-truth <- expl$shapley_values
+# truth <- expl$shapley_values
 
-colnames(expl_approx) <- colnames(truth)
+# colnames(expl_approx) <- colnames(truth)
 fwrite(expl_approx,paste0(sim_results_saving_folder,"approx_shapley_values_", shapley_reweighting_strategy, ".csv"))
 
 bias_vec <- colMeans(est-truth)
