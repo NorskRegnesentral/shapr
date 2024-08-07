@@ -96,10 +96,11 @@
 #'
 #' @param adaptive TODO: document
 #'
+#' @param adaptive_arguments TODO: document
 #'
-#' @param print_shapleyres TODO: document
+#' @param print_shapleyres TODO: move to verbose
 #'
-#' @param print_iter_info TODO: document
+#' @param print_iter_info TODO: move to verbose
 #'
 #' @param shapley_reweighting TODO: document
 #'

@@ -451,7 +451,7 @@ check_convergence <- function(internal) {
       dt_shapley_est0[, minval := min(.SD), .SDcols = -c(1, 2), by = .I]
       dt_shapley_est0[, max_sd0 := max_sd0]
       dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tolerance))^2]
-      est_required_combinations <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO: Consider other ways to do this
+      est_required_combinations <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO:Consider other ways to do this
       est_remaining_combinations <- max(0, est_required_combinations - n_sampled_combinations)
 
       converged_sd <- (est_remaining_combinations == 0)
