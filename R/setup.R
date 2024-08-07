@@ -107,15 +107,15 @@ setup <- function(x_train,
 
 
 #' @keywords internal
-set_adaptive_parameters <- function(internal){
-
+set_adaptive_parameters <- function(internal) {
   adaptive <- internal$parameters$adaptive
 
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
   adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
-                                            adaptive_arguments,
-                                            keep.null = TRUE)
+    adaptive_arguments,
+    keep.null = TRUE
+  )
 
   internal$parameters$adaptive_arguments <- adaptive_arguments
 
@@ -130,7 +130,6 @@ set_adaptive_parameters <- function(internal){
 
 
   return(internal)
-
 }
 
 # Get functions ========================================================================================================
@@ -153,37 +152,40 @@ set_adaptive_parameters <- function(internal){
 #' @author Martin Jullum
 get_adaptive_arguments_default <- function(internal,
                                            max_iter = 20,
-                                           initial_n_combinations = min(200,
-                                                                        ceiling((2^internal$parameters$n_features) / 10)),
+                                           initial_n_combinations = min(
+                                             200,
+                                             ceiling((2^internal$parameters$n_features) / 10)
+                                           ),
                                            convergence_tolerance = 0.02,
                                            reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
                                            n_boot_samps = 100,
-                                           compute_sd = ifelse(internal$parameters$exact,FALSE,TRUE)){
-
+                                           compute_sd = ifelse(internal$parameters$exact, FALSE, TRUE)) {
   adaptive <- internal$parameters$adaptive
 
-  if(isTRUE(adaptive)){
+  if (isTRUE(adaptive)) {
     ret_list <- mget(
-      c("initial_n_combinations",
+      c(
+        "initial_n_combinations",
         "max_iter",
         "convergence_tolerance",
         "reduction_factor_vec",
         "n_boot_samps",
-        "compute_sd")
+        "compute_sd"
+      )
     )
   } else {
-
-    ret_list <- list(initial_n_combinations = internal$parameters$n_combinations,
-                     max_iter = 1,
-                     convergence_tolerance = NULL,
-                     reduction_factor_vec = NULL,
-                     n_boot_samps = n_boot_samps,
-                     compute_sd = isFALSE(internal$parameters$exact) &&
-                       isFALSE(internal$parameters$is_groupwise))
+    ret_list <- list(
+      initial_n_combinations = internal$parameters$n_combinations,
+      max_iter = 1,
+      convergence_tolerance = NULL,
+      reduction_factor_vec = NULL,
+      n_boot_samps = n_boot_samps,
+      compute_sd = isFALSE(internal$parameters$exact) &&
+        isFALSE(internal$parameters$is_groupwise)
+    )
   }
 
   return(ret_list)
-
 }
 
 #' @keywords internal

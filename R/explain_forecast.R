@@ -205,7 +205,7 @@ explain_forecast <- function(model,
 
   # Some cleanup when doing testing
   testing <- internal$parameters$testing
-  if(isTRUE(testing)){
+  if (isTRUE(testing)) {
     output <- testing_cleanup(output)
   }
 

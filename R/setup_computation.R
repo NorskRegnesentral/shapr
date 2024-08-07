@@ -801,7 +801,7 @@ create_S_batch <- function(internal, seed = NULL) {
   }
 
   # Reduces n_batches if it is larger than the number of new_id_combinations
-  n_batches <- min(n_batches,X0[,.N]-2)
+  n_batches <- min(n_batches, X0[, .N] - 2)
 
 
   if (!is.null(seed)) set.seed(seed)

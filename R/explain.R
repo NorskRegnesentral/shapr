@@ -424,7 +424,7 @@ explain <- function(model,
 
   # Some cleanup when doing testing
   testing <- internal$parameters$testing
-  if(isTRUE(testing)){
+  if (isTRUE(testing)) {
     output <- testing_cleanup(output)
   }
 
@@ -434,7 +434,6 @@ explain <- function(model,
 #' @keywords internal
 #' @author Lars Henry Berge Olsen, Martin Jullum
 testing_cleanup <- function(output) {
-
   # Removing the timing of different function calls
   output$timing <- NULL
 
