@@ -15,9 +15,7 @@ test_that("error with custom model without providing predict_model", {
         x_explain = x_explain_mixed,
         approach = "independence",
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
-      )
+        n_batches = 1      )
     },
     error = TRUE
   )
@@ -45,9 +43,8 @@ test_that("messages with missing detail in get_model_specs", {
       prediction_zero = p0,
       predict_model = custom_predict_model,
       get_model_specs = NA,
-      n_batches = 1,
-      timing = FALSE
-    )
+      n_batches = 1
+      )
   })
 
 
@@ -66,9 +63,8 @@ test_that("messages with missing detail in get_model_specs", {
       prediction_zero = p0,
       predict_model = custom_predict_model,
       get_model_specs = custom_get_model_specs_no_lab,
-      n_batches = 1,
-      timing = FALSE
-    )
+      n_batches = 1
+      )
   })
 
 
@@ -86,9 +82,8 @@ test_that("messages with missing detail in get_model_specs", {
       prediction_zero = p0,
       predict_model = custom_predict_model,
       get_model_specs = custom_gms_no_classes,
-      n_batches = 1,
-      timing = FALSE
-    )
+      n_batches = 1
+      )
   })
 
 
@@ -110,9 +105,8 @@ test_that("messages with missing detail in get_model_specs", {
       prediction_zero = p0,
       predict_model = custom_predict_model,
       get_model_specs = custom_gms_no_factor_levels,
-      n_batches = 1,
-      timing = FALSE
-    )
+      n_batches = 1
+      )
   })
 })
 
@@ -130,9 +124,8 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_train = x_train_wrong_format,
         approach = "independence",
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
-      )
+        n_batches = 1
+        )
     },
     error = TRUE
   )
@@ -148,8 +141,8 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -167,8 +160,8 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_train = x_train_wrong_format,
         approach = "independence",
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -187,8 +180,8 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_train = x_train_no_column_names,
         approach = "independence",
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -206,8 +199,8 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -226,8 +219,8 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_train = x_train_no_column_names,
         approach = "independence",
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -245,8 +238,8 @@ test_that("erroneous input: `model`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -267,8 +260,8 @@ test_that("erroneous input: `approach`", {
         x_train = x_train_numeric,
         approach = approach_non_character,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -285,8 +278,8 @@ test_that("erroneous input: `approach`", {
         x_train = x_train_numeric,
         approach = approach_incorrect_length,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -303,8 +296,8 @@ test_that("erroneous input: `approach`", {
         x_train = x_train_numeric,
         approach = approach_incorrect_character,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -325,8 +318,8 @@ test_that("erroneous input: `prediction_zero`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0_non_numeric_1,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -343,8 +336,8 @@ test_that("erroneous input: `prediction_zero`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0_non_numeric_2,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -362,8 +355,8 @@ test_that("erroneous input: `prediction_zero`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0_too_long,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -380,8 +373,8 @@ test_that("erroneous input: `prediction_zero`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0_is_NA,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -403,8 +396,8 @@ test_that("erroneous input: `n_combinations`", {
         approach = "independence",
         prediction_zero = p0,
         n_combinations = n_combinations_non_numeric_1,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -422,8 +415,8 @@ test_that("erroneous input: `n_combinations`", {
         approach = "independence",
         prediction_zero = p0,
         n_combinations = n_combinations_non_numeric_2,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -442,8 +435,8 @@ test_that("erroneous input: `n_combinations`", {
         approach = "independence",
         prediction_zero = p0,
         n_combinations = n_combinations_non_integer,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -463,8 +456,8 @@ test_that("erroneous input: `n_combinations`", {
         approach = "independence",
         prediction_zero = p0,
         n_combinations = n_combinations_too_long,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -482,8 +475,8 @@ test_that("erroneous input: `n_combinations`", {
         approach = "independence",
         prediction_zero = p0,
         n_combinations = n_combinations_is_NA,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -501,8 +494,8 @@ test_that("erroneous input: `n_combinations`", {
         approach = "independence",
         prediction_zero = p0,
         n_combinations = n_combinations_non_positive,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -520,8 +513,8 @@ test_that("erroneous input: `n_combinations`", {
         prediction_zero = p0,
         approach = "gaussian",
         n_combinations = n_combinations,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -547,8 +540,8 @@ test_that("erroneous input: `n_combinations`", {
         approach = "gaussian",
         group = groups,
         n_combinations = n_combinations,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -570,8 +563,8 @@ test_that("erroneous input: `group`", {
         approach = "independence",
         prediction_zero = p0,
         group = group_non_list,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -589,8 +582,8 @@ test_that("erroneous input: `group`", {
         approach = "independence",
         prediction_zero = p0,
         group = group_with_non_characters,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -610,8 +603,8 @@ test_that("erroneous input: `group`", {
         approach = "independence",
         prediction_zero = p0,
         group = group_with_non_data_features,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -631,8 +624,8 @@ test_that("erroneous input: `group`", {
         approach = "independence",
         prediction_zero = p0,
         group = group_missing_data_features,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -652,8 +645,8 @@ test_that("erroneous input: `group`", {
         approach = "independence",
         prediction_zero = p0,
         group = group_dup_data_features,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -670,8 +663,8 @@ test_that("erroneous input: `group`", {
         approach = "independence",
         prediction_zero = p0,
         group = single_group,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -693,8 +686,8 @@ test_that("erroneous input: `n_samples`", {
         approach = "independence",
         prediction_zero = p0,
         n_samples = n_samples_non_numeric_1,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -712,8 +705,8 @@ test_that("erroneous input: `n_samples`", {
         approach = "independence",
         prediction_zero = p0,
         n_samples = n_samples_non_numeric_2,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -730,8 +723,8 @@ test_that("erroneous input: `n_samples`", {
         approach = "independence",
         prediction_zero = p0,
         n_samples = n_samples_non_integer,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -748,8 +741,8 @@ test_that("erroneous input: `n_samples`", {
         approach = "independence",
         prediction_zero = p0,
         n_samples = n_samples_too_long,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -766,8 +759,8 @@ test_that("erroneous input: `n_samples`", {
         approach = "independence",
         prediction_zero = p0,
         n_samples = n_samples_is_NA,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -784,8 +777,8 @@ test_that("erroneous input: `n_samples`", {
         approach = "independence",
         prediction_zero = p0,
         n_samples = n_samples_non_positive,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -806,7 +799,7 @@ test_that("erroneous input: `n_batches`", {
         approach = "independence",
         prediction_zero = p0,
         n_batches = n_batches_non_numeric_1,
-        timing = FALSE
+
       )
     },
     error = TRUE
@@ -823,7 +816,7 @@ test_that("erroneous input: `n_batches`", {
         approach = "independence",
         prediction_zero = p0,
         n_batches = n_batches_non_numeric_2,
-        timing = FALSE
+
       )
     },
     error = TRUE
@@ -840,7 +833,7 @@ test_that("erroneous input: `n_batches`", {
         approach = "independence",
         prediction_zero = p0,
         n_batches = n_batches_non_integer,
-        timing = FALSE
+
       )
     },
     error = TRUE
@@ -857,7 +850,7 @@ test_that("erroneous input: `n_batches`", {
         approach = "independence",
         prediction_zero = p0,
         n_batches = n_batches_too_long,
-        timing = FALSE
+
       )
     },
     error = TRUE
@@ -874,7 +867,7 @@ test_that("erroneous input: `n_batches`", {
         approach = "independence",
         prediction_zero = p0,
         n_batches = n_batches_is_NA,
-        timing = FALSE
+
       )
     },
     error = TRUE
@@ -891,7 +884,7 @@ test_that("erroneous input: `n_batches`", {
         approach = "independence",
         prediction_zero = p0,
         n_batches = n_batches_non_positive,
-        timing = FALSE
+
       )
     },
     error = TRUE
@@ -910,7 +903,7 @@ test_that("erroneous input: `n_batches`", {
         prediction_zero = p0,
         n_combinations = n_combinations,
         n_batches = n_batches_too_large,
-        timing = FALSE
+
       )
     },
     error = TRUE
@@ -927,7 +920,7 @@ test_that("erroneous input: `n_batches`", {
         approach = "independence",
         prediction_zero = p0,
         n_batches = n_batches_too_large_2,
-        timing = FALSE
+
       )
     },
     error = TRUE
@@ -948,8 +941,8 @@ test_that("erroneous input: `seed`", {
         approach = "independence",
         prediction_zero = p0,
         seed = seed_not_integer_interpretable,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -970,8 +963,8 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         approach = "independence",
         prediction_zero = p0,
         keep_samp_for_vS = keep_samp_for_vS_non_logical_1,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -988,8 +981,8 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         approach = "independence",
         prediction_zero = p0,
         keep_samp_for_vS = keep_samp_for_vS_non_logical_2,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
+
       )
     },
     error = TRUE
@@ -1006,8 +999,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         approach = "independence",
         prediction_zero = p0,
         keep_samp_for_vS = keep_samp_for_vS_too_long,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1028,8 +1020,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         approach = "independence",
         prediction_zero = p0,
         MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1046,8 +1037,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         approach = "independence",
         prediction_zero = p0,
         MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1064,8 +1054,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         approach = "independence",
         prediction_zero = p0,
         MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1087,8 +1076,7 @@ test_that("erroneous input: `predict_model`", {
         approach = "independence",
         prediction_zero = p0,
         predict_model = predict_model_nonfunction,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1108,8 +1096,7 @@ test_that("erroneous input: `predict_model`", {
         approach = "independence",
         prediction_zero = p0,
         predict_model = predict_model_non_num_output,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1129,8 +1116,7 @@ test_that("erroneous input: `predict_model`", {
         approach = "independence",
         prediction_zero = p0,
         predict_model = predict_model_wrong_output_len,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1150,8 +1136,7 @@ test_that("erroneous input: `predict_model`", {
         approach = "independence",
         prediction_zero = p0,
         predict_model = predict_model_invalid_argument,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1171,8 +1156,7 @@ test_that("erroneous input: `predict_model`", {
         approach = "independence",
         prediction_zero = p0,
         predict_model = predict_model_error,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1194,8 +1178,7 @@ test_that("erroneous input: `get_model_specs`", {
         approach = "independence",
         prediction_zero = p0,
         get_model_specs = get_model_specs_nonfunction,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1216,8 +1199,7 @@ test_that("erroneous input: `get_model_specs`", {
         approach = "independence",
         prediction_zero = p0,
         get_model_specs = get_ms_output_not_list,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1237,8 +1219,7 @@ test_that("erroneous input: `get_model_specs`", {
         approach = "independence",
         prediction_zero = p0,
         get_model_specs = get_ms_output_too_long,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1262,8 +1243,7 @@ test_that("erroneous input: `get_model_specs`", {
         approach = "independence",
         prediction_zero = p0,
         get_model_specs = get_ms_output_wrong_names,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1283,8 +1263,7 @@ test_that("erroneous input: `get_model_specs`", {
         approach = "independence",
         prediction_zero = p0,
         get_model_specs = get_model_specs_error,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1304,8 +1283,7 @@ test_that("incompatible input: `data/approach`", {
         x_train = x_explain_mixed,
         approach = non_factor_approach_1,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1321,8 +1299,7 @@ test_that("incompatible input: `data/approach`", {
         x_train = x_explain_mixed,
         approach = non_factor_approach_2,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1338,8 +1315,7 @@ test_that("incompatible input: `data/approach`", {
         x_train = x_explain_mixed,
         approach = non_factor_approach_3,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE
+        n_batches = 1
       )
     },
     error = TRUE
@@ -1357,8 +1333,7 @@ test_that("Correct dimension of S when sampling combinations", {
     prediction_zero = p0,
     approach = "ctree",
     n_combinations = n_combinations,
-    n_batches = 1,
-    timing = FALSE
+    n_batches = 1
   )
 
   expect_equal(nrow(res$internal$objects$S), n_combinations)
@@ -1376,8 +1351,7 @@ test_that("Error with too low `n_combinations`", {
       prediction_zero = p0,
       approach = "gaussian",
       n_combinations = n_combinations,
-      n_batches = 1,
-      timing = FALSE
+      n_batches = 1
     )
   )
 
@@ -1400,8 +1374,7 @@ test_that("Error with too low `n_combinations`", {
       approach = "gaussian",
       group = groups,
       n_combinations = n_combinations,
-      n_batches = 1,
-      timing = FALSE
+      n_batches = 1
     )
   )
 })
@@ -1425,8 +1398,7 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
         n_samples = 2, # Low value for fast computations
         n_batches = 1, # Not related to the bug
         seed = 123,
-        n_combinations = NULL,
-        timing = FALSE
+        n_combinations = NULL
       )
     }
   )
@@ -1446,8 +1418,7 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
         n_batches = 1, # Not related to the bug
         seed = 123,
         adaptive_arguments = list(compute_sd = FALSE),
-        n_combinations = 2^ncol(x_explain_numeric),
-        timing = FALSE
+        n_combinations = 2^ncol(x_explain_numeric)
       )
     },
     regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
@@ -1468,8 +1439,7 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
         n_batches = 1, # Not related to the bug
         seed = 123,
         adaptive_arguments = list(compute_sd = FALSE),
-        n_combinations = 2^ncol(x_explain_numeric) + 1,
-        timing = FALSE
+        n_combinations = 2^ncol(x_explain_numeric) + 1
       )
     },
     regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
@@ -1514,8 +1484,7 @@ test_that("Correct dimension of S when sampling combinations with groups", {
     approach = "ctree",
     group = groups,
     n_combinations = n_combinations,
-    n_batches = 1,
-    timing = FALSE
+    n_batches = 1
   )
 
   expect_equal(nrow(res$internal$objects$S), n_combinations)
@@ -1529,8 +1498,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
     x_train = x_train_numeric,
     approach = "empirical",
     prediction_zero = p0,
-    n_batches = 1,
-    timing = FALSE
+    n_batches = 1
   )
 
   explain.new_data_feature_order <- explain(
@@ -1540,8 +1508,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
     x_train = rev(x_train_numeric),
     approach = "empirical",
     prediction_zero = p0,
-    n_batches = 1,
-    timing = FALSE
+    n_batches = 1
   )
 
   explain.new_model_feat_order <- explain(
@@ -1551,8 +1518,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
     x_train = x_train_numeric,
     approach = "empirical",
     prediction_zero = p0,
-    n_batches = 1,
-    timing = FALSE
+    n_batches = 1
   )
 
   # Same Shapley values, but different order
@@ -1578,8 +1544,7 @@ test_that("parallelization gives same output for any approach", {
     x_train = x_train_numeric,
     approach = "empirical",
     prediction_zero = p0,
-    n_batches = 10,
-    timing = FALSE
+    n_batches = 10
   )
 
   future::plan("multisession", workers = 2) # Parallelized with 2 cores
@@ -1590,8 +1555,7 @@ test_that("parallelization gives same output for any approach", {
     x_train = x_train_numeric,
     approach = "empirical",
     prediction_zero = p0,
-    n_batches = 10,
-    timing = FALSE
+    n_batches = 10
   )
 
   future::plan("sequential") # Resetting to sequential computation
@@ -1605,13 +1569,13 @@ test_that("parallelization gives same output for any approach", {
 
   # ctree is seed NOT independent
   explain.ctree_sequential <- explain(
+    testing = TRUE,
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "ctree",
     prediction_zero = p0,
-    n_batches = 10,
-    timing = FALSE
+    n_batches = 10
   )
 
   future::plan("multisession", workers = 2) # Parallelized with 2 cores
@@ -1622,9 +1586,8 @@ test_that("parallelization gives same output for any approach", {
     x_train = x_train_numeric,
     approach = "ctree",
     prediction_zero = p0,
-    n_batches = 10,
-    timing = FALSE
-  )
+    n_batches = 10
+    )
 
   future::plan("sequential") # Resetting to sequential computation
 
@@ -1644,8 +1607,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "empirical",
     prediction_zero = p0,
-    n_batches = 5,
-    timing = FALSE
+    n_batches = 5
   )
 
   explain.empirical_n_batches_10 <- explain(
@@ -1655,8 +1617,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "empirical",
     prediction_zero = p0,
-    n_batches = 10,
-    timing = FALSE
+    n_batches = 10
   )
 
   # Difference in the objects (n_batches and related)
@@ -1678,8 +1639,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "ctree",
     prediction_zero = p0,
-    n_batches = 5,
-    timing = FALSE
+    n_batches = 5
   )
 
   explain.ctree_n_batches_10 <- explain(
@@ -1689,8 +1649,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "ctree",
     prediction_zero = p0,
-    n_batches = 10,
-    timing = FALSE
+    n_batches = 10
   )
 
   # Difference in the objects (n_batches and related)
@@ -1714,7 +1673,7 @@ test_that("gaussian approach use the user provided parameters", {
     x_train = x_train_numeric,
     approach = "gaussian",
     prediction_zero = p0,
-    timing = FALSE
+
   )
 
   # Expect that gaussian.mu is the sample mean when no values are provided
@@ -1740,7 +1699,6 @@ test_that("gaussian approach use the user provided parameters", {
     x_train = x_train_numeric,
     approach = "gaussian",
     prediction_zero = p0,
-
     gaussian.mu = gaussian.provided_mu,
     gaussian.cov_mat = gaussian.provided_cov_mat
   )
@@ -1840,7 +1798,6 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     approach = c("independence", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = 15,
-
     seed = 1
   )
 
@@ -1859,7 +1816,6 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     approach = c("independence", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = NULL,
-
     seed = 1
   )
 
@@ -1881,7 +1837,6 @@ test_that("setting the seed for combined approaches works", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-
     seed = 1
   )
 
@@ -1892,7 +1847,6 @@ test_that("setting the seed for combined approaches works", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-
     seed = 1
   )
 
@@ -1908,7 +1862,6 @@ test_that("setting the seed for combined approaches works", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-
     seed = 1
   )
 
@@ -1919,7 +1872,6 @@ test_that("setting the seed for combined approaches works", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-
     seed = 1
   )
 
@@ -1939,7 +1891,6 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
-
     seed = 1
   )
   expect_equal(explanation_combined_1$internal$parameters$n_approaches, 4)
@@ -1952,7 +1903,6 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("empirical"),
     prediction_zero = p0,
-
     seed = 1
   )
   expect_equal(explanation_combined_2$internal$parameters$n_approaches, 1)
@@ -1965,7 +1915,6 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("gaussian", "gaussian", "gaussian", "gaussian"),
     prediction_zero = p0,
-
     seed = 1
   )
   expect_equal(explanation_combined_3$internal$parameters$n_approaches, 4)
@@ -1978,7 +1927,6 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "independence", "empirical"),
     prediction_zero = p0,
-
     seed = 1
   )
   expect_equal(explanation_combined_4$internal$parameters$n_approaches, 4)
@@ -1992,7 +1940,6 @@ test_that("counting the number of unique approaches", {
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "independence", "empirical"),
     prediction_zero = p0,
-
     seed = 1
   )
   expect_equal(explanation_combined_5$internal$parameters$n_approaches, 4)
