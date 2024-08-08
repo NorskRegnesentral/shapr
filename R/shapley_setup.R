@@ -270,18 +270,19 @@ feature_not_exact <- function(m,
   w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
-  if (!is.null(prev_feature_samples)) {
-    feature_sample_all <- prev_feature_samples
-    unique_samples <- length(unique(prev_feature_samples))
-    n_combinations <- min(2^m, n_combinations + unique_samples + 2)
-    # Adjusts for the the unique samples, zero and m samples
-  } else {
-    feature_sample_all <- list()
-    unique_samples <- 0
-  }
 
 
   if (unique_sampling) {
+    if (!is.null(prev_feature_samples)) {
+      feature_sample_all <- prev_feature_samples
+      unique_samples <- length(unique(prev_feature_samples))
+      n_combinations <- min(2^m, n_combinations + unique_samples + 2)
+      # Adjusts for the the unique samples, zero and m samples
+    } else {
+      feature_sample_all <- list()
+      unique_samples <- 0
+    }
+
     while (unique_samples < n_combinations - 2) {
       if (paired_shap_sampling == TRUE) {
         n_samps <- ceiling((n_combinations - unique_samples - 2) / 2) # Sample -2 as we add zero and m samples below
@@ -308,13 +309,19 @@ feature_not_exact <- function(m,
       unique_samples <- length(unique(feature_sample_all))
     }
   } else {
+
+    if(is.null(prev_feature_samples)){
+       n_combinations <- n_combinations - 2 # Sample -2 for the first iteration as we add zero and m samples below
+    }
+
     n_features_sample <- sample(
       x = n_features,
-      size = n_combinations - 2, # Sample -2 as we add zero and m samples below
+      size = n_combinations,
       replace = TRUE,
       prob = p
     )
-    feature_sample_all <- sample_features_cpp(m, n_features_sample)
+    feature_sample <- sample_features_cpp(m, n_features_sample)
+    feature_sample_all <- c(prev_feature_samples, feature_sample)
   }
 
   # Add zero and m features
