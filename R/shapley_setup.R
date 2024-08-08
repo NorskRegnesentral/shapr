@@ -230,14 +230,16 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 shapley_reweighting <- function(X, reweight = "on_N") {
   # Updates the shapley weights in X based on the reweighting strategy BY REFERENCE
 
-  m <- X[.N, n_features]
 
   if (reweight == "on_N") {
     X[, shapley_weight := mean(shapley_weight), by = N]
   } else if (reweight == "on_n_features") {
     X[, shapley_weight := mean(shapley_weight), by = n_features]
   } else if (reweight == "on_all") {
+    m <- X[.N, n_features]
     X[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m = 10^6)]
+  } else if (reweight == "on_N_sum"){
+    X[, shapley_weight := sum(shapley_weight), by = N]
   } # strategy= "none" or something else do nothing
   return(NULL)
 }

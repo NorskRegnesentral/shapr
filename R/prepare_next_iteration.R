@@ -61,5 +61,6 @@ prepare_next_iteration <- function(internal) {
 
   internal$iter_list[[iter + 1]] <- next_iter_list
 
+
   return(internal)
 }

@@ -17,15 +17,22 @@ compute_estimates <- function(internal, vS_list) {
     internal = internal
   )
 
+  internal$timing_list$postprocess_vS <- Sys.time()
+
 
   # Compute the Shapley values
   dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+
+  internal$timing_list$compute_shapley <- Sys.time()
 
   if (compute_sd) {
     dt_shapley_sd <- bootstrap_shapley(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
   } else {
     dt_shapley_sd <- dt_shapley_est * 0
   }
+
+  internal$timing_list$compute_bootstrap <- Sys.time()
+
 
   # Adding explain_id to the output dt
   dt_shapley_est[, explain_id := .I]
@@ -165,7 +172,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   n_features <- internal$parameters$n_features
   shap_names <- internal$parameters$feature_names
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  shapley_reweighting <- internal$parameters$shapley_reweighting
+  shapley_reweight <- internal$parameters$shapley_reweighting
 
   boot_sd_array <- array(NA, dim = c(n_explain, n_features + 1, n_boot_samps))
 
@@ -216,13 +223,13 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
     }
 
 
-    X_boot0[, shapley_weight := .N, by = "id_combination"]
+    X_boot0[, shapley_weight := .N/n_combinations_boot, by = "id_combination"]
     X_boot0 <- unique(X_boot0, by = "id_combination")
 
     X_boot <- rbind(X_keep, X_boot0)
     data.table::setorder(X_boot, id_combination)
 
-    shapley_reweighting(X_boot, reweight = shapley_reweighting) # reweights the shapley weights by reference
+    shapley_reweighting(X_boot, reweight = shapley_reweight) # reweights the shapley weights by reference
 
     W_boot <- shapr::weight_matrix(
       X = X_boot,
@@ -243,3 +250,64 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   return(dt_kshap_boot_sd)
 }
 
+bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
+  set.seed(seed)
+
+  X_org <- copy(X)
+  n_explain <- internal$parameters$n_explain
+  n_features0 <- internal$parameters$n_features
+  shap_names <- internal$parameters$feature_names
+  paired_shap_sampling <- internal$parameters$paired_shap_sampling
+  shapley_reweight <- internal$parameters$shapley_reweighting
+
+  boot_sd_array <- array(NA, dim = c(n_explain, n_features0 + 1, n_boot_samps))
+
+  X_keep <- X_org[c(1, .N), .(id_combination, features, n_features, N, shapley_weight)]
+  X_samp <- X_org[-c(1, .N), .(id_combination, features, n_features, N, shapley_weight, sample_freq)]
+  X_samp[, features_tmp := sapply(features, paste, collapse = " ")]
+
+  n_combinations_boot <- X_samp[, sum(sample_freq)]
+
+  ### Currently only supporting non-paired sampling
+
+  X_boot0 <- X_samp[
+    sample.int(
+      n = .N,
+      size = n_combinations_boot*n_boot_samps,
+      replace = TRUE,
+      prob = sample_freq
+    ),
+    .(id_combination, features, n_features, N,shapley_weight)
+  ]
+  X_boot <- rbind(X_keep[rep(1:2,each=n_boot_samps),], X_boot0)
+  X_boot[,boot_id:=rep(seq(n_boot_samps),times=n_combinations_boot+2)]
+
+  setkey(X_boot,boot_id,id_combination)
+  X_boot[, shapley_weight := .N/n_combinations_boot, by = .(id_combination,boot_id)]
+  X_boot <- unique(X_boot, by = c("id_combination","boot_id"))
+  X_boot[, shapley_weight := mean(shapley_weight), by = .(N,boot_id)]
+  X_boot[n_features %in% c(0,n_features0), shapley_weight := X_keep[1, shapley_weight]]
+
+  for (i in seq_len(n_boot_samps)) {
+    W_boot <- shapr::weight_matrix(
+      X = X_boot[boot_id==i],
+      normalize_W_weights = TRUE,
+      is_groupwise = FALSE
+    )
+
+    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_combination %in% X_boot[boot_id==i, id_combination], -"id_combination"]))
+
+    boot_sd_array[, , i] <- copy(kshap_boot)
+  }
+
+  std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
+
+  dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
+  colnames(dt_kshap_boot_sd) <- c("none", shap_names)
+
+  return(dt_kshap_boot_sd)
+}

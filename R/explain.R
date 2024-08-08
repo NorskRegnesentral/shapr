@@ -318,7 +318,7 @@ explain <- function(model,
                     shapley_reweighting = "none", # tmp # "on_N" # TODO: Make "on_N" the default later on.
                     ...) { # ... is further arguments passed to specific approaches
 
-  timing_list <- list(init_time = Sys.time())
+  init_time = Sys.time()
 
   set.seed(seed)
 
@@ -346,10 +346,10 @@ explain <- function(model,
     adaptive = adaptive,
     adaptive_arguments = adaptive_arguments,
     shapley_reweighting = shapley_reweighting,
+    init_time = init_time,
     ...
   )
 
-  timing_list$setup <- Sys.time()
 
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(predict_model = predict_model, model = model)
@@ -362,7 +362,7 @@ explain <- function(model,
     internal = internal
   )
 
-  timing_list$test_prediction <- Sys.time()
+  internal$timing_list$test_prediction <- Sys.time()
 
 
   # Add the predicted response of the training and explain data to the internal list for regression-based methods.
@@ -379,11 +379,15 @@ explain <- function(model,
 
   iter <- 0
   converged <- FALSE
+  internal$main_timing_list <- internal$timing_list
 
   set.seed(seed)
 
+  ### Start the init timeing THING HERE!!!!!!!!!!!!!!!!
+
   while (converged == FALSE) {
     iter <- iter + 1
+    internal$timing_list <- list(init=Sys.time())
 
     # setup the Shapley framework
     internal <- shapley_setup(internal)
@@ -395,6 +399,8 @@ explain <- function(model,
 
     # Compute the vS
     vS_list <- compute_vS(internal, model, predict_model)
+
+    internal$timing_list$compute_vS <- Sys.time()
 
     # Compute shapley value estimated and bootstrapped standard deviations
     internal <- compute_estimates(internal, vS_list)
@@ -410,17 +416,21 @@ explain <- function(model,
 
     ### Setting globals for to simplify the loop
     converged <- internal$iter_list[[iter]]$converged
+
+    internal$timing_list$postprocess_res <- Sys.time()
+
+    internal$iter_timing_list[[iter]] <- internal$timing_list
   }
 
-  timing_list$adaptive_estimation <- Sys.time()
+  internal$main_timing_list$adaptive_estimation <- Sys.time()
 
 
   # Rerun after convergence to get the same output format as for the non-adaptive approach
   output <- finalize_explanation(internal = internal)
 
-  timing_list$finalize_explanation <- Sys.time()
+  internal$main_timing_list$finalize_explanation <- Sys.time()
 
-  output$timing <- compute_time(timing_list)
+  output$timing <- compute_time(internal)
 
 
   # Some cleanup when doing testing

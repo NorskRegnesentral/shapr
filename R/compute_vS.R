@@ -7,7 +7,7 @@
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS <- function(internal, model, predict_model, method = "future") {
+compute_vS <- function(internal, model, predict_model, method = "00future") {
   iter <- length(internal$iter_list)
 
   S_batch <- internal$iter_list[[iter]]$S_batch

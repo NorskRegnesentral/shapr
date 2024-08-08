@@ -20,6 +20,8 @@ setup_approach <- function(internal, ...) {
   }
 
   UseMethod("setup_approach", this_class)
+
+  internal$timing_list$setup_approach <-  Sys.time()
 }
 
 #' @inheritParams default_doc

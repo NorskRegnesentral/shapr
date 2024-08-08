@@ -55,5 +55,7 @@ check_convergence <- function(internal) {
   internal$iter_list[[iter]]$est_remaining_combinations <- est_remaining_combinations
   internal$iter_list[[iter]]$est_required_combs_per_ex_id <- as.list(est_required_combs_per_ex_id)
 
+  internal$timing_list$check_convergence <- Sys.time()
+
   return(internal)
 }

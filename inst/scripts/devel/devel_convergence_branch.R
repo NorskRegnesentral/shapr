@@ -50,6 +50,20 @@ explanation_adaptive <- explain(
   shapley_reweighting = "on_N"
 )
 
+explanation_adaptive <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "ctree",
+  n_combinations = 500,
+  prediction_zero = p0,
+  adaptive = TRUE,
+  print_shapleyres = TRUE, # tmp
+  print_iter_info = TRUE, # tmp
+  shapley_reweighting = "on_N"
+)
+
+
 explanation_nonadaptive <- explain(
   model = model,
   x_explain = x_explain,

@@ -46,6 +46,7 @@ setup <- function(x_train,
                   shapley_reweighting = "none",
                   is_python = FALSE,
                   testing = FALSE,
+                  init_time = NULL,
                   ...) {
   internal <- list()
 
@@ -101,6 +102,9 @@ setup <- function(x_train,
   internal <- check_and_set_parameters(internal)
 
   internal <- set_adaptive_parameters(internal)
+
+  internal$timing_list <- list(init_time = init_time,
+                               setup = Sys.time())
 
   return(internal)
 }
@@ -609,8 +613,8 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   }
 
   # type
-  if (!(length(shapley_reweighting) == 1 && shapley_reweighting %in% c("none", "on_N", "on_all"))) {
-    stop("`shapley_reweighting` must be one of `none`, `on_N` or `on_all`.\n")
+  if (!(length(shapley_reweighting) == 1 && shapley_reweighting %in% c("none", "on_N", "on_all", "on_N_sum"))) {
+    stop("`shapley_reweighting` must be one of `none`, `on_N`, `on_N_sum` or `on_all`.\n")
   }
 
 
