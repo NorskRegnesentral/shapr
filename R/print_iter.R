@@ -1,12 +1,17 @@
 print_iter <- function(internal, print_iter_info, print_shapleyres) {
+
+
   iter <- length(internal$iter_list) - 1 # This function is called after the preparation of the next iteration
 
   converged <- internal$iter_list[[iter]]$converged
   converged_exact <- internal$iter_list[[iter]]$converged_exact
   converged_sd <- internal$iter_list[[iter]]$converged_sd
   converged_max_iter <- internal$iter_list[[iter]]$converged_max_iter
+  converged_max_n_combinations <- internal$iter_list[[iter]]$converged_max_n_combinations
 
   if (print_iter_info) {
+    convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
+
     current_n_combinations <- internal$iter_list[[iter]]$n_combinations
     est_remaining_combinations <- internal$iter_list[[iter]]$est_remaining_combinations
     est_required_combinations <- internal$iter_list[[iter]]$est_required_combinations
@@ -16,9 +21,15 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
     if (isFALSE(converged)) {
       cat(paste0(
         "\nIteration ", iter, "\n",
-        "Not converged after ", current_n_combinations, " coalitions.\n",
-        "Estimated remaining coalitions: ", est_remaining_combinations, "\n",
-        "Estimated required coalitions: ", est_required_combinations, "\n",
+        "Not converged after ", current_n_combinations, " coalitions.\n"
+      ))
+      if(!is.null(convergence_tolerance)){
+        cat(paste0(
+          "Estimated remaining coalitions: ", est_remaining_combinations, "\n",
+          "Estimated required coalitions: ", est_required_combinations, "\n"
+        ))
+      }
+      cat(paste0(
         "Using ", next_n_combinations, " new coalitions in the next iteration.\n"
       ))
     } else {
@@ -38,9 +49,15 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
       }
       if (isTRUE(converged_max_iter)) {
         cat(paste0(
-          "Maximum number iterations reached after ", current_n_combinations, " coalitions.\n"
+          "Maximum number of iterations reached after ", current_n_combinations, " coalitions.\n"
         ))
       }
+      if (isTRUE(converged_max_n_combinations)) {
+        cat(paste0(
+          "Maximum number of coalitions (", current_n_combinations, ") reached.\n"
+        ))
+      }
+
     }
   }
 

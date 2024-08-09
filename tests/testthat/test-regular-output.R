@@ -55,7 +55,7 @@ test_that("output_lm_numeric_empirical_n_combinations", {
       x_train = x_train_numeric,
       approach = "empirical",
       prediction_zero = p0,
-      n_combinations = 20,
+      max_n_combinations = 20,
       n_batches = 1
     ),
     "output_lm_numeric_empirical_n_combinations"
@@ -89,7 +89,7 @@ test_that("output_lm_numeric_empirical_AICc_each", {
       x_train = x_train_numeric,
       approach = "empirical",
       prediction_zero = p0,
-      n_combinations = 8,
+      max_n_combinations = 8,
       empirical.type = "AICc_each_k",
       n_batches = 1
     ),
@@ -107,7 +107,7 @@ test_that("output_lm_numeric_empirical_AICc_full", {
       x_train = x_train_numeric,
       approach = "empirical",
       prediction_zero = p0,
-      n_combinations = 8,
+      max_n_combinations = 8,
       empirical.type = "AICc_full",
       n_batches = 1
     ),

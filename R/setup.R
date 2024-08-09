@@ -622,6 +622,7 @@ set_exact <- function(internal){
 
   internal$parameters$exact <- exact
 
+  return(internal)
 }
 
 
@@ -980,12 +981,16 @@ get_adaptive_arguments_default <- function(internal,
                                            n_boot_samps = 100,
                                            compute_sd = ifelse(internal$parameters$exact, FALSE, TRUE)) {
   adaptive <- internal$parameters$adaptive
+  max_n_combinations <- internal$parameters$max_n_combinations
+  exact <- internal$parameters$exact
+  is_groupwise <- internal$parameters$is_groupwise
 
   if (isTRUE(adaptive)) {
     ret_list <- mget(
       c(
         "initial_n_combinations",
         "fixed_n_combinations_per_iter",
+        "max_n_combinations",
         "max_iter",
         "convergence_tolerance",
         "reduction_factor_vec",
@@ -995,14 +1000,14 @@ get_adaptive_arguments_default <- function(internal,
     )
   } else {
     ret_list <- list(
-      initial_n_combinations = internal$parameters$max_n_combinations,
+      initial_n_combinations = max_n_combinations,
       fixed_n_combinations_per_iter = NULL,
+      max_n_combinations = max_n_combinations,
       max_iter = 1,
       convergence_tolerance = NULL,
       reduction_factor_vec = NULL,
       n_boot_samps = n_boot_samps,
-      compute_sd = isFALSE(internal$parameters$exact) &&
-        isFALSE(internal$parameters$is_groupwise)
+      compute_sd = isFALSE(exact) && isFALSE(is_groupwise)
     )
   }
 

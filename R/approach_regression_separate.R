@@ -324,6 +324,11 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.check_parameters <- function(internal) {
+  iter <- length(internal$iter_list)
+
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
+
+
   # Convert the objects to R-objects if they are strings
   if (is.character(internal$parameters$regression.model)) {
     internal$parameters$regression.model <- regression.get_string_to_R(internal$parameters$regression.model)
@@ -347,7 +352,7 @@ regression.check_parameters <- function(internal) {
   # Check that `regression.check_sur_n_comb` is a valid value (only applicable for surrogate regression)
   regression.check_sur_n_comb(
     regression.surrogate_n_comb = internal$parameters$regression.surrogate_n_comb,
-    n_combinations = internal$parameters$n_combinations
+    n_combinations = n_combinations
   )
 
   # Check and get if we are to tune the hyperparameters of the regression model
@@ -474,11 +479,12 @@ regression.prep_message_batch <- function(internal, index_features) {
 regression.prep_message_comb <- function(internal, index_features, comb_idx) {
   iter <- length(internal$iter_list)
 
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
   X <- internal$iter_list[[iter]]$X
 
   message(paste0(
     "Working on combination with id ", X$id_combination[index_features[comb_idx]],
-    " of ", internal$parameters$n_combinations, "."
+    " of ", n_combinations, "."
   ))
 }
 
