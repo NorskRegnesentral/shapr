@@ -26,7 +26,7 @@ compute_estimates <- function(internal, vS_list) {
   internal$timing_list$compute_shapley <- Sys.time()
 
   if (compute_sd) {
-    dt_shapley_sd <- bootstrap_shapley(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
+    dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
   } else {
     dt_shapley_sd <- dt_shapley_est * 0
   }

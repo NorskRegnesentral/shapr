@@ -9,7 +9,6 @@ test_that("output_lm_numeric_independence_reach_exact", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      max_n_combinations = 10,
       adaptive = TRUE,
       print_shapleyres = TRUE,
       print_iter_info = TRUE
@@ -27,7 +26,6 @@ test_that("output_lm_numeric_independence_converges_tol", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      max_n_combinations = 10,
       adaptive_arguments = list(
         initial_n_combinations = 10,
         convergence_tolerance = 0.1
@@ -49,7 +47,6 @@ test_that("output_lm_numeric_independence_converges_maxit", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      max_n_combinations = 10,
       adaptive_arguments = list(
         initial_n_combinations = 10,
         convergence_tolerance = 0.001,
@@ -63,3 +60,22 @@ test_that("output_lm_numeric_independence_converges_maxit", {
     "output_lm_numeric_independence_converges_maxit"
   )
 })
+
+test_that("output_lm_numeric_independence_converges_max_n_combinations", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "independence",
+      prediction_zero = p0,
+      max_n_combinations = 20,
+      adaptive = TRUE,
+      print_shapleyres = TRUE,
+      print_iter_info = TRUE
+    ),
+    "output_lm_numeric_independence_converges_max_n_combinations"
+  )
+})
+

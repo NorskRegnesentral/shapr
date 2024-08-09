@@ -27,7 +27,8 @@ prepare_next_iteration <- function(internal) {
     }
 
     # Thresholding if max_n_combinations in reached
-    proposal_next_n_combinations <- min(max_n_combinations,proposal_next_n_combinations)
+    proposal_next_n_combinations <- min(max_n_combinations-current_n_combinations,
+                                        proposal_next_n_combinations)
 
     if ((current_n_combinations + proposal_next_n_combinations) >= 2^n_features) {
       # Use all coalitions in the last iteration as the estimated number of samples is more than what remains
