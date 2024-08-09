@@ -75,12 +75,6 @@ features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
 
-\item{n_combinations}{Integer.
-If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
-If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
-If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
-The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.}
-
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
 If \code{FALSE} all lags of each variable are explained individually.}
