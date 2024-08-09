@@ -10,6 +10,10 @@
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
       
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `get_predict_model()`:
       ! You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain().
@@ -24,6 +28,10 @@
     Message
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
+      
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
       
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
@@ -46,6 +54,10 @@
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -66,6 +78,10 @@
     Message
       Note: Feature classes extracted from the model contains NA.
       Assuming feature classes from the data are correct.
+      
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
       
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
@@ -88,6 +104,10 @@
     Message
       Note: Feature factor levels extracted from the model contains NA.
       Assuming feature factor levels from the data are correct.
+      
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
       
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
@@ -184,6 +204,11 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = approach_non_character,
         prediction_zero = p0, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
@@ -196,6 +221,11 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = approach_incorrect_length,
         prediction_zero = p0, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
@@ -208,6 +238,11 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = approach_incorrect_character,
         prediction_zero = p0, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
@@ -257,94 +292,88 @@
       Error in `get_parameters()`:
       ! `prediction_zero` (NA) must be numeric and match the output size of the model (1).
 
-# erroneous input: `n_combinations`
+# erroneous input: `max_n_combinations`
 
     Code
-      n_combinations_non_numeric_1 <- "bla"
+      max_n_combinations_non_numeric_1 <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_combinations = n_combinations_non_numeric_1, n_batches = 1)
+        max_n_combinations = max_n_combinations_non_numeric_1, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_combinations` must be NULL or a single positive integer.
+      ! `max_n_combinations` must be NULL or a single positive integer.
 
 ---
 
     Code
-      n_combinations_non_numeric_2 <- TRUE
+      max_n_combinations_non_numeric_2 <- TRUE
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_combinations = n_combinations_non_numeric_2, n_batches = 1)
+        max_n_combinations = max_n_combinations_non_numeric_2, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_combinations` must be NULL or a single positive integer.
+      ! `max_n_combinations` must be NULL or a single positive integer.
 
 ---
 
     Code
-      n_combinations_non_integer <- 10.5
+      max_n_combinations_non_integer <- 10.5
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_combinations = n_combinations_non_integer, n_batches = 1)
+        max_n_combinations = max_n_combinations_non_integer, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_combinations` must be NULL or a single positive integer.
+      ! `max_n_combinations` must be NULL or a single positive integer.
 
 ---
 
     Code
-      n_combinations_too_long <- c(1, 2)
+      max_n_combinations_too_long <- c(1, 2)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_combinations = n_combinations_too_long, n_batches = 1)
+        max_n_combinations = max_n_combinations_too_long, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_combinations` must be NULL or a single positive integer.
+      ! `max_n_combinations` must be NULL or a single positive integer.
 
 ---
 
     Code
-      n_combinations_is_NA <- as.numeric(NA)
+      max_n_combinations_is_NA <- as.numeric(NA)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_combinations = n_combinations_is_NA, n_batches = 1)
+        max_n_combinations = max_n_combinations_is_NA, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_combinations` must be NULL or a single positive integer.
+      ! `max_n_combinations` must be NULL or a single positive integer.
 
 ---
 
     Code
-      n_combinations_non_positive <- 0
+      max_n_combinations_non_positive <- 0
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_combinations = n_combinations_non_positive, n_batches = 1)
+        max_n_combinations = max_n_combinations_non_positive, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_combinations` must be NULL or a single positive integer.
-
----
-
-    Code
-      n_combinations <- ncol(x_explain_numeric) - 1
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, approach = "gaussian",
-        n_combinations = n_combinations, n_batches = 1)
-    Condition
-      Error in `check_n_combinations()`:
-      ! `n_combinations` has to be greater than the number of features.
+      ! `max_n_combinations` must be NULL or a single positive integer.
 
 ---
 
     Code
       groups <- list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
-      n_combinations <- length(groups) - 1
+      max_n_combinations <- length(groups) - 1
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "gaussian",
-        group = groups, n_combinations = n_combinations, n_batches = 1)
+        group = groups, max_n_combinations = max_n_combinations, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is smaller than or n_groups = 3, 
+      and is therefore set to n_groups + 1  = 4.
+      
     Condition
-      Error in `check_n_combinations()`:
-      ! `n_combinations` has to be greater than the number of groups.
+      Error:
+      ! j (the 2nd argument inside [...]) is a single symbol but column name 'sample_freq' is not found. If you intended to select columns using a variable in calling scope, please try DT[, ..sample_freq]. The .. prefix conveys one-level-up similar to a file system path.
 
 # erroneous input: `group`
 
@@ -554,11 +583,11 @@
 ---
 
     Code
-      n_combinations <- 10
+      max_n_combinations <- 10
       n_batches_too_large <- 11
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_combinations = n_combinations, n_batches = n_batches_too_large, )
+        max_n_combinations = max_n_combinations, n_batches = n_batches_too_large, )
     Condition
       Error in `check_n_batches()`:
       ! `n_batches` (11) must be smaller than the number of feature combinations/`n_combinations` (10)
@@ -570,6 +599,11 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
         n_batches = n_batches_too_large_2, )
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `check_n_batches()`:
       ! `n_batches` (32) must be smaller than the number of feature combinations/`n_combinations` (32)
@@ -660,6 +694,11 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
         predict_model = predict_model_nonfunction, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `get_predict_model()`:
       ! `predict_model` must be NULL or a function.
@@ -673,6 +712,11 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
         predict_model = predict_model_non_num_output, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `test_predict_model()`:
       ! The predict_model function of class `lm` does not return a numeric output of the desired length
@@ -692,6 +736,11 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
         predict_model = predict_model_wrong_output_len, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `test_predict_model()`:
       ! The predict_model function of class `lm` does not return a numeric output of the desired length
@@ -711,6 +760,11 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
         predict_model = predict_model_invalid_argument, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `test_predict_model()`:
       ! The predict_model function of class `lm` is invalid.
@@ -729,6 +783,11 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
         predict_model = predict_model_error, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `test_predict_model()`:
       ! The predict_model function of class `lm` is invalid.
@@ -824,6 +883,11 @@
       explain(testing = TRUE, model = model_lm_mixed, x_explain = x_explain_mixed,
         x_train = x_explain_mixed, approach = non_factor_approach_1, prediction_zero = p0,
         n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `setup_approach.gaussian()`:
       ! The following feature(s) are factor(s): Month_factor.
@@ -837,6 +901,11 @@
       explain(testing = TRUE, model = model_lm_mixed, x_explain = x_explain_mixed,
         x_train = x_explain_mixed, approach = non_factor_approach_2, prediction_zero = p0,
         n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `setup_approach.empirical()`:
       ! The following feature(s) are factor(s): Month_factor.
@@ -850,9 +919,68 @@
       explain(testing = TRUE, model = model_lm_mixed, x_explain = x_explain_mixed,
         x_train = x_explain_mixed, approach = non_factor_approach_3, prediction_zero = p0,
         n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
       Error in `setup_approach.copula()`:
       ! The following feature(s) are factor(s): Month_factor.
       approach = 'copula' does not support factor features.
       Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical'.
+
+# Message with too low `max_n_combinations`
+
+    Code
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_explain_numeric, prediction_zero = p0, approach = "gaussian",
+        max_n_combinations = max_n_combinations, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is smaller than or n_features = 5, 
+      and is therefore set to n_features + 1  = 6.
+      
+    Output
+         explain_id  none   Solar.R    Wind       Temp  Month       Day
+              <int> <num>     <num>   <num>      <num>  <num>     <num>
+      1:          1 42.44 0.0001730   7.840 -0.0007458  4.766 -0.003219
+      2:          2 42.44 0.0001797  -4.674 -0.0007807 -9.186 -0.019336
+      3:          3 42.44 0.0001726 -21.121 -0.0007665  3.561 -0.007937
+
+# Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weights
+
+    Code
+      explanation_exact <- explain(testing = TRUE, model = model_lm_numeric,
+        x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
+        prediction_zero = p0, n_samples = 2, n_batches = 1, seed = 123,
+        max_n_combinations = NULL)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
+
+---
+
+    Code
+      explanation_equal <- explain(testing = TRUE, model = model_lm_numeric,
+        x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
+        prediction_zero = p0, n_samples = 2, n_batches = 1, seed = 123,
+        adaptive_arguments = list(compute_sd = FALSE), max_n_combinations = 2^ncol(
+          x_explain_numeric))
+
+---
+
+    Code
+      explanation_larger <- explain(testing = TRUE, model = model_lm_numeric,
+        x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
+        prediction_zero = p0, n_samples = 2, n_batches = 1, seed = 123,
+        adaptive_arguments = list(compute_sd = FALSE), max_n_combinations = 2^ncol(
+          x_explain_numeric) + 1)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
 

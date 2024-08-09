@@ -522,8 +522,7 @@ test_that("erroneous input: `max_n_combinations`", {
         max_n_combinations = max_n_combinations,
         n_batches = 1
       )
-    },
-    error = TRUE
+    }
   )
 
 
@@ -1362,10 +1361,10 @@ test_that("Correct dimension of S when sampling combinations", {
   expect_equal(nrow(res$internal$objects$S), max_n_combinations)
 })
 
-test_that("Error with too low `max_n_combinations`", {
+test_that("Message with too low `max_n_combinations`", {
   max_n_combinations <- ncol(x_explain_numeric) - 1
 
-  expect_error(
+  expect_snapshot(
     explain(
       testing = TRUE,
       model = model_lm_numeric,
@@ -1387,7 +1386,9 @@ test_that("Error with too low `max_n_combinations`", {
 
   max_n_combinations <- length(groups) - 1
 
-  expect_error(
+  ### THIS CURRENTLY FAILS AS GROUPING IS NOT FIXED YET
+
+  expect_snapshot(
     explain(
       testing = TRUE,
       model = model_lm_numeric,
@@ -1409,27 +1410,23 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
   # Create three explainer object: one with exact mode, one with
   # `max_n_combinations` = 2^m, and one with `max_n_combinations` > 2^m
   # No message as n_combination = NULL sets exact mode
-  expect_no_message(
-    object = {
-      explanation_exact <- explain(
-        testing = TRUE,
-        model = model_lm_numeric,
-        x_explain = x_explain_numeric,
-        x_train = x_train_numeric,
-        approach = "gaussian",
-        prediction_zero = p0,
-        n_samples = 2, # Low value for fast computations
-        n_batches = 1, # Not related to the bug
-        seed = 123,
-        max_n_combinations = NULL
-      )
-    }
+  expect_snapshot(
+    explanation_exact <- explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      prediction_zero = p0,
+      n_samples = 2, # Low value for fast computations
+      n_batches = 1, # Not related to the bug
+      seed = 123,
+      max_n_combinations = NULL
+    )
   )
 
   # We should get a message saying that we are using the exact mode.
-  # The `regexp` format match the one written in `feature_combinations()`.
-  expect_message(
-    object = {
+  expect_snapshot(
       explanation_equal <- explain(
         testing = TRUE,
         model = model_lm_numeric,
@@ -1442,15 +1439,12 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
         seed = 123,
         adaptive_arguments = list(compute_sd = FALSE),
         max_n_combinations = 2^ncol(x_explain_numeric)
+        )
       )
-    },
-    regexp = "Success with message:\nmax_n_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
-  )
 
   # We should get a message saying that we are using the exact mode.
   # The `regexp` format match the one written in `feature_combinations()`.
-  expect_message(
-    object = {
+  expect_snapshot(
       explanation_larger <- explain(
         testing = TRUE,
         model = model_lm_numeric,
@@ -1463,10 +1457,8 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
         seed = 123,
         adaptive_arguments = list(compute_sd = FALSE),
         max_n_combinations = 2^ncol(x_explain_numeric) + 1
+        )
       )
-    },
-    regexp = "Success with message:\nmax_n_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
-  )
 
   # Test that returned objects are identical (including all using the exact option and having the same Shapley weights)
   expect_equal(
@@ -1498,6 +1490,7 @@ test_that("Correct dimension of S when sampling combinations with groups", {
     C = "Day"
   )
 
+  # FAILS AS GROUPING IS NOT SUPPORTED YET
   res <- explain(
     testing = TRUE,
     model = model_lm_mixed,

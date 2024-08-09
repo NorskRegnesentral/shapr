@@ -34,7 +34,7 @@ finalize_explanation <- function(internal) {
   internal$tmp <- NULL
 
   # Clearing out the timing lists as they are added to the output separately
-  internal$main_timing_list <- internal$iter_timing_list <- NULL
+  internal$main_timing_list <- internal$iter_timing_list <- internal$timing_list <- NULL
 
 
   # Extract the predictions we are explaining

@@ -73,11 +73,12 @@ shapley_setup <- function(internal) {
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
 
-  # Storing the feature samples
-  repetitions <- X[-c(1, .N), sample_freq]
-  unique_feature_samples <- X[-c(1, .N), features]
 
   if(isFALSE(exact)){
+    # Storing the feature samples
+    repetitions <- X[-c(1, .N), sample_freq]
+    unique_feature_samples <- X[-c(1, .N), features]
+
     feature_samples <- unlist(
       lapply(
         seq_along(unique_feature_samples),
