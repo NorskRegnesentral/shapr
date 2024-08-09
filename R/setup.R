@@ -622,6 +622,7 @@ set_exact <- function(internal){
 
   internal$parameters$exact <- exact
 
+  return(internal)
 }
 
 

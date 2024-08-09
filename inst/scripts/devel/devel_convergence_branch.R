@@ -42,7 +42,7 @@ explanation_adaptive <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  n_combinations = 500,
+  max_n_combinations = 500,
   prediction_zero = p0,
   adaptive = TRUE,
   print_shapleyres = TRUE, # tmp
