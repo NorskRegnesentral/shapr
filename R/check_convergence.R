@@ -3,6 +3,7 @@ check_convergence <- function(internal) {
 
   convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
   max_iter <- internal$parameters$adaptive_arguments$max_iter
+  max_n_combinations <- internal$parameters$adaptive_arguments$max_n_combinations
 
   exact <- internal$iter_list[[iter]]$exact
 
@@ -43,14 +44,17 @@ check_convergence <- function(internal) {
     }
   }
 
+  converged_max_n_combinations <- (n_sampled_combinations + 2 >= max_n_combinations)
+
   converged_max_iter <- (iter >= max_iter)
 
-  converged <- converged_exact || converged_sd || converged_max_iter
+  converged <- converged_exact || converged_sd || converged_max_iter || converged_max_n_combinations
 
   internal$iter_list[[iter]]$converged <- converged
   internal$iter_list[[iter]]$converged_exact <- converged_exact
   internal$iter_list[[iter]]$converged_sd <- converged_sd
   internal$iter_list[[iter]]$converged_max_iter <- converged_max_iter
+  internal$iter_list[[iter]]$converged_max_n_combinations <- converged_max_n_combinations
   internal$iter_list[[iter]]$est_required_combinations <- est_required_combinations
   internal$iter_list[[iter]]$est_remaining_combinations <- est_remaining_combinations
   internal$iter_list[[iter]]$est_required_combs_per_ex_id <- as.list(est_required_combs_per_ex_id)

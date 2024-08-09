@@ -94,7 +94,7 @@ explain_forecast <- function(model,
                              horizon,
                              approach,
                              prediction_zero,
-                             n_combinations = NULL,
+                             max_n_combinations = NULL,
                              group_lags = TRUE,
                              group = NULL,
                              n_samples = 1e3,
@@ -127,7 +127,7 @@ explain_forecast <- function(model,
     approach = approach,
     prediction_zero = prediction_zero,
     output_size = horizon,
-    n_combinations = n_combinations,
+    max_n_combinations = max_n_combinations,
     n_samples = n_samples,
     n_batches = n_batches,
     seed = seed,
@@ -176,13 +176,8 @@ explain_forecast <- function(model,
 
 
   ### Temporary solution for forecast
-
-  internal$iter_list <- list(list(
-    X = internal$objects$X,
-    S = internal$objects$S,
-    n_combinations = internal$parameters$n_combinations
-  ))
-  ####
+  internal$iter_list[[1]]$X <- internal$objects$X
+  internal$iter_list[[1]]$S <- internal$objects$S
 
 
   # Compute the v(S):

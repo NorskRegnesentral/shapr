@@ -9,7 +9,7 @@ test_that("output_lm_numeric_independence_reach_exact", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      n_combinations = 10,
+      max_n_combinations = 10,
       adaptive = TRUE,
       print_shapleyres = TRUE,
       print_iter_info = TRUE
@@ -27,7 +27,7 @@ test_that("output_lm_numeric_independence_converges_tol", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      n_combinations = 10,
+      max_n_combinations = 10,
       adaptive_arguments = list(
         initial_n_combinations = 10,
         convergence_tolerance = 0.1
@@ -49,7 +49,7 @@ test_that("output_lm_numeric_independence_converges_maxit", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      n_combinations = 10,
+      max_n_combinations = 10,
       adaptive_arguments = list(
         initial_n_combinations = 10,
         convergence_tolerance = 0.001,

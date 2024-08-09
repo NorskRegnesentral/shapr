@@ -6,7 +6,7 @@ test_that("adaptive_arguments are respected", {
     x_train = x_train_numeric,
     approach = "independence",
     prediction_zero = p0,
-    n_combinations = 10,
+    max_n_combinations = 10,
     adaptive_arguments = list(
       initial_n_combinations = 17,
       convergence_tolerance = 0.001,

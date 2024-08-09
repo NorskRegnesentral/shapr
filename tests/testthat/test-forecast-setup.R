@@ -154,12 +154,12 @@ test_that("erroneous input: `prediction_zero`", {
   )
 })
 
-test_that("erroneous input: `n_combinations`", {
+test_that("erroneous input: `max_n_combinations`", {
   set.seed(123)
 
   expect_snapshot(
     {
-      # Too low n_combinations (smaller than # features)
+      # Too low max_n_combinations (smaller than # features)
       horizon <- 3
       explain_y_lags <- 2
       explain_xreg_lags <- 2
@@ -179,7 +179,7 @@ test_that("erroneous input: `n_combinations`", {
         approach = "independence",
         prediction_zero = p0_ar,
         n_batches = 1,
-        n_combinations = n_combinations,
+        max_n_combinations = n_combinations,
         group_lags = FALSE
       )
     },
@@ -209,7 +209,7 @@ test_that("erroneous input: `n_combinations`", {
         approach = "independence",
         prediction_zero = p0_ar,
         n_batches = 1,
-        n_combinations = n_combinations,
+        max_n_combinations = n_combinations,
         group_lags = TRUE
       )
     },

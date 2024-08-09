@@ -60,15 +60,13 @@ shapley_setup <- function(internal) {
 
   #### Updating parameters ####
 
-  # Updating parameters$exact as done in feature_combinations
+  # Updating parameters$exact as done in feature_combinations. I don't think this is necessary now. TODO: Check.
   if (!exact && n_combinations >= 2^n_features0) {
     internal$iter_list[[iter]]$exact <- TRUE
     internal$parameters$exact <- TRUE # Since this means that all combinations have been sampled
   }
 
-  # Updating these parameters in the end based on what is actually used -- can probably remove some of this redundancy
-  internal$parameters$n_combinations <- nrow(S)
-  internal$parameters$n_combinations <- nrow(S)
+  # Updating n_combinations in the end based on what is actually used. I don't think this is necessary now. TODO: Check.
   internal$iter_list[[iter]]$n_combinations <- nrow(S)
 
   # This will be obsolete later
@@ -79,18 +77,22 @@ shapley_setup <- function(internal) {
   repetitions <- X[-c(1, .N), sample_freq]
   unique_feature_samples <- X[-c(1, .N), features]
 
-  feature_samples <- unlist(
-    lapply(
-      seq_along(unique_feature_samples),
-      function(i) {
-        rep(
-          list(unique_feature_samples[[i]]),
-          repetitions[i]
-        )
-      }
-    ),
-    recursive = FALSE
-  )
+  if(isFALSE(exact)){
+    feature_samples <- unlist(
+      lapply(
+        seq_along(unique_feature_samples),
+        function(i) {
+          rep(
+            list(unique_feature_samples[[i]]),
+            repetitions[i]
+          )
+        }
+      ),
+      recursive = FALSE
+    )
+  } else {
+    feature_samples <- NA
+  }
 
   internal$iter_list[[iter]]$X <- X
   internal$iter_list[[iter]]$W <- W
@@ -98,9 +100,6 @@ shapley_setup <- function(internal) {
   internal$iter_list[[iter]]$id_comb_feature_map <- id_comb_feature_map
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
   internal$iter_list[[iter]]$feature_samples <- feature_samples
-
-
-
 
   return(internal)
 }
@@ -550,8 +549,11 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 create_S_batch_forecast <- function(internal, seed = NULL) { # This is temporary used for forecast only. to be removed
   n_features0 <- internal$parameters$n_features
   approach0 <- internal$parameters$approach
-  n_combinations <- internal$parameters$n_combinations
   n_batches <- internal$parameters$n_batches
+
+  iter <- length(internal$iter_list)
+
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
 
   X <- internal$objects$X
 
@@ -751,11 +753,14 @@ setup_computation <- function(internal, model, predict_model) {
 shapley_setup_forecast <- function(internal) {
   exact <- internal$parameters$exact
   n_features0 <- internal$parameters$n_features
-  n_combinations <- internal$parameters$n_combinations
   is_groupwise <- internal$parameters$is_groupwise
   group_num <- internal$objects$group_num
   horizon <- internal$parameters$horizon
   feature_names <- internal$parameters$feature_names
+
+  iter <- length(internal$iter_list)
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
+
 
   X_list <- W_list <- list()
 
@@ -832,7 +837,7 @@ shapley_setup_forecast <- function(internal) {
     internal$parameters$exact <- TRUE # Note that this is exact only if all horizons use the exact method.
   }
 
-  internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used.
+  internal$iter_list[[iter]]$n_combinations <- nrow(S) # Updating this parameter in the end based on what is used.
 
   # This will be obsolete later
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
