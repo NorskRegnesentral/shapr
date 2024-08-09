@@ -11,7 +11,7 @@ explain(
   approach,
   paired_shap_sampling = FALSE,
   prediction_zero,
-  n_combinations = NULL,
+  max_n_combinations = NULL,
   adaptive = FALSE,
   group = NULL,
   n_samples = 1000,
@@ -56,11 +56,13 @@ features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
 
-\item{n_combinations}{Integer.
-If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
-If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
-If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
-The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.}
+\item{max_n_combinations}{Integer.
+The upper limit on the number of unique feature/group combinations to use in the adaptive procedure
+(if \code{adaptive = TRUE}).
+If \code{adaptive = FALSE} it represents the number of feature/group combinations to use directly.
+The quantity refers to the number of unique feature combinations if \code{group = NULL},
+and group combinations if \code{group != NULL}.
+\code{max_n_combinations = NULL} corresponds to \code{max_n_combinations=2^n_features}.}
 
 \item{adaptive}{TODO: document}
 

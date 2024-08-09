@@ -367,25 +367,16 @@ explain <- function(model,
   internal$timing_list$test_prediction <- Sys.time()
 
 
-  # Add the predicted response of the training and explain data to the internal list for regression-based methods.
-  # Use isTRUE as `regression` is not present (NULL) for non-regression methods (i.e., Monte Carlo-based methods).
-  if (isTRUE(internal$parameters$regression)) {
-    internal <- regression.get_y_hat(internal = internal, model = model, predict_model = predict_model)
-  }
+  internal <- additional_regression_setup(internal, predict_model)
 
-
-  # Adaptive approach
-  if (!("regression_surrogate" %in% approach)) { # Called after shapley_setup of regression_surrogate
-    internal <- setup_approach(internal, model = model, predict_model = predict_model)
-  }
+  # Not called for approach = regression_surrogate
+  internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
   iter <- 0
   converged <- FALSE
   internal$main_timing_list <- internal$timing_list
 
   set.seed(seed)
-
-  ### Start the init timeing THING HERE!!!!!!!!!!!!!!!!
 
   while (converged == FALSE) {
     iter <- iter + 1
@@ -394,10 +385,8 @@ explain <- function(model,
     # setup the Shapley framework
     internal <- shapley_setup(internal)
 
-    if ("regression_surrogate" %in% approach) { # Since setup_approach for regression_surrogate requires shapley_setup
-      # to be called first, it will be called in here
-      internal <- setup_approach(internal, model = model, predict_model = predict_model)
-    }
+    # Only actually called for approach = regression_surrogate
+    internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
     # Compute the vS
     vS_list <- compute_vS(internal, model, predict_model)

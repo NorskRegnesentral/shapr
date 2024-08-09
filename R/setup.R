@@ -472,27 +472,17 @@ check_and_set_parameters <- function(internal) {
   # Check groups
   feature_names <- internal$parameters$feature_names
   group <- internal$parameters$group
-  max_n_combinations <- internal$parameters$max_n_combinations
-  n_features <- internal$parameters$n_features
-  n_groups <- internal$parameters$n_groups
-  is_groupwise <- internal$parameters$is_groupwise
-  adaptive <- internal$parameters$adaptive
-
 
   if (!is.null(group)) check_groups(feature_names, group)
 
-  if(isFALSE(adaptive) && (
-    (isFALSE(is_groupwise) && max_n_combinations == 2^n_features) ||
-    (isTRUE(is_groupwise) && max_n_combinations == 2^n_groups)
-  )
-  ){
-    exact <- TRUE
-  } else {
-    exact <- FALSE
-  }
-
   # Adjust max_n_combinations
   internal <- adjust_max_n_combinations(internal)
+
+  check_max_n_combinations_fc(internal)
+
+  internal <- set_exact(internal)
+
+  check_computability(internal)
 
   # Check approach
   check_approach(internal)
@@ -509,8 +499,75 @@ check_and_set_parameters <- function(internal) {
   return(internal)
 }
 
+
 #' @keywords internal
 adjust_max_n_combinations <- function(internal) {
+  is_groupwise <- internal$parameters$is_groupwise
+  max_n_combinations <- internal$parameters$max_n_combinations
+  n_features <- internal$parameters$n_features
+  n_groups <- internal$parameters$n_groups
+
+
+  # Adjust max_n_combinations
+  if(isFALSE(is_groupwise)){
+    # Set max_n_combinations to upper bound
+    if(is.null(max_n_combinations) || max_n_combinations > 2^n_features){
+      max_n_combinations <- 2^n_features
+      message(
+        paste0(
+          "Success with message:\n",
+          "max_n_combinations is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
+          "and is therefore set to 2^n_features = ", 2^n_features,".\n"
+        )
+      )
+
+    }
+    # Set max_n_combinations to lower bound
+    if(max_n_combinations <= n_features){
+      max_n_combinations <- n_features + 1
+      message(
+        paste0(
+          "Success with message:\n",
+          "max_n_combinations is smaller than or n_features = ", n_features, ", \n",
+          "and is therefore set to n_features + 1  = ", n_features + 1,".\n"
+        )
+      )
+    }
+  } else {
+    # Set max_n_combinations to upper bound
+    if(is.null(max_n_combinations) || max_n_combinations > 2^n_groups){
+      max_n_combinations <- 2^n_groups
+      message(
+        paste0(
+          "Success with message:\n",
+          "max_n_combinations is NULL or larger than or 2^n_groups = ", 2^n_groups, ", \n",
+          "and is therefore set to 2^n_groups = ", 2^n_groups,".\n"
+        )
+      )
+
+    }
+    # Set max_n_combinations to lower bound
+    if(max_n_combinations <= n_groups){
+      max_n_combinations <- n_groups + 1
+      message(
+        paste0(
+          "Success with message:\n",
+          "max_n_combinations is smaller than or n_groups = ", n_groups, ", \n",
+          "and is therefore set to n_groups + 1  = ", n_groups + 1,".\n"
+        )
+      )
+
+    }
+  }
+
+  internal$parameters$max_n_combinations <- max_n_combinations
+
+  return(internal)
+
+}
+
+check_max_n_combinations_fc <- function(internal){
+
   is_groupwise <- internal$parameters$is_groupwise
   max_n_combinations <- internal$parameters$max_n_combinations
   n_features <- internal$parameters$n_features
@@ -542,34 +599,80 @@ adjust_max_n_combinations <- function(internal) {
         ))
       }
     }
-  } else {
+  }
+}
 
-    # Adjust max_n_combinations
-    if(isFALSE(is_groupwise)){
-      # Set max_n_combinations to upper bound
-      if(is.null(max_n_combinations) || max_n_combinations > 2^n_features){
-        max_n_combinations <- 2^n_features
-      }
-      # Set max_n_combinations to lower bound
-      if(max_n_combinations <= n_features){
-        max_n_combinations <- n_features + 1
-      }
-    } else {
-      # Set max_n_combinations to upper bound
-      if(is.null(max_n_combinations) || max_n_combinations > 2^n_groups){
-        max_n_combinations <- 2^n_groups
-      }
-      # Set max_n_combinations to lower bound
-      if(max_n_combinations <= n_groups){
-        max_n_combinations <- n_groups + 1
-      }
-    }
+
+set_exact <- function(internal){
+  max_n_combinations <- internal$parameters$max_n_combinations
+  n_features <- internal$parameters$n_features
+  n_groups <- internal$parameters$n_groups
+  is_groupwise <- internal$parameters$is_groupwise
+  adaptive <- internal$parameters$adaptive
+
+  if(isFALSE(adaptive) && (
+    (isFALSE(is_groupwise) && max_n_combinations == 2^n_features) ||
+    (isTRUE(is_groupwise) && max_n_combinations == 2^n_groups)
+  )
+  ){
+    exact <- TRUE
+  } else {
+    exact <- FALSE
   }
 
-  internal$parameters$max_n_combinations <- max_n_combinations
+  internal$parameters$exact <- exact
 
-  return(internal)
 }
+
+
+#' @keywords internal
+check_computability <- function(internal) {
+
+  is_groupwise <- internal$parameters$is_groupwise
+  max_n_combinations <- internal$parameters$max_n_combinations
+  n_features <- internal$parameters$n_features
+  n_groups <- internal$parameters$n_groups
+  exact <- internal$parameters$exact
+  adaptive <- internal$parameters$adaptive
+
+
+  # Force user to use a natural number for n_combinations if m > 13
+  if (isTRUE(exact)){
+    if(isFALSE(is_groupwise) && n_features > 13){
+      warning(
+        paste0(
+          "Due to computation time, we recommend not computing Shapley values exactly \n",
+          "(with all 2^n_features (",2^n_features,") combinations for n_features > 13.\n",
+          "Consider reducing max_n_combinations and enabling adaptive estimation with adaptive = TRUE.\n"
+        )
+      )
+    }
+    if(isTRUE(is_groupwise) && n_groups > 13){
+      warning(
+        paste0(
+          "Due to computation time, we recommend not computing Shapley values exactly \n",
+          "(with all 2^n_groups (",2^n_groups,") combinations for n_groups > 13.\n",
+          "Consider reducing max_n_combinations and enabling adaptive estimation with adaptive = TRUE.\n"
+        )
+      )
+    }
+  } else {
+    if(isFALSE(is_groupwise) && n_features > 30){
+      warning(
+        "Due to computation time, we strongly recommend enabling adaptive estimation with adaptive = TRUE",
+        " when n_features > 30.\n",
+      )
+    }
+    if(isTRUE(is_groupwise) && n_groups > 30){
+      warning(
+        "Due to computation time, we strongly recommend enabling adaptive estimation with adaptive = TRUE",
+        " when n_groups > 30.\n",
+      )
+    }
+  }
+}
+
+
 
 
 #' @keywords internal
@@ -904,4 +1007,19 @@ get_adaptive_arguments_default <- function(internal,
   }
 
   return(ret_list)
+}
+
+
+additional_regression_setup <- function(internal, predict_model){
+
+  # This step needs to be called after predict_model is set, and therefore arrives at a later stage in explain()
+
+  # Add the predicted response of the training and explain data to the internal list for regression-based methods.
+  # Use isTRUE as `regression` is not present (NULL) for non-regression methods (i.e., Monte Carlo-based methods).
+  if (isTRUE(internal$parameters$regression)) {
+    internal <- regression.get_y_hat(internal = internal, model = model, predict_model = predict_model)
+  }
+
+  return(internal)
+
 }
