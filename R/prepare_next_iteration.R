@@ -13,7 +13,7 @@ prepare_next_iteration <- function(internal) {
     est_remaining_combinations <- internal$iter_list[[iter]]$est_remaining_combinations
     reduction_factor <- internal$iter_list[[iter]]$reduction_factor
     current_n_combinations <- internal$iter_list[[iter]]$n_combinations
-
+    current_feature_samples <- internal$iter_list[[iter]]$feature_samples
 
     X <- internal$iter_list[[iter]]$X
 
@@ -38,24 +38,10 @@ prepare_next_iteration <- function(internal) {
 
     next_iter_list$reduction_factor <- reduction_factor_vec[iter]
 
-    # Storing the feature samples I have from before (not sure I need these if I run exact).
-    # Could also be moved to shapley_setup as it is computed based on X only, and that is stored in previous iter_list
-    repetitions <- X[-c(1, .N), sample_freq]
-    unique_feature_samples <- X[-c(1, .N), features]
+    next_iter_list$prev_feature_samples <- current_feature_samples
 
-    next_iter_list$prev_feature_samples <- unlist(
-      lapply(
-        seq_along(unique_feature_samples),
-        function(i) {
-          rep(
-            list(unique_feature_samples[[i]]),
-            repetitions[i]
-          )
-        }
-      ),
-      recursive = FALSE
-    )
-  } else {
+
+    } else {
     next_iter_list <- list()
   }
 

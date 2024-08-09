@@ -75,11 +75,31 @@ shapley_setup <- function(internal) {
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
 
+  # Storing the feature samples
+  repetitions <- X[-c(1, .N), sample_freq]
+  unique_feature_samples <- X[-c(1, .N), features]
+
+  feature_samples <- unlist(
+    lapply(
+      seq_along(unique_feature_samples),
+      function(i) {
+        rep(
+          list(unique_feature_samples[[i]]),
+          repetitions[i]
+        )
+      }
+    ),
+    recursive = FALSE
+  )
+
   internal$iter_list[[iter]]$X <- X
   internal$iter_list[[iter]]$W <- W
   internal$iter_list[[iter]]$S <- S
   internal$iter_list[[iter]]$id_comb_feature_map <- id_comb_feature_map
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
+  internal$iter_list[[iter]]$feature_samples <- feature_samples
+
+
 
 
   return(internal)
