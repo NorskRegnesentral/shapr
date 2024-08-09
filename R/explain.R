@@ -27,11 +27,13 @@
 #' Typically we set this value equal to the mean of the response variable in our training data, but other choices
 #' such as the mean of the predictions in the training data are also reasonable.
 #'
-#' @param n_combinations Integer.
-#' If `group = NULL`, `n_combinations` represents the number of unique feature combinations to sample.
-#' If `group != NULL`, `n_combinations` represents the number of unique group combinations to sample.
-#' If `n_combinations = NULL`, the exact method is used and all combinations are considered.
-#' The maximum number of combinations equals `2^m`, where `m` is the number of features.
+#' @param max_n_combinations Integer.
+#' The upper limit on the number of unique feature/group combinations to use in the adaptive procedure
+#' (if `adaptive = TRUE`).
+#' If `adaptive = FALSE` it represents the number of feature/group combinations to use directly.
+#' The quantity refers to the number of unique feature combinations if `group = NULL`,
+#' and group combinations if `group != NULL`.
+#' `max_n_combinations = NULL` corresponds to `max_n_combinations=2^n_features`.
 #'
 #' @param group List.
 #' If `NULL` regular feature wise Shapley values are computed.
@@ -301,7 +303,7 @@ explain <- function(model,
                     approach,
                     paired_shap_sampling = FALSE, # TODO: Make TRUE the default later on
                     prediction_zero,
-                    n_combinations = NULL,
+                    max_n_combinations = NULL,
                     adaptive = FALSE,
                     group = NULL,
                     n_samples = 1e3,
