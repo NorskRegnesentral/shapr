@@ -11,17 +11,28 @@
 setup_approach <- function(internal, ...) {
   approach <- internal$parameters$approach
 
-  this_class <- ""
+  iter <- length(internal$iter_list)
+  X <- internal$iter_list[[iter]]$X
 
-  if (length(approach) > 1) {
-    class(this_class) <- "combined"
+  run_now <- (isFALSE("regression_surrogate" %in% approach) && isTRUE(is.null(X))) ||
+    (isTRUE("regression_surrogate" %in% approach) && isFALSE(is.null(X)))
+
+  if(isFALSE(run_now)){ # Do nothing
+    return(internal)
   } else {
-    class(this_class) <- approach
+    this_class <- ""
+
+    if (length(approach) > 1) {
+      class(this_class) <- "combined"
+    } else {
+      class(this_class) <- approach
+    }
+
+    UseMethod("setup_approach", this_class)
+
+    internal$timing_list$setup_approach <-  Sys.time()
   }
 
-  UseMethod("setup_approach", this_class)
-
-  internal$timing_list$setup_approach <-  Sys.time()
 }
 
 #' @inheritParams default_doc
