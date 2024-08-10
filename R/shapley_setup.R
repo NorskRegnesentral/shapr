@@ -61,6 +61,7 @@ shapley_setup <- function(internal) {
   #### Updating parameters ####
 
   # Updating parameters$exact as done in feature_combinations. I don't think this is necessary now. TODO: Check.
+  # Moreover, it does not apply to grouping, so must be adjusted anyway.
   if (!exact && n_combinations >= 2^n_features0) {
     internal$iter_list[[iter]]$exact <- TRUE
     internal$parameters$exact <- TRUE # Since this means that all combinations have been sampled
@@ -77,7 +78,12 @@ shapley_setup <- function(internal) {
   if(isFALSE(exact)){
     # Storing the feature samples
     repetitions <- X[-c(1, .N), sample_freq]
-    unique_feature_samples <- X[-c(1, .N), features]
+
+    if(is_groupwise){
+      unique_feature_samples <- X[-c(1, .N), groups] # We call it feature_samples even if it applies also to groups.
+    } else {
+      unique_feature_samples <- X[-c(1, .N), features]
+    }
 
     feature_samples <- unlist(
       lapply(

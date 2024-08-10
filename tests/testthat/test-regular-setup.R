@@ -548,8 +548,7 @@ test_that("erroneous input: `max_n_combinations`", {
         max_n_combinations = max_n_combinations,
         n_batches = 1
       )
-    },
-    error = TRUE
+    }
   )
 })
 
@@ -1385,8 +1384,6 @@ test_that("Message with too low `max_n_combinations`", {
   )
 
   max_n_combinations <- length(groups) - 1
-
-  ### THIS CURRENTLY FAILS AS GROUPING IS NOT FIXED YET
 
   expect_snapshot(
     explain(
