@@ -361,19 +361,21 @@
 ---
 
     Code
-      groups <- list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
-      max_n_combinations <- length(groups) - 1
+      max_n_combinations <- ncol(x_explain_numeric) - 1
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "gaussian",
-        group = groups, max_n_combinations = max_n_combinations, n_batches = 1)
+        max_n_combinations = max_n_combinations, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is smaller than or n_groups = 3, 
-      and is therefore set to n_groups + 1  = 4.
+      max_n_combinations is smaller than or n_features = 5, 
+      and is therefore set to n_features + 1  = 6.
       
-    Condition
-      Error:
-      ! j (the 2nd argument inside [...]) is a single symbol but column name 'sample_freq' is not found. If you intended to select columns using a variable in calling scope, please try DT[, ..sample_freq]. The .. prefix conveys one-level-up similar to a file system path.
+    Output
+         explain_id  none Solar.R    Wind    Temp Month    Day
+              <int> <num>   <num>   <num>   <num> <num>  <num>
+      1:          1 42.44  -4.954  14.410   7.667 1.013 -5.534
+      2:          2 42.44   4.203  -5.842 -15.017 1.182  1.595
+      3:          3 42.44   4.713 -32.459   2.059 0.831  7.288
 
 ---
 
