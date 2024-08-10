@@ -11,6 +11,10 @@
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
       
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_groups = 4, 
+      and is therefore set to 2^n_groups = 4.
+      
     Condition
       Error in `get_predict_model()`:
       ! You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain().
@@ -80,7 +84,7 @@
       Error in `get_parameters()`:
       ! `prediction_zero` (77.8823529411765, 77.8823529411765) must be numeric and match the output size of the model (3).
 
-# erroneous input: `n_combinations`
+# erroneous input: `max_n_combinations`
 
     Code
       horizon <- 3
@@ -91,36 +95,18 @@
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
       horizon = horizon, approach = "independence", prediction_zero = p0_ar,
-      n_batches = 1, n_combinations = n_combinations, group_lags = FALSE)
+      n_batches = 1, max_n_combinations = n_combinations, group_lags = FALSE)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
-    Condition
-      Error in `check_n_combinations()`:
-      ! `n_combinations` (6) has to be greater than the number of components to decompose  the forecast onto:
-      `horizon` (3) + `explain_y_lags` (2) + sum(`explain_xreg_lags`) (2).
-
----
-
-    Code
-      horizon <- 3
-      explain_y_lags <- 2
-      explain_xreg_lags <- 2
-      n_combinations <- 1 + 1
-      explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
-      "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
-      explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
-      horizon = horizon, approach = "independence", prediction_zero = p0_ar,
-      n_batches = 1, n_combinations = n_combinations, group_lags = TRUE)
-    Message
-      Note: Feature names extracted from the model contains NA.
-      Consistency checks between model and data is therefore disabled.
+      Success with message:
+      max_n_combinations is smaller than or n_features = 7, 
+      and is therefore set to n_features + 1  = 8.
       
     Condition
-      Error in `check_n_combinations()`:
-      ! `n_combinations` (2) has to be greater than the number of components to decompose the forecast onto:
-      ncol(`xreg`) (1) + 1
+      Error in `feature_combinations()`:
+      ! argument "unique_sampling" is missing, with no default
 
 # erroneous input: `train_idx`
 

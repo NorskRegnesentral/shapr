@@ -375,6 +375,23 @@
       Error:
       ! j (the 2nd argument inside [...]) is a single symbol but column name 'sample_freq' is not found. If you intended to select columns using a variable in calling scope, please try DT[, ..sample_freq]. The .. prefix conveys one-level-up similar to a file system path.
 
+---
+
+    Code
+      groups <- list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
+      max_n_combinations <- length(groups) - 1
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, prediction_zero = p0, approach = "gaussian",
+        group = groups, max_n_combinations = max_n_combinations, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is smaller than or n_groups = 3, 
+      and is therefore set to n_groups + 1  = 4.
+      
+    Condition
+      Error:
+      ! j (the 2nd argument inside [...]) is a single symbol but column name 'sample_freq' is not found. If you intended to select columns using a variable in calling scope, please try DT[, ..sample_freq]. The .. prefix conveys one-level-up similar to a file system path.
+
 # erroneous input: `group`
 
     Code

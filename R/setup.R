@@ -1015,7 +1015,7 @@ get_adaptive_arguments_default <- function(internal,
 }
 
 
-additional_regression_setup <- function(internal, predict_model){
+additional_regression_setup <- function(internal, model, predict_model){
 
   # This step needs to be called after predict_model is set, and therefore arrives at a later stage in explain()
 

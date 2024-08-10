@@ -367,7 +367,7 @@ explain <- function(model,
   internal$timing_list$test_prediction <- Sys.time()
 
 
-  internal <- additional_regression_setup(internal, predict_model)
+  internal <- additional_regression_setup(internal, model = model, predict_model = predict_model)
 
   # Not called for approach = regression_surrogate
   internal <- setup_approach(internal, model = model, predict_model = predict_model)

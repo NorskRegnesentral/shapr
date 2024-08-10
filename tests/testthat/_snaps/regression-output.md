@@ -2,6 +2,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
@@ -24,6 +29,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 16, 
+      and is therefore set to 2^n_features = 16.
+      
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
@@ -35,6 +45,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R    Wind   Temp     Day Month_factor
               <int> <num>   <num>   <num>  <num>   <num>        <num>
@@ -46,6 +61,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -57,6 +77,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R   Wind    Temp     Day Month_factor
               <int> <num>   <num>  <num>   <num>   <num>        <num>
@@ -68,6 +93,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R   Wind    Temp     Day Month_factor
               <int> <num>   <num>  <num>   <num>   <num>        <num>
@@ -79,6 +109,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R    Wind    Temp    Day Month_factor
               <int> <num>   <num>   <num>   <num>  <num>        <num>
@@ -90,6 +125,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R    Wind   Temp   Month     Day
               <int> <num>   <num>   <num>  <num>   <num>   <num>
@@ -123,6 +163,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 16, 
+      and is therefore set to 2^n_features = 16.
+      
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
@@ -134,6 +179,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R    Wind   Temp     Day Month_factor
               <int> <num>   <num>   <num>  <num>   <num>        <num>
@@ -145,6 +195,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R   Wind   Temp    Day Month_factor
               <int> <num>   <num>  <num>  <num>  <num>        <num>
@@ -156,6 +211,11 @@
 
     Code
       (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>

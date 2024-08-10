@@ -6,6 +6,10 @@
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 4, 
+      and is therefore set to 2^n_features = 4.
+      
     Output
          explain_idx horizon  none  Temp.1  Temp.2
                <int>   <int> <num>   <num>   <num>
@@ -23,6 +27,10 @@
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
+      
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 128, 
+      and is therefore set to 2^n_features = 128.
       
     Output
          explain_idx horizon  none  Temp.1 Temp.2  Wind.1  Wind.2 Wind.F1 Wind.F2
@@ -50,6 +58,10 @@
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 4, 
+      and is therefore set to 2^n_features = 4.
+      
     Output
          explain_idx horizon  none  Temp.1 Temp.2
                <int>   <int> <num>   <num>  <num>
@@ -68,6 +80,10 @@
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_groups = 4, 
+      and is therefore set to 2^n_groups = 4.
+      
     Output
          explain_idx horizon  none    Temp   Wind
                <int>   <int> <num>   <num>  <num>
@@ -85,6 +101,10 @@
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
+      
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_features = 8, 
+      and is therefore set to 2^n_features = 8.
       
     Condition
       Warning in `matrix()`:
