@@ -148,41 +148,32 @@ shapley_setup <- function(internal) {
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL,
                                  paired_shap_sampling = TRUE, prev_feature_samples = NULL,unique_sampling) {
-  m_group <- length(group_num) # The number of groups
 
-  if (m_group == 0) {
-    # Here if feature-wise Shapley values
-    if (exact) {
-      dt <- feature_exact(m, weight_zero_m)
-    } else {
-      dt <- feature_not_exact(m,
-        n_combinations,
-        weight_zero_m,
-        paired_shap_sampling = paired_shap_sampling,
-        prev_feature_samples = prev_feature_samples,
-        unique_sampling = unique_sampling
-      )
-      stopifnot(
-        data.table::is.data.table(dt),
-        !is.null(dt[["p"]])
-      )
-      p <- NULL # due to NSE notes in R CMD check
-      dt[, p := NULL]
-    }
+  is_groupwise <- length(group_num)>0
+
+  this_m <- ifelse(is_groupwise,length(group_num),m)
+  if (exact) {
+    dt <- feature_exact(this_m, weight_zero_m)
   } else {
-    # Here if group-wise Shapley values
-    if (exact) {
-      dt <- feature_group(group_num, weight_zero_m)
-    } else {
-      dt <- feature_group_not_exact(group_num, n_combinations, weight_zero_m)
-      stopifnot(
-        data.table::is.data.table(dt),
-        !is.null(dt[["p"]])
-      )
-      p <- NULL # due to NSE notes in R CMD check
-      dt[, p := NULL]
-    }
+    dt <- feature_not_exact(this_m,
+                            n_combinations,
+                            weight_zero_m,
+                            paired_shap_sampling = paired_shap_sampling,
+                            prev_feature_samples = prev_feature_samples,
+                            unique_sampling = unique_sampling
+    )
+    stopifnot(
+      data.table::is.data.table(dt),
+      !is.null(dt[["p"]])
+    )
+    p <- NULL # due to NSE notes in R CMD check
+    dt[, p := NULL]
   }
+
+  if(is_groupwise){
+    convert_feature_to_groups(dt, group_num) # Convert to groups by reference
+  }
+
   return(dt)
 }
 
@@ -342,6 +333,15 @@ feature_not_exact <- function(m,
 
   return(X)
 }
+
+convert_feature_to_groups <- function(dt,group_num){
+  setnames(dt,c("features","n_features"),c("groups","n_groups"))
+  dt[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
+  dt[, n_features := length(features[[1]]), id_combination]
+
+  return(NULL)
+}
+
 
 #' Calculate Shapley weight
 #'
