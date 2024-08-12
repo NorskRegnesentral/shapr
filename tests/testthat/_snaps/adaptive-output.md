@@ -280,3 +280,56 @@
       2:          2 42.44   2.199  -3.349 -5.232 -5.502 -1.995
       3:          3 42.44   3.657 -18.614 -1.440 -2.462  1.291
 
+# output_lm_numeric_gaussian_group_converges_tol
+
+    Code
+      (out <- code)
+    Message
+      Success with message:
+      max_n_combinations is NULL or larger than or 2^n_groups = 8, 
+      and is therefore set to 2^n_groups = 8.
+      
+      Setting parameter 'n_batches' to 7 as a fair trade-off between memory consumption and computation time.
+      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
+      
+    Output
+      
+      Iteration 1
+      Not converged after 5 coalitions.
+      Estimated remaining coalitions: 10
+      Estimated required coalitions: 13
+      Using 1 new coalitions in the next iteration.
+      Current estimated Shapley values (sd):
+                   none               A               B              C
+                 <char>          <char>          <char>         <char>
+      1: 42.444 (0.00)   -2.653 (0.98)   14.045 (3.22)   1.210 (3.35) 
+      2: 42.444 (0.00)    2.196 (1.21)  -12.992 (1.37)  -3.084 (1.94) 
+      3: 42.444 (0.00)  -13.864 (2.38)   -0.294 (3.31)  -3.411 (4.07) 
+      
+      Iteration 2
+      Not converged after 6 coalitions.
+      Estimated remaining coalitions: 21
+      Estimated required coalitions: 25
+      Using 2 new coalitions in the next iteration.
+      Current estimated Shapley values (sd):
+                   none               A               B              C
+                 <char>          <char>          <char>         <char>
+      1: 42.444 (0.00)    1.025 (2.55)   14.045 (3.29)  -2.468 (4.09) 
+      2: 42.444 (0.00)    0.854 (0.98)  -12.992 (1.55)  -1.742 (1.88) 
+      3: 42.444 (0.00)  -18.115 (3.98)   -0.294 (3.01)   0.840 (4.86) 
+      
+      Iteration 3
+      Estimation stopped!
+      Maximum number of coalitions (8) reached.
+      Final estimated Shapley values (sd):
+                   none               A               B              C
+                 <char>          <char>          <char>         <char>
+      1: 42.444 (0.00)    0.664 (2.02)   13.684 (2.08)  -1.746 (1.77) 
+      2: 42.444 (0.00)    0.579 (0.79)  -13.266 (0.68)  -1.192 (0.78) 
+      3: 42.444 (0.00)  -18.100 (2.29)   -0.279 (2.33)   0.810 (1.87) 
+         explain_id  none        A        B       C
+              <int> <num>    <num>    <num>   <num>
+      1:          1 42.44   0.6638  13.6838 -1.7456
+      2:          2 42.44   0.5791 -13.2665 -1.1920
+      3:          3 42.44 -18.0996  -0.2788  0.8101
+

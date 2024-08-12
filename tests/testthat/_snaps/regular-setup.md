@@ -967,6 +967,24 @@
       2:          2 42.44 0.0001797  -4.674 -0.0007807 -9.186 -0.019336
       3:          3 42.44 0.0001726 -21.121 -0.0007665  3.561 -0.007937
 
+---
+
+    Code
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_explain_numeric, prediction_zero = p0, approach = "gaussian",
+        group = groups, max_n_combinations = max_n_combinations, n_batches = 1)
+    Message
+      Success with message:
+      max_n_combinations is smaller than or n_groups = 3, 
+      and is therefore set to n_groups + 1  = 4.
+      
+    Output
+         explain_id  none         A      B         C
+              <int> <num>     <num>  <num>     <num>
+      1:          1 42.44 -0.001404  12.60 6.388e-05
+      2:          2 42.44 -0.001419 -13.88 4.690e-05
+      3:          3 42.44 -0.001465 -17.57 6.250e-05
+
 # Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weights
 
     Code
