@@ -79,3 +79,32 @@ test_that("output_lm_numeric_independence_converges_max_n_combinations", {
   )
 })
 
+
+test_that("output_lm_numeric_gaussian_group_converges_tol", {
+  groups <- list(
+    A = c("Solar.R", "Wind"),
+    B = c("Temp", "Month"),
+    C = "Day"
+  )
+
+    expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      group = groups,
+      prediction_zero = p0,
+      adaptive_arguments = list(
+        initial_n_combinations = 5,
+        convergence_tolerance = 0.1
+      ),
+      adaptive = TRUE,
+      print_shapleyres = TRUE,
+      print_iter_info = TRUE
+    ),
+    "output_lm_numeric_gaussian_group_converges_tol"
+  )
+})
+

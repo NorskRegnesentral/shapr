@@ -122,7 +122,7 @@ compute_shapley_new <- function(internal, dt_vS) {
   if (!is_groupwise) {
     shap_names <- feature_names
   } else {
-    shap_names <- names(internal$parameters$group) # TODO: Add group_names (and feature_names) to internal earlier
+    shap_names <- names(internal$parameters$group) # TODO: Add group_names (and shap_names) to internal earlier
   }
 
   # If multiple horizons with explain_forecast are used, we only distribute value to those used at each horizon
@@ -257,12 +257,26 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
 
   set.seed(seed)
 
-  X_org <- copy(X)
+  is_groupwise <- internal$parameters$is_groupwise
+
   n_explain <- internal$parameters$n_explain
-  n_features0 <- internal$parameters$n_features
-  shap_names <- internal$parameters$feature_names
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweight <- internal$parameters$shapley_reweighting
+
+  X_org <- copy(X)
+
+  if(isFALSE(is_groupwise)){
+    n_features0 <- internal$parameters$n_features
+    shap_names <- internal$parameters$feature_names
+  } else {
+    # Groupwise explanation
+    # Temporary rename group objects to feature objects for code simplicity below
+
+    n_features0 <- internal$parameters$n_groups
+    shap_names <- names(internal$parameters$group)
+    X_org[,n_features:=n_groups]
+    X_org[,features:=groups]
+  }
 
   boot_sd_array <- array(NA, dim = c(n_explain, n_features0 + 1, n_boot_samps))
 

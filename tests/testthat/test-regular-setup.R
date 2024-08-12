@@ -1487,7 +1487,6 @@ test_that("Correct dimension of S when sampling combinations with groups", {
     C = "Day"
   )
 
-  # FAILS AS GROUPING IS NOT SUPPORTED YET
   res <- explain(
     testing = TRUE,
     model = model_lm_mixed,
@@ -2067,3 +2066,37 @@ test_that("vaeac_pretreained_vaeac_model", {
   # Check for equal Shapley values
   expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac$shapley_values)
 })
+
+
+test_that("feature wise and groupwise computations are identical", {
+  groups <- list(
+    Solar.R = "Solar.R",
+    Wind = "Wind",
+    Temp = "Temp",
+    Month = "Month",
+    Day = "Day"
+  )
+
+  expl_feat <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "gaussian",
+    prediction_zero = p0)
+
+
+  expl_group <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "gaussian",
+    group = groups,
+    prediction_zero = p0)
+
+
+  # Checking equality in the list with all final and intermediate results
+  expect_equal(expl_feat$shapley_values,expl_group$shapley_values)
+})
+
