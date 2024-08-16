@@ -150,7 +150,7 @@ shapley_setup <- function(internal) {
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL,
-                                 paired_shap_sampling = TRUE, prev_feature_samples = NULL, unique_sampling) {
+                                 paired_shap_sampling = TRUE, prev_feature_samples = NULL, unique_sampling = TRUE) {
   is_groupwise <- length(group_num) > 0
 
   this_m <- ifelse(is_groupwise, length(group_num), m)

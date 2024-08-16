@@ -313,7 +313,8 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
       is_groupwise = FALSE
     )
 
-    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_combination %in% X_boot[boot_id == i, id_combination], -"id_combination"]))
+    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_combination %in% X_boot[boot_id == i,
+                                                                          id_combination], -"id_combination"]))
 
     boot_sd_array[, , i] <- copy(kshap_boot)
   }

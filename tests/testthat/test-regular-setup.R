@@ -393,7 +393,7 @@ test_that("erroneous input: `max_n_combinations`", {
   expect_snapshot(
     {
       # non-numeric 1
-      max_n_combinations_non_numeric_1 <- "bla"
+      max_n_comb_non_numeric_1 <- "bla"
 
       explain(
         testing = TRUE,
@@ -402,7 +402,7 @@ test_that("erroneous input: `max_n_combinations`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_combinations_non_numeric_1,
+        max_n_combinations = max_n_comb_non_numeric_1,
         n_batches = 1
       )
     },
@@ -412,7 +412,7 @@ test_that("erroneous input: `max_n_combinations`", {
   expect_snapshot(
     {
       # non-numeric 2
-      max_n_combinations_non_numeric_2 <- TRUE
+      max_n_comb_non_numeric_2 <- TRUE
 
       explain(
         testing = TRUE,
@@ -421,7 +421,7 @@ test_that("erroneous input: `max_n_combinations`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_combinations_non_numeric_2,
+        max_n_combinations = max_n_comb_non_numeric_2,
         n_batches = 1
       )
     },
@@ -491,7 +491,7 @@ test_that("erroneous input: `max_n_combinations`", {
   expect_snapshot(
     {
       # Non-positive
-      max_n_combinations_non_positive <- 0
+      max_n_comb_non_positive <- 0
 
       explain(
         testing = TRUE,
@@ -500,7 +500,7 @@ test_that("erroneous input: `max_n_combinations`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_combinations_non_positive,
+        max_n_combinations = max_n_comb_non_positive,
         n_batches = 1
       )
     },

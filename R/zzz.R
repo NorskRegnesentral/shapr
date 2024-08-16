@@ -116,7 +116,10 @@
       "req_samples",
       "explain_id",
       "id_combination_new",
-      "features_str"
+      "features_str",
+      "boot_id",
+      "iter",
+      "total"
     )
   )
 

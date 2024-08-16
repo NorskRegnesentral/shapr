@@ -581,8 +581,8 @@ check_max_n_combinations_fc <- function(internal) {
     if (!is_groupwise) {
       if (max_n_combinations <= n_features) {
         stop(paste0(
-          "`max_n_combinations` (", max_n_combinations, ") has to be greater than the number of components to decompose ",
-          " the forecast onto:\n",
+          "`max_n_combinations` (", max_n_combinations, ") has to be greater than the number of ",
+          "components to decompose the forecast onto:\n",
           "`horizon` (", horizon, ") + `explain_y_lags` (", explain_y_lags, ") ",
           "+ sum(`explain_xreg_lags`) (", sum(explain_xreg_lags), ").\n"
         ))
@@ -590,8 +590,8 @@ check_max_n_combinations_fc <- function(internal) {
     } else {
       if (max_n_combinations <= n_groups) {
         stop(paste0(
-          "`max_n_combinations` (", max_n_combinations, ") has to be greater than the number of components to decompose ",
-          "the forecast onto:\n",
+          "`max_n_combinations` (", max_n_combinations, ") has to be greater than the number of ",
+          "components to decompose the forecast onto:\n",
           "ncol(`xreg`) (", ncol(`xreg`), ") + 1"
         ))
       }
