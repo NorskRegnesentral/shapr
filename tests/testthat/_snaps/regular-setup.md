@@ -390,9 +390,12 @@
       max_n_combinations is smaller than or n_groups = 3, 
       and is therefore set to n_groups + 1  = 4.
       
-    Condition
-      Error:
-      ! j (the 2nd argument inside [...]) is a single symbol but column name 'sample_freq' is not found. If you intended to select columns using a variable in calling scope, please try DT[, ..sample_freq]. The .. prefix conveys one-level-up similar to a file system path.
+    Output
+         explain_id  none       A       B      C
+              <int> <num>   <num>   <num>  <num>
+      1:          1 42.44  -2.653  18.272 -3.017
+      2:          2 42.44   2.196 -14.010 -2.066
+      3:          3 42.44 -13.864  -5.111  1.407
 
 # erroneous input: `group`
 

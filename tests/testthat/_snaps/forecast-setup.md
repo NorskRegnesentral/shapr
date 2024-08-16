@@ -108,6 +108,30 @@
       Error in `feature_combinations()`:
       ! argument "unique_sampling" is missing, with no default
 
+---
+
+    Code
+      horizon <- 3
+      explain_y_lags <- 2
+      explain_xreg_lags <- 2
+      n_combinations <- 1 + 1
+      explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
+      "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
+      explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
+      horizon = horizon, approach = "independence", prediction_zero = p0_ar,
+      n_batches = 1, max_n_combinations = n_combinations, group_lags = TRUE)
+    Message
+      Note: Feature names extracted from the model contains NA.
+      Consistency checks between model and data is therefore disabled.
+      
+      Success with message:
+      max_n_combinations is smaller than or n_groups = 2, 
+      and is therefore set to n_groups + 1  = 3.
+      
+    Condition
+      Error in `feature_combinations()`:
+      ! argument "unique_sampling" is missing, with no default
+
 # erroneous input: `train_idx`
 
     Code
