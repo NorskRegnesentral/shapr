@@ -104,9 +104,23 @@
       max_n_combinations is smaller than or n_features = 7, 
       and is therefore set to n_features + 1  = 8.
       
-    Condition
-      Error in `feature_combinations()`:
-      ! argument "unique_sampling" is missing, with no default
+    Output
+         explain_idx horizon  none Temp.1 Temp.2     Wind.1     Wind.2    Wind.F1
+               <int>   <int> <num>  <num>  <num>      <num>      <num>      <num>
+      1:         149       1 77.88 -2.297 -2.540 -1.366e+00 -1.821e+00 -2.483e+00
+      2:         150       1 77.88  2.103 -1.587 -1.397e+00 -1.863e+00 -2.892e+00
+      3:         149       2 77.88 -7.307  1.332 -7.471e-08 -1.139e+00 -2.278e+00
+      4:         150       2 77.88 -3.021  2.374 -7.391e-08 -1.165e+00 -2.330e+00
+      5:         149       3 77.88 -7.313 -4.369  2.285e+00  1.559e-07  6.062e-08
+      6:         150       3 77.88 -3.028 -3.458  2.337e+00  1.620e-07  6.315e-08
+            Wind.F2 Wind.F3
+              <num>   <num>
+      1:         NA      NA
+      2:         NA      NA
+      3: -1.493e+00      NA
+      4:  6.661e-01      NA
+      5: -9.219e-08  0.6726
+      6: -9.643e-08 -0.5269
 
 ---
 
@@ -128,9 +142,15 @@
       max_n_combinations is smaller than or n_groups = 2, 
       and is therefore set to n_groups + 1  = 3.
       
-    Condition
-      Error in `feature_combinations()`:
-      ! argument "unique_sampling" is missing, with no default
+    Output
+         explain_idx horizon  none   Temp   Wind
+               <int>   <int> <num>  <num>  <num>
+      1:         149       1 77.88 -9.390 -1.117
+      2:         150       1 77.88 -4.141 -1.494
+      3:         149       2 77.88 -7.113 -3.771
+      4:         150       2 77.88 -1.812 -1.664
+      5:         149       3 77.88 -7.113 -1.612
+      6:         150       3 77.88 -1.812 -2.864
 
 # erroneous input: `train_idx`
 

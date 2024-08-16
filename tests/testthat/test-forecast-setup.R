@@ -182,8 +182,7 @@ test_that("erroneous input: `max_n_combinations`", {
         max_n_combinations = n_combinations,
         group_lags = FALSE
       )
-    },
-    error = TRUE
+    }
   )
 
 
@@ -212,8 +211,7 @@ test_that("erroneous input: `max_n_combinations`", {
         max_n_combinations = n_combinations,
         group_lags = TRUE
       )
-    },
-    error = TRUE
+    }
   )
 })
 

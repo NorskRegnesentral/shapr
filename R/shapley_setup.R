@@ -753,16 +753,24 @@ setup_computation <- function(internal, model, predict_model) {
 
 #' @keywords internal
 shapley_setup_forecast <- function(internal) {
-  exact <- internal$parameters$exact
   n_features0 <- internal$parameters$n_features
+  approach0 <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
+  paired_shap_sampling <- internal$parameters$paired_shap_sampling
+  shapley_reweighting <- internal$parameters$shapley_reweighting
+
   group_num <- internal$objects$group_num
   horizon <- internal$parameters$horizon
   feature_names <- internal$parameters$feature_names
 
-  iter <- length(internal$iter_list)
-  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  # TODO: Just added temporary, and set to TRUE unless not specified explicitly as a ... argument in explain()
+  unique_sampling <- ifelse(is.null(internal$parameters$unique_sampling), TRUE, internal$parameters$unique_sampling)
 
+  iter <- length(internal$iter_list)
+
+  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  exact <- internal$iter_list[[iter]]$exact
+  prev_feature_samples <- internal$iter_list[[iter]]$prev_feature_samples
 
   X_list <- W_list <- list()
 
@@ -786,15 +794,28 @@ shapley_setup_forecast <- function(internal) {
     this_featcomb <- horizon_features[[i]]
     n_this_featcomb <- length(this_featcomb)
 
+    n_combinations_here <- min(2^n_this_featcomb,n_combinations)
+    exact_here <- ifelse(n_combinations_here == 2^n_this_featcomb, TRUE, exact)
+
     this_group_num <- lapply(group_num, function(x) x[x %in% this_featcomb])
 
     X_list[[i]] <- feature_combinations(
-      m = n_this_featcomb,
-      exact = exact,
-      n_combinations = n_combinations,
-      weight_zero_m = 10^6,
-      group_num = this_group_num
-    )
+        m = n_this_featcomb,
+        exact = exact_here,
+        n_combinations = n_combinations_here,
+        weight_zero_m = 10^6,
+        group_num = this_group_num,
+        paired_shap_sampling = paired_shap_sampling,
+        prev_feature_samples = prev_feature_samples,
+        unique_sampling = unique_sampling # TODO: Just added temporary
+      )
+
+    # Adding approach to X (needed for the combined approaches)
+    if (length(approach0) > 1) {
+      X_list[[i]][!(n_features %in% c(0, n_features0)), approach := approach0[n_features]]
+    } else {
+      X_list[[i]][, approach := approach0]
+    }
 
     W_list[[i]] <- weight_matrix(
       X = X_list[[i]],

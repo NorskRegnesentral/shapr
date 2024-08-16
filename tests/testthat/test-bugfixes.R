@@ -12,6 +12,7 @@ test_that("bug with column name ordering in edge case is fixed", {
       x_train = x_train_numeric,
       approach = "gaussian",
       prediction_zero = p0,
+      max_n_combinations = 2^5,
       n_samples = 2,
       n_batches = 2^5 - 1, # Bug happens when n_batches = n_combinations - 1
       keep_samp_for_vS = TRUE,
