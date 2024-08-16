@@ -1,5 +1,8 @@
+#define ARMA_WARN_LEVEL 1 // Disables the warning regarding approximate solution for small n_combinations
 #include <RcppArmadillo.h>
 using namespace Rcpp;
+
+
 
 //' Calculate weight matrix
 //'
