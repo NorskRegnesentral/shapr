@@ -6,9 +6,9 @@ test_that("adaptive_arguments are respected", {
     x_train = x_train_numeric,
     approach = "independence",
     prediction_zero = p0,
-    max_n_combinations = 10,
+    max_n_combinations = 30,
     adaptive_arguments = list(
-      initial_n_combinations = 17,
+      initial_n_combinations = 7,
       convergence_tolerance = 0.001,
       reduction_factor_vec = rep(10^(-5), 10),
       max_iter = 8
@@ -19,7 +19,7 @@ test_that("adaptive_arguments are respected", {
   )
 
   # Check that initial_n_combinations is respected
-  expect_equal(ex$internal$iter_list[[1]]$X[, .N], 17)
+  expect_equal(ex$internal$iter_list[[1]]$X[, .N], 7)
 
   # Check that max_iter is respected
   expect_equal(length(ex$internal$iter_list), 8)
