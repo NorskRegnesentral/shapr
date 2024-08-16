@@ -7,13 +7,17 @@
 regression.check_sur_n_comb(regression.surrogate_n_comb, n_combinations)
 }
 \arguments{
-\item{regression.surrogate_n_comb}{Integer (default is \code{internal$parameters$n_combinations}) specifying the
+\item{regression.surrogate_n_comb}{Integer.
+(default is \code{internal$iter_list[[length(internal$iter_list)]]$n_combinations}) specifying the
 number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
-"\code{internal$parameters$n_combinations} - 2". By default, we use all coalitions, but this can take a lot of memory
-in larger dimensions. Note that by "all", we mean all coalitions chosen by \code{shapr} to be used. This will be all
-\eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in the exact mode. If the
-user sets a lower value than \code{internal$parameters$n_combinations}, then we sample this amount of unique
-coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.}
+"\code{internal$iter_list[[length(internal$iter_list)]]$n_combinations} - 2".
+By default, we use all coalitions, but this can take a lot of memory in larger dimensions.
+Note that by "all", we mean all coalitions chosen by \code{shapr} to be used.
+This will be all \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in
+the exact mode.
+If the user sets a lower value than \code{internal$iter_list[[length(internal$iter_list)]]$n_combinations},
+then we sample this amount of unique coalitions separately for each training observations.
+That is, on average, all coalitions should be equally trained.}
 
 \item{n_combinations}{Integer. The number of used combinations (including the empty and grand coalitions).}
 }

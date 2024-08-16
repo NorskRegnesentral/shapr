@@ -33,8 +33,8 @@ confidence intervals for the overall MSEv and the MSEv_combination. The confiden
 the MSEv scores are means over the observations/explicands, and that means are approximation normal. Since the
 standard deviations are estimated, we use the quantile t from the T distribution with N_explicands - 1 degrees of
 freedom corresponding to the provided level. Here, N_explicands is the number of observations/explicands.
-MSEv ± t\emph{SD(MSEv)/sqrt(N_explicands). Note that the \code{explain()} function already scales the standard deviation by
-sqrt(N_explicands), thus, the CI are MSEv ± t}MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
+MSEv +/- t\emph{SD(MSEv)/sqrt(N_explicands). Note that the \code{explain()} function already scales the standard deviation by
+sqrt(N_explicands), thus, the CI are MSEv \/- t}MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
 MSEv data.tables in the objects in the \code{explanation_list}.}
 
 \item{geom_col_width}{Numeric. Bar width. By default, set to 90\% of the \code{\link[ggplot2:resolution]{ggplot2::resolution()}} of the data.}

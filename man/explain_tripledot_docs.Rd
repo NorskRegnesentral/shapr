@@ -92,13 +92,17 @@ Note, to make it easier to call \code{explain()} from Python, the \code{regressi
 containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}
-    \item{\code{regression.surrogate_n_comb}}{Integer (default is \code{internal$parameters$n_combinations}) specifying the
+    \item{\code{regression.surrogate_n_comb}}{Integer.
+(default is \code{internal$iter_list[[length(internal$iter_list)]]$n_combinations}) specifying the
 number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
-"\code{internal$parameters$n_combinations} - 2". By default, we use all coalitions, but this can take a lot of memory
-in larger dimensions. Note that by "all", we mean all coalitions chosen by \code{shapr} to be used. This will be all
-\eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in the exact mode. If the
-user sets a lower value than \code{internal$parameters$n_combinations}, then we sample this amount of unique
-coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.}
+"\code{internal$iter_list[[length(internal$iter_list)]]$n_combinations} - 2".
+By default, we use all coalitions, but this can take a lot of memory in larger dimensions.
+Note that by "all", we mean all coalitions chosen by \code{shapr} to be used.
+This will be all \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in
+the exact mode.
+If the user sets a lower value than \code{internal$iter_list[[length(internal$iter_list)]]$n_combinations},
+then we sample this amount of unique coalitions separately for each training observations.
+That is, on average, all coalitions should be equally trained.}
     \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
 Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
     \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
