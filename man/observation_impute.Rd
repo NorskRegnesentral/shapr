@@ -15,10 +15,10 @@ observation_impute(
 }
 \arguments{
 \item{W_kernel}{Numeric matrix. Contains all nonscaled weights between training and test
-observations for all feature combinations. The dimension equals \verb{n_train x m}.}
+observations for all coalitions. The dimension equals \verb{n_train x m}.}
 
-\item{S}{Integer matrix of dimension \verb{n_combinations x m}, where \code{n_combinations}
-and \code{m} equals the total number of sampled/non-sampled feature combinations and
+\item{S}{Integer matrix of dimension \verb{n_coalitions x m}, where \code{n_coalitions}
+and \code{m} equals the total number of sampled/non-sampled coalitions and
 the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.}
 
 \item{x_train}{Numeric matrix}

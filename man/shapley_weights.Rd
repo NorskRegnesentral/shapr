@@ -9,7 +9,7 @@ shapley_weights(m, N, n_components, weight_zero_m = 10^6)
 \arguments{
 \item{m}{Positive integer. Total number of features/feature groups.}
 
-\item{N}{Positive integer. The number of unique combinations when sampling \code{n_components} features/feature
+\item{N}{Positive integer. The number of unique coalitions when sampling \code{n_components} features/feature
 groups, without replacement, from a sample space consisting of \code{m} different features/feature groups.}
 
 \item{n_components}{Positive integer. Represents the number of features/feature groups you want to sample from

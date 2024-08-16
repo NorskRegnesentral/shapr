@@ -42,7 +42,7 @@ explanation_adaptive <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  max_n_combinations = 500,
+  max_n_coalitions = 500,
   prediction_zero = p0,
   adaptive = TRUE,
   print_shapleyres = TRUE, # tmp
@@ -55,7 +55,7 @@ explanation_adaptive <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  n_combinations = 500,
+  n_coalitions = 500,
   prediction_zero = p0,
   adaptive = TRUE,
   print_shapleyres = TRUE, # tmp
@@ -69,7 +69,7 @@ explanation_nonadaptive <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  n_combinations = 400,
+  n_coalitions = 400,
   prediction_zero = p0,
   adaptive = FALSE
 )
@@ -80,10 +80,10 @@ explanation_adaptive <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  n_combinations = 500,
+  n_coalitions = 500,
   prediction_zero = p0,
   adaptive = TRUE,
-  adaptive_arguments = list(initial_n_combinations=10,convergence_tolerance=0.0001),
+  adaptive_arguments = list(initial_n_coalitions=10,convergence_tolerance=0.0001),
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
   shapley_reweighting = "on_N"
@@ -141,7 +141,7 @@ explanation_regular <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  n_combinations = NULL,
+  n_coalitions = NULL,
   prediction_zero = p0,
   adaptive = FALSE
 )

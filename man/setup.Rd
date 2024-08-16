@@ -11,7 +11,7 @@ setup(
   paired_shap_sampling = FALSE,
   prediction_zero,
   output_size = 1,
-  max_n_combinations,
+  max_n_coalitions,
   group,
   n_samples,
   n_batches,
@@ -61,13 +61,13 @@ such as the mean of the predictions in the training data are also reasonable.}
 
 \item{output_size}{TODO: Document}
 
-\item{max_n_combinations}{Integer.
-The upper limit on the number of unique feature/group combinations to use in the adaptive procedure
+\item{max_n_coalitions}{Integer.
+The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
 (if \code{adaptive = TRUE}).
-If \code{adaptive = FALSE} it represents the number of feature/group combinations to use directly.
-The quantity refers to the number of unique feature combinations if \code{group = NULL},
-and group combinations if \code{group != NULL}.
-\code{max_n_combinations = NULL} corresponds to \code{max_n_combinations=2^n_features}.}
+If \code{adaptive = FALSE} it represents the number of feature/group coalitions to use directly.
+The quantity refers to the number of unique feature coalitions if \code{group = NULL},
+and group coalitions if \code{group != NULL}.
+\code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
@@ -80,10 +80,10 @@ Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
 \item{n_batches}{Positive integer (or NULL).
-Specifies how many batches the total number of feature combinations should be split into when calculating the
+Specifies how many batches the total number of coalitions should be split into when calculating the
 contribution function for each test observation.
 The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-which depends on \code{approach} and \code{n_combinations}.
+which depends on \code{approach} and \code{n_coalitions}.
 For models with many features, increasing the number of batches reduces the RAM allocation significantly.
 This typically comes with a small increase in computation time.}
 
@@ -103,10 +103,10 @@ Contains the 3 elements:
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
 
-\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the combinations
+\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the coalitions
 uniformly when computing the MSEv criterion. If \code{FALSE}, then the function use the Shapley kernel weights to
-weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-sampling frequency when not all combinations are considered.}
+weight the coalitions when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
+sampling frequency when not all coalitions are considered.}
 
 \item{type}{Character.
 Either "normal" or "forecast" corresponding to function \code{setup()} is called from,

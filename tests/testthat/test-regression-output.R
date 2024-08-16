@@ -25,7 +25,7 @@ test_that("output_lm_numeric_lm_separate_n_comb", {
       approach = "regression_separate",
       prediction_zero = p0,
       n_batches = 4,
-      max_n_combinations = 10,
+      max_n_coalitions = 10,
       regression.model = parsnip::linear_reg()
     ),
     "output_lm_numeric_lm_separate_n_comb"
@@ -167,7 +167,7 @@ test_that("output_lm_numeric_lm_surrogate_n_comb", {
       approach = "regression_surrogate",
       prediction_zero = p0,
       n_batches = 4,
-      max_n_combinations = 10,
+      max_n_coalitions = 10,
       regression.model = parsnip::linear_reg()
     ),
     "output_lm_numeric_lm_surrogate_n_comb"
@@ -184,7 +184,7 @@ test_that("output_lm_numeric_lm_surrogate_reg_surr_n_comb", {
       approach = "regression_surrogate",
       prediction_zero = p0,
       n_batches = 4,
-      max_n_combinations = 10,
+      max_n_coalitions = 10,
       regression.model = parsnip::linear_reg(),
       regression.surrogate_n_comb = 8
     ),

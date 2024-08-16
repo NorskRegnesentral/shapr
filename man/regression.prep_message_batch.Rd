@@ -11,8 +11,8 @@ regression.prep_message_batch(internal, index_features)
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
-\item{index_features}{Positive integer vector. Specifies the indices of combinations to
-apply to the present method. \code{NULL} means all combinations. Only used internally.}
+\item{index_features}{Positive integer vector. Specifies the id_coalition to
+apply to the present method. \code{NULL} means all coalitions. Only used internally.}
 }
 \description{
 Produce message about which batch prepare_data is working on

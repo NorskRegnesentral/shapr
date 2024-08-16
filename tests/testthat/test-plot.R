@@ -265,7 +265,7 @@ test_that("MSEv evaluation criterion plots", {
     fig = plot_MSEv_eval_crit(
       explanation_list_named,
       plot_type = "comb",
-      id_combination = c(3, 4, 9, 13:15),
+      id_coalition = c(3, 4, 9, 13:15),
       CI_level = 0.95
     )$MSEv_combination_bar
   )

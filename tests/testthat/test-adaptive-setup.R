@@ -6,9 +6,9 @@ test_that("adaptive_arguments are respected", {
     x_train = x_train_numeric,
     approach = "independence",
     prediction_zero = p0,
-    max_n_combinations = 30,
+    max_n_coalitions = 30,
     adaptive_arguments = list(
-      initial_n_combinations = 7,
+      initial_n_coalitions = 7,
       convergence_tolerance = 0.001,
       reduction_factor_vec = rep(10^(-5), 10),
       max_iter = 8
@@ -18,7 +18,7 @@ test_that("adaptive_arguments are respected", {
     print_iter_info = FALSE
   )
 
-  # Check that initial_n_combinations is respected
+  # Check that initial_n_coalitions is respected
   expect_equal(ex$internal$iter_list[[1]]$X[, .N], 7)
 
   # Check that max_iter is respected
@@ -44,7 +44,7 @@ test_that("adaptive feature wise and groupwise computations identical", {
     approach = "gaussian",
     prediction_zero = p0,
     adaptive_arguments = list(
-      initial_n_combinations = 5,
+      initial_n_coalitions = 5,
       convergence_tolerance = 0.1
     ),
     adaptive = TRUE
@@ -60,7 +60,7 @@ test_that("adaptive feature wise and groupwise computations identical", {
     group = groups,
     prediction_zero = p0,
     adaptive_arguments = list(
-      initial_n_combinations = 5,
+      initial_n_coalitions = 5,
       convergence_tolerance = 0.1
     ),
     adaptive = TRUE

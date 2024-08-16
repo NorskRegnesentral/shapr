@@ -387,7 +387,7 @@ test_that("erroneous input: `prediction_zero`", {
   )
 })
 
-test_that("erroneous input: `max_n_combinations`", {
+test_that("erroneous input: `max_n_coalitions`", {
   set.seed(123)
 
   expect_snapshot(
@@ -402,7 +402,7 @@ test_that("erroneous input: `max_n_combinations`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_comb_non_numeric_1,
+        max_n_coalitions = max_n_comb_non_numeric_1,
         n_batches = 1
       )
     },
@@ -421,7 +421,7 @@ test_that("erroneous input: `max_n_combinations`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_comb_non_numeric_2,
+        max_n_coalitions = max_n_comb_non_numeric_2,
         n_batches = 1
       )
     },
@@ -432,7 +432,7 @@ test_that("erroneous input: `max_n_combinations`", {
   expect_snapshot(
     {
       # non-integer
-      max_n_combinations_non_integer <- 10.5
+      max_n_coalitions_non_integer <- 10.5
 
       explain(
         testing = TRUE,
@@ -441,7 +441,7 @@ test_that("erroneous input: `max_n_combinations`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_combinations_non_integer,
+        max_n_coalitions = max_n_coalitions_non_integer,
         n_batches = 1
       )
     },
@@ -453,7 +453,7 @@ test_that("erroneous input: `max_n_combinations`", {
   expect_snapshot(
     {
       # length > 1
-      max_n_combinations_too_long <- c(1, 2)
+      max_n_coalitions_too_long <- c(1, 2)
 
       explain(
         testing = TRUE,
@@ -462,7 +462,7 @@ test_that("erroneous input: `max_n_combinations`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_combinations_too_long,
+        max_n_coalitions = max_n_coalitions_too_long,
         n_batches = 1
       )
     },
@@ -472,7 +472,7 @@ test_that("erroneous input: `max_n_combinations`", {
   expect_snapshot(
     {
       # NA-numeric
-      max_n_combinations_is_NA <- as.numeric(NA)
+      max_n_coalitions_is_NA <- as.numeric(NA)
 
       explain(
         testing = TRUE,
@@ -481,7 +481,7 @@ test_that("erroneous input: `max_n_combinations`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_combinations_is_NA,
+        max_n_coalitions = max_n_coalitions_is_NA,
         n_batches = 1
       )
     },
@@ -500,7 +500,7 @@ test_that("erroneous input: `max_n_combinations`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_comb_non_positive,
+        max_n_coalitions = max_n_comb_non_positive,
         n_batches = 1
       )
     },
@@ -508,8 +508,8 @@ test_that("erroneous input: `max_n_combinations`", {
   )
 
   expect_snapshot({
-    # Too low max_n_combinations (smaller than # features
-    max_n_combinations <- ncol(x_explain_numeric) - 1
+    # Too low max_n_coalitions (smaller than # features
+    max_n_coalitions <- ncol(x_explain_numeric) - 1
 
     explain(
       testing = TRUE,
@@ -518,21 +518,21 @@ test_that("erroneous input: `max_n_combinations`", {
       x_train = x_train_numeric,
       prediction_zero = p0,
       approach = "gaussian",
-      max_n_combinations = max_n_combinations,
+      max_n_coalitions = max_n_coalitions,
       n_batches = 1
     )
   })
 
 
   expect_snapshot({
-    # Too low max_n_combinations (smaller than # groups
+    # Too low max_n_coalitions (smaller than # groups
     groups <- list(
       A = c("Solar.R", "Wind"),
       B = c("Temp", "Month"),
       C = "Day"
     )
 
-    max_n_combinations <- length(groups) - 1
+    max_n_coalitions <- length(groups) - 1
 
     explain(
       testing = TRUE,
@@ -542,7 +542,7 @@ test_that("erroneous input: `max_n_combinations`", {
       prediction_zero = p0,
       approach = "gaussian",
       group = groups,
-      max_n_combinations = max_n_combinations,
+      max_n_coalitions = max_n_coalitions,
       n_batches = 1
     )
   })
@@ -890,10 +890,10 @@ test_that("erroneous input: `n_batches`", {
     error = TRUE
   )
 
-  # Larger than number of max_n_combinations
+  # Larger than number of max_n_coalitions
   expect_snapshot(
     {
-      max_n_combinations <- 10
+      max_n_coalitions <- 10
       n_batches_too_large <- 11
       explain(
         testing = TRUE,
@@ -902,14 +902,14 @@ test_that("erroneous input: `n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        max_n_combinations = max_n_combinations,
+        max_n_coalitions = max_n_coalitions,
         n_batches = n_batches_too_large,
       )
     },
     error = TRUE
   )
 
-  # Larger than number of max_n_combinations without specification
+  # Larger than number of max_n_coalitions without specification
   expect_snapshot(
     {
       n_batches_too_large_2 <- 32
@@ -1340,7 +1340,7 @@ test_that("incompatible input: `data/approach`", {
 })
 
 test_that("Correct dimension of S when sampling combinations", {
-  max_n_combinations <- 10
+  max_n_coalitions <- 10
 
   res <- explain(
     testing = TRUE,
@@ -1349,15 +1349,15 @@ test_that("Correct dimension of S when sampling combinations", {
     x_train = x_explain_mixed,
     prediction_zero = p0,
     approach = "ctree",
-    max_n_combinations = max_n_combinations,
+    max_n_coalitions = max_n_coalitions,
     n_batches = 1
   )
 
-  expect_equal(nrow(res$internal$objects$S), max_n_combinations)
+  expect_equal(nrow(res$internal$objects$S), max_n_coalitions)
 })
 
-test_that("Message with too low `max_n_combinations`", {
-  max_n_combinations <- ncol(x_explain_numeric) - 1
+test_that("Message with too low `max_n_coalitions`", {
+  max_n_coalitions <- ncol(x_explain_numeric) - 1
 
   expect_snapshot(
     explain(
@@ -1367,7 +1367,7 @@ test_that("Message with too low `max_n_combinations`", {
       x_train = x_explain_numeric,
       prediction_zero = p0,
       approach = "gaussian",
-      max_n_combinations = max_n_combinations,
+      max_n_coalitions = max_n_coalitions,
       n_batches = 1
     )
   )
@@ -1379,7 +1379,7 @@ test_that("Message with too low `max_n_combinations`", {
     C = "Day"
   )
 
-  max_n_combinations <- length(groups) - 1
+  max_n_coalitions <- length(groups) - 1
 
   expect_snapshot(
     explain(
@@ -1390,18 +1390,18 @@ test_that("Message with too low `max_n_combinations`", {
       prediction_zero = p0,
       approach = "gaussian",
       group = groups,
-      max_n_combinations = max_n_combinations,
+      max_n_coalitions = max_n_coalitions,
       n_batches = 1
     )
   )
 })
 
-test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weights", {
-  # Check that the `explain()` function enters the exact mode when max_n_combinations
+test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weights", {
+  # Check that the `explain()` function enters the exact mode when max_n_coalitions
   # is larger than or equal to 2^m.
 
   # Create three explainer object: one with exact mode, one with
-  # `max_n_combinations` = 2^m, and one with `max_n_combinations` > 2^m
+  # `max_n_coalitions` = 2^m, and one with `max_n_coalitions` > 2^m
   # No message as n_combination = NULL sets exact mode
   expect_snapshot(
     explanation_exact <- explain(
@@ -1414,7 +1414,7 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
       n_samples = 2, # Low value for fast computations
       n_batches = 1, # Not related to the bug
       seed = 123,
-      max_n_combinations = NULL
+      max_n_coalitions = NULL
     )
   )
 
@@ -1431,12 +1431,12 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
       n_batches = 1, # Not related to the bug
       seed = 123,
       adaptive_arguments = list(compute_sd = FALSE),
-      max_n_combinations = 2^ncol(x_explain_numeric)
+      max_n_coalitions = 2^ncol(x_explain_numeric)
     )
   )
 
   # We should get a message saying that we are using the exact mode.
-  # The `regexp` format match the one written in `feature_combinations()`.
+  # The `regexp` format match the one written in `create_coalition_table()`.
   expect_snapshot(
     explanation_larger <- explain(
       testing = TRUE,
@@ -1449,7 +1449,7 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
       n_batches = 1, # Not related to the bug
       seed = 123,
       adaptive_arguments = list(compute_sd = FALSE),
-      max_n_combinations = 2^ncol(x_explain_numeric) + 1
+      max_n_coalitions = 2^ncol(x_explain_numeric) + 1
     )
   )
 
@@ -1463,7 +1463,7 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
     explanation_larger
   )
 
-  # Explicitly check that exact mode is set and that max_n_combinations equals 2^ncol(x_explain_numeric) (32)
+  # Explicitly check that exact mode is set and that max_n_coalitions equals 2^ncol(x_explain_numeric) (32)
   # Since all 3 explanation objects are equal (per the above test) it suffices to do this for explanation_exact
   expect_true(
     explanation_exact$internal$parameters$exact
@@ -1475,7 +1475,7 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
 })
 
 test_that("Correct dimension of S when sampling combinations with groups", {
-  max_n_combinations <- 5
+  max_n_coalitions <- 5
 
   groups <- list(
     A = c("Solar.R", "Wind"),
@@ -1491,11 +1491,11 @@ test_that("Correct dimension of S when sampling combinations with groups", {
     prediction_zero = p0,
     approach = "ctree",
     group = groups,
-    max_n_combinations = max_n_combinations,
+    max_n_coalitions = max_n_coalitions,
     n_batches = 1
   )
 
-  expect_equal(nrow(res$internal$objects$S), max_n_combinations)
+  expect_equal(nrow(res$internal$objects$S), max_n_coalitions)
 })
 
 test_that("data feature ordering is output_lm_numeric_column_order", {
@@ -1725,13 +1725,13 @@ test_that("gaussian approach use the user provided parameters", {
 
 test_that("Shapr sets a valid default value for `n_batches`", {
   # Shapr sets the default number of batches to be 10 for this dataset and the
-  # "ctree", "gaussian", and "copula" approaches. Thus, setting `max_n_combinations`
+  # "ctree", "gaussian", and "copula" approaches. Thus, setting `max_n_coalitions`
   # to any value lower of equal to 10 causes the error.
   any_number_equal_or_below_10 <- 8
 
   # Before the bugfix, shapr:::check_n_batches() throws the error:
   # Error in check_n_batches(internal) :
-  #   `n_batches` (10) must be smaller than the number feature combinations/`max_n_combinations` (8)
+  #   `n_batches` (10) must be smaller than the number feature combinations/`max_n_coalitions` (8)
   # Bug only occures for "ctree", "gaussian", and "copula" as they are treated different in
   # `get_default_n_batches()`, I am not certain why. Ask Martin about the logic behind that.
   expect_no_error(
@@ -1743,7 +1743,7 @@ test_that("Shapr sets a valid default value for `n_batches`", {
       n_samples = 2, # Low value for fast computations
       approach = "gaussian",
       prediction_zero = p0,
-      max_n_combinations = any_number_equal_or_below_10
+      max_n_coalitions = any_number_equal_or_below_10
     )
   )
 })

@@ -27,13 +27,13 @@
 #' Typically we set this value equal to the mean of the response variable in our training data, but other choices
 #' such as the mean of the predictions in the training data are also reasonable.
 #'
-#' @param max_n_combinations Integer.
-#' The upper limit on the number of unique feature/group combinations to use in the adaptive procedure
+#' @param max_n_coalitions Integer.
+#' The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
 #' (if `adaptive = TRUE`).
-#' If `adaptive = FALSE` it represents the number of feature/group combinations to use directly.
-#' The quantity refers to the number of unique feature combinations if `group = NULL`,
-#' and group combinations if `group != NULL`.
-#' `max_n_combinations = NULL` corresponds to `max_n_combinations=2^n_features`.
+#' If `adaptive = FALSE` it represents the number of feature/group coalitions to use directly.
+#' The quantity refers to the number of unique feature coalitions if `group = NULL`,
+#' and group coalitions if `group != NULL`.
+#' `max_n_coalitions = NULL` corresponds to `max_n_coalitions=2^n_features`.
 #'
 #' @param group List.
 #' If `NULL` regular feature wise Shapley values are computed.
@@ -46,10 +46,10 @@
 #' Monte Carlo integration for every conditional expectation. See also details.
 #'
 #' @param n_batches Positive integer (or NULL).
-#' Specifies how many batches the total number of feature combinations should be split into when calculating the
+#' Specifies how many batches the total number of coalitions should be split into when calculating the
 #' contribution function for each test observation.
 #' The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-#' which depends on `approach` and `n_combinations`.
+#' which depends on `approach` and `n_coalitions`.
 #' For models with many features, increasing the number of batches reduces the RAM allocation significantly.
 #' This typically comes with a small increase in computation time.
 #'
@@ -84,10 +84,10 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
-#' @param MSEv_uniform_comb_weights Logical. If `TRUE` (default), then the function weights the combinations
+#' @param MSEv_uniform_comb_weights Logical. If `TRUE` (default), then the function weights the coalitions
 #' uniformly when computing the MSEv criterion. If `FALSE`, then the function use the Shapley kernel weights to
-#' weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-#' sampling frequency when not all combinations are considered.
+#' weight the coalitions when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
+#' sampling frequency when not all coalitions are considered.
 #'
 #' @param verbose An integer specifying the level of verbosity. If `0`, `shapr` will stay silent.
 #' If `1`, it will print information about performance. If `2`, some additional information will be printed out.
@@ -303,7 +303,7 @@ explain <- function(model,
                     approach,
                     paired_shap_sampling = FALSE, # TODO: Make TRUE the default later on
                     prediction_zero,
-                    max_n_combinations = NULL,
+                    max_n_coalitions = NULL,
                     adaptive = FALSE,
                     group = NULL,
                     n_samples = 1e3,
@@ -336,7 +336,7 @@ explain <- function(model,
     approach = approach,
     paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
-    max_n_combinations = max_n_combinations,
+    max_n_coalitions = max_n_coalitions,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,

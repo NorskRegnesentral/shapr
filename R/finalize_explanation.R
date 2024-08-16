@@ -71,9 +71,9 @@ get_iter_results <- function(iter_list) {
 }
 
 iter_list_to_dt <- function(iter_list, what = c(
-                              "exact", "compute_sd", "reduction_factor", "n_combinations",
+                              "exact", "compute_sd", "reduction_factor", "n_coalitions",
                               "converged", "converged_exact", "converged_sd", "converged_max_iter",
-                              "est_required_combinations", "est_remaining_combinations"
+                              "est_required_coalitions", "est_remaining_coalitions"
                             )) {
   extracted <- lapply(iter_list, function(x) x[what])
   ret <- do.call(rbind, lapply(extracted, as.data.table))
@@ -85,13 +85,13 @@ iter_list_to_dt <- function(iter_list, what = c(
 
 #' @keywords internal
 get_p <- function(dt_vS, internal) {
-  id_combination <- NULL # due to NSE
+  id_coalition <- NULL # due to NSE
 
   iter <- length(internal$iter_list)
-  max_id_combination <- internal$iter_list[[iter]]$n_combinations
+  max_id_coalition <- internal$iter_list[[iter]]$n_coalitions
 
 
-  p <- unlist(dt_vS[id_combination == max_id_combination, ][, id_combination := NULL])
+  p <- unlist(dt_vS[id_coalition == max_id_coalition, ][, id_coalition := NULL])
 
   if (internal$parameters$type == "forecast") {
     names(p) <- apply(internal$parameters$output_labels, 1, function(x) paste0("explain_idx_", x[1], "_horizon_", x[2]))
@@ -112,30 +112,30 @@ get_p <- function(dt_vS, internal) {
 #'
 #' @inheritParams explain
 #' @inheritParams default_doc
-#' @param dt_vS Data.table of dimension `n_combinations` times `n_explain + 1` containing the contribution function
-#' estimates. The first column is assumed to be named `id_combination` and containing the ids of the combinations.
-#' The last row is assumed to be the full combination, i.e., it contains the predicted responses for the observations
+#' @param dt_vS Data.table of dimension `n_coalitions` times `n_explain + 1` containing the contribution function
+#' estimates. The first column is assumed to be named `id_coalition` and containing the ids of the coalitions.
+#' The last row is assumed to be the full coalition, i.e., it contains the predicted responses for the observations
 #' which are to be explained.
 #' @param MSEv_skip_empty_full_comb Logical. If `TRUE` (default), we exclude the empty and grand
-#' combinations/coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
+#' coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
 #' for all methods, i.e., their contribution function is independent of the used method as they are special cases not
-#' effected by the used method. If `FALSE`, we include the empty and grand combinations/coalitions. In this situation,
+#' effected by the used method. If `FALSE`, we include the empty and grand coalitions. In this situation,
 #' we also recommend setting `MSEv_uniform_comb_weights = TRUE`, as otherwise the large weights for the empty and
-#' grand combinations/coalitions will outweigh all other combinations and make the MSEv criterion uninformative.
+#' grand coalitions will outweigh all other coalitions and make the MSEv criterion uninformative.
 #'
 #' @return
 #' List containing:
 #' \describe{
 #'  \item{`MSEv`}{A \code{\link[data.table]{data.table}} with the overall MSEv evaluation criterion averaged
-#'  over both the combinations/coalitions and observations/explicands. The \code{\link[data.table]{data.table}}
-#'  also contains the standard deviation of the MSEv values for each explicand (only averaged over the combinations)
+#'  over both the coalitions and observations/explicands. The \code{\link[data.table]{data.table}}
+#'  also contains the standard deviation of the MSEv values for each explicand (only averaged over the coalitions)
 #'  divided by the square root of the number of explicands.}
 #'  \item{`MSEv_explicand`}{A \code{\link[data.table]{data.table}} with the mean squared error for each
-#'  explicand, i.e., only averaged over the combinations/coalitions.}
-#'  \item{`MSEv_combination`}{A \code{\link[data.table]{data.table}} with the mean squared error for each
-#'  combination/coalition, i.e., only averaged over the explicands/observations.
+#'  explicand, i.e., only averaged over the coalitions.}
+#'  \item{`MSEv_coalition`}{A \code{\link[data.table]{data.table}} with the mean squared error for each
+#'  coalition, i.e., only averaged over the explicands/observations.
 #'  The \code{\link[data.table]{data.table}} also contains the standard deviation of the MSEv values for
-#'  each combination divided by the square root of the number of explicands.}
+#'  each coalition divided by the square root of the number of explicands.}
 #' }
 #'
 #' @description Function that computes the Mean Squared Error (MSEv) of the contribution function
@@ -158,27 +158,27 @@ compute_MSEv_eval_crit <- function(internal,
                                    MSEv_uniform_comb_weights,
                                    MSEv_skip_empty_full_comb = TRUE) {
   iter <- length(internal$iter_list)
-  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
 
   n_explain <- internal$parameters$n_explain
-  id_combination_indices <- if (MSEv_skip_empty_full_comb) seq(2, n_combinations - 1) else seq(1, n_combinations)
-  n_combinations_used <- length(id_combination_indices)
+  id_coalition_indices <- if (MSEv_skip_empty_full_comb) seq(2, n_coalitions - 1) else seq(1, n_coalitions)
+  n_coalitions_used <- length(id_coalition_indices)
 
   X <- internal$objects$X
-  features <- X$features[id_combination_indices]
+  coalitions <- X$coalitions[id_coalition_indices]
 
   # Extract the predicted responses f(x)
-  p <- unlist(dt_vS[id_combination == n_combinations, -"id_combination"])
+  p <- unlist(dt_vS[id_coalition == n_coalitions, -"id_coalition"])
 
   # Create contribution matrix
-  vS <- as.matrix(dt_vS[id_combination_indices, -"id_combination"])
+  vS <- as.matrix(dt_vS[id_coalition_indices, -"id_coalition"])
 
   # Square the difference between the v(S) and f(x)
   dt_squared_diff_original <- sweep(vS, 2, p)^2
 
   # Get the weights
-  averaging_weights <- if (MSEv_uniform_comb_weights) rep(1, n_combinations) else X$shapley_weight
-  averaging_weights <- averaging_weights[id_combination_indices]
+  averaging_weights <- if (MSEv_uniform_comb_weights) rep(1, n_coalitions) else X$shapley_weight
+  averaging_weights <- averaging_weights[id_coalition_indices]
   averaging_weights_scaled <- averaging_weights / sum(averaging_weights)
 
   # Apply the `averaging_weights_scaled` to each column (i.e., each explicand)
@@ -189,8 +189,8 @@ compute_MSEv_eval_crit <- function(internal,
   MSEv_explicand <- colSums(dt_squared_diff)
 
   # The MSEv criterion for each coalition, i.e., only averaged over the explicands.
-  MSEv_combination <- rowMeans(dt_squared_diff * n_combinations_used)
-  MSEv_combination_sd <- apply(dt_squared_diff * n_combinations_used, 1, sd) / sqrt(n_explain)
+  MSEv_coalition <- rowMeans(dt_squared_diff * n_coalitions_used)
+  MSEv_coalition_sd <- apply(dt_squared_diff * n_coalitions_used, 1, sd) / sqrt(n_explain)
 
   # The MSEv criterion averaged over both the coalitions and explicands.
   MSEv <- mean(MSEv_explicand)
@@ -198,8 +198,8 @@ compute_MSEv_eval_crit <- function(internal,
 
   # Set the name entries in the arrays
   names(MSEv_explicand) <- paste0("id_", seq(n_explain))
-  names(MSEv_combination) <- paste0("id_combination_", id_combination_indices)
-  names(MSEv_combination_sd) <- paste0("id_combination_", id_combination_indices)
+  names(MSEv_coalition) <- paste0("id_coalition_", id_coalition_indices)
+  names(MSEv_coalition_sd) <- paste0("id_coalition_", id_coalition_indices)
 
   # Convert the results to data.table
   MSEv <- data.table(
@@ -210,17 +210,17 @@ compute_MSEv_eval_crit <- function(internal,
     "id" = seq(n_explain),
     "MSEv" = MSEv_explicand
   )
-  MSEv_combination <- data.table(
-    "id_combination" = id_combination_indices,
-    "features" = features,
-    "MSEv" = MSEv_combination,
-    "MSEv_sd" = MSEv_combination_sd
+  MSEv_coalition <- data.table(
+    "id_coalition" = id_coalition_indices,
+    "coalitions" = coalitions,
+    "MSEv" = MSEv_coalition,
+    "MSEv_sd" = MSEv_coalition_sd
   )
 
   return(list(
     MSEv = MSEv,
     MSEv_explicand = MSEv_explicand,
-    MSEv_combination = MSEv_combination
+    MSEv_coalition = MSEv_coalition
   ))
 }
 

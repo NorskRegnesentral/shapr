@@ -11,7 +11,7 @@ explain(
   approach,
   paired_shap_sampling = FALSE,
   prediction_zero,
-  max_n_combinations = NULL,
+  max_n_coalitions = NULL,
   adaptive = FALSE,
   group = NULL,
   n_samples = 1000,
@@ -56,13 +56,13 @@ features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
 
-\item{max_n_combinations}{Integer.
-The upper limit on the number of unique feature/group combinations to use in the adaptive procedure
+\item{max_n_coalitions}{Integer.
+The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
 (if \code{adaptive = TRUE}).
-If \code{adaptive = FALSE} it represents the number of feature/group combinations to use directly.
-The quantity refers to the number of unique feature combinations if \code{group = NULL},
-and group combinations if \code{group != NULL}.
-\code{max_n_combinations = NULL} corresponds to \code{max_n_combinations=2^n_features}.}
+If \code{adaptive = FALSE} it represents the number of feature/group coalitions to use directly.
+The quantity refers to the number of unique feature coalitions if \code{group = NULL},
+and group coalitions if \code{group != NULL}.
+\code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
 \item{adaptive}{TODO: document}
 
@@ -77,10 +77,10 @@ Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
 \item{n_batches}{Positive integer (or NULL).
-Specifies how many batches the total number of feature combinations should be split into when calculating the
+Specifies how many batches the total number of coalitions should be split into when calculating the
 contribution function for each test observation.
 The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-which depends on \code{approach} and \code{n_combinations}.
+which depends on \code{approach} and \code{n_coalitions}.
 For models with many features, increasing the number of batches reduces the RAM allocation significantly.
 This typically comes with a small increase in computation time.}
 
@@ -115,10 +115,10 @@ If \code{NULL} (the default) internal functions are used for natively supported 
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
-\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the combinations
+\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the coalitions
 uniformly when computing the MSEv criterion. If \code{FALSE}, then the function use the Shapley kernel weights to
-weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-sampling frequency when not all combinations are considered.}
+weight the coalitions when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
+sampling frequency when not all coalitions are considered.}
 
 \item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
 If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
@@ -146,7 +146,7 @@ If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest wei
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
     \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
-Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
+Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
 Only used when \code{empirical.type = "fixed_sigma"}}
     \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
 Number of samples to consider in AICc optimization.
@@ -217,8 +217,8 @@ is also a valid input. It is essential to include the package prefix if the pack
 The data.frame must contain the possible hyperparameter value combinations to try.
 The column names must match the names of the tuneable parameters specified in \code{regression.model}.
 If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
-for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
-Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
+Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
 vignette for several examples.
 Note, to make it easier to call \code{explain()} from Python, the \code{regression.tune_values} can also be a string
 containing an R function. For example,
@@ -235,14 +235,14 @@ containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}
     \item{\code{regression.surrogate_n_comb}}{Integer.
-(default is \code{internal$iter_list[[length(internal$iter_list)]]$n_combinations}) specifying the
-number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
-"\code{internal$iter_list[[length(internal$iter_list)]]$n_combinations} - 2".
+(default is \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions}) specifying the
+number of unique coalitions to apply to each training observation. Maximum allowed value is
+"\code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions} - 2".
 By default, we use all coalitions, but this can take a lot of memory in larger dimensions.
 Note that by "all", we mean all coalitions chosen by \code{shapr} to be used.
 This will be all \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in
 the exact mode.
-If the user sets a lower value than \code{internal$iter_list[[length(internal$iter_list)]]$n_combinations},
+If the user sets a lower value than \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions},
 then we sample this amount of unique coalitions separately for each training observations.
 That is, on average, all coalitions should be equally trained.}
     \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)

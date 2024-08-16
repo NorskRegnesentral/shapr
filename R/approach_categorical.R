@@ -109,9 +109,9 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   }
   feature_names <- internal$parameters$feature_names
 
-  # 3 id columns: id, id_combination, and id_all
+  # 3 id columns: id, id_coalition, and id_all
   # id: for each x_explain observation
-  # id_combination: the rows of the S matrix
+  # id_coalition: the rows of the S matrix
   # id_all: identifies the unique combinations of feature values from
   # the training data (not necessarily the ones in the explain data)
 
@@ -121,9 +121,9 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 
   S_dt <- data.table::data.table(S)
   S_dt[S_dt == 0] <- NA
-  S_dt[, id_combination := seq_len(nrow(S_dt))]
+  S_dt[, id_coalition := seq_len(nrow(S_dt))]
 
-  data.table::setnames(S_dt, c(feature_conditioned, "id_combination"))
+  data.table::setnames(S_dt, c(feature_conditioned, "id_coalition"))
 
   # (1) Compute marginal probabilities
 
@@ -156,13 +156,13 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 
   cond_dt <- j_S_all_feat[marg_dt, on = feature_conditioned]
   cond_dt[, cond_prob := joint_prob / marg_prob]
-  cond_dt[id_combination == 1, marg_prob := 0]
-  cond_dt[id_combination == 1, cond_prob := 1]
+  cond_dt[id_coalition == 1, marg_prob := 0]
+  cond_dt[id_coalition == 1, cond_prob := 1]
 
   # check marginal probabilities
   cond_dt_unique <- unique(cond_dt, by = feature_conditioned)
-  check <- cond_dt_unique[id_combination != 1][, .(sum_prob = sum(marg_prob)),
-    by = "id_combination"
+  check <- cond_dt_unique[id_coalition != 1][, .(sum_prob = sum(marg_prob)),
+    by = "id_coalition"
   ][["sum_prob"]]
   if (!all(round(check) == 1)) {
     print("Warning - not all marginal probabilities sum to 1. There could be a problem
@@ -170,7 +170,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   }
 
   # make x_explain
-  data.table::setkeyv(cond_dt, c("id_combination", "id_all"))
+  data.table::setkeyv(cond_dt, c("id_coalition", "id_all"))
   x_explain_with_id <- data.table::copy(x_explain)[, id := .I]
   dt_just_explain <- cond_dt[x_explain_with_id, on = feature_names]
 
@@ -181,8 +181,8 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   dt <- cond_dt[dt_explain_just_conditioned, on = feature_conditioned, allow.cartesian = TRUE]
 
   # check conditional probabilities
-  check <- dt[id_combination != 1][, .(sum_prob = sum(cond_prob)),
-    by = c("id_combination", "id")
+  check <- dt[id_coalition != 1][, .(sum_prob = sum(cond_prob)),
+    by = c("id_coalition", "id")
   ][["sum_prob"]]
   if (!all(round(check) == 1)) {
     print("Warning - not all conditional probabilities sum to 1. There could be a problem
@@ -190,13 +190,13 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   }
 
   setnames(dt, "cond_prob", "w")
-  data.table::setkeyv(dt, c("id_combination", "id"))
+  data.table::setkeyv(dt, c("id_coalition", "id"))
 
   # here we merge so that we only return the combintations found in our actual explain data
   # this merge does not change the number of rows in dt
-  # dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
+  # dt <- merge(dt, x$X[, .(id_coalition, n_features)], by = "id_coalition")
   # dt[n_features %in% c(0, ncol(x_explain)), w := 1.0]
-  dt[id_combination %in% c(1, 2^ncol(x_explain)), w := 1.0]
-  ret_col <- c("id_combination", "id", feature_names, "w")
-  return(dt[id_combination %in% index_features, mget(ret_col)])
+  dt[id_coalition %in% c(1, 2^ncol(x_explain)), w := 1.0]
+  ret_col <- c("id_coalition", "id", feature_names, "w")
+  return(dt[id_coalition %in% index_features, mget(ret_col)])
 }

@@ -13,7 +13,7 @@ univariate standard normal.}
 \item{x_explain_mat}{arma::mat. Matrix of dimension (\code{n_explain}, \code{n_features}) containing the observations
 to explain.}
 
-\item{S}{arma::mat. Matrix of dimension (\code{n_combinations}, \code{n_features}) containing binary representations of
+\item{S}{arma::mat. Matrix of dimension (\code{n_coalitions}, \code{n_features}) containing binary representations of
 the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
 This is not a problem internally in shapr as the empty and grand coalitions treated differently.}
 

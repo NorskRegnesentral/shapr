@@ -35,30 +35,30 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   }
 
   #### Adds v_S output above to any vS_list already computed ####
-  ### Need to map the old id_combinations to the new numbers for this merging to work out
+  ### Need to map the old id_coalitions to the new numbers for this merging to work out
   if (iter > 1) {
-    prev_id_comb_feature_map <- internal$iter_list[[iter - 1]]$id_comb_feature_map
+    prev_coalition_map <- internal$iter_list[[iter - 1]]$coalition_map
     prev_vS_list <- internal$iter_list[[iter - 1]]$vS_list
 
-    current_id_comb_feature_map <- internal$iter_list[[iter]]$id_comb_feature_map
+    current_coalition_map <- internal$iter_list[[iter]]$coalition_map
 
 
-    # Creates a mapper from the last id_combination to the new id_combination numbering
-    id_combination_mapper <- merge(prev_id_comb_feature_map,
-      current_id_comb_feature_map,
-      by = "features_str",
-      suffixes = c("", "_new")
+    # Creates a mapper from the last id_coalition to the new id_coalition numbering
+    id_coalitions_mapper <- merge(prev_coalition_map,
+                               current_coalition_map,
+                               by = "coalitions_str",
+                               suffixes = c("", "_new")
     )
     prev_vS_list_new <- list()
 
-    # Applies the mapper to update the prev_vS_list ot the new id_combination numbering
+    # Applies the mapper to update the prev_vS_list ot the new id_coalition numbering
     for (k in seq_along(prev_vS_list)) {
       prev_vS_list_new[[k]] <- merge(prev_vS_list[[k]],
-        id_combination_mapper[, .(id_combination, id_combination_new)],
-        by = "id_combination"
+                                     id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+                                     by = "id_coalition"
       )
-      prev_vS_list_new[[k]][, id_combination := id_combination_new]
-      prev_vS_list_new[[k]][, id_combination_new := NULL]
+      prev_vS_list_new[[k]][, id_coalition := id_coalition_new]
+      prev_vS_list_new[[k]][, id_coalition_new := NULL]
     }
 
     # Merge the new vS_list with the old vS_list
@@ -115,25 +115,25 @@ batch_prepare_vS_regression <- function(S, internal) {
 
   X <- internal$iter_list[[iter]]$X
 
-  max_id_comb <- X[, .N]
+  max_id_coal <- X[, .N]
   x_explain_y_hat <- internal$data$x_explain_y_hat
 
   # Compute the contribution functions different based on if the grand coalition is in S or not
-  if (!(max_id_comb %in% S)) {
+  if (!(max_id_coal %in% S)) {
     dt <- prepare_data(internal, index_features = S)
   } else {
     # Remove the grand coalition. NULL is for the special case for when the batch only includes the grand coalition.
-    dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_comb]) else NULL
+    dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_coal]) else NULL
 
     # Add the results for the grand coalition (Need to add names in case the batch only contains the grand coalition)
-    dt <- rbind(dt, data.table(as.integer(max_id_comb), matrix(x_explain_y_hat, nrow = 1)), use.names = FALSE)
+    dt <- rbind(dt, data.table(as.integer(max_id_coal), matrix(x_explain_y_hat, nrow = 1)), use.names = FALSE)
 
     # Need to add column names if batch S only contains the grand coalition
-    if (length(S) == 1) setnames(dt, c("id_combination", paste0("p_hat1_", seq_len(internal$parameters$n_explain))))
+    if (length(S) == 1) setnames(dt, c("id_coalition", paste0("p_hat1_", seq_len(internal$parameters$n_explain))))
   }
 
-  # Set id_combination to be the key
-  setkey(dt, id_combination)
+  # Set id_coalition to be the key
+  setkey(dt, id_coalition)
 
   return(dt)
 }
@@ -182,26 +182,26 @@ batch_prepare_vS_MC_auxiliary <- function(S, internal) {
 
   X <- internal$iter_list[[iter]]$X
 
-  max_id_combination <- X[, .N]
+  max_id_coalition <- X[, .N]
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
 
   # TODO: Check what is the fastest approach to deal with the last observation.
-  # Not doing this for the largest id combination (should check if this is faster or slower, actually)
+  # Not doing this for the largest id_coalition (should check if this is faster or slower, actually)
   # An alternative would be to delete rows from the dt which is provided by prepare_data.
-  if (!(max_id_combination %in% S)) {
+  if (!(max_id_coalition %in% S)) {
     # TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
     dt <- prepare_data(internal, index_features = S)
   } else {
     if (length(S) > 1) {
-      S <- S[S != max_id_combination]
+      S <- S[S != max_id_coalition]
       dt <- prepare_data(internal, index_features = S)
     } else {
       dt <- NULL # Special case for when the batch only include the largest id
     }
-    dt_max <- data.table(id_combination = max_id_combination, x_explain, w = 1, id = seq_len(n_explain))
+    dt_max <- data.table(id_coalition = max_id_coalition, x_explain, w = 1, id = seq_len(n_explain))
     dt <- rbind(dt, dt_max)
-    setkey(dt, id, id_combination)
+    setkey(dt, id, id_coalition)
   }
   return(dt)
 }
@@ -242,13 +242,13 @@ compute_preds <- function(
 
 compute_MCint <- function(dt, pred_cols = "p_hat") {
   # Calculate contributions
-  dt_res <- dt[, lapply(.SD, function(x) sum(((x) * w) / sum(w))), .(id, id_combination), .SDcols = pred_cols]
-  data.table::setkeyv(dt_res, c("id", "id_combination"))
-  dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = pred_cols)
+  dt_res <- dt[, lapply(.SD, function(x) sum(((x) * w) / sum(w))), .(id, id_coalition), .SDcols = pred_cols]
+  data.table::setkeyv(dt_res, c("id", "id_coalition"))
+  dt_mat <- data.table::dcast(dt_res, id_coalition ~ id, value.var = pred_cols)
   if (length(pred_cols) == 1) {
     names(dt_mat)[-1] <- paste0(pred_cols, "_", names(dt_mat)[-1])
   }
-  # dt_mat[, id_combination := NULL]
+  # dt_mat[, id_coalition := NULL]
 
   return(dt_mat)
 }

@@ -6,7 +6,7 @@
           "regression_surrogate", "gaussian", "independence", "empirical"), )
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -21,7 +21,7 @@
           "regression_separate", "gaussian", "independence", "empirical"), )
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -36,7 +36,7 @@
         regression.model = NULL)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -51,7 +51,7 @@
         regression.model = lm)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -67,7 +67,7 @@
         mode = "regression"))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -84,7 +84,7 @@
           3)))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -101,7 +101,7 @@
           3), num_terms = c(1, 2, 3)))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -118,7 +118,7 @@
           2, 3)))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -133,7 +133,7 @@
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -150,7 +150,7 @@
           tree_depth = c(1, 2, 3))))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -166,7 +166,7 @@
         mode = "regression"), regression.tune_values = function(x) c(1, 2, 3))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -183,7 +183,7 @@
           wrong_name = c(1, 2, 3)))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -200,7 +200,7 @@
           3)), regression.vfold_cv_para = 10)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -217,7 +217,7 @@
           3)), regression.vfold_cv_para = list(10))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -234,7 +234,7 @@
           3)), regression.vfold_cv_para = list(hey = 10))
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -249,7 +249,7 @@
         regression.recipe_func = 3)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -266,7 +266,7 @@
         })
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -281,12 +281,12 @@
         regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
       Error in `regression.check_sur_n_comb()`:
-      ! `regression.surrogate_n_comb` (31) must be a positive integer less than or equal to `n_combinations` minus two (30).
+      ! `regression.surrogate_n_comb` (31) must be a positive integer less than or equal to `n_coalitions` minus two (30).
 
 ---
 
@@ -296,10 +296,10 @@
         regression.surrogate_n_comb = 0)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
       Error in `regression.check_sur_n_comb()`:
-      ! `regression.surrogate_n_comb` (0) must be a positive integer less than or equal to `n_combinations` minus two (30).
+      ! `regression.surrogate_n_comb` (0) must be a positive integer less than or equal to `n_coalitions` minus two (30).
 

@@ -27,7 +27,7 @@ test_that("output_lm_numeric_independence_converges_tol", {
       approach = "independence",
       prediction_zero = p0,
       adaptive_arguments = list(
-        initial_n_combinations = 10,
+        initial_n_coalitions = 10,
         convergence_tolerance = 0.1
       ),
       adaptive = TRUE,
@@ -48,7 +48,7 @@ test_that("output_lm_numeric_independence_converges_maxit", {
       approach = "independence",
       prediction_zero = p0,
       adaptive_arguments = list(
-        initial_n_combinations = 10,
+        initial_n_coalitions = 10,
         convergence_tolerance = 0.001,
         reduction_factor_vec = rep(10^(-5), 10),
         max_iter = 8
@@ -61,7 +61,7 @@ test_that("output_lm_numeric_independence_converges_maxit", {
   )
 })
 
-test_that("output_lm_numeric_independence_converges_max_n_combinations", {
+test_that("output_lm_numeric_independence_converges_max_n_coalitions", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -70,12 +70,12 @@ test_that("output_lm_numeric_independence_converges_max_n_combinations", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      max_n_combinations = 20,
+      max_n_coalitions = 20,
       adaptive = TRUE,
       print_shapleyres = TRUE,
       print_iter_info = TRUE
     ),
-    "output_lm_numeric_independence_converges_max_n_combinations"
+    "output_lm_numeric_independence_converges_max_n_coalitions"
   )
 })
 
@@ -97,7 +97,7 @@ test_that("output_lm_numeric_gaussian_group_converges_tol", {
       group = groups,
       prediction_zero = p0,
       adaptive_arguments = list(
-        initial_n_combinations = 5,
+        initial_n_coalitions = 5,
         convergence_tolerance = 0.1
       ),
       adaptive = TRUE,

@@ -9,7 +9,7 @@ using namespace Rcpp;
 //' univariate standard normal.
 //' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
 //' to explain.
-//' @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
+//' @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
 //' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
 //' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
 //' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature.

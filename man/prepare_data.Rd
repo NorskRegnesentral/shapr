@@ -43,8 +43,8 @@ prepare_data(internal, index_features = NULL, ...)
 \arguments{
 \item{internal}{Not used.}
 
-\item{index_features}{Positive integer vector. Specifies the indices of combinations to
-apply to the present method. \code{NULL} means all combinations. Only used internally.}
+\item{index_features}{Positive integer vector. Specifies the id_coalition to
+apply to the present method. \code{NULL} means all coalitions. Only used internally.}
 
 \item{...}{Currently not used.}
 }

@@ -9,8 +9,8 @@ default_doc_explain(internal, index_features)
 \arguments{
 \item{internal}{Not used.}
 
-\item{index_features}{Positive integer vector. Specifies the indices of combinations to
-apply to the present method. \code{NULL} means all combinations. Only used internally.}
+\item{index_features}{Positive integer vector. Specifies the id_coalition to
+apply to the present method. \code{NULL} means all coalitions. Only used internally.}
 }
 \description{
 Exported documentation helper function.

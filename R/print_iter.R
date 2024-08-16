@@ -5,30 +5,30 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
   converged_exact <- internal$iter_list[[iter]]$converged_exact
   converged_sd <- internal$iter_list[[iter]]$converged_sd
   converged_max_iter <- internal$iter_list[[iter]]$converged_max_iter
-  converged_max_n_combinations <- internal$iter_list[[iter]]$converged_max_n_combinations
+  converged_max_n_coalitions <- internal$iter_list[[iter]]$converged_max_n_coalitions
 
   if (print_iter_info) {
     convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
 
-    current_n_combinations <- internal$iter_list[[iter]]$n_combinations
-    est_remaining_combinations <- internal$iter_list[[iter]]$est_remaining_combinations
-    est_required_combinations <- internal$iter_list[[iter]]$est_required_combinations
+    current_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
+    est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions
+    est_required_coalitions <- internal$iter_list[[iter]]$est_required_coalitions
 
-    next_n_combinations <- internal$iter_list[[iter + 1]]$n_combinations
+    next_n_coalitions <- internal$iter_list[[iter + 1]]$n_coalitions
 
     if (isFALSE(converged)) {
       cat(paste0(
         "\nIteration ", iter, "\n",
-        "Not converged after ", current_n_combinations, " coalitions.\n"
+        "Not converged after ", current_n_coalitions, " coalitions.\n"
       ))
       if (!is.null(convergence_tolerance)) {
         cat(paste0(
-          "Estimated remaining coalitions: ", est_remaining_combinations, "\n",
-          "Estimated required coalitions: ", est_required_combinations, "\n"
+          "Estimated remaining coalitions: ", est_remaining_coalitions, "\n",
+          "Estimated required coalitions: ", est_required_coalitions, "\n"
         ))
       }
       cat(paste0(
-        "Using ", next_n_combinations, " new coalitions in the next iteration.\n"
+        "Using ", next_n_coalitions, " new coalitions in the next iteration.\n"
       ))
     } else {
       cat(paste0(
@@ -37,22 +37,22 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
       ))
       if (isTRUE(converged_exact)) {
         cat(paste0(
-          "All (", current_n_combinations, ") coalitions used.\n"
+          "All (", current_n_coalitions, ") coalitions used.\n"
         ))
       }
       if (isTRUE(converged_sd)) {
         cat(paste0(
-          "Convergence tolerance reached after ", current_n_combinations, " coalitions.\n"
+          "Convergence tolerance reached after ", current_n_coalitions, " coalitions.\n"
         ))
       }
       if (isTRUE(converged_max_iter)) {
         cat(paste0(
-          "Maximum number of iterations reached after ", current_n_combinations, " coalitions.\n"
+          "Maximum number of iterations reached after ", current_n_coalitions, " coalitions.\n"
         ))
       }
-      if (isTRUE(converged_max_n_combinations)) {
+      if (isTRUE(converged_max_n_coalitions)) {
         cat(paste0(
-          "Maximum number of coalitions (", current_n_combinations, ") reached.\n"
+          "Maximum number of coalitions (", current_n_coalitions, ") reached.\n"
         ))
       }
     }

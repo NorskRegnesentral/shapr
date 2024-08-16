@@ -4,7 +4,7 @@
 \alias{feature_group_not_exact}
 \title{Analogue to feature_not_exact, but for groups instead.}
 \usage{
-feature_group_not_exact(group_num, n_combinations = 200, weight_zero_m = 10^6)
+feature_group_not_exact(group_num, n_coalitions = 200, weight_zero_m = 10^6)
 }
 \arguments{
 \item{group_num}{List. Contains vector of integers indicating the feature numbers for the

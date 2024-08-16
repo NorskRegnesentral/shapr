@@ -179,28 +179,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // weight_matrix_cpp
-arma::mat weight_matrix_cpp(List subsets, int m, int n, NumericVector w);
-RcppExport SEXP _shapr_weight_matrix_cpp(SEXP subsetsSEXP, SEXP mSEXP, SEXP nSEXP, SEXP wSEXP) {
+arma::mat weight_matrix_cpp(List coalitions, int m, int n, NumericVector w);
+RcppExport SEXP _shapr_weight_matrix_cpp(SEXP coalitionsSEXP, SEXP mSEXP, SEXP nSEXP, SEXP wSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type subsets(subsetsSEXP);
+    Rcpp::traits::input_parameter< List >::type coalitions(coalitionsSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(weight_matrix_cpp(subsets, m, n, w));
+    rcpp_result_gen = Rcpp::wrap(weight_matrix_cpp(coalitions, m, n, w));
     return rcpp_result_gen;
 END_RCPP
 }
-// feature_matrix_cpp
-NumericMatrix feature_matrix_cpp(List features, int m);
-RcppExport SEXP _shapr_feature_matrix_cpp(SEXP featuresSEXP, SEXP mSEXP) {
+// coalition_matrix_cpp
+NumericMatrix coalition_matrix_cpp(List coalitions, int m);
+RcppExport SEXP _shapr_coalition_matrix_cpp(SEXP coalitionsSEXP, SEXP mSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type features(featuresSEXP);
+    Rcpp::traits::input_parameter< List >::type coalitions(coalitionsSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    rcpp_result_gen = Rcpp::wrap(feature_matrix_cpp(features, m));
+    rcpp_result_gen = Rcpp::wrap(coalition_matrix_cpp(coalitions, m));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -219,7 +219,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
     {"_shapr_weight_matrix_cpp", (DL_FUNC) &_shapr_weight_matrix_cpp, 4},
-    {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},
+    {"_shapr_coalition_matrix_cpp", (DL_FUNC) &_shapr_coalition_matrix_cpp, 2},
     {NULL, NULL, 0}
 };
 

@@ -51,7 +51,7 @@ prepare_data.copula <- function(internal, index_features, ...) {
   n_explain <- internal$parameters$n_explain
   n_samples <- internal$parameters$n_samples
   n_features <- internal$parameters$n_features
-  n_combinations_now <- length(index_features)
+  n_coalitions_now <- length(index_features)
   x_train_mat <- as.matrix(internal$data$x_train)
   x_explain_mat <- as.matrix(internal$data$x_explain)
   copula.mu <- internal$parameters$copula.mu
@@ -79,16 +79,16 @@ prepare_data.copula <- function(internal, index_features, ...) {
   )
 
   # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
-  dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  dim(dt) <- c(n_coalitions_now * n_explain * n_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)
   data.table::setnames(dt, feature_names)
-  dt[, id_combination := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
+  dt[, id_coalition := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
   dt[, id := rep(seq(n_explain), each = n_samples, times = nrow(S))]
   dt[, w := 1 / n_samples]
-  dt[, id_combination := index_features[id_combination]]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  dt[, id_coalition := index_features[id_coalition]]
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
   return(dt)
 }

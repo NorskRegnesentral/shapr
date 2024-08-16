@@ -30,11 +30,11 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   S <- internal$iter_list[[iter]]$S
 
   if (is.null(index_features)) {
-    # Use all feature combinations/coalitions (only applies if a single approach is used)
+    # Use all coalitions (only applies if a single approach is used)
     index_features <- X[, .I]
   }
 
-  # Extract the relevant feature combinations/coalitions
+  # Extract the relevant coalitions
   # Set `drop = FALSE` to ensure that `S0` is a matrix.
   S0 <- S[index_features, , drop = FALSE]
 
@@ -97,7 +97,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
     # Add keys
     dt_l[[i]] <- data.table::as.data.table(dt_p)
     data.table::setnames(dt_l[[i]], feature_specs$labels)
-    dt_l[[i]][, id_combination := index_features[index_s]]
+    dt_l[[i]][, id_coalition := index_features[index_s]]
     dt_l[[i]][, w := w0]
     dt_l[[i]][, id := i]
   }

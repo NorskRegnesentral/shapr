@@ -7,7 +7,7 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 4, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 4, 
       and is therefore set to 2^n_features = 4.
       
     Output
@@ -29,7 +29,7 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 128, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 128, 
       and is therefore set to 2^n_features = 128.
       
     Output
@@ -59,7 +59,7 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 4, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 4, 
       and is therefore set to 2^n_features = 4.
       
     Output
@@ -81,7 +81,7 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_groups = 4, 
+      max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
       and is therefore set to 2^n_groups = 4.
       
     Output
@@ -103,7 +103,7 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 8, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 8, 
       and is therefore set to 2^n_features = 8.
       
     Condition

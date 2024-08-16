@@ -11,7 +11,7 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -30,7 +30,7 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -55,7 +55,7 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -80,7 +80,7 @@
       Assuming feature classes from the data are correct.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -106,7 +106,7 @@
       Assuming feature factor levels from the data are correct.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -206,7 +206,7 @@
         prediction_zero = p0, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -223,7 +223,7 @@
         prediction_zero = p0, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -240,7 +240,7 @@
         prediction_zero = p0, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -292,16 +292,16 @@
       Error in `get_parameters()`:
       ! `prediction_zero` (NA) must be numeric and match the output size of the model (1).
 
-# erroneous input: `max_n_combinations`
+# erroneous input: `max_n_coalitions`
 
     Code
       max_n_comb_non_numeric_1 <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_comb_non_numeric_1, n_batches = 1)
+        max_n_coalitions = max_n_comb_non_numeric_1, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `max_n_combinations` must be NULL or a single positive integer.
+      ! `max_n_coalitions` must be NULL or a single positive integer.
 
 ---
 
@@ -309,43 +309,43 @@
       max_n_comb_non_numeric_2 <- TRUE
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_comb_non_numeric_2, n_batches = 1)
+        max_n_coalitions = max_n_comb_non_numeric_2, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `max_n_combinations` must be NULL or a single positive integer.
+      ! `max_n_coalitions` must be NULL or a single positive integer.
 
 ---
 
     Code
-      max_n_combinations_non_integer <- 10.5
+      max_n_coalitions_non_integer <- 10.5
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_combinations_non_integer, n_batches = 1)
+        max_n_coalitions = max_n_coalitions_non_integer, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `max_n_combinations` must be NULL or a single positive integer.
+      ! `max_n_coalitions` must be NULL or a single positive integer.
 
 ---
 
     Code
-      max_n_combinations_too_long <- c(1, 2)
+      max_n_coalitions_too_long <- c(1, 2)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_combinations_too_long, n_batches = 1)
+        max_n_coalitions = max_n_coalitions_too_long, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `max_n_combinations` must be NULL or a single positive integer.
+      ! `max_n_coalitions` must be NULL or a single positive integer.
 
 ---
 
     Code
-      max_n_combinations_is_NA <- as.numeric(NA)
+      max_n_coalitions_is_NA <- as.numeric(NA)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_combinations_is_NA, n_batches = 1)
+        max_n_coalitions = max_n_coalitions_is_NA, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `max_n_combinations` must be NULL or a single positive integer.
+      ! `max_n_coalitions` must be NULL or a single positive integer.
 
 ---
 
@@ -353,21 +353,21 @@
       max_n_comb_non_positive <- 0
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_comb_non_positive, n_batches = 1)
+        max_n_coalitions = max_n_comb_non_positive, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `max_n_combinations` must be NULL or a single positive integer.
+      ! `max_n_coalitions` must be NULL or a single positive integer.
 
 ---
 
     Code
-      max_n_combinations <- ncol(x_explain_numeric) - 1
+      max_n_coalitions <- ncol(x_explain_numeric) - 1
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "gaussian",
-        max_n_combinations = max_n_combinations, n_batches = 1)
+        max_n_coalitions = max_n_coalitions, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is smaller than or n_features = 5, 
+      max_n_coalitions is smaller than or n_features = 5, 
       and is therefore set to n_features + 1  = 6.
       
     Output
@@ -381,13 +381,13 @@
 
     Code
       groups <- list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
-      max_n_combinations <- length(groups) - 1
+      max_n_coalitions <- length(groups) - 1
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "gaussian",
-        group = groups, max_n_combinations = max_n_combinations, n_batches = 1)
+        group = groups, max_n_coalitions = max_n_coalitions, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is smaller than or n_groups = 3, 
+      max_n_coalitions is smaller than or n_groups = 3, 
       and is therefore set to n_groups + 1  = 4.
       
     Output
@@ -605,14 +605,14 @@
 ---
 
     Code
-      max_n_combinations <- 10
+      max_n_coalitions <- 10
       n_batches_too_large <- 11
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_combinations, n_batches = n_batches_too_large, )
+        max_n_coalitions = max_n_coalitions, n_batches = n_batches_too_large, )
     Condition
       Error in `check_n_batches()`:
-      ! `n_batches` (11) must be smaller than the number of feature combinations/`n_combinations` (10)
+      ! `n_batches` (11) must be smaller than the number of feature combinations/`n_coalitions` (10)
 
 ---
 
@@ -623,12 +623,12 @@
         n_batches = n_batches_too_large_2, )
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
       Error in `check_n_batches()`:
-      ! `n_batches` (32) must be smaller than the number of feature combinations/`n_combinations` (32)
+      ! `n_batches` (32) must be smaller than the number of feature combinations/`n_coalitions` (32)
 
 # erroneous input: `seed`
 
@@ -718,7 +718,7 @@
         predict_model = predict_model_nonfunction, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -736,7 +736,7 @@
         predict_model = predict_model_non_num_output, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -760,7 +760,7 @@
         predict_model = predict_model_wrong_output_len, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -784,7 +784,7 @@
         predict_model = predict_model_invalid_argument, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -807,7 +807,7 @@
         predict_model = predict_model_error, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -907,7 +907,7 @@
         n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -925,7 +925,7 @@
         n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -943,7 +943,7 @@
         n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Condition
@@ -952,15 +952,15 @@
       approach = 'copula' does not support factor features.
       Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical'.
 
-# Message with too low `max_n_combinations`
+# Message with too low `max_n_coalitions`
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_explain_numeric, prediction_zero = p0, approach = "gaussian",
-        max_n_combinations = max_n_combinations, n_batches = 1)
+        max_n_coalitions = max_n_coalitions, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is smaller than or n_features = 5, 
+      max_n_coalitions is smaller than or n_features = 5, 
       and is therefore set to n_features + 1  = 6.
       
     Output
@@ -975,10 +975,10 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_explain_numeric, prediction_zero = p0, approach = "gaussian",
-        group = groups, max_n_combinations = max_n_combinations, n_batches = 1)
+        group = groups, max_n_coalitions = max_n_coalitions, n_batches = 1)
     Message
       Success with message:
-      max_n_combinations is smaller than or n_groups = 3, 
+      max_n_coalitions is smaller than or n_groups = 3, 
       and is therefore set to n_groups + 1  = 4.
       
     Output
@@ -988,16 +988,16 @@
       2:          2 42.44 -0.001419 -13.88 4.690e-05
       3:          3 42.44 -0.001465 -17.57 6.250e-05
 
-# Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weights
+# Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weights
 
     Code
       explanation_exact <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
         prediction_zero = p0, n_samples = 2, n_batches = 1, seed = 123,
-        max_n_combinations = NULL)
+        max_n_coalitions = NULL)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
 
@@ -1007,7 +1007,7 @@
       explanation_equal <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
         prediction_zero = p0, n_samples = 2, n_batches = 1, seed = 123,
-        adaptive_arguments = list(compute_sd = FALSE), max_n_combinations = 2^ncol(
+        adaptive_arguments = list(compute_sd = FALSE), max_n_coalitions = 2^ncol(
           x_explain_numeric))
 
 ---
@@ -1016,11 +1016,11 @@
       explanation_larger <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
         prediction_zero = p0, n_samples = 2, n_batches = 1, seed = 123,
-        adaptive_arguments = list(compute_sd = FALSE), max_n_combinations = 2^ncol(
+        adaptive_arguments = list(compute_sd = FALSE), max_n_coalitions = 2^ncol(
           x_explain_numeric) + 1)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
 

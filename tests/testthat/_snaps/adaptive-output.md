@@ -4,7 +4,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
       Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
@@ -51,7 +51,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
       Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
@@ -85,7 +85,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
       Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
@@ -232,7 +232,7 @@
       2:          2 42.44   2.283  -3.280 -5.255 -5.614 -2.014
       3:          3 42.44   3.741 -18.545 -1.463 -2.574  1.273
 
-# output_lm_numeric_independence_converges_max_n_combinations
+# output_lm_numeric_independence_converges_max_n_coalitions
 
     Code
       (out <- code)
@@ -286,7 +286,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_groups = 8, 
+      max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
       and is therefore set to 2^n_groups = 8.
       
       Setting parameter 'n_batches' to 7 as a fair trade-off between memory consumption and computation time.

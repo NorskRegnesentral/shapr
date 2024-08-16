@@ -4,16 +4,14 @@
 \alias{weight_matrix}
 \title{Calculate weighted matrix}
 \usage{
-weight_matrix(X, normalize_W_weights = TRUE, is_groupwise = FALSE)
+weight_matrix(X, normalize_W_weights = TRUE)
 }
 \arguments{
 \item{X}{data.table}
 
-\item{normalize_W_weights}{Logical. Whether to normalize the weights for the combinations to sum to 1 for
-increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
-except combination \code{1} and \code{2^m}.}
-
-\item{is_groupwise}{Logical. Indicating whether group wise Shapley values are to be computed.}
+\item{normalize_W_weights}{Logical. Whether to normalize the weights for the coalitions to sum to 1 for
+increased numerical stability before solving the WLS (weighted least squares). Applies to all coalitions
+except coalition \code{1} and \code{2^m}.}
 }
 \value{
 Numeric matrix. See \code{\link[=weight_matrix_cpp]{weight_matrix_cpp()}} for more information.

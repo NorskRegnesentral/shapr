@@ -11,8 +11,8 @@
 #' The data.frame must contain the possible hyperparameter value combinations to try.
 #' The column names must match the names of the tuneable parameters specified in `regression.model`.
 #' If `regression.tune_values` is a function, then it should take one argument `x` which is the training data
-#' for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
-#' Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+#' for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
+#' Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
 #' vignette for several examples.
 #' Note, to make it easier to call `explain()` from Python, the `regression.tune_values` can also be a string
 #' containing an R function. For example,
@@ -77,15 +77,15 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
   # Small printout to the user about which batch that are currently worked on
   if (internal$parameters$verbose == 2) regression.prep_message_batch(internal, index_features)
 
-  # Initialize empty data table with specific column names and id_combination (transformed to integer later). The data
+  # Initialize empty data table with specific column names and id_coalition (transformed to integer later). The data
   # table will contain the contribution function values for the coalitions given by `index_features` and all explicands.
-  dt_res_column_names <- c("id_combination", paste0("p_hat1_", seq_len(internal$parameters$n_explain)))
+  dt_res_column_names <- c("id_coalition", paste0("p_hat1_", seq_len(internal$parameters$n_explain)))
   dt_res <- data.table(matrix(ncol = length(dt_res_column_names), nrow = 0, dimnames = list(NULL, dt_res_column_names)))
 
   # Iterate over the coalitions provided by index_features.
   # Note that index_features will never be NULL and never contain the empty or grand coalitions.
   for (comb_idx in seq_along(features)) {
-    # Get the column indices of the features in current coalition/combination
+    # Get the column indices of the features in current coalition
     current_comb <- features[[comb_idx]]
 
     # Extract the current training (and add y_hat as response) and explain data
@@ -112,9 +112,9 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
     dt_res <- rbind(dt_res, data.table(index_features[comb_idx], matrix(pred_explicand, nrow = 1)), use.names = FALSE)
   }
 
-  # Set id_combination to be the key
-  dt_res[, id_combination := as.integer(id_combination)]
-  data.table::setkey(dt_res, id_combination)
+  # Set id_coalition to be the key
+  dt_res[, id_coalition := as.integer(id_coalition)]
+  data.table::setkey(dt_res, id_coalition)
 
   # Return the estimated contribution function values
   return(dt_res)
@@ -326,7 +326,7 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 regression.check_parameters <- function(internal) {
   iter <- length(internal$iter_list)
 
-  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
 
 
   # Convert the objects to R-objects if they are strings
@@ -352,7 +352,7 @@ regression.check_parameters <- function(internal) {
   # Check that `regression.check_sur_n_comb` is a valid value (only applicable for surrogate regression)
   regression.check_sur_n_comb(
     regression.surrogate_n_comb = internal$parameters$regression.surrogate_n_comb,
-    n_combinations = n_combinations
+    n_coalitions = n_coalitions
   )
 
   # Check and get if we are to tune the hyperparameters of the regression model
@@ -465,26 +465,26 @@ regression.prep_message_batch <- function(internal, index_features) {
 
 
   message(paste0(
-    "Working on batch ", X[id_combination == index_features[1]]$batch, " of ",
+    "Working on batch ", X[id_coalition == index_features[1]]$batch, " of ",
     internal$parameters$n_batches, " in `prepare_data.", internal$parameters$approach, "()`."
   ))
 }
 
-#' Produce message about which combination prepare_data is working on
+#' Produce message about which coalition prepare_data is working on
 #' @inheritParams default_doc
 #' @inheritParams default_doc_explain
-#' @param comb_idx Integer. The index of the combination in a specific batch.
+#' @param comb_idx Integer. The index of the coalition in a specific batch.
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.prep_message_comb <- function(internal, index_features, comb_idx) {
   iter <- length(internal$iter_list)
 
-  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   X <- internal$iter_list[[iter]]$X
 
   message(paste0(
-    "Working on combination with id ", X$id_combination[index_features[comb_idx]],
-    " of ", n_combinations, "."
+    "Working on coalition with id ", X$id_coalition[index_features[comb_idx]],
+    " of ", n_coalitions, "."
   ))
 }
 

@@ -894,10 +894,10 @@ MSEv_plots$MSEv_explicand_bar
 
 ```r
 
-# To see which coalition S each of the `id_combination` corresponds to,
+# To see which coalition S each of the `id_coalition` corresponds to,
 # i.e., which features that are conditions on.
-explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination", "features")]
-#>     id_combination features
+explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_coalition", "features")]
+#>     id_coalition features
 #>              <int>   <list>
 #>  1:              2        1
 #>  2:              3        2
@@ -915,7 +915,7 @@ explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination", "feature
 #> 14:             15    2,3,4
 ```
 
-We can specify the `index_x_explain` and `id_combination` parameters in `plot_MSEv_eval_crit()` to only plot
+We can specify the `index_x_explain` and `id_coalition` parameters in `plot_MSEv_eval_crit()` to only plot
 certain test observations and combinations, respectively.
 
 
@@ -933,7 +933,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 ```r
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "comb",
-  id_combination = c(3, 4, 9, 13:15),
+  id_coalition = c(3, 4, 9, 13:15),
   CI_level = 0.95
 )$MSEv_combination_bar
 ```
@@ -975,7 +975,7 @@ plot_MSEv_eval_crit(explanation_list_named) +
 
 When using `explain`, the default behavior is to use all feature
 combinations in the Shapley formula. Kernel SHAP's sampling based
-approach may be used by specifying `n_combinations`, which is the number
+approach may be used by specifying `n_coalitions`, which is the number
 of unique feature combinations to sample. If not specified, the exact
 method is used. The computation time grows approximately exponentially
 with the number of features. The training data and the model whose
@@ -1709,13 +1709,13 @@ which typically is a limited resource. By doing the most resource hungry
 computations (the computation of v(S)) in sequential batches with
 different feature subsets $S$, the memory usage can be significantly
 reduces. Such batching comes at the cost of an increase in computation
-time, which depends on the number of feature subsets (`n_combinations`),
+time, which depends on the number of feature subsets (`n_coalitions`),
 the number of features, the estimation `approach` and so on. When
 calling `shapr::explain()`, we allow the user to set the number of
 batches with the argument `n_batches`. The default of this argument is
 `NULL`, which uses a (hopefully) reasonable trade-off between
 computation speed and memory consumption which depends on
-`n_combinations` and `approach`. The memory/computation time trade-off
+`n_coalitions` and `approach`. The memory/computation time trade-off
 is most apparent for models with more than say 6-7 features. Below we a
 basic example where `n_batches=10`:
 

@@ -3,21 +3,21 @@ check_convergence <- function(internal) {
 
   convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
   max_iter <- internal$parameters$adaptive_arguments$max_iter
-  max_n_combinations <- internal$parameters$adaptive_arguments$max_n_combinations
+  max_n_coalitions <- internal$parameters$adaptive_arguments$max_n_coalitions
 
   exact <- internal$iter_list[[iter]]$exact
 
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
-  n_sampled_combinations <- internal$iter_list[[iter]]$n_combinations - 2 # Subtract the zero and full predictions
+  n_sampled_coalitions <- internal$iter_list[[iter]]$n_coalitions - 2 # Subtract the zero and full predictions
 
   max_sd <- dt_shapley_sd[, max(.SD), .SDcols = -1, by = .I]$V1 # Max per prediction
-  max_sd0 <- max_sd * sqrt(n_sampled_combinations) # Scales UP the sd as it scales at this rate
+  max_sd0 <- max_sd * sqrt(n_sampled_coalitions) # Scales UP the sd as it scales at this rate
 
   dt_shapley_est0 <- copy(dt_shapley_est)
 
-  est_required_combs_per_ex_id <- est_required_combinations <- est_remaining_combinations <- NA
+  est_required_coals_per_ex_id <- est_required_coalitions <- est_remaining_coalitions <- NA
 
   if (isTRUE(exact)) {
     converged_exact <- TRUE
@@ -29,35 +29,35 @@ check_convergence <- function(internal) {
       dt_shapley_est0[, minval := min(.SD), .SDcols = -c(1, 2), by = .I]
       dt_shapley_est0[, max_sd0 := max_sd0]
       dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tolerance))^2]
-      est_required_combinations <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO:Consider other ways to do this
-      est_remaining_combinations <- max(0, est_required_combinations - n_sampled_combinations)
+      est_required_coalitions <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO:Consider other ways to do this
+      est_remaining_coalitions <- max(0, est_required_coalitions - n_sampled_coalitions)
 
-      converged_sd <- (est_remaining_combinations == 0)
+      converged_sd <- (est_remaining_coalitions == 0)
 
-      est_required_combs_per_ex_id <- dt_shapley_est0[, req_samples]
-      names(est_required_combs_per_ex_id) <- paste0(
+      est_required_coals_per_ex_id <- dt_shapley_est0[, req_samples]
+      names(est_required_coals_per_ex_id) <- paste0(
         "req_samples_explain_id_",
-        seq_along(est_required_combs_per_ex_id)
+        seq_along(est_required_coals_per_ex_id)
       )
     } else {
       converged_sd <- FALSE
     }
   }
 
-  converged_max_n_combinations <- (n_sampled_combinations + 2 >= max_n_combinations)
+  converged_max_n_coalitions <- (n_sampled_coalitions + 2 >= max_n_coalitions)
 
   converged_max_iter <- (iter >= max_iter)
 
-  converged <- converged_exact || converged_sd || converged_max_iter || converged_max_n_combinations
+  converged <- converged_exact || converged_sd || converged_max_iter || converged_max_n_coalitions
 
   internal$iter_list[[iter]]$converged <- converged
   internal$iter_list[[iter]]$converged_exact <- converged_exact
   internal$iter_list[[iter]]$converged_sd <- converged_sd
   internal$iter_list[[iter]]$converged_max_iter <- converged_max_iter
-  internal$iter_list[[iter]]$converged_max_n_combinations <- converged_max_n_combinations
-  internal$iter_list[[iter]]$est_required_combinations <- est_required_combinations
-  internal$iter_list[[iter]]$est_remaining_combinations <- est_remaining_combinations
-  internal$iter_list[[iter]]$est_required_combs_per_ex_id <- as.list(est_required_combs_per_ex_id)
+  internal$iter_list[[iter]]$converged_max_n_coalitions <- converged_max_n_coalitions
+  internal$iter_list[[iter]]$est_required_coalitions <- est_required_coalitions
+  internal$iter_list[[iter]]$est_remaining_coalitions <- est_remaining_coalitions
+  internal$iter_list[[iter]]$est_required_coals_per_ex_id <- as.list(est_required_coals_per_ex_id)
 
   internal$timing_list$check_convergence <- Sys.time()
 

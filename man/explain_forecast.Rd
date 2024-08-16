@@ -15,7 +15,7 @@ explain_forecast(
   horizon,
   approach,
   prediction_zero,
-  max_n_combinations = NULL,
+  max_n_coalitions = NULL,
   group_lags = TRUE,
   group = NULL,
   n_samples = 1000,
@@ -75,13 +75,13 @@ features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
 
-\item{max_n_combinations}{Integer.
-The upper limit on the number of unique feature/group combinations to use in the adaptive procedure
+\item{max_n_coalitions}{Integer.
+The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
 (if \code{adaptive = TRUE}).
-If \code{adaptive = FALSE} it represents the number of feature/group combinations to use directly.
-The quantity refers to the number of unique feature combinations if \code{group = NULL},
-and group combinations if \code{group != NULL}.
-\code{max_n_combinations = NULL} corresponds to \code{max_n_combinations=2^n_features}.}
+If \code{adaptive = FALSE} it represents the number of feature/group coalitions to use directly.
+The quantity refers to the number of unique feature coalitions if \code{group = NULL},
+and group coalitions if \code{group != NULL}.
+\code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
@@ -98,10 +98,10 @@ Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
 \item{n_batches}{Positive integer (or NULL).
-Specifies how many batches the total number of feature combinations should be split into when calculating the
+Specifies how many batches the total number of coalitions should be split into when calculating the
 contribution function for each test observation.
 The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-which depends on \code{approach} and \code{n_combinations}.
+which depends on \code{approach} and \code{n_coalitions}.
 For models with many features, increasing the number of batches reduces the RAM allocation significantly.
 This typically comes with a small increase in computation time.}
 
@@ -154,7 +154,7 @@ If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest wei
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
     \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
-Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
+Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
 Only used when \code{empirical.type = "fixed_sigma"}}
     \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
 Number of samples to consider in AICc optimization.

@@ -1,4 +1,4 @@
-#define ARMA_WARN_LEVEL 1 // Disables the warning regarding approximate solution for small n_combinations
+#define ARMA_WARN_LEVEL 1 // Disables the warning regarding approximate solution for small n_coalitions
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
@@ -6,27 +6,27 @@ using namespace Rcpp;
 
 //' Calculate weight matrix
 //'
-//' @param subsets List. Each of the elements equals an integer
+//' @param coalitions List. Each of the elements equals an integer
 //' vector representing a valid combination of features/feature groups.
 //' @param m Integer. Number of features/feature groups
 //' @param n Integer. Number of combinations
 //' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
 //' the Shapley weight of feature/feature group combination \code{i}, represented by
-//' \code{subsets[[i]]}.
+//' \code{coalitions[[i]]}.
 //'
 //' @export
 //' @keywords internal
 //'
 //' @return Matrix of dimension n x m + 1
-//' @author Nikolai Sellereite
+//' @author Nikolai Sellereite, Martin Jullum
 // [[Rcpp::export]]
-arma::mat weight_matrix_cpp(List subsets, int m, int n, NumericVector w){
+arma::mat weight_matrix_cpp(List coalitions, int m, int n, NumericVector w){
 
     // Note that Z is a n x (m + 1) matrix, where m is the number
-    // of unique subsets. All elements in the first column are equal to 1.
+    // of unique coalitions. All elements in the first column are equal to 1.
     // For j > 0, Z(i, j) = 1 if and only if feature/feature group j is present in
-    // the ith combination of subsets. In example, if Z(i, j) = 1 we know that
-    // j is present in subsets[i].
+    // the ith combination of coalitions. In example, if Z(i, j) = 1 we know that
+    // j is present in coalitions[i].
 
     // Note that w represents the diagonal in W, where W is a diagoanl
     // n x n matrix.
@@ -54,8 +54,8 @@ arma::mat weight_matrix_cpp(List subsets, int m, int n, NumericVector w){
         // Set all elements in the first column equal to 1
         Z(i, 0) = 1;
 
-        // Extract subsets
-        subset_vec = subsets[i];
+        // Extract coalitions
+        subset_vec = coalitions[i];
         n_elements = subset_vec.length();
         if (n_elements > 0) {
             for (int j = 0; j < n_elements; j++)
@@ -77,32 +77,32 @@ arma::mat weight_matrix_cpp(List subsets, int m, int n, NumericVector w){
     return R;
 }
 
-//' Get feature matrix
+//' Get coalition matrix
 //'
-//' @param features List
-//' @param m Positive integer. Total number of features
+//' @param coalitions List
+//' @param m Positive integer. Total number of coalitions
 //'
 //' @export
 //' @keywords internal
 //'
 //' @return Matrix
-//' @author Nikolai Sellereite
+//' @author Nikolai Sellereite, Martin Jullum
 // [[Rcpp::export]]
-NumericMatrix feature_matrix_cpp(List features, int m) {
+NumericMatrix coalition_matrix_cpp(List coalitions, int m) {
 
     // Define variables
-    int n_combinations;
-    n_combinations = features.length();
-    NumericMatrix A(n_combinations, m);
+    int n_coalitions;
+    n_coalitions = coalitions.length();
+    NumericMatrix A(n_coalitions, m);
 
     // Error-check
-    IntegerVector features_zero = features[0];
+    IntegerVector features_zero = coalitions[0];
     if (features_zero.length() > 0)
-        Rcpp::stop("The first element of features should be an empty vector, i.e. integer(0)");
+        Rcpp::stop("Internal error: The first element of coalitions should be an empty vector, i.e. integer(0)");
 
-    for (int i = 1; i < n_combinations; ++i) {
+    for (int i = 1; i < n_coalitions; ++i) {
 
-        NumericVector feature_vec = features[i];
+        NumericVector feature_vec = coalitions[i];
 
         for (int j = 0; j < feature_vec.length(); ++j) {
 

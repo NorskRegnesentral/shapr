@@ -23,7 +23,7 @@ setup <- function(x_train,
                   paired_shap_sampling = FALSE,
                   prediction_zero,
                   output_size = 1,
-                  max_n_combinations,
+                  max_n_coalitions,
                   group,
                   n_samples,
                   n_batches,
@@ -55,7 +55,7 @@ setup <- function(x_train,
     paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
     output_size = output_size,
-    max_n_combinations = max_n_combinations,
+    max_n_coalitions = max_n_coalitions,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -112,7 +112,7 @@ setup <- function(x_train,
 }
 
 #' @keywords internal
-get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, max_n_combinations, group,
+get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, max_n_coalitions, group,
                            n_samples, n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
                            explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights,
                            verbose, adaptive = FALSE, adaptive_arguments = adaptive_arguments,
@@ -132,13 +132,13 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   }
 
 
-  # max_n_combinations
-  if (!is.null(max_n_combinations) &&
-    !(is.wholenumber(max_n_combinations) &&
-      length(max_n_combinations) == 1 &&
-      !is.na(max_n_combinations) &&
-      max_n_combinations > 0)) {
-    stop("`max_n_combinations` must be NULL or a single positive integer.")
+  # max_n_coalitions
+  if (!is.null(max_n_coalitions) &&
+    !(is.wholenumber(max_n_coalitions) &&
+      length(max_n_coalitions) == 1 &&
+      !is.na(max_n_coalitions) &&
+      max_n_coalitions > 0)) {
+    stop("`max_n_coalitions` must be NULL or a single positive integer.")
   }
 
   # group (checked more thoroughly later)
@@ -238,7 +238,7 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     approach = approach,
     paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
-    max_n_combinations = max_n_combinations,
+    max_n_coalitions = max_n_coalitions,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -403,7 +403,7 @@ get_extra_parameters <- function(internal) {
         "\nSuccess with message:\n
       Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc."
       )
-      names(internal$parameters$group) <- paste0("group", seq_along(group))
+      names(group) <- paste0("group", seq_along(group))
     }
 
     # Make group list with numeric feature indicators
@@ -412,9 +412,18 @@ get_extra_parameters <- function(internal) {
     })
 
     internal$parameters$n_groups <- length(group)
+    internal$parameters$group_names <- names(group)
+    internal$parameters$group <- group
+    internal$parameters$shap_names <- internal$parameters$group_names
+    internal$parameters$n_shapley_values <- internal$parameters$n_groups
+
+
   } else {
     internal$objects$group_num <- NULL
     internal$parameters$n_groups <- NULL
+    internal$parameters$group_names <- NULL
+    internal$parameters$shap_names <- internal$parameters$feature_names
+    internal$parameters$n_shapley_values <- internal$parameters$n_features
   }
 
   # Get the number of unique approaches
@@ -477,10 +486,10 @@ check_and_set_parameters <- function(internal) {
 
   if (!is.null(group)) check_groups(feature_names, group)
 
-  # Adjust max_n_combinations
-  internal <- adjust_max_n_combinations(internal)
+  # Adjust max_n_coalitions
+  internal <- adjust_max_n_coalitions(internal)
 
-  check_max_n_combinations_fc(internal)
+  check_max_n_coalitions_fc(internal)
 
   internal <- set_exact(internal)
 
@@ -492,7 +501,7 @@ check_and_set_parameters <- function(internal) {
   # Setting default value for n_batches (when NULL)
   internal <- set_defaults(internal)
 
-  # Checking n_batches vs n_combinations etc
+  # Checking n_batches vs n_coalitions etc
   check_n_batches(internal)
 
   # Check regression if we are doing regression
@@ -503,70 +512,70 @@ check_and_set_parameters <- function(internal) {
 
 
 #' @keywords internal
-adjust_max_n_combinations <- function(internal) {
+adjust_max_n_coalitions <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
-  max_n_combinations <- internal$parameters$max_n_combinations
+  max_n_coalitions <- internal$parameters$max_n_coalitions
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
 
 
-  # Adjust max_n_combinations
+  # Adjust max_n_coalitions
   if (isFALSE(is_groupwise)) {
-    # Set max_n_combinations to upper bound
-    if (is.null(max_n_combinations) || max_n_combinations > 2^n_features) {
-      max_n_combinations <- 2^n_features
+    # Set max_n_coalitions to upper bound
+    if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_features) {
+      max_n_coalitions <- 2^n_features
       message(
         paste0(
           "Success with message:\n",
-          "max_n_combinations is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
+          "max_n_coalitions is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
           "and is therefore set to 2^n_features = ", 2^n_features, ".\n"
         )
       )
     }
-    # Set max_n_combinations to lower bound
-    if (max_n_combinations <= n_features) {
-      max_n_combinations <- n_features + 1
+    # Set max_n_coalitions to lower bound
+    if (max_n_coalitions <= n_features) {
+      max_n_coalitions <- n_features + 1
       message(
         paste0(
           "Success with message:\n",
-          "max_n_combinations is smaller than or n_features = ", n_features, ", \n",
+          "max_n_coalitions is smaller than or n_features = ", n_features, ", \n",
           "and is therefore set to n_features + 1  = ", n_features + 1, ".\n"
         )
       )
     }
   } else {
-    # Set max_n_combinations to upper bound
-    if (is.null(max_n_combinations) || max_n_combinations > 2^n_groups) {
-      max_n_combinations <- 2^n_groups
+    # Set max_n_coalitions to upper bound
+    if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_groups) {
+      max_n_coalitions <- 2^n_groups
       message(
         paste0(
           "Success with message:\n",
-          "max_n_combinations is NULL or larger than or 2^n_groups = ", 2^n_groups, ", \n",
+          "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_groups, ", \n",
           "and is therefore set to 2^n_groups = ", 2^n_groups, ".\n"
         )
       )
     }
-    # Set max_n_combinations to lower bound
-    if (max_n_combinations <= n_groups) {
-      max_n_combinations <- n_groups + 1
+    # Set max_n_coalitions to lower bound
+    if (max_n_coalitions <= n_groups) {
+      max_n_coalitions <- n_groups + 1
       message(
         paste0(
           "Success with message:\n",
-          "max_n_combinations is smaller than or n_groups = ", n_groups, ", \n",
+          "max_n_coalitions is smaller than or n_groups = ", n_groups, ", \n",
           "and is therefore set to n_groups + 1  = ", n_groups + 1, ".\n"
         )
       )
     }
   }
 
-  internal$parameters$max_n_combinations <- max_n_combinations
+  internal$parameters$max_n_coalitions <- max_n_coalitions
 
   return(internal)
 }
 
-check_max_n_combinations_fc <- function(internal) {
+check_max_n_coalitions_fc <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
-  max_n_combinations <- internal$parameters$max_n_combinations
+  max_n_coalitions <- internal$parameters$max_n_coalitions
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
 
@@ -579,18 +588,18 @@ check_max_n_combinations_fc <- function(internal) {
     xreg <- internal$data$xreg
 
     if (!is_groupwise) {
-      if (max_n_combinations <= n_features) {
+      if (max_n_coalitions <= n_features) {
         stop(paste0(
-          "`max_n_combinations` (", max_n_combinations, ") has to be greater than the number of ",
+          "`max_n_coalitions` (", max_n_coalitions, ") has to be greater than the number of ",
           "components to decompose the forecast onto:\n",
           "`horizon` (", horizon, ") + `explain_y_lags` (", explain_y_lags, ") ",
           "+ sum(`explain_xreg_lags`) (", sum(explain_xreg_lags), ").\n"
         ))
       }
     } else {
-      if (max_n_combinations <= n_groups) {
+      if (max_n_coalitions <= n_groups) {
         stop(paste0(
-          "`max_n_combinations` (", max_n_combinations, ") has to be greater than the number of ",
+          "`max_n_coalitions` (", max_n_coalitions, ") has to be greater than the number of ",
           "components to decompose the forecast onto:\n",
           "ncol(`xreg`) (", ncol(`xreg`), ") + 1"
         ))
@@ -601,15 +610,15 @@ check_max_n_combinations_fc <- function(internal) {
 
 
 set_exact <- function(internal) {
-  max_n_combinations <- internal$parameters$max_n_combinations
+  max_n_coalitions <- internal$parameters$max_n_coalitions
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
   is_groupwise <- internal$parameters$is_groupwise
   adaptive <- internal$parameters$adaptive
 
   if (isFALSE(adaptive) && (
-    (isFALSE(is_groupwise) && max_n_combinations == 2^n_features) ||
-      (isTRUE(is_groupwise) && max_n_combinations == 2^n_groups)
+    (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
+      (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
   )
   ) {
     exact <- TRUE
@@ -626,21 +635,21 @@ set_exact <- function(internal) {
 #' @keywords internal
 check_computability <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
-  max_n_combinations <- internal$parameters$max_n_combinations
+  max_n_coalitions <- internal$parameters$max_n_coalitions
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
   exact <- internal$parameters$exact
   adaptive <- internal$parameters$adaptive
 
 
-  # Force user to use a natural number for n_combinations if m > 13
+  # Force user to use a natural number for n_coalitions if m > 13
   if (isTRUE(exact)) {
     if (isFALSE(is_groupwise) && n_features > 13) {
       warning(
         paste0(
           "Due to computation time, we recommend not computing Shapley values exactly \n",
-          "(with all 2^n_features (", 2^n_features, ") combinations for n_features > 13.\n",
-          "Consider reducing max_n_combinations and enabling adaptive estimation with adaptive = TRUE.\n"
+          "(with all 2^n_features (", 2^n_features, ") coalitions for n_features > 13.\n",
+          "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
         )
       )
     }
@@ -648,8 +657,8 @@ check_computability <- function(internal) {
       warning(
         paste0(
           "Due to computation time, we recommend not computing Shapley values exactly \n",
-          "(with all 2^n_groups (", 2^n_groups, ") combinations for n_groups > 13.\n",
-          "Consider reducing max_n_combinations and enabling adaptive estimation with adaptive = TRUE.\n"
+          "(with all 2^n_groups (", 2^n_groups, ") coalitions for n_groups > 13.\n",
+          "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
         )
       )
     }
@@ -715,32 +724,32 @@ set_defaults <- function(internal) {
 
   approach <- internal$parameters$approach
   n_unique_approaches <- internal$parameters$n_unique_approaches
-  max_n_combinations <- internal$parameters$max_n_combinations
+  max_n_coalitions <- internal$parameters$max_n_coalitions
   n_batches <- internal$parameters$n_batches
 
   # n_batches
   if (is.null(n_batches)) {
-    internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, max_n_combinations)
+    internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, max_n_coalitions)
   }
 
   return(internal)
 }
 
 #' @keywords internal
-get_default_n_batches <- function(approach, n_unique_approaches, max_n_combinations) {
+get_default_n_batches <- function(approach, n_unique_approaches, max_n_coalitions) {
   used_approach <- names(sort(table(approach), decreasing = TRUE))[1] # Most frequent used approach (when more present)
 
   if (used_approach %in% c("ctree", "gaussian", "copula")) {
-    suggestion <- ceiling(max_n_combinations / 10)
+    suggestion <- ceiling(max_n_coalitions / 10)
     this_min <- 10
     this_max <- 1000
   } else {
-    suggestion <- ceiling(max_n_combinations / 100)
+    suggestion <- ceiling(max_n_coalitions / 100)
     this_min <- 2
     this_max <- 100
   }
   min_checked <- max(c(this_min, suggestion, n_unique_approaches))
-  ret <- min(c(this_max, min_checked, max_n_combinations - 1))
+  ret <- min(c(this_max, min_checked, max_n_coalitions - 1))
   message(
     paste0(
       "Setting parameter 'n_batches' to ", ret, " as a fair trade-off between memory consumption and ",
@@ -755,16 +764,16 @@ get_default_n_batches <- function(approach, n_unique_approaches, max_n_combinati
 check_n_batches <- function(internal) {
   n_batches <- internal$parameters$n_batches
   n_features <- internal$parameters$n_features
-  max_n_combinations <- internal$parameters$max_n_combinations
+  max_n_coalitions <- internal$parameters$max_n_coalitions
   is_groupwise <- internal$parameters$is_groupwise
   n_groups <- internal$parameters$n_groups
   n_unique_approaches <- internal$parameters$n_unique_approaches
 
 
-  if (n_batches >= max_n_combinations) {
+  if (n_batches >= max_n_coalitions) {
     stop(paste0(
-      "`n_batches` (", n_batches, ") must be smaller than the number of feature combinations/`n_combinations` (",
-      max_n_combinations, ")"
+      "`n_batches` (", n_batches, ") must be smaller than the number of coalitions (",
+      max_n_coalitions, ")"
     ))
   }
 
@@ -923,7 +932,7 @@ set_adaptive_parameters <- function(internal) {
 
   internal$iter_list <- list()
   internal$iter_list[[1]] <- list(
-    n_combinations = adaptive_arguments$initial_n_combinations,
+    n_coalitions = adaptive_arguments$initial_n_coalitions,
     exact = internal$parameters$exact,
     compute_sd = adaptive_arguments$compute_sd,
     reduction_factor = adaptive_arguments$reduction_factor_vec[1]
@@ -941,17 +950,17 @@ set_adaptive_parameters <- function(internal) {
 #' non-adaptive estimation procedure
 #'
 #' @param max_iter Integer. Maximum number of estimation iterations
-#' @param initial_n_combinations Integer. Number of coalitions to use in the first estimation iteration.
-#' @param fixed_n_combinations_per_iter Integer. Number of `n_combinations` to use in each iteration.
+#' @param initial_n_coalitions Integer. Number of coalitions to use in the first estimation iteration.
+#' @param fixed_n_coalitions_per_iter Integer. Number of `n_coalitions` to use in each iteration.
 #' `NULL` (default) means setting it based on estimates based on a set convergence threshold.
 #' @param convergence_tolerance Numeric. The t variable in the convergence threshold formula on page 6 in the paper
 #' Covert and Lee (2021), 'Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression'
 #' https://arxiv.org/pdf/2012.01536. Smaller values requires more coalitions before convergence is reached.
-#' @param reduction_factor_vec Numeric vector. The number of `n_combinations` that must be used to reach convergence
+#' @param reduction_factor_vec Numeric vector. The number of `n_coalitions` that must be used to reach convergence
 #' in the next iteration is estimated.
-#' The number of `n_combinations` actually used in the next iteration is set to this estimate multiplied by
+#' The number of `n_coalitions` actually used in the next iteration is set to this estimate multiplied by
 #' `reduction_factor_vec[i]` for iteration `i`.
-#' It is wise to start with smaller numbers to avoid using too many `n_combinations` due to uncertain estimates in
+#' It is wise to start with smaller numbers to avoid using too many `n_coalitions` due to uncertain estimates in
 #' the first iterations.
 #' @param n_boot_samps Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
 #' coalitions used to estimate the standard deviations of the Shapley value estimates.
@@ -963,7 +972,7 @@ set_adaptive_parameters <- function(internal) {
 #' @author Martin Jullum
 get_adaptive_arguments_default <- function(internal,
                                            max_iter = 20,
-                                           initial_n_combinations = ceiling(
+                                           initial_n_coalitions = ceiling(
                                              min(
                                                200,
                                                max(
@@ -972,22 +981,22 @@ get_adaptive_arguments_default <- function(internal,
                                                )
                                              )
                                            ),
-                                           fixed_n_combinations_per_iter = NULL,
+                                           fixed_n_coalitions_per_iter = NULL,
                                            convergence_tolerance = 0.02,
                                            reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
                                            n_boot_samps = 100,
                                            compute_sd = ifelse(internal$parameters$exact, FALSE, TRUE)) {
   adaptive <- internal$parameters$adaptive
-  max_n_combinations <- internal$parameters$max_n_combinations
+  max_n_coalitions <- internal$parameters$max_n_coalitions
   exact <- internal$parameters$exact
   is_groupwise <- internal$parameters$is_groupwise
 
   if (isTRUE(adaptive)) {
     ret_list <- mget(
       c(
-        "initial_n_combinations",
-        "fixed_n_combinations_per_iter",
-        "max_n_combinations",
+        "initial_n_coalitions",
+        "fixed_n_coalitions_per_iter",
+        "max_n_coalitions",
         "max_iter",
         "convergence_tolerance",
         "reduction_factor_vec",
@@ -997,9 +1006,9 @@ get_adaptive_arguments_default <- function(internal,
     )
   } else {
     ret_list <- list(
-      initial_n_combinations = max_n_combinations,
-      fixed_n_combinations_per_iter = NULL,
-      max_n_combinations = max_n_combinations,
+      initial_n_coalitions = max_n_coalitions,
+      fixed_n_coalitions_per_iter = NULL,
+      max_n_coalitions = max_n_coalitions,
       max_iter = 1,
       convergence_tolerance = NULL,
       reduction_factor_vec = NULL,

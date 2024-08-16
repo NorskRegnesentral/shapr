@@ -154,17 +154,17 @@ test_that("erroneous input: `prediction_zero`", {
   )
 })
 
-test_that("erroneous input: `max_n_combinations`", {
+test_that("erroneous input: `max_n_coalitions`", {
   set.seed(123)
 
   expect_snapshot(
     {
-      # Too low max_n_combinations (smaller than # features)
+      # Too low max_n_coalitions (smaller than # features)
       horizon <- 3
       explain_y_lags <- 2
       explain_xreg_lags <- 2
 
-      n_combinations <- horizon + explain_y_lags + explain_xreg_lags - 1
+      n_coalitions <- horizon + explain_y_lags + explain_xreg_lags - 1
 
       explain_forecast(
         testing = TRUE,
@@ -179,7 +179,7 @@ test_that("erroneous input: `max_n_combinations`", {
         approach = "independence",
         prediction_zero = p0_ar,
         n_batches = 1,
-        max_n_combinations = n_combinations,
+        max_n_coalitions = n_coalitions,
         group_lags = FALSE
       )
     }
@@ -188,12 +188,12 @@ test_that("erroneous input: `max_n_combinations`", {
 
   expect_snapshot(
     {
-      # Too low n_combinations (smaller than # groups)
+      # Too low n_coalitions (smaller than # groups)
       horizon <- 3
       explain_y_lags <- 2
       explain_xreg_lags <- 2
 
-      n_combinations <- 1 + 1
+      n_coalitions <- 1 + 1
 
       explain_forecast(
         testing = TRUE,
@@ -208,7 +208,7 @@ test_that("erroneous input: `max_n_combinations`", {
         approach = "independence",
         prediction_zero = p0_ar,
         n_batches = 1,
-        max_n_combinations = n_combinations,
+        max_n_coalitions = n_coalitions,
         group_lags = TRUE
       )
     }

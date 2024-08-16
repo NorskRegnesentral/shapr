@@ -26,7 +26,7 @@ editor_options:
 
 > [Pretrained vaeac (path)](#pretrained_vaeac_path)
 
-> [Subset of coalitions](#n_combinations)
+> [Subset of coalitions](#n_coalitions)
 
 > [Paired sampling](#paired_sampling)
 
@@ -251,14 +251,14 @@ all.equal(explanation$shapley_values, expl_pretrained_vaeac_path$shapley_values)
 
 
 
-## Specified n_combinations and more batches {#n_combinations}
+## Specified n_coalitions and more batches {#n_coalitions}
 
 In this section, we discuss two general `shapr` parameters in the `explain()` function
-that are method independent, namely, `n_combinations` and `n_batches`.
+that are method independent, namely, `n_coalitions` and `n_batches`.
 The user can limit the Shapley value computations to only a subset of coalitions by setting the
-`n_combinations` parameter to a value lower than $2^{n_\text{features}}$. To lower the memory
+`n_coalitions` parameter to a value lower than $2^{n_\text{features}}$. To lower the memory
 usage, the user can split the coalitions into several batches by setting `n_batches` to a desired
-number. In this example, we set `n_batches = 5` and `n_combinations = 10` which is less than
+number. In this example, we set `n_batches = 5` and `n_coalitions = 10` which is less than
 the maximum of `16`.
 
 Note that we do not need to train a new `vaeac` model as we can use the one above trained on
@@ -274,7 +274,7 @@ expl_batches_combinations <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_combinations = 10,
+  n_coalitions = 10,
   n_batches = 5,
   n_samples = n_samples,
   vaeac.extra_parameters = list(
@@ -288,14 +288,14 @@ expl_batches_combinations <- explain(
 plot_SV_several_approaches(list("Original" = explanation, "Other combi." = expl_batches_combinations))
 ```
 
-![](figure_vaeac/check-n_combinations-and-more-batches-1.png)
+![](figure_vaeac/check-n_coalitions-and-more-batches-1.png)
 
 ```r
 # Here we can see that the samples coalitions are in different batches and have different weights
 expl_batches_combinations$internal$objects$X
-#> Key: <id_combination>
+#> Key: <id_coalition>
 #> Index: <approach>
-#>     id_combination features n_features     N shapley_weight approach batch
+#>     id_coalition features n_features     N shapley_weight approach batch
 #>              <int>   <list>      <int> <int>          <int>   <char> <num>
 #>  1:              1                   0     1        1000000     <NA>    NA
 #>  2:              2        3          1     4              1    vaeac     1
@@ -310,8 +310,8 @@ expl_batches_combinations$internal$objects$X
 
 # Can compare that to the situation where we have exact computations (i.e., include all coalitions)
 explanation$internal$objects$X
-#> Key: <id_combination>
-#>     id_combination features n_features     N shapley_weight approach batch
+#> Key: <id_coalition>
+#>     id_coalition features n_features     N shapley_weight approach batch
 #>              <int>   <list>      <int> <int>          <num>   <char> <num>
 #>  1:              1                   0     1       1.00e+06     <NA>    NA
 #>  2:              2        1          1     4       2.50e-01    vaeac     1
@@ -334,7 +334,7 @@ explanation$internal$objects$X
 Note that if we train a `vaeac` model from scratch with the setup above, then the `vaeac` model will not use
 a missing completely as random (MCAR) mask generator, but rather a mask generator that ensures that the `vaeac`
 model is only trained on the specified set of coalitions. In this case, it will be the set of the
-`n_combinations - 2` sampled coalitions. The minus two is because the `vaeac` model will
+`n_coalitions - 2` sampled coalitions. The minus two is because the `vaeac` model will
 not train on the empty and grand coalitions as they are not needed in the Shapley value computations.
 
 ```r
@@ -344,7 +344,7 @@ expl_batches_combinations_2 <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_combinations = 10,
+  n_coalitions = 10,
   n_batches = 1,
   n_samples = n_samples,
   vaeac.n_vaeacs_initialize = 1,
@@ -382,7 +382,7 @@ The `vaeac` approach can use paired sampling to improve the stability of the tra
 When using paired sampling, each observation in the training batches will be duplicated, but the first version will
 be masked by $S$ and the second verion will be masked by the complement $\bar{S}$. The mask are taken from the
 `explanation$internal$objects$S` matrix. Note that `vaeac` does not check if the complement is also in said matrix.
-This means that if the Shapley value explanations are computed based on a subset of coalitions, i.e., `n_combinations`
+This means that if the Shapley value explanations are computed based on a subset of coalitions, i.e., `n_coalitions`
 is less than $2^{n_\text{features}}$, then the `vaeac` model might be trained on coalitions which are not used when
 computing the Shapley values. This should not be considered as redundant training as it increases the stablility and
 performance of the `vaeac` model as a whole, hence, we reccomend to use paried samping (default). Furthermore, the masks

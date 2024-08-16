@@ -12,7 +12,7 @@
 #' `eta` is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
 #'
 #' @param empirical.fixed_sigma Positive numeric scalar. (default = 0.1)
-#' Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
+#' Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
 #' Only used when `empirical.type = "fixed_sigma"`
 #'
 #' @param empirical.n_samples_aicc Positive integer. (default = 1000)
@@ -172,7 +172,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
       )
 
       dt_l[[i]][, id := i]
-      if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+      if (!is.null(index_features)) dt_l[[i]][, id_coalition := index_features[id_coalition]]
     }
   } else {
     h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
@@ -221,7 +221,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
       )
 
       dt_l[[i]][, id := i]
-      if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+      if (!is.null(index_features)) dt_l[[i]][, id_coalition := index_features[id_coalition]]
     }
   }
 
@@ -238,9 +238,9 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 #' Generate permutations of training data using test observations
 #'
 #' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
-#' observations for all feature combinations. The dimension equals `n_train x m`.
-#' @param S Integer matrix of dimension `n_combinations x m`, where `n_combinations`
-#' and `m` equals the total number of sampled/non-sampled feature combinations and
+#' observations for all coalitions. The dimension equals `n_train x m`.
+#' @param S Integer matrix of dimension `n_coalitions x m`, where `n_coalitions`
+#' and `m` equals the total number of sampled/non-sampled coalitions and
 #' the total number of unique features, respectively. Note that `m = ncol(x_train)`.
 #' @param x_train Numeric matrix
 #' @param x_explain Numeric matrix
@@ -258,9 +258,9 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
   stopifnot(nrow(W_kernel) == nrow(x_train))
   stopifnot(ncol(W_kernel) == nrow(S))
   stopifnot(all(S %in% c(0, 1)))
-  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- NULL # due to NSE notes in R CMD check
+  index_s <- index_x_train <- id_coalition <- weight <- w <- wcum <- NULL # due to NSE notes in R CMD check
 
-  # Find weights for all combinations and training data
+  # Find weights for all coalitions and training data
   dt <- data.table::as.data.table(W_kernel)
   nms_vec <- seq_len(ncol(dt))
   names(nms_vec) <- colnames(dt)
@@ -268,11 +268,11 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
   dt_melt <- data.table::melt(
     dt,
     id.vars = "index_x_train",
-    variable.name = "id_combination",
+    variable.name = "id_coalition",
     value.name = "weight",
     variable.factor = FALSE
   )
-  dt_melt[, index_s := nms_vec[id_combination]]
+  dt_melt[, index_s := nms_vec[id_coalition]]
 
   # Remove training data with small weight
   knms <- c("index_s", "weight")
@@ -296,7 +296,7 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
   # Add keys
   dt_p <- data.table::as.data.table(dt_p)
   data.table::setnames(dt_p, colnames(x_train))
-  dt_p[, id_combination := dt_melt[["index_s"]]]
+  dt_p[, id_coalition := dt_melt[["index_s"]]]
   dt_p[, w := dt_melt[["weight"]]]
 
   return(dt_p)
@@ -372,14 +372,14 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
 
   iter <- length(internal$iter_list)
 
-  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   X <- internal$iter_list[[iter]]$X
   S <- internal$iter_list[[iter]]$S
 
 
   stopifnot(
     data.table::is.data.table(X),
-    !is.null(X[["id_combination"]]),
+    !is.null(X[["id_coalition"]]),
     !is.null(X[["n_features"]])
   )
 
@@ -392,7 +392,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   empirical.n_samples_aicc <- nrow(optimsamp)
   nloops <- n_explain # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = n_features, nrow = n_combinations)
+  h_optim_mat <- matrix(NA, ncol = n_features, nrow = n_coalitions)
 
   if (is.null(index_features)) {
     index_features <- X[, .I]
@@ -403,7 +403,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   these_k <- unique(X[, n_features[index_features]])
 
   for (i in these_k) {
-    these_cond <- X[index_features][n_features == i, id_combination]
+    these_cond <- X[index_features][n_features == i, id_coalition]
     cutters <- seq_len(empirical.n_samples_aicc)
     no_cond <- length(these_cond)
     cond_samp <- cut(
@@ -490,7 +490,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
 
   iter <- length(internal$iter_list)
 
-  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   X <- internal$iter_list[[iter]]$X
   S <- internal$iter_list[[iter]]$S
 
@@ -508,7 +508,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
   )
   nloops <- n_explain # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = n_features, nrow = n_combinations)
+  h_optim_mat <- matrix(NA, ncol = n_features, nrow = n_coalitions)
 
   if (is.null(index_features)) {
     index_features <- X[, .I]

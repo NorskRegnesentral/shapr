@@ -116,7 +116,7 @@ for(kk in testObs_computed_vec){
   run <- iterative_kshap_func(model,x_explain,x_train,
                               testObs_computed = testObs_computed,
                               cutoff_feats = cutoff_feats,
-                              initial_n_combinations = 50,
+                              initial_n_coalitions = 50,
                               full_pred = full_pred,
                               shapsum_other_features = shapsum_other_features,
                               p0 = p0,
@@ -150,7 +150,7 @@ for (i in testObs_computed_vec){
                                     x_train = x_train,
                                     approach = "gaussian",
                                     prediction_zero = p0,
-                                    n_combinations = runcomps_list[[i]],
+                                    n_coalitions = runcomps_list[[i]],
                                     Sigma=Sigma,mu=mu)
   expl_approx[i,] = unlist(expl_approx_obj$shapley_values)
   expl_approx_obj_list[[i]] <- expl_approx_obj

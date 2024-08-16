@@ -90,17 +90,17 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
       sample = ctree.sample
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_coalition")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+    if (!is.null(index_features)) dt_l[[i]][, id_coalition := index_features[id_coalition]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[id_combination %in% c(1, 2^n_features), w := 1.0]
+  dt[id_coalition %in% c(1, 2^n_features), w := 1.0]
 
   # only return unique dt
-  dt2 <- dt[, sum(w), by = c("id_combination", labels, "id")]
+  dt2 <- dt[, sum(w), by = c("id_coalition", labels, "id")]
   setnames(dt2, "V1", "w")
 
   return(dt2)

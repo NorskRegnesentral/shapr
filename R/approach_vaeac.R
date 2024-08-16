@@ -78,18 +78,18 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Check if vaeac is to be applied on a subset of coalitions.
   if (!parameters$exact || parameters$is_groupwise || combined_approaches) {
     # We have either:
-    # 1) sampled `n_combinations` different subsets of coalitions (i.e., not exact),
+    # 1) sampled `n_coalitions` different subsets of coalitions (i.e., not exact),
     # 2) using the coalitions which respects the groups in group Shapley values, and/or
     # 3) using a combination of approaches where vaeac is only used on a subset of the coalitions.
     # Here, objects$S contains the coalitions while objects$X contains the information about the approach.
 
     # Extract the the coalitions / masks which are estimated using vaeac as a matrix
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions <-
-      S[X[approach == "vaeac"]$id_combination, , drop = FALSE]
+      S[X[approach == "vaeac"]$id_coalition, , drop = FALSE]
 
     # Extract the weights for the corresponding coalitions / masks.
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob <-
-      X$shapley_weight[X[approach == "vaeac"]$id_combination]
+      X$shapley_weight[X[approach == "vaeac"]$id_coalition]
 
     # Normalize the weights/probabilities such that they sum to one.
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob <-
@@ -189,11 +189,11 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   iter <- length(internal$iter_list)
 
-  n_combinations <- internal$iter_list[[iter]]$n_combinations
+  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   S <- internal$iter_list[[iter]]$S
 
   # If not provided, then set `index_features` to all non trivial coalitions
-  if (is.null(index_features)) index_features <- seq(2, n_combinations - 1)
+  if (is.null(index_features)) index_features <- seq(2, n_coalitions - 1)
 
   # Extract objects we are going to need later
   seed <- internal$parameters$seed
@@ -320,8 +320,8 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' `mask_gen_coalitions` is specified.
 #' @param mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
 #' `vaeac` model will be trained on, see [shapr::specified_masks_mask_generator()]. This parameter is used internally
-#' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
-#' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+#' in `shapr` when we only consider a subset of coalitions, i.e., when
+#' `n_coalitions` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 #' when `group` is specified in [shapr::explain()].
 #' @param mask_gen_coalitions_prob Numeric array (default is `NULL`). Array of length equal to the height
 #' of `mask_gen_coalitions` containing the probabilities of sampling the corresponding coalitions in
@@ -1144,15 +1144,15 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
   # If user provide `index_features`, then we add columns needed for shapr computations
   if (!is.null(index_features)) {
-    # Add id, id_combination and weights (uniform for the `vaeac` approach) to the result.
-    result[, c("id", "id_combination", "w") := list(
+    # Add id, id_coalition and weights (uniform for the `vaeac` approach) to the result.
+    result[, c("id", "id_coalition", "w") := list(
       rep(x = seq(n_explain), each = length(index_features) * n_samples),
       rep(x = index_features, each = n_samples, times = n_explain),
       1 / n_samples
     )]
 
     # Set the key in the data table
-    data.table::setkeyv(result, c("id", "id_combination"))
+    data.table::setkeyv(result, c("id", "id_coalition"))
   }
 
   return(result)
@@ -1661,7 +1661,7 @@ vaeac_check_parameters <- function(x_train,
 #' during the training of the vaeac model. Used in [torch::dataloader()].
 #' @param vaeac.batch_size_sampling Positive integer (default is `NULL`) The number of samples to include in
 #' each batch when generating the Monte Carlo samples. If `NULL`, then the function generates the Monte Carlo samples
-#' for the provided coalitions/combinations and all explicands sent to [shapr::explain()] at the time.
+#' for the provided coalitions and all explicands sent to [shapr::explain()] at the time.
 #' The number of coalitions are determined by `n_batches` in [shapr::explain()]. We recommend to tweak `n_batches`
 #' rather  than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
 #' @param vaeac.running_avg_n_values Positive integer (default is `5`). The number of previous IWAE values to include
@@ -1688,8 +1688,8 @@ vaeac_check_parameters <- function(x_train,
 #' `vaeac.mask_gen_coalitions` is specified.
 #' @param vaeac.mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
 #' `vaeac` model will be trained on, see [shapr::specified_masks_mask_generator()]. This parameter is used internally
-#' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
-#' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+#' in `shapr` when we only consider a subset of coalitions, i.e., when
+#' `n_coalitions` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 #' when `group` is specified in [shapr::explain()].
 #' @param vaeac.mask_gen_coalitions_prob Numeric array (default is `NULL`). Array of length equal to the height
 #' of `vaeac.mask_gen_coalitions` containing the probabilities of sampling the corresponding coalitions in
@@ -2447,7 +2447,7 @@ vaeac_prep_message_batch <- function(internal, index_features) {
 
   X <- internal$iter_list[[iter]]$X
 
-  id_batch <- X[id_combination == index_features[1]]$batch
+  id_batch <- X[id_coalition == index_features[1]]$batch
   n_batches <- internal$parameters$n_batches
   message(paste0("Generating Monte Carlo samples using `vaeac` for batch ", id_batch, " of ", n_batches, "."))
 }

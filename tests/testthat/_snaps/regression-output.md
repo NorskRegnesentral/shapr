@@ -4,7 +4,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -31,7 +31,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 16, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 16, 
       and is therefore set to 2^n_features = 16.
       
     Output
@@ -47,7 +47,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -63,7 +63,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -79,7 +79,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -95,7 +95,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -111,7 +111,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -127,7 +127,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -165,7 +165,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 16, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 16, 
       and is therefore set to 2^n_features = 16.
       
     Output
@@ -181,7 +181,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -197,7 +197,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output
@@ -213,7 +213,7 @@
       (out <- code)
     Message
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_features = 32, 
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
     Output

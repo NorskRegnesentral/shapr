@@ -7,9 +7,9 @@
 get_adaptive_arguments_default(
   internal,
   max_iter = 20,
-  initial_n_combinations = ceiling(min(200, max(internal$parameters$n_features,
+  initial_n_coalitions = ceiling(min(200, max(internal$parameters$n_features,
     (2^internal$parameters$n_features)/10))),
-  fixed_n_combinations_per_iter = NULL,
+  fixed_n_coalitions_per_iter = NULL,
   convergence_tolerance = 0.02,
   reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
   n_boot_samps = 100,
@@ -21,20 +21,20 @@ get_adaptive_arguments_default(
 
 \item{max_iter}{Integer. Maximum number of estimation iterations}
 
-\item{initial_n_combinations}{Integer. Number of coalitions to use in the first estimation iteration.}
+\item{initial_n_coalitions}{Integer. Number of coalitions to use in the first estimation iteration.}
 
-\item{fixed_n_combinations_per_iter}{Integer. Number of \code{n_combinations} to use in each iteration.
+\item{fixed_n_coalitions_per_iter}{Integer. Number of \code{n_coalitions} to use in each iteration.
 \code{NULL} (default) means setting it based on estimates based on a set convergence threshold.}
 
 \item{convergence_tolerance}{Numeric. The t variable in the convergence threshold formula on page 6 in the paper
 Covert and Lee (2021), 'Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression'
 https://arxiv.org/pdf/2012.01536. Smaller values requires more coalitions before convergence is reached.}
 
-\item{reduction_factor_vec}{Numeric vector. The number of \code{n_combinations} that must be used to reach convergence
+\item{reduction_factor_vec}{Numeric vector. The number of \code{n_coalitions} that must be used to reach convergence
 in the next iteration is estimated.
-The number of \code{n_combinations} actually used in the next iteration is set to this estimate multiplied by
+The number of \code{n_coalitions} actually used in the next iteration is set to this estimate multiplied by
 \code{reduction_factor_vec[i]} for iteration \code{i}.
-It is wise to start with smaller numbers to avoid using too many \code{n_combinations} due to uncertain estimates in
+It is wise to start with smaller numbers to avoid using too many \code{n_coalitions} due to uncertain estimates in
 the first iterations.}
 
 \item{n_boot_samps}{Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all

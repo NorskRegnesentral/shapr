@@ -75,7 +75,7 @@ prepare_data <- function(internal, index_features = NULL, ...) {
   if (length(approach) > 1) {
     # Picks the relevant approach from the X table which list the unique approach of the batch
     # matches by index_features
-    class(this_class) <- X[id_combination == index_features[1], approach]
+    class(this_class) <- X[id_coalition == index_features[1], approach]
   } else {
     # Only one approach for all coalitions sizes
     class(this_class) <- approach

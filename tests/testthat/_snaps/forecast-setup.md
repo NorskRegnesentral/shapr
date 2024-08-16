@@ -12,7 +12,7 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is NULL or larger than or 2^n_groups = 4, 
+      max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
       and is therefore set to 2^n_groups = 4.
       
     Condition
@@ -84,24 +84,24 @@
       Error in `get_parameters()`:
       ! `prediction_zero` (77.8823529411765, 77.8823529411765) must be numeric and match the output size of the model (3).
 
-# erroneous input: `max_n_combinations`
+# erroneous input: `max_n_coalitions`
 
     Code
       horizon <- 3
       explain_y_lags <- 2
       explain_xreg_lags <- 2
-      n_combinations <- horizon + explain_y_lags + explain_xreg_lags - 1
+      n_coalitions <- horizon + explain_y_lags + explain_xreg_lags - 1
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
       horizon = horizon, approach = "independence", prediction_zero = p0_ar,
-      n_batches = 1, max_n_combinations = n_combinations, group_lags = FALSE)
+      n_batches = 1, max_n_coalitions = n_coalitions, group_lags = FALSE)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is smaller than or n_features = 7, 
+      max_n_coalitions is smaller than or n_features = 7, 
       and is therefore set to n_features + 1  = 8.
       
     Output
@@ -128,18 +128,18 @@
       horizon <- 3
       explain_y_lags <- 2
       explain_xreg_lags <- 2
-      n_combinations <- 1 + 1
+      n_coalitions <- 1 + 1
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
       horizon = horizon, approach = "independence", prediction_zero = p0_ar,
-      n_batches = 1, max_n_combinations = n_combinations, group_lags = TRUE)
+      n_batches = 1, max_n_coalitions = n_coalitions, group_lags = TRUE)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_combinations is smaller than or n_groups = 2, 
+      max_n_coalitions is smaller than or n_groups = 2, 
       and is therefore set to n_groups + 1  = 3.
       
     Output
