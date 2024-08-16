@@ -12,7 +12,7 @@ feature_combinations(
   group_num = NULL,
   paired_shap_sampling = TRUE,
   prev_feature_samples = NULL,
-  unique_sampling
+  unique_sampling = TRUE
 )
 }
 \arguments{

@@ -295,10 +295,10 @@
 # erroneous input: `max_n_combinations`
 
     Code
-      max_n_combinations_non_numeric_1 <- "bla"
+      max_n_comb_non_numeric_1 <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_combinations_non_numeric_1, n_batches = 1)
+        max_n_combinations = max_n_comb_non_numeric_1, n_batches = 1)
     Condition
       Error in `get_parameters()`:
       ! `max_n_combinations` must be NULL or a single positive integer.
@@ -306,10 +306,10 @@
 ---
 
     Code
-      max_n_combinations_non_numeric_2 <- TRUE
+      max_n_comb_non_numeric_2 <- TRUE
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_combinations_non_numeric_2, n_batches = 1)
+        max_n_combinations = max_n_comb_non_numeric_2, n_batches = 1)
     Condition
       Error in `get_parameters()`:
       ! `max_n_combinations` must be NULL or a single positive integer.
@@ -350,10 +350,10 @@
 ---
 
     Code
-      max_n_combinations_non_positive <- 0
+      max_n_comb_non_positive <- 0
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_combinations = max_n_combinations_non_positive, n_batches = 1)
+        max_n_combinations = max_n_comb_non_positive, n_batches = 1)
     Condition
       Error in `get_parameters()`:
       ! `max_n_combinations` must be NULL or a single positive integer.
