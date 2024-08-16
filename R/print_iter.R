@@ -1,6 +1,4 @@
 print_iter <- function(internal, print_iter_info, print_shapleyres) {
-
-
   iter <- length(internal$iter_list) - 1 # This function is called after the preparation of the next iteration
 
   converged <- internal$iter_list[[iter]]$converged
@@ -23,7 +21,7 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
         "\nIteration ", iter, "\n",
         "Not converged after ", current_n_combinations, " coalitions.\n"
       ))
-      if(!is.null(convergence_tolerance)){
+      if (!is.null(convergence_tolerance)) {
         cat(paste0(
           "Estimated remaining coalitions: ", est_remaining_combinations, "\n",
           "Estimated required coalitions: ", est_required_combinations, "\n"
@@ -57,7 +55,6 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
           "Maximum number of coalitions (", current_n_combinations, ") reached.\n"
         ))
       }
-
     }
   }
 

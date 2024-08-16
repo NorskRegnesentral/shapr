@@ -1,6 +1,3 @@
-
-
-
 #' @keywords internal
 shapley_setup <- function(internal) {
   n_features0 <- internal$parameters$n_features
@@ -10,7 +7,7 @@ shapley_setup <- function(internal) {
   shapley_reweighting <- internal$parameters$shapley_reweighting
 
   # TODO: Just added temporary, and set to TRUE unless not specified explicitly as a ... argument in explain()
-  unique_sampling <- ifelse(is.null(internal$parameters$unique_sampling),TRUE,internal$parameters$unique_sampling)
+  unique_sampling <- ifelse(is.null(internal$parameters$unique_sampling), TRUE, internal$parameters$unique_sampling)
 
   iter <- length(internal$iter_list)
 
@@ -75,11 +72,11 @@ shapley_setup <- function(internal) {
   # instead of storing it
 
 
-  if(isFALSE(exact)){
+  if (isFALSE(exact)) {
     # Storing the feature samples
     repetitions <- X[-c(1, .N), sample_freq]
 
-    if(is_groupwise){
+    if (is_groupwise) {
       unique_feature_samples <- X[-c(1, .N), groups] # We call it feature_samples even if it applies also to groups.
     } else {
       unique_feature_samples <- X[-c(1, .N), features]
@@ -153,20 +150,19 @@ shapley_setup <- function(internal) {
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL,
-                                 paired_shap_sampling = TRUE, prev_feature_samples = NULL,unique_sampling) {
+                                 paired_shap_sampling = TRUE, prev_feature_samples = NULL, unique_sampling) {
+  is_groupwise <- length(group_num) > 0
 
-  is_groupwise <- length(group_num)>0
-
-  this_m <- ifelse(is_groupwise,length(group_num),m)
+  this_m <- ifelse(is_groupwise, length(group_num), m)
   if (exact) {
     dt <- feature_exact(this_m, weight_zero_m)
   } else {
     dt <- feature_not_exact(this_m,
-                            n_combinations,
-                            weight_zero_m,
-                            paired_shap_sampling = paired_shap_sampling,
-                            prev_feature_samples = prev_feature_samples,
-                            unique_sampling = unique_sampling
+      n_combinations,
+      weight_zero_m,
+      paired_shap_sampling = paired_shap_sampling,
+      prev_feature_samples = prev_feature_samples,
+      unique_sampling = unique_sampling
     )
     stopifnot(
       data.table::is.data.table(dt),
@@ -176,7 +172,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     dt[, p := NULL]
   }
 
-  if(is_groupwise){
+  if (is_groupwise) {
     convert_feature_to_groups(dt, group_num) # Convert to groups by reference
   }
 
@@ -195,7 +191,7 @@ shapley_reweighting <- function(X, reweight = "on_N") {
   } else if (reweight == "on_all") {
     m <- X[.N, n_features]
     X[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m = 10^6)]
-  } else if (reweight == "on_N_sum"){
+  } else if (reweight == "on_N_sum") {
     X[, shapley_weight := sum(shapley_weight), by = N]
   } # strategy= "none" or something else do nothing
   return(NULL)
@@ -266,9 +262,8 @@ feature_not_exact <- function(m,
       unique_samples <- length(unique(feature_sample_all))
     }
   } else {
-
-    if(is.null(prev_feature_samples)){
-       n_combinations <- n_combinations - 2 # Sample -2 for the first iteration as we add zero and m samples below
+    if (is.null(prev_feature_samples)) {
+      n_combinations <- n_combinations - 2 # Sample -2 for the first iteration as we add zero and m samples below
     }
 
     n_features_sample <- sample(
@@ -340,8 +335,8 @@ feature_not_exact <- function(m,
   return(X)
 }
 
-convert_feature_to_groups <- function(dt,group_num){
-  setnames(dt,c("features","n_features"),c("groups","n_groups"))
+convert_feature_to_groups <- function(dt, group_num) {
+  setnames(dt, c("features", "n_features"), c("groups", "n_groups"))
   dt[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
   dt[, n_features := length(features[[1]]), id_combination]
 
@@ -863,4 +858,3 @@ shapley_setup_forecast <- function(internal) {
 
   return(internal)
 }
-

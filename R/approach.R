@@ -17,7 +17,7 @@ setup_approach <- function(internal, ...) {
   run_now <- (isFALSE("regression_surrogate" %in% approach) && isTRUE(is.null(X))) ||
     (isTRUE("regression_surrogate" %in% approach) && isFALSE(is.null(X)))
 
-  if(isFALSE(run_now)){ # Do nothing
+  if (isFALSE(run_now)) { # Do nothing
     return(internal)
   } else {
     this_class <- ""
@@ -30,9 +30,8 @@ setup_approach <- function(internal, ...) {
 
     UseMethod("setup_approach", this_class)
 
-    internal$timing_list$setup_approach <-  Sys.time()
+    internal$timing_list$setup_approach <- Sys.time()
   }
-
 }
 
 #' @inheritParams default_doc

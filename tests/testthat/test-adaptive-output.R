@@ -87,7 +87,7 @@ test_that("output_lm_numeric_gaussian_group_converges_tol", {
     C = "Day"
   )
 
-    expect_snapshot_rds(
+  expect_snapshot_rds(
     explain(
       testing = TRUE,
       model = model_lm_numeric,
@@ -107,4 +107,3 @@ test_that("output_lm_numeric_gaussian_group_converges_tol", {
     "output_lm_numeric_gaussian_group_converges_tol"
   )
 })
-

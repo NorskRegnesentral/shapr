@@ -20,15 +20,17 @@ prepare_next_iteration <- function(internal) {
     X <- internal$iter_list[[iter]]$X
 
 
-    if(is.null(fixed_n_combinations_per_iter)){
+    if (is.null(fixed_n_combinations_per_iter)) {
       proposal_next_n_combinations <- ceiling(est_remaining_combinations * reduction_factor)
     } else {
       proposal_next_n_combinations <- fixed_n_combinations_per_iter
     }
 
     # Thresholding if max_n_combinations in reached
-    proposal_next_n_combinations <- min(max_n_combinations-current_n_combinations,
-                                        proposal_next_n_combinations)
+    proposal_next_n_combinations <- min(
+      max_n_combinations - current_n_combinations,
+      proposal_next_n_combinations
+    )
 
     if ((current_n_combinations + proposal_next_n_combinations) >= 2^n_features) {
       # Use all coalitions in the last iteration as the estimated number of samples is more than what remains
@@ -45,9 +47,7 @@ prepare_next_iteration <- function(internal) {
     next_iter_list$reduction_factor <- reduction_factor_vec[iter]
 
     next_iter_list$prev_feature_samples <- current_feature_samples
-
-
-    } else {
+  } else {
     next_iter_list <- list()
   }
 

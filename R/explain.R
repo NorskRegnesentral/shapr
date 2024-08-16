@@ -320,7 +320,7 @@ explain <- function(model,
                     shapley_reweighting = "none", # tmp # "on_N" # TODO: Make "on_N" the default later on.
                     ...) { # ... is further arguments passed to specific approaches
 
-  init_time = Sys.time()
+  init_time <- Sys.time()
 
   set.seed(seed)
 
@@ -380,7 +380,7 @@ explain <- function(model,
 
   while (converged == FALSE) {
     iter <- iter + 1
-    internal$timing_list <- list(init=Sys.time())
+    internal$timing_list <- list(init = Sys.time())
 
     # setup the Shapley framework
     internal <- shapley_setup(internal)

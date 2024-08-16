@@ -507,49 +507,45 @@ test_that("erroneous input: `max_n_combinations`", {
     error = TRUE
   )
 
-  expect_snapshot(
-    {
-      # Too low max_n_combinations (smaller than # features
-      max_n_combinations <- ncol(x_explain_numeric) - 1
+  expect_snapshot({
+    # Too low max_n_combinations (smaller than # features
+    max_n_combinations <- ncol(x_explain_numeric) - 1
 
-      explain(
-        testing = TRUE,
-        model = model_lm_numeric,
-        x_explain = x_explain_numeric,
-        x_train = x_train_numeric,
-        prediction_zero = p0,
-        approach = "gaussian",
-        max_n_combinations = max_n_combinations,
-        n_batches = 1
-      )
-    }
-  )
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      prediction_zero = p0,
+      approach = "gaussian",
+      max_n_combinations = max_n_combinations,
+      n_batches = 1
+    )
+  })
 
 
-  expect_snapshot(
-    {
-      # Too low max_n_combinations (smaller than # groups
-      groups <- list(
-        A = c("Solar.R", "Wind"),
-        B = c("Temp", "Month"),
-        C = "Day"
-      )
+  expect_snapshot({
+    # Too low max_n_combinations (smaller than # groups
+    groups <- list(
+      A = c("Solar.R", "Wind"),
+      B = c("Temp", "Month"),
+      C = "Day"
+    )
 
-      max_n_combinations <- length(groups) - 1
+    max_n_combinations <- length(groups) - 1
 
-      explain(
-        testing = TRUE,
-        model = model_lm_numeric,
-        x_explain = x_explain_numeric,
-        x_train = x_train_numeric,
-        prediction_zero = p0,
-        approach = "gaussian",
-        group = groups,
-        max_n_combinations = max_n_combinations,
-        n_batches = 1
-      )
-    }
-  )
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      prediction_zero = p0,
+      approach = "gaussian",
+      group = groups,
+      max_n_combinations = max_n_combinations,
+      n_batches = 1
+    )
+  })
 })
 
 test_that("erroneous input: `group`", {
@@ -1424,38 +1420,38 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
 
   # We should get a message saying that we are using the exact mode.
   expect_snapshot(
-      explanation_equal <- explain(
-        testing = TRUE,
-        model = model_lm_numeric,
-        x_explain = x_explain_numeric,
-        x_train = x_train_numeric,
-        approach = "gaussian",
-        prediction_zero = p0,
-        n_samples = 2, # Low value for fast computations
-        n_batches = 1, # Not related to the bug
-        seed = 123,
-        adaptive_arguments = list(compute_sd = FALSE),
-        max_n_combinations = 2^ncol(x_explain_numeric)
-        )
-      )
+    explanation_equal <- explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      prediction_zero = p0,
+      n_samples = 2, # Low value for fast computations
+      n_batches = 1, # Not related to the bug
+      seed = 123,
+      adaptive_arguments = list(compute_sd = FALSE),
+      max_n_combinations = 2^ncol(x_explain_numeric)
+    )
+  )
 
   # We should get a message saying that we are using the exact mode.
   # The `regexp` format match the one written in `feature_combinations()`.
   expect_snapshot(
-      explanation_larger <- explain(
-        testing = TRUE,
-        model = model_lm_numeric,
-        x_explain = x_explain_numeric,
-        x_train = x_train_numeric,
-        approach = "gaussian",
-        prediction_zero = p0,
-        n_samples = 2, # Low value for fast computations
-        n_batches = 1, # Not related to the bug
-        seed = 123,
-        adaptive_arguments = list(compute_sd = FALSE),
-        max_n_combinations = 2^ncol(x_explain_numeric) + 1
-        )
-      )
+    explanation_larger <- explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      prediction_zero = p0,
+      n_samples = 2, # Low value for fast computations
+      n_batches = 1, # Not related to the bug
+      seed = 123,
+      adaptive_arguments = list(compute_sd = FALSE),
+      max_n_combinations = 2^ncol(x_explain_numeric) + 1
+    )
+  )
 
   # Test that returned objects are identical (including all using the exact option and having the same Shapley weights)
   expect_equal(
@@ -1473,7 +1469,7 @@ test_that("Shapr with `max_n_combinations` >= 2^m uses exact Shapley kernel weig
     explanation_exact$internal$parameters$exact
   )
   expect_equal(
-    explanation_exact$internal$objects$X[,.N],
+    explanation_exact$internal$objects$X[, .N],
     2^ncol(x_explain_numeric)
   )
 })
@@ -2083,7 +2079,8 @@ test_that("feature wise and groupwise computations are identical", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "gaussian",
-    prediction_zero = p0)
+    prediction_zero = p0
+  )
 
 
   expl_group <- explain(
@@ -2093,10 +2090,10 @@ test_that("feature wise and groupwise computations are identical", {
     x_train = x_train_numeric,
     approach = "gaussian",
     group = groups,
-    prediction_zero = p0)
+    prediction_zero = p0
+  )
 
 
   # Checking equality in the list with all final and intermediate results
-  expect_equal(expl_feat$shapley_values,expl_group$shapley_values)
+  expect_equal(expl_feat$shapley_values, expl_group$shapley_values)
 })
-

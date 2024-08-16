@@ -103,8 +103,10 @@ setup <- function(x_train,
 
   internal <- set_adaptive_parameters(internal)
 
-  internal$timing_list <- list(init_time = init_time,
-                               setup = Sys.time())
+  internal$timing_list <- list(
+    init_time = init_time,
+    setup = Sys.time()
+  )
 
   return(internal)
 }
@@ -122,7 +124,7 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     stop("`paired_shap_sampling` must be a single logical.")
   }
 
-  if (!is.logical(adaptive) && length(adaptive)==1) {
+  if (!is.logical(adaptive) && length(adaptive) == 1) {
     stop("`adaptive` must be a single logical.")
   }
   if (!is.list(adaptive_arguments)) {
@@ -132,38 +134,38 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
 
   # max_n_combinations
   if (!is.null(max_n_combinations) &&
-      !(is.wholenumber(max_n_combinations) &&
-        length(max_n_combinations) == 1 &&
-        !is.na(max_n_combinations) &&
-        max_n_combinations > 0)) {
+    !(is.wholenumber(max_n_combinations) &&
+      length(max_n_combinations) == 1 &&
+      !is.na(max_n_combinations) &&
+      max_n_combinations > 0)) {
     stop("`max_n_combinations` must be NULL or a single positive integer.")
   }
 
   # group (checked more thoroughly later)
   if (!is.null(group) &&
-      !is.list(group)) {
+    !is.list(group)) {
     stop("`group` must be NULL or a list")
   }
 
   # n_samples
   if (!(is.wholenumber(n_samples) &&
-        length(n_samples) == 1 &&
-        !is.na(n_samples) &&
-        n_samples > 0)) {
+    length(n_samples) == 1 &&
+    !is.na(n_samples) &&
+    n_samples > 0)) {
     stop("`n_samples` must be a single positive integer.")
   }
   # n_batches
   if (!is.null(n_batches) &&
-      !(is.wholenumber(n_batches) &&
-        length(n_batches) == 1 &&
-        !is.na(n_batches) &&
-        n_batches > 0)) {
+    !(is.wholenumber(n_batches) &&
+      length(n_batches) == 1 &&
+      !is.na(n_batches) &&
+      n_batches > 0)) {
     stop("`n_batches` must be NULL or a single positive integer.")
   }
 
   # keep_samp_for_vS
   if (!(is.logical(keep_samp_for_vS) &&
-        length(keep_samp_for_vS) == 1)) {
+    length(keep_samp_for_vS) == 1)) {
     stop("`keep_samp_for_vS` must be single logical.")
   }
 
@@ -216,8 +218,8 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   #### Tests combining more than one parameter ####
   # prediction_zero vs output_size
   if (!all((is.numeric(prediction_zero)) &&
-           all(length(prediction_zero) == output_size) &&
-           all(!is.na(prediction_zero)))) {
+    all(length(prediction_zero) == output_size) &&
+    all(!is.na(prediction_zero)))) {
     stop(paste0(
       "`prediction_zero` (", paste0(prediction_zero, collapse = ", "),
       ") must be numeric and match the output size of the model (",
@@ -509,65 +511,60 @@ adjust_max_n_combinations <- function(internal) {
 
 
   # Adjust max_n_combinations
-  if(isFALSE(is_groupwise)){
+  if (isFALSE(is_groupwise)) {
     # Set max_n_combinations to upper bound
-    if(is.null(max_n_combinations) || max_n_combinations > 2^n_features){
+    if (is.null(max_n_combinations) || max_n_combinations > 2^n_features) {
       max_n_combinations <- 2^n_features
       message(
         paste0(
           "Success with message:\n",
           "max_n_combinations is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
-          "and is therefore set to 2^n_features = ", 2^n_features,".\n"
+          "and is therefore set to 2^n_features = ", 2^n_features, ".\n"
         )
       )
-
     }
     # Set max_n_combinations to lower bound
-    if(max_n_combinations <= n_features){
+    if (max_n_combinations <= n_features) {
       max_n_combinations <- n_features + 1
       message(
         paste0(
           "Success with message:\n",
           "max_n_combinations is smaller than or n_features = ", n_features, ", \n",
-          "and is therefore set to n_features + 1  = ", n_features + 1,".\n"
+          "and is therefore set to n_features + 1  = ", n_features + 1, ".\n"
         )
       )
     }
   } else {
     # Set max_n_combinations to upper bound
-    if(is.null(max_n_combinations) || max_n_combinations > 2^n_groups){
+    if (is.null(max_n_combinations) || max_n_combinations > 2^n_groups) {
       max_n_combinations <- 2^n_groups
       message(
         paste0(
           "Success with message:\n",
           "max_n_combinations is NULL or larger than or 2^n_groups = ", 2^n_groups, ", \n",
-          "and is therefore set to 2^n_groups = ", 2^n_groups,".\n"
+          "and is therefore set to 2^n_groups = ", 2^n_groups, ".\n"
         )
       )
-
     }
     # Set max_n_combinations to lower bound
-    if(max_n_combinations <= n_groups){
+    if (max_n_combinations <= n_groups) {
       max_n_combinations <- n_groups + 1
       message(
         paste0(
           "Success with message:\n",
           "max_n_combinations is smaller than or n_groups = ", n_groups, ", \n",
-          "and is therefore set to n_groups + 1  = ", n_groups + 1,".\n"
+          "and is therefore set to n_groups + 1  = ", n_groups + 1, ".\n"
         )
       )
-
     }
   }
 
   internal$parameters$max_n_combinations <- max_n_combinations
 
   return(internal)
-
 }
 
-check_max_n_combinations_fc <- function(internal){
-
+check_max_n_combinations_fc <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
   max_n_combinations <- internal$parameters$max_n_combinations
   n_features <- internal$parameters$n_features
@@ -603,18 +600,18 @@ check_max_n_combinations_fc <- function(internal){
 }
 
 
-set_exact <- function(internal){
+set_exact <- function(internal) {
   max_n_combinations <- internal$parameters$max_n_combinations
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
   is_groupwise <- internal$parameters$is_groupwise
   adaptive <- internal$parameters$adaptive
 
-  if(isFALSE(adaptive) && (
+  if (isFALSE(adaptive) && (
     (isFALSE(is_groupwise) && max_n_combinations == 2^n_features) ||
-    (isTRUE(is_groupwise) && max_n_combinations == 2^n_groups)
+      (isTRUE(is_groupwise) && max_n_combinations == 2^n_groups)
   )
-  ){
+  ) {
     exact <- TRUE
   } else {
     exact <- FALSE
@@ -628,7 +625,6 @@ set_exact <- function(internal){
 
 #' @keywords internal
 check_computability <- function(internal) {
-
   is_groupwise <- internal$parameters$is_groupwise
   max_n_combinations <- internal$parameters$max_n_combinations
   n_features <- internal$parameters$n_features
@@ -638,33 +634,33 @@ check_computability <- function(internal) {
 
 
   # Force user to use a natural number for n_combinations if m > 13
-  if (isTRUE(exact)){
-    if(isFALSE(is_groupwise) && n_features > 13){
+  if (isTRUE(exact)) {
+    if (isFALSE(is_groupwise) && n_features > 13) {
       warning(
         paste0(
           "Due to computation time, we recommend not computing Shapley values exactly \n",
-          "(with all 2^n_features (",2^n_features,") combinations for n_features > 13.\n",
+          "(with all 2^n_features (", 2^n_features, ") combinations for n_features > 13.\n",
           "Consider reducing max_n_combinations and enabling adaptive estimation with adaptive = TRUE.\n"
         )
       )
     }
-    if(isTRUE(is_groupwise) && n_groups > 13){
+    if (isTRUE(is_groupwise) && n_groups > 13) {
       warning(
         paste0(
           "Due to computation time, we recommend not computing Shapley values exactly \n",
-          "(with all 2^n_groups (",2^n_groups,") combinations for n_groups > 13.\n",
+          "(with all 2^n_groups (", 2^n_groups, ") combinations for n_groups > 13.\n",
           "Consider reducing max_n_combinations and enabling adaptive estimation with adaptive = TRUE.\n"
         )
       )
     }
   } else {
-    if(isFALSE(is_groupwise) && n_features > 30){
+    if (isFALSE(is_groupwise) && n_features > 30) {
       warning(
         "Due to computation time, we strongly recommend enabling adaptive estimation with adaptive = TRUE",
         " when n_features > 30.\n",
       )
     }
-    if(isTRUE(is_groupwise) && n_groups > 30){
+    if (isTRUE(is_groupwise) && n_groups > 30) {
       warning(
         "Due to computation time, we strongly recommend enabling adaptive estimation with adaptive = TRUE",
         " when n_groups > 30.\n",
@@ -685,8 +681,8 @@ check_approach <- function(internal) {
   supported_approaches <- get_supported_approaches()
 
   if (!(is.character(approach) &&
-        (length(approach) == 1 || length(approach) == n_features - 1) &&
-        all(is.element(approach, supported_approaches)))
+    (length(approach) == 1 || length(approach) == n_features - 1) &&
+    all(is.element(approach, supported_approaches)))
   ) {
     stop(
       paste0(
@@ -918,8 +914,8 @@ set_adaptive_parameters <- function(internal) {
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
   adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
-                                          adaptive_arguments,
-                                          keep.null = TRUE
+    adaptive_arguments,
+    keep.null = TRUE
   )
 
   internal$parameters$adaptive_arguments <- adaptive_arguments
@@ -970,8 +966,9 @@ get_adaptive_arguments_default <- function(internal,
                                            initial_n_combinations = ceiling(
                                              min(
                                                200,
-                                               max(internal$parameters$n_features,
-                                                   (2^internal$parameters$n_features) / 10
+                                               max(
+                                                 internal$parameters$n_features,
+                                                 (2^internal$parameters$n_features) / 10
                                                )
                                              )
                                            ),
@@ -1015,8 +1012,7 @@ get_adaptive_arguments_default <- function(internal,
 }
 
 
-additional_regression_setup <- function(internal, model, predict_model){
-
+additional_regression_setup <- function(internal, model, predict_model) {
   # This step needs to be called after predict_model is set, and therefore arrives at a later stage in explain()
 
   # Add the predicted response of the training and explain data to the internal list for regression-based methods.
@@ -1026,5 +1022,4 @@ additional_regression_setup <- function(internal, model, predict_model){
   }
 
   return(internal)
-
 }

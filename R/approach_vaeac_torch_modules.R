@@ -1525,7 +1525,7 @@ gauss_cat_sampler_most_likely <- function(one_hot_max_sizes, min_sigma = 1e-4, m
           distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
           col_sample <- torch::torch_argmax(distr$probs, -1)[, NULL]$to(dtype = torch::torch_float()) # Most lik class
         }
-        sample <- append(sample, col_sample) # Add the vector of sampled values for the i´th feature to the sample list
+        sample <- append(sample, col_sample) # Add the vector of sampled values for the i-th feature to the sample list
       }
       return(torch::torch_cat(sample, -1)) # Create a 2D torch by column binding the vectors in the list
     }
@@ -1587,7 +1587,7 @@ gauss_cat_sampler_random <- function(one_hot_max_sizes, min_sigma = 1e-4, min_pr
           distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
           col_sample <- distr$sample()$unsqueeze(-1)$to(dtype = torch::torch_float()) # Sample class using class prob
         }
-        sample <- append(sample, col_sample) # Add the vector of sampled values for the i´th feature to the sample list
+        sample <- append(sample, col_sample) # Add the vector of sampled values for the i-th feature to the sample list
       }
       return(torch::torch_cat(sample, -1)) # Create a 2D torch by column binding the vectors in the list
     }
@@ -1656,7 +1656,7 @@ gauss_cat_parameters <- function(one_hot_max_sizes, min_sigma = 1e-4, min_prob =
           distr <- vaeac_categorical_parse_params(params, self$min_prob) # Create a categorical distr based on params
           current_parameters <- distr$probs # Extract the current probabilities for each classs
         }
-        parameters <- append(parameters, current_parameters) # Add the i´th feature's parameters to the parameters list
+        parameters <- append(parameters, current_parameters) # Add the i-th feature's parameters to the parameters list
       }
       return(torch::torch_cat(parameters, -1)) # Create a 2D torch_tensor by column binding the tensors in the list
     }
@@ -1821,7 +1821,7 @@ categorical_to_one_hot_layer <- function(one_hot_max_sizes, add_nans_map_for_col
       # ONLY FOR CONTINUOUS FEATURES: out_cols now is a list of n_features tensors of shape n x size = n x 1 for
       # continuous variables. We concatenate them to a matrix of dim n x 2*n_features (in cont case) for prior net, but
       # for proposal net, it is n x 3*n_features, and they take the form
-      # [batch1, is.nan1, batch2, is.nan2, …,  batch12, is.nan12, mask1, mask2, …, mask12]
+      # [batch1, is.nan1, batch2, is.nan2, ...,  batch12, is.nan12, mask1, mask2, ..., mask12]
       return(out_cols)
     }
   )

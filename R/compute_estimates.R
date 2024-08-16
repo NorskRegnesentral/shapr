@@ -203,8 +203,8 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
 
       # Extract the paired coalitions from X_samp
       X_boot00_paired <- merge(X_boot00[, .(features_dup_tmp)],
-                               X_samp[, .(id_combination, features, n_features, N, features_tmp)],
-                               by.x = "features_dup_tmp", by.y = "features_tmp"
+        X_samp[, .(id_combination, features, n_features, N, features_tmp)],
+        by.x = "features_dup_tmp", by.y = "features_tmp"
       )
       X_boot0 <- rbind(
         X_boot00[, .(id_combination, features, n_features, N)],
@@ -223,7 +223,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
     }
 
 
-    X_boot0[, shapley_weight := .N/n_combinations_boot, by = "id_combination"]
+    X_boot0[, shapley_weight := .N / n_combinations_boot, by = "id_combination"]
     X_boot0 <- unique(X_boot0, by = "id_combination")
 
     X_boot <- rbind(X_keep, X_boot0)
@@ -265,7 +265,7 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
 
   X_org <- copy(X)
 
-  if(isFALSE(is_groupwise)){
+  if (isFALSE(is_groupwise)) {
     n_features0 <- internal$parameters$n_features
     shap_names <- internal$parameters$feature_names
   } else {
@@ -274,8 +274,8 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
 
     n_features0 <- internal$parameters$n_groups
     shap_names <- names(internal$parameters$group)
-    X_org[,n_features:=n_groups]
-    X_org[,features:=groups]
+    X_org[, n_features := n_groups]
+    X_org[, features := groups]
   }
 
   boot_sd_array <- array(NA, dim = c(n_explain, n_features0 + 1, n_boot_samps))
@@ -291,29 +291,29 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
   X_boot0 <- X_samp[
     sample.int(
       n = .N,
-      size = n_combinations_boot*n_boot_samps,
+      size = n_combinations_boot * n_boot_samps,
       replace = TRUE,
       prob = sample_freq
     ),
-    .(id_combination, features, n_features, N,shapley_weight)
+    .(id_combination, features, n_features, N, shapley_weight)
   ]
-  X_boot <- rbind(X_keep[rep(1:2,each=n_boot_samps),], X_boot0)
-  X_boot[,boot_id:=rep(seq(n_boot_samps),times=n_combinations_boot+2)]
+  X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ], X_boot0)
+  X_boot[, boot_id := rep(seq(n_boot_samps), times = n_combinations_boot + 2)]
 
-  setkey(X_boot,boot_id,id_combination)
-  X_boot[, shapley_weight := .N/n_combinations_boot, by = .(id_combination,boot_id)]
-  X_boot <- unique(X_boot, by = c("id_combination","boot_id"))
-  X_boot[, shapley_weight := mean(shapley_weight), by = .(N,boot_id)]
-  X_boot[n_features %in% c(0,n_features0), shapley_weight := X_keep[1, shapley_weight]]
+  setkey(X_boot, boot_id, id_combination)
+  X_boot[, shapley_weight := .N / n_combinations_boot, by = .(id_combination, boot_id)]
+  X_boot <- unique(X_boot, by = c("id_combination", "boot_id"))
+  X_boot[, shapley_weight := mean(shapley_weight), by = .(N, boot_id)]
+  X_boot[n_features %in% c(0, n_features0), shapley_weight := X_keep[1, shapley_weight]]
 
   for (i in seq_len(n_boot_samps)) {
     W_boot <- shapr::weight_matrix(
-      X = X_boot[boot_id==i],
+      X = X_boot[boot_id == i],
       normalize_W_weights = TRUE,
       is_groupwise = FALSE
     )
 
-    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_combination %in% X_boot[boot_id==i, id_combination], -"id_combination"]))
+    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_combination %in% X_boot[boot_id == i, id_combination], -"id_combination"]))
 
     boot_sd_array[, , i] <- copy(kshap_boot)
   }
