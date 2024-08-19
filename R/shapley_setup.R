@@ -1,10 +1,11 @@
 #' @keywords internal
 shapley_setup <- function(internal) {
   n_shapley_values <- internal$parameters$n_shapley_values
-  approach0 <- internal$parameters$approach
+  approach <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweighting <- internal$parameters$shapley_reweighting
+  coal_feature_list <- internal$objects$coal_feature_list
 
   # TODO: Just added temporary, and set to TRUE unless not specified explicitly as a ... argument in explain()
   unique_sampling <- ifelse(is.null(internal$parameters$unique_sampling), TRUE, internal$parameters$unique_sampling)
@@ -22,15 +23,12 @@ shapley_setup <- function(internal) {
     weight_zero_m = 10^6,
     paired_shap_sampling = paired_shap_sampling,
     prev_coal_samples = prev_coal_samples,
-    unique_sampling = unique_sampling # TODO: Just added temporary
+    unique_sampling = unique_sampling, # TODO: Just added temporary
+    coal_feature_list = coal_feature_list,
+    approach0 = approach
   )
 
-  # Adding approach to X (needed for the combined approaches)
-  if (length(approach0) > 1) {
-    X[!(coalition_size %in% c(0, n_shapley_values)), approach := approach0[coalition_size]]
-  } else {
-    X[, approach := approach0]
-  }
+
 
   coalition_map <- X[, .(id_coalition,
     coalitions_str = sapply(coalitions, paste, collapse = " ")
@@ -43,6 +41,7 @@ shapley_setup <- function(internal) {
     X = X,
     normalize_W_weights = TRUE
   )
+
 
   ## Get feature matrix ---------
   S <- coalition_matrix_cpp(
@@ -139,7 +138,9 @@ shapley_setup <- function(internal) {
 #' # Subsample of coalitions
 #' x <- create_coalition_table(exact = FALSE, m = 10, n_coalitions = 1e2)
 create_coalition_table <- function(m, exact = TRUE, n_coalitions = 200, weight_zero_m = 10^6,
-                                 paired_shap_sampling = TRUE, prev_coal_samples = NULL, unique_sampling = TRUE) {
+                                 paired_shap_sampling = TRUE, prev_coal_samples = NULL, unique_sampling = TRUE,
+                                 coal_feature_list = as.list(seq_len(m)),
+                                 approach0 = "gaussian") {
   if (exact) {
     dt <- exact_coalition_table(m, weight_zero_m)
   } else {
@@ -157,6 +158,16 @@ create_coalition_table <- function(m, exact = TRUE, n_coalitions = 200, weight_z
     p <- NULL # due to NSE notes in R CMD check
     dt[, p := NULL]
   }
+
+  dt[, features := lapply(coalitions, FUN = coal_feature_mapper, coal_feature_list = coal_feature_list)]
+
+  # Adding approach to X (needed for the combined approaches)
+  if (length(approach0) > 1) {
+    dt[!(coalition_size %in% c(0, m)), approach := approach0[coalition_size]]
+  } else {
+    dt[, approach := approach0]
+  }
+
 
   return(dt)
 }
@@ -355,15 +366,15 @@ helper_feature <- function(m, coal_sample) {
 
 
 
+
 #' @keywords internal
-group_fun <- function(x, group_num) {
+coal_feature_mapper <- function(x, coal_feature_list) {
   if (length(x) != 0) {
-    unlist(group_num[x])
+    unlist(coal_feature_list[x])
   } else {
     integer(0)
   }
 }
-
 
 #' Calculate weighted matrix
 #'
@@ -602,12 +613,12 @@ setup_computation <- function(internal, model, predict_model) {
 #' @keywords internal
 shapley_setup_forecast <- function(internal) {
   n_shapley_values <- internal$parameters$n_shapley_values
-  approach0 <- internal$parameters$approach
+  approach <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweighting <- internal$parameters$shapley_reweighting
 
-  group_num <- internal$objects$group_num
+  coal_feature_list <- internal$objects$coal_feature_list
   horizon <- internal$parameters$horizon
   feature_names <- internal$parameters$feature_names
 
@@ -652,7 +663,9 @@ shapley_setup_forecast <- function(internal) {
         weight_zero_m = 10^6,
         paired_shap_sampling = paired_shap_sampling,
         prev_coal_samples = prev_coal_samples,
-        unique_sampling = unique_sampling # TODO: Just added temporary
+        unique_sampling = unique_sampling, # TODO: Just added temporary
+        coal_feature_list = coal_feature_list,
+        approach0 = approach
       )
 
     # Adding approach to X (needed for the combined approaches)

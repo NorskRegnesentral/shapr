@@ -407,9 +407,12 @@ get_extra_parameters <- function(internal) {
     }
 
     # Make group list with numeric feature indicators
-    internal$objects$group_num <- lapply(group, FUN = function(x) {
-      match(x, internal$parameters$feature_names)
-    })
+    internal$objects$coal_feature_list <- lapply(group, FUN = function(x) {
+        match(x, internal$parameters$feature_names)
+      })
+
+
+
 
     internal$parameters$n_groups <- length(group)
     internal$parameters$group_names <- names(group)
@@ -419,7 +422,8 @@ get_extra_parameters <- function(internal) {
 
 
   } else {
-    internal$objects$group_num <- NULL
+    internal$objects$coal_feature_list <- as.list(seq_len(internal$parameters$n_features))
+
     internal$parameters$n_groups <- NULL
     internal$parameters$group_names <- NULL
     internal$parameters$shap_names <- internal$parameters$feature_names
