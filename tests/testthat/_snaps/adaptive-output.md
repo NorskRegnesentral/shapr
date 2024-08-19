@@ -16,7 +16,7 @@
       Not converged after 5 coalitions.
       Estimated remaining coalitions: 447
       Estimated required coalitions: 450
-      Using 29 new coalitions in the next iteration.
+      Using 27 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
                    none        Solar.R            Wind           Temp          Month
                  <char>         <char>          <char>         <char>         <char>
@@ -320,13 +320,14 @@
       
       Iteration 3
       Estimation stopped!
+      All (8) coalitions used.
       Maximum number of coalitions (8) reached.
-      Final estimated Shapley values (sd):
-                   none               A               B              C
-                 <char>          <char>          <char>         <char>
-      1: 42.444 (0.00)    0.664 (2.02)   13.684 (2.08)  -1.746 (1.77) 
-      2: 42.444 (0.00)    0.579 (0.79)  -13.266 (0.68)  -1.192 (0.78) 
-      3: 42.444 (0.00)  -18.100 (2.29)   -0.279 (2.33)   0.810 (1.87) 
+      Final estimated Shapley values:
+           none       A       B      C
+         <char>  <char>  <char> <char>
+      1: 42.444   0.664  13.684 -1.746
+      2: 42.444   0.579 -13.266 -1.192
+      3: 42.444 -18.100  -0.279  0.810
          explain_id  none        A        B       C
               <int> <num>    <num>    <num>   <num>
       1:          1 42.44   0.6638  13.6838 -1.7456
