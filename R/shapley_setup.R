@@ -670,12 +670,6 @@ shapley_setup_forecast <- function(internal) {
         approach0 = approach
       )
 
-    # Adding approach to X (needed for the combined approaches)
-    if (length(approach0) > 1) {
-      X_list[[i]][!(coalition_size %in% c(0, n_shapley_values)), approach := approach0[coalition_size]]
-    } else {
-      X_list[[i]][, approach := approach0]
-    }
 
     W_list[[i]] <- weight_matrix(
       X = X_list[[i]],

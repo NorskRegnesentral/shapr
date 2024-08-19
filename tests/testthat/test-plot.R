@@ -237,18 +237,18 @@ test_that("MSEv evaluation criterion plots", {
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_combination_bar",
-    fig = MSEv_plots$MSEv_combination_bar
+    title = "MSEv_coalition_bar",
+    fig = MSEv_plots$MSEv_coalition_bar
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_combination_bar specified width",
-    fig = MSEv_plots_specified_width$MSEv_combination_bar
+    title = "MSEv_coalition_bar specified width",
+    fig = MSEv_plots_specified_width$MSEv_coalition_bar
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_combination_line_point",
-    fig = MSEv_plots$MSEv_combination_line_point
+    title = "MSEv_coalition_line_point",
+    fig = MSEv_plots$MSEv_coalition_line_point
   )
 
   vdiffr::expect_doppelganger(
@@ -261,13 +261,13 @@ test_that("MSEv evaluation criterion plots", {
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_combinations for specified combinations",
+    title = "MSEv_coalitions for specified coalitions",
     fig = plot_MSEv_eval_crit(
       explanation_list_named,
       plot_type = "comb",
       id_coalition = c(3, 4, 9, 13:15),
       CI_level = 0.95
-    )$MSEv_combination_bar
+    )$MSEv_coalition_bar
   )
 })
 
