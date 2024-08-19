@@ -614,6 +614,7 @@ setup_computation <- function(internal, model, predict_model) {
 #' @keywords internal
 shapley_setup_forecast <- function(internal) {
   n_shapley_values <- internal$parameters$n_shapley_values
+  n_features <- internal$parameters$n_features
   approach <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
@@ -706,8 +707,8 @@ shapley_setup_forecast <- function(internal) {
 
   ## Get feature matrix ---------
   S <- coalition_matrix_cpp(
-    coalitions = X[["coalitions"]],
-    m = n_shapley_values
+    coalitions = X[["features"]],
+    m = n_features
   )
 
 

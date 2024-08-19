@@ -35,7 +35,7 @@ prepare_next_iteration <- function(internal) {
     if ((current_n_coalitions + proposal_next_n_coalitions) >= 2^n_shapley_values) {
       # Use all coalitions in the last iteration as the estimated number of samples is more than what remains
       next_iter_list$exact <- TRUE
-      next_iter_list$n_coalitions <- 2^n_shapley_values - current_n_coalitions + 2
+      next_iter_list$n_coalitions <- 2^n_shapley_values - current_n_coalitions
       next_iter_list$compute_sd <- FALSE
     } else {
       # Sample more keeping the current samples

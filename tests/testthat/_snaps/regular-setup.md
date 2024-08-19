@@ -612,7 +612,7 @@
         max_n_coalitions = max_n_coalitions, n_batches = n_batches_too_large, )
     Condition
       Error in `check_n_batches()`:
-      ! `n_batches` (11) must be smaller than the number of feature combinations/`n_coalitions` (10)
+      ! `n_batches` (11) must be smaller than the number of coalitions (10)
 
 ---
 
@@ -628,7 +628,7 @@
       
     Condition
       Error in `check_n_batches()`:
-      ! `n_batches` (32) must be smaller than the number of feature combinations/`n_coalitions` (32)
+      ! `n_batches` (32) must be smaller than the number of coalitions (32)
 
 # erroneous input: `seed`
 
