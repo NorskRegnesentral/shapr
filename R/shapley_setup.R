@@ -139,9 +139,9 @@ shapley_setup <- function(internal) {
 #' # Subsample of coalitions
 #' x <- create_coalition_table(exact = FALSE, m = 10, n_coalitions = 1e2)
 create_coalition_table <- function(m, exact = TRUE, n_coalitions = 200, weight_zero_m = 10^6,
-                                 paired_shap_sampling = TRUE, prev_coal_samples = NULL, unique_sampling = TRUE,
-                                 coal_feature_list = as.list(seq_len(m)),
-                                 approach0 = "gaussian") {
+                                   paired_shap_sampling = TRUE, prev_coal_samples = NULL, unique_sampling = TRUE,
+                                   coal_feature_list = as.list(seq_len(m)),
+                                   approach0 = "gaussian") {
   if (exact) {
     dt <- exact_coalition_table(m, weight_zero_m)
   } else {
@@ -206,12 +206,11 @@ exact_coalition_table <- function(m, weight_zero_m = 10^6) {
 
 #' @keywords internal
 sample_coalition_table <- function(m,
-                              n_coalitions = 200,
-                              weight_zero_m = 10^6,
-                              unique_sampling = TRUE,
-                              paired_shap_sampling = TRUE,
-                              prev_coal_samples = NULL) {
-
+                                   n_coalitions = 200,
+                                   weight_zero_m = 10^6,
+                                   unique_sampling = TRUE,
+                                   paired_shap_sampling = TRUE,
+                                   prev_coal_samples = NULL) {
   # Setup
   coal_samp_vec <- seq(m - 1)
   n <- sapply(coal_samp_vec, choose, n = m)
@@ -390,7 +389,6 @@ coal_feature_mapper <- function(x, coal_feature_list) {
 #' @export
 #' @author Nikolai Sellereite, Martin Jullum
 weight_matrix <- function(X, normalize_W_weights = TRUE) {
-
   # Fetch weights
   w <- X[["shapley_weight"]]
 
@@ -652,7 +650,6 @@ shapley_setup_forecast <- function(internal) {
 
   # Apply create_coalition_table, weigth_matrix and coalition_matrix_cpp to each of the different horizons
   for (i in seq_along(horizon_features)) {
-
     # TODO: Somethis is not correct in these next 20 lines of code. Something was messed up after
     # Removing the group stuff and generalizing to coalitions.
 
@@ -663,27 +660,27 @@ shapley_setup_forecast <- function(internal) {
     n_this_featcomb <- length(this_coal_feature_list)
 
 
-    n_coalitions_here <- min(2^n_this_featcomb,n_coalitions)
+    n_coalitions_here <- min(2^n_this_featcomb, n_coalitions)
     exact_here <- ifelse(n_coalitions_here == 2^n_this_featcomb, TRUE, exact)
 
 
     X_list[[i]] <- create_coalition_table(
-        m = n_this_featcomb,
-        exact = exact_here,
-        n_coalitions = n_coalitions_here,
-        weight_zero_m = 10^6,
-        paired_shap_sampling = paired_shap_sampling,
-        prev_coal_samples = prev_coal_samples,
-        unique_sampling = unique_sampling, # TODO: Just added temporary
-        coal_feature_list = this_coal_feature_list,
-        approach0 = approach
-      )
+      m = n_this_featcomb,
+      exact = exact_here,
+      n_coalitions = n_coalitions_here,
+      weight_zero_m = 10^6,
+      paired_shap_sampling = paired_shap_sampling,
+      prev_coal_samples = prev_coal_samples,
+      unique_sampling = unique_sampling, # TODO: Just added temporary
+      coal_feature_list = this_coal_feature_list,
+      approach0 = approach
+    )
 
 
     W_list[[i]] <- weight_matrix(
       X = X_list[[i]],
       normalize_W_weights = TRUE
-      )
+    )
   }
 
   # Merge the coalition data.table to single one to use for computing conditional expectations later on

@@ -56,7 +56,6 @@ compute_estimates <- function(internal, vS_list) {
 
 #' @keywords internal
 postprocess_vS_list <- function(vS_list, internal) {
-
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
   prediction_zero <- internal$parameters$prediction_zero
   n_explain <- internal$parameters$n_explain
@@ -294,10 +293,12 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
     W_boot <- weight_matrix(
       X = X_boot[boot_id == i],
       normalize_W_weights = TRUE
-      )
+    )
 
-    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_coalition %in% X_boot[boot_id == i,
-                                                                          id_coalition], -"id_coalition"]))
+    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_coalition %in% X_boot[
+      boot_id == i,
+      id_coalition
+    ], -"id_coalition"]))
 
     boot_sd_array[, , i] <- copy(kshap_boot)
   }

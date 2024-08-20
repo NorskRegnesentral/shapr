@@ -45,17 +45,17 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
 
     # Creates a mapper from the last id_coalition to the new id_coalition numbering
     id_coalitions_mapper <- merge(prev_coalition_map,
-                               current_coalition_map,
-                               by = "coalitions_str",
-                               suffixes = c("", "_new")
+      current_coalition_map,
+      by = "coalitions_str",
+      suffixes = c("", "_new")
     )
     prev_vS_list_new <- list()
 
     # Applies the mapper to update the prev_vS_list ot the new id_coalition numbering
     for (k in seq_along(prev_vS_list)) {
       prev_vS_list_new[[k]] <- merge(prev_vS_list[[k]],
-                                     id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
-                                     by = "id_coalition"
+        id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+        by = "id_coalition"
       )
       prev_vS_list_new[[k]][, id_coalition := id_coalition_new]
       prev_vS_list_new[[k]][, id_coalition_new := NULL]

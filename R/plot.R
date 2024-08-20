@@ -1281,9 +1281,9 @@ make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
-                                        n_explain,
-                                        tfrac = NULL,
-                                        geom_col_width = 0.9) {
+                                      n_explain,
+                                      tfrac = NULL,
+                                      geom_col_width = 0.9) {
   MSEv_coalition_source <-
     ggplot2::ggplot(MSEv_coalition_dt, ggplot2::aes(x = id_coalition, y = MSEv)) +
     ggplot2::labs(
