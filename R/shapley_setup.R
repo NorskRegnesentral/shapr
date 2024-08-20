@@ -422,7 +422,7 @@ create_S_batch_forecast <- function(internal, seed = NULL) { # This is temporary
   if (!is.null(seed)) set.seed(seed)
 
   if (length(approach0) > 1) {
-    X[!(n_features %in% c(0, n_shapley_values)), approach := approach0[n_features]]
+    X[!(n_coalitions %in% c(0, n_shapley_values)), approach := approach0[n_coalitions]]
 
     # Finding the number of batches per approach
     batch_count_dt <- X[!is.na(approach), list(
@@ -470,7 +470,7 @@ create_S_batch_forecast <- function(internal, seed = NULL) { # This is temporary
       batch_counter <- X[approach == approach_vec[i], max(batch)]
     }
   } else {
-    X[!(n_features %in% c(0, n_shapley_values)), approach := approach0]
+    X[!(n_coalitions %in% c(0, n_shapley_values)), approach := approach0]
 
     # Spreading the batches
     X[, randomorder := sample(.N)]
@@ -652,11 +652,20 @@ shapley_setup_forecast <- function(internal) {
 
   # Apply create_coalition_table, weigth_matrix and coalition_matrix_cpp to each of the different horizons
   for (i in seq_along(horizon_features)) {
+
+    # TODO: Somethis is not correct in these next 20 lines of code. Something was messed up after
+    # Removing the group stuff and generalizing to coalitions.
+
     this_featcomb <- horizon_features[[i]]
-    n_this_featcomb <- length(this_featcomb)
+
+    this_coal_feature_list <- lapply(coal_feature_list, function(x) x[x %in% this_featcomb])
+
+    n_this_featcomb <- length(this_coal_feature_list)
+
 
     n_coalitions_here <- min(2^n_this_featcomb,n_coalitions)
     exact_here <- ifelse(n_coalitions_here == 2^n_this_featcomb, TRUE, exact)
+
 
     X_list[[i]] <- create_coalition_table(
         m = n_this_featcomb,
@@ -666,7 +675,7 @@ shapley_setup_forecast <- function(internal) {
         paired_shap_sampling = paired_shap_sampling,
         prev_coal_samples = prev_coal_samples,
         unique_sampling = unique_sampling, # TODO: Just added temporary
-        coal_feature_list = coal_feature_list,
+        coal_feature_list = this_coal_feature_list,
         approach0 = approach
       )
 

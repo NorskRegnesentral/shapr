@@ -365,7 +365,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   n_train <- internal$parameters$n_train
   n_explain <- internal$parameters$n_explain
   empirical.n_samples_aicc <- internal$parameters$empirical.n_samples_aicc
-  n_features <- internal$parameters$n_features
+  n_shapley_values <- internal$parameters$n_shapley_values
   labels <- internal$objects$feature_specs$labels
   empirical.start_aicc <- internal$parameters$empirical.start_aicc
   empirical.eval_max_aicc <- internal$parameters$empirical.eval_max_aicc
@@ -380,7 +380,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   stopifnot(
     data.table::is.data.table(X),
     !is.null(X[["id_coalition"]]),
-    !is.null(X[["n_features"]])
+    !is.null(X[["coalition_size"]])
   )
 
   optimsamp <- sample_combinations(
@@ -392,7 +392,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   empirical.n_samples_aicc <- nrow(optimsamp)
   nloops <- n_explain # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = n_features, nrow = n_coalitions)
+  h_optim_mat <- matrix(NA, ncol = n_shapley_values, nrow = n_coalitions)
 
   if (is.null(index_features)) {
     index_features <- X[, .I]
@@ -400,10 +400,10 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
 
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-  these_k <- unique(X[, n_features[index_features]])
+  these_k <- unique(X[, coalition_size[index_features]])
 
   for (i in these_k) {
-    these_cond <- X[index_features][n_features == i, id_coalition]
+    these_cond <- X[index_features][coalition_size == i, id_coalition]
     cutters <- seq_len(empirical.n_samples_aicc)
     no_cond <- length(these_cond)
     cond_samp <- cut(
@@ -483,7 +483,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
   n_train <- internal$parameters$n_train
   n_explain <- internal$parameters$n_explain
   empirical.n_samples_aicc <- internal$parameters$empirical.n_samples_aicc
-  n_features <- internal$parameters$n_features
+  n_shapley_values <- internal$parameters$n_shapley_values
   labels <- internal$objects$feature_specs$labels
   empirical.start_aicc <- internal$parameters$empirical.start_aicc
   empirical.eval_max_aicc <- internal$parameters$empirical.eval_max_aicc
@@ -508,7 +508,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
   )
   nloops <- n_explain # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = n_features, nrow = n_coalitions)
+  h_optim_mat <- matrix(NA, ncol = n_shapley_values, nrow = n_coalitions)
 
   if (is.null(index_features)) {
     index_features <- X[, .I]
