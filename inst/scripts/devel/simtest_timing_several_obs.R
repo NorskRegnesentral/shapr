@@ -10,7 +10,7 @@ shapley_threshold_val <- 0.1
 
 m <- 12
 n_train <- 5000
-n_explain <- 100
+n_explain <- 1000
 rho_1 <- 0.5
 rho_2 <- 0.5
 rho_3 <- 0.5
@@ -49,7 +49,7 @@ y_explain <- alpha +
   as.vector(as.matrix(cos(x_explain))%*%beta) +
   unlist(gamma[1]*g(x_explain[,1],x_explain[,2])) +
   unlist(gamma[1]*g(x_explain[,3],x_explain[,4])) +
-  rnorm(n_train, 0, 1)
+  rnorm(n_explain, 0, 1)
 
 xy_train <- cbind(y_train, x_train)
 
@@ -65,7 +65,7 @@ pred_train <- predict(model, as.matrix(x_train))
 
 this_order <- order(unlist(x_train[,1]))
 
-plot(unlist(x_train[this_order,1]),pred_train[this_order],type="l")
+# plot(unlist(x_train[this_order,1]),pred_train[this_order],type="l")
 
 p0 <- mean(pred_train) # mean(y_train)
 
@@ -143,9 +143,11 @@ p0 <- mean(pred_train) # mean(y_train)
 ################# Larger experiment #################
 
 
-# Explaining 100 instances separately to compare the two methods more thoroughly
+# Explaining 100 instances at once to compare the two methods more thoroughly
+print(Sys.time())
 set.seed(184651)
 inds = 1:n_explain
+inds_train = sample(1:n_train, 1000, replace = FALSE)
 iteration_number = 10
 initial_batch_size = batch_size = 128
 
@@ -160,49 +162,46 @@ t_improved = data.table(compute_vS = numeric(), compute_shapley = numeric(), com
 setwd("/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/")
 source("improved_shap.R")
 
-data = x_train
+data = x_train[inds_train,]
 convergence_threshold = 0.005
 paired_sampling = TRUE
 variance_estimator = "bootstrap"
 
-for (i in 1:length(inds)){
-  print(paste0("Instance ", i, ". Time: ", Sys.time()))
-  expl <- explain(
-    model = model,
-    x_explain = x_explain[inds[i],],
-    x_train = x_train,
-    approach = "independence",
-    prediction_zero = p0,
-    n_combinations = 100,
-    Sigma=Sigma,
-    mu=mu,
-    adaptive = TRUE,
-    unique_sampling = FALSE,
-    adaptive_arguments = list(initial_n_combinations = initial_batch_size,
-                              fixed_n_combinations_per_iter = batch_size,
-                              max_iter = iteration_number,
-                              convergence_tolerance = 10^(-10),
-                              compute_sd = TRUE),
-    shapley_reweighting = "none",
-    print_iter_info = FALSE
-    )
+expl <- explain(
+  model = model,
+  x_explain = x_explain[inds,],
+  x_train = x_train[inds_train,],
+  approach = "gaussian",
+  prediction_zero = p0,
+  n_combinations = 100,
+  Sigma=Sigma,
+  mu=mu,
+  adaptive = TRUE,
+  unique_sampling = FALSE,
+  adaptive_arguments = list(initial_n_combinations = initial_batch_size,
+                            fixed_n_combinations_per_iter = batch_size,
+                            max_iter = iteration_number,
+                            convergence_tolerance = 10^(-10),
+                            compute_sd = TRUE),
+  shapley_reweighting = "none",
+  print_iter_info = FALSE,
+  n_batches = 90
+)
+print("done with normal shapley")
 
-  # Timings per iteration
-  expl$timing$iter_timing_secs_dt[]
+print(Sys.time())
+instance = x_explain[inds,]
+res <- improvedShapley(instance = instance, batch_size = batch_size, initial_batch_size = initial_batch_size, data = data, model = model,
+                paired_sampling = paired_sampling, convergence_threshold = convergence_threshold, return_all = TRUE,
+                variance_estimator = variance_estimator, return_all_S = TRUE, verbose = FALSE,
+                n_bootstrap_sets = 100, variance_batches = 1, min_variance_samples = 1, detect_convergence = FALSE,
+                n_samples = initial_batch_size + batch_size*(iteration_number-1))
 
-  instance = x_explain[inds[i],]
-  res <- improvedShapley(instance = instance, batch_size = batch_size, initial_batch_size = initial_batch_size, data = data, model = model,
-                  paired_sampling = paired_sampling, convergence_threshold = convergence_threshold, return_all = TRUE,
-                  variance_estimator = variance_estimator, return_all_S = TRUE, verbose = FALSE,
-                  n_bootstrap_sets = 100, variance_batches = 1, min_variance_samples = 1, detect_convergence = FALSE,
-                  n_samples = initial_batch_size + batch_size*(iteration_number-1))
-
-  names = colnames(res$tracker$timing)
-  dt1 <- expl$timing$iter_timing_secs_dt[][, lapply(.SD, mean)][,..names]
-  dt2 =  res$tracker$timing[, lapply(.SD, mean)]
-  t_improved <- rbind(t_improved, dt2[, iter := NULL])
-  t_normal <- rbind(t_normal, dt1[, iter := NULL])
-}
+names = colnames(res$tracker$timing)
+t_normal = expl$timing$iter_timing_secs_dt[][, lapply(.SD, mean)][,..names]
+t_improved =  res$tracker$timing[, lapply(.SD, mean)]
 
 print(colMeans(t_normal))
 print(colMeans(t_improved))
+traceback()
+print(Sys.time())
