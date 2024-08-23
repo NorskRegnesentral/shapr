@@ -9,10 +9,11 @@ create_coalition_table(
   exact = TRUE,
   n_coalitions = 200,
   weight_zero_m = 10^6,
-  group_num = NULL,
   paired_shap_sampling = TRUE,
   prev_coal_samples = NULL,
-  unique_sampling = TRUE
+  unique_sampling = TRUE,
+  coal_feature_list = as.list(seq_len(m)),
+  approach0 = "gaussian"
 )
 }
 \arguments{
@@ -28,9 +29,6 @@ value for \code{n_coalitions}.}
 \item{weight_zero_m}{Numeric. The value to use as a replacement for infinite coalition
 weights when doing numerical operations.}
 
-\item{group_num}{List. Contains vector of integers indicating the feature numbers for the
-different groups.}
-
 \item{paired_shap_sampling}{TODO: document}
 
 \item{prev_coal_samples}{TODO: document}
@@ -40,13 +38,13 @@ A data.table that contains the following columns:
 \describe{
 \item{id_coalition}{Positive integer. Represents a unique key for each coalition. Note that the table
 is sorted by \code{id_coalition}, so that is always equal to \code{x[["id_coalition"]] = 1:nrow(x)}.}
-\item{features}{List. Each item of the list is an integer vector where \code{features[[i]]}
-represents the indices of the features included in coalition \code{i}. Note that all the items
+\item{coalitions}{List. Each item of the list is an integer vector where \code{coalitions[[i]]}
+represents the indices of the elements included in coalition \code{i}. Note that all the items
 are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
-\item{n_features}{Vector of positive integers. \code{n_features[i]} equals the number of features in coalition
-\code{i}, i.e. \code{n_features[i] = length(features[[i]])}.}.
-\item{N}{Positive integer. The number of unique ways to sample \code{n_features[i]} features
-from \code{m} different features, without replacement.}
+\item{coalition_size}{Vector of positive integers. \code{coalition_size[i]} equals the number of elements in coalition
+\code{i}, i.e. \code{coalition_size[i] = length(coalitions[[i]])}.}.
+\item{N}{Positive integer. The number of unique ways to sample \code{coalition_size[i]} elements
+from \code{m} different features/groups of features, without replacement.}
 }
 }
 \description{

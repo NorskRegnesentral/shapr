@@ -179,21 +179,36 @@ shapley_reweighting <- function(X, reweight = "on_N") {
 
 
   if (reweight == "on_N") {
-    X[, shapley_weight := mean(shapley_weight), by = N]
+    X[-c(1,.N), shapley_weight := mean(shapley_weight), by = N]
   } else if (reweight == "on_coal_size") {
-    X[, shapley_weight := mean(shapley_weight), by = coalition_size]
+    X[-c(1,.N), shapley_weight := mean(shapley_weight), by = coalition_size]
   } else if (reweight == "on_all") {
     m <- X[.N, coalition_size]
-    X[, shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)]
+    X[-c(1,.N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
   } else if (reweight == "on_N_sum") {
     X[, shapley_weight := sum(shapley_weight), by = N]
   } else if (reweight == "on_all_cond") {
     m <- X[.N, coalition_size]
     K <- X[,sum(sample_freq)]
-    X[, shapley_weight0 := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)]
-    X[, cond := 1-(1-shapley_weight0)^K]
-    X[, shapley_weight := shapley_weight0/cond]
-  } # strategy= "none" or something else do nothing
+    X[-c(1,.N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
+    X[-c(1,.N), cond := 1-(1-shapley_weight)^K]
+    X[-c(1,.N), shapley_weight := shapley_weight/cond]
+  } else if (reweight == "on_all_cond_paired") {
+    m <- X[.N, coalition_size]
+    K <- X[,sum(sample_freq)]
+    X[-c(1,.N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
+    X[-c(1,.N), cond := 1-(1-2*shapley_weight)^(K/2)]
+    X[-c(1,.N), shapley_weight := 2*shapley_weight/cond]
+  } else if (reweight == "comb") {
+    # Very ad-hoc: Half on_coal_size and half of on_all
+    X[, shapley_weight1 := mean(shapley_weight), by = coalition_size]
+    X[-c(1,.N), shapley_weight1 := shapley_weight1/sum(shapley_weight1)]
+    m <- X[.N, coalition_size]
+    X[-c(1,.N), shapley_weight2 := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
+    X[-c(1,.N), shapley_weight2 := shapley_weight2/sum(shapley_weight2)]
+    X[-c(1,.N), shapley_weight := (shapley_weight1+shapley_weight2)/2]
+    }
+  # strategy= "none" or something else do nothing
   return(NULL)
 }
 
@@ -266,14 +281,26 @@ sample_coalition_table <- function(m,
       n_coalitions <- n_coalitions - 2 # Sample -2 for the first iteration as we add zero and m samples below
     }
 
+    if (paired_shap_sampling == TRUE) {
+      n_samps <- ceiling(n_coalitions / 2) # Sample -2 as we add zero and m samples below
+    } else {
+      n_samps <- n_coalitions # Sample -2 as we add zero and m samples below
+    }
+
     coal_size_sample <- sample(
       x = coal_samp_vec,
-      size = n_coalitions,
+      size = n_samps,
       replace = TRUE,
       prob = p
     )
+
     coal_sample <- sample_features_cpp(m, coal_size_sample)
-    coal_sample_all <- c(prev_coal_samples, coal_sample)
+    if (paired_shap_sampling == TRUE) {
+      coal_sample_paired <- lapply(coal_sample, function(x) seq(m)[-x])
+      coal_sample_all <- c(coal_sample_all, coal_sample, coal_sample_paired)
+    } else {
+      coal_sample_all <- c(coal_sample_all, coal_sample)
+    }
   }
 
   # Add zero and full prediction
@@ -354,6 +381,14 @@ shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
   x <- (m - 1) / (N * n_components * (m - n_components))
   x[!is.finite(x)] <- weight_zero_m
   x
+}
+
+#' @keywords internal
+sum_shapley_weights <- function(m){
+  coal_samp_vec <- seq(m - 1)
+  n <- sapply(coal_samp_vec, choose, n = m)
+  w <- shapley_weights(m = m, N = n, coal_samp_vec) * n
+  return(sum(w))
 }
 
 

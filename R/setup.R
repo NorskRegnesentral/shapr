@@ -228,8 +228,10 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   }
 
   # type
-  if (!(length(shapley_reweighting) == 1 && shapley_reweighting %in% c("none", "on_N", "on_all", "on_N_sum"))) {
-    stop("`shapley_reweighting` must be one of `none`, `on_N`, `on_N_sum` or `on_all`.\n")
+  if (!(length(shapley_reweighting) == 1 && shapley_reweighting %in%
+        c("none", "on_N", "on_coal_size", "on_all", "on_N_sum", "on_all_cond", "on_all_cond_paired", "comb"))) {
+    stop("`shapley_reweighting` must be one of `none`, `on_N`, `on_coal_size`, `on_N_sum`, ",
+    "`on_all`, `on_all_cond`, `on_all_cond_paired` or `comb`.\n")
   }
 
 
