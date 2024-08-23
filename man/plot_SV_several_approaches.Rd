@@ -111,7 +111,7 @@ explanation_independence <- explain(
   x_train = x_train,
   approach = "independence",
   prediction_zero = prediction_zero,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Empirical approach
@@ -121,7 +121,7 @@ explanation_empirical <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = prediction_zero,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Gaussian 1e1 approach
@@ -131,7 +131,7 @@ explanation_gaussian_1e1 <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = prediction_zero,
-  n_samples = 1e1
+  n_MC_samples = 1e1
 )
 
 # Gaussian 1e2 approach
@@ -141,7 +141,7 @@ explanation_gaussian_1e2 <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = prediction_zero,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Combined approach
@@ -151,7 +151,7 @@ explanation_combined <- explain(
   x_train = x_train,
   approach = c("gaussian", "ctree", "empirical"),
   prediction_zero = prediction_zero,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Create a list of explanations with names

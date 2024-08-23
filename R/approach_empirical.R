@@ -126,7 +126,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
   empirical.type <- internal$parameters$empirical.type
   empirical.eta <- internal$parameters$empirical.eta
   empirical.fixed_sigma <- internal$parameters$empirical.fixed_sigma
-  n_samples <- internal$parameters$n_samples
+  n_MC_samples <- internal$parameters$n_MC_samples
 
   model <- internal$tmp$model
   predict_model <- internal$tmp$predict_model
@@ -168,7 +168,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
         x_train = as.matrix(x_train),
         x_explain = as.matrix(x_explain[i, , drop = FALSE]),
         empirical.eta = empirical.eta,
-        n_samples = n_samples
+        n_MC_samples = n_MC_samples
       )
 
       dt_l[[i]][, id := i]
@@ -217,7 +217,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
         x_train = as.matrix(x_train),
         x_explain = as.matrix(x_explain[i, , drop = FALSE]),
         empirical.eta = empirical.eta,
-        n_samples = n_samples
+        n_MC_samples = n_MC_samples
       )
 
       dt_l[[i]][, id := i]
@@ -252,7 +252,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 #' @keywords internal
 #'
 #' @author Nikolai Sellereite
-observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = .7, n_samples = 1e3) {
+observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = .7, n_MC_samples = 1e3) {
   # Check input
   stopifnot(is.matrix(W_kernel) & is.matrix(S))
   stopifnot(nrow(W_kernel) == nrow(x_train))
@@ -282,7 +282,7 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
     dt_melt[, wcum := cumsum(weight), by = "index_s"]
     dt_melt <- dt_melt[wcum > 1 - empirical.eta][, wcum := NULL]
   }
-  dt_melt <- dt_melt[, tail(.SD, n_samples), by = "index_s"]
+  dt_melt <- dt_melt[, tail(.SD, n_MC_samples), by = "index_s"]
 
   # Generate data used for prediction
   dt_p <- observation_impute_cpp(

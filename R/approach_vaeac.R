@@ -200,7 +200,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   verbose <- internal$parameters$verbose
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
-  n_samples <- internal$parameters$n_samples
+  n_MC_samples <- internal$parameters$n_MC_samples
   vaeac.model <- internal$parameters$vaeac.model
   vaeac.sampler <- internal$parameters$vaeac.sampler
   vaeac.checkpoint <- internal$parameters$vaeac.checkpoint
@@ -221,7 +221,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   x_explain_with_MC_samples_dt <- vaeac_impute_missing_entries(
     x_explain_with_NaNs = x_explain_extended,
     n_explain = n_explain,
-    n_samples = n_samples,
+    n_MC_samples = n_MC_samples,
     vaeac_model = vaeac.model,
     checkpoint = vaeac.checkpoint,
     sampler = vaeac.sampler,
@@ -1004,20 +1004,20 @@ vaeac_train_model_continue <- function(explanation,
 #'
 #' @inheritParams vaeac_train_model
 #' @param x_explain_with_NaNs A 2D matrix, where the missing entries to impute are represented by `NaN`.
-#' @param n_samples Integer. The number of imputed versions we create for each row in `x_explain_with_NaNs`.
+#' @param n_MC_samples Integer. The number of imputed versions we create for each row in `x_explain_with_NaNs`.
 #' @param index_features Optional integer vector. Used internally in shapr package to index the coalitions.
 #' @param n_explain Positive integer. The number of explicands.
 #' @param vaeac_model An initialized `vaeac` model that we are going to use to generate the MC samples.
 #' @param checkpoint List containing the parameters of the `vaeac` model.
 #' @param sampler A sampler object used to sample the MC samples.
 #'
-#' @return A data.table where the missing values (`NaN`) in `x_explain_with_NaNs` have been imputed `n_samples` times.
+#' @return A data.table where the missing values (`NaN`) in `x_explain_with_NaNs` have been imputed `n_MC_samples` times.
 #' The data table will contain extra id columns if `index_features` and `n_explain` are provided.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
-                                         n_samples,
+                                         n_MC_samples,
                                          vaeac_model,
                                          checkpoint,
                                          sampler,
@@ -1061,7 +1061,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
   # Create an auxiliary list of lists to store the imputed values combined with the original values. The structure is
   # [[i'th MC sample]][[b'th batch]], where the entries are tensors of dimension batch_size x n_features.
-  results <- lapply(seq(n_samples), function(k) list())
+  results <- lapply(seq(n_MC_samples), function(k) list())
 
   # Generate the conditional Monte Carlo samples for the observation `x_explain_with_NaNs`, one batch at the time.
   coro::loop(for (batch in dataloader) {
@@ -1085,10 +1085,10 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     # Do not need to keep track of the gradients, as we are not fitting the model.
     torch::with_no_grad({
       # Compute the distribution parameters for the generative models inferred by the masked encoder and decoder.
-      # This is a tensor of shape [batch_size, n_samples, n_generative_parameters]. Note that, for only continuous
+      # This is a tensor of shape [batch_size, n_MC_samples, n_generative_parameters]. Note that, for only continuous
       # features we have that n_generative_parameters = 2*n_features, but for categorical data the number depends
       # on the number of categories.
-      samples_params <- vaeac_model$generate_samples_params(batch = batch_extended, mask = mask_extended, K = n_samples)
+      samples_params <- vaeac_model$generate_samples_params(batch = batch_extended, mask = mask_extended, K = n_MC_samples)
 
       # Remove the parameters belonging to added instances in batch_extended.
       samples_params <- samples_params[1:batch$shape[1], , ]
@@ -1100,7 +1100,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     batch_zeroed_nans[mask] <- 0
 
     # Iterate over the number of imputations and generate the imputed samples
-    for (i in seq(n_samples)) {
+    for (i in seq(n_MC_samples)) {
       # Extract the i'th inferred generative parameters for the whole batch.
       # sample_params is a tensor of shape [batch_size, n_generative_parameters].
       sample_params <- samples_params[, i, ]
@@ -1116,24 +1116,24 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
       # Make a deep copy and add it to correct location in the results list.
       results[[i]] <- append(results[[i]], sample$clone()$detach()$cpu())
-    } # End of iterating over the n_samples
+    } # End of iterating over the n_MC_samples
   }) # End of iterating over the batches. Done imputing.
 
   if (verbose == 2) message("Postprocessing the Monte Carlo samples.")
 
-  # Order the MC samples into a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]. The lapply function
+  # Order the MC samples into a tensor of shape [nrow(x_explain_with_NaNs), n_MC_samples, n_features]. The lapply function
   # creates a list of tensors of shape [nrow(x_explain_with_NaNs), 1, n_features] by concatenating the batches for the
   # i'th MC sample to a tensor of shape [nrow(x_explain_with_NaNs), n_features] and then add unsqueeze to add a new
   # singleton dimension as the second dimension to get the shape [nrow(x_explain_with_NaNs), 1, n_features]. Then
-  # outside of the lapply function, we concatenate the n_samples torch elements to form a final torch result of shape
-  # [nrow(x_explain_with_NaNs), n_samples, n_features].
-  result <- torch::torch_cat(lapply(seq(n_samples), function(i) torch::torch_cat(results[[i]])$unsqueeze(2)), dim = 2)
+  # outside of the lapply function, we concatenate the n_MC_samples torch elements to form a final torch result of shape
+  # [nrow(x_explain_with_NaNs), n_MC_samples, n_features].
+  result <- torch::torch_cat(lapply(seq(n_MC_samples), function(i) torch::torch_cat(results[[i]])$unsqueeze(2)), dim = 2)
 
   # Get back to the original distribution by undoing the normalization by multiplying with the std and adding the mean
   result <- result * checkpoint$norm_std + checkpoint$norm_mean
 
-  # Convert from a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]
-  # to a matrix of shape [(nrow(x_explain_with_NaNs) * n_samples), n_features].
+  # Convert from a tensor of shape [nrow(x_explain_with_NaNs), n_MC_samples, n_features]
+  # to a matrix of shape [(nrow(x_explain_with_NaNs) * n_MC_samples), n_features].
   result <- data.table::as.data.table(as.matrix(result$view(c(
     result$shape[1] * result$shape[2],
     result$shape[3]
@@ -1146,9 +1146,9 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
   if (!is.null(index_features)) {
     # Add id, id_coalition and weights (uniform for the `vaeac` approach) to the result.
     result[, c("id", "id_coalition", "w") := list(
-      rep(x = seq(n_explain), each = length(index_features) * n_samples),
-      rep(x = index_features, each = n_samples, times = n_explain),
-      1 / n_samples
+      rep(x = seq(n_explain), each = length(index_features) * n_MC_samples),
+      rep(x = index_features, each = n_MC_samples, times = n_explain),
+      1 / n_MC_samples
     )]
 
     # Set the key in the data table
@@ -2511,7 +2511,7 @@ vaeac_prep_message_batch <- function(internal, index_features) {
 #'   x_train = x_train,
 #'   approach = approach,
 #'   prediction_zero = p0,
-#'   n_samples = 1, # As we are only interested in the training of the vaeac
+#'   n_MC_samples = 1, # As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 10, # Should be higher in applications.
 #'   vaeac.n_vaeacs_initialize = 1,
 #'   vaeac.width = 16,
@@ -2525,7 +2525,7 @@ vaeac_prep_message_batch <- function(internal, index_features) {
 #'   x_train = x_train,
 #'   approach = approach,
 #'   prediction_zero = p0,
-#'   n_samples = 1, # As we are only interested in the training of the vaeac
+#'   n_MC_samples = 1, # As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 10, # Should be higher in applications.
 #'   vaeac.width = 16,
 #'   vaeac.depth = 2,
@@ -2746,7 +2746,7 @@ vaeac_plot_eval_crit <- function(explanation_list,
 #'   x_train = x_train,
 #'   approach = "vaeac",
 #'   prediction_zero = mean(y_train),
-#'   n_samples = 1,
+#'   n_MC_samples = 1,
 #'   vaeac.epochs = 10,
 #'   vaeac.n_vaeacs_initialize = 1
 #' )
@@ -2825,7 +2825,7 @@ vaeac_plot_imputed_ggpairs <- function(
   checkpoint <- torch::torch_load(vaeac_model_path)
 
   # Get the number of observations in the x_true and features
-  n_samples <- if (is.null(x_true)) 500 else nrow(x_true)
+  n_MC_samples <- if (is.null(x_true)) 500 else nrow(x_true)
   n_features <- checkpoint$n_features
 
   # Checking for valid dimension
@@ -2840,12 +2840,12 @@ vaeac_plot_imputed_ggpairs <- function(
 
   # Impute the missing entries using the vaeac approach. Here we generate x from p(x), so no conditioning.
   imputed_values <- vaeac_impute_missing_entries(
-    x_explain_with_NaNs = matrix(NaN, n_samples, checkpoint$n_features),
-    n_samples = 1,
+    x_explain_with_NaNs = matrix(NaN, n_MC_samples, checkpoint$n_features),
+    n_MC_samples = 1,
     vaeac_model = vaeac_model,
     checkpoint = checkpoint,
     sampler = explanation$internal$parameters$vaeac.sampler,
-    batch_size = n_samples,
+    batch_size = n_MC_samples,
     verbose = explanation$internal$parameters$verbose,
     seed = explanation$internal$parameters$seed
   )
@@ -2857,7 +2857,7 @@ vaeac_plot_imputed_ggpairs <- function(
 
   # Add type variable representing if they are imputed samples or from `x_true`
   combined_data$type <-
-    factor(rep(c("True", "Imputed"), times = c(ifelse(is.null(nrow(x_true)), 0, nrow(x_true)), n_samples)))
+    factor(rep(c("True", "Imputed"), times = c(ifelse(is.null(nrow(x_true)), 0, nrow(x_true)), n_MC_samples)))
 
   # Create the ggpairs figure and potentially add title based on the description of the used vaeac model
   figure <- GGally::ggpairs(

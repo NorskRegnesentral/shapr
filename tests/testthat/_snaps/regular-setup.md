@@ -470,16 +470,16 @@
       ! You have specified only a single group named A, containing the features: Solar.R, Wind, Temp, Month, Day.
        The predictions must be decomposed in at least two groups to be meaningful.
 
-# erroneous input: `n_samples`
+# erroneous input: `n_MC_samples`
 
     Code
       n_samples_non_numeric_1 <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_samples = n_samples_non_numeric_1, n_batches = 1)
+        n_MC_samples = n_samples_non_numeric_1, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_samples` must be a single positive integer.
+      ! `n_MC_samples` must be a single positive integer.
 
 ---
 
@@ -487,10 +487,10 @@
       n_samples_non_numeric_2 <- TRUE
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_samples = n_samples_non_numeric_2, n_batches = 1)
+        n_MC_samples = n_samples_non_numeric_2, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_samples` must be a single positive integer.
+      ! `n_MC_samples` must be a single positive integer.
 
 ---
 
@@ -498,10 +498,10 @@
       n_samples_non_integer <- 10.5
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_samples = n_samples_non_integer, n_batches = 1)
+        n_MC_samples = n_samples_non_integer, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_samples` must be a single positive integer.
+      ! `n_MC_samples` must be a single positive integer.
 
 ---
 
@@ -509,10 +509,10 @@
       n_samples_too_long <- c(1, 2)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_samples = n_samples_too_long, n_batches = 1)
+        n_MC_samples = n_samples_too_long, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_samples` must be a single positive integer.
+      ! `n_MC_samples` must be a single positive integer.
 
 ---
 
@@ -520,10 +520,10 @@
       n_samples_is_NA <- as.numeric(NA)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_samples = n_samples_is_NA, n_batches = 1)
+        n_MC_samples = n_samples_is_NA, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_samples` must be a single positive integer.
+      ! `n_MC_samples` must be a single positive integer.
 
 ---
 
@@ -531,10 +531,10 @@
       n_samples_non_positive <- 0
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_samples = n_samples_non_positive, n_batches = 1)
+        n_MC_samples = n_samples_non_positive, n_batches = 1)
     Condition
       Error in `get_parameters()`:
-      ! `n_samples` must be a single positive integer.
+      ! `n_MC_samples` must be a single positive integer.
 
 # erroneous input: `n_batches`
 
@@ -993,7 +993,7 @@
     Code
       explanation_exact <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
-        prediction_zero = p0, n_samples = 2, n_batches = 1, seed = 123,
+        prediction_zero = p0, n_MC_samples = 2, n_batches = 1, seed = 123,
         max_n_coalitions = NULL)
     Message
       Success with message:
@@ -1006,7 +1006,7 @@
     Code
       explanation_equal <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
-        prediction_zero = p0, n_samples = 2, n_batches = 1, seed = 123,
+        prediction_zero = p0, n_MC_samples = 2, n_batches = 1, seed = 123,
         adaptive_arguments = list(compute_sd = FALSE), max_n_coalitions = 2^ncol(
           x_explain_numeric))
 
@@ -1015,7 +1015,7 @@
     Code
       explanation_larger <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
-        prediction_zero = p0, n_samples = 2, n_batches = 1, seed = 123,
+        prediction_zero = p0, n_MC_samples = 2, n_batches = 1, seed = 123,
         adaptive_arguments = list(compute_sd = FALSE), max_n_coalitions = 2^ncol(
           x_explain_numeric) + 1)
     Message

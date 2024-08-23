@@ -6,7 +6,7 @@
 \usage{
 vaeac_impute_missing_entries(
   x_explain_with_NaNs,
-  n_samples,
+  n_MC_samples,
   vaeac_model,
   checkpoint,
   sampler,
@@ -20,7 +20,7 @@ vaeac_impute_missing_entries(
 \arguments{
 \item{x_explain_with_NaNs}{A 2D matrix, where the missing entries to impute are represented by \code{NaN}.}
 
-\item{n_samples}{Integer. The number of imputed versions we create for each row in \code{x_explain_with_NaNs}.}
+\item{n_MC_samples}{Integer. The number of imputed versions we create for each row in \code{x_explain_with_NaNs}.}
 
 \item{vaeac_model}{An initialized \code{vaeac} model that we are going to use to generate the MC samples.}
 
@@ -42,7 +42,7 @@ based code is being run.}
 \item{index_features}{Optional integer vector. Used internally in shapr package to index the coalitions.}
 }
 \value{
-A data.table where the missing values (\code{NaN}) in \code{x_explain_with_NaNs} have been imputed \code{n_samples} times.
+A data.table where the missing values (\code{NaN}) in \code{x_explain_with_NaNs} have been imputed \code{n_MC_samples} times.
 The data table will contain extra id columns if \code{index_features} and \code{n_explain} are provided.
 }
 \description{

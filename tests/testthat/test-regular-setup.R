@@ -671,7 +671,7 @@ test_that("erroneous input: `group`", {
   )
 })
 
-test_that("erroneous input: `n_samples`", {
+test_that("erroneous input: `n_MC_samples`", {
   set.seed(123)
 
   expect_snapshot(
@@ -686,7 +686,7 @@ test_that("erroneous input: `n_samples`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        n_samples = n_samples_non_numeric_1,
+        n_MC_samples = n_samples_non_numeric_1,
         n_batches = 1
       )
     },
@@ -705,7 +705,7 @@ test_that("erroneous input: `n_samples`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        n_samples = n_samples_non_numeric_2,
+        n_MC_samples = n_samples_non_numeric_2,
         n_batches = 1
       )
     },
@@ -723,7 +723,7 @@ test_that("erroneous input: `n_samples`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        n_samples = n_samples_non_integer,
+        n_MC_samples = n_samples_non_integer,
         n_batches = 1
       )
     },
@@ -741,7 +741,7 @@ test_that("erroneous input: `n_samples`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        n_samples = n_samples_too_long,
+        n_MC_samples = n_samples_too_long,
         n_batches = 1
       )
     },
@@ -759,7 +759,7 @@ test_that("erroneous input: `n_samples`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        n_samples = n_samples_is_NA,
+        n_MC_samples = n_samples_is_NA,
         n_batches = 1
       )
     },
@@ -777,7 +777,7 @@ test_that("erroneous input: `n_samples`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        n_samples = n_samples_non_positive,
+        n_MC_samples = n_samples_non_positive,
         n_batches = 1
       )
     },
@@ -1411,7 +1411,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       x_train = x_train_numeric,
       approach = "gaussian",
       prediction_zero = p0,
-      n_samples = 2, # Low value for fast computations
+      n_MC_samples = 2, # Low value for fast computations
       n_batches = 1, # Not related to the bug
       seed = 123,
       max_n_coalitions = NULL
@@ -1427,7 +1427,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       x_train = x_train_numeric,
       approach = "gaussian",
       prediction_zero = p0,
-      n_samples = 2, # Low value for fast computations
+      n_MC_samples = 2, # Low value for fast computations
       n_batches = 1, # Not related to the bug
       seed = 123,
       adaptive_arguments = list(compute_sd = FALSE),
@@ -1445,7 +1445,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       x_train = x_train_numeric,
       approach = "gaussian",
       prediction_zero = p0,
-      n_samples = 2, # Low value for fast computations
+      n_MC_samples = 2, # Low value for fast computations
       n_batches = 1, # Not related to the bug
       seed = 123,
       adaptive_arguments = list(compute_sd = FALSE),
@@ -1740,7 +1740,7 @@ test_that("Shapr sets a valid default value for `n_batches`", {
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
-      n_samples = 2, # Low value for fast computations
+      n_MC_samples = 2, # Low value for fast computations
       approach = "gaussian",
       prediction_zero = p0,
       max_n_coalitions = any_number_equal_or_below_10
@@ -1964,7 +1964,7 @@ test_that("vaeac_set_seed_works", {
     x_train = x_train_mixed,
     approach = "vaeac",
     prediction_zero = p0,
-    n_samples = 10,
+    n_MC_samples = 10,
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
@@ -1981,7 +1981,7 @@ test_that("vaeac_set_seed_works", {
     x_train = x_train_mixed,
     approach = "vaeac",
     prediction_zero = p0,
-    n_samples = 10,
+    n_MC_samples = 10,
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
@@ -2006,7 +2006,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     x_train = x_train_mixed,
     approach = "vaeac",
     prediction_zero = p0,
-    n_samples = 10,
+    n_MC_samples = 10,
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
@@ -2028,7 +2028,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     x_train = x_train_mixed,
     approach = "vaeac",
     prediction_zero = p0,
-    n_samples = 10,
+    n_MC_samples = 10,
     n_batches = 2,
     seed = 1,
     vaeac.extra_parameters = list(
@@ -2051,7 +2051,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     x_train = x_train_mixed,
     approach = "vaeac",
     prediction_zero = p0,
-    n_samples = 10,
+    n_MC_samples = 10,
     n_batches = 2,
     seed = 1,
     vaeac.extra_parameters = list(

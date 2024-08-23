@@ -110,7 +110,7 @@ inv_gaussian_transform_cpp <- function(z, x) {
 
 #' Generate (Gaussian) Copula MC samples
 #'
-#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_samples`, `n_features`) containing samples from the
+#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_MC_samples`, `n_features`) containing samples from the
 #' univariate standard normal.
 #' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
 #' to explain on the original scale.
@@ -127,8 +127,8 @@ inv_gaussian_transform_cpp <- function(z, x) {
 #' between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
 #' transformed to a standardized normal distribution.
 #'
-#' @return An arma::cube/3D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
-#' the columns (_,j,_) are matrices of dimension (`n_samples`, `n_features`) containing the conditional Gaussian
+#' @return An arma::cube/3D array of dimension (`n_MC_samples`, `n_explain` * `n_coalitions`, `n_features`), where
+#' the columns (_,j,_) are matrices of dimension (`n_MC_samples`, `n_features`) containing the conditional Gaussian
 #' copula MC samples for each explicand and coalition on the original scale.
 #'
 #' @export
@@ -140,7 +140,7 @@ prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gau
 
 #' Generate Gaussian MC samples
 #'
-#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_samples`, `n_features`) containing samples from the
+#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_MC_samples`, `n_features`) containing samples from the
 #' univariate standard normal.
 #' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
 #' to explain.
@@ -151,8 +151,8 @@ prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gau
 #' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
 #' between all pairs of features.
 #'
-#' @return An arma::cube/3D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
-#' the columns (_,j,_) are matrices of dimension (`n_samples`, `n_features`) containing the conditional Gaussian
+#' @return An arma::cube/3D array of dimension (`n_MC_samples`, `n_explain` * `n_coalitions`, `n_features`), where
+#' the columns (_,j,_) are matrices of dimension (`n_MC_samples`, `n_features`) containing the conditional Gaussian
 #' MC samples for each explicand and coalition.
 #'
 #' @export

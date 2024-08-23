@@ -170,7 +170,7 @@ test_that("output_lm_numeric_vaeac", {
       approach = "vaeac",
       prediction_zero = p0,
       n_batches = 1,
-      n_samples = 10, # Low value here to speed up the time
+      n_MC_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
       vaeac.extra_parameters = list(
@@ -207,7 +207,7 @@ test_that("output_lm_categorical_vaeac", {
       approach = "vaeac",
       prediction_zero = p0,
       n_batches = 1,
-      n_samples = 10, # Low value here to speed up the time
+      n_MC_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
       vaeac.extra_parameters = list(
@@ -353,7 +353,7 @@ test_that("output_lm_mixed_vaeac", {
       approach = "vaeac",
       prediction_zero = p0,
       n_batches = 1,
-      n_samples = 10, # Low value here to speed up the time
+      n_MC_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
       vaeac.extra_parameters = list(

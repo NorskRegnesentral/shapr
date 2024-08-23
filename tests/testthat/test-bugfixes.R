@@ -13,7 +13,7 @@ test_that("bug with column name ordering in edge case is fixed", {
       approach = "gaussian",
       prediction_zero = p0,
       max_n_coalitions = 2^5,
-      n_samples = 2,
+      n_MC_samples = 2,
       n_batches = 2^5 - 1, # Bug happens when n_batches = n_coalitions - 1
       keep_samp_for_vS = TRUE,
       seed = 123

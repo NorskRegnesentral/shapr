@@ -12,13 +12,13 @@
 #' Determines the minimum sum of weights in a terminal node required for a split
 #'
 #' @param ctree.sample Boolean. (default = TRUE)
-#' If TRUE, then the method always samples `n_samples` observations from the leaf nodes (with replacement).
-#' If FALSE and the number of observations in the leaf node is less than `n_samples`,
+#' If TRUE, then the method always samples `n_MC_samples` observations from the leaf nodes (with replacement).
+#' If FALSE and the number of observations in the leaf node is less than `n_MC_samples`,
 #' the method will take all observations in the leaf.
-#' If FALSE and the number of observations in the leaf node is more than `n_samples`,
-#' the method will sample `n_samples` observations (with replacement).
+#' If FALSE and the number of observations in the leaf node is more than `n_MC_samples`,
+#' the method will sample `n_MC_samples` observations (with replacement).
 #' This means that there will always be sampling in the leaf unless
-#' `sample` = FALSE AND the number of obs in the node is less than `n_samples`.
+#' `sample` = FALSE AND the number of obs in the node is less than `n_MC_samples`.
 #'
 #' @inheritParams default_doc_explain
 #'
@@ -46,7 +46,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
-  n_samples <- internal$parameters$n_samples
+  n_MC_samples <- internal$parameters$n_MC_samples
   n_features <- internal$parameters$n_features
   ctree.mincriterion <- internal$parameters$ctree.mincriterion
   ctree.minsplit <- internal$parameters$ctree.minsplit
@@ -83,7 +83,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
     l <- lapply(
       X = all_trees,
       FUN = sample_ctree,
-      n_samples = n_samples,
+      n_MC_samples = n_MC_samples,
       x_explain = x_explain[i, , drop = FALSE],
       x_train = x_train,
       n_features = n_features,
@@ -91,7 +91,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_coalition")
-    dt_l[[i]][, w := 1 / n_samples]
+    dt_l[[i]][, w := 1 / n_MC_samples]
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_coalition := index_features[id_coalition]]
   }
@@ -204,7 +204,7 @@ create_ctree <- function(given_ind,
 #' @param tree List. Contains tree which is an object of type ctree built from the party package.
 #' Also contains given_ind, the features to condition upon.
 #'
-#' @param n_samples Numeric. Indicates how many samples to use for MCMC.
+#' @param n_MC_samples Numeric. Indicates how many samples to use for MCMC.
 #'
 #' @param x_explain Matrix, data.frame or data.table with the features of the observation whose
 #' predictions ought to be explained (test data). Dimension `1\timesp` or `p\times1`.
@@ -215,15 +215,15 @@ create_ctree <- function(given_ind,
 #'
 #' @param sample Boolean. True indicates that the method samples from the terminal node
 #' of the tree whereas False indicates that the method takes all the observations if it is
-#' less than n_samples.
+#' less than n_MC_samples.
 #'
-#' @return data.table with `n_samples` (conditional) Gaussian samples
+#' @return data.table with `n_MC_samples` (conditional) Gaussian samples
 #'
 #' @keywords internal
 #'
 #' @author Annabelle Redelmeier
 sample_ctree <- function(tree,
-                         n_samples,
+                         n_MC_samples,
                          x_explain,
                          x_train,
                          n_features,
@@ -265,12 +265,12 @@ sample_ctree <- function(tree,
 
     rowno <- seq_len(nrow(x_train))
 
-    use_all_obs <- !sample & (length(rowno[fit.nodes == pred.nodes]) <= n_samples)
+    use_all_obs <- !sample & (length(rowno[fit.nodes == pred.nodes]) <= n_MC_samples)
 
     if (use_all_obs) {
       newrowno <- rowno[fit.nodes == pred.nodes]
     } else {
-      newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples,
+      newrowno <- sample(rowno[fit.nodes == pred.nodes], n_MC_samples,
         replace = TRUE
       )
     }

@@ -64,9 +64,9 @@ if you condition on more than 5 features this can be done by simply passing
 when conditioning on \code{i} features. Conditioning on all features needs no approach as that is given
 by the complete prediction itself, and should thus not be part of the vector.
 
-For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
+For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{sample} argument).
-For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
+For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{empirical.eta} argument.
 }
@@ -99,7 +99,7 @@ explain1 <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Gaussian approach
@@ -109,7 +109,7 @@ explain2 <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Gaussian copula approach
@@ -119,7 +119,7 @@ explain3 <- explain(
   x_train = x_train,
   approach = "copula",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # ctree approach
@@ -129,7 +129,7 @@ explain4 <- explain(
   x_train = x_train,
   approach = "ctree",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Combined approach
@@ -140,7 +140,7 @@ explain5 <- explain(
   x_train = x_train,
   approach = approach,
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Print the Shapley values
@@ -162,7 +162,7 @@ explain_groups <- explain(
   group = group_list,
   approach = "empirical",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 print(explain_groups$shapley_values)
 

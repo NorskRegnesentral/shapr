@@ -41,7 +41,7 @@
 #' the number of groups. The list element contains character vectors with the features included
 #' in each of the different groups.
 #'
-#' @param n_samples Positive integer.
+#' @param n_MC_samples Positive integer.
 #' Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation. See also details.
 #'
@@ -134,9 +134,9 @@
 #' when conditioning on `i` features. Conditioning on all features needs no approach as that is given
 #' by the complete prediction itself, and should thus not be part of the vector.
 #'
-#' For `approach="ctree"`, `n_samples` corresponds to the number of samples
+#' For `approach="ctree"`, `n_MC_samples` corresponds to the number of samples
 #' from the leaf node (see an exception related to the `sample` argument).
-#' For `approach="empirical"`, `n_samples` is  the \eqn{K} parameter in equations (14-15) of
+#' For `approach="empirical"`, `n_MC_samples` is  the \eqn{K} parameter in equations (14-15) of
 #' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 #' `empirical.eta` argument.
 #'
@@ -199,7 +199,7 @@
 #'   x_train = x_train,
 #'   approach = "empirical",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Gaussian approach
@@ -209,7 +209,7 @@
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Gaussian copula approach
@@ -219,7 +219,7 @@
 #'   x_train = x_train,
 #'   approach = "copula",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # ctree approach
@@ -229,7 +229,7 @@
 #'   x_train = x_train,
 #'   approach = "ctree",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Combined approach
@@ -240,7 +240,7 @@
 #'   x_train = x_train,
 #'   approach = approach,
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Print the Shapley values
@@ -262,7 +262,7 @@
 #'   group = group_list,
 #'   approach = "empirical",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #' print(explain_groups$shapley_values)
 #'
@@ -306,7 +306,7 @@ explain <- function(model,
                     max_n_coalitions = NULL,
                     adaptive = FALSE,
                     group = NULL,
-                    n_samples = 1e3,
+                    n_MC_samples = 1e3,
                     n_batches = NULL,
                     seed = 1,
                     keep_samp_for_vS = FALSE,
@@ -338,7 +338,7 @@ explain <- function(model,
     prediction_zero = prediction_zero,
     max_n_coalitions = max_n_coalitions,
     group = group,
-    n_samples = n_samples,
+    n_MC_samples = n_MC_samples,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,

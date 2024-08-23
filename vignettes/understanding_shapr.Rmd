@@ -777,7 +777,7 @@ explanation_independence <- explain(
   x_train = x_train,
   approach = "independence",
   prediction_zero = p0,
-  n_samples = 1e2,
+  n_MC_samples = 1e2,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -791,7 +791,7 @@ explanation_empirical <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p0,
-  n_samples = 1e2,
+  n_MC_samples = 1e2,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -805,7 +805,7 @@ explanation_gaussian_1e1 <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p0,
-  n_samples = 1e1,
+  n_MC_samples = 1e1,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -819,7 +819,7 @@ explanation_gaussian_1e2 <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p0,
-  n_samples = 1e2,
+  n_MC_samples = 1e2,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -833,7 +833,7 @@ explanation_combined <- explain(
   x_train = x_train,
   approach = c("gaussian", "empirical", "independence"),
   prediction_zero = p0,
-  n_samples = 1e2,
+  n_MC_samples = 1e2,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -994,7 +994,7 @@ variables. For more details see [Combined approach](#combined) below.
 
 When computing the kernel SHAP values by `explain`, the maximum number
 of samples to use in the Monte Carlo integration for every conditional
-expectation is controlled by the argument `n_samples` (default equals
+expectation is controlled by the argument `n_MC_samples` (default equals
 `1000`). The computation time grows approximately linear with this
 number. You will also need to pass a numeric value for the argument
 `prediction_zero`, which represents the prediction value when not
@@ -1609,7 +1609,7 @@ explanation_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = p0,
-  n_samples = 100,
+  n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
   vaeac.epochs = 3,
@@ -1652,7 +1652,7 @@ explanation_vaeac_early_stop <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = p0,
-  n_samples = 100,
+  n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
   vaeac.epochs = 1000, # Set it to a large number

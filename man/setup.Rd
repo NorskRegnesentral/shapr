@@ -13,7 +13,7 @@ setup(
   output_size = 1,
   max_n_coalitions,
   group,
-  n_samples,
+  n_MC_samples,
   n_batches,
   seed,
   keep_samp_for_vS,
@@ -75,7 +75,7 @@ If provided, group wise Shapley values are computed. \code{group} then has lengt
 the number of groups. The list element contains character vectors with the features included
 in each of the different groups.}
 
-\item{n_samples}{Positive integer.
+\item{n_MC_samples}{Positive integer.
 Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 

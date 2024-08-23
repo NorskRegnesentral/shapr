@@ -20,7 +20,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
 
   # Extract relevant parameters
   feature_specs <- internal$objects$feature_specs
-  n_samples <- internal$parameters$n_samples
+  n_MC_samples <- internal$parameters$n_MC_samples
   n_train <- internal$parameters$n_train
   n_explain <- internal$parameters$n_explain
 
@@ -67,10 +67,10 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   x_explain0_mat <- as.matrix(x_explain0)
 
   # Get coalition indices.
-  # We repeat each coalition index `min(n_samples, n_train)` times. We use `min`
-  # as we cannot sample `n_samples` unique indices if `n_train` is less than `n_samples`.
-  index_s <- rep(seq_len(nrow(S0)), each = min(n_samples, n_train))
-  w0 <- 1 / min(n_samples, n_train) # The inverse of the number of samples being used in practice
+  # We repeat each coalition index `min(n_MC_samples, n_train)` times. We use `min`
+  # as we cannot sample `n_MC_samples` unique indices if `n_train` is less than `n_MC_samples`.
+  index_s <- rep(seq_len(nrow(S0)), each = min(n_MC_samples, n_train))
+  w0 <- 1 / min(n_MC_samples, n_train) # The inverse of the number of samples being used in practice
 
   # Creat a list to store the MC samples, where ith entry is associated with ith explicand
   dt_l <- list()
@@ -82,7 +82,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
 
     # Sample the indices of the training observations we are going to splice the explicand with
     # and replicate these indices by the number of coalitions.
-    index_xtrain <- c(replicate(nrow(S0), sample(x = seq(n_train), size = min(n_samples, n_train), replace = FALSE)))
+    index_xtrain <- c(replicate(nrow(S0), sample(x = seq(n_train), size = min(n_MC_samples, n_train), replace = FALSE)))
 
     # Generate data used for prediction. This splices the explicand with
     # the other sampled training observations for all relevant coalitions.

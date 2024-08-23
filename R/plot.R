@@ -98,7 +98,7 @@
 #'   x_train = x_train,
 #'   approach = "empirical",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -148,7 +148,7 @@
 #'   x_train = x_train,
 #'   approach = "ctree",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -863,7 +863,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = "independence",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Gaussian 1e1 approach
@@ -873,7 +873,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e1
+#'   n_MC_samples = 1e1
 #' )
 #'
 #' # Gaussian 1e2 approach
@@ -883,7 +883,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # ctree approach
@@ -893,7 +893,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = "ctree",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Combined approach
@@ -903,7 +903,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = c("gaussian", "independence", "ctree"),
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Create a list of explanations with names
@@ -1412,7 +1412,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_train = x_train,
 #'   approach = "independence",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Empirical approach
@@ -1422,7 +1422,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_train = x_train,
 #'   approach = "empirical",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Gaussian 1e1 approach
@@ -1432,7 +1432,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e1
+#'   n_MC_samples = 1e1
 #' )
 #'
 #' # Gaussian 1e2 approach
@@ -1442,7 +1442,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Combined approach
@@ -1452,7 +1452,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_train = x_train,
 #'   approach = c("gaussian", "ctree", "empirical"),
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Create a list of explanations with names

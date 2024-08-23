@@ -124,13 +124,13 @@ Determines minimum value that the sum of the left and right daughter nodes requi
 Determines the minimum sum of weights in a terminal node required for a split}
 
 \item{ctree.sample}{Boolean. (default = TRUE)
-If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
-If FALSE and the number of observations in the leaf node is less than \code{n_samples},
+If TRUE, then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
+If FALSE and the number of observations in the leaf node is less than \code{n_MC_samples},
 the method will take all observations in the leaf.
-If FALSE and the number of observations in the leaf node is more than \code{n_samples},
-the method will sample \code{n_samples} observations (with replacement).
+If FALSE and the number of observations in the leaf node is more than \code{n_MC_samples},
+the method will sample \code{n_MC_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
-\code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+\code{sample} = FALSE AND the number of obs in the node is less than \code{n_MC_samples}.}
 
 \item{empirical.type}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.

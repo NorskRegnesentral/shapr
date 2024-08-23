@@ -5,7 +5,7 @@ using namespace Rcpp;
 
 //' Generate Gaussian MC samples
 //'
-//' @param MC_samples_mat arma::mat. Matrix of dimension (`n_samples`, `n_features`) containing samples from the
+//' @param MC_samples_mat arma::mat. Matrix of dimension (`n_MC_samples`, `n_features`) containing samples from the
 //' univariate standard normal.
 //' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
 //' to explain.
@@ -16,8 +16,8 @@ using namespace Rcpp;
 //' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
 //' between all pairs of features.
 //'
-//' @return An arma::cube/3D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
-//' the columns (_,j,_) are matrices of dimension (`n_samples`, `n_features`) containing the conditional Gaussian
+//' @return An arma::cube/3D array of dimension (`n_MC_samples`, `n_explain` * `n_coalitions`, `n_features`), where
+//' the columns (_,j,_) are matrices of dimension (`n_MC_samples`, `n_features`) containing the conditional Gaussian
 //' MC samples for each explicand and coalition.
 //'
 //' @export
@@ -31,13 +31,13 @@ arma::cube prepare_data_gaussian_cpp(const arma::mat& MC_samples_mat,
                                      const arma::mat& cov_mat) {
 
   int n_explain = x_explain_mat.n_rows;
-  int n_samples = MC_samples_mat.n_rows;
+  int n_MC_samples = MC_samples_mat.n_rows;
   int n_features = MC_samples_mat.n_cols;
   int n_coalitions = S.n_rows;
 
   // Initialize auxiliary matrix and result cube
-  arma::mat aux_mat(n_samples, n_features);
-  arma::cube result_cube(n_samples, n_explain*n_coalitions, n_features);
+  arma::mat aux_mat(n_MC_samples, n_features);
+  arma::cube result_cube(n_MC_samples, n_explain*n_coalitions, n_features);
 
   // Iterate over the coalitions
   for (int S_ind = 0; S_ind < n_coalitions; S_ind++) {
@@ -78,8 +78,8 @@ arma::cube prepare_data_gaussian_cpp(const arma::mat& MC_samples_mat,
 
     // Loop over the different explicands and combine the generated values with the values we conditioned on
     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
-      aux_mat.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1);
-      aux_mat.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+      aux_mat.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_MC_samples, 1);
+      aux_mat.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_MC_samples, 1);
       result_cube.col(S_ind*n_explain + idx_now) = aux_mat;
     }
   }

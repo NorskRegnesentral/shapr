@@ -14,7 +14,7 @@ explain(
   max_n_coalitions = NULL,
   adaptive = FALSE,
   group = NULL,
-  n_samples = 1000,
+  n_MC_samples = 1000,
   n_batches = NULL,
   seed = 1,
   keep_samp_for_vS = FALSE,
@@ -72,7 +72,7 @@ If provided, group wise Shapley values are computed. \code{group} then has lengt
 the number of groups. The list element contains character vectors with the features included
 in each of the different groups.}
 
-\item{n_samples}{Positive integer.
+\item{n_MC_samples}{Positive integer.
 Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
@@ -176,13 +176,13 @@ Determines minimum value that the sum of the left and right daughter nodes requi
     \item{\code{ctree.minbucket}}{Numeric scalar. (default = 7)
 Determines the minimum sum of weights in a terminal node required for a split}
     \item{\code{ctree.sample}}{Boolean. (default = TRUE)
-If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
-If FALSE and the number of observations in the leaf node is less than \code{n_samples},
+If TRUE, then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
+If FALSE and the number of observations in the leaf node is less than \code{n_MC_samples},
 the method will take all observations in the leaf.
-If FALSE and the number of observations in the leaf node is more than \code{n_samples},
-the method will sample \code{n_samples} observations (with replacement).
+If FALSE and the number of observations in the leaf node is more than \code{n_MC_samples},
+the method will sample \code{n_MC_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
-\code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+\code{sample} = FALSE AND the number of obs in the node is less than \code{n_MC_samples}.}
     \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
 in the neural networks of the masked encoder, full encoder, and decoder.}
     \item{\code{vaeac.width}}{Positive integer (default is \code{32}). The number of neurons in each
@@ -303,9 +303,9 @@ if you condition on more than 5 features this can be done by simply passing
 when conditioning on \code{i} features. Conditioning on all features needs no approach as that is given
 by the complete prediction itself, and should thus not be part of the vector.
 
-For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
+For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{sample} argument).
-For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
+For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{empirical.eta} argument.
 }
@@ -338,7 +338,7 @@ explain1 <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Gaussian approach
@@ -348,7 +348,7 @@ explain2 <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Gaussian copula approach
@@ -358,7 +358,7 @@ explain3 <- explain(
   x_train = x_train,
   approach = "copula",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # ctree approach
@@ -368,7 +368,7 @@ explain4 <- explain(
   x_train = x_train,
   approach = "ctree",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Combined approach
@@ -379,7 +379,7 @@ explain5 <- explain(
   x_train = x_train,
   approach = approach,
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 # Print the Shapley values
@@ -401,7 +401,7 @@ explain_groups <- explain(
   group = group_list,
   approach = "empirical",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 print(explain_groups$shapley_values)
 

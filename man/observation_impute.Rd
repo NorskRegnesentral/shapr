@@ -10,7 +10,7 @@ observation_impute(
   x_train,
   x_explain,
   empirical.eta = 0.7,
-  n_samples = 1000
+  n_MC_samples = 1000
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ the total number of unique features, respectively. Note that \code{m = ncol(x_tr
 
 \item{x_explain}{Numeric matrix}
 
-\item{n_samples}{Positive integer.
+\item{n_MC_samples}{Positive integer.
 Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 }

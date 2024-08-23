@@ -748,7 +748,7 @@ explanation_independence <- explain(
   x_train = x_train,
   approach = "independence",
   prediction_zero = p0,
-  n_samples = 1e2,
+  n_MC_samples = 1e2,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -760,7 +760,7 @@ explanation_empirical <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p0,
-  n_samples = 1e2,
+  n_MC_samples = 1e2,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -772,7 +772,7 @@ explanation_gaussian_1e1 <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p0,
-  n_samples = 1e1,
+  n_MC_samples = 1e1,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -784,7 +784,7 @@ explanation_gaussian_1e2 <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p0,
-  n_samples = 1e2,
+  n_MC_samples = 1e2,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -796,7 +796,7 @@ explanation_combined <- explain(
   x_train = x_train,
   approach = c("gaussian", "empirical", "independence"),
   prediction_zero = p0,
-  n_samples = 1e2,
+  n_MC_samples = 1e2,
   n_batches = 5,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -891,7 +891,7 @@ plot_MSEv_eval_crit(explanation_list_named) +
 
 When using `explain`, the default behavior is to use all feature
 combinations in the Shapley formula. Kernel SHAP's sampling based
-approach may be used by specifying `n_combinations`, which is the number
+approach may be used by specifying `n_coalitions`, which is the number
 of unique feature combinations to sample. If not specified, the exact
 method is used. The computation time grows approximately exponentially
 with the number of features. The training data and the model whose
@@ -910,7 +910,7 @@ variables. For more details see [Combined approach](#combined) below.
 
 When computing the kernel SHAP values by `explain`, the maximum number
 of samples to use in the Monte Carlo integration for every conditional
-expectation is controlled by the argument `n_samples` (default equals
+expectation is controlled by the argument `n_MC_samples` (default equals
 `1000`). The computation time grows approximately linear with this
 number. You will also need to pass a numeric value for the argument
 `prediction_zero`, which represents the prediction value when not
@@ -1421,7 +1421,7 @@ explanation_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = p0,
-  n_samples = 100,
+  n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
   vaeac.epochs = 3,
@@ -1456,7 +1456,7 @@ explanation_vaeac_early_stop <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = p0,
-  n_samples = 100,
+  n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
   vaeac.epochs = 1000, # Set it to a large number
@@ -1503,13 +1503,13 @@ which typically is a limited resource. By doing the most resource hungry
 computations (the computation of v(S)) in sequential batches with
 different feature subsets $S$, the memory usage can be significantly
 reduces. Such batching comes at the cost of an increase in computation
-time, which depends on the number of feature subsets (`n_combinations`),
+time, which depends on the number of feature subsets (`n_coalitions`),
 the number of features, the estimation `approach` and so on. When
 calling `shapr::explain()`, we allow the user to set the number of
 batches with the argument `n_batches`. The default of this argument is
 `NULL`, which uses a (hopefully) reasonable trade-off between
 computation speed and memory consumption which depends on
-`n_combinations` and `approach`. The memory/computation time trade-off
+`n_coalitions` and `approach`. The memory/computation time trade-off
 is most apparent for models with more than say 6-7 features. Below we a
 basic example where `n_batches=10`:
 

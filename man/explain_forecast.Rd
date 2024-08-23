@@ -18,7 +18,7 @@ explain_forecast(
   max_n_coalitions = NULL,
   group_lags = TRUE,
   group = NULL,
-  n_samples = 1000,
+  n_MC_samples = 1000,
   n_batches = NULL,
   seed = 1,
   keep_samp_for_vS = FALSE,
@@ -93,7 +93,7 @@ If provided, group wise Shapley values are computed. \code{group} then has lengt
 the number of groups. The list element contains character vectors with the features included
 in each of the different groups.}
 
-\item{n_samples}{Positive integer.
+\item{n_MC_samples}{Positive integer.
 Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
@@ -184,13 +184,13 @@ Determines minimum value that the sum of the left and right daughter nodes requi
     \item{\code{ctree.minbucket}}{Numeric scalar. (default = 7)
 Determines the minimum sum of weights in a terminal node required for a split}
     \item{\code{ctree.sample}}{Boolean. (default = TRUE)
-If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
-If FALSE and the number of observations in the leaf node is less than \code{n_samples},
+If TRUE, then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
+If FALSE and the number of observations in the leaf node is less than \code{n_MC_samples},
 the method will take all observations in the leaf.
-If FALSE and the number of observations in the leaf node is more than \code{n_samples},
-the method will sample \code{n_samples} observations (with replacement).
+If FALSE and the number of observations in the leaf node is more than \code{n_MC_samples},
+the method will sample \code{n_MC_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
-\code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+\code{sample} = FALSE AND the number of obs in the node is less than \code{n_MC_samples}.}
     \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
 in the neural networks of the masked encoder, full encoder, and decoder.}
     \item{\code{vaeac.width}}{Positive integer (default is \code{32}). The number of neurons in each

@@ -15,7 +15,7 @@ prepare_data_copula_cpp(
 )
 }
 \arguments{
-\item{MC_samples_mat}{arma::mat. Matrix of dimension (\code{n_samples}, \code{n_features}) containing samples from the
+\item{MC_samples_mat}{arma::mat. Matrix of dimension (\code{n_MC_samples}, \code{n_features}) containing samples from the
 univariate standard normal.}
 
 \item{x_explain_mat}{arma::mat. Matrix of dimension (\code{n_explain}, \code{n_features}) containing the observations
@@ -39,8 +39,8 @@ between all pairs of features after being transformed using the Gaussian transfo
 transformed to a standardized normal distribution.}
 }
 \value{
-An arma::cube/3D array of dimension (\code{n_samples}, \code{n_explain} * \code{n_coalitions}, \code{n_features}), where
-the columns (\emph{,j,}) are matrices of dimension (\code{n_samples}, \code{n_features}) containing the conditional Gaussian
+An arma::cube/3D array of dimension (\code{n_MC_samples}, \code{n_explain} * \code{n_coalitions}, \code{n_features}), where
+the columns (\emph{,j,}) are matrices of dimension (\code{n_MC_samples}, \code{n_features}) containing the conditional Gaussian
 copula MC samples for each explicand and coalition on the original scale.
 }
 \description{

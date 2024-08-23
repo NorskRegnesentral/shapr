@@ -25,7 +25,7 @@ setup <- function(x_train,
                   output_size = 1,
                   max_n_coalitions,
                   group,
-                  n_samples,
+                  n_MC_samples,
                   n_batches,
                   seed,
                   keep_samp_for_vS,
@@ -57,7 +57,7 @@ setup <- function(x_train,
     output_size = output_size,
     max_n_coalitions = max_n_coalitions,
     group = group,
-    n_samples = n_samples,
+    n_MC_samples = n_MC_samples,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
@@ -113,7 +113,7 @@ setup <- function(x_train,
 
 #' @keywords internal
 get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, max_n_coalitions, group,
-                           n_samples, n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
+                           n_MC_samples, n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
                            explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights,
                            verbose, adaptive = FALSE, adaptive_arguments = adaptive_arguments,
                            shapley_reweighting = "none", testing, is_python, ...) {
@@ -147,12 +147,12 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     stop("`group` must be NULL or a list")
   }
 
-  # n_samples
-  if (!(is.wholenumber(n_samples) &&
-    length(n_samples) == 1 &&
-    !is.na(n_samples) &&
-    n_samples > 0)) {
-    stop("`n_samples` must be a single positive integer.")
+  # n_MC_samples
+  if (!(is.wholenumber(n_MC_samples) &&
+    length(n_MC_samples) == 1 &&
+    !is.na(n_MC_samples) &&
+    n_MC_samples > 0)) {
+    stop("`n_MC_samples` must be a single positive integer.")
   }
   # n_batches
   if (!is.null(n_batches) &&
@@ -242,7 +242,7 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     prediction_zero = prediction_zero,
     max_n_coalitions = max_n_coalitions,
     group = group,
-    n_samples = n_samples,
+    n_MC_samples = n_MC_samples,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
@@ -813,8 +813,8 @@ check_regression <- function(internal) {
     ))
   }
 
-  # Remove n_samples if we are doing regression, as we are not doing MC sampling
-  internal$parameters$n_samples <- NULL
+  # Remove n_MC_samples if we are doing regression, as we are not doing MC sampling
+  internal$parameters$n_MC_samples <- NULL
 
   return(internal)
 }
