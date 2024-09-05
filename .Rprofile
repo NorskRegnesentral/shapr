@@ -1,3 +1,5 @@
+testthat::set_max_fails(Inf)
+
 #' Helper function for package development
 #'
 #' This is a manual extension of [testthat::snapshot_review()] which works for the \code{.rds} files used in
@@ -7,7 +9,7 @@
 #' @param ... Additional arguments passed to [waldo::compare()]
 #' Gives the relative path to the test files to review
 #'
-snapshot_review_man <- function(path, tolerance = NULL, max_diffs = 50, ...) {
+snapshot_review_man <- function(path, tolerance = 10^(-5), max_diffs = 200, ...) {
   changed <- testthat:::snapshot_meta(path)
   these_rds <- (tools::file_ext(changed$name) == "rds")
   if (any(these_rds)) {
