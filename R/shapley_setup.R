@@ -186,7 +186,7 @@ shapley_reweighting <- function(X, reweight = "on_N") {
     m <- X[.N, coalition_size]
     X[-c(1,.N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
   } else if (reweight == "on_N_sum") {
-    X[, shapley_weight := sum(shapley_weight), by = N]
+    X[-c(1,.N), shapley_weight := sum(shapley_weight), by = N]
   } else if (reweight == "on_all_cond") {
     m <- X[.N, coalition_size]
     K <- X[,sum(sample_freq)]

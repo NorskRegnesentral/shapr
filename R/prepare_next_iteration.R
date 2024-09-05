@@ -1,6 +1,7 @@
 prepare_next_iteration <- function(internal) {
   iter <- length(internal$iter_list)
   converged <- internal$iter_list[[iter]]$converged
+  paired_shap_sampling <- internal$parameters$paired_shap_sampling
 
 
   if (converged == FALSE) {
@@ -19,7 +20,6 @@ prepare_next_iteration <- function(internal) {
 
     X <- internal$iter_list[[iter]]$X
 
-
     if (is.null(fixed_n_coalitions_per_iter)) {
       proposal_next_n_coalitions <- ceiling(est_remaining_coalitions * reduction_factor)
     } else {
@@ -31,6 +31,11 @@ prepare_next_iteration <- function(internal) {
       max_n_coalitions - current_n_coalitions,
       proposal_next_n_coalitions
     )
+
+    if(paired_shap_sampling){
+      proposal_next_n_coalitions <- ceiling(proposal_next_n_coalitions*0.5)*2
+    }
+
 
     if ((current_n_coalitions + proposal_next_n_coalitions) >= 2^n_shapley_values) {
       # Use all coalitions in the last iteration as the estimated number of samples is more than what remains

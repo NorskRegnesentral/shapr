@@ -30,7 +30,10 @@ check_convergence <- function(internal) {
       dt_shapley_est0[, max_sd0 := max_sd0]
       dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tolerance))^2]
       est_required_coalitions <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO:Consider other ways to do this
-      est_remaining_coalitions <- max(0, est_required_coalitions - n_sampled_coalitions)
+      if(isTRUE(paired_shap_sampling)){
+        est_required_coalitions <- ceiling(est_required_coalitions*0.5)*2
+      }
+      est_remaining_coalitions <- max(0, est_required_coalitions - (n_sampled_coalitions + 2))
 
       converged_sd <- (est_remaining_coalitions == 0)
 
