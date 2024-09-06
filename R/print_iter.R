@@ -31,7 +31,7 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
         ))
       }
       cat(paste0(
-        "Using ", next_n_coalitions, " new coalitions in the next iteration.\n"
+        "Using ", next_n_coalitions - current_n_coalitions, " new coalitions in the next iteration.\n"
       ))
     } else {
       cat(paste0(

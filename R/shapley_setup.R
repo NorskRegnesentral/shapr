@@ -238,13 +238,11 @@ sample_coalition_table <- function(m,
   w <- shapley_weights(m = m, N = n, coal_samp_vec) * n
   p <- w / sum(w)
 
-
-
   if (unique_sampling) {
     if (!is.null(prev_coal_samples)) {
       coal_sample_all <- prev_coal_samples
       unique_samples <- length(unique(prev_coal_samples))
-      n_coalitions <- min(2^m, n_coalitions + unique_samples + 2)
+      n_coalitions <- min(2^m, n_coalitions)
       # Adjusts for the the unique samples, zero and m samples
     } else {
       coal_sample_all <- list()
@@ -276,7 +274,7 @@ sample_coalition_table <- function(m,
       }
       unique_samples <- length(unique(coal_sample_all))
     }
-  } else {
+  } else { # TODO: Consider deleting this as it does not anything useful and just confuses terminology
     if (is.null(prev_coal_samples)) {
       n_coalitions <- n_coalitions - 2 # Sample -2 for the first iteration as we add zero and m samples below
     }

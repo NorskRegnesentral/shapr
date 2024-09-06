@@ -7,6 +7,10 @@
 #'
 #' @export
 compute_estimates <- function(internal, vS_list) {
+
+  internal$timing_list$compute_vS <- Sys.time()
+
+
   iter <- length(internal$iter_list)
   compute_sd <- internal$iter_list[[iter]]$compute_sd
 

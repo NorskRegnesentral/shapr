@@ -318,8 +318,19 @@ explain <- function(model,
                     print_shapleyres = FALSE, # tmp
                     print_iter_info = FALSE, # tmp
                     shapley_reweighting = "none", # tmp # "on_N" # TODO: Make "on_N" the default later on.
-                    shapr_object = NULL
+                    prev_shapr_object = NULL,
                     ...) { # ... is further arguments passed to specific approaches
+
+
+
+  if(!is.null(prev_shapr_object)){
+    prev_internal <- get_prev_internal(prev_shapr_object)
+
+    # Overwrite the input arguments set in explain() with those from in prev_shapr_object
+    # except model, x_explain, x_train, max_n_coalitions, adaptive_arguments, seed
+    list2env(prev_internal$parameters)
+  }
+
 
   init_time <- Sys.time()
 
@@ -354,6 +365,7 @@ explain <- function(model,
   )
 
 
+
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(predict_model = predict_model, model = model)
 
@@ -370,17 +382,26 @@ explain <- function(model,
 
   internal <- additional_regression_setup(internal, model = model, predict_model = predict_model)
 
+
+  if(!is.null(prev_shapr_object)){
+    internal$iter_list <- prev_internal$iter_list
+
+    # Preparing parameters for next iteration (does not do anything if already converged)
+    internal <- prepare_next_iteration(internal)
+
+  }
+
   # Not called for approach = regression_surrogate
   internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
-  iter <- 0
-  converged <- FALSE
   internal$main_timing_list <- internal$timing_list
+
+  converged <- FALSE
+  iter <- length(internal$iter_list)
 
   set.seed(seed)
 
   while (converged == FALSE) {
-    iter <- iter + 1
     internal$timing_list <- list(init = Sys.time())
 
     # setup the Shapley framework
@@ -391,8 +412,6 @@ explain <- function(model,
 
     # Compute the vS
     vS_list <- compute_vS(internal, model, predict_model)
-
-    internal$timing_list$compute_vS <- Sys.time()
 
     # Compute shapley value estimated and bootstrapped standard deviations
     internal <- compute_estimates(internal, vS_list)
@@ -415,6 +434,8 @@ explain <- function(model,
     internal$timing_list$postprocess_res <- Sys.time()
 
     internal$iter_timing_list[[iter]] <- internal$timing_list
+
+    iter <- iter + 1
   }
 
   internal$main_timing_list$adaptive_estimation <- Sys.time()
@@ -469,3 +490,25 @@ testing_cleanup <- function(output) {
 
   return(output)
 }
+
+get_prev_internal <- function(prev_shapr_object,exclude_parameters = c("max_n_coalitions","adaptive_arguments","seed")){
+  cl <- class(prev_shapr_object)[1]
+
+  if(cl=="character"){
+    internal <- readRDS(prev_shapr_object)[c("parameters","iter_list")]
+  } else if(cl=="shapr"){
+    internal <- prev_shapr_object$internal[c("parameters","iter_list")]
+  } else{
+    stop("Invalid `shapr_object` passed to explain(). See ?explain for details.")
+  }
+
+  if(length(exclude_parameters)>0){
+    internal$parameters[exclude_parameters] <- NULL
+  }
+
+  iter <- length(internal$iter_list)
+  internal$iter_list[[iter]]$converged <- FALSE # hard setting the convergence parameter
+
+  return(internal)
+}
+
