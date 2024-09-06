@@ -27,8 +27,6 @@ finalize_explanation <- function(internal) {
   # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
   internal$tmp <- NULL
 
-  # Clearing out the timing lists as they are added to the output separately
-  internal$main_timing_list <- internal$iter_timing_list <- internal$timing_list <- NULL
 
 
   # Extract the predictions we are explaining

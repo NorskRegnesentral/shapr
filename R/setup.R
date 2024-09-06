@@ -989,11 +989,20 @@ get_adaptive_arguments_default <- function(internal,
                                            convergence_tolerance = 0.02,
                                            reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
                                            n_boot_samps = 100,
-                                           compute_sd = ifelse(internal$parameters$exact, FALSE, TRUE)) {
+                                           compute_sd = ifelse(internal$parameters$exact, FALSE, TRUE),
+                                           saving_path = tempfile("shapr_obj_",fileext=".rds")) {
   adaptive <- internal$parameters$adaptive
   max_n_coalitions <- internal$parameters$max_n_coalitions
   exact <- internal$parameters$exact
   is_groupwise <- internal$parameters$is_groupwise
+
+  # Check that the saving_path exists, and abort if not...
+  if(!dir.exists(dirname(saving_path))){
+    stop(
+      paste0("Directory ",dirname(saving_path)," in the adapative_arguments$saving_path does not exists.\n",
+             "Please create the directory with `dir.create('",dirname(saving_path),"')` or use another directory.")
+    )
+  }
 
   if (isTRUE(adaptive)) {
     ret_list <- mget(
@@ -1005,7 +1014,8 @@ get_adaptive_arguments_default <- function(internal,
         "convergence_tolerance",
         "reduction_factor_vec",
         "n_boot_samps",
-        "compute_sd"
+        "compute_sd",
+        "saving_path"
       )
     )
   } else {
@@ -1017,7 +1027,8 @@ get_adaptive_arguments_default <- function(internal,
       convergence_tolerance = NULL,
       reduction_factor_vec = NULL,
       n_boot_samps = n_boot_samps,
-      compute_sd = isFALSE(exact) && isFALSE(is_groupwise)
+      compute_sd = isFALSE(exact) && isFALSE(is_groupwise),
+      saving_path = saving_path
     )
   }
 

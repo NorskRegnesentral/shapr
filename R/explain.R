@@ -318,6 +318,7 @@ explain <- function(model,
                     print_shapleyres = FALSE, # tmp
                     print_iter_info = FALSE, # tmp
                     shapley_reweighting = "none", # tmp # "on_N" # TODO: Make "on_N" the default later on.
+                    shapr_object = NULL
                     ...) { # ... is further arguments passed to specific approaches
 
   init_time <- Sys.time()
@@ -402,6 +403,9 @@ explain <- function(model,
     # Preparing parameters for next iteration (does not do anything if already converged)
     internal <- prepare_next_iteration(internal)
 
+    # Save intermediate results
+    save_results(internal)
+
     # Printing iteration information
     print_iter(internal, print_iter_info, print_shapleyres)
 
@@ -439,6 +443,11 @@ testing_cleanup <- function(output) {
   # Removing the timing of different function calls
   output$timing <- NULL
 
+  # Clearing out the timing lists as well
+  output$internal$main_timing_list <- NULL
+  output$internal$iter_timing_list <- NULL
+  output$internal$timing_list <- NULL
+
   # Removing paths to non-reproducable vaeac model objects
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters[c(
@@ -454,6 +463,9 @@ testing_cleanup <- function(output) {
     # In the future we could delete this only when a new argument in explain called testing is TRUE
     output$internal$objects$regression.surrogate_model$pre$mold$blueprint$recipe$fit_times <- NULL
   }
+
+  # Delete the saving_path
+  internal$parameters$adaptive_arguments$saving_path <- NULL
 
   return(output)
 }

@@ -7,6 +7,9 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
   converged_max_iter <- internal$iter_list[[iter]]$converged_max_iter
   converged_max_n_coalitions <- internal$iter_list[[iter]]$converged_max_n_coalitions
 
+  saving_path <- internal$parameters$adaptive_arguments$saving_path
+  testing <- internal$parameters$testing
+
   if (print_iter_info) {
     convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
 
@@ -56,6 +59,14 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
         ))
       }
     }
+
+    # Printing saving_path unless testing is TRUE
+    if(isFALSE(testing)){
+      cat(paste0(
+        "Intermediate computations saved at ", saving_path, ".\n"
+      ))
+    }
+
   }
 
   if (print_shapleyres) {
