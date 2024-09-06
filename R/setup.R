@@ -969,14 +969,14 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
   return(internal)
 }
 
-update_adaptive_arguments <- function(internal,adaptive_arguments){
+update_adaptive_arguments <- function(prev_iter_list,adaptive_arguments){
 
-  iter <- length(internal$iter_list)
-  prev_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
-  max_n_coalitions <- internal$parameters$adaptive_arguments$max_n_coalitions
+  iter <- length(prev_iter_list)
+  prev_n_coalitions <- prev_iter_list[[iter]]$n_coalitions
+  max_n_coalitions <- adaptive_arguments$max_n_coalitions
 
   # Check if the maximum number of coalitions is smaller than the number of coalitions already computed
-  if(prev_n_coalitions > max_n_coaltions){
+  if(prev_n_coalitions > max_n_coalitions){
     stop(
       paste0(
         "The maximum number of coalitions (",max_n_coalitions,") is smaller than the number of coalitions ",
@@ -987,7 +987,7 @@ update_adaptive_arguments <- function(internal,adaptive_arguments){
   }
 
   # Redefine max_iter to be the maximum number of NEW iterations
-  adaptive_arguments$max_iter <- adaptive_arguments$max_iter + length(internal$iter_list)
+  adaptive_arguments$max_iter <- adaptive_arguments$max_iter + iter
 
   return(adaptive_arguments)
 }
