@@ -13,8 +13,8 @@ save_results <- function(internal){
 
   # Save the results to a new location, then delete old and rename for safe code interruption
 
-  internal$data <- NULL # Not saving data due to potentially large file size
-  saveRDS(internal, saving_path_copy)
+  #Saving parameters and iter_list
+  saveRDS(internal[c("parameters","iter_list")], saving_path_copy)
   if (file.exists(saving_path)) file.remove(saving_path)
   file.rename(saving_path_copy, saving_path)
 

@@ -325,8 +325,9 @@ explain <- function(model,
 
   init_time <- Sys.time()
 
-  set.seed(seed)
-
+  if(!is.null(seed)){
+    set.seed(seed)
+  }
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
@@ -382,7 +383,9 @@ explain <- function(model,
   converged <- FALSE
   iter <- length(internal$iter_list)
 
-  set.seed(seed)
+  if(!is.null(seed)){
+    set.seed(seed)
+  }
 
   while (converged == FALSE) {
     internal$timing_list <- list(init = Sys.time())
@@ -402,11 +405,11 @@ explain <- function(model,
     # Check convergence based on estimates and standard deviations (and thresholds)
     internal <- check_convergence(internal)
 
-    # Preparing parameters for next iteration (does not do anything if already converged)
-    internal <- prepare_next_iteration(internal)
-
     # Save intermediate results
     save_results(internal)
+
+    # Preparing parameters for next iteration (does not do anything if already converged)
+    internal <- prepare_next_iteration(internal)
 
     # Printing iteration information
     print_iter(internal, print_iter_info, print_shapleyres)
@@ -478,7 +481,7 @@ get_prev_internal <- function(prev_shapr_object,exclude_parameters = c("max_n_co
   cl <- class(prev_shapr_object)[1]
 
   if(cl=="character"){
-    internal <- readRDS(prev_shapr_object)[c("parameters","iter_list")]
+    internal <- readRDS(file = prev_shapr_object)# Already contains only "parameters" and "iter_list"
   } else if(cl=="shapr"){
     internal <- prev_shapr_object$internal[c("parameters","iter_list")]
   } else{

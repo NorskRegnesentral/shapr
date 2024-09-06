@@ -944,14 +944,21 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
     keep.null = TRUE
   )
 
+  internal$parameters$adaptive_arguments <- adaptive_arguments
 
 
   if(!is.null(prev_iter_list)){
 
-    adaptive_arguments <- update_adaptive_arguments(prev_iter_list,adaptive_arguments)
-
+    # Update internal with the iter_list from prev_shapr_object
     internal$iter_list <- prev_iter_list
 
+    # Update convergence data with NEW adaptive arguments
+    internal <- check_convergence(internal)
+
+    # Check for convergence based on last iter_list with new adaptive arguments
+    check_vs_prev_shapr_object(internal)
+
+    # Prepare next iteration
     internal <- prepare_next_iteration(internal)
 
   } else {
@@ -964,32 +971,44 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
     )
   }
 
-  internal$parameters$adaptive_arguments <- adaptive_arguments
 
   return(internal)
 }
 
-update_adaptive_arguments <- function(prev_iter_list,adaptive_arguments){
+check_vs_prev_shapr_object <- function(internal){
 
-  iter <- length(prev_iter_list)
-  prev_n_coalitions <- prev_iter_list[[iter]]$n_coalitions
-  max_n_coalitions <- adaptive_arguments$max_n_coalitions
+  iter <- length(internal$iter_list)
 
-  # Check if the maximum number of coalitions is smaller than the number of coalitions already computed
-  if(prev_n_coalitions > max_n_coalitions){
-    stop(
-      paste0(
-        "The maximum number of coalitions (",max_n_coalitions,") is smaller than the number of coalitions ",
-        "already computed (",prev_n_coalitions,") in `prev_shapr_object`.\n",
-        "Please increase `max_n_coalitions`."
+  converged <- internal$iter_list[[iter]]$converged
+  converged_exact <- internal$iter_list[[iter]]$converged_exact
+  converged_sd <- internal$iter_list[[iter]]$converged_sd
+  converged_max_iter <- internal$iter_list[[iter]]$converged_max_iter
+  converged_max_n_coalitions <- internal$iter_list[[iter]]$converged_max_n_coalitions
+
+  if(isTRUE(converged)){
+    message0 <- "Convergence reached before estimation start.\n"
+    if (isTRUE(converged_exact)) {
+      message0 <- c(message0,
+                    paste0("All coalitions estimated. No need for further estimation.\n")
       )
-    )
+    }
+    if (isTRUE(converged_sd)) {
+      message0 <- c(message0,
+                    paste0("Convergence tolerance reached. Consider decreasing `adaptive_arguments$tolerance`.\n")
+      )
+    }
+    if (isTRUE(converged_max_iter)) {
+      message0 <- c(message0,
+                    paste0("Maximum number of iterations reached. Consider increasing `adaptive_arguments$max_iter`.\n")
+      )
+    }
+    if (isTRUE(converged_max_n_coalitions)) {
+      message0 <- c(message0,
+                    paste0("Maximum number of coalitions reached. Consider increasing `max_n_coalitions`.\n")
+      )
+    }
+    stop(message0)
   }
-
-  # Redefine max_iter to be the maximum number of NEW iterations
-  adaptive_arguments$max_iter <- adaptive_arguments$max_iter + iter
-
-  return(adaptive_arguments)
 }
 
 # Get functions ========================================================================================================
