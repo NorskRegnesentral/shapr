@@ -47,8 +47,23 @@ setup <- function(x_train,
                   is_python = FALSE,
                   testing = FALSE,
                   init_time = NULL,
+                  prev_shapr_object = NULL,
                   ...) {
   internal <- list()
+
+  # Using parameters and iter_list from a previouys  to continue estimation from on previous shapr objects
+  if(is.null(prev_shapr_object)){
+    prev_iter_list <- NULL
+  } else{
+    prev_internal <- get_prev_internal(prev_shapr_object)
+
+    prev_iter_list <- prev_internal$iter_list
+
+    # Overwrite the input arguments set in explain() with those from in prev_shapr_object
+    # except model, x_explain, x_train, max_n_coalitions, adaptive_arguments, seed
+    list2env(prev_internal$parameters)
+  }
+
 
   internal$parameters <- get_parameters(
     approach = approach,
@@ -101,7 +116,7 @@ setup <- function(x_train,
 
   internal <- check_and_set_parameters(internal)
 
-  internal <- set_adaptive_parameters(internal)
+  internal <- set_adaptive_parameters(internal,prev_iter_list)
 
   internal$timing_list <- list(
     init_time = init_time,
@@ -491,7 +506,7 @@ check_and_set_parameters <- function(internal) {
   if (!is.null(group)) check_groups(feature_names, group)
 
   # Adjust max_n_coalitions
-  internal <- adjust_max_n_coalitions(internal)
+  internal$parameters$max_n_coalitions <- adjust_max_n_coalitions(internal)
 
   check_max_n_coalitions_fc(internal)
 
@@ -572,9 +587,8 @@ adjust_max_n_coalitions <- function(internal) {
     }
   }
 
-  internal$parameters$max_n_coalitions <- max_n_coalitions
 
-  return(internal)
+  return(max_n_coalitions)
 }
 
 check_max_n_coalitions_fc <- function(internal) {
@@ -921,8 +935,7 @@ check_groups <- function(feature_names, group) {
 
 
 #' @keywords internal
-set_adaptive_parameters <- function(internal) {
-  adaptive <- internal$parameters$adaptive
+set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
 
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
@@ -931,19 +944,52 @@ set_adaptive_parameters <- function(internal) {
     keep.null = TRUE
   )
 
+
+
+  if(!is.null(prev_iter_list)){
+
+    adaptive_arguments <- update_adaptive_arguments(prev_iter_list,adaptive_arguments)
+
+    internal$iter_list <- prev_iter_list
+
+    internal <- prepare_next_iteration(internal)
+
+  } else {
+    internal$iter_list <- list()
+    internal$iter_list[[1]] <- list(
+      n_coalitions = adaptive_arguments$initial_n_coalitions,
+      exact = internal$parameters$exact,
+      compute_sd = adaptive_arguments$compute_sd,
+      reduction_factor = adaptive_arguments$reduction_factor_vec[1]
+    )
+  }
+
   internal$parameters$adaptive_arguments <- adaptive_arguments
 
-
-  internal$iter_list <- list()
-  internal$iter_list[[1]] <- list(
-    n_coalitions = adaptive_arguments$initial_n_coalitions,
-    exact = internal$parameters$exact,
-    compute_sd = adaptive_arguments$compute_sd,
-    reduction_factor = adaptive_arguments$reduction_factor_vec[1]
-  )
-
-
   return(internal)
+}
+
+update_adaptive_arguments <- function(internal,adaptive_arguments){
+
+  iter <- length(internal$iter_list)
+  prev_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
+  max_n_coalitions <- internal$parameters$adaptive_arguments$max_n_coalitions
+
+  # Check if the maximum number of coalitions is smaller than the number of coalitions already computed
+  if(prev_n_coalitions > max_n_coaltions){
+    stop(
+      paste0(
+        "The maximum number of coalitions (",max_n_coalitions,") is smaller than the number of coalitions ",
+        "already computed (",prev_n_coalitions,") in `prev_shapr_object`.\n",
+        "Please increase `max_n_coalitions`."
+      )
+    )
+  }
+
+  # Redefine max_iter to be the maximum number of NEW iterations
+  adaptive_arguments$max_iter <- adaptive_arguments$max_iter + length(internal$iter_list)
+
+  return(adaptive_arguments)
 }
 
 # Get functions ========================================================================================================

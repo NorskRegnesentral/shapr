@@ -4,6 +4,7 @@ check_convergence <- function(internal) {
   convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
   max_iter <- internal$parameters$adaptive_arguments$max_iter
   max_n_coalitions <- internal$parameters$adaptive_arguments$max_n_coalitions
+  paired_shap_sampling <- internal$parameters$paired_shap_sampling
 
   exact <- internal$iter_list[[iter]]$exact
 

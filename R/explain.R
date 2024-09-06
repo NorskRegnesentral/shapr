@@ -323,15 +323,6 @@ explain <- function(model,
 
 
 
-  if(!is.null(prev_shapr_object)){
-    prev_internal <- get_prev_internal(prev_shapr_object)
-
-    # Overwrite the input arguments set in explain() with those from in prev_shapr_object
-    # except model, x_explain, x_train, max_n_coalitions, adaptive_arguments, seed
-    list2env(prev_internal$parameters)
-  }
-
-
   init_time <- Sys.time()
 
   set.seed(seed)
@@ -361,6 +352,7 @@ explain <- function(model,
     adaptive_arguments = adaptive_arguments,
     shapley_reweighting = shapley_reweighting,
     init_time = init_time,
+    prev_shapr_object = prev_shapr_object,
     ...
   )
 
@@ -381,15 +373,6 @@ explain <- function(model,
 
 
   internal <- additional_regression_setup(internal, model = model, predict_model = predict_model)
-
-
-  if(!is.null(prev_shapr_object)){
-    internal$iter_list <- prev_internal$iter_list
-
-    # Preparing parameters for next iteration (does not do anything if already converged)
-    internal <- prepare_next_iteration(internal)
-
-  }
 
   # Not called for approach = regression_surrogate
   internal <- setup_approach(internal, model = model, predict_model = predict_model)
@@ -486,7 +469,7 @@ testing_cleanup <- function(output) {
   }
 
   # Delete the saving_path
-  internal$parameters$adaptive_arguments$saving_path <- NULL
+  output$internal$parameters$adaptive_arguments$saving_path <- NULL
 
   return(output)
 }
