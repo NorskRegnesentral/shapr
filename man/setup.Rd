@@ -35,6 +35,7 @@ setup(
   is_python = FALSE,
   testing = FALSE,
   init_time = NULL,
+  prev_shapr_object = NULL,
   ...
 )
 }

@@ -52,7 +52,7 @@ full = explain(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
     reduction_factor_vec = rep(10^(-5), 10),
-    max_iter = 5
+    max_iter = 7
   ),
   adaptive = TRUE,
   print_shapleyres = TRUE,
@@ -72,7 +72,7 @@ first = explain(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
     reduction_factor_vec = rep(10^(-5), 10),
-    max_iter = 2
+    max_iter = 4
   ),
   adaptive = TRUE,
   print_shapleyres = TRUE,
@@ -92,7 +92,7 @@ second = explain(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
     reduction_factor_vec = rep(10^(-5), 10),
-    max_iter = 5
+    max_iter = 7
   ),
   adaptive = TRUE,
   print_shapleyres = TRUE,
@@ -103,6 +103,8 @@ second = explain(
 )
 
 
+
+# This cannot be tested, I think.
 second_path = explain(
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
@@ -125,5 +127,6 @@ second_path = explain(
 
 
 # Identical results
-all.equal(full$shapley_values,second$shapley_values)
-all.equal(full$shapley_values,second_path$shapley_values)
+all.equal(full$shapley_values,second$shapley_values) # TRUE
+all.equal(full$shapley_values,second2$shapley_values) # TRUE
+all.equal(full$shapley_values,second_path$shapley_values) # TRUE

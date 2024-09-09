@@ -130,3 +130,123 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
   )
 })
 
+test_that("output_lm_numeric_independence_saving_and_cont_est", {
+
+  # Full 8 iteration estimation to compare against
+  # Sets seed on the outside + seed = NULL for reproducibility in two-step estimation
+  set.seed(123)
+  full <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "independence",
+    prediction_zero = p0,
+    adaptive_arguments = list(
+      initial_n_coalitions = 10,
+      convergence_tolerance = 0.001,
+      reduction_factor_vec = rep(10^(-5), 10),
+      max_iter = 8
+    ),
+    adaptive = TRUE,
+    seed=NULL
+  )
+
+  # Testing saving and continuation estimation
+  # By setting the seed outside (+ seed= NULL), we should get identical objects when calling explain twice this way
+  set.seed(123)
+  e_init_object <- explain(
+    testing = FALSE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "independence",
+    prediction_zero = p0,
+    adaptive_arguments = list(
+      initial_n_coalitions = 10,
+      convergence_tolerance = 0.001,
+      reduction_factor_vec = rep(10^(-5), 10),
+      max_iter = 5
+    ),
+    adaptive = TRUE,
+    seed=NULL
+  )
+
+  # Continue estimation from the init object
+  expect_snapshot_rds(
+    e_cont_est_object <- explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "independence",
+      prediction_zero = p0,
+      adaptive_arguments = list(
+        initial_n_coalitions = 10,
+        convergence_tolerance = 0.001,
+        reduction_factor_vec = rep(10^(-5), 10),
+        max_iter = 8
+      ),
+      adaptive = TRUE,
+      print_shapleyres = TRUE,
+      print_iter_info = TRUE,
+      prev_shapr_object = e_init_object,
+      seed=NULL
+    ),
+    "output_lm_numeric_independence_cont_est_object"
+  )
+
+  # Testing equality with the object being run in one go
+  expect_equal(e_cont_est_object, full)
+
+
+  # Same as above but using the saving_path instead of the shapr object itself #
+  set.seed(123)
+  e_init_path <- explain(
+    testing = FALSE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "independence",
+    prediction_zero = p0,
+    adaptive_arguments = list(
+      initial_n_coalitions = 10,
+      convergence_tolerance = 0.001,
+      reduction_factor_vec = rep(10^(-5), 10),
+      max_iter = 5
+    ),
+    adaptive = TRUE,
+    seed=NULL
+  )
+
+  # Continue estimation from the init object
+  expect_snapshot_rds(
+    e_cont_est_path <- explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "independence",
+      prediction_zero = p0,
+      adaptive_arguments = list(
+        initial_n_coalitions = 10,
+        convergence_tolerance = 0.001,
+        reduction_factor_vec = rep(10^(-5), 10),
+        max_iter = 8
+      ),
+      adaptive = TRUE,
+      print_shapleyres = TRUE,
+      print_iter_info = TRUE,
+      prev_shapr_object = e_init_path$internal$parameters$adaptive_arguments$saving_path,
+      seed=NULL
+    ),
+    "output_lm_numeric_independence_cont_est_path"
+  )
+
+  # Testing equality with the object being run in one go
+  expect_equal(e_cont_est_path, full)
+
+})
+
+
+
