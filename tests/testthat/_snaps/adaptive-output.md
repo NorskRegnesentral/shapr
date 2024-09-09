@@ -146,8 +146,8 @@
       
       Iteration 4
       Not converged after 13 coalitions.
-      Estimated remaining coalitions: 61949
-      Estimated required coalitions: 61962
+      Estimated remaining coalitions: 61948
+      Estimated required coalitions: 61961
       Using 1 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
                    none        Solar.R            Wind           Temp          Month
@@ -296,8 +296,8 @@
       
       Iteration 1
       Not converged after 5 coalitions.
-      Estimated remaining coalitions: 9
-      Estimated required coalitions: 14
+      Estimated remaining coalitions: 8
+      Estimated required coalitions: 13
       Using 1 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
                    none               A               B              C
@@ -308,8 +308,8 @@
       
       Iteration 2
       Not converged after 6 coalitions.
-      Estimated remaining coalitions: 20
-      Estimated required coalitions: 26
+      Estimated remaining coalitions: 19
+      Estimated required coalitions: 25
       Using 2 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
                    none               A               B              C
@@ -401,4 +401,140 @@
       1:          1 42.44  -4.533   8.226 17.506 -5.519 -3.078
       2:          2 42.44   2.254  -3.389 -5.244 -5.519 -1.983
       3:          3 42.44   3.712 -18.654 -1.452 -2.479  1.304
+
+# output_lm_numeric_independence_saving_and_cont_est
+
+    Code
+      (out <- code)
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
+      Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
+      
+    Output
+      
+      Iteration 6
+      Not converged after 15 coalitions.
+      Estimated remaining coalitions: 71
+      Estimated required coalitions: 86
+      Using 1 new coalitions in the next iteration.
+      Current estimated Shapley values (sd):
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.479 (0.05)    8.206 (0.06)  17.445 (0.05)  -5.515 (0.06) 
+      2: 42.444 (0.00)   2.308 (0.05)   -3.409 (0.06)  -5.304 (0.05)  -5.515 (0.06) 
+      3: 42.444 (0.00)   3.766 (0.05)  -18.674 (0.06)  -1.512 (0.05)  -2.475 (0.06) 
+                    Day
+                 <char>
+      1: -3.055 (0.05) 
+      2: -1.959 (0.05) 
+      3:  1.327 (0.05) 
+      
+      Iteration 7
+      Not converged after 16 coalitions.
+      Estimated remaining coalitions: 63
+      Estimated required coalitions: 79
+      Using 1 new coalitions in the next iteration.
+      Current estimated Shapley values (sd):
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.509 (0.05)    8.226 (0.04)  17.474 (0.05)  -5.556 (0.05) 
+      2: 42.444 (0.00)   2.278 (0.05)   -3.388 (0.04)  -5.275 (0.05)  -5.556 (0.05) 
+      3: 42.444 (0.00)   3.736 (0.05)  -18.653 (0.04)  -1.484 (0.05)  -2.516 (0.05) 
+                    Day
+                 <char>
+      1: -3.034 (0.05) 
+      2: -1.938 (0.05) 
+      3:  1.348 (0.05) 
+      
+      Iteration 8
+      Estimation stopped!
+      Maximum number of iterations reached after 17 coalitions.
+      Final estimated Shapley values (sd):
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.510 (0.05)    8.226 (0.05)  17.474 (0.05)  -5.554 (0.03) 
+      2: 42.444 (0.00)   2.277 (0.05)   -3.388 (0.05)  -5.276 (0.05)  -5.554 (0.03) 
+      3: 42.444 (0.00)   3.735 (0.05)  -18.653 (0.05)  -1.484 (0.05)  -2.514 (0.03) 
+                    Day
+                 <char>
+      1: -3.034 (0.04) 
+      2: -1.939 (0.04) 
+      3:  1.348 (0.04) 
+         explain_id  none Solar.R    Wind   Temp  Month    Day
+              <int> <num>   <num>   <num>  <num>  <num>  <num>
+      1:          1 42.44  -4.510   8.226 17.474 -5.554 -3.034
+      2:          2 42.44   2.277  -3.388 -5.276 -5.554 -1.939
+      3:          3 42.44   3.735 -18.653 -1.484 -2.514  1.348
+
+---
+
+    Code
+      (out <- code)
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
+      Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
+      
+    Output
+      
+      Iteration 6
+      Not converged after 15 coalitions.
+      Estimated remaining coalitions: 71
+      Estimated required coalitions: 86
+      Using 1 new coalitions in the next iteration.
+      Current estimated Shapley values (sd):
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.479 (0.05)    8.206 (0.06)  17.445 (0.05)  -5.515 (0.06) 
+      2: 42.444 (0.00)   2.308 (0.05)   -3.409 (0.06)  -5.304 (0.05)  -5.515 (0.06) 
+      3: 42.444 (0.00)   3.766 (0.05)  -18.674 (0.06)  -1.512 (0.05)  -2.475 (0.06) 
+                    Day
+                 <char>
+      1: -3.055 (0.05) 
+      2: -1.959 (0.05) 
+      3:  1.327 (0.05) 
+      
+      Iteration 7
+      Not converged after 16 coalitions.
+      Estimated remaining coalitions: 63
+      Estimated required coalitions: 79
+      Using 1 new coalitions in the next iteration.
+      Current estimated Shapley values (sd):
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.509 (0.05)    8.226 (0.04)  17.474 (0.05)  -5.556 (0.05) 
+      2: 42.444 (0.00)   2.278 (0.05)   -3.388 (0.04)  -5.275 (0.05)  -5.556 (0.05) 
+      3: 42.444 (0.00)   3.736 (0.05)  -18.653 (0.04)  -1.484 (0.05)  -2.516 (0.05) 
+                    Day
+                 <char>
+      1: -3.034 (0.05) 
+      2: -1.938 (0.05) 
+      3:  1.348 (0.05) 
+      
+      Iteration 8
+      Estimation stopped!
+      Maximum number of iterations reached after 17 coalitions.
+      Final estimated Shapley values (sd):
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.510 (0.05)    8.226 (0.05)  17.474 (0.05)  -5.554 (0.03) 
+      2: 42.444 (0.00)   2.277 (0.05)   -3.388 (0.05)  -5.276 (0.05)  -5.554 (0.03) 
+      3: 42.444 (0.00)   3.735 (0.05)  -18.653 (0.05)  -1.484 (0.05)  -2.514 (0.03) 
+                    Day
+                 <char>
+      1: -3.034 (0.04) 
+      2: -1.939 (0.04) 
+      3:  1.348 (0.04) 
+         explain_id  none Solar.R    Wind   Temp  Month    Day
+              <int> <num>   <num>   <num>  <num>  <num>  <num>
+      1:          1 42.44  -4.510   8.226 17.474 -5.554 -3.034
+      2:          2 42.44   2.277  -3.388 -5.276 -5.554 -1.939
+      3:          3 42.44   3.735 -18.653 -1.484 -2.514  1.348
 
