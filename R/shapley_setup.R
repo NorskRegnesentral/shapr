@@ -695,6 +695,7 @@ shapley_setup_forecast <- function(internal) {
     this_featcomb <- horizon_features[[i]]
 
     this_coal_feature_list <- lapply(coal_feature_list, function(x) x[x %in% this_featcomb])
+    this_coal_feature_list <- this_coal_feature_list[sapply(this_coal_feature_list, function (x) length(x) != 0)]
 
     n_this_featcomb <- length(this_coal_feature_list)
 
