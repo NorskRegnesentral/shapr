@@ -967,12 +967,26 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
       n_coalitions = adaptive_arguments$initial_n_coalitions,
       exact = internal$parameters$exact,
       compute_sd = adaptive_arguments$compute_sd,
-      reduction_factor = adaptive_arguments$reduction_factor_vec[1]
+      reduction_factor = adaptive_arguments$reduction_factor_vec[1],
+      n_batches = set_n_batches(adaptive_arguments$initial_n_coalitions,internal)
     )
   }
 
-
   return(internal)
+}
+
+set_n_batches <- function(n_coalitions,internal){
+  min_n_batches <- internal$parameters$adaptive_arguments$min_n_batches
+  max_batch_size <- internal$parameters$adaptive_arguments$max_batch_size
+  n_unique_approaches <- internal$parameters$n_unique_approaches
+
+  # Restrict the sizes of the batches to max_batch_size, but require at least min_n_batches and n_unique_approaches
+  suggested_n_batches <- max(min_n_batches,n_unique_approaches,ceiling(n_coalitions/max_batch_size))
+
+  # Set Set n_batches to no less than n_coalitions
+  n_batches <- min(n_coalitions,suggested_n_batches)
+
+  return(n_batches)
 }
 
 check_vs_prev_shapr_object <- function(internal){

@@ -53,6 +53,9 @@ prepare_next_iteration <- function(internal) {
       reduction_factor_vec[length(reduction_factor_vec)]
     )
 
+    next_iter_list$n_batches = set_n_batches(next_iter_list$n_coalitions,internal)
+
+
     next_iter_list$prev_coal_samples <- current_coal_samples
   } else {
     next_iter_list <- list()

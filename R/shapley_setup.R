@@ -531,11 +531,12 @@ create_S_batch_forecast <- function(internal, seed = NULL) { # This is temporary
 create_S_batch <- function(internal, seed = NULL) {
   n_shapley_values <- internal$parameters$n_shapley_values
   approach0 <- internal$parameters$approach
-  n_batches <- internal$parameters$n_batches
 
   iter <- length(internal$iter_list)
 
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
+  n_batches <- internal$iter_list[[iter]]$n_batches
+
   exact <- internal$iter_list[[iter]]$exact
 
 
