@@ -1034,7 +1034,11 @@ check_vs_prev_shapr_object <- function(internal){
 #' @param n_boot_samps Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
 #' coalitions used to estimate the standard deviations of the Shapley value estimates.
 #' @param compute_sd Logical. Whether to estimate the standard deviations of the Shapley value estimates.
-#'
+#' @param max_batch_size Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
+#' A larger numbers requires more memory, but may have a slight computational advantage.
+#' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
+#' Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
+#' than the number of parallel workers.
 #' @inheritParams default_doc_explain
 #'
 #' @export
@@ -1055,6 +1059,8 @@ get_adaptive_arguments_default <- function(internal,
                                            reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
                                            n_boot_samps = 100,
                                            compute_sd = ifelse(internal$parameters$exact, FALSE, TRUE),
+                                           max_batch_size = 10,
+                                           min_n_batches = 10,
                                            saving_path = tempfile("shapr_obj_",fileext=".rds")) {
   adaptive <- internal$parameters$adaptive
   max_n_coalitions <- internal$parameters$max_n_coalitions
@@ -1080,6 +1086,8 @@ get_adaptive_arguments_default <- function(internal,
         "reduction_factor_vec",
         "n_boot_samps",
         "compute_sd",
+        "max_batch_size",
+        "min_n_batches",
         "saving_path"
       )
     )
@@ -1093,6 +1101,8 @@ get_adaptive_arguments_default <- function(internal,
       reduction_factor_vec = NULL,
       n_boot_samps = n_boot_samps,
       compute_sd = isFALSE(exact) && isFALSE(is_groupwise),
+      max_batch_size = max_batch_size,
+      min_n_batches = min_n_batches,
       saving_path = saving_path
     )
   }
