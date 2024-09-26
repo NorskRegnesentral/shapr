@@ -97,14 +97,6 @@ in each of the different groups.}
 Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
-\item{n_batches}{Positive integer (or NULL).
-Specifies how many batches the total number of coalitions should be split into when calculating the
-contribution function for each test observation.
-The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-which depends on \code{approach} and \code{n_coalitions}.
-For models with many features, increasing the number of batches reduces the RAM allocation significantly.
-This typically comes with a small increase in computation time.}
-
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
 If \code{NULL} the seed will be inherited from the calling environment.}

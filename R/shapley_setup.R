@@ -448,7 +448,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 create_S_batch_forecast <- function(internal, seed = NULL) { # This is temporary used for forecast only. to be removed
   n_shapley_values <- internal$parameters$n_shapley_values
   approach0 <- internal$parameters$approach
-  n_batches <- internal$parameters$n_batches
+  n_batches <- 10 # TODO: fix this! similartly to how it is done in non-forecast
 
   iter <- length(internal$iter_list)
 

@@ -1662,8 +1662,9 @@ vaeac_check_parameters <- function(x_train,
 #' @param vaeac.batch_size_sampling Positive integer (default is `NULL`) The number of samples to include in
 #' each batch when generating the Monte Carlo samples. If `NULL`, then the function generates the Monte Carlo samples
 #' for the provided coalitions and all explicands sent to [shapr::explain()] at the time.
-#' The number of coalitions are determined by `n_batches` in [shapr::explain()]. We recommend to tweak `n_batches`
-#' rather  than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
+#' The number of coalitions are determined by the `n_batches` used by [shapr::explain()]. We recommend to tweak
+#' `adaptive_arguments$max_batch_size` and `adaptive_arguments$min_n_batches`
+#' rather than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
 #' @param vaeac.running_avg_n_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
 #' @param vaeac.skip_conn_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
@@ -2448,7 +2449,7 @@ vaeac_prep_message_batch <- function(internal, index_features) {
   X <- internal$iter_list[[iter]]$X
 
   id_batch <- X[id_coalition == index_features[1]]$batch
-  n_batches <- internal$parameters$n_batches
+  n_batches <- internal$iter_list[[iter]]$n_batches
   message(paste0("Generating Monte Carlo samples using `vaeac` for batch ", id_batch, " of ", n_batches, "."))
 }
 

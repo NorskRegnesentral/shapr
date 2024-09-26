@@ -463,10 +463,11 @@ regression.prep_message_batch <- function(internal, index_features) {
 
   X <- internal$iter_list[[iter]]$X
 
+  n_batches <- internal$iter_list[[iter]]$n_batches
 
   message(paste0(
     "Working on batch ", X[id_coalition == index_features[1]]$batch, " of ",
-    internal$parameters$n_batches, " in `prepare_data.", internal$parameters$approach, "()`."
+    n_batches, " in `prepare_data.", internal$parameters$approach, "()`."
   ))
 }
 

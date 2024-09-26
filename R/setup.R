@@ -26,7 +26,6 @@ setup <- function(x_train,
                   max_n_coalitions,
                   group,
                   n_MC_samples,
-                  n_batches,
                   seed,
                   keep_samp_for_vS,
                   feature_specs,
@@ -73,7 +72,6 @@ setup <- function(x_train,
     max_n_coalitions = max_n_coalitions,
     group = group,
     n_MC_samples = n_MC_samples,
-    n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     type = type,
@@ -128,7 +126,7 @@ setup <- function(x_train,
 
 #' @keywords internal
 get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, max_n_coalitions, group,
-                           n_MC_samples, n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
+                           n_MC_samples, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
                            explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights,
                            verbose, adaptive = FALSE, adaptive_arguments = adaptive_arguments,
                            shapley_reweighting = "none", testing, is_python, ...) {
@@ -168,14 +166,6 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     !is.na(n_MC_samples) &&
     n_MC_samples > 0)) {
     stop("`n_MC_samples` must be a single positive integer.")
-  }
-  # n_batches
-  if (!is.null(n_batches) &&
-    !(is.wholenumber(n_batches) &&
-      length(n_batches) == 1 &&
-      !is.na(n_batches) &&
-      n_batches > 0)) {
-    stop("`n_batches` must be NULL or a single positive integer.")
   }
 
   # keep_samp_for_vS
@@ -258,7 +248,6 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
     max_n_coalitions = max_n_coalitions,
     group = group,
     n_MC_samples = n_MC_samples,
-    n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     is_python = is_python,
@@ -517,12 +506,6 @@ check_and_set_parameters <- function(internal) {
   # Check approach
   check_approach(internal)
 
-  # Setting default value for n_batches (when NULL)
-  internal <- set_defaults(internal)
-
-  # Checking n_batches vs n_coalitions etc
-  check_n_batches(internal)
-
   # Check regression if we are doing regression
   if (internal$parameters$regression) internal <- check_regression(internal)
 
@@ -736,74 +719,6 @@ get_supported_approaches <- function() {
 }
 
 
-#' @keywords internal
-set_defaults <- function(internal) {
-  # Set defaults for certain arguments (based on other input)
-
-  approach <- internal$parameters$approach
-  n_unique_approaches <- internal$parameters$n_unique_approaches
-  max_n_coalitions <- internal$parameters$max_n_coalitions
-  n_batches <- internal$parameters$n_batches
-
-  # n_batches
-  if (is.null(n_batches)) {
-    internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, max_n_coalitions)
-  }
-
-  return(internal)
-}
-
-#' @keywords internal
-get_default_n_batches <- function(approach, n_unique_approaches, max_n_coalitions) {
-  used_approach <- names(sort(table(approach), decreasing = TRUE))[1] # Most frequent used approach (when more present)
-
-  if (used_approach %in% c("ctree", "gaussian", "copula")) {
-    suggestion <- ceiling(max_n_coalitions / 10)
-    this_min <- 10
-    this_max <- 1000
-  } else {
-    suggestion <- ceiling(max_n_coalitions / 100)
-    this_min <- 2
-    this_max <- 100
-  }
-  min_checked <- max(c(this_min, suggestion, n_unique_approaches))
-  ret <- min(c(this_max, min_checked, max_n_coalitions - 1))
-  message(
-    paste0(
-      "Setting parameter 'n_batches' to ", ret, " as a fair trade-off between memory consumption and ",
-      "computation time.\n",
-      "Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.\n"
-    )
-  )
-  return(ret)
-}
-
-#' @keywords internal
-check_n_batches <- function(internal) {
-  n_batches <- internal$parameters$n_batches
-  n_features <- internal$parameters$n_features
-  max_n_coalitions <- internal$parameters$max_n_coalitions
-  is_groupwise <- internal$parameters$is_groupwise
-  n_groups <- internal$parameters$n_groups
-  n_unique_approaches <- internal$parameters$n_unique_approaches
-
-
-  if (n_batches >= max_n_coalitions) {
-    stop(paste0(
-      "`n_batches` (", n_batches, ") must be smaller than the number of coalitions (",
-      max_n_coalitions, ")"
-    ))
-  }
-
-  if (n_batches < n_unique_approaches) {
-    stop(paste0(
-      "`n_batches` (", n_batches, ") must be larger than the number of unique approaches in `approach` (",
-      n_unique_approaches, ")."
-    ))
-  }
-}
-
-
 
 
 #' @keywords internal
@@ -983,7 +898,7 @@ set_n_batches <- function(n_coalitions,internal){
   # Restrict the sizes of the batches to max_batch_size, but require at least min_n_batches and n_unique_approaches
   suggested_n_batches <- max(min_n_batches,n_unique_approaches,ceiling(n_coalitions/max_batch_size))
 
-  # Set Set n_batches to no less than n_coalitions
+  # Set n_batches to no less than n_coalitions
   n_batches <- min(n_coalitions,suggested_n_batches)
 
   return(n_batches)

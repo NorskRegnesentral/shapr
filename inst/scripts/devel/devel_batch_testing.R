@@ -46,8 +46,8 @@ library(progressr)
 library(future)
 # Not necessary, and only apply to the explain() call below
 progressr::handlers(global = TRUE) # For progress bars
-future::plan(multisession, workers = 2) # Parallized computations
-future::plan(sequential)
+#future::plan(multisession, workers = 2) # Parallized computations
+#future::plan(sequential)
 
 expl <- explain(model = model,
                 x_explain= x_explain,

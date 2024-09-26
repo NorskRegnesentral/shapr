@@ -45,14 +45,6 @@
 #' Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation. See also details.
 #'
-#' @param n_batches Positive integer (or NULL).
-#' Specifies how many batches the total number of coalitions should be split into when calculating the
-#' contribution function for each test observation.
-#' The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-#' which depends on `approach` and `n_coalitions`.
-#' For models with many features, increasing the number of batches reduces the RAM allocation significantly.
-#' This typically comes with a small increase in computation time.
-#'
 #' @param seed Positive integer.
 #' Specifies the seed before any randomness based code is being run.
 #' If `NULL` the seed will be inherited from the calling environment.
@@ -307,7 +299,6 @@ explain <- function(model,
                     adaptive = FALSE,
                     group = NULL,
                     n_MC_samples = 1e3,
-                    n_batches = NULL,
                     seed = 1,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
@@ -343,7 +334,6 @@ explain <- function(model,
     max_n_coalitions = max_n_coalitions,
     group = group,
     n_MC_samples = n_MC_samples,
-    n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,

@@ -14,6 +14,8 @@ get_adaptive_arguments_default(
   reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
   n_boot_samps = 100,
   compute_sd = ifelse(internal$parameters$exact, FALSE, TRUE),
+  max_batch_size = 10,
+  min_n_batches = 10,
   saving_path = tempfile("shapr_obj_", fileext = ".rds")
 )
 }
@@ -42,6 +44,13 @@ the first iterations.}
 coalitions used to estimate the standard deviations of the Shapley value estimates.}
 
 \item{compute_sd}{Logical. Whether to estimate the standard deviations of the Shapley value estimates.}
+
+\item{max_batch_size}{Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
+A larger numbers requires more memory, but may have a slight computational advantage.}
+
+\item{min_n_batches}{Integer. The minimum number of batches to split the computation into within each iteration.
+Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
+than the number of parallel workers.}
 }
 \description{
 Function to specify arguments of the adaptive estimation procedure
