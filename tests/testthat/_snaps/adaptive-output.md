@@ -7,9 +7,6 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
-      Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
-      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
-      
     Output
       
       Iteration 1
@@ -54,9 +51,6 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
-      Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
-      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
-      
     Output
       
       Iteration 1
@@ -87,9 +81,6 @@
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
-      
-      Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
-      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
       
     Output
       
@@ -236,10 +227,6 @@
 
     Code
       (out <- code)
-    Message
-      Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
-      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
-      
     Output
       
       Iteration 1
@@ -288,9 +275,6 @@
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
       and is therefore set to 2^n_groups = 8.
-      
-      Setting parameter 'n_batches' to 7 as a fair trade-off between memory consumption and computation time.
-      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
       
     Output
       
@@ -342,9 +326,6 @@
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
-      
-      Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
-      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
       
     Output
       
@@ -411,9 +392,6 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
-      Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
-      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
-      
     Output
       
       Iteration 6
@@ -478,9 +456,6 @@
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
-      
-      Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
-      Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
       
     Output
       
