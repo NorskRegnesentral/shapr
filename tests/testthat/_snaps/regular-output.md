@@ -74,6 +74,33 @@
       
       Success with message:
       empirical.eta force set to 1 for empirical.type = 'independence'
+      
+      Success with message:
+      empirical.eta force set to 1 for empirical.type = 'independence'
+      
+      Success with message:
+      empirical.eta force set to 1 for empirical.type = 'independence'
+      
+      Success with message:
+      empirical.eta force set to 1 for empirical.type = 'independence'
+      
+      Success with message:
+      empirical.eta force set to 1 for empirical.type = 'independence'
+      
+      Success with message:
+      empirical.eta force set to 1 for empirical.type = 'independence'
+      
+      Success with message:
+      empirical.eta force set to 1 for empirical.type = 'independence'
+      
+      Success with message:
+      empirical.eta force set to 1 for empirical.type = 'independence'
+      
+      Success with message:
+      empirical.eta force set to 1 for empirical.type = 'independence'
+      
+      Success with message:
+      empirical.eta force set to 1 for empirical.type = 'independence'
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -86,11 +113,11 @@
     Code
       (out <- code)
     Output
-         explain_id  none Solar.R    Wind     Temp    Month     Day
-              <int> <num>   <num>   <num>    <num>    <num>   <num>
-      1:          1 42.44  -15.66   6.823  17.5092   0.2463  3.6847
-      2:          2 42.44   10.70  -1.063 -10.6804 -13.0305  0.1983
-      3:          3 42.44   14.65 -19.946   0.9675  -7.3433 -5.8946
+         explain_id  none Solar.R     Wind     Temp    Month     Day
+              <int> <num>   <num>    <num>    <num>    <num>   <num>
+      1:          1 42.44  -14.98   6.3170  17.4103   0.2876  3.5623
+      2:          2 42.44   12.42   0.1482 -10.2338 -16.4096  0.1967
+      3:          3 42.44   15.74 -19.7250   0.9992  -8.6950 -5.8886
 
 # output_lm_numeric_empirical_AICc_full
 
@@ -113,11 +140,11 @@
       and is therefore set to 2^n_features = 32.
       
     Output
-         explain_id  none Solar.R    Wind     Temp   Month     Day
-              <int> <num>   <num>   <num>    <num>   <num>   <num>
-      1:          1 42.44  -8.117   7.438  14.0026  0.8602 -1.5813
-      2:          2 42.44   5.278  -5.219 -12.1079 -0.8073 -1.0235
-      3:          3 42.44   7.867 -25.995  -0.1377 -0.2368  0.9342
+         explain_id  none Solar.R    Wind     Temp  Month     Day
+              <int> <num>   <num>   <num>    <num>  <num>   <num>
+      1:          1 42.44  -8.645   7.842  14.4120  0.535 -1.5427
+      2:          2 42.44   4.751  -4.814 -11.6985 -1.132 -0.9848
+      3:          3 42.44   7.339 -25.590   0.2717 -0.562  0.9729
 
 # output_lm_numeric_copula
 
@@ -129,11 +156,11 @@
       and is therefore set to 2^n_features = 32.
       
     Output
-         explain_id  none Solar.R    Wind    Temp  Month    Day
-              <int> <num>   <num>   <num>   <num>  <num>  <num>
-      1:          1 42.44  -5.960   7.046  13.863 -0.274 -2.074
-      2:          2 42.44   4.482  -4.892 -10.491 -1.659 -1.319
-      3:          3 42.44   6.587 -25.533   1.279 -1.043  1.142
+         explain_id  none Solar.R    Wind    Temp   Month    Day
+              <int> <num>   <num>   <num>   <num>   <num>  <num>
+      1:          1 42.44  -6.512   7.341  14.357 -0.5201 -2.064
+      2:          2 42.44   3.983  -4.656 -10.001 -1.8813 -1.324
+      3:          3 42.44   6.076 -25.219   1.754 -1.3488  1.169
 
 # output_lm_numeric_ctree
 
@@ -147,9 +174,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp   Month    Day
               <int> <num>   <num>   <num>  <num>   <num>  <num>
-      1:          1 42.44  -9.124   9.509 17.139 -1.4711 -3.451
-      2:          2 42.44   5.342  -6.097 -8.232 -2.8129 -2.079
-      3:          3 42.44   6.901 -21.079 -4.687  0.1494  1.146
+      1:          1 42.44  -9.198   9.679 16.925 -1.3310 -3.473
+      2:          2 42.44   5.283  -6.046 -8.095 -2.7998 -2.222
+      3:          3 42.44   6.984 -20.837 -4.762 -0.1545  1.201
 
 # output_lm_numeric_vaeac
 
@@ -161,11 +188,11 @@
       and is therefore set to 2^n_features = 32.
       
     Output
-         explain_id  none Solar.R    Wind    Temp  Month     Day
-              <int> <num>   <num>   <num>   <num>  <num>   <num>
-      1:          1 42.44  -6.534   9.146 18.8166 -5.238 -3.5884
-      2:          2 42.44   1.421  -5.329 -6.8472 -3.668  0.5436
-      3:          3 42.44   7.073 -18.914 -0.6391 -6.038  0.9493
+         explain_id  none Solar.R    Wind   Temp    Month     Day
+              <int> <num>   <num>   <num>  <num>    <num>   <num>
+      1:          1 42.44  -4.941   7.495 17.471 -4.35451 -3.0686
+      2:          2 42.44   1.824  -5.193 -8.943  0.07104 -1.6383
+      3:          3 42.44   4.530 -20.285  3.170 -4.28496 -0.6978
 
 # output_lm_categorical_ctree
 
@@ -179,9 +206,9 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1 42.44       -6.206              15.38         -6.705      -2.973
-      2:          2 42.44       -5.764             -17.71         21.866     -13.219
-      3:          3 42.44        7.101             -21.78          1.730      -5.413
+      1:          1 42.44       -5.719              15.22         -6.220      -3.791
+      2:          2 42.44       -5.687             -17.48         22.095     -13.755
+      3:          3 42.44        6.839             -21.90          1.997      -5.301
 
 # output_lm_categorical_vaeac
 
@@ -195,9 +222,9 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1 42.44        1.795              10.32         -6.919      -5.704
-      2:          2 42.44       -2.438             -18.15         20.755     -14.999
-      3:          3 42.44        8.299             -23.71          8.751     -11.708
+      1:          1 42.44       -1.966              12.55         -4.716       -6.38
+      2:          2 42.44       -2.405             -14.39         14.433      -12.47
+      3:          3 42.44        2.755             -14.24          3.222      -10.10
 
 # output_lm_categorical_categorical
 
@@ -256,11 +283,11 @@
       and is therefore set to 2^n_features = 32.
       
     Output
-         explain_id  none Solar.R   Wind   Temp  Month     Day
-              <int> <num>   <num>  <num>  <num>  <num>   <num>
-      1:          1 42.44  -8.746   9.03 15.366 -2.619 -0.4293
-      2:          2 42.44   3.126  -4.50 -7.789 -4.401 -0.3161
-      3:          3 42.44   7.037 -22.86 -1.837  0.607 -0.5181
+         explain_id  none Solar.R    Wind   Temp   Month     Day
+              <int> <num>   <num>   <num>  <num>   <num>   <num>
+      1:          1 42.44  -8.987   9.070 15.511 -2.5647 -0.4281
+      2:          2 42.44   2.916  -4.516 -7.845 -4.1649 -0.2686
+      3:          3 42.44   6.968 -22.988 -1.717  0.6776 -0.5086
 
 # output_lm_numeric_comb2
 
@@ -272,11 +299,11 @@
       and is therefore set to 2^n_features = 32.
       
     Output
-         explain_id  none Solar.R    Wind     Temp  Month     Day
-              <int> <num>   <num>   <num>    <num>  <num>   <num>
-      1:          1 42.44  -9.294   9.327 17.31641 -1.754 -2.9935
-      2:          2 42.44   5.194  -5.506 -8.45049 -2.935 -2.1810
-      3:          3 42.44   6.452 -22.967 -0.09553 -1.310  0.3519
+         explain_id  none Solar.R    Wind    Temp  Month     Day
+              <int> <num>   <num>   <num>   <num>  <num>   <num>
+      1:          1 42.44  -9.394   9.435 17.0084 -1.700 -2.7465
+      2:          2 42.44   5.227  -5.209 -8.5226 -2.968 -2.4068
+      3:          3 42.44   6.186 -22.904 -0.3273 -1.132  0.6081
 
 # output_lm_numeric_comb3
 
@@ -290,9 +317,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp  Month      Day
               <int> <num>   <num>   <num>  <num>  <num>    <num>
-      1:          1 42.44  -6.952  10.777 12.160 -3.641  0.25767
-      2:          2 42.44   2.538  -2.586 -8.503 -5.376  0.04789
-      3:          3 42.44   5.803 -22.122  3.362 -2.926 -1.68514
+      1:          1 42.44  -6.887  10.715 12.199 -3.670  0.24393
+      2:          2 42.44   2.603  -2.648 -8.464 -5.405  0.03414
+      3:          3 42.44   5.868 -22.184  3.401 -2.955 -1.69888
 
 # output_lm_mixed_independence
 
@@ -322,9 +349,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp     Day Month_factor
               <int> <num>   <num>   <num>  <num>   <num>        <num>
-      1:          1 42.44  -9.165  11.815 13.184 -0.4473       -4.802
-      2:          2 42.44   3.652  -5.782 -6.524 -0.4349       -6.295
-      3:          3 42.44   6.268 -21.441 -7.323  1.6330       10.262
+      1:          1 42.44  -9.150  12.057 13.162 -0.8269       -4.658
+      2:          2 42.44   4.425  -6.006 -6.260 -0.3910       -7.151
+      3:          3 42.44   6.941 -21.427 -7.518  1.3987       10.006
 
 # output_lm_mixed_vaeac
 
@@ -336,11 +363,11 @@
       and is therefore set to 2^n_features = 32.
       
     Output
-         explain_id  none Solar.R    Wind   Temp     Day Month_factor
-              <int> <num>   <num>   <num>  <num>   <num>        <num>
-      1:          1 42.44  -3.629   8.898 17.330 -2.5409      -9.4742
-      2:          2 42.44   3.938  -3.933 -8.190  0.6284      -7.8259
-      3:          3 42.44   5.711 -15.928 -3.216  2.2431       0.5899
+         explain_id  none Solar.R    Wind     Temp     Day Month_factor
+              <int> <num>   <num>   <num>    <num>   <num>        <num>
+      1:          1 42.44  -5.050   6.861 15.73013 -0.2083       -6.749
+      2:          2 42.44   2.600  -4.636 -2.26409 -3.1294       -7.954
+      3:          3 42.44   5.139 -17.878 -0.01372  0.5855        1.567
 
 # output_lm_mixed_comb
 
@@ -352,11 +379,11 @@
       and is therefore set to 2^n_features = 32.
       
     Output
-         explain_id  none Solar.R    Wind   Temp     Day Month_factor
-              <int> <num>   <num>   <num>  <num>   <num>        <num>
-      1:          1 42.44  -7.886  10.511 16.292 -0.9519       -7.382
-      2:          2 42.44   5.001  -4.925 -7.015 -1.0954       -7.349
-      3:          3 42.44   5.505 -20.583 -4.328  0.7825        8.023
+         explain_id  none Solar.R    Wind   Temp    Day Month_factor
+              <int> <num>   <num>   <num>  <num>  <num>        <num>
+      1:          1 42.44  -7.677  10.757 16.247 -1.446       -7.297
+      2:          2 42.44   5.049  -5.028 -6.965 -1.265       -7.174
+      3:          3 42.44   5.895 -20.744 -4.468  0.775        7.943
 
 # output_custom_lm_numeric_independence_1
 
@@ -408,9 +435,9 @@
     Output
          explain_id  none Solar.R   Wind   Temp     Day Month_factor
               <int> <num>   <num>  <num>  <num>   <num>        <num>
-      1:          1 42.44  -5.603  13.05  20.43 0.08508      -0.2664
-      2:          2 42.44   4.645 -12.57 -16.65 1.29133      -2.1574
-      3:          3 42.44   5.451 -14.01 -19.72 1.32503       6.3851
+      1:          1 42.44  -5.639  13.31  20.93 -0.4716       -0.425
+      2:          2 42.44   5.709 -13.30 -16.52  1.4006       -2.738
+      3:          3 42.44   6.319 -14.07 -19.77  1.0831        5.870
 
 # output_lm_numeric_interaction
 
@@ -440,9 +467,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp   Month    Day
               <int> <num>   <num>   <num>  <num>   <num>  <num>
-      1:          1 42.44  -9.124   9.509 17.139 -1.4711 -3.451
-      2:          2 42.44   5.342  -6.097 -8.232 -2.8129 -2.079
-      3:          3 42.44   6.901 -21.079 -4.687  0.1494  1.146
+      1:          1 42.44  -9.198   9.679 16.925 -1.3310 -3.473
+      2:          2 42.44   5.283  -6.046 -8.095 -2.7998 -2.222
+      3:          3 42.44   6.984 -20.837 -4.762 -0.1545  1.201
 
 # output_lm_numeric_independence_more_batches
 

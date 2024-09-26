@@ -371,11 +371,11 @@
       and is therefore set to n_features + 1  = 6.
       
     Output
-         explain_id  none Solar.R    Wind    Temp Month    Day
-              <int> <num>   <num>   <num>   <num> <num>  <num>
-      1:          1 42.44  -4.954  14.410   7.667 1.013 -5.534
-      2:          2 42.44   4.203  -5.842 -15.017 1.182  1.595
-      3:          3 42.44   4.713 -32.459   2.059 0.831  7.288
+         explain_id  none Solar.R    Wind    Temp  Month    Day
+              <int> <num>   <num>   <num>   <num>  <num>  <num>
+      1:          1 42.44  -4.954  14.749   8.079 0.3131 -5.585
+      2:          2 42.44   4.203  -5.503 -14.604 0.4815  1.544
+      3:          3 42.44   4.713 -32.121   2.471 0.1306  7.238
 
 ---
 
@@ -393,9 +393,9 @@
     Output
          explain_id  none       A       B      C
               <int> <num>   <num>   <num>  <num>
-      1:          1 42.44  -2.653  18.272 -3.017
-      2:          2 42.44   2.196 -14.010 -2.066
-      3:          3 42.44 -13.864  -5.111  1.407
+      1:          1 42.44  -2.652  18.271 -3.017
+      2:          2 42.44   2.197 -14.011 -2.066
+      3:          3 42.44 -13.863  -5.112  1.407
 
 # erroneous input: `group`
 
@@ -535,100 +535,6 @@
     Condition
       Error in `get_parameters()`:
       ! `n_MC_samples` must be a single positive integer.
-
-# erroneous input: `n_batches`
-
-    Code
-      n_batches_non_numeric_1 <- "bla"
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_batches = n_batches_non_numeric_1, )
-    Condition
-      Error in `get_parameters()`:
-      ! `n_batches` must be NULL or a single positive integer.
-
----
-
-    Code
-      n_batches_non_numeric_2 <- TRUE
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_batches = n_batches_non_numeric_2, )
-    Condition
-      Error in `get_parameters()`:
-      ! `n_batches` must be NULL or a single positive integer.
-
----
-
-    Code
-      n_batches_non_integer <- 10.5
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_batches = n_batches_non_integer, )
-    Condition
-      Error in `get_parameters()`:
-      ! `n_batches` must be NULL or a single positive integer.
-
----
-
-    Code
-      n_batches_too_long <- c(1, 2)
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_batches = n_batches_too_long, )
-    Condition
-      Error in `get_parameters()`:
-      ! `n_batches` must be NULL or a single positive integer.
-
----
-
-    Code
-      n_batches_is_NA <- as.numeric(NA)
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_batches = n_batches_is_NA, )
-    Condition
-      Error in `get_parameters()`:
-      ! `n_batches` must be NULL or a single positive integer.
-
----
-
-    Code
-      n_batches_non_positive <- 0
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_batches = n_batches_non_positive, )
-    Condition
-      Error in `get_parameters()`:
-      ! `n_batches` must be NULL or a single positive integer.
-
----
-
-    Code
-      max_n_coalitions <- 10
-      n_batches_too_large <- 11
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        max_n_coalitions = max_n_coalitions, n_batches = n_batches_too_large, )
-    Condition
-      Error in `check_n_batches()`:
-      ! `n_batches` (11) must be smaller than the number of coalitions (10)
-
----
-
-    Code
-      n_batches_too_large_2 <- 32
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        n_batches = n_batches_too_large_2, )
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
-    Condition
-      Error in `check_n_batches()`:
-      ! `n_batches` (32) must be smaller than the number of coalitions (32)
 
 # erroneous input: `seed`
 
@@ -966,9 +872,9 @@
     Output
          explain_id  none   Solar.R    Wind       Temp  Month       Day
               <int> <num>     <num>   <num>      <num>  <num>     <num>
-      1:          1 42.44 0.0001730   7.840 -0.0007458  4.766 -0.003219
-      2:          2 42.44 0.0001797  -4.674 -0.0007807 -9.186 -0.019336
-      3:          3 42.44 0.0001726 -21.121 -0.0007665  3.561 -0.007937
+      1:          1 42.44 0.0001730   7.480 -0.0002106  5.113  0.008439
+      2:          2 42.44 0.0001797  -5.034 -0.0002455 -8.838 -0.007679
+      3:          3 42.44 0.0001726 -21.480 -0.0002313  3.908  0.003721
 
 ---
 
@@ -982,11 +888,11 @@
       and is therefore set to n_groups + 1  = 4.
       
     Output
-         explain_id  none         A      B         C
-              <int> <num>     <num>  <num>     <num>
-      1:          1 42.44 -0.001404  12.60 6.388e-05
-      2:          2 42.44 -0.001419 -13.88 4.690e-05
-      3:          3 42.44 -0.001465 -17.57 6.250e-05
+         explain_id  none          A      B         C
+              <int> <num>      <num>  <num>     <num>
+      1:          1 42.44 -0.0006997  12.60 6.388e-05
+      2:          2 42.44 -0.0007149 -13.88 4.690e-05
+      3:          3 42.44 -0.0007607 -17.57 6.250e-05
 
 # Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weights
 
