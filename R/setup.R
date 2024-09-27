@@ -859,7 +859,13 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
     keep.null = TRUE
   )
 
-  internal$parameters$adaptive_arguments <- adaptive_arguments
+
+  check_adaptive_arguments(adaptive_arguments)
+
+  # Translate any null input
+  adaptive_arguments <- trans_null_adaptive_arguments(adaptive_arguments)
+
+  internal$parameters$adaptive_arguments <- trans_null_adaptive_arguments(adaptive_arguments)
 
 
   if(!is.null(prev_iter_list)){
@@ -890,10 +896,123 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
   return(internal)
 }
 
+check_adaptive_arguments <- function(adaptive_arguments){
+
+  list2env(adaptive_arguments, env = environment())
+
+  initial_n_coalitions
+
+  # initial_n_coalitions
+  if (!(is.wholenumber(initial_n_coalitions) &&
+        length(initial_n_coalitions) == 1 &&
+        !is.na(initial_n_coalitions) &&
+        initial_n_coalitions <= max_n_coalitions &&
+        initial_n_coalitions > 2)) {
+    stop("`adaptive_arguments$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.")
+  }
+
+  # fixed_n_coalitions
+  if (!(is.wholenumber(fixed_n_coalitions) &&
+        length(fixed_n_coalitions) == 1 &&
+        !is.na(fixed_n_coalitions) &&
+        fixed_n_coalitions <= max_n_coalitions &&
+        fixed_n_coalitions > 0)) {
+    stop("`adaptive_arguments$fixed_n_coalitions` must be a single positive integer no larger than `max_n_coalitions`.")
+  }
+
+  # max_iter
+  if (!(is.null(max_iter) &&
+        (is.wholenumber(max_iter) || is.infinite(max_iter)) &&
+        length(max_iter) == 1 &&
+        !is.na(max_iter) &&
+        max_iter > 0)) {
+    stop("`adaptive_arguments$max_iter` must be NULL, Inf or a single positive integer.")
+  }
+
+  # convergence_tolerance
+  if (!(is.null(convergence_tolerance) &&
+        length(convergence_tolerance) == 1 &&
+        !is.na(convergence_tolerance) &&
+        convergence_tolerance >= 0)) {
+    stop("`adaptive_arguments$convergence_tolerance` must be NULL, 0, or a positive numeric.")
+  }
+
+  # reduction_factor_vec
+  if (!(is.null(reduction_factor_vec) &&
+        all(!is.na(reduction_factor_vec)) &&
+        all(reduction_factor_vec <= 1) &&
+        all(reduction_factor_vec >= 0))) {
+    stop("`adaptive_arguments$reduction_factor_vec` must be a vector or numerics between 0 and 1.")
+  }
+
+  # n_boot_samps
+  if (!(is.wholenumber(n_boot_samps) &&
+        length(n_boot_samps) == 1 &&
+        !is.na(n_boot_samps) &&
+        n_boot_samps > 0)) {
+    stop("`adaptive_arguments$n_boot_samps` must be a single positive integer.")
+  }
+
+  # compute_sd
+  if (!(is.logical(compute_sd) &&
+        length(compute_sd) == 1)) {
+    stop("`adaptive_arguments$compute_sd` must be a single logical.")
+  }
+
+
+  # min_n_batches
+  if (!(is.null(min_n_batches) &&
+        is.wholenumber(min_n_batches) &&
+        length(min_n_batches) == 1 &&
+        !is.na(min_n_batches) &&
+        min_n_batches > 0)) {
+    stop("`adaptive_arguments$min_n_batches` must be NULL or a single positive integer.")
+  }
+
+  # max_batch_size
+  if (!(is.null(max_batch_size) &&
+        (is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
+        length(max_batch_size) == 1 &&
+        !is.na(max_batch_size) &&
+        max_batch_size > 0)) {
+    stop("`adaptive_arguments$max_batch_size` must be NULL, Inf or a single positive integer.")
+  }
+
+  # saving_path
+  if (!(is.character(saving_path) &&
+        length(saving_path) == 1)) {
+    stop("`adaptive_arguments$saving_path` must be a single character.")
+  }
+
+  # Check that the saving_path exists, and abort if not...
+  if(!dir.exists(dirname(saving_path))){
+    stop(
+      paste0("Directory ",dirname(saving_path)," in the adapative_arguments$saving_path does not exists.\n",
+             "Please create the directory with `dir.create('",dirname(saving_path),"')` or use another directory.")
+    )
+  }
+
+
+}
+
+trans_null_adaptive_arguments <- function(adaptive_arguments){
+
+  list2env(adaptive_arguments, env = environment())
+
+  # Translating NULL to always return n_batches = 1 (if just one approach)
+  adaptive_arguments$min_n_batches <- ifelse(is.null(min_n_batches),1,min_n_batches)
+  adaptive_arguments$max_batch_size <- ifelse(is.null(max_batch_size),Inf,max_batch_size)
+  adaptive_arguments$max_iter <- ifelse(is.null(max_iter),Inf,max_iter)
+
+  return(adaptive_arguments)
+}
+
+
 set_n_batches <- function(n_coalitions,internal){
   min_n_batches <- internal$parameters$adaptive_arguments$min_n_batches
   max_batch_size <- internal$parameters$adaptive_arguments$max_batch_size
   n_unique_approaches <- internal$parameters$n_unique_approaches
+
 
   # Restrict the sizes of the batches to max_batch_size, but require at least min_n_batches and n_unique_approaches
   suggested_n_batches <- max(min_n_batches,n_unique_approaches,ceiling(n_coalitions/max_batch_size))
@@ -973,7 +1092,6 @@ check_vs_prev_shapr_object <- function(internal){
 #' @export
 #' @author Martin Jullum
 get_adaptive_arguments_default <- function(internal,
-                                           max_iter = 20,
                                            initial_n_coalitions = ceiling(
                                              min(
                                                200,
@@ -984,6 +1102,7 @@ get_adaptive_arguments_default <- function(internal,
                                              )
                                            ),
                                            fixed_n_coalitions_per_iter = NULL,
+                                           max_iter = 20,
                                            convergence_tolerance = 0.02,
                                            reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
                                            n_boot_samps = 100,
@@ -996,15 +1115,11 @@ get_adaptive_arguments_default <- function(internal,
   exact <- internal$parameters$exact
   is_groupwise <- internal$parameters$is_groupwise
 
-  # Check that the saving_path exists, and abort if not...
-  if(!dir.exists(dirname(saving_path))){
-    stop(
-      paste0("Directory ",dirname(saving_path)," in the adapative_arguments$saving_path does not exists.\n",
-             "Please create the directory with `dir.create('",dirname(saving_path),"')` or use another directory.")
-    )
-  }
+
+
 
   if (isTRUE(adaptive)) {
+
     ret_list <- mget(
       c(
         "initial_n_coalitions",
