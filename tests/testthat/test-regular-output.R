@@ -22,7 +22,7 @@ test_that("output_lm_numeric_independence_MSEv_Shapley_weights", {
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
       approach = "independence",
-      prediction_zero = p0
+      prediction_zero = p0,
       MSEv_uniform_comb_weights = FALSE
     ),
     "output_lm_numeric_independence_MSEv_Shapley_weights"
@@ -193,7 +193,7 @@ test_that("output_lm_categorical_vaeac", {
       x_explain = x_explain_categorical,
       x_train = x_train_categorical,
       approach = "vaeac",
-      prediction_zero = p0
+      prediction_zero = p0,
       n_MC_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
@@ -542,7 +542,7 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
       approach = "independence",
-      prediction_zero = p0
+      prediction_zero = p0,
       keep_samp_for_vS = TRUE
     )),
     "output_lm_numeric_independence_keep_samp_for_vS"
