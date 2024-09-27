@@ -70,3 +70,177 @@ test_that("adaptive feature wise and groupwise computations identical", {
   # Checking equality in the list with all final and intermediate results
   expect_equal(expl_feat$internal$iter_results, expl_group$internal$iter_results)
 })
+
+test_that("erroneous input: `min_n_batches`", {
+  set.seed(123)
+
+  # non-numeric 1
+  expect_snapshot(
+    {
+      n_batches_non_numeric_1 <- "bla"
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        adaptive_arguments = list(min_n_batches = n_batches_non_numeric_1)
+      )
+    },
+    error = TRUE
+  )
+
+  # non-numeric 2
+  expect_snapshot(
+    {
+      n_batches_non_numeric_2 <- TRUE
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        adaptive_arguments = list(min_n_batches = n_batches_non_numeric_2)
+      )
+    },
+    error = TRUE
+  )
+
+  # non-integer
+  expect_snapshot(
+    {
+      n_batches_non_integer <- 10.5
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        adaptive_arguments = list(min_n_batches = n_batches_non_integer)
+      )
+    },
+    error = TRUE
+  )
+
+  # length > 1
+  expect_snapshot(
+    {
+      n_batches_too_long <- c(1, 2)
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        adaptive_arguments = list(min_n_batches = n_batches_too_long)
+      )
+    },
+    error = TRUE
+  )
+
+  # NA-numeric
+  expect_snapshot(
+    {
+      n_batches_is_NA <- as.numeric(NA)
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        adaptive_arguments = list(min_n_batches = n_batches_is_NA)
+      )
+    },
+    error = TRUE
+  )
+
+  # Non-positive
+  expect_snapshot(
+    {
+      n_batches_non_positive <- 0
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        adaptive_arguments = list(min_n_batches = n_batches_non_positive)
+      )
+    },
+    error = TRUE
+  )
+
+})
+
+test_that("different n_batches gives same/different shapley values for different approaches", {
+  # approach "empirical" is seed independent
+  explain.empirical_n_batches_5 <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "empirical",
+    prediction_zero = p0,
+    adaptive_arguments = list(min_n_batches = 5, max_batch_size = 10)
+  )
+
+  explain.empirical_n_batches_10 <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "empirical",
+    prediction_zero = p0,
+    adaptive_arguments = list(min_n_batches = 10, max_batch_size = 10)
+  )
+
+  # Difference in the objects (n_batches and related)
+  expect_false(identical(
+    explain.empirical_n_batches_5,
+    explain.empirical_n_batches_10
+  ))
+  # Same Shapley values
+  expect_equal(
+    explain.empirical_n_batches_5$shapley_values,
+    explain.empirical_n_batches_10$shapley_values
+  )
+
+  # approach "ctree" is seed dependent
+  explain.ctree_n_batches_5 <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "ctree",
+    prediction_zero = p0,
+    adaptive_arguments = list(min_n_batches = 5, max_batch_size = 10)
+  )
+
+  explain.ctree_n_batches_10 <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "ctree",
+    prediction_zero = p0,
+    adaptive_arguments = list(min_n_batches = 10, max_batch_size = 10)
+  )
+
+  # Difference in the objects (n_batches and related)
+  expect_false(identical(
+    explain.ctree_n_batches_5,
+    explain.ctree_n_batches_10
+  ))
+  # NEITHER same Shapley values
+  expect_false(identical(
+    explain.ctree_n_batches_5$shapley_values,
+    explain.ctree_n_batches_10$shapley_values
+  ))
+})
+

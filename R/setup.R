@@ -912,17 +912,18 @@ check_adaptive_arguments <- function(adaptive_arguments){
   }
 
   # fixed_n_coalitions
-  if (!(is.wholenumber(fixed_n_coalitions) &&
-        length(fixed_n_coalitions) == 1 &&
-        !is.na(fixed_n_coalitions) &&
-        fixed_n_coalitions <= max_n_coalitions &&
-        fixed_n_coalitions > 0)) {
-    stop("`adaptive_arguments$fixed_n_coalitions` must be a single positive integer no larger than `max_n_coalitions`.")
+  if (!is.null(fixed_n_coalitions_per_iter) &&
+      !(is.wholenumber(fixed_n_coalitions_per_iter) &&
+        length(fixed_n_coalitions_per_iter) == 1 &&
+        !is.na(fixed_n_coalitions_per_iter) &&
+        fixed_n_coalitions_per_iter <= max_n_coalitions &&
+        fixed_n_coalitions_per_iter > 0)) {
+    stop("`adaptive_arguments$fixed_n_coalitions_per_iter` must be NULL or a single positive integer no larger than `max_n_coalitions`.")
   }
 
   # max_iter
-  if (!(is.null(max_iter) &&
-        (is.wholenumber(max_iter) || is.infinite(max_iter)) &&
+  if (!is.null(max_iter) &&
+      !((is.wholenumber(max_iter) || is.infinite(max_iter)) &&
         length(max_iter) == 1 &&
         !is.na(max_iter) &&
         max_iter > 0)) {
@@ -930,19 +931,19 @@ check_adaptive_arguments <- function(adaptive_arguments){
   }
 
   # convergence_tolerance
-  if (!(is.null(convergence_tolerance) &&
-        length(convergence_tolerance) == 1 &&
-        !is.na(convergence_tolerance) &&
-        convergence_tolerance >= 0)) {
+  if (!is.null(convergence_tolerance) &&
+      !(length(convergence_tolerance) == 1 &&
+       !is.na(convergence_tolerance) &&
+       convergence_tolerance >= 0)) {
     stop("`adaptive_arguments$convergence_tolerance` must be NULL, 0, or a positive numeric.")
   }
 
   # reduction_factor_vec
-  if (!(is.null(reduction_factor_vec) &&
-        all(!is.na(reduction_factor_vec)) &&
+  if (!is.null(reduction_factor_vec) &&
+      !(all(!is.na(reduction_factor_vec)) &&
         all(reduction_factor_vec <= 1) &&
         all(reduction_factor_vec >= 0))) {
-    stop("`adaptive_arguments$reduction_factor_vec` must be a vector or numerics between 0 and 1.")
+    stop("`adaptive_arguments$reduction_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
   }
 
   # n_boot_samps
@@ -961,8 +962,8 @@ check_adaptive_arguments <- function(adaptive_arguments){
 
 
   # min_n_batches
-  if (!(is.null(min_n_batches) &&
-        is.wholenumber(min_n_batches) &&
+  if (!is.null(min_n_batches) &&
+      !(is.wholenumber(min_n_batches) &&
         length(min_n_batches) == 1 &&
         !is.na(min_n_batches) &&
         min_n_batches > 0)) {
@@ -970,8 +971,8 @@ check_adaptive_arguments <- function(adaptive_arguments){
   }
 
   # max_batch_size
-  if (!(is.null(max_batch_size) &&
-        (is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
+  if (!is.null(max_batch_size) &&
+      !((is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
         length(max_batch_size) == 1 &&
         !is.na(max_batch_size) &&
         max_batch_size > 0)) {
@@ -987,7 +988,7 @@ check_adaptive_arguments <- function(adaptive_arguments){
   # Check that the saving_path exists, and abort if not...
   if(!dir.exists(dirname(saving_path))){
     stop(
-      paste0("Directory ",dirname(saving_path)," in the adapative_arguments$saving_path does not exists.\n",
+      paste0("Directory ",dirname(saving_path)," in the adaptive_arguments$saving_path does not exists.\n",
              "Please create the directory with `dir.create('",dirname(saving_path),"')` or use another directory.")
     )
   }

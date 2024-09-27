@@ -10,7 +10,6 @@ test_that("regression erroneous input: `approach`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = c("regression_surrogate", "gaussian", "independence", "empirical"),
       )
     },
@@ -26,7 +25,6 @@ test_that("regression erroneous input: `approach`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = c("regression_separate", "gaussian", "independence", "empirical"),
       )
     },
@@ -46,7 +44,6 @@ test_that("regression erroneous input: `regression.model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = NULL
       )
@@ -63,7 +60,6 @@ test_that("regression erroneous input: `regression.model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = lm
       )
@@ -80,7 +76,6 @@ test_that("regression erroneous input: `regression.model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression")
       )
@@ -97,7 +92,6 @@ test_that("regression erroneous input: `regression.model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(num_terms = c(1, 2, 3))
@@ -115,7 +109,6 @@ test_that("regression erroneous input: `regression.model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3), num_terms = c(1, 2, 3))
@@ -133,7 +126,6 @@ test_that("regression erroneous input: `regression.model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = 2, engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3))
@@ -151,7 +143,6 @@ test_that("regression erroneous input: `regression.model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_surrogate",
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3))
       )
@@ -173,7 +164,6 @@ test_that("regression erroneous input: `regression.tune_values`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = 2, engine = "rpart", mode = "regression"),
         regression.tune_values = as.matrix(data.frame(tree_depth = c(1, 2, 3)))
@@ -191,7 +181,6 @@ test_that("regression erroneous input: `regression.tune_values`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = function(x) c(1, 2, 3)
@@ -209,7 +198,6 @@ test_that("regression erroneous input: `regression.tune_values`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = function(x) data.frame(wrong_name = c(1, 2, 3))
@@ -231,7 +219,6 @@ test_that("regression erroneous input: `regression.vfold_cv_para`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)),
@@ -250,7 +237,6 @@ test_that("regression erroneous input: `regression.vfold_cv_para`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)),
@@ -269,7 +255,6 @@ test_that("regression erroneous input: `regression.vfold_cv_para`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)),
@@ -293,7 +278,6 @@ test_that("regression erroneous input: `regression.recipe_func`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_separate",
         regression.recipe_func = 3
       )
@@ -310,7 +294,6 @@ test_that("regression erroneous input: `regression.recipe_func`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_surrogate",
         regression.recipe_func = function(x) {
           return(2)
@@ -333,7 +316,6 @@ test_that("regression erroneous input: `regression.surrogate_n_comb`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_surrogate",
         regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1
       )
@@ -350,7 +332,6 @@ test_that("regression erroneous input: `regression.surrogate_n_comb`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
         approach = "regression_surrogate",
         regression.surrogate_n_comb = 0
       )
