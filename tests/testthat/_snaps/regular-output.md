@@ -471,22 +471,6 @@
       2:          2 42.44   5.283  -6.046 -8.095 -2.7998 -2.222
       3:          3 42.44   6.984 -20.837 -4.762 -0.1545  1.201
 
-# output_lm_numeric_independence_more_batches
-
-    Code
-      (out <- code)
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
-    Output
-         explain_id  none Solar.R    Wind   Temp  Month    Day
-              <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -4.537   8.269 17.517 -5.581 -3.066
-      2:          2 42.44   2.250  -3.345 -5.232 -5.581 -1.971
-      3:          3 42.44   3.708 -18.610 -1.440 -2.541  1.316
-
 # output_lm_numeric_empirical_progress
 
     Code
