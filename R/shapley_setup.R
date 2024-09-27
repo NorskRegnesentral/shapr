@@ -26,7 +26,8 @@ shapley_setup <- function(internal) {
     prev_coal_samples = prev_coal_samples,
     unique_sampling = unique_sampling, # TODO: Just added temporary
     coal_feature_list = coal_feature_list,
-    approach0 = approach
+    approach0 = approach,
+    shapley_reweighting = shapley_reweighting
   )
 
 
@@ -35,7 +36,6 @@ shapley_setup <- function(internal) {
     coalitions_str = sapply(coalitions, paste, collapse = " ")
   )]
 
-  shapley_reweighting(X, reweight = shapley_reweighting) # Reweights the shapley weights in X by reference
 
   # Get weighted matrix ----------------
   W <- weight_matrix(
@@ -141,7 +141,8 @@ shapley_setup <- function(internal) {
 create_coalition_table <- function(m, exact = TRUE, n_coalitions = 200, weight_zero_m = 10^6,
                                    paired_shap_sampling = TRUE, prev_coal_samples = NULL, unique_sampling = TRUE,
                                    coal_feature_list = as.list(seq_len(m)),
-                                   approach0 = "gaussian") {
+                                   approach0 = "gaussian",
+                                   shapley_reweighting) {
   if (exact) {
     dt <- exact_coalition_table(m, weight_zero_m)
   } else {
@@ -150,7 +151,8 @@ create_coalition_table <- function(m, exact = TRUE, n_coalitions = 200, weight_z
       weight_zero_m,
       paired_shap_sampling = paired_shap_sampling,
       prev_coal_samples = prev_coal_samples,
-      unique_sampling = unique_sampling
+      unique_sampling = unique_sampling,
+      shapley_reweighting = shapley_reweighting
     )
     stopifnot(
       data.table::is.data.table(dt),
@@ -199,15 +201,7 @@ shapley_reweighting <- function(X, reweight = "on_N") {
     X[-c(1,.N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
     X[-c(1,.N), cond := 1-(1-2*shapley_weight)^(K/2)]
     X[-c(1,.N), shapley_weight := 2*shapley_weight/cond]
-  } else if (reweight == "comb") {
-    # Very ad-hoc: Half on_coal_size and half of on_all
-    X[, shapley_weight1 := mean(shapley_weight), by = coalition_size]
-    X[-c(1,.N), shapley_weight1 := shapley_weight1/sum(shapley_weight1)]
-    m <- X[.N, coalition_size]
-    X[-c(1,.N), shapley_weight2 := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
-    X[-c(1,.N), shapley_weight2 := shapley_weight2/sum(shapley_weight2)]
-    X[-c(1,.N), shapley_weight := (shapley_weight1+shapley_weight2)/2]
-    }
+  }
   # strategy= "none" or something else do nothing
   return(NULL)
 }
@@ -231,7 +225,8 @@ sample_coalition_table <- function(m,
                                    weight_zero_m = 10^6,
                                    unique_sampling = TRUE,
                                    paired_shap_sampling = TRUE,
-                                   prev_coal_samples = NULL) {
+                                   prev_coal_samples = NULL,
+                                   shapley_reweighting) {
   # Setup
   coal_samp_vec <- seq(m - 1)
   n <- sapply(coal_samp_vec, choose, n = m)
@@ -356,6 +351,8 @@ sample_coalition_table <- function(m,
   X[, N := as.integer(N)]
   nms <- c("id_coalition", "coalitions", "coalition_size", "N", "shapley_weight", "p", "sample_freq")
   data.table::setcolorder(X, nms)
+
+  shapley_reweighting(X, reweight = shapley_reweighting) # Reweights the shapley weights in X by reference
 
   return(X)
 }

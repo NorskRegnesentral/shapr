@@ -293,10 +293,10 @@ explain <- function(model,
                     x_explain,
                     x_train,
                     approach,
-                    paired_shap_sampling = FALSE, # TODO: Make TRUE the default later on
+                    paired_shap_sampling = TRUE,
                     prediction_zero,
                     max_n_coalitions = NULL,
-                    adaptive = FALSE,
+                    adaptive = TRUE,
                     group = NULL,
                     n_MC_samples = 1e3,
                     seed = 1,
@@ -308,7 +308,7 @@ explain <- function(model,
                     adaptive_arguments = list(),
                     print_shapleyres = FALSE, # tmp
                     print_iter_info = FALSE, # tmp
-                    shapley_reweighting = "none", # tmp # "on_N" # TODO: Make "on_N" the default later on.
+                    shapley_reweighting = "on_all_cond",
                     prev_shapr_object = NULL,
                     ...) { # ... is further arguments passed to specific approaches
 
