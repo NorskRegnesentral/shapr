@@ -1,3 +1,19 @@
+# output_lm_numeric_lm_separate_adaptive
+
+    Code
+      (out <- code)
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
+    Output
+         explain_id  none Solar.R    Wind     Temp   Month     Day
+              <int> <num>   <num>   <num>    <num>   <num>   <num>
+      1:          1 42.44  -8.577   7.845  14.4756  0.6251 -1.7664
+      2:          2 42.44   4.818  -4.811 -11.6350 -1.0423 -1.2086
+      3:          3 42.44   7.406 -25.587   0.3353 -0.4718  0.7491
+
 # output_lm_numeric_lm_separate
 
     Code
@@ -120,6 +136,31 @@
       1:          1 42.44 -13.991  14.352  16.490   1.82       -8.088
       2:          2 42.44   8.183  -1.463 -16.499   3.63       -9.233
       3:          3 42.44   3.364 -14.946   0.401 -11.32       11.905
+
+# output_lm_numeric_lm_surrogate_adaptive
+
+    Code
+      (out <- code)
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
+    Condition
+      Warning in `predict.lm()`:
+      prediction from rank-deficient fit; consider predict(., rankdeficient="NA")
+      Warning in `predict.lm()`:
+      prediction from rank-deficient fit; consider predict(., rankdeficient="NA")
+      Warning in `predict.lm()`:
+      prediction from rank-deficient fit; consider predict(., rankdeficient="NA")
+      Warning in `predict.lm()`:
+      prediction from rank-deficient fit; consider predict(., rankdeficient="NA")
+    Output
+         explain_id  none Solar.R    Wind   Temp   Month     Day
+              <int> <num>   <num>   <num>  <num>   <num>   <num>
+      1:          1 42.44  -9.668  10.383 14.899 -1.5122 -1.4988
+      2:          2 42.44   2.232  -5.112 -8.094 -1.9599 -0.9455
+      3:          3 42.44   6.498 -23.580 -2.877 -0.5079  2.8989
 
 # output_lm_numeric_lm_surrogate
 

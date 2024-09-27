@@ -11,8 +11,9 @@ test_that("output_lm_numeric_independence_reach_exact", {
       prediction_zero = p0,
       adaptive = TRUE,
       print_shapleyres = TRUE,
-      print_iter_info = TRUE
-    ),
+      print_iter_info = TRUE,
+      paired_shap_sampling = TRUE
+      ),
     "output_lm_numeric_independence_reach_exact"
   )
 })
@@ -142,6 +143,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     x_train = x_train_numeric,
     approach = "independence",
     prediction_zero = p0,
+    paired_shap_sampling = FALSE,
     adaptive_arguments = list(
       initial_n_coalitions = 10,
       convergence_tolerance = 0.001,
@@ -162,6 +164,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     x_train = x_train_numeric,
     approach = "independence",
     prediction_zero = p0,
+    paired_shap_sampling = FALSE,
     adaptive_arguments = list(
       initial_n_coalitions = 10,
       convergence_tolerance = 0.001,
@@ -170,7 +173,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     ),
     adaptive = TRUE,
     seed=NULL
-  )
+    )
 
   # Continue estimation from the init object
   expect_snapshot_rds(
@@ -181,6 +184,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
+      paired_shap_sampling = FALSE,
       adaptive_arguments = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.001,
@@ -191,7 +195,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       print_shapleyres = TRUE,
       print_iter_info = TRUE,
       prev_shapr_object = e_init_object,
-      seed=NULL
+      seed=NULL,
     ),
     "output_lm_numeric_independence_cont_est_object"
   )
@@ -209,6 +213,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     x_train = x_train_numeric,
     approach = "independence",
     prediction_zero = p0,
+    paired_shap_sampling = FALSE,
     adaptive_arguments = list(
       initial_n_coalitions = 10,
       convergence_tolerance = 0.001,
@@ -228,6 +233,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
+      paired_shap_sampling = FALSE,
       adaptive_arguments = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.001,
