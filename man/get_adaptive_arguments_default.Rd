@@ -6,10 +6,10 @@
 \usage{
 get_adaptive_arguments_default(
   internal,
-  max_iter = 20,
   initial_n_coalitions = ceiling(min(200, max(internal$parameters$n_features,
     (2^internal$parameters$n_features)/10))),
   fixed_n_coalitions_per_iter = NULL,
+  max_iter = 20,
   convergence_tolerance = 0.02,
   reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
   n_boot_samps = 100,
@@ -22,12 +22,12 @@ get_adaptive_arguments_default(
 \arguments{
 \item{internal}{Not used.}
 
-\item{max_iter}{Integer. Maximum number of estimation iterations}
-
 \item{initial_n_coalitions}{Integer. Number of coalitions to use in the first estimation iteration.}
 
 \item{fixed_n_coalitions_per_iter}{Integer. Number of \code{n_coalitions} to use in each iteration.
 \code{NULL} (default) means setting it based on estimates based on a set convergence threshold.}
+
+\item{max_iter}{Integer. Maximum number of estimation iterations}
 
 \item{convergence_tolerance}{Numeric. The t variable in the convergence threshold formula on page 6 in the paper
 Covert and Lee (2021), 'Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression'

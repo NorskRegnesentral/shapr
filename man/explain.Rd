@@ -9,10 +9,10 @@ explain(
   x_explain,
   x_train,
   approach,
-  paired_shap_sampling = FALSE,
+  paired_shap_sampling = TRUE,
   prediction_zero,
   max_n_coalitions = NULL,
-  adaptive = FALSE,
+  adaptive = TRUE,
   group = NULL,
   n_MC_samples = 1000,
   seed = 1,
@@ -24,7 +24,7 @@ explain(
   adaptive_arguments = list(),
   print_shapleyres = FALSE,
   print_iter_info = FALSE,
-  shapley_reweighting = "none",
+  shapley_reweighting = "on_all_cond",
   prev_shapr_object = NULL,
   ...
 )

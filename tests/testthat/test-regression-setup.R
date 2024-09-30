@@ -11,6 +11,7 @@ test_that("regression erroneous input: `approach`", {
         x_train = x_train_numeric,
         prediction_zero = p0,
         approach = c("regression_surrogate", "gaussian", "independence", "empirical"),
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -26,6 +27,7 @@ test_that("regression erroneous input: `approach`", {
         x_train = x_train_numeric,
         prediction_zero = p0,
         approach = c("regression_separate", "gaussian", "independence", "empirical"),
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -144,7 +146,8 @@ test_that("regression erroneous input: `regression.model`", {
         x_train = x_train_numeric,
         prediction_zero = p0,
         approach = "regression_surrogate",
-        regression.tune_values = data.frame(tree_depth = c(1, 2, 3))
+        regression.tune_values = data.frame(tree_depth = c(1, 2, 3)),
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -297,7 +300,8 @@ test_that("regression erroneous input: `regression.recipe_func`", {
         approach = "regression_surrogate",
         regression.recipe_func = function(x) {
           return(2)
-        }
+        },
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -317,7 +321,8 @@ test_that("regression erroneous input: `regression.surrogate_n_comb`", {
         x_train = x_train_numeric,
         prediction_zero = p0,
         approach = "regression_surrogate",
-        regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1
+        regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1,
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -333,7 +338,8 @@ test_that("regression erroneous input: `regression.surrogate_n_comb`", {
         x_train = x_train_numeric,
         prediction_zero = p0,
         approach = "regression_surrogate",
-        regression.surrogate_n_comb = 0
+        regression.surrogate_n_comb = 0,
+        adaptive = FALSE
       )
     },
     error = TRUE

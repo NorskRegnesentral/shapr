@@ -1210,11 +1210,11 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       prediction_zero = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
-      max_n_coalitions = NULL
+      max_n_coalitions = NULL,
+      adaptive = FALSE
     )
   )
 
-  # We should get a message saying that we are using the exact mode.
   expect_snapshot(
     explanation_equal <- explain(
       testing = TRUE,
@@ -1226,7 +1226,8 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
       adaptive_arguments = list(compute_sd = FALSE),
-      max_n_coalitions = 2^ncol(x_explain_numeric)
+      max_n_coalitions = 2^ncol(x_explain_numeric),
+      adaptive = FALSE
     )
   )
 
@@ -1243,7 +1244,8 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
       adaptive_arguments = list(compute_sd = FALSE),
-      max_n_coalitions = 2^ncol(x_explain_numeric) + 1
+      max_n_coalitions = 2^ncol(x_explain_numeric) + 1,
+      adaptive = FALSE
     )
   )
 
@@ -1269,7 +1271,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
 })
 
 test_that("Correct dimension of S when sampling combinations with groups", {
-  max_n_coalitions <- 5
+  max_n_coalitions <- 6
 
   groups <- list(
     A = c("Solar.R", "Wind"),
@@ -1556,7 +1558,8 @@ test_that("vaeac_set_seed_works", {
     vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
-    )
+    ),
+    adaptive = FALSE
   )
 
   explanation_vaeac_2 <- explain(
@@ -1572,7 +1575,8 @@ test_that("vaeac_set_seed_works", {
     vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
-    )
+    ),
+    adaptive = FALSE
   )
 
   # Check for equal Shapley values
@@ -1596,7 +1600,8 @@ test_that("vaeac_pretreained_vaeac_model", {
     vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
-    )
+    ),
+    adaptive = FALSE
   )
 
   #### We can do this by reusing the vaeac model OBJECT
@@ -1615,7 +1620,8 @@ test_that("vaeac_pretreained_vaeac_model", {
     seed = 1,
     vaeac.extra_parameters = list(
       vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_model
-    )
+    ),
+    adaptive = FALSE
   )
 
   # Check for equal Shapley values
@@ -1637,7 +1643,8 @@ test_that("vaeac_pretreained_vaeac_model", {
     seed = 1,
     vaeac.extra_parameters = list(
       vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_path
-    )
+    ),
+    adaptive = FALSE
   )
 
   # Check for equal Shapley values

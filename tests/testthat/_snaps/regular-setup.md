@@ -355,15 +355,15 @@
         max_n_coalitions = max_n_coalitions)
     Message
       Success with message:
-      max_n_coalitions is smaller than or n_features = 5, 
-      and is therefore set to n_features + 1  = 6.
+      max_n_coalitions is smaller than max(10, n_features + 1 = 6),which will result in unreliable results.
+      It is therefore set to 10.
       
     Output
-         explain_id  none Solar.R    Wind    Temp  Month    Day
-              <int> <num>   <num>   <num>   <num>  <num>  <num>
-      1:          1 42.44  -4.954  14.749   8.079 0.3131 -5.585
-      2:          2 42.44   4.203  -5.503 -14.604 0.4815  1.544
-      3:          3 42.44   4.713 -32.121   2.471 0.1306  7.238
+         explain_id  none Solar.R    Wind     Temp   Month     Day
+              <int> <num>   <num>   <num>    <num>   <num>   <num>
+      1:          1 42.44 -1.4276 -1.4276  15.1967  1.6879 -1.4276
+      2:          2 42.44 -0.9143 -0.9143 -10.8152 -0.3212 -0.9143
+      3:          3 42.44 -5.8068 -5.8068   0.1677 -0.3155 -5.8068
 
 ---
 
@@ -375,15 +375,15 @@
         group = groups, max_n_coalitions = max_n_coalitions)
     Message
       Success with message:
-      max_n_coalitions is smaller than or n_groups = 3, 
-      and is therefore set to n_groups + 1  = 4.
+      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
+      max_n_coalitions is therefore set to 2^n_groups = 8.
       
     Output
-         explain_id  none       A       B      C
-              <int> <num>   <num>   <num>  <num>
-      1:          1 42.44  -2.652  18.271 -3.017
-      2:          2 42.44   2.197 -14.011 -2.066
-      3:          3 42.44 -13.863  -5.112  1.407
+         explain_id  none        A        B       C
+              <int> <num>    <num>    <num>   <num>
+      1:          1 42.44   0.5994  13.6818 -1.6791
+      2:          2 42.44   0.5146 -13.2685 -1.1256
+      3:          3 42.44 -18.1640  -0.2808  0.8766
 
 # erroneous input: `group`
 
@@ -851,15 +851,15 @@
         max_n_coalitions = max_n_coalitions)
     Message
       Success with message:
-      max_n_coalitions is smaller than or n_features = 5, 
-      and is therefore set to n_features + 1  = 6.
+      max_n_coalitions is smaller than max(10, n_features + 1 = 6),which will result in unreliable results.
+      It is therefore set to 10.
       
     Output
-         explain_id  none   Solar.R    Wind       Temp  Month       Day
-              <int> <num>     <num>   <num>      <num>  <num>     <num>
-      1:          1 42.44 0.0001730   7.480 -0.0002106  5.113  0.008439
-      2:          2 42.44 0.0001797  -5.034 -0.0002455 -8.838 -0.007679
-      3:          3 42.44 0.0001726 -21.480 -0.0002313  3.908  0.003721
+         explain_id  none Solar.R    Wind   Temp   Month     Day
+              <int> <num>   <num>   <num>  <num>   <num>   <num>
+      1:          1 42.44  2.3585  2.3585  5.900 -0.3739  2.3585
+      2:          2 42.44 -1.5323 -1.5323 -8.909 -0.3739 -1.5323
+      3:          3 42.44 -0.7635 -0.7635 -6.441 -8.8373 -0.7635
 
 ---
 
@@ -869,22 +869,23 @@
         group = groups, max_n_coalitions = max_n_coalitions)
     Message
       Success with message:
-      max_n_coalitions is smaller than or n_groups = 3, 
-      and is therefore set to n_groups + 1  = 4.
+      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
+      max_n_coalitions is therefore set to 2^n_groups = 8.
       
     Output
-         explain_id  none          A      B         C
-              <int> <num>      <num>  <num>     <num>
-      1:          1 42.44 -0.0006997  12.60 6.388e-05
-      2:          2 42.44 -0.0007149 -13.88 4.690e-05
-      3:          3 42.44 -0.0007607 -17.57 6.250e-05
+         explain_id  none      A      B       C
+              <int> <num>  <num>  <num>   <num>
+      1:          1 42.44  5.672  5.672  1.2582
+      2:          2 42.44 -6.554 -6.555 -0.7703
+      3:          3 42.44 -5.356 -5.356 -6.8563
 
 # Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weights
 
     Code
       explanation_exact <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
-        prediction_zero = p0, n_MC_samples = 2, seed = 123, max_n_coalitions = NULL)
+        prediction_zero = p0, n_MC_samples = 2, seed = 123, max_n_coalitions = NULL,
+        adaptive = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -897,7 +898,8 @@
       explanation_equal <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
         prediction_zero = p0, n_MC_samples = 2, seed = 123, adaptive_arguments = list(
-          compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric))
+          compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric),
+        adaptive = FALSE)
 
 ---
 
@@ -905,7 +907,8 @@
       explanation_larger <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
         prediction_zero = p0, n_MC_samples = 2, seed = 123, adaptive_arguments = list(
-          compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric) + 1)
+          compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric) + 1,
+        adaptive = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 

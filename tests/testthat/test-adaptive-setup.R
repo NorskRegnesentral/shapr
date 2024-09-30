@@ -8,9 +8,9 @@ test_that("adaptive_arguments are respected", {
     prediction_zero = p0,
     max_n_coalitions = 30,
     adaptive_arguments = list(
-      initial_n_coalitions = 7,
-      convergence_tolerance = 0.001,
-      reduction_factor_vec = rep(10^(-5), 10),
+      initial_n_coalitions = 6,
+      convergence_tolerance = 0.0005,
+      reduction_factor_vec = rep(10^(-6), 10),
       max_iter = 8
     ),
     adaptive = TRUE,
@@ -19,7 +19,7 @@ test_that("adaptive_arguments are respected", {
   )
 
   # Check that initial_n_coalitions is respected
-  expect_equal(ex$internal$iter_list[[1]]$X[, .N], 7)
+  expect_equal(ex$internal$iter_list[[1]]$X[, .N], 6)
 
   # Check that max_iter is respected
   expect_equal(length(ex$internal$iter_list), 8)

@@ -3,7 +3,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = c(
-          "regression_surrogate", "gaussian", "independence", "empirical"), )
+          "regression_surrogate", "gaussian", "independence", "empirical"), adaptive = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -18,7 +18,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = c(
-          "regression_separate", "gaussian", "independence", "empirical"), )
+          "regression_separate", "gaussian", "independence", "empirical"), adaptive = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -130,7 +130,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "regression_surrogate",
-        regression.tune_values = data.frame(tree_depth = c(1, 2, 3)))
+        regression.tune_values = data.frame(tree_depth = c(1, 2, 3)), adaptive = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -263,7 +263,7 @@
         x_train = x_train_numeric, prediction_zero = p0, approach = "regression_surrogate",
         regression.recipe_func = function(x) {
           return(2)
-        })
+        }, adaptive = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -278,7 +278,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "regression_surrogate",
-        regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1)
+        regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1, adaptive = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -293,7 +293,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "regression_surrogate",
-        regression.surrogate_n_comb = 0)
+        regression.surrogate_n_comb = 0, adaptive = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 

@@ -147,30 +147,30 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
 
   # max_n_coalitions
   if (!is.null(max_n_coalitions) &&
-    !(is.wholenumber(max_n_coalitions) &&
-      length(max_n_coalitions) == 1 &&
-      !is.na(max_n_coalitions) &&
-      max_n_coalitions > 0)) {
+      !(is.wholenumber(max_n_coalitions) &&
+        length(max_n_coalitions) == 1 &&
+        !is.na(max_n_coalitions) &&
+        max_n_coalitions > 0)) {
     stop("`max_n_coalitions` must be NULL or a single positive integer.")
   }
 
   # group (checked more thoroughly later)
   if (!is.null(group) &&
-    !is.list(group)) {
+      !is.list(group)) {
     stop("`group` must be NULL or a list")
   }
 
   # n_MC_samples
   if (!(is.wholenumber(n_MC_samples) &&
-    length(n_MC_samples) == 1 &&
-    !is.na(n_MC_samples) &&
-    n_MC_samples > 0)) {
+        length(n_MC_samples) == 1 &&
+        !is.na(n_MC_samples) &&
+        n_MC_samples > 0)) {
     stop("`n_MC_samples` must be a single positive integer.")
   }
 
   # keep_samp_for_vS
   if (!(is.logical(keep_samp_for_vS) &&
-    length(keep_samp_for_vS) == 1)) {
+        length(keep_samp_for_vS) == 1)) {
     stop("`keep_samp_for_vS` must be single logical.")
   }
 
@@ -223,8 +223,8 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   #### Tests combining more than one parameter ####
   # prediction_zero vs output_size
   if (!all((is.numeric(prediction_zero)) &&
-    all(length(prediction_zero) == output_size) &&
-    all(!is.na(prediction_zero)))) {
+           all(length(prediction_zero) == output_size) &&
+           all(!is.na(prediction_zero)))) {
     stop(paste0(
       "`prediction_zero` (", paste0(prediction_zero, collapse = ", "),
       ") must be numeric and match the output size of the model (",
@@ -236,7 +236,7 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   if (!(length(shapley_reweighting) == 1 && shapley_reweighting %in%
         c("none", "on_N", "on_coal_size", "on_all", "on_N_sum", "on_all_cond", "on_all_cond_paired", "comb"))) {
     stop("`shapley_reweighting` must be one of `none`, `on_N`, `on_coal_size`, `on_N_sum`, ",
-    "`on_all`, `on_all_cond`, `on_all_cond_paired` or `comb`.\n")
+         "`on_all`, `on_all_cond`, `on_all_cond_paired` or `comb`.\n")
   }
 
 
@@ -521,8 +521,11 @@ adjust_max_n_coalitions <- function(internal) {
   n_groups <- internal$parameters$n_groups
 
 
+
+
+
   # Adjust max_n_coalitions
-  if (isFALSE(is_groupwise)) {
+  if (isFALSE(is_groupwise)) { # feature wise
     # Set max_n_coalitions to upper bound
     if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_features) {
       max_n_coalitions <- 2^n_features
@@ -535,17 +538,30 @@ adjust_max_n_coalitions <- function(internal) {
       )
     }
     # Set max_n_coalitions to lower bound
-    if (max_n_coalitions <= n_features) {
-      max_n_coalitions <- n_features + 1
-      message(
-        paste0(
-          "Success with message:\n",
-          "max_n_coalitions is smaller than or n_features = ", n_features, ", \n",
-          "and is therefore set to n_features + 1  = ", n_features + 1, ".\n"
+    if(isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10,n_features+1)){
+      if(n_features <= 3){
+        max_n_coalitions <- 2^n_features
+        message(
+          paste0(
+            "Success with message:\n",
+            "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",2^n_features,") ",
+            "that we should use all to get reliable results.\n",
+            "max_n_coalitions is therefore set to 2^n_features = ",2^n_features,".\n"
+          )
         )
-      )
+      } else {
+        max_n_coalitions <- min(10,n_features + 1)
+        message(
+          paste0(
+            "Success with message:\n",
+            "max_n_coalitions is smaller than max(10, n_features + 1 = ",n_features + 1 ,"),",
+            "which will result in unreliable results.\n",
+            "It is therefore set to ",max(10,n_features+1),".\n"
+          )
+        )
+      }
     }
-  } else {
+  } else { # group wise
     # Set max_n_coalitions to upper bound
     if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_groups) {
       max_n_coalitions <- 2^n_groups
@@ -558,15 +574,28 @@ adjust_max_n_coalitions <- function(internal) {
       )
     }
     # Set max_n_coalitions to lower bound
-    if (max_n_coalitions <= n_groups) {
-      max_n_coalitions <- n_groups + 1
-      message(
-        paste0(
-          "Success with message:\n",
-          "max_n_coalitions is smaller than or n_groups = ", n_groups, ", \n",
-          "and is therefore set to n_groups + 1  = ", n_groups + 1, ".\n"
+    if(isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10,n_groups+1)){
+      if(n_groups <= 3){
+        max_n_coalitions <- 2^n_groups
+        message(
+          paste0(
+            "Success with message:\n",
+            "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (",2^n_groups,") ",
+            "that we should use all to get reliable results.\n",
+            "max_n_coalitions is therefore set to 2^n_groups = ",2^n_groups,".\n"
+          )
         )
-      )
+      } else {
+        max_n_coalitions <- min(10,n_groups + 1)
+        message(
+          paste0(
+            "Success with message:\n",
+            "max_n_coalitions is smaller than max(10, n_groups + 1 = ",n_groups + 1 ,"),",
+            "which will result in unreliable results.\n",
+            "It is therefore set to ",max(10,n_groups+1),".\n"
+          )
+        )
+      }
     }
   }
 
@@ -619,7 +648,7 @@ set_exact <- function(internal) {
 
   if (isFALSE(adaptive) && (
     (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
-      (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
+    (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
   )
   ) {
     exact <- TRUE
@@ -691,8 +720,8 @@ check_approach <- function(internal) {
   supported_approaches <- get_supported_approaches()
 
   if (!(is.character(approach) &&
-    (length(approach) == 1 || length(approach) == n_features - 1) &&
-    all(is.element(approach, supported_approaches)))
+        (length(approach) == 1 || length(approach) == n_features - 1) &&
+        all(is.element(approach, supported_approaches)))
   ) {
     stop(
       paste0(
@@ -855,8 +884,8 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
   adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
-    adaptive_arguments,
-    keep.null = TRUE
+                                          adaptive_arguments,
+                                          keep.null = TRUE
   )
 
 
@@ -865,8 +894,7 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
   # Translate any null input
   adaptive_arguments <- trans_null_adaptive_arguments(adaptive_arguments)
 
-  internal$parameters$adaptive_arguments <- trans_null_adaptive_arguments(adaptive_arguments)
-
+  internal$parameters$adaptive_arguments <- adaptive_arguments
 
   if(!is.null(prev_iter_list)){
 
@@ -900,7 +928,6 @@ check_adaptive_arguments <- function(adaptive_arguments){
 
   list2env(adaptive_arguments, env = environment())
 
-  initial_n_coalitions
 
   # initial_n_coalitions
   if (!(is.wholenumber(initial_n_coalitions) &&
@@ -933,8 +960,8 @@ check_adaptive_arguments <- function(adaptive_arguments){
   # convergence_tolerance
   if (!is.null(convergence_tolerance) &&
       !(length(convergence_tolerance) == 1 &&
-       !is.na(convergence_tolerance) &&
-       convergence_tolerance >= 0)) {
+        !is.na(convergence_tolerance) &&
+        convergence_tolerance >= 0)) {
     stop("`adaptive_arguments$convergence_tolerance` must be NULL, 0, or a positive numeric.")
   }
 

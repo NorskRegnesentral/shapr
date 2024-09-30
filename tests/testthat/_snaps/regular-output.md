@@ -51,11 +51,11 @@
     Code
       (out <- code)
     Output
-         explain_id  none Solar.R    Wind   Temp  Month    Day
-              <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -5.795  15.320  8.557 -7.547  2.066
-      2:          2 42.44   3.266  -3.252 -7.693 -7.663  1.462
-      3:          3 42.44   4.290 -24.395  6.739 -1.006 -3.197
+         explain_id  none Solar.R    Wind   Temp   Month    Day
+              <int> <num>   <num>   <num>  <num>   <num>  <num>
+      1:          1 42.44 -14.030  18.711  9.718 -6.1533  4.356
+      2:          2 42.44   3.015  -3.442 -7.095 -7.8174  1.459
+      3:          3 42.44   8.566 -24.310  3.208  0.6956 -5.728
 
 # output_lm_numeric_empirical_independence
 
@@ -113,22 +113,22 @@
     Code
       (out <- code)
     Output
-         explain_id  none Solar.R     Wind     Temp    Month     Day
-              <int> <num>   <num>    <num>    <num>    <num>   <num>
-      1:          1 42.44  -14.98   6.3170  17.4103   0.2876  3.5623
-      2:          2 42.44   12.42   0.1482 -10.2338 -16.4096  0.1967
-      3:          3 42.44   15.74 -19.7250   0.9992  -8.6950 -5.8886
+         explain_id  none Solar.R    Wind    Temp   Month      Day
+              <int> <num>   <num>   <num>   <num>   <num>    <num>
+      1:          1 42.44  -9.778   9.084  5.4596  5.4596  2.37679
+      2:          2 42.44   6.833  -4.912 -7.9095 -7.9095  0.01837
+      3:          3 42.44   6.895 -21.308  0.6281  0.6281 -4.41122
 
 # output_lm_numeric_empirical_AICc_full
 
     Code
       (out <- code)
     Output
-         explain_id  none Solar.R     Wind     Temp    Month     Day
-              <int> <num>   <num>    <num>    <num>    <num>   <num>
-      1:          1 42.44  -14.98   6.3170  17.4103   0.2876  3.5623
-      2:          2 42.44   12.42   0.1482 -10.2338 -16.4096  0.1967
-      3:          3 42.44   15.74 -19.7250   0.9992  -8.6950 -5.8886
+         explain_id  none Solar.R    Wind    Temp   Month      Day
+              <int> <num>   <num>   <num>   <num>   <num>    <num>
+      1:          1 42.44  -9.778   9.084  5.4596  5.4596  2.37679
+      2:          2 42.44   6.833  -4.912 -7.9095 -7.9095  0.01837
+      3:          3 42.44   6.895 -21.308  0.6281  0.6281 -4.41122
 
 # output_lm_numeric_gaussian
 

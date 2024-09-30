@@ -13,7 +13,8 @@ create_coalition_table(
   prev_coal_samples = NULL,
   unique_sampling = TRUE,
   coal_feature_list = as.list(seq_len(m)),
-  approach0 = "gaussian"
+  approach0 = "gaussian",
+  shapley_reweighting
 )
 }
 \arguments{

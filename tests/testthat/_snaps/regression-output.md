@@ -35,11 +35,11 @@
     Code
       (out <- code)
     Output
-         explain_id  none Solar.R    Wind    Temp Month     Day
-              <int> <num>   <num>   <num>   <num> <num>   <num>
-      1:          1 42.44  -7.806  14.811   5.751 4.056 -4.2111
-      2:          2 42.44   5.056  -7.055 -16.887 5.976 -0.9692
-      3:          3 42.44   7.020 -33.059   2.395 3.782  2.2943
+         explain_id  none Solar.R    Wind     Temp   Month    Day
+              <int> <num>   <num>   <num>    <num>   <num>  <num>
+      1:          1 42.44  -8.593   8.491  15.3573 -0.9151 -1.739
+      2:          2 42.44   4.948  -3.745 -10.6547 -2.8369 -1.591
+      3:          3 42.44   7.129 -25.351   0.3282 -1.3110  1.637
 
 # output_lm_categorical_lm_separate
 
@@ -183,22 +183,22 @@
     Code
       (out <- code)
     Output
-         explain_id  none Solar.R     Wind     Temp   Month     Day
-              <int> <num>   <num>    <num>    <num>   <num>   <num>
-      1:          1 42.44 -9.6804  12.2171  11.4871 0.74529 -2.1671
-      2:          2 42.44  0.6882   0.3332 -12.8835 1.93235 -3.9496
-      3:          3 42.44  7.8022 -26.0731  -0.2148 0.04831  0.8691
+         explain_id  none Solar.R    Wind    Temp  Month     Day
+              <int> <num>   <num>   <num>   <num>  <num>   <num>
+      1:          1 42.44  -9.946   9.182 16.2078 -2.630 -0.2120
+      2:          2 42.44   2.239  -6.194 -7.0743 -2.630 -0.2199
+      3:          3 42.44   8.127 -24.230  0.4572 -1.188 -0.7344
 
 # output_lm_numeric_lm_surrogate_reg_surr_n_comb
 
     Code
       (out <- code)
     Output
-         explain_id  none Solar.R     Wind     Temp   Month     Day
-              <int> <num>   <num>    <num>    <num>   <num>   <num>
-      1:          1 42.44 -9.6804  12.2171  11.4871 0.74529 -2.1671
-      2:          2 42.44  0.6882   0.3332 -12.8835 1.93235 -3.9496
-      3:          3 42.44  7.8022 -26.0731  -0.2148 0.04831  0.8691
+         explain_id  none Solar.R    Wind    Temp  Month     Day
+              <int> <num>   <num>   <num>   <num>  <num>   <num>
+      1:          1 42.44  -9.946   9.182 16.2078 -2.630 -0.2120
+      2:          2 42.44   2.239  -6.194 -7.0743 -2.630 -0.2199
+      3:          3 42.44   8.127 -24.230  0.4572 -1.188 -0.7344
 
 # output_lm_categorical_lm_surrogate
 
