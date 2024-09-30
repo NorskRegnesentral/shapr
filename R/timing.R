@@ -1,3 +1,9 @@
+#' Gathers and computes the timing of the different parts of the explain function.
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
+#' @keywords internal
 compute_time <- function(internal) {
   main_timing_list <- internal$main_timing_list
   iter_timing_list <- internal$iter_timing_list
@@ -26,9 +32,9 @@ compute_time <- function(internal) {
 
   timing_output <- list(
     init_time = main_timing_list[[1]],
-    total_time_secs = main_timing_list[[length(main_timing_list)]],
+    end_time = main_timing_list[[length(main_timing_list)]],
     main_timing_secs = main_timing_secs,
-    iter_timing_secs_dt = iter_timing_secs_dt
+    iter_timing_secs_dt = iter_timing_secs_dt[]
   )
   internal$main_timing_list <- internal$iter_timing_list <- NULL
 

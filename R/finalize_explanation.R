@@ -1,7 +1,6 @@
-#' Finalizes the explanation object
+#' Gathers the final output to create the explanation object
 #'
-#' @inherit explain
-#' @inheritParams default_doc
+#' @inheritParams default_doc_explain
 #'
 #' @export
 finalize_explanation <- function(internal) {

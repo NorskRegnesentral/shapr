@@ -175,11 +175,18 @@ One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (defa
 probabilities.
 \code{'on_all'} means the original sampling probabilities are used for all coalitions.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once. This}
+probability that they are sampled at least once.
+This method is preferred as it has performed the best in simulation studies.}
 
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
+
+\item{prev_shapr_object}{Object or String.
+If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
+then the function will use the previous object to continue the computation.
+This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
+want to continue the adaptive estimation. See the vignette for examples.}
 
 \item{...}{Further arguments passed to specific approaches}
 }

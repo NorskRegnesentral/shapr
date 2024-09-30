@@ -1,9 +1,12 @@
-
-
+#' Saves the itermediate results to disk
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
+#' @keywords internal
 save_results <- function(internal){
 
   saving_path <- internal$parameters$adaptive_arguments$saving_path
-
 
   # Modify name for the new file
   filename <- basename(saving_path)

@@ -9,7 +9,7 @@ compute_shapley_new(internal, dt_vS)
 \arguments{
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{iter_results}, \code{output}.}
 
 \item{dt_vS}{The contribution matrix.}
 }

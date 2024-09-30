@@ -1,3 +1,9 @@
+#' Prepares the next iteration of the adaptive sampling algorithm
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
+#' @keywords internal
 prepare_next_iteration <- function(internal) {
   iter <- length(internal$iter_list)
   converged <- internal$iter_list[[iter]]$converged

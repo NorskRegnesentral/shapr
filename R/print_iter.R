@@ -1,4 +1,11 @@
+#' Prints iterative information
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
+#' @keywords internal
 print_iter <- function(internal, print_iter_info, print_shapleyres) {
+  # TODO: print_iter_info, print_shapleyres will be replaced by verbose extracted from internal
   iter <- length(internal$iter_list) - 1 # This function is called after the preparation of the next iteration
 
   converged <- internal$iter_list[[iter]]$converged

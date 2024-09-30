@@ -98,7 +98,7 @@
 #' @param adaptive Logical.
 #' If `TRUE` (default), Shapley values are estimated adaptively in an iterative manner.
 #' This provides sufficiently accurate Shapley value estimates faster.
-#' First an initial number of coalitions is sampled, then boostrapping is used to estimate the variance of the Shapley
+#' First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 #' values.
 #' A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
 #' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -127,7 +127,7 @@
 #' probability that they are sampled at least once.
 #' This method is preferred as it has performed the best in simulation studies.
 #'
-#' @param prev_shapr_object Object or String.
+#' @param prev_shapr_object `shapr` object or string.
 #' If an object of class `shapr` is provided or string with a path to where intermediate results are strored,
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
@@ -155,7 +155,7 @@
 #' [future::future] and [progressr::progressr] packages. See the examples below.
 #' For adaptive estimation (`adaptive=TRUE`), intermediate results may also be printed to the console
 #' (according to the `verbose` argument).
-#' Moreover, the intermediate results are written to disk. and the v(S) values are computed in batch mode.
+#' Moreover, the intermediate results are written to disk.
 #' This combined with adaptive estimation with (optional) intermediate results printed to the console (and temporary
 #' written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 #' in a memory friendly manner.
@@ -173,6 +173,11 @@
 #'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 #'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
 #'   \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion}{MSEv evaluation section in the vignette for details}.}
+#'   \item{timing}{List containing timing information for the different parts of the computation.
+#'   `init_time` and `end_time` gives the time stamps for the start and end of the computation.
+#'   `main_timing_secs` gives the time in seconds for the main computations.
+#'   `iter_timing_secs` gives for each iteration of the adaptive estimation, the time spent on the different parts
+#'   adaptive estimation routine.}
 #' }
 #'
 #' @examples
@@ -455,6 +460,11 @@ explain <- function(model,
   return(output)
 }
 
+#' Cleans out certain output arguments to allow perfect reproducability of the output
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
 #' @keywords internal
 #' @author Lars Henry Berge Olsen, Martin Jullum
 testing_cleanup <- function(output) {

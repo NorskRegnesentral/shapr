@@ -1,5 +1,5 @@
 
-#' Set up the kernelSHAP framwork
+#' Set up the kernelSHAP framework
 #'
 #' @inheritParams default_doc_explain
 #'

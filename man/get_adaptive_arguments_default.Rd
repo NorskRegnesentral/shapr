@@ -20,7 +20,8 @@ get_adaptive_arguments_default(
 )
 }
 \arguments{
-\item{internal}{Not used.}
+\item{internal}{List.
+Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
 \item{initial_n_coalitions}{Integer. Number of coalitions to use in the first estimation iteration.}
 

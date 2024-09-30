@@ -1,12 +1,14 @@
 #' Computes `v(S)` for all features subsets `S`.
 #'
+#' @inheritParams default_doc_explain
 #' @inheritParams default_doc
-#' @inheritParams explain
 #'
 #' @param method Character
 #' Indicates whether the lappy method (default) or loop method should be used.
+#' This is only used for testing purposes.
 #'
 #' @export
+#' @keywords internal
 compute_vS <- function(internal, model, predict_model, method = "future") {
   iter <- length(internal$iter_list)
 

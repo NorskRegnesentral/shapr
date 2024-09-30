@@ -97,7 +97,8 @@ setup_approach(internal, ...)
 )
 }
 \arguments{
-\item{internal}{Not used.}
+\item{internal}{List.
+Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
 \item{...}{\code{approach}-specific arguments. See below.}
 
