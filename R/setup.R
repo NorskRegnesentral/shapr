@@ -1123,9 +1123,9 @@ get_adaptive_arguments_default <- function(internal,
                                            initial_n_coalitions = ceiling(
                                              min(
                                                200,
-                                               max(
-                                                 internal$parameters$n_features,
-                                                 (2^internal$parameters$n_features) / 10
+                                               max(5,
+                                                   internal$parameters$n_features,
+                                                   (2^internal$parameters$n_features) / 10
                                                )
                                              )
                                            ),
