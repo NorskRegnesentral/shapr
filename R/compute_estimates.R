@@ -1,11 +1,11 @@
-#' Computes the Shapley values given `v(S)`
+#' Computes the the Shapley values and their standard deviation given the `v(S)`
 #'
-#' @inherit explain
-#' @inheritParams default_doc
+#' @inheritParams default_doc_explain
 #' @param vS_list List
 #' Output from [compute_vS()]
 #'
 #' @export
+#' @keywords internal
 compute_estimates <- function(internal, vS_list) {
 
   internal$timing_list$compute_vS <- Sys.time()

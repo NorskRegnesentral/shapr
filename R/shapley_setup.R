@@ -1,3 +1,9 @@
+
+#' Set up the kernelSHAP framwork
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
 #' @keywords internal
 shapley_setup <- function(internal) {
   n_shapley_values <- internal$parameters$n_shapley_values

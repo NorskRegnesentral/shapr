@@ -26,8 +26,12 @@ the total number of unique features, respectively. Note that \code{m = ncol(x_tr
 \item{x_explain}{Numeric matrix}
 
 \item{n_MC_samples}{Positive integer.
-Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation. See also details.}
+Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
+from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
+For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
+Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+\code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 }
 \value{
 data.table

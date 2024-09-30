@@ -23,7 +23,7 @@ then \code{index_features} must be provided.}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
-If \code{NULL} the seed will be inherited from the calling environment.}
+If \code{NULL} no seed is set in the calling environment.}
 
 \item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
 If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.

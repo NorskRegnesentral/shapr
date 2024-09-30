@@ -48,7 +48,10 @@ All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empiri
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
 The two regression approaches can not be combined with any other approach. See details for more information.}
 
-\item{paired_shap_sampling}{TODO: document}
+\item{paired_shap_sampling}{Logical.
+If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
+That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
+computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
 
 \item{prediction_zero}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
@@ -64,7 +67,16 @@ The quantity refers to the number of unique feature coalitions if \code{group = 
 and group coalitions if \code{group != NULL}.
 \code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
-\item{adaptive}{TODO: document}
+\item{adaptive}{Logical.
+If \code{TRUE} (default), Shapley values are estimated adaptively in an iterative manner.
+This provides sufficiently accurate Shapley value estimates faster.
+First an initial number of coalitions is sampled, then boostrapping is used to estimate the variance of the Shapley
+values.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
+coalitions.
+The process is repeated until the variances are below the threshold.
+Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_arguments}.}
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
@@ -73,30 +85,33 @@ the number of groups. The list element contains character vectors with the featu
 in each of the different groups.}
 
 \item{n_MC_samples}{Positive integer.
-Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation. See also details.}
+Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
+from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
+For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
+Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+\code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
-If \code{NULL} the seed will be inherited from the calling environment.}
+If \code{NULL} no seed is set in the calling environment.}
 
 \item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
-(in \code{internal$output})}
+Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in \code{internal$output}).
+Not used for \code{approach="regression_separate"} or \code{approach="regression_surrogate"}.}
 
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
-(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
-models.)
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported models.)
 The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
-and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
+and a data.frame/data.table to compute predictions for.
+The function must give the prediction as a numeric vector.
 \code{NULL} (the default) uses functions specified internally.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{get_model_specs}{Function.
 An optional function for checking model/data consistency when \code{model} is not natively supported.
-(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
-models.)
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported models.)
 The function takes \code{model} as argument and provides a list with 3 elements:
 \describe{
 \item{labels}{Character vector with the names of each feature.}
@@ -107,23 +122,36 @@ If \code{NULL} (the default) internal functions are used for natively supported 
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
-\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the coalitions
-uniformly when computing the MSEv criterion. If \code{FALSE}, then the function use the Shapley kernel weights to
-weight the coalitions when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-sampling frequency when not all coalitions are considered.}
+\item{MSEv_uniform_comb_weights}{Logical.
+If \code{TRUE} (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
+If \code{FALSE}, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
+criterion.
+Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
 \item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
 If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
 Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
-\item{adaptive_arguments}{TODO: document}
+\item{adaptive_arguments}{Named list.
+Specifices the arguments for the adaptive procedure.
+See \code{\link[=get_adaptive_arguments_default]{get_adaptive_arguments_default()}} for description of the arguments and their default values.}
 
 \item{print_shapleyres}{TODO: move to verbose}
 
 \item{print_iter_info}{TODO: move to verbose}
 
-\item{shapley_reweighting}{TODO: document}
+\item{shapley_reweighting}{String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+the randomness and thereby the variance of the Shapley value estimates.
+One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
+\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
+\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+\code{'on_all'} means the original sampling probabilities are used for all coalitions.
+\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once. This}
 
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
@@ -248,58 +276,38 @@ This is useful if the underlying time series are scaled between 0 and 1, for exa
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-\item{shapley_values}{data.table with the estimated Shapley values}
-\item{internal}{List with the different parameters, data and functions used internally}
+\item{shapley_values}{data.table with the estimated Shapley values with explained observation in the rows and
+features along the columns.
+The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{prediction_zero})}
+\item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
+Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
+definition 0 when all coalitions is used.
+Only present when \code{adaptive = TRUE} and \code{adaptive_arguments$compute_sd=TRUE}.}
+\item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
-\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach.}
+\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
+\href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion}{MSEv evaluation section in the vignette for details}.}
 }
-
-\code{shapley_values} is a data.table where the number of rows equals
-the number of observations you'd like to explain, and the number of columns equals \code{m +1},
-where \code{m} equals the total number of features in your model.
-
-If \code{shapley_values[i, j + 1] > 0} it indicates that the j-th feature increased the prediction for
-the i-th observation. Likewise, if \code{shapley_values[i, j + 1] < 0} it indicates that the j-th feature
-decreased the prediction for the i-th observation.
-The magnitude of the value is also important to notice. E.g. if \code{shapley_values[i, k + 1]} and
-\code{shapley_values[i, j + 1]} are greater than \code{0}, where \code{j != k}, and
-\code{shapley_values[i, k + 1]} > \code{shapley_values[i, j + 1]} this indicates that feature
-\code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
-feature was larger than the j-th feature.
-
-The first column in \code{dt}, called \code{none}, is the prediction value not assigned to any of the features
-(\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
-It's equal for all observations and set by the user through the argument \code{prediction_zero}.
-The difference between the prediction and \code{none} is distributed among the other features.
-In theory this value should be the expected prediction without conditioning on any features.
-Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable.
 }
 \description{
 Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
 }
 \details{
-The most important thing to notice is that \code{shapr} has implemented eight different
-Monte Carlo-based approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"vaeac"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
-\code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"},
-and see the separate vignette on the regression-based approaches for more information.
-In addition, the user also has the option of combining the different Monte Carlo-based approaches.
-E.g., if you're in a situation where you have trained a model that consists of 10 features,
-and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
-the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
-if you condition on more than 5 features this can be done by simply passing
-\code{approach = c("gaussian", rep("empirical", 4), rep("copula", 4))}. If
-\code{"approach[i]" = "gaussian"} means that you'd like to use the \code{"gaussian"} approach
-when conditioning on \code{i} features. Conditioning on all features needs no approach as that is given
-by the complete prediction itself, and should thus not be part of the vector.
+The \code{shapr} package implements kernelSHAP estimation of dependence-aware Shapley values with
+eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
+\code{"empirical"}, \code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"vaeac"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
+\code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"}.
+It is also possible to combine the different approaches, see the vignettes for more information.
 
-For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
-from the leaf node (see an exception related to the \code{sample} argument).
-For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-\code{empirical.eta} argument.
+The package is allows for parallelized computation with progress updates through the tightly connected
+\link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
+For adaptive estimation (\code{adaptive=TRUE}), intermediate results may also be printed to the console
+(according to the \code{verbose} argument).
+Moreover, the intermediate results are written to disk. and the v(S) values are computed in batch mode.
+This combined with adaptive estimation with (optional) intermediate results printed to the console (and temporary
+written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
+in a memory friendly manner.
 }
 \examples{
 
@@ -322,6 +330,14 @@ model <- lm(lm_formula, data = data_train)
 
 # Explain predictions
 p <- mean(data_train[, y_var])
+
+# (Optionally) enable parallelization via the future package
+library(future)
+future::plan(multisession, workers = 2)
+
+# (Optionally) enable progress updates within every iteration via the progressr package
+library(progressr)
+handlers(global = TRUE)
 
 # Empirical approach
 explain1 <- explain(

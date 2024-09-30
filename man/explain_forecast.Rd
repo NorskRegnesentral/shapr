@@ -94,30 +94,33 @@ the number of groups. The list element contains character vectors with the featu
 in each of the different groups.}
 
 \item{n_MC_samples}{Positive integer.
-Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation. See also details.}
+Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
+from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
+For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
+Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+\code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
-If \code{NULL} the seed will be inherited from the calling environment.}
+If \code{NULL} no seed is set in the calling environment.}
 
 \item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
-(in \code{internal$output})}
+Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in \code{internal$output}).
+Not used for \code{approach="regression_separate"} or \code{approach="regression_surrogate"}.}
 
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
-(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
-models.)
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported models.)
 The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
-and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
+and a data.frame/data.table to compute predictions for.
+The function must give the prediction as a numeric vector.
 \code{NULL} (the default) uses functions specified internally.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{get_model_specs}{Function.
 An optional function for checking model/data consistency when \code{model} is not natively supported.
-(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
-models.)
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported models.)
 The function takes \code{model} as argument and provides a list with 3 elements:
 \describe{
 \item{labels}{Character vector with the names of each feature.}
@@ -218,32 +221,18 @@ This is useful if the underlying time series are scaled between 0 and 1, for exa
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-\item{shapley_values}{data.table with the estimated Shapley values}
-\item{internal}{List with the different parameters, data and functions used internally}
+\item{shapley_values}{data.table with the estimated Shapley values with explained observation in the rows and
+features along the columns.
+The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{prediction_zero})}
+\item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
+Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
+definition 0 when all coalitions is used.
+Only present when \code{adaptive = TRUE} and \code{adaptive_arguments$compute_sd=TRUE}.}
+\item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
-\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach.}
+\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
+\href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion}{MSEv evaluation section in the vignette for details}.}
 }
-
-\code{shapley_values} is a data.table where the number of rows equals
-the number of observations you'd like to explain, and the number of columns equals \code{m +1},
-where \code{m} equals the total number of features in your model.
-
-If \code{shapley_values[i, j + 1] > 0} it indicates that the j-th feature increased the prediction for
-the i-th observation. Likewise, if \code{shapley_values[i, j + 1] < 0} it indicates that the j-th feature
-decreased the prediction for the i-th observation.
-The magnitude of the value is also important to notice. E.g. if \code{shapley_values[i, k + 1]} and
-\code{shapley_values[i, j + 1]} are greater than \code{0}, where \code{j != k}, and
-\code{shapley_values[i, k + 1]} > \code{shapley_values[i, j + 1]} this indicates that feature
-\code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
-feature was larger than the j-th feature.
-
-The first column in \code{dt}, called \code{none}, is the prediction value not assigned to any of the features
-(\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
-It's equal for all observations and set by the user through the argument \code{prediction_zero}.
-The difference between the prediction and \code{none} is distributed among the other features.
-In theory this value should be the expected prediction without conditioning on any features.
-Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable.
 }
 \description{
 Computes dependence-aware Shapley values for observations in \code{explain_idx} from the specified

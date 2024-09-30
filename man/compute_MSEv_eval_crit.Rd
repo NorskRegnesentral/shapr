@@ -21,10 +21,11 @@ estimates. The first column is assumed to be named \code{id_coalition} and conta
 The last row is assumed to be the full coalition, i.e., it contains the predicted responses for the observations
 which are to be explained.}
 
-\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the coalitions
-uniformly when computing the MSEv criterion. If \code{FALSE}, then the function use the Shapley kernel weights to
-weight the coalitions when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-sampling frequency when not all coalitions are considered.}
+\item{MSEv_uniform_comb_weights}{Logical.
+If \code{TRUE} (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
+If \code{FALSE}, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
+criterion.
+Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
 \item{MSEv_skip_empty_full_comb}{Logical. If \code{TRUE} (default), we exclude the empty and grand
 coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical

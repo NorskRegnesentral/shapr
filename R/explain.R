@@ -42,30 +42,33 @@
 #' in each of the different groups.
 #'
 #' @param n_MC_samples Positive integer.
-#' Indicating the maximum number of samples to use in the
-#' Monte Carlo integration for every conditional expectation. See also details.
+#' Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+#' For `approach="ctree"`, `n_MC_samples` corresponds to the number of samples
+#' from the leaf node (see an exception related to the `ctree.sample` argument [shapr::setup_approach.ctree()]).
+#' For `approach="empirical"`, `n_MC_samples` is  the \eqn{K} parameter in equations (14-15) of
+#' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+#' `empirical.eta` argument [shapr::setup_approach.empirical()].
 #'
 #' @param seed Positive integer.
 #' Specifies the seed before any randomness based code is being run.
-#' If `NULL` the seed will be inherited from the calling environment.
+#' If `NULL` no seed is set in the calling environment.
 #'
 #' @param keep_samp_for_vS Logical.
-#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
-#' (in `internal$output`)
+#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal$output`).
+#' Not used for `approach="regression_separate"` or `approach="regression_surrogate"`.
 #'
 #' @param predict_model Function.
 #' The prediction function used when `model` is not natively supported.
-#' (Run [get_supported_models()] for a list of natively supported
-#' models.)
+#' (Run [get_supported_models()] for a list of natively supported models.)
 #' The function must have two arguments, `model` and `newdata` which specify, respectively, the model
-#' and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
+#' and a data.frame/data.table to compute predictions for.
+#' The function must give the prediction as a numeric vector.
 #' `NULL` (the default) uses functions specified internally.
 #' Can also be used to override the default function for natively supported model classes.
 #'
 #' @param get_model_specs Function.
 #' An optional function for checking model/data consistency when `model` is not natively supported.
-#' (Run [get_supported_models()] for a list of natively supported
-#' models.)
+#' (Run [get_supported_models()] for a list of natively supported models.)
 #' The function takes `model` as argument and provides a list with 3 elements:
 #' \describe{
 #'   \item{labels}{Character vector with the names of each feature.}
@@ -76,28 +79,59 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
-#' @param MSEv_uniform_comb_weights Logical. If `TRUE` (default), then the function weights the coalitions
-#' uniformly when computing the MSEv criterion. If `FALSE`, then the function use the Shapley kernel weights to
-#' weight the coalitions when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-#' sampling frequency when not all coalitions are considered.
+#' @param MSEv_uniform_comb_weights Logical.
+#' If `TRUE` (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
+#' If `FALSE`, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
+#' criterion.
+#' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
 #'
 #' @param verbose An integer specifying the level of verbosity. If `0`, `shapr` will stay silent.
 #' If `1`, it will print information about performance. If `2`, some additional information will be printed out.
 #' Use `0` (default) for no verbosity, `1` for low verbose, and `2` for high verbose.
 #' TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.
 #'
-#' @param paired_shap_sampling TODO: document
+#' @param paired_shap_sampling Logical.
+#' If `TRUE` (default), paired versions of all sampled coalitions are also included in the computation.
+#' That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
+#' computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.
 #'
-#' @param adaptive TODO: document
+#' @param adaptive Logical.
+#' If `TRUE` (default), Shapley values are estimated adaptively in an iterative manner.
+#' This provides sufficiently accurate Shapley value estimates faster.
+#' First an initial number of coalitions is sampled, then boostrapping is used to estimate the variance of the Shapley
+#' values.
+#' A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+#' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
+#' coalitions.
+#' The process is repeated until the variances are below the threshold.
+#' Specifics related to the adaptive process and convergence criterion are set through `adaptive_arguments`.
 #'
-#' @param adaptive_arguments TODO: document
-#'
+#' @param adaptive_arguments Named list.
+#' Specifices the arguments for the adaptive procedure.
+#' See [shapr::get_adaptive_arguments_default()] for description of the arguments and their default values.
+
 #' @param print_shapleyres TODO: move to verbose
 #'
 #' @param print_iter_info TODO: move to verbose
 #'
-#' @param shapley_reweighting TODO: document
+#' @param shapley_reweighting String.
+#' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+#' the randomness and thereby the variance of the Shapley value estimates.
+#' One of `'none'`, `'on_N'`, `'on_all'`, `'on_all_cond'` (default).
+#' `'none'` means no reweighting, i.e. the sampling frequency weights are used as is.
+#' `'on_coal_size'` means the sampling frequencies are averaged over all coalitions of the same size.
+#' `'on_N'` means the sampling frequencies are averaged over all coalitions with the same original sampling
+#' probabilities.
+#' `'on_all'` means the original sampling probabilities are used for all coalitions.
+#' `'on_all_cond'` means the original sampling probabilities are used for all coalitions, while adjusting for the
+#' probability that they are sampled at least once.
+#' This method is preferred as it has performed the best in simulation studies.
 #'
+#' @param prev_shapr_object Object or String.
+#' If an object of class `shapr` is provided or string with a path to where intermediate results are strored,
+#' then the function will use the previous object to continue the computation.
+#' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
+#' want to continue the adaptive estimation. See the vignette for examples.
 #' @param ... Further arguments passed to specific approaches
 #'
 #' @inheritDotParams setup_approach.empirical
@@ -111,56 +145,35 @@
 #' @inheritDotParams setup_approach.regression_surrogate
 #' @inheritDotParams setup_approach.timeseries
 #'
-#' @details The most important thing to notice is that `shapr` has implemented eight different
-#' Monte Carlo-based approaches for estimating the conditional distributions of the data, namely `"empirical"`,
-#' `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
-#' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`,
-#' and see the separate vignette on the regression-based approaches for more information.
-#' In addition, the user also has the option of combining the different Monte Carlo-based approaches.
-#' E.g., if you're in a situation where you have trained a model that consists of 10 features,
-#' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
-#' the `"empirical"` approach if you condition on 2-5 features, and `"copula"` version
-#' if you condition on more than 5 features this can be done by simply passing
-#' `approach = c("gaussian", rep("empirical", 4), rep("copula", 4))`. If
-#' `"approach[i]" = "gaussian"` means that you'd like to use the `"gaussian"` approach
-#' when conditioning on `i` features. Conditioning on all features needs no approach as that is given
-#' by the complete prediction itself, and should thus not be part of the vector.
+#' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
+#' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
+#' `"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
+#' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
+#' It is also possible to combine the different approaches, see the vignettes for more information.
 #'
-#' For `approach="ctree"`, `n_MC_samples` corresponds to the number of samples
-#' from the leaf node (see an exception related to the `sample` argument).
-#' For `approach="empirical"`, `n_MC_samples` is  the \eqn{K} parameter in equations (14-15) of
-#' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-#' `empirical.eta` argument.
-#'
+#' The package is allows for parallelized computation with progress updates through the tightly connected
+#' [future::future] and [progressr::progressr] packages. See the examples below.
+#' For adaptive estimation (`adaptive=TRUE`), intermediate results may also be printed to the console
+#' (according to the `verbose` argument).
+#' Moreover, the intermediate results are written to disk. and the v(S) values are computed in batch mode.
+#' This combined with adaptive estimation with (optional) intermediate results printed to the console (and temporary
+#' written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
+#' in a memory friendly manner.
 #'
 #' @return Object of class `c("shapr", "list")`. Contains the following items:
 #' \describe{
-#'   \item{shapley_values}{data.table with the estimated Shapley values}
-#'   \item{internal}{List with the different parameters, data and functions used internally}
+#'   \item{shapley_values}{data.table with the estimated Shapley values with explained observation in the rows and
+#'   features along the columns.
+#'   The column `none` is the prediction not devoted to any of the features (given by the argument `prediction_zero`)}
+#'   \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
+#'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
+#'   definition 0 when all coalitions is used.
+#'   Only present when `adaptive = TRUE` and `adaptive_arguments$compute_sd=TRUE`.}
+#'   \item{internal}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
-#'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach.}
+#'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
+#'   \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion}{MSEv evaluation section in the vignette for details}.}
 #' }
-#'
-#' `shapley_values` is a data.table where the number of rows equals
-#' the number of observations you'd like to explain, and the number of columns equals `m +1`,
-#' where `m` equals the total number of features in your model.
-#'
-#' If `shapley_values[i, j + 1] > 0` it indicates that the j-th feature increased the prediction for
-#' the i-th observation. Likewise, if `shapley_values[i, j + 1] < 0` it indicates that the j-th feature
-#' decreased the prediction for the i-th observation.
-#' The magnitude of the value is also important to notice. E.g. if `shapley_values[i, k + 1]` and
-#' `shapley_values[i, j + 1]` are greater than `0`, where `j != k`, and
-#' `shapley_values[i, k + 1]` > `shapley_values[i, j + 1]` this indicates that feature
-#' `j` and `k` both increased the value of the prediction, but that the effect of the k-th
-#' feature was larger than the j-th feature.
-#'
-#' The first column in `dt`, called `none`, is the prediction value not assigned to any of the features
-#' (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
-#' It's equal for all observations and set by the user through the argument `prediction_zero`.
-#' The difference between the prediction and `none` is distributed among the other features.
-#' In theory this value should be the expected prediction without conditioning on any features.
-#' Typically we set this value equal to the mean of the response variable in our training data, but other choices
-#' such as the mean of the predictions in the training data are also reasonable.
 #'
 #' @examples
 #'
@@ -183,6 +196,14 @@
 #'
 #' # Explain predictions
 #' p <- mean(data_train[, y_var])
+#'
+#' # (Optionally) enable parallelization via the future package
+#' library(future)
+#' future::plan(multisession, workers = 2)
+#'
+#' # (Optionally) enable progress updates within every iteration via the progressr package
+#' library(progressr)
+#' handlers(global = TRUE)
 #'
 #' # Empirical approach
 #' explain1 <- explain(
