@@ -446,7 +446,6 @@ below.
 ``` r
 library(xgboost)
 library(data.table)
-#> data.table 1.15.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -486,7 +485,6 @@ explanation <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
-#> 
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
@@ -1450,8 +1448,6 @@ same airquality data set as used above.
 
 ``` r
 library(gbm)
-#> Loaded gbm 2.2.2
-#> This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3
 
 formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
 # Fitting a gbm model
@@ -1533,6 +1529,7 @@ explanation_custom_minimal <- explain(
 )
 #> Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
 #> Consistency checks between model and data is therefore disabled.
+#> 
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
@@ -1769,6 +1766,8 @@ ex_further <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Error in check_vs_prev_shapr_object(internal): Convergence reached before estimation start.
+#> Maximum number of iterations reached. Consider increasing `adaptive_arguments$max_iter`.
 
 print(ex_further$internal$parameters$adaptive_arguments$saving_path)
 #> [1] "/tmp/RtmpwjZFOu/shapr_obj_1f6d1468eed09.rds"
@@ -1785,11 +1784,7 @@ ex_even_further <- explain(
   adaptive_arguments = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_further$internal$parameters$adaptive_arguments$saving_path
 )
-#> Note: Feature classes extracted from the model contains NA.
-#> Assuming feature classes from the data are correct.
-#> Success with message:
-#> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-#> and is therefore set to 2^n_features = 32.
+#> Error in gzfile(file, "rb"): cannot open the connection
 ```
 
 ## Explaining a forecasting model using `explain_forecast`
@@ -1868,9 +1863,6 @@ explanation_forecast <- explain_forecast(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 4, 
 #> and is therefore set to 2^n_features = 4.
-#> Registered S3 method overwritten by 'quantmod':
-#>   method            from
-#>   as.zoo.data.frame zoo
 explanation_forecast
 #>    explain_idx horizon    none     Y.1      Y.2
 #>          <int>   <int>   <num>   <num>    <num>

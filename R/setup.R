@@ -130,6 +130,34 @@ setup <- function(x_train,
   return(internal)
 }
 
+get_prev_internal <- function(prev_shapr_object,exclude_parameters = c("max_n_coalitions","adaptive_arguments","seed")){
+  cl <- class(prev_shapr_object)[1]
+
+  if(cl=="character"){
+    internal <- readRDS(file = prev_shapr_object)# Already contains only "parameters" and "iter_list"
+  } else if(cl=="shapr"){
+    internal <- prev_shapr_object$internal[c("parameters","iter_list")]
+  } else{
+    stop("Invalid `shapr_object` passed to explain(). See ?explain for details.")
+  }
+
+  if(length(exclude_parameters)>0){
+    internal$parameters[exclude_parameters] <- NULL
+  }
+
+  iter <- length(internal$iter_list)
+  internal$iter_list[[iter]]$converged <- FALSE # hard setting the convergence parameter
+
+  adaptive <- internal$parameters$adaptive
+
+  if(isFALSE(adaptive)){
+    internal$iter_list[[1]]$converged_max_iter <- FALSE # Allow running non-adaptive estimation further
+  }
+
+  return(internal)
+}
+
+
 #' @keywords internal
 get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, max_n_coalitions, group,
                            n_MC_samples, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,

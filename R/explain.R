@@ -517,24 +517,4 @@ testing_cleanup <- function(output) {
   return(output)
 }
 
-get_prev_internal <- function(prev_shapr_object,exclude_parameters = c("max_n_coalitions","adaptive_arguments","seed")){
-  cl <- class(prev_shapr_object)[1]
-
-  if(cl=="character"){
-    internal <- readRDS(file = prev_shapr_object)# Already contains only "parameters" and "iter_list"
-  } else if(cl=="shapr"){
-    internal <- prev_shapr_object$internal[c("parameters","iter_list")]
-  } else{
-    stop("Invalid `shapr_object` passed to explain(). See ?explain for details.")
-  }
-
-  if(length(exclude_parameters)>0){
-    internal$parameters[exclude_parameters] <- NULL
-  }
-
-  iter <- length(internal$iter_list)
-  internal$iter_list[[iter]]$converged <- FALSE # hard setting the convergence parameter
-
-  return(internal)
-}
 

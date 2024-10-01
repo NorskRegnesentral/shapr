@@ -87,20 +87,20 @@ The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley
 eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
 `"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
 `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
-See [Estimation approaches and plotting functionality](#ex) below for examples. 
+See [Estimation approaches and plotting functionality](#ex) below for examples.
 It is also possible to combine the different approaches, see the [combined approach](#combined).
 
 The package is allows for parallelized computation with progress updates through the tightly connected
 `future` and `progressr` packages, see [Parallelization and progress updates](#paraprog) for details.
 
-Moreover, the default behavior is to estimate the Shapley values adaptively/iteratively, with increasing number of 
-feature coalitions being added, and to stop estimation as the estimated Shapley values has achieved a certain level of 
-stability. 
+Moreover, the default behavior is to estimate the Shapley values adaptively/iteratively, with increasing number of
+feature coalitions being added, and to stop estimation as the estimated Shapley values has achieved a certain level of
+stability.
 More information about this is provided in [Adaptive estimation](#adaptive)
-The above, combined with batch computation of the `v(S)` values enables fast and accurate estimation of the 
+The above, combined with batch computation of the `v(S)` values enables fast and accurate estimation of the
 Shapley values in a memory friendly manner.
 
-The package also provides functionality for computing Shapley values for groups of features, multiple output 
+The package also provides functionality for computing Shapley values for groups of features, multiple output
 time series forecasting models, and custom function explanation, see [Advanced usage](#advanced).
 
 ## Main arguments in `explain`
@@ -949,7 +949,7 @@ plot_MSEv_eval_crit(explanation_list_named) +
 TODO: Edit this text
 If the argument `adaptive=TRUE` (default), the Shapley values are estimated adaptively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley 
+First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -1524,11 +1524,11 @@ plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stop
 ## Continued computation {#cont_computation}
 In this section, we demonstrate how to continue to improve estimation accuracy with additional coalition samples,
 from a previous Shapley value computation based on `shapr::explain()` with the adaptive estimation procedure.
-This can be done either by passing an existing object of class `shapr`, or by passing a string with the path to 
-the intermediately saved results. 
-The latter is found at `SHAPR_OBJ$internal$parameters$adaptive_arguments$saving_path`, defaults to a temporary folder, 
-and is updated after each iteration. 
-This can be particularly handy for long-running computations. 
+This can be done either by passing an existing object of class `shapr`, or by passing a string with the path to
+the intermediately saved results.
+The latter is found at `SHAPR_OBJ$internal$parameters$adaptive_arguments$saving_path`, defaults to a temporary folder,
+and is updated after each iteration.
+This can be particularly handy for long-running computations.
 
 ```{r}
 # First we run the computation with the adaptive estimation procedure for a limited number of coalition samples
@@ -1568,7 +1568,8 @@ ex_init <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p0,
-  max_n_coalitions = 20
+  max_n_coalitions = 20,
+  adaptive = TRUE
 )
 
 # Using the ex_init object to continue the computation with 5 more coalition samples
@@ -1579,6 +1580,7 @@ ex_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = 25,
+  adaptive_arguments = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_init
 )
 
@@ -1593,7 +1595,6 @@ ex_even_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = NULL,
-  adaptive_arguments = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_further$internal$parameters$adaptive_arguments$saving_path
 )
 
