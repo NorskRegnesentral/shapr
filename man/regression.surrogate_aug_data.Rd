@@ -19,7 +19,8 @@ regression.surrogate_aug_data(
 \arguments{
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{iter_results}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
+\code{main_timing_list}, \code{output}, \code{iter_timing_list} and \code{iter_results}.}
 
 \item{x}{Data.table containing the data. Either the training data or the explicands. If \code{x} is the explicands,
 then \code{index_features} must be provided.}

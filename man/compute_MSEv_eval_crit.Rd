@@ -14,7 +14,8 @@ compute_MSEv_eval_crit(
 \arguments{
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{iter_results}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
+\code{main_timing_list}, \code{output}, \code{iter_timing_list} and \code{iter_results}.}
 
 \item{dt_vS}{Data.table of dimension \code{n_coalitions} times \code{n_explain + 1} containing the contribution function
 estimates. The first column is assumed to be named \code{id_coalition} and containing the ids of the coalitions.

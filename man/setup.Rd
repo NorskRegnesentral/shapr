@@ -28,7 +28,7 @@ setup(
   explain_xreg_lags = NULL,
   group_lags = NULL,
   verbose,
-  adaptive = FALSE,
+  adaptive = NULL,
   adaptive_arguments = list(),
   shapley_reweighting = "none",
   is_python = FALSE,
@@ -150,10 +150,11 @@ If \code{1}, it will print information about performance. If \code{2}, some addi
 Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
 TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
-\item{adaptive}{Logical.
-If \code{TRUE} (default), Shapley values are estimated adaptively in an iterative manner.
+\item{adaptive}{Logical or NULL
+If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
+If eventually \code{TRUE}, the Shapley values are estimated adaptively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then boostrapping is used to estimate the variance of the Shapley
+First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -182,7 +183,7 @@ This method is preferred as it has performed the best in simulation studies.}
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
 
-\item{prev_shapr_object}{Object or String.
+\item{prev_shapr_object}{\code{shapr} object or string.
 If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore

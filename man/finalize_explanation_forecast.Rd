@@ -12,7 +12,8 @@ Output from \code{\link[=compute_vS]{compute_vS()}}}
 
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{iter_results}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
+\code{main_timing_list}, \code{output}, \code{iter_timing_list} and \code{iter_results}.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
@@ -28,6 +29,11 @@ Only present when \code{adaptive = TRUE} and \code{adaptive_arguments$compute_sd
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion}{MSEv evaluation section in the vignette for details}.}
+\item{timing}{List containing timing information for the different parts of the computation.
+\code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
+\code{main_timing_secs} gives the time in seconds for the main computations.
+\code{iter_timing_secs} gives for each iteration of the adaptive estimation, the time spent on the different parts
+adaptive estimation routine.}
 }
 }
 \description{
@@ -45,7 +51,7 @@ The package is allows for parallelized computation with progress updates through
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
 For adaptive estimation (\code{adaptive=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).
-Moreover, the intermediate results are written to disk. and the v(S) values are computed in batch mode.
+Moreover, the intermediate results are written to disk.
 This combined with adaptive estimation with (optional) intermediate results printed to the console (and temporary
 written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 in a memory friendly manner.

@@ -12,7 +12,7 @@ explain(
   paired_shap_sampling = TRUE,
   prediction_zero,
   max_n_coalitions = NULL,
-  adaptive = TRUE,
+  adaptive = NULL,
   group = NULL,
   n_MC_samples = 1000,
   seed = 1,
@@ -67,10 +67,11 @@ The quantity refers to the number of unique feature coalitions if \code{group = 
 and group coalitions if \code{group != NULL}.
 \code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
-\item{adaptive}{Logical.
-If \code{TRUE} (default), Shapley values are estimated adaptively in an iterative manner.
+\item{adaptive}{Logical or NULL
+If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
+If eventually \code{TRUE}, the Shapley values are estimated adaptively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then boostrapping is used to estimate the variance of the Shapley
+First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -154,7 +155,7 @@ probabilities.
 probability that they are sampled at least once.
 This method is preferred as it has performed the best in simulation studies.}
 
-\item{prev_shapr_object}{Object or String.
+\item{prev_shapr_object}{\code{shapr} object or string.
 If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
@@ -295,6 +296,11 @@ Only present when \code{adaptive = TRUE} and \code{adaptive_arguments$compute_sd
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion}{MSEv evaluation section in the vignette for details}.}
+\item{timing}{List containing timing information for the different parts of the computation.
+\code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
+\code{main_timing_secs} gives the time in seconds for the main computations.
+\code{iter_timing_secs} gives for each iteration of the adaptive estimation, the time spent on the different parts
+adaptive estimation routine.}
 }
 }
 \description{
@@ -312,7 +318,7 @@ The package is allows for parallelized computation with progress updates through
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
 For adaptive estimation (\code{adaptive=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).
-Moreover, the intermediate results are written to disk. and the v(S) values are computed in batch mode.
+Moreover, the intermediate results are written to disk.
 This combined with adaptive estimation with (optional) intermediate results printed to the console (and temporary
 written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 in a memory friendly manner.

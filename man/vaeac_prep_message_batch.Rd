@@ -9,7 +9,8 @@ vaeac_prep_message_batch(internal, index_features)
 \arguments{
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{iter_results}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
+\code{main_timing_list}, \code{output}, \code{iter_timing_list} and \code{iter_results}.}
 
 \item{index_features}{Positive integer vector. Specifies the id_coalition to
 apply to the present method. \code{NULL} means all coalitions. Only used internally.}

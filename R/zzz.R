@@ -135,7 +135,8 @@
       "coalitions_str",
       "cond",
       "tmp_coalitions",
-      "max_iter"
+      "max_iter",
+      "convergence_tolerance"
     )
   )
 
