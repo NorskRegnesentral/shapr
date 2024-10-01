@@ -13,7 +13,7 @@ get_adaptive_arguments_default(
   convergence_tolerance = 0.02,
   reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
   n_boot_samps = 100,
-  compute_sd = ifelse(internal$parameters$exact, FALSE, TRUE),
+  compute_sd = isTRUE(internal$parameters$adaptive),
   max_batch_size = 10,
   min_n_batches = 10,
   saving_path = tempfile("shapr_obj_", fileext = ".rds")
