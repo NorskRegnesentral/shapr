@@ -53,11 +53,15 @@ prepare_next_iteration <- function(internal) {
       next_iter_list$compute_sd <- TRUE
     }
 
-    next_iter_list$reduction_factor <- ifelse(
-      length(reduction_factor_vec)>=iter,
-      reduction_factor_vec[iter],
-      reduction_factor_vec[length(reduction_factor_vec)]
-    )
+    if(!is.null(reduction_factor_vec[1])){
+      next_iter_list$reduction_factor <- ifelse(
+        length(reduction_factor_vec)>=iter,
+        reduction_factor_vec[iter],
+        reduction_factor_vec[length(reduction_factor_vec)]
+      )
+    } else {
+      next_iter_list$reduction_factor <- NULL
+    }
 
     next_iter_list$n_batches = set_n_batches(next_iter_list$n_coalitions,internal)
 

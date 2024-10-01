@@ -148,11 +148,6 @@ get_prev_internal <- function(prev_shapr_object,exclude_parameters = c("max_n_co
   iter <- length(internal$iter_list)
   internal$iter_list[[iter]]$converged <- FALSE # hard setting the convergence parameter
 
-  adaptive <- internal$parameters$adaptive
-
-  if(isFALSE(adaptive)){
-    internal$iter_list[[1]]$converged_max_iter <- FALSE # Allow running non-adaptive estimation further
-  }
 
   return(internal)
 }
@@ -965,6 +960,12 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
     # Update internal with the iter_list from prev_shapr_object
     internal$iter_list <- prev_iter_list
 
+    # Conveniently allow running non-adaptive estimation one step further
+    if(isFALSE(internal$parameters$adaptive)){
+      internal$parameters$adaptive_arguments$max_iter <- length(internal$iter_list) + 1
+      internal$parameters$adaptive_arguments$reduction_factor_vec <- NULL
+    }
+
     # Update convergence data with NEW adaptive arguments
     internal <- check_convergence(internal)
 
@@ -1201,7 +1202,7 @@ get_adaptive_arguments_default <- function(internal,
                                            convergence_tolerance = 0.02,
                                            reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
                                            n_boot_samps = 100,
-                                           compute_sd = ifelse(internal$parameters$exact, FALSE, TRUE),
+                                           compute_sd = isTRUE(internal$parameters$adaptive),
                                            max_batch_size = 10,
                                            min_n_batches = 10,
                                            saving_path = tempfile("shapr_obj_",fileext=".rds")) {
