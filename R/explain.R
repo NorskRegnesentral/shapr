@@ -410,7 +410,7 @@ explain <- function(model,
 
   internal <- additional_regression_setup(internal, model = model, predict_model = predict_model)
 
-  # Not called for approach = regression_surrogate
+  # Not called for approach %in% c("regression_surrogate","vaeac")
   internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
   internal$main_timing_list <- internal$timing_list
