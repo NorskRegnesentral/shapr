@@ -147,20 +147,14 @@
       and is therefore set to 2^n_features = 32.
       
     Condition
-      Warning in `predict.lm()`:
-      prediction from rank-deficient fit; consider predict(., rankdeficient="NA")
-      Warning in `predict.lm()`:
-      prediction from rank-deficient fit; consider predict(., rankdeficient="NA")
-      Warning in `predict.lm()`:
-      prediction from rank-deficient fit; consider predict(., rankdeficient="NA")
-      Warning in `predict.lm()`:
-      prediction from rank-deficient fit; consider predict(., rankdeficient="NA")
+      Warning in `check_and_set_adaptive()`:
+      Adaptive estimation of Shapley values are not supported for approach = regression_surrogate. Setting adaptive = FALSE.
     Output
          explain_id  none Solar.R    Wind   Temp   Month     Day
               <int> <num>   <num>   <num>  <num>   <num>   <num>
-      1:          1 42.44  -9.668  10.383 14.899 -1.5122 -1.4988
-      2:          2 42.44   2.232  -5.112 -8.094 -1.9599 -0.9455
-      3:          3 42.44   6.498 -23.580 -2.877 -0.5079  2.8989
+      1:          1 42.44  -9.273   9.578 16.536 -1.2690 -2.9707
+      2:          2 42.44   2.623  -5.766 -6.717 -1.4694 -2.5496
+      3:          3 42.44   6.801 -24.090 -1.295  0.1202  0.8953
 
 # output_lm_numeric_lm_surrogate
 

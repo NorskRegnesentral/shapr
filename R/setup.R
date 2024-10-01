@@ -956,7 +956,7 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
 
 check_adaptive_arguments <- function(adaptive_arguments){
 
-  list2env(adaptive_arguments, env = environment())
+  list2env(adaptive_arguments, envir = environment())
 
 
   # initial_n_coalitions
@@ -1055,7 +1055,7 @@ check_adaptive_arguments <- function(adaptive_arguments){
 
 trans_null_adaptive_arguments <- function(adaptive_arguments){
 
-  list2env(adaptive_arguments, env = environment())
+  list2env(adaptive_arguments, envir = environment())
 
   # Translating NULL to always return n_batches = 1 (if just one approach)
   adaptive_arguments$min_n_batches <- ifelse(is.null(min_n_batches),1,min_n_batches)
