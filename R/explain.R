@@ -205,7 +205,7 @@
 #'
 #' # (Optionally) enable parallelization via the future package
 #' if (requireNamespace("future", quietly = TRUE)) {
-#' future::plan(multisession, workers = 2)
+#' future::plan("multisession", workers = 2)
 #' }
 #'
 #' # (Optionally) enable progress updates within every iteration via the progressr package
