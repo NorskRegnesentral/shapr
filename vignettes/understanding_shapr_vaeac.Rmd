@@ -109,9 +109,10 @@ Here we go through how to use the `vaeac` approach on the same data as in the ma
 First we set up the model we want to explain.
 
 
-```r
+``` r
 library(xgboost)
 library(data.table)
+#> data.table 1.15.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -144,9 +145,8 @@ prediction_zero <- mean(y_train)
 We are now going to explain predictions made by the model using the `vaeac` approach.
 
 
-```r
+``` r
 n_MC_samples <- 25 # Low number of MC samples to make the vignette build faster
-n_batches <- 1 # Do all coalitions in one batch
 vaeac.n_vaeacs_initialize <- 2 # Initialize several vaeacs to counteract bad initialization values
 vaeac.epochs <- 4 # The number of training epochs
 
@@ -157,28 +157,30 @@ explanation <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_MC_samples = n_MC_samples,
-  n_batches = n_batches,
   vaeac.epochs = vaeac.epochs,
   vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 ```
 We can look at the Shapley values.
 
 
-```r
+``` r
 # Printing and ploting the Shapley values.
 # See ?shapr::explain for interpretation of the values.
 print(explanation$shapley_values)
-#>      none Solar.R    Wind     Temp    Month
-#>     <num>   <num>   <num>    <num>    <num>
-#> 1: 43.086  6.1207  3.1430 -18.6779 -2.88614
-#> 2: 43.086 -2.0779 -2.5548 -20.1182  0.69569
-#> 3: 43.086  3.0385 -5.5121 -18.2575 -2.55871
-#> 4: 43.086  3.0009 -4.7220  -8.9452 -3.92486
-#> 5: 43.086 -1.1022 -4.4319 -13.5459 -5.29567
-#> 6: 43.086  3.9320 -9.8445 -11.9489 -3.56018
+#>    explain_id   none  Solar.R      Wind     Temp    Month
+#>         <int>  <num>    <num>     <num>    <num>    <num>
+#> 1:          1 43.086  4.35827  -0.49487 -16.7173  0.55352
+#> 2:          2 43.086 -2.06968  -2.76668 -17.3760 -1.84287
+#> 3:          3 43.086  1.24259  -5.05865 -18.7919 -0.68187
+#> 4:          4 43.086  5.20834 -10.03741  -8.4807 -1.28136
+#> 5:          5 43.086  0.22127  -3.05847 -17.9177 -3.62080
+#> 6:          6 43.086  4.25576  -9.58514 -18.7123  2.62017
 plot(explanation)
 ```
 
@@ -197,7 +199,7 @@ that it loads a pretrained `vaeac` model instead of training it from scratch.
 In this example, we extract the trained `vaeac` model from the previous example and send it to `explain()`.
 
 
-```r
+``` r
 # Send the pre-trained vaeac model
 expl_pretrained_vaeac <- explain(
   model = model,
@@ -205,7 +207,6 @@ expl_pretrained_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
   n_MC_samples = n_MC_samples,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
@@ -213,6 +214,9 @@ expl_pretrained_vaeac <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 
 # Check that this version provides the same Shapley values
 all.equal(explanation$shapley_values, expl_pretrained_vaeac$shapley_values)
@@ -226,7 +230,7 @@ model on the computer but not the whole `explanation` object. The possible save 
 a message that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 
-```r
+``` r
 # Call `explanation$internal$parameters$vaeac$model` to see possible vaeac models. We use `best` below.
 # send the pre-trained vaeac path
 expl_pretrained_vaeac_path <- explain(
@@ -235,7 +239,6 @@ expl_pretrained_vaeac_path <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
   n_MC_samples = n_MC_samples,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac$models$best
@@ -243,6 +246,9 @@ expl_pretrained_vaeac_path <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 
 # Check that this version provides the same Shapley values
 all.equal(explanation$shapley_values, expl_pretrained_vaeac_path$shapley_values)
@@ -251,22 +257,19 @@ all.equal(explanation$shapley_values, expl_pretrained_vaeac_path$shapley_values)
 
 
 
-## Specified n_coalitions and more batches {#n_coalitions}
+## Specified n_coalitions {#n_coalitions}
 
-In this section, we discuss two general `shapr` parameters in the `explain()` function
-that are method independent, namely, `n_coalitions` and `n_batches`.
+In this section, we discuss a general `shapr` parameter in the `explain()` function
+that is method independent, namely, `n_coalitions`.
 The user can limit the Shapley value computations to only a subset of coalitions by setting the
-`n_coalitions` parameter to a value lower than $2^{n_\text{features}}$. To lower the memory
-usage, the user can split the coalitions into several batches by setting `n_batches` to a desired
-number. In this example, we set `n_batches = 5` and `n_coalitions = 10` which is less than
-the maximum of `16`.
+`n_coalitions` parameter to a value lower than $2^{n_\text{features}}$.
 
 Note that we do not need to train a new `vaeac` model as we can use the one above trained on
 all `16` coalitions as we are now only using a subset of them. This is not applicable the other
 way around.
 
 
-```r
+``` r
 # send the pre-trained vaeac path
 expl_batches_combinations <- explain(
   model = model,
@@ -275,7 +278,6 @@ expl_batches_combinations <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_coalitions = 10,
-  n_batches = 5,
   n_MC_samples = n_MC_samples,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
@@ -283,52 +285,38 @@ expl_batches_combinations <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 
 # Gives different Shapley values as the latter one are only based on a subset of coalitions
 plot_SV_several_approaches(list("Original" = explanation, "Other combi." = expl_batches_combinations))
 ```
 
-![](figure_vaeac/check-n_coalitions-and-more-batches-1.png)
+![](figure_vaeac/check-n_coalitions-1.png)
 
-```r
-# Here we can see that the samples coalitions are in different batches and have different weights
-expl_batches_combinations$internal$objects$X
-#> Key: <id_coalition>
-#> Index: <approach>
-#>     id_coalition features n_features     N shapley_weight approach batch
-#>              <int>   <list>      <int> <int>          <int>   <char> <num>
-#>  1:              1                   0     1        1000000     <NA>    NA
-#>  2:              2        3          1     4              1    vaeac     1
-#>  3:              3        4          1     4              1    vaeac     3
-#>  4:              4        2          1     4              1    vaeac     2
-#>  5:              5      2,3          2     6              2    vaeac     5
-#>  6:              6      1,4          2     6              1    vaeac     2
-#>  7:              7    1,3,4          3     4              2    vaeac     5
-#>  8:              8    2,3,4          3     4              1    vaeac     4
-#>  9:              9    1,2,3          3     4              1    vaeac     4
-#> 10:             10  1,2,3,4          4     1        1000000     <NA>     1
+``` r
 
 # Can compare that to the situation where we have exact computations (i.e., include all coalitions)
 explanation$internal$objects$X
-#> Key: <id_coalition>
-#>     id_coalition features n_features     N shapley_weight approach batch
-#>              <int>   <list>      <int> <int>          <num>   <char> <num>
-#>  1:              1                   0     1       1.00e+06     <NA>    NA
-#>  2:              2        1          1     4       2.50e-01    vaeac     1
-#>  3:              3        2          1     4       2.50e-01    vaeac     1
-#>  4:              4        3          1     4       2.50e-01    vaeac     1
-#>  5:              5        4          1     4       2.50e-01    vaeac     1
-#>  6:              6      1,2          2     6       1.25e-01    vaeac     1
-#>  7:              7      1,3          2     6       1.25e-01    vaeac     1
-#>  8:              8      1,4          2     6       1.25e-01    vaeac     1
-#>  9:              9      2,3          2     6       1.25e-01    vaeac     1
-#> 10:             10      2,4          2     6       1.25e-01    vaeac     1
-#> 11:             11      3,4          2     6       1.25e-01    vaeac     1
-#> 12:             12    1,2,3          3     4       2.50e-01    vaeac     1
-#> 13:             13    1,2,4          3     4       2.50e-01    vaeac     1
-#> 14:             14    1,3,4          3     4       2.50e-01    vaeac     1
-#> 15:             15    2,3,4          3     4       2.50e-01    vaeac     1
-#> 16:             16  1,2,3,4          4     1       1.00e+06     <NA>     1
+#>     id_coalition coalitions coalition_size     N shapley_weight sample_freq features approach
+#>            <int>     <list>          <int> <int>          <num>      <lgcl>   <list>   <char>
+#>  1:            1                         0     1       1.00e+06          NA             vaeac
+#>  2:            2          1              1     4       2.50e-01          NA        1    vaeac
+#>  3:            3          2              1     4       2.50e-01          NA        2    vaeac
+#>  4:            4          3              1     4       2.50e-01          NA        3    vaeac
+#>  5:            5          4              1     4       2.50e-01          NA        4    vaeac
+#>  6:            6        1,2              2     6       1.25e-01          NA      1,2    vaeac
+#>  7:            7        1,3              2     6       1.25e-01          NA      1,3    vaeac
+#>  8:            8        1,4              2     6       1.25e-01          NA      1,4    vaeac
+#>  9:            9        2,3              2     6       1.25e-01          NA      2,3    vaeac
+#> 10:           10        2,4              2     6       1.25e-01          NA      2,4    vaeac
+#> 11:           11        3,4              2     6       1.25e-01          NA      3,4    vaeac
+#> 12:           12      1,2,3              3     4       2.50e-01          NA    1,2,3    vaeac
+#> 13:           13      1,2,4              3     4       2.50e-01          NA    1,2,4    vaeac
+#> 14:           14      1,3,4              3     4       2.50e-01          NA    1,3,4    vaeac
+#> 15:           15      2,3,4              3     4       2.50e-01          NA    2,3,4    vaeac
+#> 16:           16    1,2,3,4              4     1       1.00e+06          NA  1,2,3,4    vaeac
 ```
 
 Note that if we train a `vaeac` model from scratch with the setup above, then the `vaeac` model will not use
@@ -337,7 +325,7 @@ model is only trained on the specified set of coalitions. In this case, it will 
 `n_coalitions - 2` sampled coalitions. The minus two is because the `vaeac` model will
 not train on the empty and grand coalitions as they are not needed in the Shapley value computations.
 
-```r
+``` r
 expl_batches_combinations_2 <- explain(
   model = model,
   x_explain = x_explain,
@@ -345,7 +333,6 @@ expl_batches_combinations_2 <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_coalitions = 10,
-  n_batches = 1,
   n_MC_samples = n_MC_samples,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.epochs = 3,
@@ -353,22 +340,61 @@ expl_batches_combinations_2 <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 #> Setting up the `vaeac` approach.
 #> Training the `vaeac` model with the provided parameters from scratch on CPU.
-#> Using 'specified_masks_mask_generator' with '8' coalitions.
+#> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
 #> The vaeac model contains 17032 trainable parameters.
 #> Initializing vaeac number 1 of 1.
-#> Best vaeac inititalization was number 1 (of 1) with a training VLB = -6.451 after 2 epochs. Continue to train this inititalization.
+#> Best vaeac inititalization was number 1 (of 1) with a training VLB = -6.593 after 2 epochs. Continue to train this inititalization.
 #> Saving `best` vaeac model at epoch 3.
 #> Saving `best_running` vaeac model at epoch 3.
 #> Saving `last` vaeac model at epoch 3.
 #> 
 #> Results of the `vaeac` training process:
-#> Best epoch:             3. 	VLB = -4.824 	IWAE = -3.252 	IWAE_running = -3.540
-#> Best running avg epoch: 3. 	VLB = -4.824 	IWAE = -3.252 	IWAE_running = -3.540
-#> Last epoch:             3. 	VLB = -4.824 	IWAE = -3.252 	IWAE_running = -3.540
+#> Best epoch:             3. 	VLB = -4.688 	IWAE = -3.124 	IWAE_running = -3.465
+#> Best running avg epoch: 3. 	VLB = -4.688 	IWAE = -3.124 	IWAE_running = -3.465
+#> Last epoch:             3. 	VLB = -4.688 	IWAE = -3.124 	IWAE_running = -3.465
 #> Done with setting up the `vaeac` approach.
-#> Generating Monte Carlo samples using `vaeac` for batch 1 of 1.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
@@ -390,7 +416,7 @@ are randomly selected for each observation in the batch. The training time when 
 comparison to random sampling due to more complex implementation.
 
 
-```r
+``` r
 expl_paired_sampling_TRUE <- explain(
   model = model,
   x_explain = x_explain,
@@ -398,13 +424,15 @@ expl_paired_sampling_TRUE <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_MC_samples = n_MC_samples,
-  n_batches = n_batches,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.extra_parameters = list(vaeac.paired_sampling = TRUE)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 
 expl_paired_sampling_FALSE <- explain(
   model = model,
@@ -413,20 +441,23 @@ expl_paired_sampling_FALSE <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_MC_samples = n_MC_samples,
-  n_batches = n_batches,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.extra_parameters = list(vaeac.paired_sampling = FALSE)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> 
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 ```
 
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
 We do this by using the `vaeac_plot_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
 respectively.
 
-```r
+``` r
 explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE,
                          "Paired samp." = expl_paired_sampling_TRUE)
 vaeac_plot_eval_crit(explanation_list, plot_type = "criterion")
@@ -434,7 +465,7 @@ vaeac_plot_eval_crit(explanation_list, plot_type = "criterion")
 
 ![](figure_vaeac/paired-sampling-plotting-1.png)
 
-```r
+``` r
 plot_MSEv_eval_crit(explanation_list)
 ```
 
@@ -443,14 +474,14 @@ plot_MSEv_eval_crit(explanation_list)
 By looking at the time, we see that the paired version takes (a bit) longer time in the `setup_computation`
 phase, that is, in the training phase.
 
-```r
+``` r
 rbind(
-  "Paired" = expl_paired_sampling_TRUE$timing$timing_secs,
-  "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
+  "Paired" = expl_paired_sampling_TRUE$timing$main_timing_secs,
+  "Regular" = expl_paired_sampling_FALSE$timing$main_timing_secs
 )
-#>           setup test_prediction setup_computation compute_vS shapley_computation
-#> Paired  0.10987        0.055879            7.1928    0.29876           0.0043712
-#> Regular 0.05501        0.037705            6.2180    0.30362           0.0044370
+#>            setup test_prediction adaptive_estimation finalize_explanation
+#> Paired  0.048088        0.036740              11.721            0.0049973
+#> Regular 0.047131        0.036345              11.517            0.0049357
 ```
 
 
@@ -465,7 +496,7 @@ two examples here, and refer the reader to the main vignette for more detailed i
 
 By setting `verbose = 2`, we get messages about the progress of the `vaeac` approach.
 
-```r
+``` r
 expl_with_messages <- explain(
   model = model,
   x_explain = x_explain,
@@ -473,13 +504,15 @@ expl_with_messages <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_MC_samples = n_MC_samples,
-  n_batches = 5,
   verbose = 2,
   vaeac.epochs = 5,
   vaeac.n_vaeacs_initialize = 2
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 #> Setting up the `vaeac` approach.
 #> Training the `vaeac` model with the provided parameters from scratch on CPU.
 #> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
@@ -499,23 +532,43 @@ expl_with_messages <- explain(
 #> Best running avg epoch: 5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
 #> Last epoch:             5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
 #> Done with setting up the `vaeac` approach.
-#> Generating Monte Carlo samples using `vaeac` for batch 1 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
-#> Generating Monte Carlo samples using `vaeac` for batch 2 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
-#> Generating Monte Carlo samples using `vaeac` for batch 3 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
-#> Generating Monte Carlo samples using `vaeac` for batch 4 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
-#> Generating Monte Carlo samples using `vaeac` for batch 5 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
@@ -525,7 +578,7 @@ For more visual information, we can use the `progressr` package. This can help u
 step for the final `vaeac` model. Note that one can set `verbose = 0` to not get any messages from the `vaeac`
 approach and only get the progress bars. See the main vignette for examples for how to change the progress bar.
 
-```r
+``` r
 library(progressr)
 progressr::handlers("cli") # Use `progressr::handlers("void")` to silence all `progressr` updates
 progressr::with_progress({
@@ -536,7 +589,6 @@ progressr::with_progress({
     approach = "vaeac",
     prediction_zero = prediction_zero,
     n_MC_samples = n_MC_samples,
-    n_batches = 5,
     verbose = 2,
     vaeac.epochs = 5,
     vaeac.n_vaeacs_initialize = 2
@@ -544,6 +596,9 @@ progressr::with_progress({
 })
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 #> Setting up the `vaeac` approach.
 #> Training the `vaeac` model with the provided parameters from scratch on CPU.
 #> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
@@ -563,23 +618,43 @@ progressr::with_progress({
 #> Best running avg epoch: 5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
 #> Last epoch:             5. 	VLB = -3.318 	IWAE = -3.049 	IWAE_running = -3.149
 #> Done with setting up the `vaeac` approach.
-#> Generating Monte Carlo samples using `vaeac` for batch 1 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
-#> Generating Monte Carlo samples using `vaeac` for batch 2 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
-#> Generating Monte Carlo samples using `vaeac` for batch 3 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
-#> Generating Monte Carlo samples using `vaeac` for batch 4 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
-#> Generating Monte Carlo samples using `vaeac` for batch 5 of 5.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
@@ -605,7 +680,7 @@ data. However, recall that the `vaeac` model is never trained on the empty coali
 be taken with a grain of salt.
 
 
-```r
+``` r
 expl_little_training <- explain(
   model = model,
   x_explain = x_explain,
@@ -613,7 +688,6 @@ expl_little_training <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_MC_samples = 250,
-  n_batches = n_batches,
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2
 )
@@ -624,7 +698,7 @@ vaeac_plot_eval_crit(list("Original" = expl_little_training), plot_type = "metho
 
 ![](figure_vaeac/continue-training-1.png)
 
-```r
+``` r
 # Can also see how well vaeac generates data from the full joint distribution. Quite good.
 vaeac_plot_imputed_ggpairs(
   explanation = expl_little_training,
@@ -635,7 +709,7 @@ vaeac_plot_imputed_ggpairs(
 
 ![](figure_vaeac/continue-training-2.png)
 
-```r
+``` r
 # Make a copy of the explanation object and continue to train the vaeac model some more epochs
 expl_train_more <- expl_little_training
 expl_train_more$internal$parameters$vaeac <-
@@ -652,7 +726,6 @@ expl_train_more_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
   n_MC_samples = 250,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = expl_train_more$internal$parameters$vaeac
@@ -668,7 +741,7 @@ vaeac_plot_eval_crit(
 
 ![](figure_vaeac/continue-training-3.png)
 
-```r
+``` r
 # Continue to train the vaeac model some more epochs
 expl_train_even_more <- expl_train_more
 expl_train_even_more$internal$parameters$vaeac <-
@@ -685,7 +758,6 @@ expl_train_even_more_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
   n_MC_samples = 250,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = expl_train_even_more$internal$parameters$vaeac
@@ -705,7 +777,7 @@ vaeac_plot_eval_crit(
 
 ![](figure_vaeac/continue-training-4.png)
 
-```r
+``` r
 # Can also see how well vaeac generates data from the full joint distribution
 vaeac_plot_imputed_ggpairs(
   explanation = expl_train_even_more,
@@ -719,7 +791,7 @@ vaeac_plot_imputed_ggpairs(
 We can see that the extra training has decreased the MSEv score. The Shapley value explanations have also
 changed, but they are often comparable.
 
-```r
+``` r
 plot_MSEv_eval_crit(list(
   "Few epochs" = expl_little_training,
   "More epochs" = expl_train_more_vaeac,
@@ -729,7 +801,7 @@ plot_MSEv_eval_crit(list(
 
 ![](figure_vaeac/continue-training-2-1.png)
 
-```r
+``` r
 # We see that the Shapley values have changed, but they are often comparable
 plot_SV_several_approaches(list(
   "Few epochs" = expl_little_training,
@@ -749,7 +821,7 @@ If we do not want to specify the number of `epochs`, as we are uncertain how man
 model will stop the training procedure if there has been no improvement in the validation score for `5` epochs.
 
 
-```r
+``` r
 # Low value for `vaeac.epochs_early_stopping` here to build the vignette faster
 expl_early_stopping <- explain(
   model = model,
@@ -758,7 +830,6 @@ expl_early_stopping <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_MC_samples = 250,
-  n_batches = 1,
   verbose = 2,
   vaeac.epochs = 1000, # Set it to a big number
   vaeac.n_vaeacs_initialize = 2,
@@ -766,6 +837,9 @@ expl_early_stopping <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 #> Setting up the `vaeac` approach.
 #> Training the `vaeac` model with the provided parameters from scratch on CPU.
 #> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
@@ -797,7 +871,43 @@ expl_early_stopping <- explain(
 #> Best running avg epoch: 12. 	VLB = -2.958 	IWAE = -2.930 	IWAE_running = -2.991
 #> Last epoch:             14. 	VLB = -2.971 	IWAE = -2.955 	IWAE_running = -2.996
 #> Done with setting up the `vaeac` approach.
-#> Generating Monte Carlo samples using `vaeac` for batch 1 of 1.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
+#> Preprocessing the explicands.
+#> Generating the MC samples.
+#> Postprocessing the Monte Carlo samples.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 10.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
@@ -815,7 +925,7 @@ However, we can train it further for a fixed amount of epochs if desired. This c
 happy with the IWAE curve or we feel that we set `vaeac.epochs_early_stopping` to a too low value or if the max
 number of epochs (`vaeac.epochs`) were reached.
 
-```r
+``` r
 # Make a copy of the explanation object which we are to train further.
 expl_early_stopping_train_more <- expl_early_stopping
 
@@ -852,7 +962,7 @@ vaeac_plot_eval_crit(
 We can then use the extra trained version to compute the Shapley value explanations and compare it with the previous
 version that used early stopping. We see a non-significant difference.
 
-```r
+``` r
 # Use extra trained vaeac model to compute Shapley values again.
 expl_early_stopping_train_more <- explain(
   model = model,
@@ -860,7 +970,6 @@ expl_early_stopping_train_more <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
   n_MC_samples = 250,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = expl_early_stopping_train_more$internal$parameters$vaeac
@@ -868,6 +977,9 @@ expl_early_stopping_train_more <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 
 # We can compare their MSEv scores
 plot_MSEv_eval_crit(list(
@@ -878,7 +990,7 @@ plot_MSEv_eval_crit(list(
 
 ![](figure_vaeac/early-stopping-3-1.png)
 
-```r
+``` r
 # We see that the Shapley values have changed, but only slightly
 plot_SV_several_approaches(list(
   "Vaeac early stopping" = expl_early_stopping,
@@ -900,7 +1012,7 @@ The same goes for group B. Note that in this setup, there are only `4` possible 
 `2` coalitions as the empty and grand coalitions as they are not needed in the Shapley value computations.
 
 
-```r
+``` r
 expl_group <- explain(
   model = model,
   x_explain = x_explain,
@@ -908,7 +1020,6 @@ expl_group <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   group = list(A = c("Temp", "Month"), B = c("Wind", "Solar.R")),
-  n_batches = 2,
   n_MC_samples = n_MC_samples,
   verbose = 2,
   vaeac.epochs = 4,
@@ -916,28 +1027,32 @@ expl_group <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
+#> and is therefore set to 2^n_groups = 4.
 #> Setting up the `vaeac` approach.
 #> Training the `vaeac` model with the provided parameters from scratch on CPU.
-#> Using 'specified_masks_mask_generator' with '2' coalitions.
+#> Using 'specified_masks_mask_generator' with '4' coalitions.
 #> The vaeac model contains 17032 trainable parameters.
 #> Initializing vaeac number 1 of 2.
 #> Initializing vaeac number 2 of 2.
-#> Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.814 after 2 epochs. Continue to train this inititalization.
+#> Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.453 after 2 epochs. Continue to train this inititalization.
 #> Saving `best` vaeac model at epoch 3.
 #> Saving `best_running` vaeac model at epoch 3.
+#> Saving `best` vaeac model at epoch 4.
 #> Saving `best_running` vaeac model at epoch 4.
 #> Saving `last` vaeac model at epoch 4.
 #> 
 #> Results of the `vaeac` training process:
-#> Best epoch:             3. 	VLB = -3.935 	IWAE = -3.124 	IWAE_running = -3.267
-#> Best running avg epoch: 4. 	VLB = -3.619 	IWAE = -3.138 	IWAE_running = -3.235
-#> Last epoch:             4. 	VLB = -3.619 	IWAE = -3.138 	IWAE_running = -3.235
+#> Best epoch:             4. 	VLB = -3.514 	IWAE = -3.114 	IWAE_running = -3.153
+#> Best running avg epoch: 4. 	VLB = -3.514 	IWAE = -3.114 	IWAE_running = -3.153
+#> Last epoch:             4. 	VLB = -3.514 	IWAE = -3.114 	IWAE_running = -3.153
 #> Done with setting up the `vaeac` approach.
-#> Generating Monte Carlo samples using `vaeac` for batch 1 of 2.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 4.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
-#> Generating Monte Carlo samples using `vaeac` for batch 2 of 2.
+#> Generating Monte Carlo samples using `vaeac` for batch  of 4.
 #> Preprocessing the explicands.
 #> Generating the MC samples.
 #> Postprocessing the Monte Carlo samples.
@@ -954,7 +1069,7 @@ plot(expl_group)
 Here we look at a setup with mixed data, i.e., the data contains both categorical and continuous features.
 First we set up the data and the model.
 
-```r
+``` r
 library(ranger)
 data <- data.table::as.data.table(airquality)
 data <- data[complete.cases(data), ]
@@ -984,7 +1099,7 @@ consider two setups: the default architecture, and a simpler one without skip co
 to illustrate that the skip connections improve the `vaeac` method. We use `ctree` with default parameters.
 
 
-```r
+``` r
 # Here we use the ctree approach
 expl_ctree <- explain(
   model = model,
@@ -992,11 +1107,13 @@ expl_ctree <- explain(
   x_train = x_train_cat,
   approach = "ctree",
   prediction_zero = prediction_zero,
-  n_batches = 1,
   n_MC_samples = 250
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 
 # Then we use the vaeac approach
 expl_vaeac_with <- explain(
@@ -1005,13 +1122,16 @@ expl_vaeac_with <- explain(
   x_train = x_train_cat,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = 1,
   n_MC_samples = 250,
   vaeac.epochs = 50,
   vaeac.n_vaeacs_initialize = 4
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> 
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 
 # Then we use the vaeac approach
 expl_vaeac_without <- explain(
@@ -1020,7 +1140,6 @@ expl_vaeac_without <- explain(
   x_train = x_train_cat,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = 1,
   n_MC_samples = 250,
   vaeac.epochs = 50,
   vaeac.n_vaeacs_initialize = 4,
@@ -1031,6 +1150,10 @@ expl_vaeac_without <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> 
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 
 # We see that the `vaeac` model without the skip connections perform worse
 vaeac_plot_eval_crit(
@@ -1044,7 +1167,7 @@ vaeac_plot_eval_crit(
 
 ![](figure_vaeac/vaeac-mixed-data-1.png)
 
-```r
+``` r
 # The vaeac model with skip connections have the lowest/best MSE_Frye evaluation criterion score
 plot_MSEv_eval_crit(list(
   "Vaeac w.o. skip-con." = expl_vaeac_without,
@@ -1055,7 +1178,7 @@ plot_MSEv_eval_crit(list(
 
 ![](figure_vaeac/vaeac-mixed-data-2.png)
 
-```r
+``` r
 # Can compare the Shapley values. Ctree and vaeac with skip connections produce similar explanations.
 plot_SV_several_approaches(
   list(
@@ -1079,7 +1202,7 @@ Finally, note that if the user specifies `vaeac.cuda = TRUE`, but there is no av
 a warning and falls back to use CPU instead.
 
 
-```r
+``` r
 # Load necessary library
 library(mvtnorm)
 
@@ -1128,7 +1251,6 @@ time_cpu <- system.time({
     approach = "vaeac",
     prediction_zero = prediction_zero,
     n_MC_samples = 100,
-    n_batches = 5,
     vaeac.epochs = 50,
     vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(vaeac.cuda = FALSE)
@@ -1144,7 +1266,6 @@ time_cuda <- system.time({
     approach = "vaeac",
     prediction_zero = prediction_zero,
     n_MC_samples = 100,
-    n_batches = 5,
     vaeac.epochs = 50,
     vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(vaeac.cuda = TRUE)
@@ -1168,7 +1289,7 @@ rbind("Vaeac CPU" = time_cpu, "Vaeac GPU" = time_cuda)
 It is no possible to set same random state on the CPU and GPU, hence, the results
 are not equivalent. The difference is due to different initialization values.
 
-```r
+``` r
 vaeac_plot_eval_crit(
   list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
   plot_type = "criterion"
@@ -1179,7 +1300,7 @@ vaeac_plot_eval_crit(
 
 We also get almost identical $\text{MSE}_v$ values.
 
-```r
+``` r
 plot_MSEv_eval_crit(list("Vaeac CPU" = explanation_cpu,
 "Vaeac GPU" = explanation_cuda))
 ```
@@ -1188,7 +1309,7 @@ plot_MSEv_eval_crit(list("Vaeac CPU" = explanation_cpu,
 
 We can also compare the Shapley values and see that we get comparable explanations.
 
-```r
+``` r
 plot_SV_several_approaches(
   list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
   index_explicands = 1:3,
