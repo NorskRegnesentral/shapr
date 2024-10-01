@@ -695,7 +695,8 @@ shapley_setup_forecast <- function(internal) {
       paired_shap_sampling = paired_shap_sampling,
       prev_coal_samples = prev_coal_samples,
       coal_feature_list = this_coal_feature_list,
-      approach0 = approach
+      approach0 = approach,
+      shapley_reweighting = FALSE
     )
 
 
