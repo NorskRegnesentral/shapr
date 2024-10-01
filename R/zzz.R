@@ -119,7 +119,23 @@
       "features_str",
       "boot_id",
       "iter",
-      "total"
+      "total",
+      "coalitions",
+      "coalition_size",
+      "coalitions_tmp",
+      "initial_n_coalitions",
+      "max_n_coalitions",
+      "fixed_n_coalitions_per_iter",
+      "reduction_factor_vec",
+      "n_boot_samps",
+      "compute_sd",
+      "min_n_batches",
+      "max_batch_size",
+      "saving_path",
+      "coalitions_str",
+      "cond",
+      "tmp_coalitions",
+      "max_iter"
     )
   )
 
