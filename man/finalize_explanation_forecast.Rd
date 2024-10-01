@@ -79,12 +79,14 @@ model <- lm(lm_formula, data = data_train)
 p <- mean(data_train[, y_var])
 
 # (Optionally) enable parallelization via the future package
-library(future)
+if (requireNamespace("future", quietly = TRUE)) {
 future::plan(multisession, workers = 2)
+}
 
 # (Optionally) enable progress updates within every iteration via the progressr package
-library(progressr)
-handlers(global = TRUE)
+if (requireNamespace("progressr", quietly = TRUE)) {
+progressr::handlers(global = TRUE)
+}
 
 # Empirical approach
 explain1 <- explain(
@@ -182,6 +184,21 @@ explain_surrogate_lm <- explain(
   prediction_zero = p,
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
+)
+
+## Adaptive estimation
+# For illustration purposes only. By default not used for such small dimensions as here
+
+# Gaussian approach
+explain_adaptive <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  prediction_zero = p,
+  n_MC_samples = 1e2,
+  adaptive = TRUE,
+  adaptive_arguments = list(initial_n_coalitions = 10)
 )
 
 }

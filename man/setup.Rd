@@ -183,6 +183,14 @@ This method is preferred as it has performed the best in simulation studies.}
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
 
+\item{testing}{Logical.
+Only use to remove random components like timing from the object output when comparing output with testthat.
+Defaults to \code{FALSE}.}
+
+\item{init_time}{POSIXct object.
+The time when the \code{explain()} function was called, as outputted by \code{Sys.time()}.
+Used to calculate the time it took to run the full \code{explain} call.}
+
 \item{prev_shapr_object}{\code{shapr} object or string.
 If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.

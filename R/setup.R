@@ -16,6 +16,12 @@
 #' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 #' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
+#' @param testing Logical.
+#' Only use to remove random components like timing from the object output when comparing output with testthat.
+#' Defaults to `FALSE`.
+#' @param init_time POSIXct object.
+#' The time when the `explain()` function was called, as outputted by `Sys.time()`.
+#' Used to calculate the time it took to run the full `explain` call.
 #' @export
 setup <- function(x_train,
                   x_explain,
@@ -1145,6 +1151,9 @@ check_vs_prev_shapr_object <- function(internal){
 #' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
 #' Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
 #' than the number of parallel workers.
+#' @param saving_path String.
+#' The path to the directory where the results of the adaptive estimation procedure should be saved.
+#' Defaults to a temporary directory.
 #' @inheritParams default_doc_explain
 #'
 #' @export

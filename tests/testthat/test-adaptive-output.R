@@ -62,7 +62,7 @@ test_that("output_lm_numeric_independence_converges_maxit", {
   )
 })
 
-test_that("output_lm_numeric_independence_converges_max_n_coalitions", {
+test_that("output_lm_numeric_indep_conv_max_n_coalitions", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -76,7 +76,7 @@ test_that("output_lm_numeric_independence_converges_max_n_coalitions", {
       print_shapleyres = TRUE,
       print_iter_info = TRUE
     ),
-    "output_lm_numeric_independence_converges_max_n_coalitions"
+    "output_lm_numeric_indep_conv_max_n_coalitions"
   )
 })
 

@@ -19,7 +19,6 @@ explain_forecast(
   group_lags = TRUE,
   group = NULL,
   n_MC_samples = 1000,
-  n_batches = NULL,
   seed = 1,
   keep_samp_for_vS = FALSE,
   predict_model = NULL,

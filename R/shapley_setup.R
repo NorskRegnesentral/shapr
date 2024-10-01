@@ -14,8 +14,6 @@ shapley_setup <- function(internal) {
   shapley_reweighting <- internal$parameters$shapley_reweighting
   coal_feature_list <- internal$objects$coal_feature_list
 
-  # TODO: Just added temporary, and set to TRUE unless not specified explicitly as a ... argument in explain()
-  unique_sampling <- ifelse(is.null(internal$parameters$unique_sampling), TRUE, internal$parameters$unique_sampling)
 
   iter <- length(internal$iter_list)
 
@@ -30,7 +28,6 @@ shapley_setup <- function(internal) {
     weight_zero_m = 10^6,
     paired_shap_sampling = paired_shap_sampling,
     prev_coal_samples = prev_coal_samples,
-    unique_sampling = unique_sampling, # TODO: Just added temporary
     coal_feature_list = coal_feature_list,
     approach0 = approach,
     shapley_reweighting = shapley_reweighting
@@ -107,31 +104,24 @@ shapley_setup <- function(internal) {
 
 #' Define coalitions, and fetch additional information about each unique coalition
 #'
-#' @param m Positive integer. Total number of features/groups.
-#' @param exact Logical. If `TRUE` all `2^m` coalitions are generated, otherwise a
-#' subsample of the coalitions is used.
-#' @param n_coalitions Positive integer. Note that if `exact = TRUE`,
-#' `n_coalitions` is ignored. However, if `m > 12` you'll need to add a positive integer
-#' value for `n_coalitions`.
-#' @param weight_zero_m Numeric. The value to use as a replacement for infinite coalition
-#' weights when doing numerical operations.
-#'
-#' @param paired_shap_sampling TODO: document
-#'
-#' @param prev_coal_samples TODO: document
-#'
-#' @return A data.table that contains the following columns:
-#' \describe{
-#' \item{id_coalition}{Positive integer. Represents a unique key for each coalition. Note that the table
-#' is sorted by `id_coalition`, so that is always equal to `x[["id_coalition"]] = 1:nrow(x)`.}
-#' \item{coalitions}{List. Each item of the list is an integer vector where `coalitions[[i]]`
-#' represents the indices of the elements included in coalition `i`. Note that all the items
-#' are sorted such that `features[[i]] == sort(features[[i]])` is always true.}
-#' \item{coalition_size}{Vector of positive integers. `coalition_size[i]` equals the number of elements in coalition
-#' `i`, i.e. `coalition_size[i] = length(coalitions[[i]])`.}.
-#' \item{N}{Positive integer. The number of unique ways to sample `coalition_size[i]` elements
-#' from `m` different features/groups of features, without replacement.}
-#' }
+#' @param m Positive integer.
+#' Total number of features/groups.
+#' @param exact Logical.
+#' If `TRUE` all `2^m` coalitions are generated, otherwise a subsample of the coalitions is used.
+#' @param n_coalitions Positive integer.
+#' Note that if `exact = TRUE`, `n_coalitions` is ignored.
+#' @param weight_zero_m Numeric.
+#' The value to use as a replacement for infinite coalition weights when doing numerical operations.
+#' @param paired_shap_sampling Logical.
+#' Whether to do paired sampling of coalitions.
+#' @param prev_coal_samples List.
+#' A list of previously sampled coalitions.
+#' @param approach0 Character vector.
+#' Contains the approach to be used for eastimation of each coalition size. Same as `approach` in `explain()`.
+#' @param coal_feature_list List.
+#' A list mapping each coalition to the features it contains.
+#' @inheritParams explain
+#' @return A data.table with columns about the that contains the following columns:
 #'
 #' @export
 #'
@@ -145,10 +135,10 @@ shapley_setup <- function(internal) {
 #' # Subsample of coalitions
 #' x <- create_coalition_table(exact = FALSE, m = 10, n_coalitions = 1e2)
 create_coalition_table <- function(m, exact = TRUE, n_coalitions = 200, weight_zero_m = 10^6,
-                                   paired_shap_sampling = TRUE, prev_coal_samples = NULL, unique_sampling = TRUE,
+                                   paired_shap_sampling = TRUE, prev_coal_samples = NULL,
                                    coal_feature_list = as.list(seq_len(m)),
                                    approach0 = "gaussian",
-                                   shapley_reweighting) {
+                                   shapley_reweighting = "none") {
   if (exact) {
     dt <- exact_coalition_table(m, weight_zero_m)
   } else {
@@ -157,7 +147,6 @@ create_coalition_table <- function(m, exact = TRUE, n_coalitions = 200, weight_z
       weight_zero_m,
       paired_shap_sampling = paired_shap_sampling,
       prev_coal_samples = prev_coal_samples,
-      unique_sampling = unique_sampling,
       shapley_reweighting = shapley_reweighting
     )
     stopifnot(
@@ -229,7 +218,6 @@ exact_coalition_table <- function(m, weight_zero_m = 10^6) {
 sample_coalition_table <- function(m,
                                    n_coalitions = 200,
                                    weight_zero_m = 10^6,
-                                   unique_sampling = TRUE,
                                    paired_shap_sampling = TRUE,
                                    prev_coal_samples = NULL,
                                    shapley_reweighting) {
@@ -239,53 +227,25 @@ sample_coalition_table <- function(m,
   w <- shapley_weights(m = m, N = n, coal_samp_vec) * n
   p <- w / sum(w)
 
-  if (unique_sampling) {
-    if (!is.null(prev_coal_samples)) {
-      coal_sample_all <- prev_coal_samples
-      unique_samples <- length(unique(prev_coal_samples))
-      n_coalitions <- min(2^m, n_coalitions)
-      # Adjusts for the the unique samples, zero and m samples
-    } else {
-      coal_sample_all <- list()
-      unique_samples <- 0
-    }
 
-    while (unique_samples < n_coalitions - 2) {
-      if (paired_shap_sampling == TRUE) {
-        n_samps <- ceiling((n_coalitions - unique_samples - 2) / 2) # Sample -2 as we add zero and m samples below
-      } else {
-        n_samps <- n_coalitions - unique_samples - 2 # Sample -2 as we add zero and m samples below
-      }
+  if (!is.null(prev_coal_samples)) {
+    coal_sample_all <- prev_coal_samples
+    unique_samples <- length(unique(prev_coal_samples))
+    n_coalitions <- min(2^m, n_coalitions)
+    # Adjusts for the the unique samples, zero and m samples
+  } else {
+    coal_sample_all <- list()
+    unique_samples <- 0
+  }
 
-      # Sample the coalition size ----------
-      coal_size_sample <- sample(
-        x = coal_samp_vec,
-        size = n_samps,
-        replace = TRUE,
-        prob = p
-      )
-
-      # Sample specific coalitions -------
-      coal_sample <- sample_features_cpp(m, coal_size_sample)
-      if (paired_shap_sampling == TRUE) {
-        coal_sample_paired <- lapply(coal_sample, function(x) seq(m)[-x])
-        coal_sample_all <- c(coal_sample_all, coal_sample, coal_sample_paired)
-      } else {
-        coal_sample_all <- c(coal_sample_all, coal_sample)
-      }
-      unique_samples <- length(unique(coal_sample_all))
-    }
-  } else { # TODO: Consider deleting this as it does not anything useful and just confuses terminology
-    if (is.null(prev_coal_samples)) {
-      n_coalitions <- n_coalitions - 2 # Sample -2 for the first iteration as we add zero and m samples below
-    }
-
+  while (unique_samples < n_coalitions - 2) {
     if (paired_shap_sampling == TRUE) {
-      n_samps <- ceiling(n_coalitions / 2) # Sample -2 as we add zero and m samples below
+      n_samps <- ceiling((n_coalitions - unique_samples - 2) / 2) # Sample -2 as we add zero and m samples below
     } else {
-      n_samps <- n_coalitions # Sample -2 as we add zero and m samples below
+      n_samps <- n_coalitions - unique_samples - 2 # Sample -2 as we add zero and m samples below
     }
 
+    # Sample the coalition size ----------
     coal_size_sample <- sample(
       x = coal_samp_vec,
       size = n_samps,
@@ -293,6 +253,7 @@ sample_coalition_table <- function(m,
       prob = p
     )
 
+    # Sample specific coalitions -------
     coal_sample <- sample_features_cpp(m, coal_size_sample)
     if (paired_shap_sampling == TRUE) {
       coal_sample_paired <- lapply(coal_sample, function(x) seq(m)[-x])
@@ -300,6 +261,7 @@ sample_coalition_table <- function(m,
     } else {
       coal_sample_all <- c(coal_sample_all, coal_sample)
     }
+    unique_samples <- length(unique(coal_sample_all))
   }
 
   # Add zero and full prediction
@@ -665,9 +627,6 @@ shapley_setup_forecast <- function(internal) {
   horizon <- internal$parameters$horizon
   feature_names <- internal$parameters$feature_names
 
-  # TODO: Just added temporary, and set to TRUE unless not specified explicitly as a ... argument in explain()
-  unique_sampling <- ifelse(is.null(internal$parameters$unique_sampling), TRUE, internal$parameters$unique_sampling)
-
   iter <- length(internal$iter_list)
 
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
@@ -715,7 +674,6 @@ shapley_setup_forecast <- function(internal) {
       weight_zero_m = 10^6,
       paired_shap_sampling = paired_shap_sampling,
       prev_coal_samples = prev_coal_samples,
-      unique_sampling = unique_sampling, # TODO: Just added temporary
       coal_feature_list = this_coal_feature_list,
       approach0 = approach
     )

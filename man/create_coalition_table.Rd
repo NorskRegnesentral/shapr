@@ -11,42 +11,51 @@ create_coalition_table(
   weight_zero_m = 10^6,
   paired_shap_sampling = TRUE,
   prev_coal_samples = NULL,
-  unique_sampling = TRUE,
   coal_feature_list = as.list(seq_len(m)),
   approach0 = "gaussian",
-  shapley_reweighting
+  shapley_reweighting = "none"
 )
 }
 \arguments{
-\item{m}{Positive integer. Total number of features/groups.}
+\item{m}{Positive integer.
+Total number of features/groups.}
 
-\item{exact}{Logical. If \code{TRUE} all \code{2^m} coalitions are generated, otherwise a
-subsample of the coalitions is used.}
+\item{exact}{Logical.
+If \code{TRUE} all \code{2^m} coalitions are generated, otherwise a subsample of the coalitions is used.}
 
-\item{n_coalitions}{Positive integer. Note that if \code{exact = TRUE},
-\code{n_coalitions} is ignored. However, if \code{m > 12} you'll need to add a positive integer
-value for \code{n_coalitions}.}
+\item{n_coalitions}{Positive integer.
+Note that if \code{exact = TRUE}, \code{n_coalitions} is ignored.}
 
-\item{weight_zero_m}{Numeric. The value to use as a replacement for infinite coalition
-weights when doing numerical operations.}
+\item{weight_zero_m}{Numeric.
+The value to use as a replacement for infinite coalition weights when doing numerical operations.}
 
-\item{paired_shap_sampling}{TODO: document}
+\item{paired_shap_sampling}{Logical.
+Whether to do paired sampling of coalitions.}
 
-\item{prev_coal_samples}{TODO: document}
+\item{prev_coal_samples}{List.
+A list of previously sampled coalitions.}
+
+\item{coal_feature_list}{List.
+A list mapping each coalition to the features it contains.}
+
+\item{approach0}{Character vector.
+Contains the approach to be used for eastimation of each coalition size. Same as \code{approach} in \code{explain()}.}
+
+\item{shapley_reweighting}{String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+the randomness and thereby the variance of the Shapley value estimates.
+One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
+\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
+\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+\code{'on_all'} means the original sampling probabilities are used for all coalitions.
+\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+This method is preferred as it has performed the best in simulation studies.}
 }
 \value{
-A data.table that contains the following columns:
-\describe{
-\item{id_coalition}{Positive integer. Represents a unique key for each coalition. Note that the table
-is sorted by \code{id_coalition}, so that is always equal to \code{x[["id_coalition"]] = 1:nrow(x)}.}
-\item{coalitions}{List. Each item of the list is an integer vector where \code{coalitions[[i]]}
-represents the indices of the elements included in coalition \code{i}. Note that all the items
-are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
-\item{coalition_size}{Vector of positive integers. \code{coalition_size[i]} equals the number of elements in coalition
-\code{i}, i.e. \code{coalition_size[i] = length(coalitions[[i]])}.}.
-\item{N}{Positive integer. The number of unique ways to sample \code{coalition_size[i]} elements
-from \code{m} different features/groups of features, without replacement.}
-}
+A data.table with columns about the that contains the following columns:
 }
 \description{
 Define coalitions, and fetch additional information about each unique coalition

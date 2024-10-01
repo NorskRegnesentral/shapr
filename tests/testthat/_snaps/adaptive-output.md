@@ -141,11 +141,16 @@
       Estimated required coalitions: 181030
       Using 2 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
-                   none        Solar.R            Wind           Temp          Month            Day
-                 <char>         <char>          <char>         <char>         <char>         <char>
-      1: 42.444 (0.00)  -4.551 (1.13)    8.215 (2.03)  17.507 (2.82)  -5.492 (1.92)  -3.077 (2.68) 
-      2: 42.444 (0.00)   2.236 (1.23)   -3.399 (0.29)  -5.243 (0.56)  -5.492 (1.21)  -1.982 (0.63) 
-      3: 42.444 (0.00)   3.694 (0.96)  -18.664 (2.48)  -1.451 (0.44)  -2.452 (2.55)   1.305 (0.94) 
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.551 (1.13)    8.215 (2.03)  17.507 (2.82)  -5.492 (1.92) 
+      2: 42.444 (0.00)   2.236 (1.23)   -3.399 (0.29)  -5.243 (0.56)  -5.492 (1.21) 
+      3: 42.444 (0.00)   3.694 (0.96)  -18.664 (2.48)  -1.451 (0.44)  -2.452 (2.55) 
+                    Day
+                 <char>
+      1: -3.077 (2.68) 
+      2: -1.982 (0.63) 
+      3:  1.305 (0.94) 
       
       Iteration 3
       Not converged after 16 coalitions.
@@ -153,11 +158,16 @@
       Estimated required coalitions: 88366
       Using 2 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
-                   none        Solar.R            Wind           Temp          Month            Day
-                 <char>         <char>          <char>         <char>         <char>         <char>
-      1: 42.444 (0.00)  -4.540 (1.27)    8.232 (1.15)  17.504 (3.41)  -5.514 (1.50)  -3.080 (3.11) 
-      2: 42.444 (0.00)   2.247 (0.46)   -3.383 (0.32)  -5.245 (0.62)  -5.514 (0.16)  -1.984 (0.49) 
-      3: 42.444 (0.00)   3.705 (1.14)  -18.648 (1.58)  -1.454 (0.49)  -2.474 (1.14)   1.302 (0.42) 
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.540 (1.27)    8.232 (1.15)  17.504 (3.41)  -5.514 (1.50) 
+      2: 42.444 (0.00)   2.247 (0.46)   -3.383 (0.32)  -5.245 (0.62)  -5.514 (0.16) 
+      3: 42.444 (0.00)   3.705 (1.14)  -18.648 (1.58)  -1.454 (0.49)  -2.474 (1.14) 
+                    Day
+                 <char>
+      1: -3.080 (3.11) 
+      2: -1.984 (0.49) 
+      3:  1.302 (0.42) 
       
       Iteration 4
       Not converged after 18 coalitions.
@@ -165,11 +175,16 @@
       Estimated required coalitions: 40918
       Using 2 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
-                   none        Solar.R            Wind           Temp          Month            Day
-                 <char>         <char>          <char>         <char>         <char>         <char>
-      1: 42.444 (0.00)  -4.545 (0.06)    8.240 (0.02)  17.512 (1.91)  -5.521 (1.62)  -3.084 (1.03) 
-      2: 42.444 (0.00)   2.242 (0.39)   -3.375 (0.02)  -5.238 (0.17)  -5.521 (0.39)  -1.988 (0.16) 
-      3: 42.444 (0.00)   3.700 (0.31)  -18.640 (0.02)  -1.446 (0.16)  -2.481 (0.32)   1.298 (0.14) 
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.545 (0.06)    8.240 (0.02)  17.512 (1.91)  -5.521 (1.62) 
+      2: 42.444 (0.00)   2.242 (0.39)   -3.375 (0.02)  -5.238 (0.17)  -5.521 (0.39) 
+      3: 42.444 (0.00)   3.700 (0.31)  -18.640 (0.02)  -1.446 (0.16)  -2.481 (0.32) 
+                    Day
+                 <char>
+      1: -3.084 (1.03) 
+      2: -1.988 (0.16) 
+      3:  1.298 (0.14) 
       
       Iteration 5
       Not converged after 20 coalitions.
@@ -177,11 +192,16 @@
       Estimated required coalitions: 6980
       Using 2 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
-                   none        Solar.R            Wind           Temp          Month            Day
-                 <char>         <char>          <char>         <char>         <char>         <char>
-      1: 42.444 (0.00)  -4.539 (0.08)    8.252 (0.02)  17.500 (0.02)  -5.542 (0.08)  -3.069 (0.02) 
-      2: 42.444 (0.00)   2.248 (0.55)   -3.363 (0.02)  -5.249 (0.02)  -5.542 (0.55)  -1.973 (0.02) 
-      3: 42.444 (0.00)   3.706 (0.44)  -18.627 (0.02)  -1.458 (0.02)  -2.502 (0.44)   1.313 (0.02) 
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.539 (0.08)    8.252 (0.02)  17.500 (0.02)  -5.542 (0.08) 
+      2: 42.444 (0.00)   2.248 (0.55)   -3.363 (0.02)  -5.249 (0.02)  -5.542 (0.55) 
+      3: 42.444 (0.00)   3.706 (0.44)  -18.627 (0.02)  -1.458 (0.02)  -2.502 (0.44) 
+                    Day
+                 <char>
+      1: -3.069 (0.02) 
+      2: -1.973 (0.02) 
+      3:  1.313 (0.02) 
       
       Iteration 6
       Not converged after 22 coalitions.
@@ -189,11 +209,16 @@
       Estimated required coalitions: 68
       Using 2 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
-                   none        Solar.R            Wind           Temp          Month            Day
-                 <char>         <char>          <char>         <char>         <char>         <char>
-      1: 42.444 (0.00)  -4.531 (0.04)    8.263 (0.02)  17.512 (0.02)  -5.580 (0.04)  -3.061 (0.02) 
-      2: 42.444 (0.00)   2.256 (0.04)   -3.351 (0.02)  -5.238 (0.02)  -5.580 (0.04)  -1.965 (0.02) 
-      3: 42.444 (0.00)   3.714 (0.04)  -18.616 (0.02)  -1.446 (0.02)  -2.541 (0.04)   1.321 (0.02) 
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.531 (0.04)    8.263 (0.02)  17.512 (0.02)  -5.580 (0.04) 
+      2: 42.444 (0.00)   2.256 (0.04)   -3.351 (0.02)  -5.238 (0.02)  -5.580 (0.04) 
+      3: 42.444 (0.00)   3.714 (0.04)  -18.616 (0.02)  -1.446 (0.02)  -2.541 (0.04) 
+                    Day
+                 <char>
+      1: -3.061 (0.02) 
+      2: -1.965 (0.02) 
+      3:  1.321 (0.02) 
       
       Iteration 7
       Not converged after 24 coalitions.
@@ -201,28 +226,38 @@
       Estimated required coalitions: 4392
       Using 2 new coalitions in the next iteration.
       Current estimated Shapley values (sd):
-                   none        Solar.R            Wind           Temp          Month            Day
-                 <char>         <char>          <char>         <char>         <char>         <char>
-      1: 42.444 (0.00)  -4.529 (0.06)    8.261 (0.01)  17.514 (0.02)  -5.579 (0.06)  -3.064 (0.02) 
-      2: 42.444 (0.00)   2.258 (0.39)   -3.354 (0.01)  -5.236 (0.02)  -5.579 (0.39)  -1.969 (0.02) 
-      3: 42.444 (0.00)   3.716 (0.31)  -18.619 (0.01)  -1.444 (0.02)  -2.539 (0.32)   1.318 (0.02) 
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.529 (0.06)    8.261 (0.01)  17.514 (0.02)  -5.579 (0.06) 
+      2: 42.444 (0.00)   2.258 (0.39)   -3.354 (0.01)  -5.236 (0.02)  -5.579 (0.39) 
+      3: 42.444 (0.00)   3.716 (0.31)  -18.619 (0.01)  -1.444 (0.02)  -2.539 (0.32) 
+                    Day
+                 <char>
+      1: -3.064 (0.02) 
+      2: -1.969 (0.02) 
+      3:  1.318 (0.02) 
       
       Iteration 8
       Estimation stopped!
       Maximum number of iterations reached after 26 coalitions.
       Final estimated Shapley values (sd):
-                   none        Solar.R            Wind           Temp          Month            Day
-                 <char>         <char>          <char>         <char>         <char>         <char>
-      1: 42.444 (0.00)  -4.527 (0.03)    8.262 (0.01)  17.516 (0.01)  -5.582 (0.02)  -3.068 (0.01) 
-      2: 42.444 (0.00)   2.260 (0.03)   -3.352 (0.01)  -5.233 (0.01)  -5.582 (0.02)  -1.972 (0.01) 
-      3: 42.444 (0.00)   3.718 (0.03)  -18.617 (0.01)  -1.442 (0.01)  -2.542 (0.02)   1.314 (0.01) 
+                   none        Solar.R            Wind           Temp          Month
+                 <char>         <char>          <char>         <char>         <char>
+      1: 42.444 (0.00)  -4.527 (0.03)    8.262 (0.01)  17.516 (0.01)  -5.582 (0.02) 
+      2: 42.444 (0.00)   2.260 (0.03)   -3.352 (0.01)  -5.233 (0.01)  -5.582 (0.02) 
+      3: 42.444 (0.00)   3.718 (0.03)  -18.617 (0.01)  -1.442 (0.01)  -2.542 (0.02) 
+                    Day
+                 <char>
+      1: -3.068 (0.01) 
+      2: -1.972 (0.01) 
+      3:  1.314 (0.01) 
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
       1:          1 42.44  -4.527   8.262 17.516 -5.582 -3.068
       2:          2 42.44   2.260  -3.352 -5.233 -5.582 -1.972
       3:          3 42.44   3.718 -18.617 -1.442 -2.542  1.314
 
-# output_lm_numeric_independence_converges_max_n_coalitions
+# output_lm_numeric_indep_conv_max_n_coalitions
 
     Code
       (out <- code)
