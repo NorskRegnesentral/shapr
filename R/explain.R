@@ -95,8 +95,9 @@
 #' That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
 #' computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.
 #'
-#' @param adaptive Logical.
-#' If `TRUE` (default), Shapley values are estimated adaptively in an iterative manner.
+#' @param adaptive Logical or NULL
+#' If `NULL` (default), the argument is set to `TRUE` if there are more than 5 features/groups, and `FALSE` otherwise.
+#' If eventually `TRUE`, the Shapley values are estimated adaptively in an iterative manner.
 #' This provides sufficiently accurate Shapley value estimates faster.
 #' First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 #' values.
@@ -322,7 +323,7 @@ explain <- function(model,
                     paired_shap_sampling = TRUE,
                     prediction_zero,
                     max_n_coalitions = NULL,
-                    adaptive = TRUE,
+                    adaptive = NULL,
                     group = NULL,
                     n_MC_samples = 1e3,
                     seed = 1,

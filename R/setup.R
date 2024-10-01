@@ -40,7 +40,7 @@ setup <- function(x_train,
                   explain_xreg_lags = NULL,
                   group_lags = NULL,
                   verbose,
-                  adaptive = FALSE,
+                  adaptive = NULL,
                   adaptive_arguments = list(),
                   shapley_reweighting = "none",
                   is_python = FALSE,
@@ -499,6 +499,8 @@ check_and_set_parameters <- function(internal) {
 
   check_max_n_coalitions_fc(internal)
 
+  internal <- check_and_set_adaptive(internal) # sets the adaptive parameter if it is NULL (default)
+
   internal <- set_exact(internal)
 
   check_computability(internal)
@@ -519,9 +521,6 @@ adjust_max_n_coalitions <- function(internal) {
   max_n_coalitions <- internal$parameters$max_n_coalitions
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
-
-
-
 
 
   # Adjust max_n_coalitions
@@ -638,6 +637,36 @@ check_max_n_coalitions_fc <- function(internal) {
   }
 }
 
+check_and_set_adaptive <- function(internal){
+  adaptive <- internal$parameters$adaptive
+  approach <- internal$parameters$approach
+
+  # Always adaptive = FALSE for vaeac and regression_surrogate
+  if(any(approach %in% c("vaeac","regression_surrogate"))){
+    unsupported <- approach[approach %in% c("vaeac","regression_surrogate")]
+
+    if(isTRUE(adaptive)){
+      warning(
+        paste0(
+          "Adaptive estimation of Shapley values are not supported for approach = ",paste0(unsupported,collapse = ", "),
+          ". Setting adaptive = FALSE."
+          )
+      )
+    }
+
+    internal$parameters$adaptive <- FALSE
+
+  } else {
+    # Sets the default value of adaptive to TRUE if computing more than 5 Shapley values for all other approaches
+    if(is.null(adaptive)){
+      n_shapley_values <- internal$parameters$n_shapley_values # n_features if feature-wise and n_groups if group-wise
+      internal$parameters$adaptive <- isTRUE(n_shapley_values>5)
+    }
+  }
+
+  return(internal)
+}
+
 
 set_exact <- function(internal) {
   max_n_coalitions <- internal$parameters$max_n_coalitions
@@ -646,10 +675,11 @@ set_exact <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
   adaptive <- internal$parameters$adaptive
 
-  if (isFALSE(adaptive) && (
-    (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
-    (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
-  )
+  if (isFALSE(adaptive) &&
+      (
+        (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
+        (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
+      )
   ) {
     exact <- TRUE
   } else {
@@ -669,7 +699,6 @@ check_computability <- function(internal) {
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
   exact <- internal$parameters$exact
-  adaptive <- internal$parameters$adaptive
 
 
   # Force user to use a natural number for n_coalitions if m > 13
@@ -678,7 +707,7 @@ check_computability <- function(internal) {
       warning(
         paste0(
           "Due to computation time, we recommend not computing Shapley values exactly \n",
-          "(with all 2^n_features (", 2^n_features, ") coalitions for n_features > 13.\n",
+          "with all 2^n_features (", 2^n_features, ") coalitions for n_features > 13.\n",
           "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
         )
       )
@@ -687,7 +716,7 @@ check_computability <- function(internal) {
       warning(
         paste0(
           "Due to computation time, we recommend not computing Shapley values exactly \n",
-          "(with all 2^n_groups (", 2^n_groups, ") coalitions for n_groups > 13.\n",
+          "with all 2^n_groups (", 2^n_groups, ") coalitions for n_groups > 13.\n",
           "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
         )
       )
@@ -880,6 +909,7 @@ check_groups <- function(feature_names, group) {
 
 #' @keywords internal
 set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
+
 
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
