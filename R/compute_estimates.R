@@ -23,9 +23,17 @@ compute_estimates <- function(internal, vS_list) {
 
   internal$timing_list$postprocess_vS <- Sys.time()
 
+  dt_vS = processed_vS_list$dt_vS
 
   # Compute the Shapley values
   dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+  internal <- compute_shapley_frida(internal, processed_vS_list$dt_vS)
+
+  shapley_frida <- internal$iter_list[[iter]]$frida_shapley_values
+
+  inds = which(colnames(dt_shapley_est) %in% internal$parameters$feature_names )
+  print(sum(abs(dt_shapley_est[, ..inds] - shapley_frida))/length(shapley_frida))
+  # print(dt_shapley_est[, ..inds] - shapley_frida)
 
   internal$timing_list$compute_shapley <- Sys.time()
 
@@ -36,7 +44,6 @@ compute_estimates <- function(internal, vS_list) {
   }
 
   internal$timing_list$compute_bootstrap <- Sys.time()
-
 
   # Adding explain_id to the output dt
   dt_shapley_est[, explain_id := .I]
@@ -155,6 +162,131 @@ compute_shapley_new <- function(internal, dt_vS) {
   }
 
   return(dt_kshap)
+}
+
+compute_A <- function(internal, X, S, n_row_all, n_row_this_iter, weight_mat){
+  iter <- length(internal$iter_list)
+
+  n_features = internal$parameters$n_features
+  A_new = matrix(0, nrow = n_features, n_features)
+  for (i in 1:nrow(S)) {
+    A_new = A_new + weight_mat[i] * S[i, ]%*%t(S[i, ])/n_row_this_iter
+  }
+
+  if (iter == 1){
+    A = matrix(0, nrow = n_features, n_features)
+  } else {
+    A = internal$iter_list[[iter-1]]$A
+  }
+  A = A * (n_row_all - n_row_this_iter)/n_row_all + A_new * n_row_this_iter/n_row_all
+
+  internal$iter_list[[iter]]$A = A
+  return(internal)
+}
+
+compute_b <- function(internal, dt_vS, X, S, n_row_all, n_row_this_iter, weight_mat){
+
+  iter <- length(internal$iter_list)
+
+  if (iter == 1){
+    b = 0
+  } else {
+    b = internal$iter_list[[iter-1]]$b
+  }
+
+  vS = dt_vS[, -"id_coalition"]
+  b = b*(n_row_all - n_row_this_iter)/n_row_all + (t(vS) - internal$parameters$prediction_zero) %*% (S*weight_mat) / n_row_all
+
+  internal$iter_list[[iter]]$b = b
+  return(internal)
+}
+
+calculate_shapley_values_frida <- function(internal, dt_vS, preds){
+
+  n_features = internal$parameters$n_features
+
+  iter <- length(internal$iter_list)
+  A = internal$iter_list[[iter]]$A
+  b = internal$iter_list[[iter]]$b
+
+  tryCatch({
+    A_inv_one = solve(A, rep(1, n_features))
+    A_inv_vec = solve(A, t(b)) # b can also be a matrix so this should be fine
+  }, error = function(e){
+      stop("Matrix A is singular, try increasing the batch_size. Original error:", e$message)
+  })
+
+  p0 = internal$parameters$prediction_zero
+  numerator = colSums(A_inv_vec) - (preds - p0)
+  numerator = matrix(rep(as.numeric(numerator), n_features), nrow = n_features, byrow = TRUE)
+
+  shapley_values = A_inv_vec - A_inv_one * numerator / sum(A_inv_one)
+  internal$iter_list[[iter]]$frida_shapley_values = t(shapley_values)
+  return(internal)
+}
+
+compute_shapley_frida <- function(internal, dt_vS){
+
+  iter <- length(internal$iter_list)
+
+  X = internal$iter_list[[iter]]$X
+  S = internal$iter_list[[iter]]$S
+
+  if (iter > 1){
+    X_prev = internal$iter_list[[iter-1]]$X
+    X_prev[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
+    X[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
+
+    merged = merge(X_prev[,.(coalitions_tmp,old_sample_freq=sample_freq)],X[,.(coalitions_tmp,new_sample_freq=sample_freq, id_coalition = id_coalition)],by="coalitions_tmp",all.y=TRUE,all.x=FALSE)
+    setorder(merged, id_coalition)
+    merged[is.na(old_sample_freq), old_sample_freq := 0]
+    merged[,this_sample_freq:=new_sample_freq-old_sample_freq]
+
+    inds = which(merged$this_sample_freq > 0)
+  } else {
+    inds = 1:nrow(X)
+  }
+
+  if (any(X[inds, coalition_size] == internal$parameters$n_features)){
+    inds = inds[-which(X[inds, coalition_size] == internal$parameters$n_features)]
+  }
+  if (any(X[inds, coalition_size] == 0)){
+    inds = which(X[inds, coalition_size] != 0)
+  }
+
+  n_row_all = sum(X[2:(nrow(X)-1), "shapley_weight"])
+
+  S = S[inds, ]
+  X = X[inds, ]
+  if (iter == 1){
+    weight_mat = unlist(X[, "shapley_weight"])
+  } else {
+    weight_mat = merged[inds, this_sample_freq]
+  }
+
+  # Effective number of rows in this iteration
+  n_row_this_iter = sum(weight_mat) # length(S_batch)
+
+  preds = dt_vS[nrow(dt_vS), -"id_coalition"]
+  dt_vS = dt_vS[inds, ]
+
+  # Comparing with 'improved_shapley' code
+  # S_to_save = c()
+  # for (ss in 1:nrow(S)){
+  #   row = S[ss, ]
+  #   w = weight_mat[ss]
+  #   vS = dt_vS[ss, -"id_coalition"]
+  #   row = c(row, unlist(vS))
+  #   unweighted = matrix(rep(row, w), nrow = w, byrow = TRUE)
+  #   S_to_save = rbind(S_to_save, unweighted)
+  # }
+  # write.csv(S_to_save, paste0("/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/S_shapr_comp/iter_", iter, ".csv"))
+
+
+  internal = compute_A(internal, X, S, n_row_all, n_row_this_iter, weight_mat)
+  internal = compute_b(internal, dt_vS, X, S, n_row_all, n_row_this_iter, weight_mat)
+  internal = calculate_shapley_values_frida(internal, dt_vS, preds)
+  return(internal)
 }
 
 bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {

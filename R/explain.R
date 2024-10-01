@@ -354,8 +354,9 @@ explain <- function(model,
     shapley_reweighting = shapley_reweighting,
     init_time = init_time,
     prev_shapr_object = prev_shapr_object,
-    ...
+    # ...
   )
+
 
 
 
