@@ -13,9 +13,7 @@ test_that("adaptive_arguments are respected", {
       reduction_factor_vec = rep(10^(-6), 10),
       max_iter = 8
     ),
-    adaptive = TRUE,
-    print_shapleyres = FALSE,
-    print_iter_info = FALSE
+    adaptive = TRUE
   )
 
   # Check that initial_n_coalitions is respected

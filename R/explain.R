@@ -120,11 +120,6 @@
 #' @param adaptive_arguments Named list.
 #' Specifices the arguments for the adaptive procedure.
 #' See [shapr::get_adaptive_arguments_default()] for description of the arguments and their default values.
-
-#' @param print_shapleyres TODO: move to verbose
-#'
-#' @param print_iter_info TODO: move to verbose
-#'
 #' @param shapley_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 #' the randomness and thereby the variance of the Shapley value estimates.
@@ -365,8 +360,6 @@ explain <- function(model,
                     MSEv_uniform_comb_weights = TRUE,
                     verbose = "basic",
                     adaptive_arguments = list(),
-                    print_shapleyres = FALSE, # tmp
-                    print_iter_info = FALSE, # tmp
                     shapley_reweighting = "on_all_cond",
                     prev_shapr_object = NULL,
                     ...) { # ... is further arguments passed to specific approaches
@@ -461,7 +454,7 @@ explain <- function(model,
     internal <- prepare_next_iteration(internal)
 
     # Printing iteration information
-    print_iter(internal, print_iter_info, print_shapleyres)
+    print_iter(internal)
 
     ### Setting globals for to simplify the loop
     converged <- internal$iter_list[[iter]]$converged

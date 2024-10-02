@@ -4,8 +4,8 @@
 #'
 #' @export
 #' @keywords internal
-print_iter <- function(internal, print_iter_info, print_shapleyres) {
-  # TODO: print_iter_info, print_shapleyres will be replaced by verbose extracted from internal
+print_iter <- function(internal) {
+  verbose <- internal$parameters$verbose
   iter <- length(internal$iter_list) - 1 # This function is called after the preparation of the next iteration
 
   converged <- internal$iter_list[[iter]]$converged
@@ -17,7 +17,7 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
   saving_path <- internal$parameters$adaptive_arguments$saving_path
   testing <- internal$parameters$testing
 
-  if (print_iter_info) {
+  if ("convergence" %in% verbose) {
     convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
 
     current_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
@@ -75,7 +75,7 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
     }
   }
 
-  if (print_shapleyres) {
+  if ("shapley" %in% verbose) {
     n_explain <- internal$parameters$n_explain
 
     dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, -1]
