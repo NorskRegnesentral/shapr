@@ -68,12 +68,11 @@ print_iter <- function(internal, print_iter_info, print_shapleyres) {
     }
 
     # Printing saving_path unless testing is TRUE
-    if(isFALSE(testing)){
+    if (isFALSE(testing)) {
       cat(paste0(
         "Intermediate computations saved at ", saving_path, ".\n"
       ))
     }
-
   }
 
   if (print_shapleyres) {

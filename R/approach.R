@@ -14,7 +14,7 @@ setup_approach <- function(internal, ...) {
   iter <- length(internal$iter_list)
   X <- internal$iter_list[[iter]]$X
 
-  needs_X <- c("regression_surrogate","vaeac")
+  needs_X <- c("regression_surrogate", "vaeac")
 
   run_now <- (isFALSE(any(needs_X %in% approach)) && isTRUE(is.null(X))) ||
     (isTRUE(any(needs_X %in% approach)) && isFALSE(is.null(X)))

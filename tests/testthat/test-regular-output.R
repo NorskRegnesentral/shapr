@@ -57,7 +57,7 @@ test_that("output_lm_numeric_empirical_n_coalitions", {
       prediction_zero = p0,
       max_n_coalitions = 20,
       adaptive = FALSE
-      ),
+    ),
     "output_lm_numeric_empirical_n_coalitions"
   )
 })

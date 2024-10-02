@@ -36,8 +36,8 @@ prepare_next_iteration <- function(internal) {
       proposal_next_n_coalitions
     )
 
-    if(paired_shap_sampling){
-      proposal_next_n_coalitions <- ceiling(proposal_next_n_coalitions*0.5)*2
+    if (paired_shap_sampling) {
+      proposal_next_n_coalitions <- ceiling(proposal_next_n_coalitions * 0.5) * 2
     }
 
 
@@ -53,9 +53,9 @@ prepare_next_iteration <- function(internal) {
       next_iter_list$compute_sd <- TRUE
     }
 
-    if(!is.null(reduction_factor_vec[1])){
+    if (!is.null(reduction_factor_vec[1])) {
       next_iter_list$reduction_factor <- ifelse(
-        length(reduction_factor_vec)>=iter,
+        length(reduction_factor_vec) >= iter,
         reduction_factor_vec[iter],
         reduction_factor_vec[length(reduction_factor_vec)]
       )
@@ -63,7 +63,7 @@ prepare_next_iteration <- function(internal) {
       next_iter_list$reduction_factor <- NULL
     }
 
-    next_iter_list$n_batches = set_n_batches(next_iter_list$n_coalitions,internal)
+    next_iter_list$n_batches <- set_n_batches(next_iter_list$n_coalitions, internal)
 
 
     next_iter_list$prev_coal_samples <- current_coal_samples

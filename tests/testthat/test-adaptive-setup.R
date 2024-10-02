@@ -175,7 +175,6 @@ test_that("erroneous input: `min_n_batches`", {
     },
     error = TRUE
   )
-
 })
 
 test_that("different n_batches gives same/different shapley values for different approaches", {
@@ -243,4 +242,3 @@ test_that("different n_batches gives same/different shapley values for different
     explain.ctree_n_batches_10$shapley_values
   ))
 })
-

@@ -1471,7 +1471,6 @@ test_that("setting the seed for combined approaches works", {
 
   # Check that they are equal
   expect_equal(explanation_combined_1, explanation_combined_2)
-
 })
 
 test_that("counting the number of unique approaches", {

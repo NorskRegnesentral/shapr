@@ -33,7 +33,7 @@ compute_time <- function(internal) {
   timing_output <- list(
     init_time = main_timing_list[[1]],
     end_time = main_timing_list[[length(main_timing_list)]],
-    total_time_secs = main_timing_list[[length(main_timing_list)]]-main_timing_list[[1]],
+    total_time_secs = main_timing_list[[length(main_timing_list)]] - main_timing_list[[1]],
     main_timing_secs = main_timing_secs,
     iter_timing_secs_dt = iter_timing_secs_dt[]
   )

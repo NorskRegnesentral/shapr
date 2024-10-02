@@ -205,12 +205,12 @@
 #'
 #' # (Optionally) enable parallelization via the future package
 #' if (requireNamespace("future", quietly = TRUE)) {
-#' future::plan("multisession", workers = 2)
+#'   future::plan("multisession", workers = 2)
 #' }
 #'
 #' # (Optionally) enable progress updates within every iteration via the progressr package
 #' if (requireNamespace("progressr", quietly = TRUE)) {
-#' progressr::handlers(global = TRUE)
+#'   progressr::handlers(global = TRUE)
 #' }
 #'
 #' # Empirical approach
@@ -361,7 +361,7 @@ explain <- function(model,
 
   init_time <- Sys.time()
 
-  if(!is.null(seed)){
+  if (!is.null(seed)) {
     set.seed(seed)
   }
   # Gets and check feature specs from the model
@@ -418,7 +418,7 @@ explain <- function(model,
   converged <- FALSE
   iter <- length(internal$iter_list)
 
-  if(!is.null(seed)){
+  if (!is.null(seed)) {
     set.seed(seed)
   }
 
@@ -516,5 +516,3 @@ testing_cleanup <- function(output) {
 
   return(output)
 }
-
-

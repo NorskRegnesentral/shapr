@@ -1,4 +1,3 @@
-
 #' Set up the kernelSHAP framework
 #'
 #' @inheritParams default_doc_explain
@@ -176,26 +175,26 @@ shapley_reweighting <- function(X, reweight = "on_N") {
 
 
   if (reweight == "on_N") {
-    X[-c(1,.N), shapley_weight := mean(shapley_weight), by = N]
+    X[-c(1, .N), shapley_weight := mean(shapley_weight), by = N]
   } else if (reweight == "on_coal_size") {
-    X[-c(1,.N), shapley_weight := mean(shapley_weight), by = coalition_size]
+    X[-c(1, .N), shapley_weight := mean(shapley_weight), by = coalition_size]
   } else if (reweight == "on_all") {
     m <- X[.N, coalition_size]
-    X[-c(1,.N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
+    X[-c(1, .N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6) / sum_shapley_weights(m)]
   } else if (reweight == "on_N_sum") {
-    X[-c(1,.N), shapley_weight := sum(shapley_weight), by = N]
+    X[-c(1, .N), shapley_weight := sum(shapley_weight), by = N]
   } else if (reweight == "on_all_cond") {
     m <- X[.N, coalition_size]
-    K <- X[,sum(sample_freq)]
-    X[-c(1,.N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
-    X[-c(1,.N), cond := 1-(1-shapley_weight)^K]
-    X[-c(1,.N), shapley_weight := shapley_weight/cond]
+    K <- X[, sum(sample_freq)]
+    X[-c(1, .N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6) / sum_shapley_weights(m)]
+    X[-c(1, .N), cond := 1 - (1 - shapley_weight)^K]
+    X[-c(1, .N), shapley_weight := shapley_weight / cond]
   } else if (reweight == "on_all_cond_paired") {
     m <- X[.N, coalition_size]
-    K <- X[,sum(sample_freq)]
-    X[-c(1,.N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6)/sum_shapley_weights(m)]
-    X[-c(1,.N), cond := 1-(1-2*shapley_weight)^(K/2)]
-    X[-c(1,.N), shapley_weight := 2*shapley_weight/cond]
+    K <- X[, sum(sample_freq)]
+    X[-c(1, .N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6) / sum_shapley_weights(m)]
+    X[-c(1, .N), cond := 1 - (1 - 2 * shapley_weight)^(K / 2)]
+    X[-c(1, .N), shapley_weight := 2 * shapley_weight / cond]
   }
   # strategy= "none" or something else do nothing
   return(NULL)
@@ -347,7 +346,7 @@ shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
 }
 
 #' @keywords internal
-sum_shapley_weights <- function(m){
+sum_shapley_weights <- function(m) {
   coal_samp_vec <- seq(m - 1)
   n <- sapply(coal_samp_vec, choose, n = m)
   w <- shapley_weights(m = m, N = n, coal_samp_vec) * n
@@ -658,7 +657,7 @@ shapley_setup_forecast <- function(internal) {
     this_featcomb <- horizon_features[[i]]
 
     this_coal_feature_list <- lapply(coal_feature_list, function(x) x[x %in% this_featcomb])
-    this_coal_feature_list <- this_coal_feature_list[sapply(this_coal_feature_list, function (x) length(x) != 0)]
+    this_coal_feature_list <- this_coal_feature_list[sapply(this_coal_feature_list, function(x) length(x) != 0)]
 
     n_this_featcomb <- length(this_coal_feature_list)
 

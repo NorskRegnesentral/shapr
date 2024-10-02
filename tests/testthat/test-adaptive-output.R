@@ -13,7 +13,7 @@ test_that("output_lm_numeric_independence_reach_exact", {
       print_shapleyres = TRUE,
       print_iter_info = TRUE,
       paired_shap_sampling = TRUE
-      ),
+    ),
     "output_lm_numeric_independence_reach_exact"
   )
 })
@@ -132,7 +132,6 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
 })
 
 test_that("output_lm_numeric_independence_saving_and_cont_est", {
-
   # Full 8 iteration estimation to compare against
   # Sets seed on the outside + seed = NULL for reproducibility in two-step estimation
   set.seed(123)
@@ -151,7 +150,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       max_iter = 8
     ),
     adaptive = TRUE,
-    seed=NULL
+    seed = NULL
   )
 
   # Testing saving and continuation estimation
@@ -172,8 +171,8 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       max_iter = 5
     ),
     adaptive = TRUE,
-    seed=NULL
-    )
+    seed = NULL
+  )
 
   # Continue estimation from the init object
   expect_snapshot_rds(
@@ -195,7 +194,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       print_shapleyres = TRUE,
       print_iter_info = TRUE,
       prev_shapr_object = e_init_object,
-      seed=NULL,
+      seed = NULL,
     ),
     "output_lm_numeric_independence_cont_est_object"
   )
@@ -221,7 +220,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       max_iter = 5
     ),
     adaptive = TRUE,
-    seed=NULL
+    seed = NULL
   )
 
   # Continue estimation from the init object
@@ -244,15 +243,11 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       print_shapleyres = TRUE,
       print_iter_info = TRUE,
       prev_shapr_object = e_init_path$internal$parameters$adaptive_arguments$saving_path,
-      seed=NULL
+      seed = NULL
     ),
     "output_lm_numeric_independence_cont_est_path"
   )
 
   # Testing equality with the object being run in one go
   expect_equal(e_cont_est_path, full)
-
 })
-
-
-

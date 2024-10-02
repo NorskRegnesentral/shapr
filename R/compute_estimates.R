@@ -7,7 +7,6 @@
 #' @export
 #' @keywords internal
 compute_estimates <- function(internal, vS_list) {
-
   internal$timing_list$compute_vS <- Sys.time()
 
 
@@ -285,53 +284,50 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
       .(id_coalition, coalitions, coalition_size, N, sample_freq)
     ]
 
-    X_boot00[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot/2)]
+    X_boot00[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot / 2)]
 
 
-    X_boot00_paired <- copy(X_boot00[,.(coalitions,boot_id)])
-    X_boot00_paired[,coalitions:=lapply(coalitions, function(x) seq(n_shapley_values)[-x])]
+    X_boot00_paired <- copy(X_boot00[, .(coalitions, boot_id)])
+    X_boot00_paired[, coalitions := lapply(coalitions, function(x) seq(n_shapley_values)[-x])]
     X_boot00_paired[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
 
     # Extract the paired coalitions from X_samp
     X_boot00_paired <- merge(X_boot00_paired,
-                             X_samp[, .(id_coalition, coalition_size , N, shapley_weight, coalitions_tmp)],
-                             by = "coalitions_tmp"
+      X_samp[, .(id_coalition, coalition_size, N, shapley_weight, coalitions_tmp)],
+      by = "coalitions_tmp"
     )
     X_boot0 <- rbind(
-      X_boot00[, .(boot_id, id_coalition, coalitions , coalition_size     , N)],
-      X_boot00_paired[, .(boot_id,id_coalition, coalitions, coalition_size, N)]
+      X_boot00[, .(boot_id, id_coalition, coalitions, coalition_size, N)],
+      X_boot00_paired[, .(boot_id, id_coalition, coalitions, coalition_size, N)]
     )
 
-    X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ][,boot_id:=rep(seq(n_boot_samps), times = 2)], X_boot0)
+    X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ][, boot_id := rep(seq(n_boot_samps), times = 2)], X_boot0)
     setkey(X_boot, boot_id, id_coalition)
     X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
     X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
-
   } else {
+    X_boot0 <- X_samp[
+      sample.int(
+        n = .N,
+        size = n_coalitions_boot * n_boot_samps,
+        replace = TRUE,
+        prob = sample_freq
+      ),
+      .(id_coalition, coalitions, coalition_size, N)
+    ]
+    X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ], X_boot0)
+    X_boot[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot + 2)]
 
-  X_boot0 <- X_samp[
-    sample.int(
-      n = .N,
-      size = n_coalitions_boot * n_boot_samps,
-      replace = TRUE,
-      prob = sample_freq
-    ),
-    .(id_coalition, coalitions, coalition_size, N)
-  ]
-  X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ], X_boot0)
-  X_boot[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot + 2)]
-
-  setkey(X_boot, boot_id, id_coalition)
-  X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
-  X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
-  X_boot[, shapley_weight := sample_freq]
-  X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+    setkey(X_boot, boot_id, id_coalition)
+    X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
+    X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
+    X_boot[, shapley_weight := sample_freq]
+    X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
   }
 
   for (i in seq_len(n_boot_samps)) {
-
     this_X <- X_boot[boot_id == i] # This is highly inefficient, but probably the best way to deal with the reweighting for now
     shapley_reweighting(this_X, reweight = shapley_reweight)
 

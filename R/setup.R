@@ -57,9 +57,9 @@ setup <- function(x_train,
   internal <- list()
 
   # Using parameters and iter_list from a previouys  to continue estimation from on previous shapr objects
-  if(is.null(prev_shapr_object)){
+  if (is.null(prev_shapr_object)) {
     prev_iter_list <- NULL
-  } else{
+  } else {
     prev_internal <- get_prev_internal(prev_shapr_object)
 
     prev_iter_list <- prev_internal$iter_list
@@ -120,7 +120,7 @@ setup <- function(x_train,
 
   internal <- check_and_set_parameters(internal)
 
-  internal <- set_adaptive_parameters(internal,prev_iter_list)
+  internal <- set_adaptive_parameters(internal, prev_iter_list)
 
   internal$timing_list <- list(
     init_time = init_time,
@@ -130,18 +130,18 @@ setup <- function(x_train,
   return(internal)
 }
 
-get_prev_internal <- function(prev_shapr_object,exclude_parameters = c("max_n_coalitions","adaptive_arguments","seed")){
+get_prev_internal <- function(prev_shapr_object, exclude_parameters = c("max_n_coalitions", "adaptive_arguments", "seed")) {
   cl <- class(prev_shapr_object)[1]
 
-  if(cl=="character"){
-    internal <- readRDS(file = prev_shapr_object)# Already contains only "parameters" and "iter_list"
-  } else if(cl=="shapr"){
-    internal <- prev_shapr_object$internal[c("parameters","iter_list")]
-  } else{
+  if (cl == "character") {
+    internal <- readRDS(file = prev_shapr_object) # Already contains only "parameters" and "iter_list"
+  } else if (cl == "shapr") {
+    internal <- prev_shapr_object$internal[c("parameters", "iter_list")]
+  } else {
     stop("Invalid `shapr_object` passed to explain(). See ?explain for details.")
   }
 
-  if(length(exclude_parameters)>0){
+  if (length(exclude_parameters) > 0) {
     internal$parameters[exclude_parameters] <- NULL
   }
 
@@ -176,30 +176,30 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
 
   # max_n_coalitions
   if (!is.null(max_n_coalitions) &&
-      !(is.wholenumber(max_n_coalitions) &&
-        length(max_n_coalitions) == 1 &&
-        !is.na(max_n_coalitions) &&
-        max_n_coalitions > 0)) {
+    !(is.wholenumber(max_n_coalitions) &&
+      length(max_n_coalitions) == 1 &&
+      !is.na(max_n_coalitions) &&
+      max_n_coalitions > 0)) {
     stop("`max_n_coalitions` must be NULL or a single positive integer.")
   }
 
   # group (checked more thoroughly later)
   if (!is.null(group) &&
-      !is.list(group)) {
+    !is.list(group)) {
     stop("`group` must be NULL or a list")
   }
 
   # n_MC_samples
   if (!(is.wholenumber(n_MC_samples) &&
-        length(n_MC_samples) == 1 &&
-        !is.na(n_MC_samples) &&
-        n_MC_samples > 0)) {
+    length(n_MC_samples) == 1 &&
+    !is.na(n_MC_samples) &&
+    n_MC_samples > 0)) {
     stop("`n_MC_samples` must be a single positive integer.")
   }
 
   # keep_samp_for_vS
   if (!(is.logical(keep_samp_for_vS) &&
-        length(keep_samp_for_vS) == 1)) {
+    length(keep_samp_for_vS) == 1)) {
     stop("`keep_samp_for_vS` must be single logical.")
   }
 
@@ -252,8 +252,8 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   #### Tests combining more than one parameter ####
   # prediction_zero vs output_size
   if (!all((is.numeric(prediction_zero)) &&
-           all(length(prediction_zero) == output_size) &&
-           all(!is.na(prediction_zero)))) {
+    all(length(prediction_zero) == output_size) &&
+    all(!is.na(prediction_zero)))) {
     stop(paste0(
       "`prediction_zero` (", paste0(prediction_zero, collapse = ", "),
       ") must be numeric and match the output size of the model (",
@@ -263,9 +263,11 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
 
   # type
   if (!(length(shapley_reweighting) == 1 && shapley_reweighting %in%
-        c("none", "on_N", "on_coal_size", "on_all", "on_N_sum", "on_all_cond", "on_all_cond_paired", "comb"))) {
-    stop("`shapley_reweighting` must be one of `none`, `on_N`, `on_coal_size`, `on_N_sum`, ",
-         "`on_all`, `on_all_cond`, `on_all_cond_paired` or `comb`.\n")
+    c("none", "on_N", "on_coal_size", "on_all", "on_N_sum", "on_all_cond", "on_all_cond_paired", "comb"))) {
+    stop(
+      "`shapley_reweighting` must be one of `none`, `on_N`, `on_coal_size`, `on_N_sum`, ",
+      "`on_all`, `on_all_cond`, `on_all_cond_paired` or `comb`.\n"
+    )
   }
 
 
@@ -566,25 +568,25 @@ adjust_max_n_coalitions <- function(internal) {
       )
     }
     # Set max_n_coalitions to lower bound
-    if(isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10,n_features+1)){
-      if(n_features <= 3){
+    if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_features + 1)) {
+      if (n_features <= 3) {
         max_n_coalitions <- 2^n_features
         message(
           paste0(
             "Success with message:\n",
-            "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",2^n_features,") ",
+            "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (", 2^n_features, ") ",
             "that we should use all to get reliable results.\n",
-            "max_n_coalitions is therefore set to 2^n_features = ",2^n_features,".\n"
+            "max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".\n"
           )
         )
       } else {
-        max_n_coalitions <- min(10,n_features + 1)
+        max_n_coalitions <- min(10, n_features + 1)
         message(
           paste0(
             "Success with message:\n",
-            "max_n_coalitions is smaller than max(10, n_features + 1 = ",n_features + 1 ,"),",
+            "max_n_coalitions is smaller than max(10, n_features + 1 = ", n_features + 1, "),",
             "which will result in unreliable results.\n",
-            "It is therefore set to ",max(10,n_features+1),".\n"
+            "It is therefore set to ", max(10, n_features + 1), ".\n"
           )
         )
       }
@@ -602,25 +604,25 @@ adjust_max_n_coalitions <- function(internal) {
       )
     }
     # Set max_n_coalitions to lower bound
-    if(isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10,n_groups+1)){
-      if(n_groups <= 3){
+    if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_groups + 1)) {
+      if (n_groups <= 3) {
         max_n_coalitions <- 2^n_groups
         message(
           paste0(
             "Success with message:\n",
-            "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (",2^n_groups,") ",
+            "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (", 2^n_groups, ") ",
             "that we should use all to get reliable results.\n",
-            "max_n_coalitions is therefore set to 2^n_groups = ",2^n_groups,".\n"
+            "max_n_coalitions is therefore set to 2^n_groups = ", 2^n_groups, ".\n"
           )
         )
       } else {
-        max_n_coalitions <- min(10,n_groups + 1)
+        max_n_coalitions <- min(10, n_groups + 1)
         message(
           paste0(
             "Success with message:\n",
-            "max_n_coalitions is smaller than max(10, n_groups + 1 = ",n_groups + 1 ,"),",
+            "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_groups + 1, "),",
             "which will result in unreliable results.\n",
-            "It is therefore set to ",max(10,n_groups+1),".\n"
+            "It is therefore set to ", max(10, n_groups + 1), ".\n"
           )
         )
       }
@@ -666,30 +668,29 @@ check_max_n_coalitions_fc <- function(internal) {
   }
 }
 
-check_and_set_adaptive <- function(internal){
+check_and_set_adaptive <- function(internal) {
   adaptive <- internal$parameters$adaptive
   approach <- internal$parameters$approach
 
   # Always adaptive = FALSE for vaeac and regression_surrogate
-  if(any(approach %in% c("vaeac","regression_surrogate"))){
-    unsupported <- approach[approach %in% c("vaeac","regression_surrogate")]
+  if (any(approach %in% c("vaeac", "regression_surrogate"))) {
+    unsupported <- approach[approach %in% c("vaeac", "regression_surrogate")]
 
-    if(isTRUE(adaptive)){
+    if (isTRUE(adaptive)) {
       warning(
         paste0(
-          "Adaptive estimation of Shapley values are not supported for approach = ",paste0(unsupported,collapse = ", "),
+          "Adaptive estimation of Shapley values are not supported for approach = ", paste0(unsupported, collapse = ", "),
           ". Setting adaptive = FALSE."
-          )
+        )
       )
     }
 
     internal$parameters$adaptive <- FALSE
-
   } else {
     # Sets the default value of adaptive to TRUE if computing more than 5 Shapley values for all other approaches
-    if(is.null(adaptive)){
+    if (is.null(adaptive)) {
       n_shapley_values <- internal$parameters$n_shapley_values # n_features if feature-wise and n_groups if group-wise
-      internal$parameters$adaptive <- isTRUE(n_shapley_values>5)
+      internal$parameters$adaptive <- isTRUE(n_shapley_values > 5)
     }
   }
 
@@ -705,10 +706,10 @@ set_exact <- function(internal) {
   adaptive <- internal$parameters$adaptive
 
   if (isFALSE(adaptive) &&
-      (
-        (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
+    (
+      (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
         (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
-      )
+    )
   ) {
     exact <- TRUE
   } else {
@@ -778,8 +779,8 @@ check_approach <- function(internal) {
   supported_approaches <- get_supported_approaches()
 
   if (!(is.character(approach) &&
-        (length(approach) == 1 || length(approach) == n_features - 1) &&
-        all(is.element(approach, supported_approaches)))
+    (length(approach) == 1 || length(approach) == n_features - 1) &&
+    all(is.element(approach, supported_approaches)))
   ) {
     stop(
       paste0(
@@ -937,14 +938,12 @@ check_groups <- function(feature_names, group) {
 
 
 #' @keywords internal
-set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
-
-
+set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
   adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
-                                          adaptive_arguments,
-                                          keep.null = TRUE
+    adaptive_arguments,
+    keep.null = TRUE
   )
 
 
@@ -955,13 +954,12 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
 
   internal$parameters$adaptive_arguments <- adaptive_arguments
 
-  if(!is.null(prev_iter_list)){
-
+  if (!is.null(prev_iter_list)) {
     # Update internal with the iter_list from prev_shapr_object
     internal$iter_list <- prev_iter_list
 
     # Conveniently allow running non-adaptive estimation one step further
-    if(isFALSE(internal$parameters$adaptive)){
+    if (isFALSE(internal$parameters$adaptive)) {
       internal$parameters$adaptive_arguments$max_iter <- length(internal$iter_list) + 1
       internal$parameters$adaptive_arguments$reduction_factor_vec <- NULL
     }
@@ -974,7 +972,6 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
 
     # Prepare next iteration
     internal <- prepare_next_iteration(internal)
-
   } else {
     internal$iter_list <- list()
     internal$iter_list[[1]] <- list(
@@ -982,142 +979,139 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
       exact = internal$parameters$exact,
       compute_sd = adaptive_arguments$compute_sd,
       reduction_factor = adaptive_arguments$reduction_factor_vec[1],
-      n_batches = set_n_batches(adaptive_arguments$initial_n_coalitions,internal)
+      n_batches = set_n_batches(adaptive_arguments$initial_n_coalitions, internal)
     )
   }
 
   return(internal)
 }
 
-check_adaptive_arguments <- function(adaptive_arguments){
-
+check_adaptive_arguments <- function(adaptive_arguments) {
   list2env(adaptive_arguments, envir = environment())
 
 
   # initial_n_coalitions
   if (!(is.wholenumber(initial_n_coalitions) &&
-        length(initial_n_coalitions) == 1 &&
-        !is.na(initial_n_coalitions) &&
-        initial_n_coalitions <= max_n_coalitions &&
-        initial_n_coalitions > 2)) {
+    length(initial_n_coalitions) == 1 &&
+    !is.na(initial_n_coalitions) &&
+    initial_n_coalitions <= max_n_coalitions &&
+    initial_n_coalitions > 2)) {
     stop("`adaptive_arguments$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.")
   }
 
   # fixed_n_coalitions
   if (!is.null(fixed_n_coalitions_per_iter) &&
-      !(is.wholenumber(fixed_n_coalitions_per_iter) &&
-        length(fixed_n_coalitions_per_iter) == 1 &&
-        !is.na(fixed_n_coalitions_per_iter) &&
-        fixed_n_coalitions_per_iter <= max_n_coalitions &&
-        fixed_n_coalitions_per_iter > 0)) {
+    !(is.wholenumber(fixed_n_coalitions_per_iter) &&
+      length(fixed_n_coalitions_per_iter) == 1 &&
+      !is.na(fixed_n_coalitions_per_iter) &&
+      fixed_n_coalitions_per_iter <= max_n_coalitions &&
+      fixed_n_coalitions_per_iter > 0)) {
     stop("`adaptive_arguments$fixed_n_coalitions_per_iter` must be NULL or a single positive integer no larger than `max_n_coalitions`.")
   }
 
   # max_iter
   if (!is.null(max_iter) &&
-      !((is.wholenumber(max_iter) || is.infinite(max_iter)) &&
-        length(max_iter) == 1 &&
-        !is.na(max_iter) &&
-        max_iter > 0)) {
+    !((is.wholenumber(max_iter) || is.infinite(max_iter)) &&
+      length(max_iter) == 1 &&
+      !is.na(max_iter) &&
+      max_iter > 0)) {
     stop("`adaptive_arguments$max_iter` must be NULL, Inf or a single positive integer.")
   }
 
   # convergence_tolerance
   if (!is.null(convergence_tolerance) &&
-      !(length(convergence_tolerance) == 1 &&
-        !is.na(convergence_tolerance) &&
-        convergence_tolerance >= 0)) {
+    !(length(convergence_tolerance) == 1 &&
+      !is.na(convergence_tolerance) &&
+      convergence_tolerance >= 0)) {
     stop("`adaptive_arguments$convergence_tolerance` must be NULL, 0, or a positive numeric.")
   }
 
   # reduction_factor_vec
   if (!is.null(reduction_factor_vec) &&
-      !(all(!is.na(reduction_factor_vec)) &&
-        all(reduction_factor_vec <= 1) &&
-        all(reduction_factor_vec >= 0))) {
+    !(all(!is.na(reduction_factor_vec)) &&
+      all(reduction_factor_vec <= 1) &&
+      all(reduction_factor_vec >= 0))) {
     stop("`adaptive_arguments$reduction_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
   }
 
   # n_boot_samps
   if (!(is.wholenumber(n_boot_samps) &&
-        length(n_boot_samps) == 1 &&
-        !is.na(n_boot_samps) &&
-        n_boot_samps > 0)) {
+    length(n_boot_samps) == 1 &&
+    !is.na(n_boot_samps) &&
+    n_boot_samps > 0)) {
     stop("`adaptive_arguments$n_boot_samps` must be a single positive integer.")
   }
 
   # compute_sd
   if (!(is.logical(compute_sd) &&
-        length(compute_sd) == 1)) {
+    length(compute_sd) == 1)) {
     stop("`adaptive_arguments$compute_sd` must be a single logical.")
   }
 
 
   # min_n_batches
   if (!is.null(min_n_batches) &&
-      !(is.wholenumber(min_n_batches) &&
-        length(min_n_batches) == 1 &&
-        !is.na(min_n_batches) &&
-        min_n_batches > 0)) {
+    !(is.wholenumber(min_n_batches) &&
+      length(min_n_batches) == 1 &&
+      !is.na(min_n_batches) &&
+      min_n_batches > 0)) {
     stop("`adaptive_arguments$min_n_batches` must be NULL or a single positive integer.")
   }
 
   # max_batch_size
   if (!is.null(max_batch_size) &&
-      !((is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
-        length(max_batch_size) == 1 &&
-        !is.na(max_batch_size) &&
-        max_batch_size > 0)) {
+    !((is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
+      length(max_batch_size) == 1 &&
+      !is.na(max_batch_size) &&
+      max_batch_size > 0)) {
     stop("`adaptive_arguments$max_batch_size` must be NULL, Inf or a single positive integer.")
   }
 
   # saving_path
   if (!(is.character(saving_path) &&
-        length(saving_path) == 1)) {
+    length(saving_path) == 1)) {
     stop("`adaptive_arguments$saving_path` must be a single character.")
   }
 
   # Check that the saving_path exists, and abort if not...
-  if(!dir.exists(dirname(saving_path))){
+  if (!dir.exists(dirname(saving_path))) {
     stop(
-      paste0("Directory ",dirname(saving_path)," in the adaptive_arguments$saving_path does not exists.\n",
-             "Please create the directory with `dir.create('",dirname(saving_path),"')` or use another directory.")
+      paste0(
+        "Directory ", dirname(saving_path), " in the adaptive_arguments$saving_path does not exists.\n",
+        "Please create the directory with `dir.create('", dirname(saving_path), "')` or use another directory."
+      )
     )
   }
-
-
 }
 
-trans_null_adaptive_arguments <- function(adaptive_arguments){
-
+trans_null_adaptive_arguments <- function(adaptive_arguments) {
   list2env(adaptive_arguments, envir = environment())
 
   # Translating NULL to always return n_batches = 1 (if just one approach)
-  adaptive_arguments$min_n_batches <- ifelse(is.null(min_n_batches),1,min_n_batches)
-  adaptive_arguments$max_batch_size <- ifelse(is.null(max_batch_size),Inf,max_batch_size)
-  adaptive_arguments$max_iter <- ifelse(is.null(max_iter),Inf,max_iter)
+  adaptive_arguments$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
+  adaptive_arguments$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
+  adaptive_arguments$max_iter <- ifelse(is.null(max_iter), Inf, max_iter)
 
   return(adaptive_arguments)
 }
 
 
-set_n_batches <- function(n_coalitions,internal){
+set_n_batches <- function(n_coalitions, internal) {
   min_n_batches <- internal$parameters$adaptive_arguments$min_n_batches
   max_batch_size <- internal$parameters$adaptive_arguments$max_batch_size
   n_unique_approaches <- internal$parameters$n_unique_approaches
 
 
   # Restrict the sizes of the batches to max_batch_size, but require at least min_n_batches and n_unique_approaches
-  suggested_n_batches <- max(min_n_batches,n_unique_approaches,ceiling(n_coalitions/max_batch_size))
+  suggested_n_batches <- max(min_n_batches, n_unique_approaches, ceiling(n_coalitions / max_batch_size))
 
   # Set n_batches to no less than n_coalitions
-  n_batches <- min(n_coalitions,suggested_n_batches)
+  n_batches <- min(n_coalitions, suggested_n_batches)
 
   return(n_batches)
 }
 
-check_vs_prev_shapr_object <- function(internal){
-
+check_vs_prev_shapr_object <- function(internal) {
   iter <- length(internal$iter_list)
 
   converged <- internal$iter_list[[iter]]$converged
@@ -1126,26 +1120,30 @@ check_vs_prev_shapr_object <- function(internal){
   converged_max_iter <- internal$iter_list[[iter]]$converged_max_iter
   converged_max_n_coalitions <- internal$iter_list[[iter]]$converged_max_n_coalitions
 
-  if(isTRUE(converged)){
+  if (isTRUE(converged)) {
     message0 <- "Convergence reached before estimation start.\n"
     if (isTRUE(converged_exact)) {
-      message0 <- c(message0,
-                    paste0("All coalitions estimated. No need for further estimation.\n")
+      message0 <- c(
+        message0,
+        paste0("All coalitions estimated. No need for further estimation.\n")
       )
     }
     if (isTRUE(converged_sd)) {
-      message0 <- c(message0,
-                    paste0("Convergence tolerance reached. Consider decreasing `adaptive_arguments$tolerance`.\n")
+      message0 <- c(
+        message0,
+        paste0("Convergence tolerance reached. Consider decreasing `adaptive_arguments$tolerance`.\n")
       )
     }
     if (isTRUE(converged_max_iter)) {
-      message0 <- c(message0,
-                    paste0("Maximum number of iterations reached. Consider increasing `adaptive_arguments$max_iter`.\n")
+      message0 <- c(
+        message0,
+        paste0("Maximum number of iterations reached. Consider increasing `adaptive_arguments$max_iter`.\n")
       )
     }
     if (isTRUE(converged_max_n_coalitions)) {
-      message0 <- c(message0,
-                    paste0("Maximum number of coalitions reached. Consider increasing `max_n_coalitions`.\n")
+      message0 <- c(
+        message0,
+        paste0("Maximum number of coalitions reached. Consider increasing `max_n_coalitions`.\n")
       )
     }
     stop(message0)
@@ -1191,9 +1189,10 @@ get_adaptive_arguments_default <- function(internal,
                                            initial_n_coalitions = ceiling(
                                              min(
                                                200,
-                                               max(5,
-                                                   internal$parameters$n_features,
-                                                   (2^internal$parameters$n_features) / 10
+                                               max(
+                                                 5,
+                                                 internal$parameters$n_features,
+                                                 (2^internal$parameters$n_features) / 10
                                                )
                                              )
                                            ),
@@ -1205,7 +1204,7 @@ get_adaptive_arguments_default <- function(internal,
                                            compute_sd = isTRUE(internal$parameters$adaptive),
                                            max_batch_size = 10,
                                            min_n_batches = 10,
-                                           saving_path = tempfile("shapr_obj_",fileext=".rds")) {
+                                           saving_path = tempfile("shapr_obj_", fileext = ".rds")) {
   adaptive <- internal$parameters$adaptive
   max_n_coalitions <- internal$parameters$max_n_coalitions
   exact <- internal$parameters$exact
@@ -1215,7 +1214,6 @@ get_adaptive_arguments_default <- function(internal,
 
 
   if (isTRUE(adaptive)) {
-
     ret_list <- mget(
       c(
         "initial_n_coalitions",
