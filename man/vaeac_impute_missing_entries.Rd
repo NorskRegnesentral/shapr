@@ -42,7 +42,8 @@ based code is being run.}
 \item{index_features}{Optional integer vector. Used internally in shapr package to index the coalitions.}
 }
 \value{
-A data.table where the missing values (\code{NaN}) in \code{x_explain_with_NaNs} have been imputed \code{n_MC_samples} times.
+A data.table where the missing values (\code{NaN}) in \code{x_explain_with_NaNs} have been imputed \code{n_MC_samples}
+times.
 The data table will contain extra id columns if \code{index_features} and \code{n_explain} are provided.
 }
 \description{

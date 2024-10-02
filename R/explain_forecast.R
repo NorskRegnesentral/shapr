@@ -128,7 +128,8 @@ explain_forecast <- function(model,
     output_size = horizon,
     max_n_coalitions = max_n_coalitions,
     n_MC_samples = n_MC_samples,
-    #    n_batches = n_batches, # TODO: This is not used anymore, but the code does not use the adaptive version of it either I think... I have now just set it to always 10 in the create_S_batches_forecast function.
+    #    n_batches = n_batches, # TODO: This is not used anymore, but the code does not use the adaptive version of it
+    #                 either I think... I have now just set it to always 10 in the create_S_batches_forecast function.
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,

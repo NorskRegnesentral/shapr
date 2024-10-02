@@ -328,7 +328,7 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
   }
 
   for (i in seq_len(n_boot_samps)) {
-    this_X <- X_boot[boot_id == i] # This is highly inefficient, but probably the best way to deal with the reweighting for now
+    this_X <- X_boot[boot_id == i] # This is highly inefficient, but the best way to deal with the reweighting for now
     shapley_reweighting(this_X, reweight = shapley_reweight)
 
     W_boot <- weight_matrix(

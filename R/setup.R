@@ -130,7 +130,8 @@ setup <- function(x_train,
   return(internal)
 }
 
-get_prev_internal <- function(prev_shapr_object, exclude_parameters = c("max_n_coalitions", "adaptive_arguments", "seed")) {
+get_prev_internal <- function(prev_shapr_object,
+                              exclude_parameters = c("max_n_coalitions", "adaptive_arguments", "seed")) {
   cl <- class(prev_shapr_object)[1]
 
   if (cl == "character") {
@@ -574,8 +575,8 @@ adjust_max_n_coalitions <- function(internal) {
         message(
           paste0(
             "Success with message:\n",
-            "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (", 2^n_features, ") ",
-            "that we should use all to get reliable results.\n",
+            "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",
+            2^n_features, ") that we should use all to get reliable results.\n",
             "max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".\n"
           )
         )
@@ -679,8 +680,8 @@ check_and_set_adaptive <- function(internal) {
     if (isTRUE(adaptive)) {
       warning(
         paste0(
-          "Adaptive estimation of Shapley values are not supported for approach = ", paste0(unsupported, collapse = ", "),
-          ". Setting adaptive = FALSE."
+          "Adaptive estimation of Shapley values are not supported for approach = ",
+          paste0(unsupported, collapse = ", "), ". Setting adaptive = FALSE."
         )
       )
     }
@@ -1006,7 +1007,10 @@ check_adaptive_arguments <- function(adaptive_arguments) {
       !is.na(fixed_n_coalitions_per_iter) &&
       fixed_n_coalitions_per_iter <= max_n_coalitions &&
       fixed_n_coalitions_per_iter > 0)) {
-    stop("`adaptive_arguments$fixed_n_coalitions_per_iter` must be NULL or a single positive integer no larger than `max_n_coalitions`.")
+    stop(
+      "`adaptive_arguments$fixed_n_coalitions_per_iter` must be NULL or a single positive integer no larger than",
+      "`max_n_coalitions`."
+    )
   }
 
   # max_iter

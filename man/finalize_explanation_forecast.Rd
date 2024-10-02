@@ -28,9 +28,12 @@ Only present when \code{adaptive = TRUE} and \code{adaptive_arguments$compute_sd
 \item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
-\href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion}{MSEv evaluation section in the vignette for details}.}
+\href{
+https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
+}{MSEv evaluation section in the vignette for details}.}
 \item{timing}{List containing timing information for the different parts of the computation.
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
+\code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
 \code{main_timing_secs} gives the time in seconds for the main computations.
 \code{iter_timing_secs} gives for each iteration of the adaptive estimation, the time spent on the different parts
 adaptive estimation routine.}
@@ -80,12 +83,12 @@ p <- mean(data_train[, y_var])
 
 # (Optionally) enable parallelization via the future package
 if (requireNamespace("future", quietly = TRUE)) {
-future::plan("multisession", workers = 2)
+  future::plan("multisession", workers = 2)
 }
 
 # (Optionally) enable progress updates within every iteration via the progressr package
 if (requireNamespace("progressr", quietly = TRUE)) {
-progressr::handlers(global = TRUE)
+  progressr::handlers(global = TRUE)
 }
 
 # Empirical approach

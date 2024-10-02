@@ -1011,7 +1011,8 @@ vaeac_train_model_continue <- function(explanation,
 #' @param checkpoint List containing the parameters of the `vaeac` model.
 #' @param sampler A sampler object used to sample the MC samples.
 #'
-#' @return A data.table where the missing values (`NaN`) in `x_explain_with_NaNs` have been imputed `n_MC_samples` times.
+#' @return A data.table where the missing values (`NaN`) in `x_explain_with_NaNs` have been imputed `n_MC_samples`
+#' times.
 #' The data table will contain extra id columns if `index_features` and `n_explain` are provided.
 #'
 #' @keywords internal
@@ -1088,7 +1089,11 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
       # This is a tensor of shape [batch_size, n_MC_samples, n_generative_parameters]. Note that, for only continuous
       # features we have that n_generative_parameters = 2*n_features, but for categorical data the number depends
       # on the number of categories.
-      samples_params <- vaeac_model$generate_samples_params(batch = batch_extended, mask = mask_extended, K = n_MC_samples)
+      samples_params <- vaeac_model$generate_samples_params(
+        batch = batch_extended,
+        mask = mask_extended,
+        K = n_MC_samples
+      )
 
       # Remove the parameters belonging to added instances in batch_extended.
       samples_params <- samples_params[1:batch$shape[1], , ]
@@ -1121,13 +1126,17 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
   if (verbose == 2) message("Postprocessing the Monte Carlo samples.")
 
-  # Order the MC samples into a tensor of shape [nrow(x_explain_with_NaNs), n_MC_samples, n_features]. The lapply function
+  # Order the MC samples into a tensor of shape [nrow(x_explain_with_NaNs), n_MC_samples, n_features].
+  # The lapply function
   # creates a list of tensors of shape [nrow(x_explain_with_NaNs), 1, n_features] by concatenating the batches for the
   # i'th MC sample to a tensor of shape [nrow(x_explain_with_NaNs), n_features] and then add unsqueeze to add a new
   # singleton dimension as the second dimension to get the shape [nrow(x_explain_with_NaNs), 1, n_features]. Then
   # outside of the lapply function, we concatenate the n_MC_samples torch elements to form a final torch result of shape
   # [nrow(x_explain_with_NaNs), n_MC_samples, n_features].
-  result <- torch::torch_cat(lapply(seq(n_MC_samples), function(i) torch::torch_cat(results[[i]])$unsqueeze(2)), dim = 2)
+  result <- torch::torch_cat(lapply(
+    seq(n_MC_samples),
+    function(i) torch::torch_cat(results[[i]])$unsqueeze(2)
+  ), dim = 2)
 
   # Get back to the original distribution by undoing the normalization by multiplying with the std and adding the mean
   result <- result * checkpoint$norm_std + checkpoint$norm_mean

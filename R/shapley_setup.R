@@ -180,19 +180,34 @@ shapley_reweighting <- function(X, reweight = "on_N") {
     X[-c(1, .N), shapley_weight := mean(shapley_weight), by = coalition_size]
   } else if (reweight == "on_all") {
     m <- X[.N, coalition_size]
-    X[-c(1, .N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6) / sum_shapley_weights(m)]
+    X[-c(1, .N), shapley_weight := shapley_weights(
+      m = m,
+      N = N,
+      n_components = coalition_size,
+      weight_zero_m = 10^6
+    ) / sum_shapley_weights(m)]
   } else if (reweight == "on_N_sum") {
     X[-c(1, .N), shapley_weight := sum(shapley_weight), by = N]
   } else if (reweight == "on_all_cond") {
     m <- X[.N, coalition_size]
     K <- X[, sum(sample_freq)]
-    X[-c(1, .N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6) / sum_shapley_weights(m)]
+    X[-c(1, .N), shapley_weight := shapley_weights(
+      m = m,
+      N = N,
+      n_components = coalition_size,
+      weight_zero_m = 10^6
+    ) / sum_shapley_weights(m)]
     X[-c(1, .N), cond := 1 - (1 - shapley_weight)^K]
     X[-c(1, .N), shapley_weight := shapley_weight / cond]
   } else if (reweight == "on_all_cond_paired") {
     m <- X[.N, coalition_size]
     K <- X[, sum(sample_freq)]
-    X[-c(1, .N), shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = 10^6) / sum_shapley_weights(m)]
+    X[-c(1, .N), shapley_weight := shapley_weights(
+      m = m,
+      N = N,
+      n_components = coalition_size,
+      weight_zero_m = 10^6
+    ) / sum_shapley_weights(m)]
     X[-c(1, .N), cond := 1 - (1 - 2 * shapley_weight)^(K / 2)]
     X[-c(1, .N), shapley_weight := 2 * shapley_weight / cond]
   }

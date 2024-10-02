@@ -173,9 +173,12 @@
 #'   \item{internal}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 #'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
-#'   \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion}{MSEv evaluation section in the vignette for details}.}
+#'   \href{
+#'   https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
+#'   }{MSEv evaluation section in the vignette for details}.}
 #'   \item{timing}{List containing timing information for the different parts of the computation.
 #'   `init_time` and `end_time` gives the time stamps for the start and end of the computation.
+#'   `total_time_secs` gives the total time in seconds for the complete execution of `explain()`.
 #'   `main_timing_secs` gives the time in seconds for the main computations.
 #'   `iter_timing_secs` gives for each iteration of the adaptive estimation, the time spent on the different parts
 #'   adaptive estimation routine.}
