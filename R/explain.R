@@ -368,6 +368,10 @@ explain <- function(model,
 
   init_time <- Sys.time()
 
+  if("basic" %in% verbose){
+    cli::cli_alert_info("Starting {.fn shapr::explain} at {init_time}")
+  }
+
   if (!is.null(seed)) {
     set.seed(seed)
   }
@@ -399,7 +403,9 @@ explain <- function(model,
     ...
   )
 
-
+  if("basic" %in% verbose){
+    setup_message(internal,model)
+  }
 
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(predict_model = predict_model, model = model)
@@ -429,13 +435,33 @@ explain <- function(model,
     set.seed(seed)
   }
 
+  if("basic" %in% verbose){
+    # TODO: Add ifelse adaptive here
+    adaptive_pb_id <- cli::cli_progress_message("Adaptive iteration {iter} running.",current=FALSE,clear = FALSE,.auto_close=FALSE)
+  }
+
   while (converged == FALSE) {
+    if("basic" %in% verbose){
+      Sys.sleep(2)
+      iter = iter+10
+      cli::cli_progress_update(id=adaptive_pb_id)
+      Sys.sleep(2)
+      iter = iter+10
+      cli::cli_progress_update(id=adaptive_pb_id)
+      iter <- iter-20
+    }
+
     internal$timing_list <- list(init = Sys.time())
+
+    if("basic" %in% verbose){
+      cli::cli_progress_step("Sampling coalitions", spinner = TRUE)
+      Sys.sleep(2)
+    }
 
     # setup the Shapley framework
     internal <- shapley_setup(internal)
 
-    # Only actually called for approach = regression_surrogate
+    # Only actually called for approach %in% c("regression_surrogate","vaeac")
     internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
     # Compute the vS
@@ -482,6 +508,8 @@ explain <- function(model,
   if (isTRUE(testing)) {
     output <- testing_cleanup(output)
   }
+
+
 
   return(output)
 }

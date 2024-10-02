@@ -10,10 +10,17 @@
 #' @export
 #' @keywords internal
 compute_vS <- function(internal, model, predict_model, method = "future") {
+
   iter <- length(internal$iter_list)
 
   S_batch <- internal$iter_list[[iter]]$S_batch
 
+  verbose <- internal$parameters$verbose
+
+  if("basic" %in% verbose){
+    cli::cli_progress_step("Computing vS", spinner = TRUE)
+    Sys.sleep(2)
+  }
 
   if (method == "future") {
     vS_list <- future_compute_vS_batch(
