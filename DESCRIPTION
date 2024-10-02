@@ -40,7 +40,7 @@ Suggests:
     ranger,
     xgboost,
     mgcv,
-    testthat (>= 3.0.0),
+    testthat,
     knitr,
     rmarkdown,
     roxygen2,

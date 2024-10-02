@@ -943,7 +943,8 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 
 # 5 plots are made
 names(MSEv_plots)
-#> [1] "MSEv_explicand_bar"        "MSEv_explicand_line_point" "MSEv_coalition_bar"        "MSEv_coalition_line_point" "MSEv_bar"
+#> [1] "MSEv_explicand_bar"        "MSEv_explicand_line_point" "MSEv_coalition_bar"        "MSEv_coalition_line_point"
+#> [5] "MSEv_bar"
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
 we have only averaged over the observations or the combinations (both as bar and line plots).
@@ -1768,10 +1769,9 @@ ex_further <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
-#> Error in rbindlist(l, use.names, fill, idcol): Item 3 has 10 columns, inconsistent with item 1 which has 11 columns. To fill missing columns use fill=TRUE.
 
 print(ex_further$internal$parameters$adaptive_arguments$saving_path)
-#> [1] "/tmp/RtmpMe6y80/shapr_obj_2cd2e287d6d35.rds"
+#> [1] "/tmp/RtmpoIJVki/shapr_obj_9f92c1daf800a.rds"
 
 # Using the ex_init object to continue the computation for the remaining coalition samples
 # but this time using the path to the saved intermediate estimation object
@@ -1784,7 +1784,11 @@ ex_even_further <- explain(
   max_n_coalitions = NULL,
   prev_shapr_object = ex_further$internal$parameters$adaptive_arguments$saving_path
 )
-#> Error in gzfile(file, "rb"): cannot open the connection
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+#> and is therefore set to 2^n_features = 32.
 ```
 
 ## Explaining a forecasting model using `explain_forecast`

@@ -73,7 +73,7 @@ iter_list_to_dt <- function(iter_list, what = c(
                               "est_required_coalitions", "est_remaining_coalitions"
                             )) {
   extracted <- lapply(iter_list, function(x) x[what])
-  ret <- do.call(rbind, lapply(extracted, as.data.table))
+  ret <- do.call(rbindlist, list(l=lapply(extracted, as.data.table),fill=TRUE))
   return(ret)
 }
 
