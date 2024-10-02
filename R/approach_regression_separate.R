@@ -38,12 +38,14 @@ setup_approach.regression_separate <- function(internal,
                                                regression.vfold_cv_para = NULL,
                                                regression.recipe_func = NULL,
                                                ...) {
+  verbose <- internal$parameters$verbose
+
   # Check that required libraries are installed
   regression.check_namespaces()
 
   # Small printout to the user
-  if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_separate'.")
-  if (internal$parameters$verbose == 2) regression.separate_time_mess() # TODO: maybe remove
+  if ("vS_details" %in% verbose) message("Starting 'setup_approach.regression_separate'.")
+  if ("vS_details" %in% verbose) regression.separate_time_mess() # TODO: maybe remove
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <-
@@ -54,7 +56,7 @@ setup_approach.regression_separate <- function(internal,
   internal <- regression.check_parameters(internal = internal)
 
   # Small printout to the user
-  if (internal$parameters$verbose == 2) message("Done with 'setup_approach.regression_separate'.")
+  if ("vS_details" %in% verbose) message("Done with 'setup_approach.regression_separate'.")
 
   return(internal) # Return the updated internal list
 }
@@ -70,12 +72,13 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
   iter <- length(internal$iter_list)
 
   X <- internal$iter_list[[iter]]$X
+  verbose <- internal$parameters$verbose
 
   # Get the features in the batch
   features <- X$features[index_features]
 
   # Small printout to the user about which batch that are currently worked on
-  if (internal$parameters$verbose == 2) regression.prep_message_batch(internal, index_features)
+  if ("vS_details" %in% verbose) regression.prep_message_batch(internal, index_features)
 
   # Initialize empty data table with specific column names and id_coalition (transformed to integer later). The data
   # table will contain the contribution function values for the coalitions given by `index_features` and all explicands.
@@ -93,11 +96,11 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
     current_x_explain <- internal$data$x_explain[, ..current_comb]
 
     # Fit the current separate regression model to the current training data
-    if (internal$parameters$verbose == 2) regression.prep_message_comb(internal, index_features, comb_idx)
+    if ("vS_details" %in% verbose) regression.prep_message_comb(internal, index_features, comb_idx)
     regression.current_fit <- regression.train_model(
       x = current_x_train,
       seed = internal$parameters$seed,
-      verbose = internal$parameters$verbose,
+      verbose = verbose,
       regression.model = internal$parameters$regression.model,
       regression.tune = internal$parameters$regression.tune,
       regression.tune_values = internal$parameters$regression.tune_values,
@@ -143,7 +146,7 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 #' @keywords internal
 regression.train_model <- function(x,
                                    seed = 1,
-                                   verbose = 0,
+                                   verbose = NULL,
                                    regression.model = parsnip::linear_reg(),
                                    regression.tune = FALSE,
                                    regression.tune_values = NULL,
@@ -209,7 +212,7 @@ regression.train_model <- function(x,
     )
 
     # Small printout to the user
-    if (verbose == 2) regression.cv_message(regression.results = regression.results, regression.grid = regression.grid)
+    if ("vS_details" %in% verbose) regression.cv_message(regression.results = regression.results, regression.grid = regression.grid)
 
     # Set seed for reproducibility. Without this we get different results based on if we run in parallel or sequential
     set.seed(seed)

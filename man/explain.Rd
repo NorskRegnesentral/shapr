@@ -20,7 +20,7 @@ explain(
   predict_model = NULL,
   get_model_specs = NULL,
   MSEv_uniform_comb_weights = TRUE,
-  verbose = 0,
+  verbose = "basic",
   adaptive_arguments = list(),
   print_shapleyres = FALSE,
   print_iter_info = FALSE,
@@ -129,10 +129,22 @@ If \code{FALSE}, then the function use the Shapley kernel weights to weight the 
 criterion.
 Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
-\item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
-If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
-Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
-TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
+\item{verbose}{String vector or NULL.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"convergence"}
+\code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the estimation and where in the calculation process the function
+currently is.
+#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+(only when \code{adaptive = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
+\itemize{
+\item the final estimates.
+\code{"vS_details"} displays information about the v_S estimates.
+This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{NULL} means no printout.
+Note that any combination of four strings can be used.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+}}
 
 \item{adaptive_arguments}{Named list.
 Specifices the arguments for the adaptive procedure.

@@ -210,8 +210,15 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   }
 
   # verbose
-  if (!is.numeric(verbose) || !(verbose %in% c(0, 1, 2))) {
-    stop("`verbose` must be either `0` (no verbosity), `1` (low verbosity), or `2` (high verbosity).")
+  if (!is.null(verbose) &&
+      (!is.character(verbose) || !(verbose %in% c("basic", "convergence", "shapley", "vS_details")))
+  ) {
+    stop(
+      paste0(
+        "`verbose` must be NULL or a string (vector) containing one or more of the strings ",
+        "`basic`, `convergence`, `shapley`, `vS_details`.\n"
+      )
+    )
   }
 
   # parameters only used for type "forecast"

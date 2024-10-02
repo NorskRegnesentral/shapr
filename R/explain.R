@@ -85,10 +85,20 @@
 #' criterion.
 #' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
 #'
-#' @param verbose An integer specifying the level of verbosity. If `0`, `shapr` will stay silent.
-#' If `1`, it will print information about performance. If `2`, some additional information will be printed out.
-#' Use `0` (default) for no verbosity, `1` for low verbose, and `2` for high verbose.
-#' TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.
+#' @param verbose String vector or NULL.
+#' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"convergence"`
+#'  `"shapley"`  and `"vS_details"`.
+#' `"basic"` (default) displays basic information about the estimation and where in the calculation process the function
+#' currently is.
+#' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
+#' (only when `adaptive = TRUE`) .
+#' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `adaptive = TRUE`)
+#' + the final estimates.
+#' `"vS_details"` displays information about the v_S estimates.
+#' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`).
+#' `NULL` means no printout.
+#' Note that any combination of four strings can be used.
+#' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the vS estimation process.
 #'
 #' @param paired_shap_sampling Logical.
 #' If `TRUE` (default), paired versions of all sampled coalitions are also included in the computation.
@@ -353,7 +363,7 @@ explain <- function(model,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     MSEv_uniform_comb_weights = TRUE,
-                    verbose = 0,
+                    verbose = "basic",
                     adaptive_arguments = list(),
                     print_shapleyres = FALSE, # tmp
                     print_iter_info = FALSE, # tmp
