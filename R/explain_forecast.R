@@ -182,6 +182,7 @@ explain_forecast <- function(model,
   ### Temporary solution for forecast
   internal$iter_list[[1]]$X <- internal$objects$X
   internal$iter_list[[1]]$S <- internal$objects$S
+  internal$iter_list[[1]]$compute_sd <- FALSE
 
 
   # Compute the v(S):
