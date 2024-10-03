@@ -210,13 +210,14 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   }
 
   # verbose
+  check_verbose(verbose)
   if (!is.null(verbose) &&
-      (!is.character(verbose) || !(all(verbose %in% c("basic", "basic2", "convergence", "shapley", "vS_details"))))
+      (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
   ) {
     stop(
       paste0(
         "`verbose` must be NULL or a string (vector) containing one or more of the strings ",
-        "`basic`, `convergence`, `shapley`, `vS_details`.\n"
+        "`basic`, `progress`, `convergence`, `shapley`, `vS_details`.\n"
       )
     )
   }
@@ -311,6 +312,26 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   return(parameters)
 }
 
+#' Function that checks the verbose parameter
+#'
+#' @inheritParams explain
+#'
+#' @return The function does not return anything.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen, Martin Jullum
+check_verbose <- function(verbose) {
+  if (!is.null(verbose) &&
+      (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
+  ) {
+    stop(
+      paste0(
+        "`verbose` must be NULL or a string (vector) containing one or more of the strings ",
+        "`basic`, `progress`, `convergence`, `shapley`, `vS_details`.\n"
+      )
+    )
+  }
+}
 
 #' @keywords internal
 get_data <- function(x_train, x_explain) {

@@ -839,7 +839,7 @@ vaeac_train_model_continue <- function(explanation,
   if (!"vaeac" %in% explanation$internal$parameters$approach) stop("`vaeac` is not an approach in `explanation`.")
   if (!is.null(lr_new)) vaeac_check_positive_numerics(list(lr_new = lr_new))
   if (!is.null(x_train) && !data.table::is.data.table(x_train)) stop("`x_train` must be a `data.table` object.")
-  vaeac_check_verbose(verbose)
+  check_verbose(verbose)
   vaeac_check_positive_integers(list(epochs_new = epochs_new, seed = seed))
   vaeac_check_logicals(list(save_data = save_data))
 
@@ -1380,26 +1380,6 @@ vaeac_check_mask_gen <- function(mask_gen_coalitions, mask_gen_coalitions_prob, 
   }
 }
 
-#' Function that checks the verbose parameter
-#'
-#' @inheritParams vaeac_train_model
-#'
-#' @return The function does not return anything.
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-vaeac_check_verbose <- function(verbose) {
-  if (!is.null(verbose) &&
-      (!is.character(verbose) || !(verbose %in% c("basic", "convergence", "shapley", "vS_details")))
-  ) {
-    stop(
-      paste0(
-        "`verbose` must be NULL or a string (vector) containing one or more of the strings ",
-        "`basic`, `convergence`, `shapley`, `vS_details`.\n"
-      )
-    )
-  }
-}
 
 #' Function that checks that the save folder exists and for a valid file name
 #'
@@ -1552,7 +1532,7 @@ vaeac_check_parameters <- function(x_train,
                                    seed,
                                    ...) {
   # Check verbose parameter
-  vaeac_check_verbose(verbose = verbose)
+  check_verbose(verbose = verbose)
 
   # Check that the activation function is valid torch::nn_module object
   vaeac_check_activation_func(activation_function = activation_function)

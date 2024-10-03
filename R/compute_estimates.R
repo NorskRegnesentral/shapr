@@ -27,26 +27,16 @@ compute_estimates <- function(internal, vS_list) {
   internal$timing_list$postprocess_vS <- Sys.time()
 
 
-  # Compute the Shapley values
-  if("basic" %in% verbose){
-    current_operation <- "Computing Shapley value estimates"
-    cli::cli_progress_update(id=cli_id)
-  }
   if("progress" %in% verbose){
     cli::cli_progress_step("Computing Shapley value estimates")
-    Sys.sleep(0.5)
   }
 
-
+  # Compute the Shapley values
   dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
 
   internal$timing_list$compute_shapley <- Sys.time()
 
   if (compute_sd) {
-    if("basic" %in% verbose){
-      current_operation <- "Boostrapping Shapley value sds"
-      cli::cli_progress_update(id=cli_id)
-    }
     if("progress" %in% verbose){
       cli::cli_progress_step("Boostrapping Shapley value sds")
     }
