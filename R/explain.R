@@ -441,22 +441,38 @@ explain <- function(model,
 #    internal$parameters$cli_id <- cli::cli_progress_step("Adaptive iteration {iter} running {current_operation}!",msg_done = "Done estimating!")
     internal$parameters$cli_id <- cli::cli_progress_message("Adaptive iteration {iter} running {current_operation}!",current=FALSE)
   }
-  if("basic2" %in% verbose){
-    current_operation <- ""
-    cli::cli_progress_step("Adaptive iteration {iter} running {current_operation}!")
+
+  if("progress" %in% verbose){
+    # Printing saving_path unless testing is TRUE
+    if(isTRUE(internal$parameters$adaptive)){
+      cli::cli_alert_info("Adaptive estimation started!")
+    } else {
+      cli::cli_alert_info("Estimation started!")
+    }
+    if (isFALSE(internal$parameters$testing)) {
+      cli::cli_alert_info("Intermediate computations saved at {.path saving_path}")
+    }
   }
 
 
 
   while (converged == FALSE) {
+    if("progress" %in% verbose){
+      if(isTRUE(internal$parameters$adaptive)){
+        new_coal <- internal$iter_list[[iter]]$new_n_coalitions
+        tot_coal <- internal$iter_list[[iter]]$n_coalitions
+        all_coal <- 2^internal$parameters$n_shapley_values
+
+        cli::cli_h1("Iteration {iter}")
+        msg <- paste0("Using {tot_coal} ({new_coal} new) of {all_coal} coalitions.")
+        cli::cli_alert_info(msg)
+      }
+    }
+
     Sys.sleep(1)
     if("basic" %in% verbose){
       current_operation <- "Sampling coalitions"
       cli::cli_progress_update(id=internal$parameters$cli_id)
-    }
-    if("basic2" %in% verbose){
-      current_operation <- "Sampling coalitions"
-      cli::cli_progress_step("Adaptive iteration {iter} running {current_operation}!")
     }
 
 

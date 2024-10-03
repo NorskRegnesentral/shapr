@@ -5,6 +5,7 @@
 #' @export
 #' @keywords internal
 shapley_setup <- function(internal) {
+  verbose <- internal$parameters$verbose
   n_shapley_values <- internal$parameters$n_shapley_values
   n_features <- internal$parameters$n_features
   approach <- internal$parameters$approach
@@ -19,6 +20,11 @@ shapley_setup <- function(internal) {
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   exact <- internal$iter_list[[iter]]$exact
   prev_coal_samples <- internal$iter_list[[iter]]$prev_coal_samples
+
+  if("progress" %in% verbose){
+    cli::cli_progress_step("Sampling coaltions")
+  }
+
 
   X <- create_coalition_table(
     m = n_shapley_values,

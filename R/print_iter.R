@@ -26,53 +26,42 @@ print_iter <- function(internal) {
 
     next_n_coalitions <- internal$iter_list[[iter + 1]]$n_coalitions
 
+    cli::cli_h3("Convergence info")
+
     if (isFALSE(converged)) {
-      cat(paste0(
-        "\nIteration ", iter, "\n",
-        "Not converged after ", current_n_coalitions, " coalitions.\n"
-      ))
+      msg <- "Not converged after {current_n_coalitions} coalitions.\n"
+
       if (!is.null(convergence_tolerance)) {
-        cat(paste0(
-          "Estimated remaining coalitions: ", est_remaining_coalitions, "\n",
-          "Estimated required coalitions: ", est_required_coalitions, "\n"
-        ))
+        msg <- paste0(msg,
+                      "Estimated remaining coalitions to reach convergence tolerance:",
+                      "{est_remaining_coalitions} .\n",
+                      "(Concervatively) adding {next_n_coalitions - current_n_coalitions} new coalitions in the next iteration.\n"
+        )
       }
-      cat(paste0(
-        "Using ", next_n_coalitions - current_n_coalitions, " new coalitions in the next iteration.\n"
-      ))
+      cli::cli_alert_info(msg)
+
     } else {
-      cat(paste0(
-        "\nIteration ", iter, "\n",
-        "Estimation stopped!\n"
-      ))
+      msg <- "Converged after {current_n_coalitions} coalitions.\n"
       if (isTRUE(converged_exact)) {
-        cat(paste0(
-          "All (", current_n_coalitions, ") coalitions used.\n"
-        ))
+        msg <- paste0(msg,
+                      "All ({current_n_coalitions}) coalitions used.\n")
       }
       if (isTRUE(converged_sd)) {
-        cat(paste0(
-          "Convergence tolerance reached after ", current_n_coalitions, " coalitions.\n"
-        ))
+        msg <- paste0(msg,
+                      "Convergence tolerance reached!\n")
       }
       if (isTRUE(converged_max_iter)) {
-        cat(paste0(
-          "Maximum number of iterations reached after ", current_n_coalitions, " coalitions.\n"
-        ))
+        msg <- paste0(msg,
+                      "Maximum number of iterations reached!\n")
       }
       if (isTRUE(converged_max_n_coalitions)) {
-        cat(paste0(
-          "Maximum number of coalitions (", current_n_coalitions, ") reached.\n"
-        ))
+        msg <- paste0(msg,
+                      "Maximum number of coalitions reached!\n")
       }
+    cli::cli_alert_success(msg)
+
     }
 
-    # Printing saving_path unless testing is TRUE
-    if (isFALSE(testing)) {
-      cat(paste0(
-        "Intermediate computations saved at ", saving_path, ".\n"
-      ))
-    }
   }
 
   if ("shapley" %in% verbose) {
@@ -86,21 +75,22 @@ print_iter <- function(internal) {
     matrix2 <- format(round(dt_shapley_sd, 2), nsmall = 2, justify = "right")
 
     if (isTRUE(converged)) {
-      cat("Final ")
+      msg <- "Final "
     } else {
-      cat("Current ")
+      msg <- "Current "
     }
 
     if (converged_exact) {
-      cat("estimated Shapley values:\n")
+      msg <- paste0(msg,"estimated Shapley values")
       print_dt <- as.data.table(matrix1)
-      names(print_dt) <- names(dt_shapley_est)
-      print(print_dt)
     } else {
-      cat("estimated Shapley values (sd):\n")
+      msg <- paste0(msg,"estimated Shapley values (sd)")
       print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = n_explain))
-      names(print_dt) <- names(dt_shapley_est)
-      print(print_dt)
     }
+
+    cli::cli_h3(msg)
+    names(print_dt) <- names(dt_shapley_est)
+    print(print_dt)
+
   }
 }

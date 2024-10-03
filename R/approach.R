@@ -9,10 +9,18 @@
 #'
 #' @export
 setup_approach <- function(internal, ...) {
+
+  verbose <- internal$parameters$verbose
+
   approach <- internal$parameters$approach
 
   iter <- length(internal$iter_list)
   X <- internal$iter_list[[iter]]$X
+
+  if("progress" %in% verbose){
+    cli::cli_progress_step("Setting up approach(es)")
+  }
+
 
   needs_X <- c("regression_surrogate", "vaeac")
 

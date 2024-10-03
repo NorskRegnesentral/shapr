@@ -63,7 +63,9 @@ prepare_next_iteration <- function(internal) {
       next_iter_list$reduction_factor <- NULL
     }
 
-    next_iter_list$n_batches <- set_n_batches(next_iter_list$n_coalitions, internal)
+    next_iter_list$new_n_coalitions <- next_iter_list$n_coalitions-current_n_coalitions
+
+    next_iter_list$n_batches <- set_n_batches(next_iter_list$new_n_coalitions, internal)
 
 
     next_iter_list$prev_coal_samples <- current_coal_samples
