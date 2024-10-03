@@ -211,7 +211,7 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
 
   # verbose
   if (!is.null(verbose) &&
-      (!is.character(verbose) || !(all(verbose %in% c("basic", "convergence", "shapley", "vS_details"))))
+      (!is.character(verbose) || !(all(verbose %in% c("basic", "basic2", "convergence", "shapley", "vS_details"))))
   ) {
     stop(
       paste0(

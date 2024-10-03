@@ -18,9 +18,14 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   verbose <- internal$parameters$verbose
 
   if("basic" %in% verbose){
-    cli::cli_progress_step("Computing vS", spinner = TRUE)
-    Sys.sleep(2)
+    current_operation <- "Computing vS"
+    cli::cli_progress_update(id=internal$parameter$cli_id)
   }
+  if("basic2" %in% verbose){
+    current_operation <- "Computing vS"
+    cli::cli_progress_step("Adaptive iteration {iter} running {current_operation}!")
+  }
+
 
   if (method == "future") {
     vS_list <- future_compute_vS_batch(

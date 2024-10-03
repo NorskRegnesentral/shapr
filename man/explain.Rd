@@ -22,8 +22,6 @@ explain(
   MSEv_uniform_comb_weights = TRUE,
   verbose = "basic",
   adaptive_arguments = list(),
-  print_shapleyres = FALSE,
-  print_iter_info = FALSE,
   shapley_reweighting = "on_all_cond",
   prev_shapr_object = NULL,
   ...
@@ -149,10 +147,6 @@ E.g. \code{verbose = c("basic", "vS_details")} will display basic information + 
 \item{adaptive_arguments}{Named list.
 Specifices the arguments for the adaptive procedure.
 See \code{\link[=get_adaptive_arguments_default]{get_adaptive_arguments_default()}} for description of the arguments and their default values.}
-
-\item{print_shapleyres}{TODO: move to verbose}
-
-\item{print_iter_info}{TODO: move to verbose}
 
 \item{shapley_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing

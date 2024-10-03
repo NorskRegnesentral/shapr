@@ -44,9 +44,6 @@ compute_time <- function(internal) {
   )
   internal$main_timing_list <- internal$iter_timing_list <- NULL
 
-  if("basic" %in% verbose){
-    cli::cli_alert_success("Done estimating in {total_time_secs} seconds.")
-  }
 
 
   return(timing_output)

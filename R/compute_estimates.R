@@ -9,6 +9,8 @@
 compute_estimates <- function(internal, vS_list) {
 
   verbose <- internal$parameters$verbose
+  cli_id <- internal$parameter$cli_id
+
   internal$timing_list$compute_vS <- Sys.time()
 
 
@@ -27,9 +29,15 @@ compute_estimates <- function(internal, vS_list) {
 
   # Compute the Shapley values
   if("basic" %in% verbose){
-    cli::cli_progress_step("Computing Shapley value estimates", spinner = TRUE)
-    Sys.sleep(2)
+    current_operation <- "Computing Shapley value estimates"
+    cli::cli_progress_update(id=cli_id)
   }
+  if("basic2" %in% verbose){
+    current_operation <- "Computing Shapley value estimates"
+    cli::cli_progress_step("Adaptive iteration {iter} running {current_operation}!")
+    Sys.sleep(0.5)
+  }
+
 
   dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
 
@@ -37,8 +45,11 @@ compute_estimates <- function(internal, vS_list) {
 
   if (compute_sd) {
     if("basic" %in% verbose){
-      cli::cli_progress_step("Boostrapping Shapley value sds", spinner = TRUE)
-      Sys.sleep(2)
+      current_operation <- "Boostrapping Shapley value sds"
+      cli::cli_progress_update(id=cli_id)
+    }
+    if("basic2" %in% verbose){
+      cli::cli_progress_step("Adaptive iteration {iter} running Boostrapping Shapley value sds22!")
     }
 
     dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
