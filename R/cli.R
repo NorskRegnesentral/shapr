@@ -1,4 +1,4 @@
-cli_basic_startup <- function(internal,model){
+cli_startup <- function(internal,model,verbose){
 
   init_time <- internal$timing_list$init_time
 
@@ -14,25 +14,41 @@ cli_basic_startup <- function(internal,model){
 
   testing <- internal$parameters$testing
 
-  if (isFALSE(testing)) {
-    cli::cli_h1("Starting {.fn shapr::explain} at {round(init_time)}")
+
+  line_vec <- "Model class: {.cls {class(model)}}"
+  line_vec <- c(line_vec,"Approach: {.emph {approach}}")
+  line_vec <- c(line_vec,"Adaptive estimation: {.emph {adaptive}}")
+  line_vec <- c(line_vec,"Number of {.emph {feat_group_txt}} Shapley values: {n_shapley_values}")
+  line_vec <- c(line_vec,"Number of observations to explain: {n_explain}")
+  if(isFALSE(testing)){
+    line_vec <- c(line_vec,"Computations (temporary) saved at: {.path {saving_path}}")
   }
 
-  line1 <- "Model class: {.cls {class(model)}}"
-  line2 <- "Approach: {.emph {approach}}"
-  line3 <- "Adaptive estimation: {.emph {adaptive}}"
-  line4 <- "Number of {.emph {feat_group_txt}} Shapley values: {n_shapley_values}"
-  line5 <- "Number of observations to explain: {n_explain}"
-  line6 <- ifelse(isFALSE(testing),"Computations (temporary) saved at: {.path {saving_path}}","")
 
-  cli::cli_ul(c(line1,line2,line3,line4,line5,line6))
-
-  if(isTRUE(adaptive)){
-    msg <- "Adaptive computation started"
-  } else {
-    msg <- "Main computation started"
+  if("basic" %in% verbose){
+    if (isFALSE(testing)) {
+      cli::cli_h1("Starting {.fn shapr::explain} at {round(init_time)}")
+    }
+    cli::cli_ul(line_vec)
   }
-  cli::cli_h2(cli::col_blue(msg))
+
+  if("vS_details" %in% verbose){
+    if(any(c("regression_surrogate", "regression_separate") %in% approach)){
+      reg_desc <- paste0(capture.output(internal$parameters$regression.model),collapse="\n")
+      cli::cli_h3("Additional details about the regression model")
+      cli::cli_text(reg_desc)
+    }
+  }
+
+  if("basic" %in% verbose){
+    if(isTRUE(adaptive)){
+      msg <- "Adaptive computation started"
+    } else {
+      msg <- "Main computation started"
+    }
+    cli::cli_h2(cli::col_blue(msg))
+
+  }
 
 }
 

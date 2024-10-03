@@ -399,9 +399,6 @@ explain <- function(model,
     ...
   )
 
-  if("basic" %in% verbose){
-    cli_basic_startup(internal,model)
-  }
 
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(predict_model = predict_model, model = model)
@@ -430,6 +427,8 @@ explain <- function(model,
   if (!is.null(seed)) {
     set.seed(seed)
   }
+
+  cli_startup(internal,model,verbose)
 
 
   while (converged == FALSE) {

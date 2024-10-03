@@ -25,7 +25,7 @@ check_convergence <- function(internal) {
 
   dt_shapley_est0 <- copy(dt_shapley_est)
 
-  est_required_coals_per_ex_id <- est_required_coalitions <- est_remaining_coalitions <- NA
+  est_required_coals_per_ex_id <- est_required_coalitions <- est_remaining_coalitions <- overall_conv_measure <- NA
 
   if (isTRUE(exact)) {
     converged_exact <- TRUE
