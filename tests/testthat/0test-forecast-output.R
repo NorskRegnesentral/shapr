@@ -78,6 +78,26 @@ test_that("forecast_output_forecast_ARIMA_group_numeric", {
   )
 })
 
+test_that("forecast_output_arima_numeric_no_lags", {
+  expect_snapshot_rds(
+    explain_forecast(
+      testing = TRUE,
+      model = model_arima_temp,
+      y = data[1:150, "Temp"],
+      xreg = data[, "Wind"],
+      train_idx = 2:148,
+      explain_idx = 149:150,
+      explain_y_lags = 0,
+      explain_xreg_lags = 0,
+      horizon = 3,
+      approach = "independence",
+      prediction_zero = p0_ar,
+      group_lags = FALSE,
+      n_batches = 1
+    ),
+    "forecast_output_arima_numeric_no_lags"
+  )
+})
 
 test_that("ARIMA gives the same output with different horizons", {
   h3 <- explain_forecast(
@@ -216,27 +236,5 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
   expect_equal(
     h3$shapley_values[horizon == 2],
     h2$shapley_values[horizon == 2]
-  )
-})
-
-test_that("forecast_output_arima_numeric_no_lags", {
-  # TODO: Need to check out this output. It gives lots of warnings, which indicates something might be wrong.
-  expect_snapshot_rds(
-    explain_forecast(
-      testing = TRUE,
-      model = model_arima_temp,
-      y = data[1:150, "Temp"],
-      xreg = data[, "Wind"],
-      train_idx = 2:148,
-      explain_idx = 149:150,
-      explain_y_lags = 0,
-      explain_xreg_lags = 0,
-      horizon = 3,
-      approach = "independence",
-      prediction_zero = p0_ar,
-      group_lags = FALSE,
-      n_batches = 1
-    ),
-    "forecast_output_arima_numeric_no_lags"
   )
 })

@@ -142,6 +142,7 @@ compute_shapley_new <- function(internal, dt_vS) {
     id_coalition_mapper_dt <- internal$objects$id_coalition_mapper_dt
     horizon <- internal$parameters$horizon
     cols_per_horizon <- internal$objects$cols_per_horizon
+    shap_names <- internal$parameters$shap_names
     W_list <- internal$objects$W_list
 
     kshap_list <- list()

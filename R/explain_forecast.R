@@ -170,10 +170,14 @@ explain_forecast <- function(model,
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
   # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-  internal <- setup_computation(internal, model, predict_model)
+
+  # setup the Shapley framework
+  internal <- shapley_setup_forecast(internal)
+
+  # Setup for approach
+  internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
   timing_list$setup_computation <- Sys.time()
-
 
   ### Temporary solution for forecast
   internal$iter_list[[1]]$X <- internal$objects$X
@@ -190,13 +194,15 @@ explain_forecast <- function(model,
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
-  output <- finalize_explanation_forecast(
+  internal <- compute_estimates(
     vS_list = vS_list,
     internal = internal
   )
+  internal$iter_list[[2]] <- numeric()
+
+  output <- finalize_explanation(internal = internal)
 
   output$timing <- compute_time(timing_list)
-
 
   # Some cleanup when doing testing
   testing <- internal$parameters$testing
@@ -314,6 +320,8 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
     y = y,
     xreg = xreg,
     group = reg_fcast$group,
+    horizon_group = reg_fcast$horizon_group,
+    shap_names = names(data_lag$group),
     n_endo = ncol(data_lag$lagged),
     x_train = cbind(
       data.table::as.data.table(data_lag$lagged[train_idx, , drop = FALSE]),
@@ -366,6 +374,7 @@ lag_data <- function(x, lags) {
 reg_forecast_setup <- function(x, horizon, group) {
   fcast <- matrix(NA, nrow(x) - horizon + 1, 0)
   names <- character()
+  horizon_group <- lapply(seq_len(horizon), function (i) names(group)[!(names(group) %in% colnames(x))])
   for (i in seq_len(ncol(x))) {
     names_i <- paste0(colnames(x)[i], ".F", seq_len(horizon))
     names <- c(names, names_i)
@@ -374,8 +383,12 @@ reg_forecast_setup <- function(x, horizon, group) {
     fcast <- cbind(fcast, fcast_i)
 
     # Append group names if the exogenous regressor also has lagged values.
-    group[[colnames(x)[i]]] <- c(group[[colnames(x)[i]]], names_i)
+    for (h in seq_len(horizon)) {
+      group[[paste0(colnames(x)[i], ".", h)]] <- c(group[[colnames(x)[i]]], names_i[seq_len(h)])
+      horizon_group[[h]] <- c(horizon_group[[h]], paste0(colnames(x)[i], ".", h))
+    }
+    group[[colnames(x)[i]]] <- NULL
   }
   colnames(fcast) <- names
-  return(list(fcast = fcast, group = group))
+  return(list(fcast = fcast, group = group, horizon_group = horizon_group))
 }
