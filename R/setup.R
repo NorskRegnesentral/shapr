@@ -968,13 +968,20 @@ check_groups <- function(feature_names, group) {
 
 #' @keywords internal
 set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
+  adaptive <- internal$parameters$adaptive
+
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
   adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
-    adaptive_arguments,
-    keep.null = TRUE
+                                          adaptive_arguments,
+                                          keep.null = TRUE
   )
 
+  # Force setting the number of coalitions and iterations for non-adaptive method
+  if(isFALSE(adaptive)){
+    adaptive_arguments$max_iter <- 1
+    adaptive_arguments$initial_n_coalitions <- adaptive_arguments$max_n_coalitions
+  }
 
   check_adaptive_arguments(adaptive_arguments)
 
@@ -1005,6 +1012,7 @@ set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
     internal$iter_list <- list()
     internal$iter_list[[1]] <- list(
       n_coalitions = adaptive_arguments$initial_n_coalitions,
+      new_n_coalitions = adaptive_arguments$initial_n_coalitions,
       exact = internal$parameters$exact,
       compute_sd = adaptive_arguments$compute_sd,
       reduction_factor = adaptive_arguments$reduction_factor_vec[1],
@@ -1237,13 +1245,11 @@ get_adaptive_arguments_default <- function(internal,
                                            max_batch_size = 10,
                                            min_n_batches = 10,
                                            saving_path = tempfile("shapr_obj_", fileext = ".rds")) {
+
   adaptive <- internal$parameters$adaptive
   max_n_coalitions <- internal$parameters$max_n_coalitions
   exact <- internal$parameters$exact
   is_groupwise <- internal$parameters$is_groupwise
-
-
-
 
   if (isTRUE(adaptive)) {
     ret_list <- mget(
@@ -1276,7 +1282,6 @@ get_adaptive_arguments_default <- function(internal,
       saving_path = saving_path
     )
   }
-
   return(ret_list)
 }
 

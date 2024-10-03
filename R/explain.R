@@ -368,10 +368,6 @@ explain <- function(model,
 
   init_time <- Sys.time()
 
-  if("basic" %in% verbose){
-    cli::cli_alert_info("Starting {.fn shapr::explain} at {init_time}")
-  }
-
   if (!is.null(seed)) {
     set.seed(seed)
   }
@@ -404,7 +400,7 @@ explain <- function(model,
   )
 
   if("basic" %in% verbose){
-    setup_message(internal,model)
+    cli_basic_startup(internal,model)
   }
 
   # Gets predict_model (if not passed to explain)
@@ -435,32 +431,10 @@ explain <- function(model,
     set.seed(seed)
   }
 
-  if("basic" %in% verbose){
-    # Printing saving_path unless testing is TRUE
-    if(isTRUE(internal$parameters$adaptive)){
-      cli::cli_alert_info("Adaptive computation started!")
-    } else {
-      cli::cli_alert_info("Main computation started!")
-    }
-    if (isFALSE(internal$parameters$testing)) {
-      cli::cli_alert_info("Intermediate computations saved at {.path saving_path}")
-    }
-  }
-
-
 
   while (converged == FALSE) {
-    if("basic" %in% verbose){
-      cli::cli_h1("Iteration {iter}")
-      if(isTRUE(internal$parameters$adaptive)){
-        new_coal <- internal$iter_list[[iter]]$new_n_coalitions
-        tot_coal <- internal$iter_list[[iter]]$n_coalitions
-        all_coal <- 2^internal$parameters$n_shapley_values
 
-        msg <- paste0("Using {tot_coal} ({new_coal} new) of {all_coal} coalitions.")
-        cli::cli_alert_info(msg)
-      }
-    }
+    cli_iter(verbose,internal,iter)
 
     internal$timing_list <- list(init = Sys.time())
 

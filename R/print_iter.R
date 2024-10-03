@@ -13,8 +13,11 @@ print_iter <- function(internal) {
   converged_sd <- internal$iter_list[[iter]]$converged_sd
   converged_max_iter <- internal$iter_list[[iter]]$converged_max_iter
   converged_max_n_coalitions <- internal$iter_list[[iter]]$converged_max_n_coalitions
+  overall_conv_measure <- internal$iter_list[[iter]]$overall_conv_measure
+  reduction_factor <- internal$iter_list[[iter]]$reduction_factor
 
   saving_path <- internal$parameters$adaptive_arguments$saving_path
+  convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
   testing <- internal$parameters$testing
 
   if ("convergence" %in% verbose) {
@@ -25,23 +28,29 @@ print_iter <- function(internal) {
     est_required_coalitions <- internal$iter_list[[iter]]$est_required_coalitions
 
     next_n_coalitions <- internal$iter_list[[iter + 1]]$n_coalitions
+    next_new_n_coalitions <- internal$iter_list[[iter + 1]]$new_n_coalitions
 
     cli::cli_h3("Convergence info")
 
     if (isFALSE(converged)) {
-      msg <- "Not converged after {current_n_coalitions} coalitions.\n"
+      msg <- "Not converged after {current_n_coalitions} coalitions:\n"
 
       if (!is.null(convergence_tolerance)) {
-        msg <- paste0(msg,
-                      "Estimated remaining coalitions to reach convergence tolerance:",
-                      "{est_remaining_coalitions} .\n",
-                      "(Concervatively) adding {next_n_coalitions - current_n_coalitions} new coalitions in the next iteration.\n"
+        conv_nice <- signif(overall_conv_measure,2)
+        tol_nice <- format(signif(convergence_tolerance,2),scientific=FALSE)
+        reduction_factor_nice <- format(signif(reduction_factor,2),scientific=FALSE)
+        msg <- paste0(
+          msg,
+          "Current convergence measure: {conv_nice} [needs {tol_nice}]\n",
+          "Estimated remaining coalitions: {est_remaining_coalitions}\n",
+          "(Concervatively) adding {reduction_factor_nice}% of that ({next_new_n_coalitions} coalitions) ",
+          "in the next iteration."
         )
       }
       cli::cli_alert_info(msg)
 
     } else {
-      msg <- "Converged after {current_n_coalitions} coalitions.\n"
+      msg <- "Converged after {current_n_coalitions} coalitions:\n"
       if (isTRUE(converged_exact)) {
         msg <- paste0(msg,
                       "All ({current_n_coalitions}) coalitions used.\n")

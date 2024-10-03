@@ -11,6 +11,7 @@ check_convergence <- function(internal) {
   max_iter <- internal$parameters$adaptive_arguments$max_iter
   max_n_coalitions <- internal$parameters$adaptive_arguments$max_n_coalitions
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
+  n_shapley_values <- internal$parameters$n_shapley_values
 
   exact <- internal$iter_list[[iter]]$exact
 
@@ -36,11 +37,16 @@ check_convergence <- function(internal) {
       dt_shapley_est0[, minval := min(.SD), .SDcols = -c(1, 2), by = .I]
       dt_shapley_est0[, max_sd0 := max_sd0]
       dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tolerance))^2]
+      dt_shapley_est0[, conv_measure := max_sd0 / ((maxval - minval) * sqrt(n_sampled_coalitions))]
+
       est_required_coalitions <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO:Consider other ways to do this
+      est_required_coalitions <- max(est_required_coalitions,2^n_shapley_values-2)
       if (isTRUE(paired_shap_sampling)) {
         est_required_coalitions <- ceiling(est_required_coalitions * 0.5) * 2
       }
       est_remaining_coalitions <- max(0, est_required_coalitions - (n_sampled_coalitions + 2))
+
+      overall_conv_measure <- dt_shapley_est0[, median(conv_measure)] # TODO:Consider other ways to do this
 
       converged_sd <- (est_remaining_coalitions == 0)
 
@@ -68,6 +74,7 @@ check_convergence <- function(internal) {
   internal$iter_list[[iter]]$est_required_coalitions <- est_required_coalitions
   internal$iter_list[[iter]]$est_remaining_coalitions <- est_remaining_coalitions
   internal$iter_list[[iter]]$est_required_coals_per_ex_id <- as.list(est_required_coals_per_ex_id)
+  internal$iter_list[[iter]]$overall_conv_measure <- overall_conv_measure
 
   internal$timing_list$check_convergence <- Sys.time()
 
