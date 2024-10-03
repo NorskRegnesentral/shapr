@@ -32,13 +32,24 @@ compute_estimates <- function(internal, vS_list) {
   shapley_frida <- internal$iter_list[[iter]]$frida_shapley_values
 
   inds = which(colnames(dt_shapley_est) %in% internal$parameters$feature_names )
-  print(sum(abs(dt_shapley_est[, ..inds] - shapley_frida))/length(shapley_frida))
+  # print(sum(abs(dt_shapley_est[, ..inds] - shapley_frida))/length(shapley_frida))
   # print(dt_shapley_est[, ..inds] - shapley_frida)
 
   internal$timing_list$compute_shapley <- Sys.time()
 
   if (compute_sd) {
     dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
+    dt_shapley_sd2 <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS, seed = 8456)
+    internal <- bootstrap_shapley_frida(internal, n_boot_samps = n_boot_samps)
+    frida_boot_shapley_values <- internal$iter_list[[iter]]$frida_boot_shapley_values
+
+    inds = which(colnames(dt_shapley_sd) %in% internal$parameters$feature_names )
+
+    # print(dt_shapley_sd[, ..inds] - frida_boot_shapley_values)
+    print(sum(abs(dt_shapley_sd[, ..inds] - frida_boot_shapley_values))/length(frida_boot_shapley_values))
+    print(sum(abs(dt_shapley_sd2[, ..inds] - frida_boot_shapley_values))/length(frida_boot_shapley_values))
+    print(sum(abs(dt_shapley_sd2[, ..inds] - dt_shapley_sd[, ..inds]))/length(frida_boot_shapley_values))
+    writeLines(" ")
   } else {
     dt_shapley_sd <- dt_shapley_est * 0
   }
@@ -228,8 +239,14 @@ compute_shapley_frida <- function(internal, dt_vS){
     inds = which(merged$this_sample_freq > 0)
 
     S_curr = S[inds, ]
-    X_curr = X[inds, -c("sample_freq")]
+    X_curr = X[inds, ]
+
     X_curr[, "shapley_weight" := merged[inds, this_sample_freq]]
+    X_curr[c(1, .N), shapley_weight := X[1, shapley_weight]]
+
+    X_curr[, sample_freq := X_curr[, shapley_weight]]
+    X_curr[c(1, .N), sample_freq := 1]
+
 
     dt_vS_curr = dt_vS[inds, ]
   } else {
@@ -238,6 +255,10 @@ compute_shapley_frida <- function(internal, dt_vS){
 
     dt_vS_curr = dt_vS
   }
+
+  internal$iter_list[[iter]]$S_curr = S_curr
+  internal$iter_list[[iter]]$X_curr = X_curr
+  internal$iter_list[[iter]]$dt_vS_curr = dt_vS_curr
 
   n_row_all = X[-c(1, .N), sum(shapley_weight)]
 
@@ -274,7 +295,7 @@ compute_shapley_frida <- function(internal, dt_vS){
   b = compute_b(b, dt_vS_curr, X_curr, S_curr, n_row_all, n_row_this_iter, p0)
   internal$iter_list[[iter]]$b = b
 
-  shapley_values = calculate_shapley_values_frida(A, b, dt_vS, preds, p0)
+  shapley_values = calculate_shapley_values_frida(A, b, dt_vS_curr, preds, p0)
   internal$iter_list[[iter]]$frida_shapley_values = shapley_values
   return(internal)
 }
@@ -371,7 +392,6 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
 
 bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   iter <- length(internal$iter_list)
-
   X <- internal$iter_list[[iter]]$X
 
   set.seed(seed)
@@ -478,10 +498,118 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
   return(dt_kshap_boot_sd)
 }
 
-bootstrap_shapley_frida <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
+
+# bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
+#   iter <- length(internal$iter_list)
+
+#   X_curr <- internal$iter_list[[iter]]$X_curr
+
+#   set.seed(seed)
+
+#   is_groupwise <- internal$parameters$is_groupwise
+
+#   n_explain <- internal$parameters$n_explain
+#   paired_shap_sampling <- internal$parameters$paired_shap_sampling
+#   shapley_reweight <- internal$parameters$shapley_reweighting
+#   shap_names <- internal$parameters$shap_names
+#   n_shapley_values <- internal$parameters$n_shapley_values
+
+
+#   X_org <- copy(X_curr)
+
+#   boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values, n_boot_samps))
+
+#   X_keep <- X_org[c(1, .N), .(id_coalition, coalitions, coalition_size, N)]
+#   X_samp <- X_org[-c(1, .N), .(id_coalition, coalitions, coalition_size, N, shapley_weight, sample_freq)]
+#   X_samp[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
+
+#   n_coalitions_boot <- X_samp[, sum(sample_freq)]
+
+#   if (paired_shap_sampling) {
+#     # Sample with replacement
+#     X_boot00 <- X_samp[
+#       sample.int(
+#         n = .N,
+#         size = ceiling(n_coalitions_boot * n_boot_samps / 2),
+#         replace = TRUE,
+#         prob = sample_freq
+#       ),
+#       .(id_coalition, coalitions, coalition_size, N, sample_freq)
+#     ]
+
+#     X_boot00[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot/2)]
+
+
+#     X_boot00_paired <- copy(X_boot00[,.(coalitions,boot_id)])
+#     X_boot00_paired[,coalitions:=lapply(coalitions, function(x) seq(n_shapley_values)[-x])]
+#     X_boot00_paired[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
+
+#     # Extract the paired coalitions from X_samp
+#     X_boot00_paired <- merge(X_boot00_paired,
+#                              X_samp[, .(id_coalition, coalition_size , N, shapley_weight, coalitions_tmp)],
+#                              by = "coalitions_tmp"
+#     )
+#     X_boot0 <- rbind(
+#       X_boot00[, .(boot_id, id_coalition, coalitions , coalition_size     , N)],
+#       X_boot00_paired[, .(boot_id,id_coalition, coalitions, coalition_size, N)]
+#     )
+
+#     X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ][,boot_id:=rep(seq(n_boot_samps), times = 2)], X_boot0)
+#     setkey(X_boot, boot_id, id_coalition)
+#     X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
+#     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
+#     X_boot[, shapley_weight := sample_freq]
+#     X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+
+#   } else {
+
+#   X_boot0 <- X_samp[
+#     sample.int(
+#       n = .N,
+#       size = n_coalitions_boot * n_boot_samps,
+#       replace = TRUE,
+#       prob = sample_freq
+#     ),
+#     .(id_coalition, coalitions, coalition_size, N)
+#   ]
+#   X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ], X_boot0)
+#   X_boot[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot + 2)]
+
+#   setkey(X_boot, boot_id, id_coalition)
+#   X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
+#   X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
+#   X_boot[, shapley_weight := sample_freq]
+#   X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+#   }
+
+#   for (i in seq_len(n_boot_samps)) {
+
+#     this_X <- X_boot[boot_id == i] # This is highly inefficient, but probably the best way to deal with the reweighting for now
+#     inds <- X_curr[, id_coalition %in% this_X[, id_coalition]]
+
+#     this_S <- internal$iter_list[[iter]]$S_curr[inds, ]
+#     this_vS_dt <- internal$iter_list[[iter]]$dt_vS_curr[inds, ]
+
+
+#     boot_sd_array[, , i] <- copy(kshap_boot)
+#   }
+
+#   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
+
+#   dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
+#   colnames(dt_kshap_boot_sd) <- c("none", shap_names)
+
+#   return(dt_kshap_boot_sd)
+# }
+
+
+
+
+bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
   iter <- length(internal$iter_list)
 
-  X <- internal$iter_list[[iter]]$X
+  X_curr <- internal$iter_list[[iter]]$X_curr
+  dt_vS_curr <- internal$iter_list[[iter]]$dt_vS_curr
 
   set.seed(seed)
 
@@ -494,22 +622,22 @@ bootstrap_shapley_frida <- function(internal, dt_vS, n_boot_samps = 100, seed = 
   n_shapley_values <- internal$parameters$n_shapley_values
 
 
-  X_org <- copy(X)
+  X_org <- copy(X_curr)
 
-  boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
+  boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values, n_boot_samps))
 
   X_keep <- X_org[c(1, .N), .(id_coalition, coalitions, coalition_size, N)]
   X_samp <- X_org[-c(1, .N), .(id_coalition, coalitions, coalition_size, N, shapley_weight, sample_freq)]
   X_samp[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
-
   n_coalitions_boot <- X_samp[, sum(sample_freq)]
+  # n_coalitions_boot = n_coalitions_boot
 
   if (paired_shap_sampling) {
     # Sample with replacement
     X_boot00 <- X_samp[
       sample.int(
         n = .N,
-        size = ceiling(n_coalitions_boot * n_boot_samps / 2),
+        size = eiling(n_coalitions_boot * n_boot_samps / 2),
         replace = TRUE,
         prob = sample_freq
       ),
@@ -555,26 +683,55 @@ bootstrap_shapley_frida <- function(internal, dt_vS, n_boot_samps = 100, seed = 
   X_boot[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot + 2)]
 
   setkey(X_boot, boot_id, id_coalition)
-  X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
+  X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
   X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
   X_boot[, shapley_weight := sample_freq]
   X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
   }
 
+  n_features = internal$parameters$n_features
+  n_row_all = internal$iter_list[[iter]]$X[-c(1, .N), sum(shapley_weight)]
+
+  p0 = internal$parameters$prediction_zero
+  preds = dt_vS_curr[.N, -"id_coalition"]
+
+  n_explain = internal$parameters$n_explain
+
+  if (iter == 1) {
+    A_list = replicate(n_boot_samps, matrix(0, n_features, n_features), simplify = FALSE)
+    b_list = replicate(n_boot_samps, matrix(0, n_explain, n_features), simplify = FALSE)
+  } else {
+    A_list = internal$iter_list[[iter-1]]$A_boot
+    b_list = internal$iter_list[[iter-1]]$b_boot
+  }
+
+  S_curr = internal$iter_list[[iter]]$S_curr
+
   for (i in seq_len(n_boot_samps)) {
 
     this_X <- X_boot[boot_id == i] # This is highly inefficient, but probably the best way to deal with the reweighting for now
+    inds = X_curr[, .I[id_coalition %in% this_X$id_coalition]]
+    this_S = S_curr[inds, ]
+    this_dt_vS = dt_vS_curr[inds, ]
 
     # shapley_reweighting(this_X, reweight = shapley_reweight) # TODO: Implement reweighting for Frida
 
+    # Effective number of rows in this iteration
+    n_row_this_iter = this_X[-c(1, .N), sum(shapley_weight)]
+    A_list[[i]] = compute_A(A_list[[i]], this_X, this_S, n_row_all, n_row_this_iter)
 
-    boot_sd_array[, , i] <- copy(kshap_boot)
+    b_list[[i]] = compute_b(b_list[[i]], this_dt_vS, this_X, this_S, n_row_all, n_row_this_iter, p0)
+    boot_sd_array[, , i] = calculate_shapley_values_frida(A_list[[i]], b_list[[i]], this_dt_vS, preds, p0)
   }
 
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
 
-  dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
-  colnames(dt_kshap_boot_sd) <- c("none", shap_names)
+  internal$iter_list[[iter]]$A_boot = A_list
+  internal$iter_list[[iter]]$b_boot = b_list
 
-  return(dt_kshap_boot_sd)
+  dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
+  # colnames(dt_kshap_boot_sd) <- c("none", shap_names)
+
+  internal$iter_list[[iter]]$frida_boot_shapley_values = std_dev_mat
+  return(internal)
 }

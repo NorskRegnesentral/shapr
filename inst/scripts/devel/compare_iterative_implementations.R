@@ -100,6 +100,9 @@ shapley_reweighting = "none" # tmp # "on_N" # TODO: Make "on_N" the default late
 prev_shapr_object = NULL
 #
 
+devtools::load_all()
+# rm(list = c("predict_model"))
+
 # debugonce(explain)
 expl <- explain(
   model = model,
@@ -108,5 +111,6 @@ expl <- explain(
   approach = approach,
   prediction_zero = prediction_zero,
   adaptive = adaptive,
-  adaptive_arguments = adaptive_arguments
+  adaptive_arguments = adaptive_arguments,
+  shapley_reweighting = shapley_reweighting
 )
