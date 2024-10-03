@@ -22,7 +22,7 @@ shapley_setup <- function(internal) {
   prev_coal_samples <- internal$iter_list[[iter]]$prev_coal_samples
 
   if("progress" %in% verbose){
-    cli::cli_progress_step("Sampling coaltions")
+    cli::cli_progress_step("Sampling coalitions")
   }
 
 

@@ -519,8 +519,16 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
   # Message title of the results
   #message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
 #  msg <- paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):\n")
-  this_vS <- paste0(" v(",paste0(current_comb,collapse=" "),") ")
-  msg0 <- paste0("Top ", n_cv, " best configs for ",this_vS,"(using ",best_results$n[1], "-fold CV)")
+
+  # Regression_separate adds the v(S), while separate does not add anything, but prints the Extra info thing
+  if(!is.null(current_comb)){
+    this_vS <- paste0("for  v(",paste0(current_comb,collapse=" "),") ")
+  } else {
+    cli::cli_h2("Extra info about the tuning of the regression model")
+    this_vS <- ""
+  }
+
+  msg0 <- paste0("Top ", n_cv, " best configs ",this_vS,"(using ",best_results$n[1], "-fold CV)")
   msg <- NULL
 
   # Iterate over the n_cv best results and print out the hyper parameter values and the rmse and rmse_std_err

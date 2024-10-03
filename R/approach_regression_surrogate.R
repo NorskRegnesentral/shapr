@@ -32,8 +32,6 @@ setup_approach.regression_surrogate <- function(internal,
   regression.check_namespaces()
 
 
-  # Small printout to the user
-  if ("vS_details" %in% verbose) message("Starting 'setup_approach.regression_surrogate'.")
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <- mget(c(
@@ -51,7 +49,6 @@ setup_approach.regression_surrogate <- function(internal,
   )
 
   # Fit the surrogate regression model and store it in the internal list
-  if ("vS_details" %in% verbose) message("Start training the surrogate model.")
   internal$objects$regression.surrogate_model <- regression.train_model(
     x = x_train_augmented,
     seed = internal$parameters$seed,
@@ -64,8 +61,6 @@ setup_approach.regression_surrogate <- function(internal,
     regression.surrogate_n_comb = regression.surrogate_n_comb + 1 # Add 1 as augment_include_grand = TRUE above
   )
 
-  # Small printout to the user
-  if ("vS_details" %in% verbose) message("Done with 'setup_approach.regression_surrogate'.")
 
   return(internal) # Return the updated internal list
 }
@@ -75,13 +70,10 @@ setup_approach.regression_surrogate <- function(internal,
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.regression_surrogate <- function(internal, index_features = NULL, ...) {
-  verbose <- internal$parameters$verbose
 
   # Load `workflows`, needed when parallelized as we call predict with a workflow object. Checked installed above.
   requireNamespace("workflows", quietly = TRUE)
 
-  # Small printout to the user about which batch that are currently worked on
-  if ("vS_details" %in% verbose) regression.prep_message_batch(internal, index_features)
 
   # Augment the explicand data
   x_explain_aug <- regression.surrogate_aug_data(internal, x = internal$data$x_explain, index_features = index_features)

@@ -14,7 +14,8 @@ regression.train_model(
   regression.vfold_cv_para = NULL,
   regression.recipe_func = NULL,
   regression.response_var = "y_hat",
-  regression.surrogate_n_comb = NULL
+  regression.surrogate_n_comb = NULL,
+  current_comb = NULL
 )
 }
 \arguments{

@@ -23,7 +23,7 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
     cli::cli_progress_step("Computing vS")
   }
   if ("vS_details" %in% verbose){
-    if(any(c("regression_surrogate", "regression_separate") %in% approach)){
+    if("regression_separate" %in% approach){
       tuning <- internal$parameters$regression.tune
       if(isTRUE(tuning)){
         cli::cli_h2("Extra info about the tuning of the regression model")
