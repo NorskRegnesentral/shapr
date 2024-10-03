@@ -182,6 +182,7 @@ explain_forecast <- function(model,
   ### Temporary solution for forecast
   internal$iter_list[[1]]$X <- internal$objects$X
   internal$iter_list[[1]]$S <- internal$objects$S
+  internal$iter_list[[1]]$S_batch <- internal$objects$S_batch
   internal$iter_list[[1]]$compute_sd <- FALSE
 
 
@@ -189,7 +190,7 @@ explain_forecast <- function(model,
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS_forecast(internal, model, predict_model, method = "regular")
+  vS_list <- compute_vS(internal, model, predict_model, method = "regular")
 
   timing_list$compute_vS <- Sys.time()
 
