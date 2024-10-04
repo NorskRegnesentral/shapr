@@ -10,8 +10,7 @@ test_that("output_lm_numeric_independence_reach_exact", {
       approach = "independence",
       prediction_zero = p0,
       adaptive = TRUE,
-      print_shapleyres = TRUE,
-      print_iter_info = TRUE,
+      verbose = c("basic", "convergence", "shapley"),
       paired_shap_sampling = TRUE
     ),
     "output_lm_numeric_independence_reach_exact"
@@ -32,8 +31,7 @@ test_that("output_lm_numeric_independence_converges_tol", {
         convergence_tolerance = 0.1
       ),
       adaptive = TRUE,
-      print_shapleyres = TRUE,
-      print_iter_info = TRUE
+      verbose = c("convergence", "shapley")
     ),
     "output_lm_numeric_independence_converges_tol"
   )
@@ -55,8 +53,7 @@ test_that("output_lm_numeric_independence_converges_maxit", {
         max_iter = 8
       ),
       adaptive = TRUE,
-      print_shapleyres = TRUE,
-      print_iter_info = TRUE
+      verbose = c("convergence", "shapley")
     ),
     "output_lm_numeric_independence_converges_maxit"
   )
@@ -73,8 +70,7 @@ test_that("output_lm_numeric_indep_conv_max_n_coalitions", {
       prediction_zero = p0,
       max_n_coalitions = 20,
       adaptive = TRUE,
-      print_shapleyres = TRUE,
-      print_iter_info = TRUE
+      verbose = c("convergence", "shapley")
     ),
     "output_lm_numeric_indep_conv_max_n_coalitions"
   )
@@ -102,8 +98,7 @@ test_that("output_lm_numeric_gaussian_group_converges_tol", {
         convergence_tolerance = 0.1
       ),
       adaptive = TRUE,
-      print_shapleyres = TRUE,
-      print_iter_info = TRUE
+      verbose = c("convergence", "shapley")
     ),
     "output_lm_numeric_gaussian_group_converges_tol"
   )
@@ -123,8 +118,7 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
         convergence_tolerance = 0.1
       ),
       adaptive = TRUE,
-      print_shapleyres = TRUE,
-      print_iter_info = TRUE,
+      verbose = c("convergence", "shapley"),
       paired_shap_sampling = TRUE
     ),
     "output_lm_numeric_independence_converges_tol_paired"
@@ -150,7 +144,8 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       max_iter = 8
     ),
     adaptive = TRUE,
-    seed = NULL
+    seed = NULL,
+    verbose = NULL
   )
 
   # Testing saving and continuation estimation
@@ -171,7 +166,8 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       max_iter = 5
     ),
     adaptive = TRUE,
-    seed = NULL
+    seed = NULL,
+    verbose = NULL
   )
 
   # Continue estimation from the init object
@@ -191,8 +187,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
         max_iter = 8
       ),
       adaptive = TRUE,
-      print_shapleyres = TRUE,
-      print_iter_info = TRUE,
+      verbose = NULL,
       prev_shapr_object = e_init_object,
       seed = NULL,
     ),
@@ -220,7 +215,8 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       max_iter = 5
     ),
     adaptive = TRUE,
-    seed = NULL
+    seed = NULL,
+    verbose = NULL
   )
 
   # Continue estimation from the init object
@@ -240,8 +236,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
         max_iter = 8
       ),
       adaptive = TRUE,
-      print_shapleyres = TRUE,
-      print_iter_info = TRUE,
+      verbose = NULL,
       prev_shapr_object = e_init_path$internal$parameters$adaptive_arguments$saving_path,
       seed = NULL
     ),

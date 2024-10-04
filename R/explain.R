@@ -85,10 +85,20 @@
 #' criterion.
 #' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
 #'
-#' @param verbose An integer specifying the level of verbosity. If `0`, `shapr` will stay silent.
-#' If `1`, it will print information about performance. If `2`, some additional information will be printed out.
-#' Use `0` (default) for no verbosity, `1` for low verbose, and `2` for high verbose.
-#' TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.
+#' @param verbose String vector or NULL.
+#' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"convergence"`
+#'  `"shapley"`  and `"vS_details"`.
+#' `"basic"` (default) displays basic information about the estimation and where in the calculation process the function
+#' currently is.
+#' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
+#' (only when `adaptive = TRUE`) .
+#' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `adaptive = TRUE`)
+#' + the final estimates.
+#' `"vS_details"` displays information about the v_S estimates.
+#' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`).
+#' `NULL` means no printout.
+#' Note that any combination of four strings can be used.
+#' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the vS estimation process.
 #'
 #' @param paired_shap_sampling Logical.
 #' If `TRUE` (default), paired versions of all sampled coalitions are also included in the computation.
@@ -110,11 +120,6 @@
 #' @param adaptive_arguments Named list.
 #' Specifices the arguments for the adaptive procedure.
 #' See [shapr::get_adaptive_arguments_default()] for description of the arguments and their default values.
-
-#' @param print_shapleyres TODO: move to verbose
-#'
-#' @param print_iter_info TODO: move to verbose
-#'
 #' @param shapley_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 #' the randomness and thereby the variance of the Shapley value estimates.
@@ -353,10 +358,8 @@ explain <- function(model,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     MSEv_uniform_comb_weights = TRUE,
-                    verbose = 0,
+                    verbose = "basic",
                     adaptive_arguments = list(),
-                    print_shapleyres = FALSE, # tmp
-                    print_iter_info = FALSE, # tmp
                     shapley_reweighting = "on_all_cond",
                     prev_shapr_object = NULL,
                     ...) { # ... is further arguments passed to specific approaches
@@ -397,7 +400,6 @@ explain <- function(model,
   )
 
 
-
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(predict_model = predict_model, model = model)
 
@@ -426,13 +428,18 @@ explain <- function(model,
     set.seed(seed)
   }
 
+  cli_startup(internal, model, verbose)
+
+
   while (converged == FALSE) {
+    cli_iter(verbose, internal, iter)
+
     internal$timing_list <- list(init = Sys.time())
 
     # setup the Shapley framework
     internal <- shapley_setup(internal)
 
-    # Only actually called for approach = regression_surrogate
+    # Only actually called for approach %in% c("regression_surrogate","vaeac")
     internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
     # Compute the vS
@@ -451,7 +458,7 @@ explain <- function(model,
     internal <- prepare_next_iteration(internal)
 
     # Printing iteration information
-    print_iter(internal, print_iter_info, print_shapleyres)
+    print_iter(internal)
 
     ### Setting globals for to simplify the loop
     converged <- internal$iter_list[[iter]]$converged
@@ -479,6 +486,8 @@ explain <- function(model,
   if (isTRUE(testing)) {
     output <- testing_cleanup(output)
   }
+
+
 
   return(output)
 }

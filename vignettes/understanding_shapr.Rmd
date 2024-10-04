@@ -26,7 +26,9 @@ editor_options:
 
 > [Adaptive estimation](#adaptive)
 
-> [Parallelization and progress updates](#paraprog)
+> [Parallelization](#para)
+
+> [Verbosity and progress updates](#verbose)
 
 > [Advanced usage](#advanced)
 
@@ -75,8 +77,12 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 See [Estimation approaches and plotting functionality](#ex) below for examples.
 It is also possible to combine the different approaches, see the [combined approach](#combined).
 
-The package is allows for parallelized computation with progress updates through the tightly connected
-`future` and `progressr` packages, see [Parallelization and progress updates](#paraprog) for details.
+The package allows for parallelized computation through the `future`package, see [Parallelization](#para) for details.
+
+The level of detail in the output can be controlled through the `verbose` argument. In addition, progress updates
+on the process of estimating the `v(S)`'s (and training the `"vaeac"` model) is available through the
+`progressr` package, supporting progress updates also for parallelized computation.
+See [Verbosity and progress updates](#verbose) for details.
 
 Moreover, the default behavior is to estimate the Shapley values adaptively/iteratively, with increasing number of
 feature coalitions being added, and to stop estimation as the estimated Shapley values has achieved a certain level of
@@ -445,7 +451,19 @@ below.
 
 ``` r
 library(xgboost)
+#> 
+#> Attaching package: 'xgboost'
+#> The following object is masked from 'package:dplyr':
+#> 
+#>     slice
 library(data.table)
+#> data.table 1.15.4 using 16 threads (see ?getDTthreads).
+#> Latest news: r-datatable.com
+#> 
+#> Attaching package: 'data.table'
+#> The following objects are masked from 'package:dplyr':
+#> 
+#>     between, first, last
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -488,6 +506,18 @@ explanation <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:48:56 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb39bf1ad5.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
@@ -546,6 +576,18 @@ explanation_plot <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:04 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 111
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb597c3bc0.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 plot(explanation_plot, plot_type = "beeswarm")
 ```
 
@@ -596,6 +638,18 @@ explanation_lm_cat <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:17 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: ctree
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb40020ba3.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
@@ -627,6 +681,18 @@ explanation_ctree <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:19 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: ctree
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb618e8626.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 # Default parameters (based on (Hothorn, 2006)) are:
 # mincriterion = 0.95
 # minsplit = 20
@@ -669,6 +735,18 @@ explanation_cat_method <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:20 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: categorical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb35365a95.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 Shapley values can be used to explain any predictive model. For
@@ -735,6 +813,18 @@ explanation_timeseries <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_groups = 16, 
 #> and is therefore set to 2^n_groups = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:21 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: timeseries
+#> • Adaptive estimation: FALSE
+#> • Number of group-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb43bfea78.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 
@@ -851,6 +941,18 @@ explanation_independence <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:23 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: independence
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 25
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb3e12b373.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Empirical approach
 explanation_empirical <- explain(
@@ -864,10 +966,21 @@ explanation_empirical <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
-#> 
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:24 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 25
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb191f283c.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Gaussian 1e1 approach
 explanation_gaussian_1e1 <- explain(
@@ -881,10 +994,21 @@ explanation_gaussian_1e1 <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
-#> 
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:33 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: gaussian
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 25
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb6e2c4dbc.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Gaussian 1e2 approach
 explanation_gaussian_1e2 <- explain(
@@ -898,10 +1022,21 @@ explanation_gaussian_1e2 <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
-#> 
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:34 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: gaussian
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 25
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb1d686709.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Combined approach
 explanation_combined <- explain(
@@ -915,10 +1050,21 @@ explanation_combined <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
-#> 
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:34 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: gaussian, empirical, and independence
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 25
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb4cf437aa.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Create a list of explanations with names
 explanation_list_named <- list(
@@ -943,8 +1089,7 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 
 # 5 plots are made
 names(MSEv_plots)
-#> [1] "MSEv_explicand_bar"        "MSEv_explicand_line_point" "MSEv_coalition_bar"        "MSEv_coalition_line_point"
-#> [5] "MSEv_bar"
+#> [1] "MSEv_explicand_bar"        "MSEv_explicand_line_point" "MSEv_coalition_bar"        "MSEv_coalition_line_point" "MSEv_bar"
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
 we have only averaged over the observations or the combinations (both as bar and line plots).
@@ -1091,11 +1236,23 @@ ex <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:39 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: gaussian
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 5
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb3890e887.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 32 of 32 coalitions.
 ```
 
-<a id="paraprog"></a>
+<a id="para"></a>
 
-# Parallelization and progress updates
+# Parallelization
 
 TODO: Edit this text
 
@@ -1137,6 +1294,18 @@ explanation_batch <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:40 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 5
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb3fb2a07d.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 32 of 32 coalitions.
 ```
 
 ## Parallelized computation
@@ -1179,11 +1348,27 @@ explanation_par <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:49 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 5
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb51b0a3cb.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 32 of 32 coalitions.
 
 future::plan(sequential) # To return to non-parallel computation
 ```
 
-## Progress updates
+<a id="verbose"></a>
+
+# Verbosity and progress updates
+
+TODO: Add verbose explanations to this text.
 
 `shapr` provides progress updates of the computation of the Shapley
 values through the R-package `progressr`. This gives the user full
@@ -1321,6 +1506,18 @@ explanation_combined <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:52 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: empirical, copula, and gaussian
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb33674a2b.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
 plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
@@ -1346,6 +1543,18 @@ explanation_combined <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:56 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: ctree, ctree, and empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb58dce703.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 ## Explain groups of features
@@ -1379,6 +1588,18 @@ explanation_group <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
 #> and is therefore set to 2^n_groups = 4.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:49:59 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of group-wise Shapley values: 2
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb10a7e68d.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 4 of 4 coalitions.
 # Prints the group-wise explanations
 explanation_group
 #>    explain_id  none      A        B
@@ -1449,6 +1670,8 @@ same airquality data set as used above.
 
 ``` r
 library(gbm)
+#> Loaded gbm 2.2.2
+#> This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3
 
 formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
 # Fitting a gbm model
@@ -1500,6 +1723,18 @@ explanation_custom <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:50:01 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <gbm>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb14bfc89.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Plot results
 plot(explanation_custom, index_x_explain = c(1, 6))
@@ -1530,10 +1765,21 @@ explanation_custom_minimal <- explain(
 )
 #> Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
 #> Consistency checks between model and data is therefore disabled.
-#> 
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:50:09 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <gbm>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb57356c62.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Plot results
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
@@ -1590,6 +1836,18 @@ explanation_tidymodels <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:50:17 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <workflow>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb568a0800.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # See that the Shapley value explanations are identical too
 all.equal(explanation$shapley_values, explanation_tidymodels$shapley_values)
@@ -1755,6 +2013,22 @@ ex_init <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:50:25 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: gaussian
+#> • Adaptive estimation: TRUE
+#> • Number of feature-wise Shapley values: 5
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb70435b6.rds'
+#> 
+#> ── Adaptive computation started ──
+#> 
+#> ── Iteration 1 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ Using 5 of 32 coalitions, 5 new.
+#> 
+#> ── Iteration 2 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ Using 20 of 32 coalitions, 14 new.
 
 # Using the ex_init object to continue the computation with 5 more coalition samples
 ex_further <- explain(
@@ -1769,9 +2043,21 @@ ex_further <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:50:27 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: gaussian
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 5
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb57b687c7.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 26 of 32 coalitions.
 
 print(ex_further$internal$parameters$adaptive_arguments$saving_path)
-#> [1] "/tmp/RtmpoIJVki/shapr_obj_9f92c1daf800a.rds"
+#> [1] "/tmp/RtmpIQRVZ2/shapr_obj_acefb57b687c7.rds"
 
 # Using the ex_init object to continue the computation for the remaining coalition samples
 # but this time using the path to the saved intermediate estimation object
@@ -1789,6 +2075,18 @@ ex_even_further <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 14:50:28 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: gaussian
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 5
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb208413af.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 32 of 32 coalitions.
 ```
 
 ## Explaining a forecasting model using `explain_forecast`
@@ -1862,23 +2160,9 @@ explanation_forecast <- explain_forecast(
   prediction_zero = p0_ar,
   group_lags = FALSE
 )
-#> Note: Feature names extracted from the model contains NA.
-#> Consistency checks between model and data is therefore disabled.
-#> Success with message:
-#> max_n_coalitions is NULL or larger than or 2^n_features = 4, 
-#> and is therefore set to 2^n_features = 4.
-#> Registered S3 method overwritten by 'quantmod':
-#>   method            from
-#>   as.zoo.data.frame zoo
+#> Error in check_verbose(verbose): `verbose` must be NULL or a string (vector) containing one or more of the strings `basic`, `progress`, `convergence`, `shapley`, `vS_details`.
 explanation_forecast
-#>    explain_idx horizon    none     Y.1      Y.2
-#>          <int>   <int>   <num>   <num>    <num>
-#> 1:         499       1 0.04018  0.5053 -0.07659
-#> 2:         500       1 0.04018 -0.3622  0.02497
-#> 3:         499       2 0.04018  0.5053 -0.07659
-#> 4:         500       2 0.04018 -0.3622  0.02497
-#> 5:         499       3 0.04018  0.5053 -0.07659
-#> 6:         500       3 0.04018 -0.3622  0.02497
+#> Error in eval(expr, envir, enclos): object 'explanation_forecast' not found
 ```
 
 Note that for a multivariate model such as a VAR (Vector AutoRegressive
@@ -1952,17 +2236,10 @@ explanation_forecast <- explain_forecast(
   prediction_zero = rep(mean(data$Temp), 2),
   group_lags = FALSE
 )
-#> Note: Feature names extracted from the model contains NA.
-#> Consistency checks between model and data is therefore disabled.
-#> Success with message:
-#> max_n_coalitions is NULL or larger than or 2^n_features = 4, 
-#> and is therefore set to 2^n_features = 4.
+#> Error in check_verbose(verbose): `verbose` must be NULL or a string (vector) containing one or more of the strings `basic`, `progress`, `convergence`, `shapley`, `vS_details`.
 
 print(explanation_forecast)
-#>    explain_idx horizon  none Temp.1 Temp.2
-#>          <num>   <num> <num>  <num>  <num>
-#> 1:         153       1 77.79 -6.578 -0.134
-#> 2:         153       2 77.79 -5.980 -0.288
+#> Error in eval(expr, envir, enclos): object 'explanation_forecast' not found
 ```
 
 The results are presented per value of `explain_idx` and forecast
@@ -2021,17 +2298,10 @@ explanation_forecast <- explain_forecast(
   prediction_zero = rep(mean(data_fit$Temp), 2),
   group_lags = FALSE
 )
-#> Note: Feature names extracted from the model contains NA.
-#> Consistency checks between model and data is therefore disabled.
-#> Success with message:
-#> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-#> and is therefore set to 2^n_features = 32.
+#> Error in check_verbose(verbose): `verbose` must be NULL or a string (vector) containing one or more of the strings `basic`, `progress`, `convergence`, `shapley`, `vS_details`.
 
 print(explanation_forecast$shapley_values)
-#>    explain_idx horizon  none   Temp.1   Temp.2  Wind.1  Wind.F1  Wind.F2
-#>          <num>   <num> <num>    <num>    <num>   <num>    <num>    <num>
-#> 1:         151       1 77.96 -0.67793 -0.67340 -1.2688 0.493408       NA
-#> 2:         151       2 77.96  0.39968 -0.50059 -1.4655 0.065913 -0.47422
+#> Error in eval(expr, envir, enclos): object 'explanation_forecast' not found
 ```
 
 

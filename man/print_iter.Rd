@@ -4,7 +4,7 @@
 \alias{print_iter}
 \title{Prints iterative information}
 \usage{
-print_iter(internal, print_iter_info, print_shapleyres)
+print_iter(internal)
 }
 \arguments{
 \item{internal}{List.

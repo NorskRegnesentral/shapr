@@ -586,10 +586,9 @@ Thus, `regression.tune_values` must be a function that returns
 a data.frame where the hyperparameter values for `mtry` will change
 based on the coalition size. If we do not let `regression.tune_values`
 be a function, then `tidymodels` will crash for any `mtry` higher
-than 1. Furthermore, by setting `verbose = 2`, we receive messages
-about which batch and coalition/combination that `shapr` processes
-and the results of the cross-validation procedure. Note that the tested
-hyperparameter value combinations change based on the coalition size.
+than 1. Furthermore, by setting letting `"vS_details" %in% verbose`,
+we receive get messages with the results of the cross-validation procedure ran within `shapr`.
+Note that the tested hyperparameter value combinations change based on the coalition size.
 
 ```{r rf-cv, cache=TRUE}
 # Using random forest with default parameters
@@ -608,7 +607,7 @@ explanation_list$sep_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  verbose = 2, # To get printouts
+  verbose = c("basic","vS_details"), # To get printouts
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -668,7 +667,7 @@ parallel to speed up the computations. The fourth model is run
 in parallel but also tunes the depth of the trees and not only
 the number of trees.
 
-A small side note: If we set `verbose = 2`, we can see which
+A small side note: If we let `"vS_details" %in% verbose`, we can see which
 `tree` value `shapr` chooses for each coalition. We would then
 see that the values 25, 50, 100, and 500 are never chosen.
 Thus, we can remove these values without influencing the result

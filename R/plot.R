@@ -1159,7 +1159,7 @@ MSEv_check_explanation_list <- function(explanation_list) {
     methods_with_diff_comb_str <- paste(names(entries_using_diff_combs)[entries_using_diff_combs], collapse = "', '")
     stop(paste0(
       "The object/objects '", methods_with_diff_comb_str, "' in `explanation_list` uses/use different ",
-      "coaltions than '", names(explanation_list)[1], "'. Cannot compare them."
+      "coalitions than '", names(explanation_list)[1], "'. Cannot compare them."
     ))
   }
 }

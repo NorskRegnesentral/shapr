@@ -42,8 +42,6 @@ setup_approach.regression_separate <- function(internal,
   regression.check_namespaces()
 
   # Small printout to the user
-  if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_separate'.")
-  if (internal$parameters$verbose == 2) regression.separate_time_mess() # TODO: maybe remove
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <-
@@ -54,7 +52,6 @@ setup_approach.regression_separate <- function(internal,
   internal <- regression.check_parameters(internal = internal)
 
   # Small printout to the user
-  if (internal$parameters$verbose == 2) message("Done with 'setup_approach.regression_separate'.")
 
   return(internal) # Return the updated internal list
 }
@@ -70,12 +67,11 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
   iter <- length(internal$iter_list)
 
   X <- internal$iter_list[[iter]]$X
+  verbose <- internal$parameters$verbose
 
   # Get the features in the batch
   features <- X$features[index_features]
 
-  # Small printout to the user about which batch that are currently worked on
-  if (internal$parameters$verbose == 2) regression.prep_message_batch(internal, index_features)
 
   # Initialize empty data table with specific column names and id_coalition (transformed to integer later). The data
   # table will contain the contribution function values for the coalitions given by `index_features` and all explicands.
@@ -92,17 +88,18 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
     current_x_train <- internal$data$x_train[, ..current_comb][, "y_hat" := internal$data$x_train_y_hat]
     current_x_explain <- internal$data$x_explain[, ..current_comb]
 
+
     # Fit the current separate regression model to the current training data
-    if (internal$parameters$verbose == 2) regression.prep_message_comb(internal, index_features, comb_idx)
     regression.current_fit <- regression.train_model(
       x = current_x_train,
       seed = internal$parameters$seed,
-      verbose = internal$parameters$verbose,
+      verbose = verbose,
       regression.model = internal$parameters$regression.model,
       regression.tune = internal$parameters$regression.tune,
       regression.tune_values = internal$parameters$regression.tune_values,
       regression.vfold_cv_para = internal$parameters$regression.vfold_cv_para,
-      regression.recipe_func = internal$parameters$regression.recipe_func
+      regression.recipe_func = internal$parameters$regression.recipe_func,
+      current_comb = current_comb
     )
 
     # Compute the predicted response for the explicands, i.e., the v(S, x_i) for all explicands x_i.
@@ -143,14 +140,15 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 #' @keywords internal
 regression.train_model <- function(x,
                                    seed = 1,
-                                   verbose = 0,
+                                   verbose = NULL,
                                    regression.model = parsnip::linear_reg(),
                                    regression.tune = FALSE,
                                    regression.tune_values = NULL,
                                    regression.vfold_cv_para = NULL,
                                    regression.recipe_func = NULL,
                                    regression.response_var = "y_hat",
-                                   regression.surrogate_n_comb = NULL) {
+                                   regression.surrogate_n_comb = NULL,
+                                   current_comb = NULL) {
   # Create a recipe to the augmented training data
   regression.recipe <- recipes::recipe(as.formula(paste(regression.response_var, "~ .")), data = x)
 
@@ -207,9 +205,14 @@ regression.train_model <- function(x,
       grid = regression.grid,
       metrics = yardstick::metric_set(yardstick::rmse)
     )
-
     # Small printout to the user
-    if (verbose == 2) regression.cv_message(regression.results = regression.results, regression.grid = regression.grid)
+    if ("vS_details" %in% verbose) {
+      regression.cv_message(
+        regression.results = regression.results,
+        regression.grid = regression.grid,
+        current_comb = current_comb
+      )
+    }
 
     # Set seed for reproducibility. Without this we get different results based on if we run in parallel or sequential
     set.seed(seed)
@@ -497,7 +500,7 @@ regression.prep_message_comb <- function(internal, index_features, comb_idx) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression.cv_message <- function(regression.results, regression.grid, n_cv = 10) {
+regression.cv_message <- function(regression.results, regression.grid, n_cv = 10, current_comb) {
   # Get the feature names and add evaluation metric rmse
   feature_names <- names(regression.grid)
   feature_names_rmse <- c(feature_names, "rmse", "rmse_std_err")
@@ -515,7 +518,19 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
   width <- sapply(regression.grid_best, function(x) max(nchar(as.character(unique(x)))))
 
   # Message title of the results
-  message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
+  # message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
+  #  msg <- paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):\n")
+
+  # Regression_separate adds the v(S), while separate does not add anything, but prints the Extra info thing
+  if (!is.null(current_comb)) {
+    this_vS <- paste0("for  v(", paste0(current_comb, collapse = " "), ") ")
+  } else {
+    cli::cli_h2("Extra info about the tuning of the regression model")
+    this_vS <- ""
+  }
+
+  msg0 <- paste0("Top ", n_cv, " best configs ", this_vS, "(using ", best_results$n[1], "-fold CV)")
+  msg <- NULL
 
   # Iterate over the n_cv best results and print out the hyper parameter values and the rmse and rmse_std_err
   for (row_idx in seq_len(nrow(best_results))) {
@@ -529,8 +544,15 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
       seq_along(feature_values_rmse),
       function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "left")
     )
-    message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))
+    # message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))
+    msg <- c(msg, paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), "\n"))
   }
+  # message("") # Empty message to get a blank line
+  cli::cli({
+    cli::cli_h3(msg0)
+    for (i in seq_along(msg)) cli::cli_text(msg[i])
+  })
 
-  message("") # Empty message to get a blank line
+
+  #    _alert_info(msg)
 }

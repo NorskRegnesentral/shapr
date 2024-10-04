@@ -210,8 +210,16 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   }
 
   # verbose
-  if (!is.numeric(verbose) || !(verbose %in% c(0, 1, 2))) {
-    stop("`verbose` must be either `0` (no verbosity), `1` (low verbosity), or `2` (high verbosity).")
+  check_verbose(verbose)
+  if (!is.null(verbose) &&
+    (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
+  ) {
+    stop(
+      paste0(
+        "`verbose` must be NULL or a string (vector) containing one or more of the strings ",
+        "`basic`, `progress`, `convergence`, `shapley`, `vS_details`.\n"
+      )
+    )
   }
 
   # parameters only used for type "forecast"
@@ -304,6 +312,26 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   return(parameters)
 }
 
+#' Function that checks the verbose parameter
+#'
+#' @inheritParams explain
+#'
+#' @return The function does not return anything.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen, Martin Jullum
+check_verbose <- function(verbose) {
+  if (!is.null(verbose) &&
+    (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
+  ) {
+    stop(
+      paste0(
+        "`verbose` must be NULL or a string (vector) containing one or more of the strings ",
+        "`basic`, `progress`, `convergence`, `shapley`, `vS_details`.\n"
+      )
+    )
+  }
+}
 
 #' @keywords internal
 get_data <- function(x_train, x_explain) {
@@ -940,6 +968,8 @@ check_groups <- function(feature_names, group) {
 
 #' @keywords internal
 set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
+  adaptive <- internal$parameters$adaptive
+
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
   adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
@@ -947,6 +977,11 @@ set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
     keep.null = TRUE
   )
 
+  # Force setting the number of coalitions and iterations for non-adaptive method
+  if (isFALSE(adaptive)) {
+    adaptive_arguments$max_iter <- 1
+    adaptive_arguments$initial_n_coalitions <- adaptive_arguments$max_n_coalitions
+  }
 
   check_adaptive_arguments(adaptive_arguments)
 
@@ -977,6 +1012,7 @@ set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
     internal$iter_list <- list()
     internal$iter_list[[1]] <- list(
       n_coalitions = adaptive_arguments$initial_n_coalitions,
+      new_n_coalitions = adaptive_arguments$initial_n_coalitions,
       exact = internal$parameters$exact,
       compute_sd = adaptive_arguments$compute_sd,
       reduction_factor = adaptive_arguments$reduction_factor_vec[1],
@@ -1214,9 +1250,6 @@ get_adaptive_arguments_default <- function(internal,
   exact <- internal$parameters$exact
   is_groupwise <- internal$parameters$is_groupwise
 
-
-
-
   if (isTRUE(adaptive)) {
     ret_list <- mget(
       c(
@@ -1248,7 +1281,6 @@ get_adaptive_arguments_default <- function(internal,
       saving_path = saving_path
     )
   }
-
   return(ret_list)
 }
 

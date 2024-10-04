@@ -7,6 +7,9 @@
 #' @export
 #' @keywords internal
 compute_estimates <- function(internal, vS_list) {
+  verbose <- internal$parameters$verbose
+  cli_id <- internal$parameter$cli_id
+
   internal$timing_list$compute_vS <- Sys.time()
 
 
@@ -23,12 +26,20 @@ compute_estimates <- function(internal, vS_list) {
   internal$timing_list$postprocess_vS <- Sys.time()
 
 
+  if ("progress" %in% verbose) {
+    cli::cli_progress_step("Computing Shapley value estimates")
+  }
+
   # Compute the Shapley values
   dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
 
   internal$timing_list$compute_shapley <- Sys.time()
 
   if (compute_sd) {
+    if ("progress" %in% verbose) {
+      cli::cli_progress_step("Boostrapping Shapley value sds")
+    }
+
     dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
   } else {
     dt_shapley_sd <- dt_shapley_est * 0
@@ -53,6 +64,10 @@ compute_estimates <- function(internal, vS_list) {
 
   # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
   internal$output <- processed_vS_list
+
+  if ("basic" %in% verbose) {
+    cli::cli_progress_done()
+  }
 
   return(internal)
 }

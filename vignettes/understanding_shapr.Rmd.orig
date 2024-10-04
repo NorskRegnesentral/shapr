@@ -41,7 +41,9 @@ library(shapr)
 
 > [Adaptive estimation](#adaptive)
 
-> [Parallelization and progress updates](#paraprog)
+> [Parallelization](#para)
+
+> [Verbosity and progress updates](#verbose)
 
 > [Advanced usage](#advanced)
 
@@ -90,8 +92,12 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 See [Estimation approaches and plotting functionality](#ex) below for examples.
 It is also possible to combine the different approaches, see the [combined approach](#combined).
 
-The package is allows for parallelized computation with progress updates through the tightly connected
-`future` and `progressr` packages, see [Parallelization and progress updates](#paraprog) for details.
+The package allows for parallelized computation through the `future`package, see [Parallelization](#para) for details.
+
+The level of detail in the output can be controlled through the `verbose` argument. In addition, progress updates
+on the process of estimating the `v(S)`'s (and training the `"vaeac"` model) is available through the
+`progressr` package, supporting progress updates also for parallelized computation.
+See [Verbosity and progress updates](#verbose) for details.
 
 Moreover, the default behavior is to estimate the Shapley values adaptively/iteratively, with increasing number of
 feature coalitions being added, and to stop estimation as the estimated Shapley values has achieved a certain level of
@@ -999,9 +1005,9 @@ ex <- explain(
 
 ```
 
-<a id="paraprog"></a>
+<a id="para"></a>
 
-# Parallelization and progress updates
+# Parallelization
 
 TODO: Edit this text
 
@@ -1077,7 +1083,11 @@ explanation_par <- explain(
 future::plan(sequential) # To return to non-parallel computation
 ```
 
-## Progress updates
+<a id="verbose"></a>
+
+# Verbosity and progress updates
+
+TODO: Add verbose explanations to this text.
 
 `shapr` provides progress updates of the computation of the Shapley
 values through the R-package `progressr`. This gives the user full

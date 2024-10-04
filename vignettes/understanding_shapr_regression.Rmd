@@ -660,10 +660,9 @@ Thus, `regression.tune_values` must be a function that returns
 a data.frame where the hyperparameter values for `mtry` will change
 based on the coalition size. If we do not let `regression.tune_values`
 be a function, then `tidymodels` will crash for any `mtry` higher
-than 1. Furthermore, by setting `verbose = 2`, we receive messages
-about which batch and coalition/combination that `shapr` processes
-and the results of the cross-validation procedure. Note that the tested
-hyperparameter value combinations change based on the coalition size.
+than 1. Furthermore, by setting letting `"vS_details" %in% verbose`,
+we receive get messages with the results of the cross-validation procedure ran within `shapr`.
+Note that the tested hyperparameter value combinations change based on the coalition size.
 
 
 ``` r
@@ -681,6 +680,18 @@ explanation_list$sep_rf <- explain(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-04 15:05:35 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb38156961.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with parameters tuned by cross-validation
 explanation_list$sep_rf_cv <- explain(
@@ -688,7 +699,7 @@ explanation_list$sep_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  verbose = 2, # To get printouts
+  verbose = c("basic","vS_details"), # To get printouts
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -701,152 +712,142 @@ explanation_list$sep_rf_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
-#> 
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
-#> Starting 'setup_approach.regression_separate'.
-#> When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object 
-#>  can be missleading as `setup_computation` does not contain the training times of the 
-#>  regression models as they are trained on the fly in `compute_vS`. This is to reduce memory 
-#>  usage and to improve efficency.
-#> Done with 'setup_approach.regression_separate'.
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 8 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 28.43  rmse_std_err = 3.02
-#> #2: mtry = 1  trees = 750  rmse = 28.76  rmse_std_err = 2.57
-#> #3: mtry = 1  trees = 400  rmse = 28.80  rmse_std_err = 2.64
-#> #4: mtry = 2  trees = 50   rmse = 29.27  rmse_std_err = 2.29
-#> #5: mtry = 2  trees = 400  rmse = 29.42  rmse_std_err = 2.40
-#> #6: mtry = 2  trees = 750  rmse = 29.46  rmse_std_err = 2.20
 #> 
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 10 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 21.12  rmse_std_err = 0.73
-#> #2: mtry = 1  trees = 750  rmse = 21.21  rmse_std_err = 0.66
-#> #3: mtry = 2  trees = 400  rmse = 21.27  rmse_std_err = 1.02
-#> #4: mtry = 2  trees = 750  rmse = 21.31  rmse_std_err = 1.01
-#> #5: mtry = 1  trees = 400  rmse = 21.34  rmse_std_err = 0.69
-#> #6: mtry = 2  trees = 50   rmse = 21.65  rmse_std_err = 0.94
+#> ── Starting `shapr::explain()` at 2024-10-04 15:05:37 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb6e806800.rds'
 #> 
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 7 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 21.34  rmse_std_err = 3.18
-#> #2: mtry = 1  trees = 400  rmse = 21.56  rmse_std_err = 3.13
-#> #3: mtry = 1  trees = 750  rmse = 21.68  rmse_std_err = 3.13
-#> #4: mtry = 2  trees = 50   rmse = 21.79  rmse_std_err = 3.10
-#> #5: mtry = 2  trees = 750  rmse = 21.85  rmse_std_err = 2.98
-#> #6: mtry = 2  trees = 400  rmse = 21.89  rmse_std_err = 2.97
+#> ── Additional details about the regression model
+#> Random Forest Model Specification (regression)
 #> 
-#> Working on coalition with id 11 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 22.94  rmse_std_err = 4.33
-#> #2: mtry = 1  trees = 400  rmse = 23.13  rmse_std_err = 4.23
-#> #3: mtry = 1  trees = 50   rmse = 23.43  rmse_std_err = 4.13
-#> #4: mtry = 2  trees = 400  rmse = 23.86  rmse_std_err = 3.77
-#> #5: mtry = 2  trees = 750  rmse = 24.00  rmse_std_err = 3.78
-#> #6: mtry = 2  trees = 50   rmse = 24.57  rmse_std_err = 4.08
+#> Main Arguments: mtry = hardhat::tune() trees = hardhat::tune()
 #> 
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 9 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 2  trees = 50   rmse = 17.46  rmse_std_err = 2.26
-#> #2: mtry = 2  trees = 750  rmse = 17.53  rmse_std_err = 2.43
-#> #3: mtry = 2  trees = 400  rmse = 17.64  rmse_std_err = 2.38
-#> #4: mtry = 1  trees = 750  rmse = 17.80  rmse_std_err = 2.09
-#> #5: mtry = 1  trees = 50   rmse = 17.81  rmse_std_err = 1.79
-#> #6: mtry = 1  trees = 400  rmse = 17.89  rmse_std_err = 2.13
+#> Computational engine: ranger
 #> 
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 4 of 16.
-#> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 22.55  rmse_std_err = 4.68
-#> #2: mtry = 1  trees = 400  rmse = 22.59  rmse_std_err = 4.63
-#> #3: mtry = 1  trees = 750  rmse = 22.64  rmse_std_err = 4.65
+#> ── Main computation started ──
 #> 
-#> Working on coalition with id 6 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 400  rmse = 21.57  rmse_std_err = 2.25
-#> #2: mtry = 1  trees = 750  rmse = 21.59  rmse_std_err = 2.29
-#> #3: mtry = 1  trees = 50   rmse = 22.38  rmse_std_err = 2.10
-#> #4: mtry = 2  trees = 400  rmse = 22.54  rmse_std_err = 2.09
-#> #5: mtry = 2  trees = 750  rmse = 22.65  rmse_std_err = 2.09
-#> #6: mtry = 2  trees = 50   rmse = 23.12  rmse_std_err = 2.23
+#> ℹ Using 16 of 16 coalitions.
 #> 
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 5 of 16.
-#> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 32.14  rmse_std_err = 4.32
-#> #2: mtry = 1  trees = 400  rmse = 32.21  rmse_std_err = 4.31
-#> #3: mtry = 1  trees = 50   rmse = 32.21  rmse_std_err = 4.25
+#> ── Extra info about the tuning of the regression model ──
 #> 
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 2 of 16.
-#> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 30.34  rmse_std_err = 3.40
-#> #2: mtry = 1  trees = 750  rmse = 30.53  rmse_std_err = 3.31
-#> #3: mtry = 1  trees = 400  rmse = 30.63  rmse_std_err = 3.32
+#> ── Top 6 best configs for  v(1 4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 28.43 rmse_std_err = 3.02
+#> #2: mtry = 1 trees = 750 rmse = 28.76 rmse_std_err = 2.57
+#> #3: mtry = 1 trees = 400 rmse = 28.80 rmse_std_err = 2.64
+#> #4: mtry = 2 trees = 50 rmse = 29.27 rmse_std_err = 2.29
+#> #5: mtry = 2 trees = 400 rmse = 29.42 rmse_std_err = 2.40
+#> #6: mtry = 2 trees = 750 rmse = 29.46 rmse_std_err = 2.20
 #> 
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 3 of 16.
-#> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 26.62  rmse_std_err = 2.33
-#> #2: mtry = 1  trees = 400  rmse = 26.72  rmse_std_err = 2.29
-#> #3: mtry = 1  trees = 50   rmse = 26.97  rmse_std_err = 2.24
+#> ── Top 6 best configs for  v(2 4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 21.12 rmse_std_err = 0.73
+#> #2: mtry = 1 trees = 750 rmse = 21.21 rmse_std_err = 0.66
+#> #3: mtry = 2 trees = 400 rmse = 21.27 rmse_std_err = 1.02
+#> #4: mtry = 2 trees = 750 rmse = 21.31 rmse_std_err = 1.01
+#> #5: mtry = 1 trees = 400 rmse = 21.34 rmse_std_err = 0.69
+#> #6: mtry = 2 trees = 50 rmse = 21.65 rmse_std_err = 0.94
 #> 
-#> Working on coalition with id 13 of 16.
-#> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 2  trees = 750  rmse = 19.81  rmse_std_err = 1.53
-#> #2: mtry = 2  trees = 400  rmse = 19.85  rmse_std_err = 1.64
-#> #3: mtry = 1  trees = 750  rmse = 19.93  rmse_std_err = 1.93
-#> #4: mtry = 1  trees = 400  rmse = 20.18  rmse_std_err = 1.90
-#> #5: mtry = 2  trees = 50   rmse = 20.41  rmse_std_err = 1.56
-#> #6: mtry = 3  trees = 50   rmse = 20.69  rmse_std_err = 1.54
-#> #7: mtry = 3  trees = 750  rmse = 20.74  rmse_std_err = 1.69
-#> #8: mtry = 3  trees = 400  rmse = 20.77  rmse_std_err = 1.76
-#> #9: mtry = 1  trees = 50   rmse = 20.79  rmse_std_err = 1.89
+#> ── Top 6 best configs for  v(1 3) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 21.34 rmse_std_err = 3.18
+#> #2: mtry = 1 trees = 400 rmse = 21.56 rmse_std_err = 3.13
+#> #3: mtry = 1 trees = 750 rmse = 21.68 rmse_std_err = 3.13
+#> #4: mtry = 2 trees = 50 rmse = 21.79 rmse_std_err = 3.10
+#> #5: mtry = 2 trees = 750 rmse = 21.85 rmse_std_err = 2.98
+#> #6: mtry = 2 trees = 400 rmse = 21.89 rmse_std_err = 2.97
 #> 
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 12 of 16.
-#> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 2  trees = 400  rmse = 16.16  rmse_std_err = 2.75
-#> #2: mtry = 3  trees = 400  rmse = 16.30  rmse_std_err = 2.80
-#> #3: mtry = 2  trees = 750  rmse = 16.41  rmse_std_err = 2.79
-#> #4: mtry = 3  trees = 750  rmse = 16.43  rmse_std_err = 2.82
-#> #5: mtry = 3  trees = 50   rmse = 16.52  rmse_std_err = 2.52
-#> #6: mtry = 1  trees = 750  rmse = 16.69  rmse_std_err = 3.15
-#> #7: mtry = 2  trees = 50   rmse = 16.89  rmse_std_err = 2.76
-#> #8: mtry = 1  trees = 400  rmse = 16.98  rmse_std_err = 2.93
-#> #9: mtry = 1  trees = 50   rmse = 17.69  rmse_std_err = 3.16
+#> ── Top 6 best configs for  v(3 4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 750 rmse = 22.94 rmse_std_err = 4.33
+#> #2: mtry = 1 trees = 400 rmse = 23.13 rmse_std_err = 4.23
+#> #3: mtry = 1 trees = 50 rmse = 23.43 rmse_std_err = 4.13
+#> #4: mtry = 2 trees = 400 rmse = 23.86 rmse_std_err = 3.77
+#> #5: mtry = 2 trees = 750 rmse = 24.00 rmse_std_err = 3.78
+#> #6: mtry = 2 trees = 50 rmse = 24.57 rmse_std_err = 4.08
 #> 
-#> Working on batch  of 10 in `prepare_data.regression_separate()`.
-#> Working on coalition with id 14 of 16.
-#> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 1  trees = 400  rmse = 21.88  rmse_std_err = 4.33
-#> #2: mtry = 1  trees = 750  rmse = 21.96  rmse_std_err = 4.38
-#> #3: mtry = 1  trees = 50   rmse = 22.03  rmse_std_err = 4.07
-#> #4: mtry = 2  trees = 400  rmse = 22.65  rmse_std_err = 4.11
-#> #5: mtry = 2  trees = 750  rmse = 22.72  rmse_std_err = 4.09
-#> #6: mtry = 2  trees = 50   rmse = 22.89  rmse_std_err = 3.97
-#> #7: mtry = 3  trees = 400  rmse = 23.38  rmse_std_err = 3.80
-#> #8: mtry = 3  trees = 750  rmse = 23.50  rmse_std_err = 3.77
-#> #9: mtry = 3  trees = 50   rmse = 23.88  rmse_std_err = 3.64
+#> ── Top 6 best configs for  v(2 3) (using 5-fold CV) 
+#> #1: mtry = 2 trees = 50 rmse = 17.46 rmse_std_err = 2.26
+#> #2: mtry = 2 trees = 750 rmse = 17.53 rmse_std_err = 2.43
+#> #3: mtry = 2 trees = 400 rmse = 17.64 rmse_std_err = 2.38
+#> #4: mtry = 1 trees = 750 rmse = 17.80 rmse_std_err = 2.09
+#> #5: mtry = 1 trees = 50 rmse = 17.81 rmse_std_err = 1.79
+#> #6: mtry = 1 trees = 400 rmse = 17.89 rmse_std_err = 2.13
 #> 
-#> Working on coalition with id 15 of 16.
-#> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 3  trees = 50   rmse = 17.96  rmse_std_err = 1.34
-#> #2: mtry = 1  trees = 50   rmse = 17.97  rmse_std_err = 2.40
-#> #3: mtry = 1  trees = 750  rmse = 18.63  rmse_std_err = 1.99
-#> #4: mtry = 2  trees = 400  rmse = 18.76  rmse_std_err = 1.42
-#> #5: mtry = 1  trees = 400  rmse = 18.79  rmse_std_err = 2.14
-#> #6: mtry = 2  trees = 750  rmse = 18.80  rmse_std_err = 1.49
-#> #7: mtry = 3  trees = 750  rmse = 19.12  rmse_std_err = 1.68
-#> #8: mtry = 3  trees = 400  rmse = 19.14  rmse_std_err = 1.65
-#> #9: mtry = 2  trees = 50   rmse = 19.33  rmse_std_err = 1.67
+#> ── Top 3 best configs for  v(3) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 22.55 rmse_std_err = 4.68
+#> #2: mtry = 1 trees = 400 rmse = 22.59 rmse_std_err = 4.63
+#> #3: mtry = 1 trees = 750 rmse = 22.64 rmse_std_err = 4.65
 #> 
+#> ── Top 6 best configs for  v(1 2) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 400 rmse = 21.57 rmse_std_err = 2.25
+#> #2: mtry = 1 trees = 750 rmse = 21.59 rmse_std_err = 2.29
+#> #3: mtry = 1 trees = 50 rmse = 22.38 rmse_std_err = 2.10
+#> #4: mtry = 2 trees = 400 rmse = 22.54 rmse_std_err = 2.09
+#> #5: mtry = 2 trees = 750 rmse = 22.65 rmse_std_err = 2.09
+#> #6: mtry = 2 trees = 50 rmse = 23.12 rmse_std_err = 2.23
+#> 
+#> ── Top 3 best configs for  v(4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 750 rmse = 32.14 rmse_std_err = 4.32
+#> #2: mtry = 1 trees = 400 rmse = 32.21 rmse_std_err = 4.31
+#> #3: mtry = 1 trees = 50 rmse = 32.21 rmse_std_err = 4.25
+#> 
+#> ── Top 3 best configs for  v(1) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 30.34 rmse_std_err = 3.40
+#> #2: mtry = 1 trees = 750 rmse = 30.53 rmse_std_err = 3.31
+#> #3: mtry = 1 trees = 400 rmse = 30.63 rmse_std_err = 3.32
+#> 
+#> ── Top 3 best configs for  v(2) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 750 rmse = 26.62 rmse_std_err = 2.33
+#> #2: mtry = 1 trees = 400 rmse = 26.72 rmse_std_err = 2.29
+#> #3: mtry = 1 trees = 50 rmse = 26.97 rmse_std_err = 2.24
+#> 
+#> ── Top 9 best configs for  v(1 2 4) (using 5-fold CV) 
+#> #1: mtry = 2 trees = 750 rmse = 19.81 rmse_std_err = 1.53
+#> #2: mtry = 2 trees = 400 rmse = 19.85 rmse_std_err = 1.64
+#> #3: mtry = 1 trees = 750 rmse = 19.93 rmse_std_err = 1.93
+#> #4: mtry = 1 trees = 400 rmse = 20.18 rmse_std_err = 1.90
+#> #5: mtry = 2 trees = 50 rmse = 20.41 rmse_std_err = 1.56
+#> #6: mtry = 3 trees = 50 rmse = 20.69 rmse_std_err = 1.54
+#> #7: mtry = 3 trees = 750 rmse = 20.74 rmse_std_err = 1.69
+#> #8: mtry = 3 trees = 400 rmse = 20.77 rmse_std_err = 1.76
+#> #9: mtry = 1 trees = 50 rmse = 20.79 rmse_std_err = 1.89
+#> 
+#> ── Top 9 best configs for  v(1 2 3) (using 5-fold CV) 
+#> #1: mtry = 2 trees = 400 rmse = 16.16 rmse_std_err = 2.75
+#> #2: mtry = 3 trees = 400 rmse = 16.30 rmse_std_err = 2.80
+#> #3: mtry = 2 trees = 750 rmse = 16.41 rmse_std_err = 2.79
+#> #4: mtry = 3 trees = 750 rmse = 16.43 rmse_std_err = 2.82
+#> #5: mtry = 3 trees = 50 rmse = 16.52 rmse_std_err = 2.52
+#> #6: mtry = 1 trees = 750 rmse = 16.69 rmse_std_err = 3.15
+#> #7: mtry = 2 trees = 50 rmse = 16.89 rmse_std_err = 2.76
+#> #8: mtry = 1 trees = 400 rmse = 16.98 rmse_std_err = 2.93
+#> #9: mtry = 1 trees = 50 rmse = 17.69 rmse_std_err = 3.16
+#> 
+#> ── Top 9 best configs for  v(1 3 4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 400 rmse = 21.88 rmse_std_err = 4.33
+#> #2: mtry = 1 trees = 750 rmse = 21.96 rmse_std_err = 4.38
+#> #3: mtry = 1 trees = 50 rmse = 22.03 rmse_std_err = 4.07
+#> #4: mtry = 2 trees = 400 rmse = 22.65 rmse_std_err = 4.11
+#> #5: mtry = 2 trees = 750 rmse = 22.72 rmse_std_err = 4.09
+#> #6: mtry = 2 trees = 50 rmse = 22.89 rmse_std_err = 3.97
+#> #7: mtry = 3 trees = 400 rmse = 23.38 rmse_std_err = 3.80
+#> #8: mtry = 3 trees = 750 rmse = 23.50 rmse_std_err = 3.77
+#> #9: mtry = 3 trees = 50 rmse = 23.88 rmse_std_err = 3.64
+#> 
+#> ── Top 9 best configs for  v(2 3 4) (using 5-fold CV) 
+#> #1: mtry = 3 trees = 50 rmse = 17.96 rmse_std_err = 1.34
+#> #2: mtry = 1 trees = 50 rmse = 17.97 rmse_std_err = 2.40
+#> #3: mtry = 1 trees = 750 rmse = 18.63 rmse_std_err = 1.99
+#> #4: mtry = 2 trees = 400 rmse = 18.76 rmse_std_err = 1.42
+#> #5: mtry = 1 trees = 400 rmse = 18.79 rmse_std_err = 2.14
+#> #6: mtry = 2 trees = 750 rmse = 18.80 rmse_std_err = 1.49
+#> #7: mtry = 3 trees = 750 rmse = 19.12 rmse_std_err = 1.68
+#> #8: mtry = 3 trees = 400 rmse = 19.14 rmse_std_err = 1.65
+#> #9: mtry = 2 trees = 50 rmse = 19.33 rmse_std_err = 1.67
 ```
 
 We can look at the $\operatorname{MSE}_v$ evaluation criterion,
@@ -912,7 +913,7 @@ parallel to speed up the computations. The fourth model is run
 in parallel but also tunes the depth of the trees and not only
 the number of trees.
 
-A small side note: If we set `verbose = 2`, we can see which
+A small side note: If we let `"vS_details" %in% verbose`, we can see which
 `tree` value `shapr` chooses for each coalition. We would then
 see that the values 25, 50, 100, and 500 are never chosen.
 Thus, we can remove these values without influencing the result

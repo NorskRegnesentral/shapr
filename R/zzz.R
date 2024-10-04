@@ -136,7 +136,9 @@
       "cond",
       "tmp_coalitions",
       "max_iter",
-      "convergence_tolerance"
+      "convergence_tolerance",
+      "conv_measure",
+      "verbose"
     )
   )
 

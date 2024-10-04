@@ -188,7 +188,7 @@ if we want to explain new predictions using the same combinations/coalitions as 
 `x_explain`. Note that the new `x_explain` must have the same features as before.
 
 The `vaeac` model is accessible via `explanation$internal$parameters$vaeac`.
-Note that if we set `verbose = 2` in `explain()`, then `shapr` will give a message
+Note that if we let `'vS_detail' %in% verbose` in `explain()`, then `shapr` will give a message
 that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 In this example, we extract the trained `vaeac` model from the previous example and send it to `explain()`.
@@ -214,7 +214,7 @@ all.equal(explanation$shapley_values, expl_pretrained_vaeac$shapley_values)
 ## Pre-trained vaeac (path) {#pretrained_vaeac_path}
 We can also just provide a path to the stored `vaeac` model. This is beneficial if we have only stored the `vaeac`
 model on the computer but not the whole `explanation` object. The possible save paths are stored in
-`explanation$internal$parameters$vaeac$model`. Note that if we set `verbose = 2` in `explain()`, then `shapr` will give
+`explanation$internal$parameters$vaeac$model`. Note that if we let `'vS_detail' %in% verbose` in `explain()`, then `shapr` will give
 a message that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 ```{r pretrained-vaeac-path, cache = TRUE}
@@ -287,7 +287,7 @@ expl_batches_combinations_2 <- explain(
   n_MC_samples = n_MC_samples,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.epochs = 3,
-  verbose = 2
+  verbose = "vS_details"
 )
 ```
 
@@ -356,12 +356,14 @@ rbind(
 ## Progressr {#progress_bar}
 As discussed in the main vignette, the `shapr` package provides two ways for receiving information about the progress
 of the approach. First, the `shapr` package provides progress updates of the computation of the Shapley values through
-the `progressr` package. Second, the user can also get information by setting `verbose = 2` in `explain()`, which
-will print out extra information related to the `vaeac` approach. The `verbose` parameter works independently of the
-`progressr` package. Meaning that the user can chose to use none, either, or both options simultaneously. We give
-two examples here, and refer the reader to the main vignette for more detailed information.
+the `progressr` package. Second, the user can also get various form of information through `verbose` in `explain()`.
+By letting `'vS_detail' %in% verbose`, we get extra information related to the `vaeac` approach.
+The `verbose` parameter works independently of the `progressr` package.
+Meaning that the user can chose to use none, either, or both options simultaneously.
+We give two examples here, and refer the reader to the main vignette for more detailed information.
 
-By setting `verbose = 2`, we get messages about the progress of the `vaeac` approach.
+By setting `c("basic", vS_details")`, we get both basic messages about the explanation case, and
+messages about the estimation of the `vaeac` approach.
 ```{r progressr-false-verbose-2, cache = TRUE}
 expl_with_messages <- explain(
   model = model,
@@ -370,14 +372,14 @@ expl_with_messages <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_MC_samples = n_MC_samples,
-  verbose = 2,
+  verbose = c("basic","vS_details"),
   vaeac.epochs = 5,
   vaeac.n_vaeacs_initialize = 2
 )
 ```
-
-For more visual information, we can use the `progressr` package. This can help us see the progress of the training
-step for the final `vaeac` model. Note that one can set `verbose = 0` to not get any messages from the `vaeac`
+For more visual information we can use the `progressr` package.
+This can help us see detailed progress of the training step for the final `vaeac` model.
+Note that by default `vS_details` is not part of `verbose`, meaning that we do not get any messages from the `vaeac`,
 approach and only get the progress bars. See the main vignette for examples for how to change the progress bar.
 ```{r progressr-true-verbose-2, cache = TRUE}
 library(progressr)
@@ -390,7 +392,7 @@ progressr::with_progress({
     approach = "vaeac",
     prediction_zero = prediction_zero,
     n_MC_samples = n_MC_samples,
-    verbose = 2,
+    verbose = "vS_details",
     vaeac.epochs = 5,
     vaeac.n_vaeacs_initialize = 2
   )
@@ -534,7 +536,7 @@ expl_early_stopping <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   n_MC_samples = 250,
-  verbose = 2,
+  verbose = c("basic","vS_details"),
   vaeac.epochs = 1000, # Set it to a big number
   vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
@@ -560,7 +562,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
     explanation = expl_early_stopping_train_more,
     epochs_new = 15,
     x_train = x_train,
-    verbose = 0
+    verbose = NULL
   )
 
 # Can even do it twice if desired
@@ -569,7 +571,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
     explanation = expl_early_stopping_train_more,
     epochs_new = 10,
     x_train = x_train,
-    verbose = 0
+    verbose = NULL
   )
 
 # Look at the training and validation errors. We see some improvement
@@ -630,7 +632,7 @@ expl_group <- explain(
   prediction_zero = prediction_zero,
   group = list(A = c("Temp", "Month"), B = c("Wind", "Solar.R")),
   n_MC_samples = n_MC_samples,
-  verbose = 2,
+  verbose = "vS_details",
   vaeac.epochs = 4,
   vaeac.n_vaeacs_initialize = 2
 )

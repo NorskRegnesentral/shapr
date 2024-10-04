@@ -29,6 +29,8 @@
 #'
 #' @importFrom Rcpp sourceCpp
 #'
+#' @imporFrom utils capture.output
+#'
 #' @keywords internal
 #'
 #' @useDynLib shapr, .registration = TRUE

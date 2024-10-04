@@ -11,7 +11,7 @@ vaeac_impute_missing_entries(
   checkpoint,
   sampler,
   batch_size,
-  verbose = 0,
+  verbose = NULL,
   seed = NULL,
   n_explain = NULL,
   index_features = NULL
@@ -31,8 +31,22 @@ vaeac_impute_missing_entries(
 \item{batch_size}{Positive integer (default is \code{64}). The number of samples to include in each batch
 during the training of the vaeac model. Used in \code{\link[torch:dataloader]{torch::dataloader()}}.}
 
-\item{verbose}{Boolean. An integer specifying the level of verbosity. Use \code{0} (default) for no verbosity,
-\code{1} for low verbose, and \code{2} for high verbose.}
+\item{verbose}{String vector or NULL.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"convergence"}
+\code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the estimation and where in the calculation process the function
+currently is.
+#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+(only when \code{adaptive = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
+\itemize{
+\item the final estimates.
+\code{"vS_details"} displays information about the v_S estimates.
+This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{NULL} means no printout.
+Note that any combination of four strings can be used.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+}}
 
 \item{seed}{Positive integer (default is \code{1}). Seed for reproducibility. Specifies the seed before any randomness
 based code is being run.}
