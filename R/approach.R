@@ -17,9 +17,6 @@ setup_approach <- function(internal, ...) {
   iter <- length(internal$iter_list)
   X <- internal$iter_list[[iter]]$X
 
-  if("progress" %in% verbose){
-    cli::cli_progress_step("Setting up approach(es)")
-  }
 
 
   needs_X <- c("regression_surrogate", "vaeac")
@@ -30,6 +27,21 @@ setup_approach <- function(internal, ...) {
   if (isFALSE(run_now)) { # Do nothing
     return(internal)
   } else {
+
+    if("progress" %in% verbose){
+      cli::cli_progress_step("Setting up approach(es)")
+    }
+    if ("vS_details" %in% verbose){
+      if("vaeac" %in% approach){
+        pretrained_provided <- internal$parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided
+        if(isFALSE(pretrained_provided)){
+          cli::cli_h2("Extra info about the training/tuning of the vaeac model")
+        } else {
+          cli::cli_h2("Extra info about the pretrained vaeac model")
+        }
+      }
+    }
+
     this_class <- ""
 
     if (length(approach) > 1) {

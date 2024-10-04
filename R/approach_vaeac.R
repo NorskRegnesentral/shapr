@@ -46,8 +46,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   S <- internal$iter_list[[iter]]$S
   parameters <- internal$parameters
 
-  # Small printout to user
-  if ("vS_details" %in% verbose) message("Setting up the `vaeac` approach.")
 
   # Check if we are doing a combination of approaches
   combined_approaches <- length(parameters$approach) > 1
@@ -106,7 +104,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   if (is.null(parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model)) {
     # We train a vaeac model with the parameters in `parameters`, as user did not provide pre-trained vaeac model
     if ("vS_details" %in% verbose) {
-      message(paste0(
+      cli::cli_text(paste0(
         "Training the `vaeac` model with the provided parameters from scratch on ",
         ifelse(parameters$vaeac.extra_parameter$vaeac.cuda, "GPU", "CPU"), "."
       ))
@@ -141,7 +139,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # The pre-trained vaeac model is either:
     # 1. The explanation$internal$parameters$vaeac list of type "vaeac" from an earlier call to explain().
     # 2. A string containing the path to where the "vaeac" model is stored on disk.
-    if ("vS_details" %in% verbose) message("Loading the provided `vaeac` model.")
+    if ("vS_details" %in% verbose) cli::cli_text("Loading the provided `vaeac` model.")
 
     # Boolean representing that a pre-trained vaeac model was provided
     parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- TRUE
@@ -151,7 +149,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
     # Small printout informing about the location of the model
     if ("vS_details" %in% verbose) {
-      message(paste0(
+      cli::cli_text(paste0(
         "The `vaeac` model runs/is trained on ", ifelse(parameters$vaeac$parameters$cuda, "GPU", "CPU"), "."
       ))
     }
@@ -176,8 +174,17 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Update/overwrite the parameters list in the internal list.
   internal$parameters <- parameters
 
-  # Small printout to user
-  if ("vS_details" %in% verbose) message("Done with setting up the `vaeac` approach.\n")
+  if ("vS_details" %in% verbose) {
+    folder_to_save_model <- parameters$vaeac$parameters$folder_to_save_model
+    vaeac_save_file_names <- parameters$vaeac$parameters$vaeac_save_file_names
+
+    cli::cli_alert_info(c("The trained `vaeac` models are saved to folder {.path {folder_to_save_model}} at\n",
+                      "{.path {vaeac_save_file_names[1]}}\n",
+                      "{.path {vaeac_save_file_names[2]}}\n",
+                      "{.path {vaeac_save_file_names[3]}}")
+    )
+  }
+
 
   # Return the updated internal list.
   return(internal)
@@ -209,7 +216,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   vaeac.batch_size_sampling <- internal$parameters$vaeac.extra_parameters$vaeac.batch_size_sampling
 
   # Small printout to the user about which batch we are working on
-  if ("vS_details" %in% verbose) vaeac_prep_message_batch(internal = internal, index_features = index_features)
+  #if ("vS_details" %in% verbose) vaeac_prep_message_batch(internal = internal, index_features = index_features)
 
   # Apply all coalitions to all explicands to get a data table where `vaeac` will impute the `NaN` values
   x_explain_extended <- vaeac_get_x_explain_extended(x_explain = x_explain, S = S, index_features = index_features)
@@ -480,13 +487,13 @@ vaeac_train_model <- function(x_train,
     if (initialization_idx == 1) {
       state_list$n_trainable_parameters <- vaeac_model$n_train_param
       if ("vS_details" %in% verbose) {
-        message(paste0("The vaeac model contains ", vaeac_model$n_train_param[1, 1], " trainable parameters."))
+        cli::cli_text(paste0("The vaeac model contains ", vaeac_model$n_train_param[1, 1], " trainable parameters."))
       }
     }
 
     # Print which initialization vaeac the function is working on
     if ("vS_details" %in% verbose) {
-      message(paste0("Initializing vaeac number ", initialization_idx, " of ", n_vaeacs_initialize, "."))
+      cli::cli_text(paste0("Initializing vaeac model number ", initialization_idx, " of ", n_vaeacs_initialize, "."))
     }
 
     # Create the ADAM optimizer
@@ -523,7 +530,7 @@ vaeac_train_model <- function(x_train,
   # Check if we are printing detailed debug information
   # Small printout to the user stating which initiated vaeac model was the best.
   if ("vS_details" %in% verbose) {
-    message(paste0(
+    cli::cli_text(paste0(
       "Best vaeac inititalization was number ", vaeac_model_best_list$initialization_idx, " (of ", n_vaeacs_initialize,
       ") with a training VLB = ", round(as.numeric(vaeac_model_best_list$train_vlb[-1]$cpu()), 3),
       " after ", epochs_initiation_phase, " epochs. Continue to train this inititalization."
@@ -712,20 +719,20 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       # Save if current vaeac model has the lowest validation IWAE error
       if ((max(val_iwae) <= val_iwae_now)$item() || is.null(best_epoch)) {
         best_epoch <- epoch
-        if ("vS_details" %in% verbose) message("Saving `best` vaeac model at epoch ", epoch, ".")
+        #if ("vS_details" %in% verbose) message("Saving `best` vaeac model at epoch ", epoch, ".")
         vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[1])
       }
 
       # Save if current vaeac model has the lowest running validation IWAE error
       if ((max(val_iwae_running) <= val_iwae_running_now)$item() || is.null(best_epoch_running)) {
         best_epoch_running <- epoch
-        if ("vS_details" %in% verbose) message("Saving `best_running` vaeac model at epoch ", epoch, ".")
+        #if ("vS_details" %in% verbose) message("Saving `best_running` vaeac model at epoch ", epoch, ".")
         vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[2])
       }
 
       # Save if we are in an n'th epoch and are to save every n'th epoch
       if (is.numeric(save_every_nth_epoch) && epoch %% save_every_nth_epoch == 0) {
-        if ("vS_details" %in% verbose) message("Saving `nth_epoch` vaeac model at epoch ", epoch, ".")
+        #if ("vS_details" %in% verbose) message("Saving `nth_epoch` vaeac model at epoch ", epoch, ".")
         vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
       }
     }
@@ -778,7 +785,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     )
   } else {
     # Save the vaeac model at the last epoch
-    if ("vS_details" %in% verbose) message("Saving `last` vaeac model at epoch ", epoch, ".")
+    #if ("vS_details" %in% verbose) message("Saving `last` vaeac model at epoch ", epoch, ".")
     last_state <- vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3], return_state = TRUE)
 
     # Summary printout
@@ -1039,7 +1046,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     torch::torch_manual_seed(seed)
   }
 
-  if ("vS_details" %in% verbose) message("Preprocessing the explicands.")
+  #if ("vS_details" %in% verbose) message("Preprocessing the explicands.")
 
   # Preprocess `x_explain_with_NaNs`. Turn factor names into numerics 1,2,...,K, (vaeac only accepts numerics) and keep
   # track of the maping of names. Optionally log-transform the continuous features. Then, finally, normalize the data
@@ -1059,7 +1066,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
   # Create a data loader that load/iterate over the data set in chronological order.
   dataloader <- torch::dataloader(dataset = dataset, batch_size = batch_size, shuffle = FALSE)
 
-  if ("vS_details" %in% verbose) message("Generating the MC samples.")
+  #if ("vS_details" %in% verbose) message("Generating the MC samples.")
 
   # Create an auxiliary list of lists to store the imputed values combined with the original values. The structure is
   # [[i'th MC sample]][[b'th batch]], where the entries are tensors of dimension batch_size x n_features.
@@ -1125,7 +1132,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     } # End of iterating over the n_MC_samples
   }) # End of iterating over the batches. Done imputing.
 
-  if ("vS_details" %in% verbose) message("Postprocessing the Monte Carlo samples.")
+  #if ("vS_details" %in% verbose) message("Postprocessing the Monte Carlo samples.")
 
   # Order the MC samples into a tensor of shape [nrow(x_explain_with_NaNs), n_MC_samples, n_features].
   # The lapply function
@@ -1822,7 +1829,7 @@ vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
 
     # Small printout
     if ("vS_details" %in% verbose) {
-      message(paste0("Using 'specified_masks_mask_generator' with '", nrow(mask_gen_coalitions), "' coalitions."))
+      cli::cli_text(paste0("Using 'specified_masks_mask_generator' with '", nrow(mask_gen_coalitions), "' coalitions."))
     }
   } else if (length(masking_ratio) == 1) {
     # We are going to use 'mcar_mask_generator' as masking_ratio is a singleton.
@@ -1830,7 +1837,7 @@ vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
     mask_generator_name <- "mcar_mask_generator"
 
     # Small printout
-    if ("vS_details" %in% verbose) message(paste0("Using 'mcar_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
+    if ("vS_details" %in% verbose) cli::cli_text(paste0("Using 'mcar_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
   } else if (length(masking_ratio) > 1) {
     # We are going to use 'specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
     # I.e., masking_ratio[5] specifies the probability of masking 5 features
@@ -1838,7 +1845,7 @@ vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
 
     # We have an array of masking ratios. Then we are using the specified_prob_mask_generator.
     if ("vS_details" %in% verbose) {
-      message(paste0(
+      cli::cli_text(paste0(
         "Using 'specified_prob_mask_generator' mask generator with 'masking_ratio = [",
         paste(masking_ratio, collapse = ", "), "]'."
       ))
@@ -2108,10 +2115,12 @@ vaeac_get_data_objects <- function(x_train,
 
   # Ensure a valid batch size
   if (batch_size > length(train_indices)) {
-    message(paste0(
-      "Decrease `batch_size` (", batch_size, ") to largest allowed value (", length(train_indices), "), ",
-      "i.e., the number of training observations."
-    ))
+    if ("vS_details" %in% verbose){
+      cli::cli_text(paste0(
+        "Decrease `batch_size` (", batch_size, ") to largest allowed value (", length(train_indices), "), ",
+        "i.e., the number of training observations."
+      ))
+    }
     batch_size <- length(train_indices)
   }
 
@@ -2433,6 +2442,34 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     last_state$val_iwae[-1]$cpu(),
     last_state$val_iwae_running[-1]$cpu()
   ))
+
+  # Trying to replace the above, but have not succeeded really.
+  # msg <- c("\nResults of the `vaeac` training process:",
+  #   sprintf("Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
+  #           best_epoch,
+  #           last_state$train_vlb[best_epoch]$cpu(),
+  #           last_state$val_iwae[best_epoch]$cpu(),
+  #           last_state$val_iwae_running[best_epoch]$cpu()
+  #   ),
+  #   sprintf("Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
+  #           best_epoch_running,
+  #           last_state$train_vlb[best_epoch_running]$cpu(),
+  #           last_state$val_iwae[best_epoch_running]$cpu(),
+  #           last_state$val_iwae_running[best_epoch_running]$cpu()
+  #   ),
+  #   sprintf("Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
+  #           last_state$epoch,
+  #           last_state$train_vlb[-1]$cpu(),
+  #           last_state$val_iwae[-1]$cpu(),
+  #           last_state$val_iwae_running[-1]$cpu()
+  #   )
+  # )
+  #
+  #
+  #cli::cli_text(msg)
+
+
+
 }
 
 #' Produce message about which batch prepare_data is working on
