@@ -107,7 +107,7 @@
       "x_train_torch",
       "self",
       "..current_comb",
-      "..regression.response_var"
+      "..regression.response_var" # test
     )
   )
 
