@@ -69,6 +69,26 @@ ex <- explain(
   vaeac.epochs = 3
 )
 
+ex2 <- explain(
+  testing = TRUE,
+  model = model_lm_numeric,
+  x_explain = x_explain_numeric,
+  x_train = x_train_numeric,
+  approach = "vaeac",
+  prediction_zero = p0,
+  max_n_coalitions = 30,
+  adaptive = FALSE,verbose=c("basic","progress","vS_details"),
+  n_MC_samples = 100,
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = ex$internal$parameters$vaeac
+  )
+)
+
+
+
+vaeac.extra_parameters = list(
+  vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
+)
 
 
 ex <- explain(
