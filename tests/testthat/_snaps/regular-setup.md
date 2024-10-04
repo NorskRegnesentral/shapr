@@ -32,6 +32,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <whatever>
+      * Approach: independence
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -56,6 +65,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <whatever>
+      * Approach: independence
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -80,6 +98,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <whatever>
+      * Approach: independence
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -105,6 +132,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <whatever>
+      * Approach: independence
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -358,6 +394,15 @@
       max_n_coalitions is smaller than max(10, n_features + 1 = 6),which will result in unreliable results.
       It is therefore set to 10.
       
+      * Model class: <lm>
+      * Approach: gaussian
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 6 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
@@ -378,6 +423,15 @@
       n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
       max_n_coalitions is therefore set to 2^n_groups = 8.
       
+      * Model class: <lm>
+      * Approach: gaussian
+      * Adaptive estimation: FALSE
+      * Number of group-wise Shapley values: 3
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 8 of 8 coalitions. 
     Output
          explain_id  none        A        B       C
               <int> <num>    <num>    <num>   <num>
@@ -854,6 +908,15 @@
       max_n_coalitions is smaller than max(10, n_features + 1 = 6),which will result in unreliable results.
       It is therefore set to 10.
       
+      * Model class: <lm>
+      * Approach: gaussian
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 6 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp   Month     Day
               <int> <num>   <num>   <num>  <num>   <num>   <num>
@@ -872,6 +935,15 @@
       n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
       max_n_coalitions is therefore set to 2^n_groups = 8.
       
+      * Model class: <lm>
+      * Approach: gaussian
+      * Adaptive estimation: FALSE
+      * Number of group-wise Shapley values: 3
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 8 of 8 coalitions. 
     Output
          explain_id  none      A      B       C
               <int> <num>  <num>  <num>   <num>
@@ -891,6 +963,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: gaussian
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
 
 ---
 
@@ -900,6 +981,16 @@
         prediction_zero = p0, n_MC_samples = 2, seed = 123, adaptive_arguments = list(
           compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric),
         adaptive = FALSE)
+    Message
+      * Model class: <lm>
+      * Approach: gaussian
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
 
 ---
 
@@ -914,4 +1005,13 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: gaussian
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
 

@@ -136,6 +136,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Condition
       Error in `regression.get_tune()`:
       ! The tunable parameters in `regression.model` ('') and `regression.tune_values` ('tree_depth') must match.
@@ -269,6 +278,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Condition
       Error in `regression.check_recipe_func()`:
       ! The output of the `regression.recipe_func` must be of class `recipe`.
@@ -284,6 +302,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Condition
       Error in `regression.check_sur_n_comb()`:
       ! `regression.surrogate_n_comb` (31) must be a positive integer less than or equal to `n_coalitions` minus two (30).
@@ -299,6 +326,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Condition
       Error in `regression.check_sur_n_comb()`:
       ! `regression.surrogate_n_comb` (0) must be a positive integer less than or equal to `n_coalitions` minus two (30).

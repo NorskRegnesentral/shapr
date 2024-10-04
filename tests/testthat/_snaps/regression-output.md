@@ -7,6 +7,19 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_separate
+      * Adaptive estimation: TRUE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Adaptive computation started --
+      
+      -- Iteration 1 -----------------------------------------------------------------
+      i Using 5 of 32 coalitions, 5 new. 
+      
+      -- Iteration 2 -----------------------------------------------------------------
+      i Using 32 of 32 coalitions, 26 new. 
     Output
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
@@ -23,6 +36,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_separate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
@@ -34,6 +56,16 @@
 
     Code
       (out <- code)
+    Message
+      * Model class: <lm>
+      * Approach: regression_separate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 10 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind     Temp   Month    Day
               <int> <num>   <num>   <num>    <num>   <num>  <num>
@@ -50,6 +82,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
       and is therefore set to 2^n_features = 16.
       
+      * Model class: <lm>
+      * Approach: regression_separate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 4
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 16 of 16 coalitions. 
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
@@ -66,6 +107,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_separate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp     Day Month_factor
               <int> <num>   <num>   <num>  <num>   <num>        <num>
@@ -82,6 +132,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_separate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -98,6 +157,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_separate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R   Wind    Temp     Day Month_factor
               <int> <num>   <num>  <num>   <num>   <num>        <num>
@@ -114,6 +182,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_separate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R   Wind    Temp     Day Month_factor
               <int> <num>   <num>  <num>   <num>   <num>        <num>
@@ -130,6 +207,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_separate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind    Temp    Day Month_factor
               <int> <num>   <num>   <num>   <num>  <num>        <num>
@@ -149,6 +235,16 @@
     Condition
       Warning in `check_and_set_adaptive()`:
       Adaptive estimation of Shapley values are not supported for approach = regression_surrogate. Setting adaptive = FALSE.
+    Message
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp   Month     Day
               <int> <num>   <num>   <num>  <num>   <num>   <num>
@@ -165,6 +261,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp   Month     Day
               <int> <num>   <num>   <num>  <num>   <num>   <num>
@@ -176,6 +281,16 @@
 
     Code
       (out <- code)
+    Message
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 10 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind    Temp  Month     Day
               <int> <num>   <num>   <num>   <num>  <num>   <num>
@@ -187,6 +302,16 @@
 
     Code
       (out <- code)
+    Message
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 10 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind    Temp  Month     Day
               <int> <num>   <num>   <num>   <num>  <num>   <num>
@@ -203,6 +328,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
       and is therefore set to 2^n_features = 16.
       
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 4
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 16 of 16 coalitions. 
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
@@ -219,6 +353,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp     Day Month_factor
               <int> <num>   <num>   <num>  <num>   <num>        <num>
@@ -235,6 +378,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R   Wind   Temp    Day Month_factor
               <int> <num>   <num>  <num>  <num>  <num>        <num>
@@ -251,6 +403,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
       and is therefore set to 2^n_features = 32.
       
+      * Model class: <lm>
+      * Approach: regression_surrogate
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>

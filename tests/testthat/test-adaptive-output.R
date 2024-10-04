@@ -10,7 +10,7 @@ test_that("output_lm_numeric_independence_reach_exact", {
       approach = "independence",
       prediction_zero = p0,
       adaptive = TRUE,
-      verbose = c("convergence","shapley"),
+      verbose = c("basic","convergence","shapley"),
       paired_shap_sampling = TRUE
     ),
     "output_lm_numeric_independence_reach_exact"
@@ -144,7 +144,8 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       max_iter = 8
     ),
     adaptive = TRUE,
-    seed = NULL
+    seed = NULL,
+    verbose = NULL
   )
 
   # Testing saving and continuation estimation
@@ -165,7 +166,8 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       max_iter = 5
     ),
     adaptive = TRUE,
-    seed = NULL
+    seed = NULL,
+    verbose = NULL
   )
 
   # Continue estimation from the init object
@@ -185,7 +187,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
         max_iter = 8
       ),
       adaptive = TRUE,
-      verbose = c("convergence","shapley"),
+      verbose = NULL,
       prev_shapr_object = e_init_object,
       seed = NULL,
     ),
@@ -213,7 +215,8 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       max_iter = 5
     ),
     adaptive = TRUE,
-    seed = NULL
+    seed = NULL,
+    verbose = NULL
   )
 
   # Continue estimation from the init object
@@ -233,7 +236,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
         max_iter = 8
       ),
       adaptive = TRUE,
-      verbose = c("convergence","shapley"),
+      verbose = NULL,
       prev_shapr_object = e_init_path$internal$parameters$adaptive_arguments$saving_path,
       seed = NULL
     ),
