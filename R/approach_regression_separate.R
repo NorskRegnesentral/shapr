@@ -38,7 +38,6 @@ setup_approach.regression_separate <- function(internal,
                                                regression.vfold_cv_para = NULL,
                                                regression.recipe_func = NULL,
                                                ...) {
-
   # Check that required libraries are installed
   regression.check_namespaces()
 
@@ -62,8 +61,6 @@ setup_approach.regression_separate <- function(internal,
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.regression_separate <- function(internal, index_features = NULL, ...) {
-
-
   # Load `workflows`, needed when parallelized as we call predict with a workflow object. Checked installed above.
   requireNamespace("workflows", quietly = TRUE)
 
@@ -209,9 +206,13 @@ regression.train_model <- function(x,
       metrics = yardstick::metric_set(yardstick::rmse)
     )
     # Small printout to the user
-    if ("vS_details" %in% verbose) regression.cv_message(regression.results = regression.results,
-                                                         regression.grid = regression.grid,
-                                                         current_comb = current_comb)
+    if ("vS_details" %in% verbose) {
+      regression.cv_message(
+        regression.results = regression.results,
+        regression.grid = regression.grid,
+        current_comb = current_comb
+      )
+    }
 
     # Set seed for reproducibility. Without this we get different results based on if we run in parallel or sequential
     set.seed(seed)
@@ -499,7 +500,7 @@ regression.prep_message_comb <- function(internal, index_features, comb_idx) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression.cv_message <- function(regression.results, regression.grid, n_cv = 10,current_comb) {
+regression.cv_message <- function(regression.results, regression.grid, n_cv = 10, current_comb) {
   # Get the feature names and add evaluation metric rmse
   feature_names <- names(regression.grid)
   feature_names_rmse <- c(feature_names, "rmse", "rmse_std_err")
@@ -517,18 +518,18 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
   width <- sapply(regression.grid_best, function(x) max(nchar(as.character(unique(x)))))
 
   # Message title of the results
-  #message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
-#  msg <- paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):\n")
+  # message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
+  #  msg <- paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):\n")
 
   # Regression_separate adds the v(S), while separate does not add anything, but prints the Extra info thing
-  if(!is.null(current_comb)){
-    this_vS <- paste0("for  v(",paste0(current_comb,collapse=" "),") ")
+  if (!is.null(current_comb)) {
+    this_vS <- paste0("for  v(", paste0(current_comb, collapse = " "), ") ")
   } else {
     cli::cli_h2("Extra info about the tuning of the regression model")
     this_vS <- ""
   }
 
-  msg0 <- paste0("Top ", n_cv, " best configs ",this_vS,"(using ",best_results$n[1], "-fold CV)")
+  msg0 <- paste0("Top ", n_cv, " best configs ", this_vS, "(using ", best_results$n[1], "-fold CV)")
   msg <- NULL
 
   # Iterate over the n_cv best results and print out the hyper parameter values and the rmse and rmse_std_err
@@ -543,15 +544,15 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
       seq_along(feature_values_rmse),
       function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "left")
     )
-    #message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))
-    msg <-c(msg,paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), "\n"))
+    # message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))
+    msg <- c(msg, paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), "\n"))
   }
-  #message("") # Empty message to get a blank line
+  # message("") # Empty message to get a blank line
   cli::cli({
     cli::cli_h3(msg0)
-    for(i in seq_along(msg)) cli::cli_text(msg[i])
+    for (i in seq_along(msg)) cli::cli_text(msg[i])
   })
 
 
-#    _alert_info(msg)
+  #    _alert_info(msg)
 }

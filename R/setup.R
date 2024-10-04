@@ -212,7 +212,7 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
   # verbose
   check_verbose(verbose)
   if (!is.null(verbose) &&
-      (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
+    (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
   ) {
     stop(
       paste0(
@@ -322,7 +322,7 @@ get_parameters <- function(approach, paired_shap_sampling, prediction_zero, outp
 #' @author Lars Henry Berge Olsen, Martin Jullum
 check_verbose <- function(verbose) {
   if (!is.null(verbose) &&
-      (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
+    (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
   ) {
     stop(
       paste0(
@@ -973,12 +973,12 @@ set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
   adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
-                                          adaptive_arguments,
-                                          keep.null = TRUE
+    adaptive_arguments,
+    keep.null = TRUE
   )
 
   # Force setting the number of coalitions and iterations for non-adaptive method
-  if(isFALSE(adaptive)){
+  if (isFALSE(adaptive)) {
     adaptive_arguments$max_iter <- 1
     adaptive_arguments$initial_n_coalitions <- adaptive_arguments$max_n_coalitions
   }
@@ -1245,7 +1245,6 @@ get_adaptive_arguments_default <- function(internal,
                                            max_batch_size = 10,
                                            min_n_batches = 10,
                                            saving_path = tempfile("shapr_obj_", fileext = ".rds")) {
-
   adaptive <- internal$parameters$adaptive
   max_n_coalitions <- internal$parameters$max_n_coalitions
   exact <- internal$parameters$exact

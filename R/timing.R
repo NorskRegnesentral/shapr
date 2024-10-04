@@ -32,7 +32,7 @@ compute_time <- function(internal) {
   iter_timing_secs_dt[, iter := .I]
   data.table::setcolorder(iter_timing_secs_dt, "iter")
 
-  total_time_secs = main_timing_list[[length(main_timing_list)]] - main_timing_list[[1]]
+  total_time_secs <- main_timing_list[[length(main_timing_list)]] - main_timing_list[[1]]
 
 
   timing_output <- list(

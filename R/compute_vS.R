@@ -10,7 +10,6 @@
 #' @export
 #' @keywords internal
 compute_vS <- function(internal, model, predict_model, method = "future") {
-
   iter <- length(internal$iter_list)
 
   S_batch <- internal$iter_list[[iter]]$S_batch
@@ -19,13 +18,13 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   approach <- internal$parameters$approach
 
   # verbose
-  if("progress" %in% verbose){
+  if ("progress" %in% verbose) {
     cli::cli_progress_step("Computing vS")
   }
-  if ("vS_details" %in% verbose){
-    if("regression_separate" %in% approach){
+  if ("vS_details" %in% verbose) {
+    if ("regression_separate" %in% approach) {
       tuning <- internal$parameters$regression.tune
-      if(isTRUE(tuning)){
+      if (isTRUE(tuning)) {
         cli::cli_h2("Extra info about the tuning of the regression model")
       }
     }

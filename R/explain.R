@@ -428,12 +428,11 @@ explain <- function(model,
     set.seed(seed)
   }
 
-  cli_startup(internal,model,verbose)
+  cli_startup(internal, model, verbose)
 
 
   while (converged == FALSE) {
-
-    cli_iter(verbose,internal,iter)
+    cli_iter(verbose, internal, iter)
 
     internal$timing_list <- list(init = Sys.time())
 

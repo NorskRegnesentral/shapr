@@ -25,7 +25,6 @@ setup_approach.regression_surrogate <- function(internal,
                                                 regression.surrogate_n_comb =
                                                   internal$iter_list[[length(internal$iter_list)]]$n_coalitions - 2,
                                                 ...) {
-
   verbose <- internal$parameters$verbose
 
   # Check that required libraries are installed
@@ -70,7 +69,6 @@ setup_approach.regression_surrogate <- function(internal,
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.regression_surrogate <- function(internal, index_features = NULL, ...) {
-
   # Load `workflows`, needed when parallelized as we call predict with a workflow object. Checked installed above.
   requireNamespace("workflows", quietly = TRUE)
 

@@ -36,9 +36,9 @@ print_iter <- function(internal) {
       msg <- "Not converged after {current_n_coalitions} coalitions:\n"
 
       if (!is.null(convergence_tolerance)) {
-        conv_nice <- signif(overall_conv_measure,2)
-        tol_nice <- format(signif(convergence_tolerance,2),scientific=FALSE)
-        reduction_factor_nice <- format(signif(reduction_factor,2),scientific=FALSE)
+        conv_nice <- signif(overall_conv_measure, 2)
+        tol_nice <- format(signif(convergence_tolerance, 2), scientific = FALSE)
+        reduction_factor_nice <- format(signif(reduction_factor, 2), scientific = FALSE)
         msg <- paste0(
           msg,
           "Current convergence measure: {conv_nice} [needs {tol_nice}]\n",
@@ -48,29 +48,34 @@ print_iter <- function(internal) {
         )
       }
       cli::cli_alert_info(msg)
-
     } else {
       msg <- "Converged after {current_n_coalitions} coalitions:\n"
       if (isTRUE(converged_exact)) {
-        msg <- paste0(msg,
-                      "All ({current_n_coalitions}) coalitions used.\n")
+        msg <- paste0(
+          msg,
+          "All ({current_n_coalitions}) coalitions used.\n"
+        )
       }
       if (isTRUE(converged_sd)) {
-        msg <- paste0(msg,
-                      "Convergence tolerance reached!\n")
+        msg <- paste0(
+          msg,
+          "Convergence tolerance reached!\n"
+        )
       }
       if (isTRUE(converged_max_iter)) {
-        msg <- paste0(msg,
-                      "Maximum number of iterations reached!\n")
+        msg <- paste0(
+          msg,
+          "Maximum number of iterations reached!\n"
+        )
       }
       if (isTRUE(converged_max_n_coalitions)) {
-        msg <- paste0(msg,
-                      "Maximum number of coalitions reached!\n")
+        msg <- paste0(
+          msg,
+          "Maximum number of coalitions reached!\n"
+        )
       }
-    cli::cli_alert_success(msg)
-
+      cli::cli_alert_success(msg)
     }
-
   }
 
   if ("shapley" %in% verbose) {
@@ -90,16 +95,15 @@ print_iter <- function(internal) {
     }
 
     if (converged_exact) {
-      msg <- paste0(msg,"estimated Shapley values")
+      msg <- paste0(msg, "estimated Shapley values")
       print_dt <- as.data.table(matrix1)
     } else {
-      msg <- paste0(msg,"estimated Shapley values (sd)")
+      msg <- paste0(msg, "estimated Shapley values (sd)")
       print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = n_explain))
     }
 
     cli::cli_h3(msg)
     names(print_dt) <- names(dt_shapley_est)
     print(print_dt)
-
   }
 }
