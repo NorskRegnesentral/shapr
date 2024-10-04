@@ -1838,7 +1838,9 @@ vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
     mask_generator_name <- "mcar_mask_generator"
 
     # Small printout
-    if ("vS_details" %in% verbose) cli::cli_text(paste0("Using 'mcar_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
+    if ("vS_details" %in% verbose) cli::cli_text(paste0("Using 'mcar_mask_generator' with 'masking_ratio = ",
+                                                        masking_ratio,
+                                                        "'."))
   } else if (length(masking_ratio) > 1) {
     # We are going to use 'specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
     # I.e., masking_ratio[5] specifies the probability of masking 5 features
