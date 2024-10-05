@@ -157,7 +157,7 @@
 #' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
 #' It is also possible to combine the different approaches, see the vignettes for more information.
 #'
-#' The package is allows for parallelized computation with progress updates through the tightly connected
+#' The package allows for parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages. See the examples below.
 #' For adaptive estimation (`adaptive=TRUE`), intermediate results may also be printed to the console
 #' (according to the `verbose` argument).
@@ -436,7 +436,7 @@ explain <- function(model,
 
     internal$timing_list <- list(init = Sys.time())
 
-    # setup the Shapley framework
+    # Setup the Shapley framework
     internal <- shapley_setup(internal)
 
     # Only actually called for approach %in% c("regression_surrogate","vaeac")

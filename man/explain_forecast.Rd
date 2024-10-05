@@ -23,7 +23,7 @@ explain_forecast(
   keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
-  verbose = 0,
+  verbose = "basic",
   ...
 )
 }

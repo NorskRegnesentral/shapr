@@ -103,7 +103,7 @@ Moreover, the default behavior is to estimate the Shapley values adaptively/iter
 feature coalitions being added, and to stop estimation as the estimated Shapley values has achieved a certain level of
 stability.
 More information about this is provided in [Adaptive estimation](#adaptive)
-The above, combined with batch computation of the `v(S)` values enables fast and accurate estimation of the
+The above, combined with batch computation of the `v(S)` values, enables fast and accurate estimation of the
 Shapley values in a memory friendly manner.
 
 The package also provides functionality for computing Shapley values for groups of features, multiple output
@@ -127,14 +127,14 @@ missing values. The default approach when computing the Shapley values
 is the empirical approach (i.e. `approach = "empirical"`). If you'd like
 to use a different approach you'll need to set `approach` equal to
 either `copula` or `gaussian`, or a vector of them, with length equal to
-the number of features. If a vector, a combined approach is used, and
+the number of features. If combined approach is used,
 element `i` indicates the approach to use when conditioning on `i`
 variables. For more details see [Combined approach](#combined) below.
 
-When computing the kernel SHAP values by `explain`, the maximum number
+When computing the kernel SHAP values with `explain`, the maximum number
 of samples to use in the Monte Carlo integration for every conditional
 expectation is controlled by the argument `n_MC_samples` (default equals
-`1000`). The computation time grows approximately linear with this
+`1000`). The computation time grows approximately linearly with this
 number. You will also need to pass a numeric value for the argument
 `prediction_zero`, which represents the prediction value when not
 conditioning on any features. We recommend setting this equal to the
@@ -955,7 +955,7 @@ plot_MSEv_eval_crit(explanation_list_named) +
 TODO: Edit this text
 If the argument `adaptive=TRUE` (default), the Shapley values are estimated adaptively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+First, an initial number of coalitions is sampled, then, bootsrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
