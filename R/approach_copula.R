@@ -88,7 +88,7 @@ prepare_data.copula <- function(internal, index_features, ...) {
 
   # Use C++ to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}), for all coalitions and explicands,
   # and then transforming them back to the original scale using the inverse Gaussian transform in C++.
-  # The `dt` object is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features) for regular
+  # The `dt` object is a 3D array of dimension (n_MC_samples, n_explain * n_coalitions, n_features) for regular
   # Shapley and in the first step for causal Shapley values. For later steps in the causal Shapley value framework,
   # the `dt` object is a matrix of dimension (n_explain * n_coalitions, n_features).
   dt <- prepare_data_copula(
@@ -102,7 +102,7 @@ prepare_data.copula <- function(internal, index_features, ...) {
   )
 
   # Reshape `dt` to a 2D array of dimension (n_MC_samples * n_explain * n_coalitions, n_features) when needed
-  if (!causal_sampling || causal_first_step) dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  if (!causal_sampling || causal_first_step) dim(dt) <- c(n_coalitions_now * n_explain * n_MC_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)

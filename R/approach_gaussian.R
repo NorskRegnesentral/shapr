@@ -83,7 +83,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   dt <- prepare_gauss(MC_samples_mat = MC_samples_mat, x_explain_mat = x_explain_mat, S = S, mu = mu, cov_mat = cov_mat)
 
   # Reshape `dt` to a 2D array of dimension (n_MC_samples * n_explain * n_coalitions, n_features) when needed
-  if (!causal_sampling || causal_first_step) dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  if (!causal_sampling || causal_first_step) dim(dt) <- c(n_coalitions_now * n_explain * n_MC_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)
@@ -125,7 +125,7 @@ get_mu_vec <- function(x_train) {
 #'
 #' Given a multivariate Gaussian distribution, this function creates data from specified marginals of said distribution.
 #'
-#' @param n_samples Integer. The number of samples to generate.
+#' @param n_MC_samples Integer. The number of samples to generate.
 #' @param Sbar_features Vector of integers indicating which marginals to sample from.
 #' @param mu Numeric vector containing the expected values for all features in the multivariate Gaussian distribution.
 #' @param cov_mat Numeric matrix containing the covariance between all features
@@ -134,9 +134,9 @@ get_mu_vec <- function(x_train) {
 #' @return
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-create_marginal_data_gaussian <- function(n_samples, Sbar_features, mu, cov_mat) {
+create_marginal_data_gaussian <- function(n_MC_samples, Sbar_features, mu, cov_mat) {
   return(data.table(mvnfast::rmvn(
-    n = n_samples,
+    n = n_MC_samples,
     mu = mu[Sbar_features],
     sigma = cov_mat[Sbar_features, Sbar_features]
   )))
