@@ -170,7 +170,8 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   xreg <- internal$data$xreg
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
-  dt <- batch_prepare_vS_MC_auxiliary(S = S, internal = internal) # Make it optional to store and return the dt_list
+  # Make it optional to store and return the dt_list
+  dt <- batch_prepare_vS_MC_aux_causal(S = S, internal = internal, causal_sampling = causal_sampling)
 
   pred_cols <- paste0("p_hat", seq_len(output_size))
 
@@ -192,6 +193,26 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
 
   # Also return the dt object if keep_samp_for_vS is TRUE
   return(if (keep_samp_for_vS) list(dt_vS = dt_vS, dt_samp_for_vS = dt) else dt_vS)
+}
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen and Martin Jullum
+batch_prepare_vS_MC_aux_causal <- function(S, internal, causal_sampling) {
+  iter <- length(internal$iter_list)
+  X <- internal$iter_list[[iter]]$X
+  max_id_combination <- internal$parameters$n_combinations
+  x_explain <- internal$data$x_explain
+  n_explain <- internal$parameters$n_explain
+  prepare_data_function = if (causal_sampling) prepare_data_causal else prepare_data
+
+  if (max_id_combination %in% S) {
+    dt <- if (length(S) == 1) NULL else prepare_data_function(internal, index_features = S[S != max_id_combination])
+    dt <- rbind(dt, data.table(id_combination = max_id_combination, x_explain, w = 1, id = seq_len(n_explain)))
+    setkey(dt, id, id_combination)
+  } else {
+    dt <- prepare_data_function(internal, index_features = S)
+  }
+  return(dt)
 }
 
 #' @keywords internal
