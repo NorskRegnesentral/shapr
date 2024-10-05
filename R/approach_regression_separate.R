@@ -518,8 +518,8 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
   width <- sapply(regression.grid_best, function(x) max(nchar(as.character(unique(x)))))
 
   # Message title of the results
-  #message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
-  #msg <- paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):\n")
+  # message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
+  # msg <- paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):\n")
 
   # Regression_separate adds the v(S), while separate does not add anything, but prints the Extra info thing
   if (!is.null(current_comb)) {
@@ -545,8 +545,10 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
       function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "left")
     )
     # message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))
-    msg <- c(msg, paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "),
-                         "\n"))
+    msg <- c(msg, paste0(
+      "#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "),
+      "\n"
+    ))
   }
   # message("") # Empty message to get a blank line
   cli::cli({
