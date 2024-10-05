@@ -589,7 +589,7 @@ check_and_set_parameters <- function(internal) {
   # Check the arguments related to asymmetric and causal Shapley
   # Check the causal_ordering, which must happen before checking the causal sampling
   internal <- check_and_set_causal_ordering(internal)
-  if (!is.null(internal$parameters$confounding)) internal = check_and_set_confounding(internal)
+  if (!is.null(internal$parameters$confounding)) internal <- check_and_set_confounding(internal)
 
   # Check the causal sampling
   internal <- check_and_set_causal_sampling(internal)
@@ -601,49 +601,52 @@ check_and_set_parameters <- function(internal) {
 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-check_and_set_causal_ordering = function(internal) {
-
+check_and_set_causal_ordering <- function(internal) {
   # Extract the needed variables/objects from the internal list
-  causal_ordering = internal$parameters$causal_ordering
-  is_groupwise = internal$parameters$is_groupwise
-  group = internal$parameters$group
-  group_num = unname(internal$objects$group_num)
-  labels = internal$objects$feature_specs$labels
+  causal_ordering <- internal$parameters$causal_ordering
+  is_groupwise <- internal$parameters$is_groupwise
+  group <- internal$parameters$group
+  group_num <- unname(internal$objects$group_num)
+  labels <- internal$objects$feature_specs$labels
 
   # Get the labels of the features or groups, and the number of them
-  labels_now = if (is_groupwise) names(group) else labels
-  m = length(labels_now)
+  labels_now <- if (is_groupwise) names(group) else labels
+  m <- length(labels_now)
 
   # If `causal_ordering` is NULL, then convert it to a list with a single component containing all features/groups
-  if (is.null(causal_ordering)) causal_ordering = list(seq(m))
+  if (is.null(causal_ordering)) causal_ordering <- list(seq(m))
 
   # Ensure that causal_ordering represents the causal ordering using the feature/group index representation
-  if (is.character(unlist(causal_ordering))) causal_ordering = convert_feature_name_to_idx(causal_ordering, labels_now)
+  if (is.character(unlist(causal_ordering))) causal_ordering <- convert_feature_name_to_idx(causal_ordering, labels_now)
   if (!is.numeric(unlist(causal_ordering))) {
-    stop(paste0("`causal_ordering` must be a list containg either only integers representing the feature/group ",
-                "indices or the feature/group names as strings. See the documentation for more details.\n"))
+    stop(paste0(
+      "`causal_ordering` must be a list containg either only integers representing the feature/group ",
+      "indices or the feature/group names as strings. See the documentation for more details.\n"
+    ))
   }
 
   # Ensure that causal_ordering_names represents the causal ordering using the feature name representation
-  causal_ordering_names = relist(labels_now[unlist(causal_ordering)], causal_ordering)
+  causal_ordering_names <- relist(labels_now[unlist(causal_ordering)], causal_ordering)
 
   # Check that the we have n_features elements and that they are 1 through n_features (i.e., no duplicates).
-  causal_ordering_vec_sort = sort(unlist(causal_ordering))
+  causal_ordering_vec_sort <- sort(unlist(causal_ordering))
   if (length(causal_ordering_vec_sort) != m || any(causal_ordering_vec_sort != seq(m))) {
     stop("`causal_ordering` is incomplete/incorrect. It must contain all feature names or indices exactly once.\n")
   }
 
   # For groups we need to convert from group level to feature level
   if (is_groupwise) {
-    causal_ordering_features = lapply(causal_ordering, function(component_i) unlist(group_num[component_i]))
-    causal_ordering_features_names = relist(labels[unlist(causal_ordering_features)], causal_ordering_features)
-    internal$parameters$causal_ordering_features = causal_ordering_features
-    internal$parameters$causal_ordering_features_names = causal_ordering_features_names
+    causal_ordering_features <- lapply(causal_ordering, function(component_i) unlist(group_num[component_i]))
+    causal_ordering_features_names <- relist(labels[unlist(causal_ordering_features)], causal_ordering_features)
+    internal$parameters$causal_ordering_features <- causal_ordering_features
+    internal$parameters$causal_ordering_features_names <- causal_ordering_features_names
   }
 
   # Update the parameters in the internal list
-  internal$parameters$causal_ordering = causal_ordering
-  internal$parameters$causal_ordering_names = causal_ordering_names
+  internal$parameters$causal_ordering <- causal_ordering
+  internal$parameters$causal_ordering_names <- causal_ordering_names
+  internal$parameters$causal_ordering_names_string <-
+    paste0("{", paste(sapply(causal_ordering_names, paste, collapse = ", "), collapse = "}, {"), "}")
 
   return(internal)
 }
@@ -651,21 +654,32 @@ check_and_set_causal_ordering = function(internal) {
 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-check_and_set_confounding = function(internal) {
-  causal_ordering = internal$parameters$causal_ordering
-  confounding = internal$parameters$confounding
+check_and_set_confounding <- function(internal) {
+  causal_ordering <- internal$parameters$causal_ordering
+  causal_ordering_names <- internal$parameters$causal_ordering_names
+  confounding <- internal$parameters$confounding
 
   # Check that confounding is either specified globally or locally
   if (length(confounding) > 1 && length(confounding) != length(causal_ordering)) {
-    stop(paste0("`confounding` must either be a single logical or a vector of logicals of the same length as ",
-                "the number of components in `causal_ordering` (", length(causal_ordering), ").\n"))
+    stop(paste0(
+      "`confounding` must either be a single logical or a vector of logicals of the same length as ",
+      "the number of components in `causal_ordering` (", length(causal_ordering), ").\n"
+    ))
   }
 
   # Replicate the global confounding value across all components
   if (length(confounding) == 1) confounding <- rep(confounding, length(causal_ordering))
 
   # Update the parameters in the internal list
-  internal$parameters$confounding = confounding
+  internal$parameters$confounding <- confounding
+
+  # String with information about which components that are subject to confounding (used by cli)
+  if (all(!confounding)) {
+    internal$parameters$confounding_string = "No component with confounding"
+  } else {
+    internal$parameters$confounding_string =
+      paste0("{", paste(sapply(causal_ordering_names[confounding], paste, collapse = ", "), collapse = "}, {"), "}")
+  }
 
   return(internal)
 }
@@ -674,8 +688,8 @@ check_and_set_confounding = function(internal) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 check_and_set_causal_sampling <- function(internal) {
-  confounding = internal$parameters$confounding
-  causal_ordering = internal$parameters$causal_ordering
+  confounding <- internal$parameters$confounding
+  causal_ordering <- internal$parameters$causal_ordering
 
   # The variable `causal_sampling` represents if we are to use the causal step-wise sampling procedure. We only want to
   # do that when confounding is specified, and we have a causal ordering that contains more than one component or
@@ -696,25 +710,27 @@ check_and_set_causal_sampling <- function(internal) {
 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-check_and_set_asymmetric = function(internal) {
-  asymmetric = internal$parameters$asymmetric
-  exact = internal$parameters$exact
-  causal_ordering = internal$parameters$causal_ordering
-  max_n_coalitions = internal$parameters$max_n_coalitions
+check_and_set_asymmetric <- function(internal) {
+  asymmetric <- internal$parameters$asymmetric
+  exact <- internal$parameters$exact
+  causal_ordering <- internal$parameters$causal_ordering
+  max_n_coalitions <- internal$parameters$max_n_coalitions
 
   # Get the number of coalitions that respects the (partial) causal ordering
-  max_n_coalitions_causal = get_max_n_coalitions_causal(causal_ordering = causal_ordering)
-  internal$parameters$max_n_coalitions_causal = max_n_coalitions_causal
+  max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
+  internal$parameters$max_n_coalitions_causal <- max_n_coalitions_causal
 
   # Get the coalitions that respects the (partial) causal ordering
-  internal$objects$legit_causal_coalitions = get_legit_causal_coalitions(causal_ordering = causal_ordering)
+  internal$objects$legit_causal_coalitions <- get_legit_causal_coalitions(causal_ordering = causal_ordering)
 
   # Check that we have a legit number of coalitions that does not exceed the maximum
   if (!exact && max_n_coalitions >= max_n_coalitions_causal) {
-    internal$parameters$exact = TRUE
+    internal$parameters$exact <- TRUE
     internal$parameters$max_n_coalitions <- max_n_coalitions_causal
-    warning(paste0("`max_n_coalitions` (", max_n_coalitions, ") is larger or equal to the number of coalitions ",
-                   "respecting the causal ordering (", max_n_coalitions_causal, "). Enter exact mode instead.\n"))
+    warning(paste0(
+      "`max_n_coalitions` (", max_n_coalitions, ") is larger or equal to the number of coalitions ",
+      "respecting the causal ordering (", max_n_coalitions_causal, "). Enter exact mode instead.\n"
+    ))
   }
 
   # TODO: Maybe something can happen above/here if exact is TRUE and that only max_n_coalitions_causal should be updated
