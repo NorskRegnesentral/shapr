@@ -102,6 +102,7 @@ setup_approach.categorical <- function(internal,
 #' @export
 #' @keywords internal
 prepare_data.categorical_old <- function(internal, index_features = NULL, ...) {
+  # TODO: we can remove this old (and slower) version
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
