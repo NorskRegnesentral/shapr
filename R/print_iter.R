@@ -38,7 +38,7 @@ print_iter <- function(internal) {
       if (!is.null(convergence_tolerance)) {
         conv_nice <- signif(overall_conv_measure, 2)
         tol_nice <- format(signif(convergence_tolerance, 2), scientific = FALSE)
-        reduction_factor_nice <- format(signif(reduction_factor*100, 2), scientific = FALSE)
+        reduction_factor_nice <- format(signif(reduction_factor * 100, 2), scientific = FALSE)
         msg <- paste0(
           msg,
           "Current convergence measure: {conv_nice} [needs {tol_nice}]\n",
