@@ -443,54 +443,6 @@ regression.check_namespaces <- function() {
   }
 }
 
-# Message functions ====================================================================================================
-#' Produce time message for separate regression
-#' @author Lars Henry Berge Olsen
-#' @keywords internal
-regression.separate_time_mess <- function() {
-  message(paste(
-    "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object \n",
-    "can be missleading as `setup_computation` does not contain the training times of the \n",
-    "regression models as they are trained on the fly in `compute_vS`. This is to reduce memory \n",
-    "usage and to improve efficency.\n"
-  )) # TODO: should we add the time somewhere else?
-}
-
-#' Produce message about which batch prepare_data is working on
-#' @inheritParams default_doc
-#' @inheritParams default_doc_explain
-#' @author Lars Henry Berge Olsen
-#' @keywords internal
-regression.prep_message_batch <- function(internal, index_features) {
-  iter <- length(internal$iter_list)
-
-  X <- internal$iter_list[[iter]]$X
-
-  n_batches <- internal$iter_list[[iter]]$n_batches
-
-  message(paste0(
-    "Working on batch ", X[id_coalition == index_features[1]]$batch, " of ",
-    n_batches, " in `prepare_data.", internal$parameters$approach, "()`."
-  ))
-}
-
-#' Produce message about which coalition prepare_data is working on
-#' @inheritParams default_doc
-#' @inheritParams default_doc_explain
-#' @param comb_idx Integer. The index of the coalition in a specific batch.
-#' @author Lars Henry Berge Olsen
-#' @keywords internal
-regression.prep_message_comb <- function(internal, index_features, comb_idx) {
-  iter <- length(internal$iter_list)
-
-  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
-  X <- internal$iter_list[[iter]]$X
-
-  message(paste0(
-    "Working on coalition with id ", X$id_coalition[index_features[comb_idx]],
-    " of ", n_coalitions, "."
-  ))
-}
 
 #' Produce message about which batch prepare_data is working on
 #'
@@ -517,10 +469,6 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
   regression.grid_best$rmse_std <- round(best_results$std_err, 2)
   width <- sapply(regression.grid_best, function(x) max(nchar(as.character(unique(x)))))
 
-  # Message title of the results
-  # message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
-  # msg <- paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):\n")
-
   # Regression_separate adds the v(S), while separate does not add anything, but prints the Extra info thing
   if (!is.null(current_comb)) {
     this_vS <- paste0("for  v(", paste0(current_comb, collapse = " "), ") ")
@@ -544,18 +492,13 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
       seq_along(feature_values_rmse),
       function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "left")
     )
-    # message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))
     msg <- c(msg, paste0(
       "#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "),
       "\n"
     ))
   }
-  # message("") # Empty message to get a blank line
   cli::cli({
     cli::cli_h3(msg0)
     for (i in seq_along(msg)) cli::cli_text(msg[i])
   })
-
-
-  #    _alert_info(msg)
 }
