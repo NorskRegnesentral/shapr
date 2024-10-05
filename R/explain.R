@@ -86,10 +86,10 @@
 #' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
 #'
 #' @param verbose String vector or NULL.
-#' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"convergence"`
-#'  `"shapley"`  and `"vS_details"`.
-#' `"basic"` (default) displays basic information about the estimation and where in the calculation process the function
-#' currently is.
+#' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
+#'  `"convergence"`, `"shapley"`  and `"vS_details"`.
+#' `"basic"` (default) displays basic information about the computation which is being performed.
+#' `"progress` displays information about where in the calculation process the function currently is.
 #' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
 #' (only when `adaptive = TRUE`) .
 #' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `adaptive = TRUE`)
@@ -334,7 +334,6 @@
 #'   adaptive = TRUE,
 #'   adaptive_arguments = list(initial_n_coalitions = 10)
 #' )
-
 #'
 #' @export
 #'

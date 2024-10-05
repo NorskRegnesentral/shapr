@@ -109,44 +109,29 @@ Shapley values in a memory friendly manner.
 The package also provides functionality for computing Shapley values for groups of features, multiple output
 time series forecasting models, and custom function explanation, see [Advanced usage](#advanced).
 
-## Main arguments in `explain`
 
-TODO: Update this text.
-When using `explain`, the default behavior is to use all feature
-combinations in the Shapley formula. Kernel SHAP's sampling based
-approach may be used by specifying `n_coalitions`, which is the number
-of unique feature combinations to sample. If not specified, the exact
-method is used. The computation time grows approximately exponentially
-with the number of features. The training data and the model whose
-predictions we wish to explain must be provided through the arguments
-`x_train` and `model`. The data whose predicted values we wish to
-explain must be given by the argument `x_explain`. Note that both
-`x_train` and `x_explain` must be a `data.frame` or a `matrix`, and all
-elements must be finite numerical values. Currently we do not support
-missing values. The default approach when computing the Shapley values
-is the empirical approach (i.e. `approach = "empirical"`). If you'd like
-to use a different approach you'll need to set `approach` equal to
-either `copula` or `gaussian`, or a vector of them, with length equal to
-the number of features. If combined approach is used,
-element `i` indicates the approach to use when conditioning on `i`
-variables. For more details see [Combined approach](#combined) below.
+## Default behavior of `explain`
 
-When computing the kernel SHAP values with `explain`, the maximum number
-of samples to use in the Monte Carlo integration for every conditional
-expectation is controlled by the argument `n_MC_samples` (default equals
-`1000`). The computation time grows approximately linearly with this
-number. You will also need to pass a numeric value for the argument
-`prediction_zero`, which represents the prediction value when not
-conditioning on any features. We recommend setting this equal to the
-mean of the response, but other values, like the mean prediction of a
-large test data set is also a possibility. If the empirical method is
-used, specific settings for that approach, like a vector of fixed
-$\sigma$ values can be specified through the argument
-`empirical.fixed_sigma`. See `?explain` for more information. If
-`approach = "gaussian"`, you may specify the mean vector and covariance
-matrix of the data generating distribution by the arguments
-`gaussian.mu` and `gaussian.cov_mat`. If not specified, they are
-estimated from the training data.
+Below we provide brief descriptions of the most important parts of the default behavior of the `explain` function.
+
+By default `explain` always compute feature-wise Shapley values.
+Groups of features can be explained by providing the feature groups through the `group` argument.
+
+When there are five or less features (or feature groups), adaptive estimation is by default disabled.
+The reason for this is that it is usually faster to estimate the Shapley values for all possible coalitions (`v(S)`),
+than to estimate the uncertainty of the Shapley values, and potentially stop estimation earlier.
+While adaptive estimation is the default starting from six features, it is mainly when there are more than ten features,
+that it is most beneficial, and can save a lot of computation time.
+The reason for this is that the number of possible coalitions grows exponentially.
+These defaults can be overridden by setting the `adaptive` argument to `TRUE` or `FALSE`.
+When using the `adaptive` argument, the estimation for an observation is stopped when all Shapley value
+standard deviations are below `t` times the range of the Shapley values.
+The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `adaptive_arguments$convergence_tolerance` argument, see [Adaptive estimation](#adaptive) for more details.
+
+Since the adaptiveness default changes based on the number of features (or feature groups), the default is also to have
+no upper bound on the number of coalitions considered.
+This can be controlled through the `max_n_coalitions` argument.
+
 
 <a id="KSHAP"></a>
 
@@ -952,9 +937,9 @@ plot_MSEv_eval_crit(explanation_list_named) +
 
 # Adaptive estimation
 
-TODO: Edit this text
-If the argument `adaptive=TRUE` (default), the Shapley values are estimated adaptively in an iterative manner.
-This provides sufficiently accurate Shapley value estimates faster.
+Adaptive estimation is the default when computing Shapley values with six or more features (or feature groups), and
+can always be manually overridden by setting `adaptive = FALSE` in the `explain()` function.
+The idea behind adaptive estimation is to estimate sufficiently accurate Shapley value estimates faster.
 First, an initial number of coalitions is sampled, then, bootsrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
@@ -962,6 +947,17 @@ If the variances are too high, we estimate the number of required samples to rea
 coalitions.
 The process is repeated until the variances are below the threshold.
 Specifics related to the adaptive process and convergence criterion are set through `adaptive_arguments` argument.
+
+The convergence criterion we use is adopted from @covert2021improving, and slightly modified to work for multiple
+observations
+
+\[ \median_i\left(\frac{max_j \hat{\text{sd}}(\hat{\phi}_{ij}){\max_j \hat{\phi}_{ij} - \min_j \hat{\phi}_{ij}}\right), < t  \]
+
+where $\hat{\phi}_{ij}$ is the Shapley value of feature $j$ for observation $i$, and $\text{sd}(\phi_{ij})$
+is the its (bootstrap) estimated standard deviation. The default value of $t$ is 0.02.
+Below we provide some examples of how to use the adaptive estimation procedure
+
+
 
 ```{r}
 library(xgboost)
@@ -1000,6 +996,7 @@ ex <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p0,
+  adaptive = TRUE,
   adaptive_arguments = list(convergence_tolerance = 0.1)
 )
 
@@ -1009,7 +1006,10 @@ ex <- explain(
 
 # Parallelization
 
-TODO: Edit this text
+The `shapr` package supports parallelization of the Shapley value estimation process through the
+`future` package.
+The parallelization is conducted over batches of `v(S)`-values.
+We therefore start by describing this batch computing.
 
 ## Batch computation
 
@@ -1024,49 +1024,29 @@ are not only heavy for the CPU, they also require a lot of memory (RAM),
 which typically is a limited resource. By doing the most resource hungry
 computations (the computation of v(S)) in sequential batches with
 different feature subsets $S$, the memory usage can be significantly
-reduces. Such batching comes at the cost of an increase in computation
-time, which depends on the number of feature subsets (`n_coalitions`),
-the number of features, the estimation `approach` and so on. When
-calling `shapr::explain()`, we allow the user to set the number of
-batches with the argument `n_batches`. The default of this argument is
-`NULL`, which uses a (hopefully) reasonable trade-off between
-computation speed and memory consumption which depends on
-`n_coalitions` and `approach`. The memory/computation time trade-off
-is most apparent for models with more than say 6-7 features. Below we a
-basic example where `n_batches=10`:
-
-```{r}
-explanation_batch <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "empirical",
-  prediction_zero = p0
-)
-```
+reduces.
+The user can control the number of batches by setting the two arguments
+`adaptive_arguments$max_batch_size` (defaults to 10) and
+`adaptive_arguments$min_n_batches` (defaults to 10).
 
 ## Parallelized computation
 
-In addition to reducing the memory consumption, the introduction of the
-`n_batch` argument allows computation within each batch to be performed in parallel.
+In addition to reducing the memory consumption, the batch computing allows the
+computations within each batch to be performed in parallel.
 The parallelization in `shapr::explain()` is handled by the
 `future_apply` which builds on the `future` environment. The `future`
 package works on all OS, allows the user to decide the parallelization
 backend (mutliple R procesess or forking), works directly with hpc
 clusters, and also supports progress updates for the parallelized task
-(see below).
+(see [Verbosity and progress updates](#verbose)).
 
 Note that, since it takes some time to duplicate data into different
 processes/machines when running in parallel, it is not always
 preferrable to run `shapr::explain()` in parallel, at least not with
 many parallel sessions (hereby called **workers**). Parallelization also
 increases the memory consumption proportionally, so you want to limit
-the number of workers for that reason too. In a future version of
-`shapr` we will provide experienced based automatic selection of the
-number of workers. In the meanwhile, this is all let to the user, and we
-advice that `n_batches` equals some positive integer multiplied by the
-number of workers. Below is a basic example of a parallelization with
-two workers.
+the number of workers for that reason too.
+Below is a basic example of a parallelization with two workers.
 
 ```{r}
 library(future)
@@ -1087,21 +1067,27 @@ future::plan(sequential) # To return to non-parallel computation
 
 # Verbosity and progress updates
 
-TODO: Add verbose explanations to this text.
+The `verbose` argument controls the verbosity of the output while running `explain()`,
+and allows one or more of the strings `"basic"`, `"progress"`, `"convergence"`, `"shapley"`  and `"vS_details"`.
+`"basic"` (default) displays basic information about the computation which is being performed,
+`"progress` displays information about where in the calculation process the function currently is,
+`"convergence"` displays information on how close to convergence the Shapley value estimates are
+(for adaptive estimation),
+`"shapley"` displays (intermediate) Shapley value estimates and standard deviations + the final estimates,
+while `"vS_details"` displays information about the `v(S)` estimates for some of the approaches.
+If the user wants no printout, the argument can be set to `NULL`.
 
-`shapr` provides progress updates of the computation of the Shapley
-values through the R-package `progressr`. This gives the user full
-control over the visual appearance of the progress updates, and also
-integrates seamlessly with the parallelization framework `future` used
-by `shapr` (see above). Note that the progress is updated as the batches
-are completed, meaning that if you have chosen `n_batches=1`, you will
-not get intermediate updates, while if you set `n_batches=10` you will
-get updates on every 10% of the computation.
+In additon, progress updates of the computation of the `v(S)` values, values through the R-package `progressr`.
+This gives the user full control over the visual appearance of these progress updates.
+The main reason for providing this separate progress update feature is that it
+integreats seamlessly with the parallelization framework `future` used by `shapr` (see [Parallelization](#para)),
+and apparently is the only framework allowing progress updates also for parallelized tasks.
+These progress updates can be used in combination with, or independently of, the `verbose` argument.
 
-Progress updates are enabled for the current R-session by running the
+These progress updates via `progressr` are enabled for the current R-session by running the
 command `progressr::handlers(local=TRUE)`, before calling
-`shapr::explain()`. To use progress updates for only a single call to
-`shapr::explain()`, one can wrap the call using
+`explain()`. To use progress updates for only a single call to
+`explain()`, one can wrap the call using
 `progressr::with_progress` as follows:
 `progressr::with_progress({ shapr::explain() })` The default appearance
 of the progress updates is a basic ASCII-based horizontal progress bar.
@@ -1110,9 +1096,9 @@ Other variants can be chosen by passing different strings to
 you are using Rstudio, the progress can be displayed directly in the gui
 with `progressr::handlers('rstudio')` (requires the `rstudioapi`
 package). If you are running Windows, you may use the pop-up gui
-progress bar `progressr::handlers('handler_winprogressbar')`. A wrapper
-for progressbar of the flexible `cli` package is also available
-`progressr::handlers('cli')` (requires the `cli` package).
+progress bar `progressr::handlers('handler_winprogressbar')`.
+A wrapper for progressbar of the flexible `cli` package, is also available
+`progressr::handlers('cli')`..
 
 For a full list of all progression handlers and the customization
 options available with `progressr`, see the `progressr`
