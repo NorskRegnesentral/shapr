@@ -41,11 +41,12 @@ compute_estimates <- function(internal, vS_list) {
     }
 
     dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
+
+    internal$timing_list$compute_bootstrap <- Sys.time()
   } else {
     dt_shapley_sd <- dt_shapley_est * 0
   }
 
-  internal$timing_list$compute_bootstrap <- Sys.time()
 
 
   # Adding explain_id to the output dt

@@ -469,7 +469,7 @@ explain <- function(model,
     iter <- iter + 1
   }
 
-  internal$main_timing_list$adaptive_estimation <- Sys.time()
+  internal$main_timing_list$main_computation <- Sys.time()
 
 
   # Rerun after convergence to get the same output format as for the non-adaptive approach

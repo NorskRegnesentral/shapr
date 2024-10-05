@@ -246,3 +246,69 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
   # Testing equality with the object being run in one go
   expect_equal(e_cont_est_path, full)
 })
+
+test_that("output_verbose_2", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      prediction_zero = p0,
+      adaptive = TRUE,
+      verbose = c("basic", "progress")
+    ),
+    "output_verbose_basic_progress"
+  )
+})
+
+test_that("output_verbose_3", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      prediction_zero = p0,
+      adaptive = TRUE,
+      verbose = c("basic", "progress","convergence")
+    ),
+    "output_verbose_3"
+  )
+})
+
+test_that("output_verbose_4", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      prediction_zero = p0,
+      adaptive = TRUE,
+      verbose = c("basic", "progress", "convergence", "shapley")
+    ),
+    "output_verbose_4"
+  )
+})
+
+test_that("output_verbose_5", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      prediction_zero = p0,
+      adaptive = TRUE,
+      verbose = c("basic", "progress", "convergence", "shapley", "vS_details")
+    ),
+    "output_verbose_5"
+  )
+})
+
+
