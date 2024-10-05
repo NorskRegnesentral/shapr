@@ -13,6 +13,12 @@ shapley_setup <- function(internal) {
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweighting <- internal$parameters$shapley_reweighting
   coal_feature_list <- internal$objects$coal_feature_list
+  asymmetric <- internal$parameters$asymmetric
+  causal_sampling <- internal$parameters$causal_sampling
+  causal_ordering <- internal$parameters$causal_ordering
+  causal_ordering_features <- internal$parameters$causal_ordering_features
+  confounding <- internal$parameters$confounding
+  legit_causal_coalitions <- internal$objects$legit_causal_coalitions # NULL if asymmetric is FALSE
 
 
   iter <- length(internal$iter_list)
@@ -35,7 +41,13 @@ shapley_setup <- function(internal) {
     prev_coal_samples = prev_coal_samples,
     coal_feature_list = coal_feature_list,
     approach0 = approach,
-    shapley_reweighting = shapley_reweighting
+    shapley_reweighting = shapley_reweighting,
+    legit_causal_coalitions = legit_causal_coalitions
+    # asymmetric = asymmetric, # TODO: DO I need all of these, maybe not the last three
+    # causal_ordering = causal_ordering
+    # causal_sampling = causal_sampling,
+    # causal_ordering_features = causal_ordering_features,
+    # confounding = confounding
   )
 
 
@@ -104,6 +116,30 @@ shapley_setup <- function(internal) {
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
   internal$iter_list[[iter]]$coal_samples <- coal_samples
 
+  # If we are doing causal Shapley values, then get the step-wise data generating process for each combination
+  if (causal_sampling) {
+    # Convert causal_ordering to be on the feature level also for group-wise Shapley values,
+    # as must know the features to include in each causal sampling step and not the group.
+    causal_ordering <- if (is_groupwise) causal_ordering_features else causal_ordering
+    S_causal_steps <- get_S_causal_steps(S = S, causal_ordering = causal_ordering, confounding = confounding)
+    S_causal_steps_strings <-
+      get_S_causal_steps(S = S, causal_ordering = causal_ordering, confounding = confounding, as_string = TRUE)
+
+    # Find all unique set of features to condition on
+    S_causal_unlist <- do.call(c, unlist(S_causal_steps, recursive = FALSE))
+    S_causal_steps_unique <- unique(S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)]) # Get S
+    S_causal_steps_unique <- S_causal_steps_unique[!sapply(S_causal_steps_unique, is.null)] # Remove NULLs
+    S_causal_steps_unique <- S_causal_steps_unique[lengths(S_causal_steps_unique) > 0] # Remove extra integer(0)
+    S_causal_steps_unique <- c(list(integer(0)), sort_feature_list(S_causal_steps_unique), list(seq(n_shapley_values)))
+    S_causal_steps_unique_S <- coalition_matrix_cpp(coalitions = S_causal_steps_unique, m = n_shapley_values)
+
+    # Insert into the internal list
+    internal$iter_list[[iter]]$S_causal_steps = S_causal_steps
+    internal$iter_list[[iter]]$S_causal_steps_strings = S_causal_steps_strings
+    internal$iter_list[[iter]]$S_causal_steps_unique = S_causal_steps_unique
+    internal$iter_list[[iter]]$S_causal_steps_unique_S = S_causal_steps_unique_S
+  }
+
   return(internal)
 }
 
@@ -139,21 +175,28 @@ shapley_setup <- function(internal) {
 #'
 #' # Subsample of coalitions
 #' x <- create_coalition_table(exact = FALSE, m = 10, n_coalitions = 1e2)
-create_coalition_table <- function(m, exact = TRUE, n_coalitions = 200, weight_zero_m = 10^6,
-                                   paired_shap_sampling = TRUE, prev_coal_samples = NULL,
+create_coalition_table <- function(m,
+                                   exact = TRUE,
+                                   n_coalitions = 200,
+                                   weight_zero_m = 10^6,
+                                   paired_shap_sampling = TRUE,
+                                   prev_coal_samples = NULL,
                                    coal_feature_list = as.list(seq_len(m)),
                                    approach0 = "gaussian",
-                                   shapley_reweighting = "none") {
+                                   shapley_reweighting = "none",
+                                   legit_causal_coalitions = NULL) {
   if (exact) {
-    dt <- exact_coalition_table(m, weight_zero_m)
+    dt <- exact_coalition_table(m = m,
+                                weight_zero_m = weight_zero_m,
+                                legit_causal_coalitions = legit_causal_coalitions)
   } else {
-    dt <- sample_coalition_table(m,
-      n_coalitions,
-      weight_zero_m,
-      paired_shap_sampling = paired_shap_sampling,
-      prev_coal_samples = prev_coal_samples,
-      shapley_reweighting = shapley_reweighting
-    )
+    dt <- sample_coalition_table(m = m,
+                                 n_coalitions = n_coalitions,
+                                 weight_zero_m = weight_zero_m,
+                                 paired_shap_sampling = paired_shap_sampling,
+                                 prev_coal_samples = prev_coal_samples,
+                                 shapley_reweighting = shapley_reweighting,
+                                 legit_causal_coalitions = legit_causal_coalitions)
     stopifnot(
       data.table::is.data.table(dt),
       !is.null(dt[["p"]])
@@ -170,7 +213,6 @@ create_coalition_table <- function(m, exact = TRUE, n_coalitions = 200, weight_z
   } else {
     dt[, approach := approach0]
   }
-
 
   return(dt)
 }
@@ -223,10 +265,20 @@ shapley_reweighting <- function(X, reweight = "on_N") {
 
 
 #' @keywords internal
-exact_coalition_table <- function(m, weight_zero_m = 10^6) {
-  dt <- data.table::data.table(id_coalition = seq(2^m))
-  coalitions0 <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
-  dt[, coalitions := unlist(coalitions0, recursive = FALSE)]
+exact_coalition_table <- function(m, legit_causal_coalitions = NULL, weight_zero_m = 10^6) {
+  # TODO: I have verified that we get the same combinations and weights as Heskes with their version. REMOVE THIS
+
+  # Create all valid coalitions for regular/symmetric or asymmetric Shapley values
+  if (is.null(legit_causal_coalitions)) {
+    # Regular/symmetric Shapley values: use all 2^m coalitions
+    coalitions0 <- unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
+  } else {
+    # Asymmetric Shapley values: use only the coalitions that respect the causal ordering
+    coalitions0 <- legit_causal_coalitions
+  }
+
+  dt <- data.table::data.table(id_coalition = seq_along(coalitions0))
+  dt[, coalitions := coalitions0]
   dt[, coalition_size := length(coalitions[[1]]), id_coalition]
   dt[, N := .N, coalition_size]
   dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m)]
@@ -240,13 +292,13 @@ sample_coalition_table <- function(m,
                                    weight_zero_m = 10^6,
                                    paired_shap_sampling = TRUE,
                                    prev_coal_samples = NULL,
-                                   shapley_reweighting) {
+                                   shapley_reweighting = "none",
+                                   legit_causal_coalitions = NULL) {
   # Setup
   coal_samp_vec <- seq(m - 1)
-  n <- sapply(coal_samp_vec, choose, n = m)
+  n <- choose(m, coal_samp_vec)
   w <- shapley_weights(m = m, N = n, coal_samp_vec) * n
   p <- w / sum(w)
-
 
   if (!is.null(prev_coal_samples)) {
     coal_sample_all <- prev_coal_samples
@@ -258,6 +310,27 @@ sample_coalition_table <- function(m,
     unique_samples <- 0
   }
 
+  # TODO: Also change to an if-else, so we have only one return. Did it like this, to get less changes on Github for
+  #       Martin to read through.
+
+  # Split in whether we do asymmetric or symmetric/regular Shapley values
+  if (!is.null(legit_causal_coalitions)) {
+    # Asymmetric Shapley values
+
+    # TODO: Talk with Martin if this is the best way to do it.
+    # Vi snakket om at jeg skulle sample med tilbakelegging. Men blir litt usikker på hva jeg skal
+    # Ta som vekter og om N skal være antallet mulige koalisjoner av en størrelse eller om det bare skal være de lovlige
+
+    # Create all combinations respecting the causal ordering and then sample based on Shapley kernel weights
+    X <- exact_coalition_table(m = m, legit_causal_coalitions = legit_causal_coalitions, weight_zero_m = weight_zero_m)
+    X <- rbind(X[1], X[-c(1,.N)][sort(sample(.N, n_coalitions - 2, prob = shapley_weight))], X[.N])
+    X[, id_combination := .I] # Update the indices
+    X[, p := NA] # Just needed as `feature_combinations()` requires there to be a p-column that it removes.
+    return(X)
+  }
+
+
+  # Symmetric/regular Shapley values
   while (unique_samples < n_coalitions - 2) {
     if (paired_shap_sampling == TRUE) {
       n_samps <- ceiling((n_coalitions - unique_samples - 2) / 2) # Sample -2 as we add zero and m samples below
