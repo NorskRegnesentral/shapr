@@ -61,7 +61,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   cov_mat <- internal$parameters$gaussian.cov_mat
   causal_sampling <- internal$parameters$causal_sampling
 
-  # For causal Shapley values in not the first step, we update the number of MC samples
+  # Update the number of MC samples for causal Shapley values not in the first step
   causal_first_step <- isTRUE(internal$parameters$causal_first_step) # Only set when called from `prepdare_data_causal`
   n_MC_samples_updated <- if (causal_sampling && !causal_first_step) n_explain else n_MC_samples
 
@@ -76,7 +76,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   prepare_gauss <-
     if (causal_sampling && !causal_first_step) prepare_data_gaussian_cpp_caus else prepare_data_gaussian_cpp
 
-  # Use Cpp to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
+  # Use C++ to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
   # The `dt` object is a 3D array of dimension (n_MC_samples, n_explain * n_coalitions, n_features) for regular
   # Shapley and in the first step for causal Shapley values. For later steps in the causal Shapley value framework,
   # the `dt` object is a matrix of dimension (n_explain * n_coalitions, n_features).
