@@ -164,10 +164,10 @@ Note that additional choices are available if \code{vaeac.save_every_nth_epoch} 
 \code{"epoch_15"}, and so on.}
 
 \item{verbose}{String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"convergence"}
-\code{"shapley"}  and \code{"vS_details"}.
-\code{"basic"} (default) displays basic information about the estimation and where in the calculation process the function
-currently is.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the computation which is being performed.
+\verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
 (only when \code{adaptive = TRUE}) .
 \code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})

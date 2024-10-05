@@ -49,7 +49,7 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 \code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"}.
 It is also possible to combine the different approaches, see the vignettes for more information.
 
-The package is allows for parallelized computation with progress updates through the tightly connected
+The package allows for parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
 For adaptive estimation (\code{adaptive=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).

@@ -128,10 +128,10 @@ criterion.
 Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
 \item{verbose}{String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"convergence"}
-\code{"shapley"}  and \code{"vS_details"}.
-\code{"basic"} (default) displays basic information about the estimation and where in the calculation process the function
-currently is.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the computation which is being performed.
+\verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
 (only when \code{adaptive = TRUE}) .
 \code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
@@ -322,7 +322,7 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 \code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"}.
 It is also possible to combine the different approaches, see the vignettes for more information.
 
-The package is allows for parallelized computation with progress updates through the tightly connected
+The package allows for parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
 For adaptive estimation (\code{adaptive=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).
