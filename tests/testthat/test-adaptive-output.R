@@ -247,7 +247,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
   expect_equal(e_cont_est_path, full)
 })
 
-test_that("output_verbose_2", {
+test_that("output_verbose_1", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -257,13 +257,13 @@ test_that("output_verbose_2", {
       approach = "gaussian",
       prediction_zero = p0,
       adaptive = TRUE,
-      verbose = c("basic", "progress")
+      verbose = c("basic")
     ),
-    "output_verbose_basic_progress"
+    "output_verbose_1"
   )
 })
 
-test_that("output_verbose_3", {
+test_that("output_verbose_1_3", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -273,13 +273,13 @@ test_that("output_verbose_3", {
       approach = "gaussian",
       prediction_zero = p0,
       adaptive = TRUE,
-      verbose = c("basic", "progress","convergence")
+      verbose = c("basic","convergence")
     ),
-    "output_verbose_3"
+    "output_verbose_1_3"
   )
 })
 
-test_that("output_verbose_4", {
+test_that("output_verbose_1_3_4", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -289,13 +289,13 @@ test_that("output_verbose_4", {
       approach = "gaussian",
       prediction_zero = p0,
       adaptive = TRUE,
-      verbose = c("basic", "progress", "convergence", "shapley")
+      verbose = c("basic", "convergence", "shapley")
     ),
-    "output_verbose_4"
+    "output_verbose_1_3_4"
   )
 })
 
-test_that("output_verbose_5", {
+test_that("output_verbose_1_3_4_5", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -305,9 +305,9 @@ test_that("output_verbose_5", {
       approach = "gaussian",
       prediction_zero = p0,
       adaptive = TRUE,
-      verbose = c("basic", "progress", "convergence", "shapley", "vS_details")
+      verbose = c("basic", "convergence", "shapley", "vS_details")
     ),
-    "output_verbose_5"
+    "output_verbose_1_3_4_5"
   )
 })
 
