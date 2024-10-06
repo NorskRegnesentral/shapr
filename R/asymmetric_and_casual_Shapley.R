@@ -4,8 +4,8 @@
 mixedsort <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE, numeric.type = c("decimal", "roman"),
                       roman.case = c("upper", "lower", "both"), scientific = TRUE) {
   x[mixedorder(x,
-               decreasing = decreasing, na.last = na.last, blank.last = blank.last, numeric.type = numeric.type,
-               roman.case = roman.case, scientific = scientific
+    decreasing = decreasing, na.last = na.last, blank.last = blank.last, numeric.type = numeric.type,
+    roman.case = roman.case, scientific = scientific
   )]
 }
 
@@ -14,8 +14,14 @@ mixedorder <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE
                        roman.case = c("upper", "lower", "both"), scientific = TRUE) {
   numeric.type <- match.arg(numeric.type)
   roman.case <- match.arg(roman.case)
-  if (length(x) < 1) return(NULL) else if (length(x) == 1) return(1)
-  if (!is.character(x)) return(order(x, decreasing = decreasing, na.last = na.last))
+  if (length(x) < 1) {
+    return(NULL)
+  } else if (length(x) == 1) {
+    return(1)
+  }
+  if (!is.character(x)) {
+    return(order(x, decreasing = decreasing, na.last = na.last))
+  }
   delim <- "\\$\\@\\$"
   if (numeric.type == "decimal") {
     if (scientific) {
@@ -25,7 +31,11 @@ mixedorder <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE
     }
     numeric <- function(x) as.numeric(x)
   } else if (numeric.type == "roman") {
-    regex <- switch(roman.case, both = "([IVXCLDMivxcldm]+)", upper = "([IVXCLDM]+)", lower = "([ivxcldm]+)")
+    regex <- switch(roman.case,
+      both = "([IVXCLDMivxcldm]+)",
+      upper = "([IVXCLDM]+)",
+      lower = "([ivxcldm]+)"
+    )
     numeric <- function(x) roman2int(x)
   } else {
     stop("Unknown value for numeric.type: ", numeric.type)
@@ -77,26 +87,26 @@ mixedorder <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE
 #' @keyword internal
 #' @author Lars Henry Berge Olsen
 #' @examples
-#' sort_feature_list(list(3, 1, c(101, 7, 111), c(7,101,1), c(7, 99, 111), c(2,1), c(1, 101)))
-sort_feature_list = function(features_list, sort_features = TRUE, sort_size = TRUE, sort_coalitions = TRUE) {
+#' sort_feature_list(list(3, 1, c(101, 7, 111), c(7, 101, 1), c(7, 99, 111), c(2, 1), c(1, 101)))
+sort_feature_list <- function(features_list, sort_features = TRUE, sort_size = TRUE, sort_coalitions = TRUE) {
   # Sort each coalition to have increasing feature indices
-  if (sort_features) features_list = lapply(features_list, sort)
+  if (sort_features) features_list <- lapply(features_list, sort)
 
   # Sort the list such that the coalition size is increasing
-  if (sort_size) features_list = features_list[order(sapply(features_list, length))]
+  if (sort_size) features_list <- features_list[order(sapply(features_list, length))]
 
   # Sort the coalitions with equal size such coalitions with lower feature indices come first (1,2,3 before 1,3,4)
   if (sort_coalitions) {
-    lengths = sapply(features_list, length)
-    lengths_unique = unique(lengths)
-    index_list = lapply(lengths_unique, function(length) which(lengths == length))
-    names(index_list) = lengths_unique
-    features_list_order = c()
+    lengths <- sapply(features_list, length)
+    lengths_unique <- unique(lengths)
+    index_list <- lapply(lengths_unique, function(length) which(lengths == length))
+    names(index_list) <- lengths_unique
+    features_list_order <- c()
     for (length in lengths_unique) {
-      length_order = mixedorder(sapply(features_list[lengths == length], paste, collapse = ","))
-      features_list_order = c(features_list_order, index_list[[as.character(length)]][length_order])
+      length_order <- mixedorder(sapply(features_list[lengths == length], paste, collapse = ","))
+      features_list_order <- c(features_list_order, index_list[[as.character(length)]][length_order])
     }
-    features_list = features_list[features_list_order]
+    features_list <- features_list[features_list_order]
   }
 
   # Return the sorted features list
@@ -116,16 +126,18 @@ sort_feature_list = function(features_list, sort_features = TRUE, sort_size = TR
 #' @keywords internal
 #'
 #' @author Lars Henry Berge Olsen
-check_categorical_valid_MCsamp = function(dt, n_explain, n_MC_samples, joint_probability_dt) {
-  dt_factor = dt[ , .SD, .SDcols = is.factor] # Get the columns that have been inserted into
-  dt_factor_names = copy(names(dt_factor)) # Get their names. Copy as we are to change dt_factor
+check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_probability_dt) {
+  dt_factor <- dt[, .SD, .SDcols = is.factor] # Get the columns that have been inserted into
+  dt_factor_names <- copy(names(dt_factor)) # Get their names. Copy as we are to change dt_factor
   dt_factor[, id := rep(seq(n_explain), each = n_MC_samples)] # Add an id column
-  dt_valid_coals = joint_probability_dt[, ..dt_factor_names] # Get the valid feature coalitions
-  dt_invalid = dt_factor[!dt_valid_coals, on = dt_factor_names] # Get non valid coalitions
-  explicand_all_invalid = dt_invalid[,.N, by = id][N == n_MC_samples] # Get if all samples for an explicand are invalid
+  dt_valid_coals <- joint_probability_dt[, ..dt_factor_names] # Get the valid feature coalitions
+  dt_invalid <- dt_factor[!dt_valid_coals, on = dt_factor_names] # Get non valid coalitions
+  explicand_all_invalid <- dt_invalid[, .N, by = id][N == n_MC_samples] # Get if all samples for an explicand are invalid
   if (nrow(explicand_all_invalid) > 0) {
-    stop(paste0("An explicand has no valid MC feature coalitions. Increase `n_MC_samples` or provide ",
-                "`joint_prob_dt` containing the probaibilities for unlikely coalitions, too."))
+    stop(paste0(
+      "An explicand has no valid MC feature coalitions. Increase `n_MC_samples` or provide ",
+      "`joint_prob_dt` containing the probaibilities for unlikely coalitions, too."
+    ))
   }
 }
 
@@ -266,20 +278,21 @@ check_n_coalitions_causal <- function(n_coalitions, causal_ordering) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-convert_feature_name_to_idx = function(causal_ordering, labels, feat_group_txt) {
-
+convert_feature_name_to_idx <- function(causal_ordering, labels, feat_group_txt) {
   # Convert the feature names into feature indices
-  causal_ordering_match = match(unlist(causal_ordering), labels)
+  causal_ordering_match <- match(unlist(causal_ordering), labels)
 
   # Check that user only provided valid feature names
   if (any(is.na(causal_ordering_match))) {
-    stop(paste0("`causal_ordering` contains ", feat_group_txt, " names (`",
-                paste0(unlist(causal_ordering)[is.na(causal_ordering_match)], collapse = "`, `"),"`) ",
-                "that are not in the data (`", paste0(labels, collapse = "`, `"), "`).\n"))
+    stop(paste0(
+      "`causal_ordering` contains ", feat_group_txt, " names (`",
+      paste0(unlist(causal_ordering)[is.na(causal_ordering_match)], collapse = "`, `"), "`) ",
+      "that are not in the data (`", paste0(labels, collapse = "`, `"), "`).\n"
+    ))
   }
 
   # Recreate the causal_ordering list with the feature indices
-  causal_ordering = relist(causal_ordering_match, causal_ordering)
+  causal_ordering <- relist(causal_ordering_match, causal_ordering)
   return(causal_ordering)
 }
 
@@ -324,7 +337,6 @@ create_marginal_data_training <- function(x_train,
                                           Sbar_features,
                                           n_MC_samples = 1000,
                                           stable_version = TRUE) {
-
   # Get the number of training observations
   n_train <- nrow(x_train)
 
@@ -332,12 +344,18 @@ create_marginal_data_training <- function(x_train,
     # If n_MC_samples > n_train, then we include each training observations n_MC_samples %/% n_train times and
     # then sample the remaining n_MC_samples %% n_train samples. Only the latter is done when n_MC_samples < n_train.
     # This is done separately for each explicand
-    sampled_indices <- as.vector(sapply(seq(n_explain),
-                                        function(x) c(rep(seq(n_train), each = n_MC_samples %/% n_train),
-                                                      sample(n_train, n_MC_samples %% n_train))))
+    sampled_indices <- as.vector(sapply(
+      seq(n_explain),
+      function(x) {
+        c(
+          rep(seq(n_train), each = n_MC_samples %/% n_train),
+          sample(n_train, n_MC_samples %% n_train)
+        )
+      }
+    ))
   } else {
     # sample everything and not guarantee that we use all training observations
-    sampled_indices = sample(n_train, n_MC_samples * n_explain, replace = TRUE)
+    sampled_indices <- sample(n_train, n_MC_samples * n_explain, replace = TRUE)
   }
 
   # Sample the marginal data and return them
@@ -376,50 +394,51 @@ create_marginal_data_training <- function(x_train,
 #' @keywords internal
 #'
 #' @author Lars Henry Berge Olsen
-create_marginal_data_categoric = function(n_MC_samples,
-                                          x_explain,
-                                          Sbar_features,
-                                          S_original,
-                                          joint_prob_dt) {
-
+create_marginal_data_categoric <- function(n_MC_samples,
+                                           x_explain,
+                                           Sbar_features,
+                                           S_original,
+                                           joint_prob_dt) {
   # Get the number of features and their names
-  n_features = ncol(x_explain)
-  feature_names = colnames(x_explain)
+  n_features <- ncol(x_explain)
+  feature_names <- colnames(x_explain)
 
   # Get the feature names of the features we are to generate
-  Sbar_now_names = feature_names[Sbar_features]
+  Sbar_now_names <- feature_names[Sbar_features]
 
   # Make a copy of the explicands and add an id
-  x_explain_copy = data.table::copy(x_explain)[, id := .I]
+  x_explain_copy <- data.table::copy(x_explain)[, id := .I]
 
   # Get the features that are in S originally and the features we are creating marginal values for
-  S_original_names = feature_names[S_original]
-  S_original_names_with_id = c("id", S_original_names)
-  relevant_features = sort(c(Sbar_features, S_original))
-  relevant_features_names = feature_names[relevant_features]
+  S_original_names <- feature_names[S_original]
+  S_original_names_with_id <- c("id", S_original_names)
+  relevant_features <- sort(c(Sbar_features, S_original))
+  relevant_features_names <- feature_names[relevant_features]
 
   # Get the marginal probabilities for the relevant feature coalitions
-  marginal_prob_dt = joint_prob_dt[, list(prob = sum(joint_prob)), by = relevant_features_names]
+  marginal_prob_dt <- joint_prob_dt[, list(prob = sum(joint_prob)), by = relevant_features_names]
 
   # Get all valid feature coalitions for the relevant features
-  dt_valid_coalitions = unique(joint_prob_dt[, ..relevant_features])
+  dt_valid_coalitions <- unique(joint_prob_dt[, ..relevant_features])
 
   # Get relevant feature coalitions that are valid for the explicands
-  dt_valid_coalitions_relevant = data.table::merge.data.table(x_explain_copy[, ..S_original_names_with_id],
-                                                                dt_valid_coalitions,
-                                                                by = S_original_names,
-                                                                allow.cartesian = TRUE)
+  dt_valid_coalitions_relevant <- data.table::merge.data.table(x_explain_copy[, ..S_original_names_with_id],
+    dt_valid_coalitions,
+    by = S_original_names,
+    allow.cartesian = TRUE
+  )
 
   # Merge the relevant feature coalitions with their marginal probabilities
-  dt_valid_coal_marg_prob = data.table::merge.data.table(dt_valid_coalitions_relevant,
-                                                         marginal_prob_dt,
-                                                         by = relevant_features_names)
-  dt_valid_coal_marg_prob[, prob := prob/sum(prob), by = id] # Make prob sum to 1 for each explicand
+  dt_valid_coal_marg_prob <- data.table::merge.data.table(dt_valid_coalitions_relevant,
+    marginal_prob_dt,
+    by = relevant_features_names
+  )
+  dt_valid_coal_marg_prob[, prob := prob / sum(prob), by = id] # Make prob sum to 1 for each explicand
   data.table::setkey(dt_valid_coal_marg_prob, "id") # Set id to key so id is in increasing order
 
   # Sample n_MC_samples from the valid coalitions using the marginal probabilities and extract the Sbar columns
   dt_return <-
-    dt_valid_coal_marg_prob[, .SD[sample(.N, n_MC_samples, replace = TRUE, prob = prob)], by = id][,..Sbar_now_names]
+    dt_valid_coal_marg_prob[, .SD[sample(.N, n_MC_samples, replace = TRUE, prob = prob)], by = id][, ..Sbar_now_names]
   return(dt_return)
 }
 
@@ -459,7 +478,7 @@ create_marginal_data_categoric = function(n_MC_samples,
 #' @author Lars Henry Berge Olsen
 get_legit_causal_coalitions <- function(causal_ordering, sort_features_in_coalitions = TRUE) {
   # Create a list to store the possible coalitions and start with the empty coalition
-  coalitions = list(numeric(0))
+  coalitions <- list(numeric(0))
 
   # Iterate over the remaining partial causal orderings
   for (i in seq(1, length(causal_ordering))) {
@@ -571,10 +590,9 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALSE) {
-
   # List to store the sampling process
-  results = vector("list", nrow(S))
-  names(results) = paste0("id_coalition_", seq(nrow(S)))
+  results <- vector("list", nrow(S))
+  names(results) <- paste0("id_coalition_", seq(nrow(S)))
 
   # Iterate over the coalitions
   for (j in seq(2, nrow(S) - 1)) {
@@ -597,14 +615,13 @@ get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALS
         # Save Sbar and S (sorting is for the visual)
         to_sample <- sort(to_sample)
         to_condition <- sort(to_condition)
-        tmp_name = paste0("id_coalition_", j)
+        tmp_name <- paste0("id_coalition_", j)
         if (as_string) {
           results[[j]] <-
             c(results[[tmp_name]], paste0(paste0(to_sample, collapse = ","), "|", paste0(to_condition, collapse = ",")))
         } else {
           results[[tmp_name]][[paste0("step_", length(results[[j]]) + 1)]] <- list(Sbar = to_sample, S = to_condition)
         }
-
       }
     }
   }
@@ -709,12 +726,12 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   # Recall that here, index_features is a vector of id_coalitions, i.e., indicating which rows in S to use.
   # Also note that we are guaranteed that index_features does not include the empty or grand coalition
 
-
   # Extract iteration specific variables
   iter <- length(internal$iter_list)
   X <- internal$iter_list[[iter]]$X
   S <- internal$iter_list[[iter]]$S
   S_causal_steps <- internal$iter_list[[iter]]$S_causal_steps
+  S_causal_steps_strings <- internal$iter_list[[iter]]$S_causal_steps_strings # TODO: REMOVE
 
   # Extract the needed variables
   x_train <- internal$data$x_train
@@ -737,9 +754,14 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   # Loop over the coalitions in the batch
   index_feature_idx <- 1
   for (index_feature_idx in seq_along(index_features)) {
-
     # Extract the index of the current coalition
     index_feature <- index_features[index_feature_idx]
+
+    # TODO: REMOVE
+    message(paste0(
+      "Coalition ", index_feature_idx, " of ", length(index_features),
+      " (id_coalition = ", index_feature, ")."
+    ))
 
     # Reset the internal_copy list for each new coalition
     if (index_feature_idx > 1) {
@@ -750,7 +772,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
     # Create the empty data table which we are to populate with the Monte Carlo samples for each coalition
     dt <- data.table(matrix(nrow = n_explain * n_MC_samples, ncol = n_features))
-    #if (approach == "categorical") dt[, names(dt) := lapply(.SD, as.factor)] # Needed for the categorical approach
+    # if (approach == "categorical") dt[, names(dt) := lapply(.SD, as.factor)] # Needed for the categorical approach
     colnames(dt) <- feature_names
 
     # Populate the data table with the features we condition on
@@ -761,11 +783,17 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
     S_causal_steps_now <- internal$iter_list[[iter]]$S_causal_steps[[index_feature]]
 
     # Loop over the steps in the iterative sampling process to generate MC samples for the unconditional features
-    sampling_step_idx <- 1
+    sampling_step_idx <- 2
     for (sampling_step_idx in seq_along(S_causal_steps_now)) {
+      # TODO: REMOVE
+      message(paste0(
+        "Sampling step ", sampling_step_idx, " of ", length(S_causal_steps_now),
+        " (", S_causal_steps_strings[[index_feature]][sampling_step_idx], ")."
+      ))
+
       # Set flag indicating whether or not we are in the first sampling step, as the the gaussian and copula
       # approaches need to know this to change their sampling procedure to ensure correctly generated MC samples
-      internal_copy$parameters$causal_first_step = sampling_step_idx == 1
+      internal_copy$parameters$causal_first_step <- sampling_step_idx == 1
 
       # Get the S (the conditional features) and Sbar (the unconditional features) in the current sampling step
       S_now <- S_causal_steps_now[[sampling_step_idx]]$S # The features to condition on in this sampling step
@@ -780,28 +808,26 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         # TODO: Can extend to also sample from the marginals of the (gaussian) copula and vaeac
         if (approach == "gaussian") {
           # Sample marginal data from the marginal gaussian distribution
-          dt_Sbar_now_marginal_values = create_marginal_data_gaussian(
+          dt_Sbar_now_marginal_values <- create_marginal_data_gaussian(
             n_MC_samples = n_MC_samples * n_explain,
             Sbar_features = Sbar_now,
             mu = internal$parameters$gaussian.mu,
             cov_mat = internal$parameters$gaussian.cov_mat
           )
-
         } else if (approach == "categorical" && length(S_causal_steps_now) > 1) {
           # For categorical approach with several sampling steps, we make sure to only sample feature coalitions
           # that are present in `categorical.joint_prob_dt` when combined with the features in `S_names`.
-          dt_Sbar_now_marginal_values = create_marginal_data_categoric(
+          dt_Sbar_now_marginal_values <- create_marginal_data_categoric(
             n_MC_samples = n_MC_samples,
             x_explain = x_explain,
             Sbar_features = Sbar_now,
             S_original = seq(n_features)[as.logical(S[index_feature, ])],
             joint_prob_dt = internal$parameters$categorical.joint_prob_dt
           )
-
         } else {
           # Sample from the training data for all approaches except the gaussian approach
           # and except the categorical approach for settings with several sampling steps
-          dt_Sbar_now_marginal_values = create_marginal_data_training(
+          dt_Sbar_now_marginal_values <- create_marginal_data_training(
             x_train = x_train,
             n_explain = n_explain,
             Sbar_features = Sbar_now,
@@ -812,14 +838,14 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
         # Insert the marginal values into the data table
         dt[, (Sbar_now_names) := dt_Sbar_now_marginal_values]
-
       } else {
         # Conditional distribution as there are variables to condition on
 
         # Create dummy versions of S and X only containing the current conditional features, and index_features is 1.
-        internal_copy$objects$S = matrix(0, ncol = n_features, nrow = 1)
-        internal_copy$objects$S[1, S_now] = 1
-        internal_copy$objects$X = data.table(id_coalition = 1, features = list(S_now), n_features = length(S_now))
+        internal_copy$iter_list[[iter]]$S <- matrix(0, ncol = n_features, nrow = 1)
+        internal_copy$iter_list[[iter]]$S[1, S_now] <- 1
+        internal_copy$iter_list[[iter]]$X <-
+          data.table(id_coalition = 1, features = list(S_now), n_features = length(S_now))
 
         # Generate the MC samples conditioning on S_now
         dt_new <- prepare_data(internal_copy, index_features = 1, ...)
@@ -827,7 +853,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         if (approach %in% c("independence", "empirical", "ctree", "categorical")) {
           # These approaches produce weighted MC samples, i.e., the do not necessarily generate n_MC_samples MC samples.
           # We ensure n_MC_samples by weighted sampling (with replacements) those ids with not n_MC_samples MC samples.
-          n_samp_now = internal_copy$parameters$n_MC_samples
+          n_samp_now <- internal_copy$parameters$n_MC_samples
           dt_new <-
             dt_new[, .SD[if (.N == n_samp_now) seq(.N) else sample(.N, n_samp_now, replace = TRUE, prob = w)], by = id]
 
@@ -842,10 +868,12 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
       # Here we check if all the generated samples are outside the joint_prob_dt
       if (approach == "categorical" && length(S_causal_steps_now) > 1) {
-        check_categorical_valid_MCsamp(dt = dt,
-                                       n_explain = n_explain,
-                                       n_MC_samples = n_MC_samples,
-                                       joint_probability_dt = internal$parameters$categorical.joint_prob_dt)
+        check_categorical_valid_MCsamp(
+          dt = dt,
+          n_explain = n_explain,
+          n_MC_samples = n_MC_samples,
+          joint_probability_dt = internal$parameters$categorical.joint_prob_dt
+        )
       }
 
       # Update the x_explain in internal_copy such that in the next sampling step use the values in dt
