@@ -258,21 +258,24 @@ check_n_coalitions_causal <- function(n_coalitions, causal_ordering) {
 #' Functions that takes a `causal_ordering` specified using strings and convert these strings to feature indices.
 #'
 #' @param labels Vector of strings containing (the order of) the feature names.
+#' @param feat_group_txt String that is either "feature" or "group" based on
+#' if `shapr` is computing feature- or group-wise Shapley values
 #' @inheritParams explain
 #'
 #' @return The `causal_ordering` list, but with feature indices (w.r.t. `labels`) instead of feature names.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-convert_feature_name_to_idx = function(causal_ordering, labels) {
+convert_feature_name_to_idx = function(causal_ordering, labels, feat_group_txt) {
 
   # Convert the feature names into feature indices
   causal_ordering_match = match(unlist(causal_ordering), labels)
 
   # Check that user only provided valid feature names
   if (any(is.na(causal_ordering_match))) {
-    stop(paste0("`causal_ordering` contains feature names that are not in the data (`",
-                paste0(unlist(causal_ordering)[is.na(causal_ordering_match)], collapse = "`, `"),"`).\n"))
+    stop(paste0("`causal_ordering` contains ", feat_group_txt, " names (`",
+                paste0(unlist(causal_ordering)[is.na(causal_ordering_match)], collapse = "`, `"),"`) ",
+                "that are not in the data (`", paste0(labels, collapse = "`, `"), "`).\n"))
   }
 
   # Recreate the causal_ordering list with the feature indices

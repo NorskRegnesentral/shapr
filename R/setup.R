@@ -605,6 +605,7 @@ check_and_set_causal_ordering <- function(internal) {
   # Extract the needed variables/objects from the internal list
   causal_ordering <- internal$parameters$causal_ordering
   is_groupwise <- internal$parameters$is_groupwise
+  feat_group_txt <- ifelse(is_groupwise, "group", "feature")
   group <- internal$parameters$group
   group_num <- unname(internal$objects$group_num)
   labels <- internal$objects$feature_specs$labels
@@ -617,11 +618,13 @@ check_and_set_causal_ordering <- function(internal) {
   if (is.null(causal_ordering)) causal_ordering <- list(seq(m))
 
   # Ensure that causal_ordering represents the causal ordering using the feature/group index representation
-  if (is.character(unlist(causal_ordering))) causal_ordering <- convert_feature_name_to_idx(causal_ordering, labels_now)
+  if (is.character(unlist(causal_ordering))) {
+    causal_ordering <- convert_feature_name_to_idx(causal_ordering, labels_now, feat_group_txt)
+  }
   if (!is.numeric(unlist(causal_ordering))) {
     stop(paste0(
-      "`causal_ordering` must be a list containg either only integers representing the feature/group ",
-      "indices or the feature/group names as strings. See the documentation for more details.\n"
+      "`causal_ordering` must be a list containg either only integers representing the ", feat_group_txt,
+      " indices or the ", feat_group_txt, " names as strings. See the documentation for more details.\n"
     ))
   }
 
@@ -631,7 +634,8 @@ check_and_set_causal_ordering <- function(internal) {
   # Check that the we have n_features elements and that they are 1 through n_features (i.e., no duplicates).
   causal_ordering_vec_sort <- sort(unlist(causal_ordering))
   if (length(causal_ordering_vec_sort) != m || any(causal_ordering_vec_sort != seq(m))) {
-    stop("`causal_ordering` is incomplete/incorrect. It must contain all feature names or indices exactly once.\n")
+    stop(paste0("`causal_ordering` is incomplete/incorrect. It must contain all ",
+                feat_group_txt, " names or indices exactly once.\n"))
   }
 
   # For groups we need to convert from group level to feature level
