@@ -751,6 +751,13 @@ adjust_max_n_coalitions <- function(internal) {
   max_n_coalitions <- internal$parameters$max_n_coalitions
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
+  asymmetric <- internal$parameters$asymmetric
+
+  if (isTRUE(asymmetric)) {
+
+  } else {
+
+  }
 
 
   # Adjust max_n_coalitions

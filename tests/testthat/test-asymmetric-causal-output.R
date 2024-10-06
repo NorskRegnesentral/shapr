@@ -35,6 +35,25 @@ test_that("output_asymmetric_conditional_regression", {
   )
 })
 
+test_that("output_asymmetric_conditional_regression_adaptive", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "regression_separate",
+      regression.model = parsnip::linear_reg(),
+      prediction_zero = p0,
+      asymmetric = TRUE,
+      causal_ordering = list(1:2, 3, 4:5),
+      confounding = NULL,
+      adaptive = TRUE
+    ),
+    "output_asymmetric_conditional_regression"
+  )
+})
+
 test_that("output_symmetric_conditional", {
   expect_snapshot_rds(
     explain(
