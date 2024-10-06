@@ -1,5 +1,3 @@
-causal_ordering <- list(1:2, 3:4, 5)
-
 test_that("asymmetric erroneous input: `causal_ordering`", {
   set.seed(123)
 
@@ -7,16 +5,16 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
     {
       # Too many variables (6 does not exist)
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
         causal_ordering = list(1:6),
         confounding = NULL,
         approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -26,16 +24,16 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
     {
       # Too many variables (5 duplicate)
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
         causal_ordering = list(1:5, 5),
         confounding = NULL,
         approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -45,16 +43,16 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
     {
       # Correct number of variables, but 5 duplicate
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
         causal_ordering = list(2:5, 5),
         confounding = NULL,
         approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -64,16 +62,16 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
     {
       # To few variables
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
         causal_ordering = list(1:2, 4),
         confounding = NULL,
         approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -83,16 +81,16 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
     {
       # Too many variables (not valid feature name)
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
-        causal_ordering = list("Solar.R", "Wind", "Temp", "Month", "Day", "FAKE"),
+        causal_ordering = list("Solar.R", "Wind", "Temp", "Month", "Day", "Invalid feature name"),
         confounding = NULL,
         approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -102,16 +100,16 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
     {
       # Too many variables (duplicate)
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind", "Temp", "Month", "Day", "Day"),
         confounding = NULL,
         approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -119,18 +117,18 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
 
   expect_snapshot(
     {
-      # Duplicate + missing "Month"
+      # Duplicate and missing "Month", but right number of variables
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind", "Temp", "Day", "Day"),
         confounding = NULL,
         approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -140,16 +138,16 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
     {
       # Too few variables
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind"),
         confounding = NULL,
         approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -159,17 +157,37 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
     {
       # Group Shapley: not giving the group names
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
         causal_ordering = list(c("Solar.R", "Wind", "Temp", "Month"), "Day"),
         confounding = NULL,
         approach = "gaussian",
-        group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day"))
+        group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
+        adaptive = FALSE
+      )
+    },
+    error = TRUE
+  )
+
+  expect_snapshot(
+    {
+      # Group Shapley: not giving all the group names correctly
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        prediction_zero = p0,
+        asymmetric = TRUE,
+        causal_ordering = list(c("A", "C"), "Wrong name"),
+        confounding = NULL,
+        approach = "gaussian",
+        group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -179,17 +197,17 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
     {
       # Group Shapley: missing a group names
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 1,
-        timing = FALSE,
         asymmetric = TRUE,
         causal_ordering = list(c("A"), "B"),
         confounding = NULL,
         approach = "gaussian",
-        group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day"))
+        group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -204,16 +222,16 @@ test_that("asymmetric erroneous input: `approach`", {
     {
       # Causal Shapley values is not applicable for combined approaches.
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 3,
-        timing = FALSE,
         asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5),
         confounding = TRUE,
         approach = c("gaussian", "independence", "empirical", "gaussian"),
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -227,16 +245,16 @@ test_that("asymmetric erroneous input: `asymmetric`", {
     {
       # Vector
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 3,
-        timing = FALSE,
         asymmetric = c(FALSE, FALSE),
         causal_ordering = list(1:2, 3:4, 5),
         confounding = TRUE,
-        approach = "gaussian"
+        approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -246,16 +264,16 @@ test_that("asymmetric erroneous input: `asymmetric`", {
     {
       # String
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 3,
-        timing = FALSE,
-        asymmetric = "Must be logical",
+        asymmetric = "Must be a single logical",
         causal_ordering = list(1:2, 3:4, 5),
         confounding = TRUE,
-        approach = "gaussian"
+        approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -265,16 +283,16 @@ test_that("asymmetric erroneous input: `asymmetric`", {
     {
       # Integer
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 3,
-        timing = FALSE,
         asymmetric = 1L,
         causal_ordering = list(1:2, 3:4, 5),
         confounding = TRUE,
-        approach = "gaussian"
+        approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -289,16 +307,16 @@ test_that("asymmetric erroneous input: `confounding`", {
     {
       # confounding not logical vector
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 3,
-        timing = FALSE,
         asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5),
         confounding = c("A", "B", "C"),
-        approach = "gaussian",
+        approach = "gaussian", ,
+        adaptive = FALSE
       )
     },
     error = TRUE
@@ -308,16 +326,16 @@ test_that("asymmetric erroneous input: `confounding`", {
     {
       # logical vector of incorrect length
       explain(
+        testing = TRUE,
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         prediction_zero = p0,
-        n_batches = 3,
-        timing = FALSE,
         asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5),
         confounding = c(TRUE, FALSE),
         approach = "gaussian",
+        adaptive = FALSE
       )
     },
     error = TRUE
