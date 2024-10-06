@@ -712,7 +712,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   X <- internal$iter_list[[iter]]$X
   S <- internal$iter_list[[iter]]$S
   S_causal_steps <- internal$iter_list[[iter]]$S_causal_steps
-  S_causal_steps_strings = internal$iter_list[[iter]]$S_causal_steps_strings
 
   # Extract the needed variables
   x_train <- internal$data$x_train
@@ -722,7 +721,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   n_features <- internal$parameters$n_features
   n_MC_samples <- internal$parameters$n_MC_samples
   feature_names <- internal$parameters$feature_names
-  verbose <- internal$parameters$verbose
 
   # Create a list to store the populated data tables with the MC samples
   dt_list <- list()
@@ -739,12 +737,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
     # Extract the index of the current coalition
     index_feature <- index_features[index_feature_idx]
-
-    # Give message if verbose
-    if (verbose == "vS_details") {
-      message(paste0("Coalition ", index_feature_idx, " of ", length(index_features),
-                     " (id_coalition = ", index_feature, ")."))
-    }
 
     # Reset the internal_copy list for each new coalition
     if (index_feature_idx > 1) {
@@ -768,12 +760,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
     # Loop over the steps in the iterative sampling process to generate MC samples for the unconditional features
     sampling_step_idx <- 1
     for (sampling_step_idx in seq_along(S_causal_steps_now)) {
-      # Small message if verbose
-      if (verbose == "vS_details") {
-        message(paste0("Sampling step ", sampling_step_idx, " of ", length(S_causal_steps_now),
-                       " (", S_causal_steps_strings[[index_feature]][sampling_step_idx], ")."))
-      }
-
       # Set flag indicating whether or not we are in the first sampling step, as the the gaussian and copula
       # approaches need to know this to change their sampling procedure to ensure correctly generated MC samples
       internal_copy$parameters$causal_first_step = sampling_step_idx == 1
