@@ -109,7 +109,7 @@ explanation <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = mean(y_train),
-  n_samples = 1,
+  n_MC_samples = 1,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1
 )

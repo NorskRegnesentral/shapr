@@ -8,12 +8,12 @@ setup(
   x_train,
   x_explain,
   approach,
+  paired_shap_sampling = FALSE,
   prediction_zero,
   output_size = 1,
-  n_combinations,
+  max_n_coalitions,
   group,
-  n_samples,
-  n_batches,
+  n_MC_samples,
   seed,
   keep_samp_for_vS,
   feature_specs,
@@ -27,9 +27,14 @@ setup(
   explain_y_lags = NULL,
   explain_xreg_lags = NULL,
   group_lags = NULL,
-  timing,
   verbose,
+  adaptive = NULL,
+  adaptive_arguments = list(),
+  shapley_reweighting = "none",
   is_python = FALSE,
+  testing = FALSE,
+  init_time = NULL,
+  prev_shapr_object = NULL,
   ...
 )
 }
@@ -46,6 +51,11 @@ All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empiri
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
 The two regression approaches can not be combined with any other approach. See details for more information.}
 
+\item{paired_shap_sampling}{Logical.
+If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
+That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
+computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
+
 \item{prediction_zero}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
 features.
@@ -54,11 +64,13 @@ such as the mean of the predictions in the training data are also reasonable.}
 
 \item{output_size}{TODO: Document}
 
-\item{n_combinations}{Integer.
-If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
-If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
-If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
-The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.}
+\item{max_n_coalitions}{Integer.
+The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
+(if \code{adaptive = TRUE}).
+If \code{adaptive = FALSE} it represents the number of feature/group coalitions to use directly.
+The quantity refers to the number of unique feature coalitions if \code{group = NULL},
+and group coalitions if \code{group != NULL}.
+\code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
@@ -66,25 +78,21 @@ If provided, group wise Shapley values are computed. \code{group} then has lengt
 the number of groups. The list element contains character vectors with the features included
 in each of the different groups.}
 
-\item{n_samples}{Positive integer.
-Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation. See also details.}
-
-\item{n_batches}{Positive integer (or NULL).
-Specifies how many batches the total number of feature combinations should be split into when calculating the
-contribution function for each test observation.
-The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-which depends on \code{approach} and \code{n_combinations}.
-For models with many features, increasing the number of batches reduces the RAM allocation significantly.
-This typically comes with a small increase in computation time.}
+\item{n_MC_samples}{Positive integer.
+Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
+from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
+For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
+Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+\code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
-If \code{NULL} the seed will be inherited from the calling environment.}
+If \code{NULL} no seed is set in the calling environment.}
 
 \item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
-(in \code{internal$output})}
+Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in \code{internal$output}).
+Not used for \code{approach="regression_separate"} or \code{approach="regression_surrogate"}.}
 
 \item{feature_specs}{List. The output from \code{\link[=get_model_specs]{get_model_specs()}} or \code{\link[=get_data_specs]{get_data_specs()}}.
 Contains the 3 elements:
@@ -94,10 +102,11 @@ Contains the 3 elements:
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
 
-\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the combinations
-uniformly when computing the MSEv criterion. If \code{FALSE}, then the function use the Shapley kernel weights to
-weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-sampling frequency when not all combinations are considered.}
+\item{MSEv_uniform_comb_weights}{Logical.
+If \code{TRUE} (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
+If \code{FALSE}, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
+criterion.
+Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
 \item{type}{Character.
 Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
@@ -136,17 +145,69 @@ If \code{xreg != NULL}, denotes the number of lags that should be used for each 
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
 If \code{FALSE} all lags of each variable are explained individually.}
 
-\item{timing}{Logical.
-Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
+\item{verbose}{String vector or NULL.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the computation which is being performed.
+\verb{"progress} displays information about where in the calculation process the function currently is.
+#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+(only when \code{adaptive = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
+\itemize{
+\item the final estimates.
+\code{"vS_details"} displays information about the v_S estimates.
+This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{NULL} means no printout.
+Note that any combination of four strings can be used.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+}}
 
-\item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
-If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
-Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
-TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
+\item{adaptive}{Logical or NULL
+If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
+If eventually \code{TRUE}, the Shapley values are estimated adaptively in an iterative manner.
+This provides sufficiently accurate Shapley value estimates faster.
+First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+values.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
+coalitions.
+The process is repeated until the variances are below the threshold.
+Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_arguments}.}
+
+\item{adaptive_arguments}{Named list.
+Specifices the arguments for the adaptive procedure.
+See \code{\link[=get_adaptive_arguments_default]{get_adaptive_arguments_default()}} for description of the arguments and their default values.}
+
+\item{shapley_reweighting}{String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+the randomness and thereby the variance of the Shapley value estimates.
+One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
+\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
+\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+\code{'on_all'} means the original sampling probabilities are used for all coalitions.
+\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+This method is preferred as it has performed the best in simulation studies.}
 
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
+
+\item{testing}{Logical.
+Only use to remove random components like timing from the object output when comparing output with testthat.
+Defaults to \code{FALSE}.}
+
+\item{init_time}{POSIXct object.
+The time when the \code{explain()} function was called, as outputted by \code{Sys.time()}.
+Used to calculate the time it took to run the full \code{explain} call.}
+
+\item{prev_shapr_object}{\code{shapr} object or string.
+If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
+then the function will use the previous object to continue the computation.
+This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
+want to continue the adaptive estimation. See the vignette for examples.}
 
 \item{...}{Further arguments passed to specific approaches}
 }

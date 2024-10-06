@@ -1,5 +1,5 @@
 
-### NOTE: THIS DOES NO LONGER WORK AS WE SWITCH TO exact when a large n_combinations is used, but the checks
+### NOTE: THIS DOES NO LONGER WORK AS WE SWITCH TO exact when a large n_coalitions is used, but the checks
 ### confirms the code works as intended.
 
 library(xgboost)
@@ -30,7 +30,7 @@ model <- xgboost(
 
 group <- list(A=x_var[1:3],B=x_var[4:5],C=x_var[7],D=x_var[c(6,8)],E=x_var[9])
 
-explainer1 <- shapr(x_train, model,group = group,n_combinations=10^ 6)
+explainer1 <- shapr(x_train, model,group = group,n_coalitions=10^ 6)
 
 explainer2 <- shapr(x_train, model,group = group)
 

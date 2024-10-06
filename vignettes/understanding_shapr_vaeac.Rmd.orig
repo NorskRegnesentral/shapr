@@ -40,7 +40,7 @@ library(shapr)
 
 > [Pretrained vaeac (path)](#pretrained_vaeac_path)
 
-> [Subset of coalitions](#n_combinations)
+> [Subset of coalitions](#n_coalitions)
 
 > [Paired sampling](#paired_sampling)
 
@@ -157,8 +157,7 @@ prediction_zero <- mean(y_train)
 We are now going to explain predictions made by the model using the `vaeac` approach.
 
 ```{r first-vaeac, cache = TRUE}
-n_samples <- 25 # Low number of MC samples to make the vignette build faster
-n_batches <- 1 # Do all coalitions in one batch
+n_MC_samples <- 25 # Low number of MC samples to make the vignette build faster
 vaeac.n_vaeacs_initialize <- 2 # Initialize several vaeacs to counteract bad initialization values
 vaeac.epochs <- 4 # The number of training epochs
 
@@ -168,8 +167,7 @@ explanation <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_samples = n_samples,
-  n_batches = n_batches,
+  n_MC_samples = n_MC_samples,
   vaeac.epochs = vaeac.epochs,
   vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize
 )
@@ -190,7 +188,7 @@ if we want to explain new predictions using the same combinations/coalitions as 
 `x_explain`. Note that the new `x_explain` must have the same features as before.
 
 The `vaeac` model is accessible via `explanation$internal$parameters$vaeac`.
-Note that if we set `verbose = 2` in `explain()`, then `shapr` will give a message
+Note that if we let `'vS_detail' %in% verbose` in `explain()`, then `shapr` will give a message
 that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 In this example, we extract the trained `vaeac` model from the previous example and send it to `explain()`.
@@ -203,8 +201,7 @@ expl_pretrained_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
-  n_samples = n_samples,
+  n_MC_samples = n_MC_samples,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
   )
@@ -217,7 +214,7 @@ all.equal(explanation$shapley_values, expl_pretrained_vaeac$shapley_values)
 ## Pre-trained vaeac (path) {#pretrained_vaeac_path}
 We can also just provide a path to the stored `vaeac` model. This is beneficial if we have only stored the `vaeac`
 model on the computer but not the whole `explanation` object. The possible save paths are stored in
-`explanation$internal$parameters$vaeac$model`. Note that if we set `verbose = 2` in `explain()`, then `shapr` will give
+`explanation$internal$parameters$vaeac$model`. Note that if we let `'vS_detail' %in% verbose` in `explain()`, then `shapr` will give
 a message that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 ```{r pretrained-vaeac-path, cache = TRUE}
@@ -229,8 +226,7 @@ expl_pretrained_vaeac_path <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
-  n_samples = n_samples,
+  n_MC_samples = n_MC_samples,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac$models$best
   )
@@ -242,21 +238,18 @@ all.equal(explanation$shapley_values, expl_pretrained_vaeac_path$shapley_values)
 
 
 
-## Specified n_combinations and more batches {#n_combinations}
+## Specified n_coalitions {#n_coalitions}
 
-In this section, we discuss two general `shapr` parameters in the `explain()` function
-that are method independent, namely, `n_combinations` and `n_batches`.
+In this section, we discuss a general `shapr` parameter in the `explain()` function
+that is method independent, namely, `n_coalitions`.
 The user can limit the Shapley value computations to only a subset of coalitions by setting the
-`n_combinations` parameter to a value lower than $2^{n_\text{features}}$. To lower the memory
-usage, the user can split the coalitions into several batches by setting `n_batches` to a desired
-number. In this example, we set `n_batches = 5` and `n_combinations = 10` which is less than
-the maximum of `16`.
+`n_coalitions` parameter to a value lower than $2^{n_\text{features}}$.
 
 Note that we do not need to train a new `vaeac` model as we can use the one above trained on
 all `16` coalitions as we are now only using a subset of them. This is not applicable the other
 way around.
 
-```{r check-n_combinations-and-more-batches, cache = TRUE}
+```{r check-n_coalitions, cache = TRUE}
 # send the pre-trained vaeac path
 expl_batches_combinations <- explain(
   model = model,
@@ -264,9 +257,8 @@ expl_batches_combinations <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_combinations = 10,
-  n_batches = 5,
-  n_samples = n_samples,
+  n_coalitions = 10,
+  n_MC_samples = n_MC_samples,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
   )
@@ -274,8 +266,6 @@ expl_batches_combinations <- explain(
 
 # Gives different Shapley values as the latter one are only based on a subset of coalitions
 plot_SV_several_approaches(list("Original" = explanation, "Other combi." = expl_batches_combinations))
-# Here we can see that the samples coalitions are in different batches and have different weights
-expl_batches_combinations$internal$objects$X
 
 # Can compare that to the situation where we have exact computations (i.e., include all coalitions)
 explanation$internal$objects$X
@@ -284,21 +274,20 @@ explanation$internal$objects$X
 Note that if we train a `vaeac` model from scratch with the setup above, then the `vaeac` model will not use
 a missing completely as random (MCAR) mask generator, but rather a mask generator that ensures that the `vaeac`
 model is only trained on the specified set of coalitions. In this case, it will be the set of the
-`n_combinations - 2` sampled coalitions. The minus two is because the `vaeac` model will
+`n_coalitions - 2` sampled coalitions. The minus two is because the `vaeac` model will
 not train on the empty and grand coalitions as they are not needed in the Shapley value computations.
-```{r check-n_combinations-and-more-batches-2, cache = TRUE}
+```{r check-n_coalitions-2, cache = TRUE}
 expl_batches_combinations_2 <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_combinations = 10,
-  n_batches = 1,
-  n_samples = n_samples,
+  n_coalitions = 10,
+  n_MC_samples = n_MC_samples,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.epochs = 3,
-  verbose = 2
+  verbose = "vS_details"
 )
 ```
 
@@ -310,7 +299,7 @@ The `vaeac` approach can use paired sampling to improve the stability of the tra
 When using paired sampling, each observation in the training batches will be duplicated, but the first version will
 be masked by $S$ and the second verion will be masked by the complement $\bar{S}$. The mask are taken from the
 `explanation$internal$objects$S` matrix. Note that `vaeac` does not check if the complement is also in said matrix.
-This means that if the Shapley value explanations are computed based on a subset of coalitions, i.e., `n_combinations`
+This means that if the Shapley value explanations are computed based on a subset of coalitions, i.e., `n_coalitions`
 is less than $2^{n_\text{features}}$, then the `vaeac` model might be trained on coalitions which are not used when
 computing the Shapley values. This should not be considered as redundant training as it increases the stablility and
 performance of the `vaeac` model as a whole, hence, we reccomend to use paried samping (default). Furthermore, the masks
@@ -324,8 +313,7 @@ expl_paired_sampling_TRUE <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_samples = n_samples,
-  n_batches = n_batches,
+  n_MC_samples = n_MC_samples,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.extra_parameters = list(vaeac.paired_sampling = TRUE)
@@ -337,8 +325,7 @@ expl_paired_sampling_FALSE <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_samples = n_samples,
-  n_batches = n_batches,
+  n_MC_samples = n_MC_samples,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.extra_parameters = list(vaeac.paired_sampling = FALSE)
@@ -359,8 +346,8 @@ By looking at the time, we see that the paired version takes (a bit) longer time
 phase, that is, in the training phase.
 ```{r paired-sampling-timing}
 rbind(
-  "Paired" = expl_paired_sampling_TRUE$timing$timing_secs,
-  "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
+  "Paired" = expl_paired_sampling_TRUE$timing$main_timing_secs,
+  "Regular" = expl_paired_sampling_FALSE$timing$main_timing_secs
 )
 ```
 
@@ -369,12 +356,14 @@ rbind(
 ## Progressr {#progress_bar}
 As discussed in the main vignette, the `shapr` package provides two ways for receiving information about the progress
 of the approach. First, the `shapr` package provides progress updates of the computation of the Shapley values through
-the `progressr` package. Second, the user can also get information by setting `verbose = 2` in `explain()`, which
-will print out extra information related to the `vaeac` approach. The `verbose` parameter works independently of the
-`progressr` package. Meaning that the user can chose to use none, either, or both options simultaneously. We give
-two examples here, and refer the reader to the main vignette for more detailed information.
+the `progressr` package. Second, the user can also get various form of information through `verbose` in `explain()`.
+By letting `'vS_detail' %in% verbose`, we get extra information related to the `vaeac` approach.
+The `verbose` parameter works independently of the `progressr` package.
+Meaning that the user can chose to use none, either, or both options simultaneously.
+We give two examples here, and refer the reader to the main vignette for more detailed information.
 
-By setting `verbose = 2`, we get messages about the progress of the `vaeac` approach.
+By setting `c("basic", vS_details")`, we get both basic messages about the explanation case, and
+messages about the estimation of the `vaeac` approach.
 ```{r progressr-false-verbose-2, cache = TRUE}
 expl_with_messages <- explain(
   model = model,
@@ -382,16 +371,15 @@ expl_with_messages <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_samples = n_samples,
-  n_batches = 5,
-  verbose = 2,
+  n_MC_samples = n_MC_samples,
+  verbose = c("basic","vS_details"),
   vaeac.epochs = 5,
   vaeac.n_vaeacs_initialize = 2
 )
 ```
-
-For more visual information, we can use the `progressr` package. This can help us see the progress of the training
-step for the final `vaeac` model. Note that one can set `verbose = 0` to not get any messages from the `vaeac`
+For more visual information we can use the `progressr` package.
+This can help us see detailed progress of the training step for the final `vaeac` model.
+Note that by default `vS_details` is not part of `verbose`, meaning that we do not get any messages from the `vaeac`,
 approach and only get the progress bars. See the main vignette for examples for how to change the progress bar.
 ```{r progressr-true-verbose-2, cache = TRUE}
 library(progressr)
@@ -403,9 +391,8 @@ progressr::with_progress({
     x_train = x_train,
     approach = "vaeac",
     prediction_zero = prediction_zero,
-    n_samples = n_samples,
-    n_batches = 5,
-    verbose = 2,
+    n_MC_samples = n_MC_samples,
+    verbose = "vS_details",
     vaeac.epochs = 5,
     vaeac.n_vaeacs_initialize = 2
   )
@@ -417,7 +404,7 @@ all.equal(expl_with_messages$shapley_values, expl_with_progressr$shapley_values)
 
 In the case the user has set a too low number of training epochs and sees that the network is still learning,
 then the user can continue to train the network from where it stopped. Thus, a good workflow can therefore
-be to call the `explain()` function with a `n_samples = 1` (to not waste to much time to generate MC samples),
+be to call the `explain()` function with a `n_MC_samples = 1` (to not waste to much time to generate MC samples),
 then look at the training and evaluation plots of the `vaeac`. If not satisfied, then train more. If satisfied,
 then call the `explain()` function again but this time by using the extra parameter `vaeac.pretrained_vaeac_model`,
 as illustrated above. Note that we have set the number of `vaeac.epochs` to be very low in this example and we
@@ -437,8 +424,7 @@ expl_little_training <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_samples = 250,
-  n_batches = n_batches,
+  n_MC_samples = 250,
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2
 )
@@ -467,8 +453,7 @@ expl_train_more_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
-  n_samples = 250,
+  n_MC_samples = 250,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = expl_train_more$internal$parameters$vaeac
   )
@@ -495,8 +480,7 @@ expl_train_even_more_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
-  n_samples = 250,
+  n_MC_samples = 250,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = expl_train_even_more$internal$parameters$vaeac
   )
@@ -551,9 +535,8 @@ expl_early_stopping <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_samples = 250,
-  n_batches = 1,
-  verbose = 2,
+  n_MC_samples = 250,
+  verbose = c("basic","vS_details"),
   vaeac.epochs = 1000, # Set it to a big number
   vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
@@ -579,7 +562,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
     explanation = expl_early_stopping_train_more,
     epochs_new = 15,
     x_train = x_train,
-    verbose = 0
+    verbose = NULL
   )
 
 # Can even do it twice if desired
@@ -588,7 +571,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
     explanation = expl_early_stopping_train_more,
     epochs_new = 10,
     x_train = x_train,
-    verbose = 0
+    verbose = NULL
   )
 
 # Look at the training and validation errors. We see some improvement
@@ -611,8 +594,7 @@ expl_early_stopping_train_more <- explain(
   x_train = x_train,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = n_batches,
-  n_samples = 250,
+  n_MC_samples = 250,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = expl_early_stopping_train_more$internal$parameters$vaeac
   )
@@ -649,9 +631,8 @@ expl_group <- explain(
   approach = "vaeac",
   prediction_zero = prediction_zero,
   group = list(A = c("Temp", "Month"), B = c("Wind", "Solar.R")),
-  n_batches = 2,
-  n_samples = n_samples,
-  verbose = 2,
+  n_MC_samples = n_MC_samples,
+  verbose = "vS_details",
   vaeac.epochs = 4,
   vaeac.n_vaeacs_initialize = 2
 )
@@ -702,8 +683,7 @@ expl_ctree <- explain(
   x_train = x_train_cat,
   approach = "ctree",
   prediction_zero = prediction_zero,
-  n_batches = 1,
-  n_samples = 250
+  n_MC_samples = 250
 )
 
 # Then we use the vaeac approach
@@ -713,8 +693,7 @@ expl_vaeac_with <- explain(
   x_train = x_train_cat,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = 1,
-  n_samples = 250,
+  n_MC_samples = 250,
   vaeac.epochs = 50,
   vaeac.n_vaeacs_initialize = 4
 )
@@ -726,8 +705,7 @@ expl_vaeac_without <- explain(
   x_train = x_train_cat,
   approach = "vaeac",
   prediction_zero = prediction_zero,
-  n_batches = 1,
-  n_samples = 250,
+  n_MC_samples = 250,
   vaeac.epochs = 50,
   vaeac.n_vaeacs_initialize = 4,
   vaeac.extra_parameters = list(
@@ -818,8 +796,7 @@ time_cpu <- system.time({
     x_train = x_train,
     approach = "vaeac",
     prediction_zero = prediction_zero,
-    n_samples = 100,
-    n_batches = 5,
+    n_MC_samples = 100,
     vaeac.epochs = 50,
     vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(vaeac.cuda = FALSE)
@@ -834,8 +811,7 @@ time_cuda <- system.time({
     x_train = x_train,
     approach = "vaeac",
     prediction_zero = prediction_zero,
-    n_samples = 100,
-    n_batches = 5,
+    n_MC_samples = 100,
     vaeac.epochs = 50,
     vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(vaeac.cuda = TRUE)

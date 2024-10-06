@@ -27,7 +27,7 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Language: en-US
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Depends: R (>= 3.5.0)
 Imports: 
     stats,
@@ -40,7 +40,7 @@ Suggests:
     ranger,
     xgboost,
     mgcv,
-    testthat (>= 3.0.0),
+    testthat,
     knitr,
     rmarkdown,
     roxygen2,
@@ -66,7 +66,8 @@ Suggests:
     yardstick,
     hardhat,
     rsample,
-    rlang
+    rlang,
+    cli
 LinkingTo: 
     RcppArmadillo,
     Rcpp

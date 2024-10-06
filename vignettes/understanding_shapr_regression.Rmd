@@ -167,7 +167,7 @@ the `tidymodels` framework: `parsnip`, `recipes`, `workflows`,
 which package the functions originate from in the `tidymodels` framework.
 
 
-```r
+``` r
 # Either use `library(tidymodels)` or separately specify the libraries indicated above
 library(tidymodels)
 
@@ -213,7 +213,7 @@ functions that plot and summarize the results of the explanation methods.
 This code block is optional to understand and can be skipped.
 
 
-```r
+``` r
 # Plot the MSEv criterion scores as horizontal bars and add dashed line of one method's score
 plot_MSEv_scores <- function(explanation_list, method_line = NULL) {
   fig <- plot_MSEv_eval_crit(explanation_list) +
@@ -256,18 +256,32 @@ with default hyperparameters. In the last section, we include all Monte
 Carlo-based methods implemented in `shapr` to make an extensive comparison.
 
 
-```r
+``` r
 # Compute the Shapley value explanations using the empirical method
 explanation_list$MC_empirical <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
-  n_batches = 4
+  prediction_zero = p0
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:13:21 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: empirical
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18761ea04792.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 
@@ -276,18 +290,32 @@ Then we compute the Shapley value explanations using a linear
 regression model and the separate regression method class.
 
 
-```r
+``` r
 explanation_list$sep_lm <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg()
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:13:25 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187667f08ebc.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 A linear model is often not flexible enough to properly model the
@@ -297,7 +325,7 @@ outperforms the linear regression model approach quite significantly
 concerning the $\operatorname{MSE}_v$ evaluation criterion.
 
 
-```r
+``` r
 plot_MSEv_scores(explanation_list)
 ```
 
@@ -335,13 +363,12 @@ the feature itself. This regression model is called principal
 component regression.
 
 
-```r
+``` r
 explanation_list$sep_pcr <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = function(regression_recipe) {
@@ -350,6 +377,21 @@ explanation_list$sep_pcr <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:13:26 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187663c08a23.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 Second, we apply a pre-processing step that computes the basis
@@ -357,13 +399,12 @@ expansions of the features using natural splines with two degrees
 of freedom. This is similar to fitting a generalized additive model.
 
 
-```r
+``` r
 explanation_list$sep_splines <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = function(regression_recipe) {
@@ -372,6 +413,21 @@ explanation_list$sep_splines <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:13:27 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187623bd0bdd.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 Finally, we provide an example where we include interactions
@@ -385,7 +441,7 @@ Furthermore, we stress that the purpose of this example is to highlight
 the framework's flexibility, NOT that the transformations below are reasonable.
 
 
-```r
+``` r
 # Example function of how to apply step functions from the recipes package to specific features
 regression.recipe_func <- function(recipe) {
   # Get the names of the present features
@@ -420,13 +476,27 @@ explanation_list$sep_reicpe_example <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = regression.recipe_func
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:13:28 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18763690cbf5.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 We can examine the $\operatorname{MSE}_v$ evaluation scores, and we
@@ -434,23 +504,23 @@ see that the method using natural splines significantly outperforms
 the other methods.
 
 
-```r
+``` r
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
 ![](figure_regression/preproc-plot-1.png)
 
-```r
+``` r
 
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 2.22
-#> sep_lm             745.21 0.77
-#> sep_pcr            784.91 1.32
-#> sep_splines        165.13 1.09
-#> sep_reicpe_example 687.45 1.74
+#> MC_empirical       179.43 4.27
+#> sep_lm             745.21 0.71
+#> sep_pcr            784.91 0.90
+#> sep_splines        165.13 0.93
+#> sep_reicpe_example 687.45 1.28
 ```
 
 
@@ -472,14 +542,13 @@ we see that the default hyperparameter values for the
 model are `tree_depth = 30`, `min_n = 2`, and `cost_complexity = 0.01`.
 
 
-```r
+``` r
 # Decision tree with specified parameters (stumps)
 explanation_list$sep_tree_stump <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(
     tree_depth = 1,
@@ -491,6 +560,21 @@ explanation_list$sep_tree_stump <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:13:29 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187674517ff7.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Decision tree with default parameters
 explanation_list$sep_tree_default <- explain(
@@ -498,12 +582,26 @@ explanation_list$sep_tree_default <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:13:30 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876712b369f.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 We can also set `regression.model = parsnip::decision_tree(tree_depth = 1, min_n = 2, cost_complexity = 0.01) %>% parsnip::set_engine("rpart") %>% parsnip::set_mode("regression")`
@@ -516,24 +614,24 @@ the empirical approach. We obtained a worse method by using stumps,
 i.e., trees with depth one.
 
 
-```r
+``` r
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
 ![](figure_regression/decision-tree-plot-1.png)
 
-```r
+``` r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 2.22
-#> sep_lm             745.21 0.77
-#> sep_pcr            784.91 1.32
-#> sep_splines        165.13 1.09
-#> sep_reicpe_example 687.45 1.74
-#> sep_tree_stump     218.05 1.03
-#> sep_tree_default   177.68 0.89
+#> MC_empirical       179.43 4.27
+#> sep_lm             745.21 0.71
+#> sep_pcr            784.91 0.90
+#> sep_splines        165.13 0.93
+#> sep_reicpe_example 687.45 1.28
+#> sep_tree_stump     218.05 0.79
+#> sep_tree_default   177.68 0.79
 ```
 
 
@@ -573,7 +671,7 @@ Note that `dials` have several other grid functions, e.g., `dials::grid_random()
 and `dials::grid_latin_hypercube()`.
 
 
-```r
+``` r
 # Possible ways to define the `regression.tune_values` object.
 # function(x) dials::grid_regular(dials::tree_depth(), levels = 4)
 dials::grid_regular(dials::tree_depth(), levels = 4)
@@ -594,14 +692,13 @@ both the `tree_depth` and `cost_complexity` parameters, but we
 will manually specify the possible hyperparameter values this time.
 
 
-```r
+``` r
 # Decision tree with cross validated depth (default values other parameters)
 explanation_list$sep_tree_cv <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"
@@ -611,6 +708,21 @@ explanation_list$sep_tree_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:13:31 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18766fce32eb.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Use trees with cross-validation on the depth and cost complexity. Manually set the values.
 explanation_list$sep_tree_cv_2 <- explain(
@@ -618,7 +730,6 @@ explanation_list$sep_tree_cv_2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(),
@@ -632,6 +743,21 @@ explanation_list$sep_tree_cv_2 <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:13:44 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18764668cc32.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 We also include one example with a random forest model where
@@ -640,25 +766,38 @@ Thus, `regression.tune_values` must be a function that returns
 a data.frame where the hyperparameter values for `mtry` will change
 based on the coalition size. If we do not let `regression.tune_values`
 be a function, then `tidymodels` will crash for any `mtry` higher
-than 1. Furthermore, by setting `verbose = 2`, we receive messages
-about which batch and coalition/combination that `shapr` processes
-and the results of the cross-validation procedure. Note that the tested
-hyperparameter value combinations change based on the coalition size.
+than 1. Furthermore, by setting letting `"vS_details" %in% verbose`,
+we receive get messages with the results of the cross-validation procedure ran within `shapr`.
+Note that the tested hyperparameter value combinations change based on the coalition size.
 
 
-```r
+``` r
 # Using random forest with default parameters
 explanation_list$sep_rf <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:14:11 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187644d0257b.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with parameters tuned by cross-validation
 explanation_list$sep_rf_cv <- explain(
@@ -666,8 +805,7 @@ explanation_list$sep_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 1, # One batch to get printouts in chronological order
-  verbose = 2, # To get printouts
+  verbose = c("basic","vS_details"), # To get printouts
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -680,139 +818,142 @@ explanation_list$sep_rf_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
-#> Starting 'setup_approach.regression_separate'.
-#> When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object 
-#>  can be missleading as `setup_computation` does not contain the training times of the 
-#>  regression models as they are trained on the fly in `compute_vS`. This is to reduce memory 
-#>  usage and to improve efficency.
-#> Done with 'setup_approach.regression_separate'.
-#> Working on batch 1 of 1 in `prepare_data.regression_separate()`.
-#> Working on combination with id 2 of 16.
-#> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 34.85  rmse_std_err = 2.99
-#> #2: mtry = 1  trees = 400  rmse = 34.95  rmse_std_err = 3.05
-#> #3: mtry = 1  trees = 50   rmse = 34.99  rmse_std_err = 2.81
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
 #> 
-#> Working on combination with id 3 of 16.
-#> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 27.48  rmse_std_err = 1.50
-#> #2: mtry = 1  trees = 750  rmse = 27.52  rmse_std_err = 1.29
-#> #3: mtry = 1  trees = 400  rmse = 27.74  rmse_std_err = 1.30
+#> ── Starting `shapr::explain()` at 2024-10-05 23:14:12 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18764f66dc0d.rds'
 #> 
-#> Working on combination with id 4 of 16.
-#> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 400  rmse = 23.60  rmse_std_err = 3.17
-#> #2: mtry = 1  trees = 750  rmse = 23.63  rmse_std_err = 3.17
-#> #3: mtry = 1  trees = 50   rmse = 24.24  rmse_std_err = 3.37
+#> ── Additional details about the regression model
+#> Random Forest Model Specification (regression)
 #> 
-#> Working on combination with id 5 of 16.
-#> Results of the 5-fold cross validation (top 3 best configurations):
-#> #1: mtry = 1  trees = 400  rmse = 33.31  rmse_std_err = 2.81
-#> #2: mtry = 1  trees = 750  rmse = 33.34  rmse_std_err = 2.81
-#> #3: mtry = 1  trees = 50   rmse = 33.41  rmse_std_err = 2.87
+#> Main Arguments: mtry = hardhat::tune() trees = hardhat::tune()
 #> 
-#> Working on combination with id 6 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 21.25  rmse_std_err = 2.24
-#> #2: mtry = 1  trees = 400  rmse = 21.69  rmse_std_err = 2.38
-#> #3: mtry = 1  trees = 750  rmse = 21.81  rmse_std_err = 2.40
-#> #4: mtry = 2  trees = 400  rmse = 22.38  rmse_std_err = 2.11
-#> #5: mtry = 2  trees = 750  rmse = 22.68  rmse_std_err = 2.04
-#> #6: mtry = 2  trees = 50   rmse = 22.91  rmse_std_err = 1.97
+#> Computational engine: ranger
 #> 
-#> Working on combination with id 7 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 2  trees = 50   rmse = 22.18  rmse_std_err = 2.93
-#> #2: mtry = 2  trees = 400  rmse = 22.28  rmse_std_err = 2.74
-#> #3: mtry = 1  trees = 750  rmse = 22.31  rmse_std_err = 2.90
-#> #4: mtry = 2  trees = 750  rmse = 22.35  rmse_std_err = 2.76
-#> #5: mtry = 1  trees = 400  rmse = 22.40  rmse_std_err = 2.80
-#> #6: mtry = 1  trees = 50   rmse = 22.62  rmse_std_err = 2.71
+#> ── Main computation started ──
 #> 
-#> Working on combination with id 8 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 29.35  rmse_std_err = 2.17
-#> #2: mtry = 1  trees = 400  rmse = 29.45  rmse_std_err = 2.37
-#> #3: mtry = 1  trees = 750  rmse = 29.57  rmse_std_err = 2.32
-#> #4: mtry = 2  trees = 750  rmse = 30.43  rmse_std_err = 2.21
-#> #5: mtry = 2  trees = 400  rmse = 30.49  rmse_std_err = 2.18
-#> #6: mtry = 2  trees = 50   rmse = 30.51  rmse_std_err = 2.19
+#> ℹ Using 16 of 16 coalitions.
 #> 
-#> Working on combination with id 9 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 18.61  rmse_std_err = 1.56
-#> #2: mtry = 2  trees = 400  rmse = 18.63  rmse_std_err = 1.56
-#> #3: mtry = 1  trees = 400  rmse = 18.80  rmse_std_err = 1.55
-#> #4: mtry = 2  trees = 750  rmse = 19.00  rmse_std_err = 1.70
-#> #5: mtry = 1  trees = 50   rmse = 19.02  rmse_std_err = 1.86
-#> #6: mtry = 2  trees = 50   rmse = 19.50  rmse_std_err = 1.72
+#> ── Extra info about the tuning of the regression model ──
 #> 
-#> Working on combination with id 10 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 400  rmse = 23.61  rmse_std_err = 1.61
-#> #2: mtry = 1  trees = 50   rmse = 23.72  rmse_std_err = 1.49
-#> #3: mtry = 1  trees = 750  rmse = 23.79  rmse_std_err = 1.64
-#> #4: mtry = 2  trees = 750  rmse = 23.86  rmse_std_err = 0.83
-#> #5: mtry = 2  trees = 400  rmse = 23.91  rmse_std_err = 0.80
-#> #6: mtry = 2  trees = 50   rmse = 24.74  rmse_std_err = 0.68
+#> ── Top 6 best configs for  v(1 4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 28.43 rmse_std_err = 3.02
+#> #2: mtry = 1 trees = 750 rmse = 28.76 rmse_std_err = 2.57
+#> #3: mtry = 1 trees = 400 rmse = 28.80 rmse_std_err = 2.64
+#> #4: mtry = 2 trees = 50 rmse = 29.27 rmse_std_err = 2.29
+#> #5: mtry = 2 trees = 400 rmse = 29.42 rmse_std_err = 2.40
+#> #6: mtry = 2 trees = 750 rmse = 29.46 rmse_std_err = 2.20
 #> 
-#> Working on combination with id 11 of 16.
-#> Results of the 5-fold cross validation (top 6 best configurations):
-#> #1: mtry = 1  trees = 400  rmse = 22.99  rmse_std_err = 4.29
-#> #2: mtry = 1  trees = 750  rmse = 23.08  rmse_std_err = 4.33
-#> #3: mtry = 1  trees = 50   rmse = 23.16  rmse_std_err = 4.28
-#> #4: mtry = 2  trees = 50   rmse = 23.80  rmse_std_err = 3.70
-#> #5: mtry = 2  trees = 400  rmse = 23.85  rmse_std_err = 3.72
-#> #6: mtry = 2  trees = 750  rmse = 24.07  rmse_std_err = 3.79
+#> ── Top 6 best configs for  v(2 4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 21.12 rmse_std_err = 0.73
+#> #2: mtry = 1 trees = 750 rmse = 21.21 rmse_std_err = 0.66
+#> #3: mtry = 2 trees = 400 rmse = 21.27 rmse_std_err = 1.02
+#> #4: mtry = 2 trees = 750 rmse = 21.31 rmse_std_err = 1.01
+#> #5: mtry = 1 trees = 400 rmse = 21.34 rmse_std_err = 0.69
+#> #6: mtry = 2 trees = 50 rmse = 21.65 rmse_std_err = 0.94
 #> 
-#> Working on combination with id 12 of 16.
-#> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 16.86  rmse_std_err = 2.19
-#> #2: mtry = 1  trees = 400  rmse = 16.90  rmse_std_err = 1.83
-#> #3: mtry = 1  trees = 750  rmse = 16.91  rmse_std_err = 1.93
-#> #4: mtry = 2  trees = 50   rmse = 17.47  rmse_std_err = 1.47
-#> #5: mtry = 2  trees = 750  rmse = 17.53  rmse_std_err = 1.77
-#> #6: mtry = 2  trees = 400  rmse = 17.82  rmse_std_err = 1.67
-#> #7: mtry = 3  trees = 50   rmse = 18.03  rmse_std_err = 1.84
-#> #8: mtry = 3  trees = 750  rmse = 18.47  rmse_std_err = 1.91
-#> #9: mtry = 3  trees = 400  rmse = 18.49  rmse_std_err = 1.82
+#> ── Top 6 best configs for  v(1 3) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 21.34 rmse_std_err = 3.18
+#> #2: mtry = 1 trees = 400 rmse = 21.56 rmse_std_err = 3.13
+#> #3: mtry = 1 trees = 750 rmse = 21.68 rmse_std_err = 3.13
+#> #4: mtry = 2 trees = 50 rmse = 21.79 rmse_std_err = 3.10
+#> #5: mtry = 2 trees = 750 rmse = 21.85 rmse_std_err = 2.98
+#> #6: mtry = 2 trees = 400 rmse = 21.89 rmse_std_err = 2.97
 #> 
-#> Working on combination with id 13 of 16.
-#> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 1  trees = 50   rmse = 19.27  rmse_std_err = 2.13
-#> #2: mtry = 2  trees = 750  rmse = 19.80  rmse_std_err = 1.59
-#> #3: mtry = 1  trees = 750  rmse = 20.03  rmse_std_err = 1.95
-#> #4: mtry = 2  trees = 400  rmse = 20.21  rmse_std_err = 1.59
-#> #5: mtry = 3  trees = 50   rmse = 20.42  rmse_std_err = 1.64
-#> #6: mtry = 1  trees = 400  rmse = 20.49  rmse_std_err = 2.13
-#> #7: mtry = 2  trees = 50   rmse = 20.59  rmse_std_err = 1.26
-#> #8: mtry = 3  trees = 400  rmse = 20.61  rmse_std_err = 1.68
-#> #9: mtry = 3  trees = 750  rmse = 20.85  rmse_std_err = 1.74
+#> ── Top 6 best configs for  v(3 4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 750 rmse = 22.94 rmse_std_err = 4.33
+#> #2: mtry = 1 trees = 400 rmse = 23.13 rmse_std_err = 4.23
+#> #3: mtry = 1 trees = 50 rmse = 23.43 rmse_std_err = 4.13
+#> #4: mtry = 2 trees = 400 rmse = 23.86 rmse_std_err = 3.77
+#> #5: mtry = 2 trees = 750 rmse = 24.00 rmse_std_err = 3.78
+#> #6: mtry = 2 trees = 50 rmse = 24.57 rmse_std_err = 4.08
 #> 
-#> Working on combination with id 14 of 16.
-#> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 1  trees = 750  rmse = 21.96  rmse_std_err = 3.12
-#> #2: mtry = 1  trees = 400  rmse = 22.36  rmse_std_err = 2.96
-#> #3: mtry = 1  trees = 50   rmse = 22.53  rmse_std_err = 3.01
-#> #4: mtry = 2  trees = 750  rmse = 22.59  rmse_std_err = 2.53
-#> #5: mtry = 2  trees = 400  rmse = 22.76  rmse_std_err = 2.39
-#> #6: mtry = 2  trees = 50   rmse = 22.80  rmse_std_err = 2.41
-#> #7: mtry = 3  trees = 400  rmse = 23.19  rmse_std_err = 2.26
-#> #8: mtry = 3  trees = 750  rmse = 23.42  rmse_std_err = 2.07
-#> #9: mtry = 3  trees = 50   rmse = 23.69  rmse_std_err = 2.22
+#> ── Top 6 best configs for  v(2 3) (using 5-fold CV) 
+#> #1: mtry = 2 trees = 50 rmse = 17.46 rmse_std_err = 2.26
+#> #2: mtry = 2 trees = 750 rmse = 17.53 rmse_std_err = 2.43
+#> #3: mtry = 2 trees = 400 rmse = 17.64 rmse_std_err = 2.38
+#> #4: mtry = 1 trees = 750 rmse = 17.80 rmse_std_err = 2.09
+#> #5: mtry = 1 trees = 50 rmse = 17.81 rmse_std_err = 1.79
+#> #6: mtry = 1 trees = 400 rmse = 17.89 rmse_std_err = 2.13
 #> 
-#> Working on combination with id 15 of 16.
-#> Results of the 5-fold cross validation (top 9 best configurations):
-#> #1: mtry = 1  trees = 400  rmse = 18.33  rmse_std_err = 2.07
-#> #2: mtry = 1  trees = 750  rmse = 18.59  rmse_std_err = 2.25
-#> #3: mtry = 2  trees = 750  rmse = 18.78  rmse_std_err = 1.59
-#> #4: mtry = 2  trees = 400  rmse = 18.81  rmse_std_err = 1.58
-#> #5: mtry = 3  trees = 50   rmse = 18.93  rmse_std_err = 1.53
-#> #6: mtry = 3  trees = 400  rmse = 19.11  rmse_std_err = 1.57
-#> #7: mtry = 3  trees = 750  rmse = 19.17  rmse_std_err = 1.71
-#> #8: mtry = 2  trees = 50   rmse = 19.18  rmse_std_err = 1.33
-#> #9: mtry = 1  trees = 50   rmse = 19.94  rmse_std_err = 2.02
+#> ── Top 3 best configs for  v(3) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 22.55 rmse_std_err = 4.68
+#> #2: mtry = 1 trees = 400 rmse = 22.59 rmse_std_err = 4.63
+#> #3: mtry = 1 trees = 750 rmse = 22.64 rmse_std_err = 4.65
 #> 
+#> ── Top 6 best configs for  v(1 2) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 400 rmse = 21.57 rmse_std_err = 2.25
+#> #2: mtry = 1 trees = 750 rmse = 21.59 rmse_std_err = 2.29
+#> #3: mtry = 1 trees = 50 rmse = 22.38 rmse_std_err = 2.10
+#> #4: mtry = 2 trees = 400 rmse = 22.54 rmse_std_err = 2.09
+#> #5: mtry = 2 trees = 750 rmse = 22.65 rmse_std_err = 2.09
+#> #6: mtry = 2 trees = 50 rmse = 23.12 rmse_std_err = 2.23
+#> 
+#> ── Top 3 best configs for  v(4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 750 rmse = 32.14 rmse_std_err = 4.32
+#> #2: mtry = 1 trees = 400 rmse = 32.21 rmse_std_err = 4.31
+#> #3: mtry = 1 trees = 50 rmse = 32.21 rmse_std_err = 4.25
+#> 
+#> ── Top 3 best configs for  v(1) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 50 rmse = 30.34 rmse_std_err = 3.40
+#> #2: mtry = 1 trees = 750 rmse = 30.53 rmse_std_err = 3.31
+#> #3: mtry = 1 trees = 400 rmse = 30.63 rmse_std_err = 3.32
+#> 
+#> ── Top 3 best configs for  v(2) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 750 rmse = 26.62 rmse_std_err = 2.33
+#> #2: mtry = 1 trees = 400 rmse = 26.72 rmse_std_err = 2.29
+#> #3: mtry = 1 trees = 50 rmse = 26.97 rmse_std_err = 2.24
+#> 
+#> ── Top 9 best configs for  v(1 2 4) (using 5-fold CV) 
+#> #1: mtry = 2 trees = 750 rmse = 19.81 rmse_std_err = 1.53
+#> #2: mtry = 2 trees = 400 rmse = 19.85 rmse_std_err = 1.64
+#> #3: mtry = 1 trees = 750 rmse = 19.93 rmse_std_err = 1.93
+#> #4: mtry = 1 trees = 400 rmse = 20.18 rmse_std_err = 1.90
+#> #5: mtry = 2 trees = 50 rmse = 20.41 rmse_std_err = 1.56
+#> #6: mtry = 3 trees = 50 rmse = 20.69 rmse_std_err = 1.54
+#> #7: mtry = 3 trees = 750 rmse = 20.74 rmse_std_err = 1.69
+#> #8: mtry = 3 trees = 400 rmse = 20.77 rmse_std_err = 1.76
+#> #9: mtry = 1 trees = 50 rmse = 20.79 rmse_std_err = 1.89
+#> 
+#> ── Top 9 best configs for  v(1 2 3) (using 5-fold CV) 
+#> #1: mtry = 2 trees = 400 rmse = 16.16 rmse_std_err = 2.75
+#> #2: mtry = 3 trees = 400 rmse = 16.30 rmse_std_err = 2.80
+#> #3: mtry = 2 trees = 750 rmse = 16.41 rmse_std_err = 2.79
+#> #4: mtry = 3 trees = 750 rmse = 16.43 rmse_std_err = 2.82
+#> #5: mtry = 3 trees = 50 rmse = 16.52 rmse_std_err = 2.52
+#> #6: mtry = 1 trees = 750 rmse = 16.69 rmse_std_err = 3.15
+#> #7: mtry = 2 trees = 50 rmse = 16.89 rmse_std_err = 2.76
+#> #8: mtry = 1 trees = 400 rmse = 16.98 rmse_std_err = 2.93
+#> #9: mtry = 1 trees = 50 rmse = 17.69 rmse_std_err = 3.16
+#> 
+#> ── Top 9 best configs for  v(1 3 4) (using 5-fold CV) 
+#> #1: mtry = 1 trees = 400 rmse = 21.88 rmse_std_err = 4.33
+#> #2: mtry = 1 trees = 750 rmse = 21.96 rmse_std_err = 4.38
+#> #3: mtry = 1 trees = 50 rmse = 22.03 rmse_std_err = 4.07
+#> #4: mtry = 2 trees = 400 rmse = 22.65 rmse_std_err = 4.11
+#> #5: mtry = 2 trees = 750 rmse = 22.72 rmse_std_err = 4.09
+#> #6: mtry = 2 trees = 50 rmse = 22.89 rmse_std_err = 3.97
+#> #7: mtry = 3 trees = 400 rmse = 23.38 rmse_std_err = 3.80
+#> #8: mtry = 3 trees = 750 rmse = 23.50 rmse_std_err = 3.77
+#> #9: mtry = 3 trees = 50 rmse = 23.88 rmse_std_err = 3.64
+#> 
+#> ── Top 9 best configs for  v(2 3 4) (using 5-fold CV) 
+#> #1: mtry = 3 trees = 50 rmse = 17.96 rmse_std_err = 1.34
+#> #2: mtry = 1 trees = 50 rmse = 17.97 rmse_std_err = 2.40
+#> #3: mtry = 1 trees = 750 rmse = 18.63 rmse_std_err = 1.99
+#> #4: mtry = 2 trees = 400 rmse = 18.76 rmse_std_err = 1.42
+#> #5: mtry = 1 trees = 400 rmse = 18.79 rmse_std_err = 2.14
+#> #6: mtry = 2 trees = 750 rmse = 18.80 rmse_std_err = 1.49
+#> #7: mtry = 3 trees = 750 rmse = 19.12 rmse_std_err = 1.68
+#> #8: mtry = 3 trees = 400 rmse = 19.14 rmse_std_err = 1.65
+#> #9: mtry = 2 trees = 50 rmse = 19.33 rmse_std_err = 1.67
 ```
 
 We can look at the $\operatorname{MSE}_v$ evaluation criterion,
@@ -827,7 +968,7 @@ we include a vertical line at the $\operatorname{MSE}_v$ score of
 the `empirical` method for easier comparison.
 
 
-```r
+``` r
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
@@ -842,21 +983,21 @@ This result indicates that even though we do hyperparameter
 tuning, we still overfit the data.
 
 
-```r
+``` r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv  Time
-#> MC_empirical       179.43  2.22
-#> sep_lm             745.21  0.77
-#> sep_pcr            784.91  1.32
-#> sep_splines        165.13  1.09
-#> sep_reicpe_example 687.45  1.74
-#> sep_tree_stump     218.05  1.03
-#> sep_tree_default   177.68  0.89
-#> sep_tree_cv        169.96 17.31
-#> sep_tree_cv_2      166.17 35.01
-#> sep_rf             210.99  1.58
-#> sep_rf_cv          212.88 38.41
+#> MC_empirical       179.43  4.27
+#> sep_lm             745.21  0.71
+#> sep_pcr            784.91  0.90
+#> sep_splines        165.13  0.93
+#> sep_reicpe_example 687.45  1.28
+#> sep_tree_stump     218.05  0.79
+#> sep_tree_default   177.68  0.79
+#> sep_tree_cv        222.71 12.98
+#> sep_tree_cv_2      219.45 26.48
+#> sep_rf             217.00  1.24
+#> sep_rf_cv          212.64 31.76
 ```
 
 
@@ -878,7 +1019,7 @@ parallel to speed up the computations. The fourth model is run
 in parallel but also tunes the depth of the trees and not only
 the number of trees.
 
-A small side note: If we set `verbose = 2`, we can see which
+A small side note: If we let `"vS_details" %in% verbose`, we can see which
 `tree` value `shapr` chooses for each coalition. We would then
 see that the values 25, 50, 100, and 500 are never chosen.
 Thus, we can remove these values without influencing the result
@@ -886,19 +1027,33 @@ and instead do a finer grid search among the lower values.
 We do this in the fourth method.
 
 
-```r
+``` r
 # Regular xgboost with default parameters
 explanation_list$sep_xgboost <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:14:44 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187615b17860.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Cross validate the number of trees
 explanation_list$sep_xgboost_cv <- explain(
@@ -906,7 +1061,6 @@ explanation_list$sep_xgboost_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model =
     parsnip::boost_tree(trees = hardhat::tune(), engine = "xgboost", mode = "regression"),
@@ -915,6 +1069,21 @@ explanation_list$sep_xgboost_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:14:45 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876235ef29a.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Cross validate the number of trees in parallel on two threads
 future::plan(future::multisession, workers = 2)
@@ -923,7 +1092,6 @@ explanation_list$sep_xgboost_cv_par <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model =
     parsnip::boost_tree(trees = hardhat::tune(), engine = "xgboost", mode = "regression"),
@@ -932,6 +1100,21 @@ explanation_list$sep_xgboost_cv_par <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:15:01 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18765c4ad0e3.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Use a finer grid of low values for `trees` and also tune `tree_depth`
 future::plan(future::multisession, workers = 4) # Change to 4 threads due to more complex CV
@@ -940,7 +1123,6 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
@@ -953,6 +1135,21 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:15:14 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18765f8e54c.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 future::plan(future::sequential) # To return to non-parallel computation
 ```
 
@@ -973,25 +1170,25 @@ note that we obtain the same value whether we run the
 cross-validation in parallel or sequentially.
 
 
-```r
+``` r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  2.22
-#> sep_lm               745.21  0.77
-#> sep_pcr              784.91  1.32
-#> sep_splines          165.13  1.09
-#> sep_reicpe_example   687.45  1.74
-#> sep_tree_stump       218.05  1.03
-#> sep_tree_default     177.68  0.89
-#> sep_tree_cv          169.96 17.31
-#> sep_tree_cv_2        166.17 35.01
-#> sep_rf               210.99  1.58
-#> sep_rf_cv            212.88 38.41
-#> sep_xgboost          197.72  0.99
-#> sep_xgboost_cv       164.69 20.72
-#> sep_xgboost_cv_par   164.69 17.53
-#> sep_xgboost_cv_2_par 146.51 21.94
+#> MC_empirical         179.43  4.27
+#> sep_lm               745.21  0.71
+#> sep_pcr              784.91  0.90
+#> sep_splines          165.13  0.93
+#> sep_reicpe_example   687.45  1.28
+#> sep_tree_stump       218.05  0.79
+#> sep_tree_default     177.68  0.79
+#> sep_tree_cv          222.71 12.98
+#> sep_tree_cv_2        219.45 26.48
+#> sep_rf               217.00  1.24
+#> sep_rf_cv            212.64 31.76
+#> sep_xgboost          197.72  0.92
+#> sep_xgboost_cv       169.83 15.07
+#> sep_xgboost_cv_par   169.83 12.72
+#> sep_xgboost_cv_2_par 153.13 14.58
 ```
 
 
@@ -1026,19 +1223,33 @@ cross-validation), and `xgboost` (with and without (some)
 cross-validation).
 
 
-```r
+``` r
 # Compute the Shapley value explanations using a surrogate linear regression model
 explanation_list$sur_lm <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:15:28 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876734af388.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Using xgboost with default parameters as the surrogate model
 explanation_list$sur_xgboost <- explain(
@@ -1046,12 +1257,26 @@ explanation_list$sur_xgboost <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:15:29 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187662e749f7.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Using xgboost with parameters tuned by cross-validation as the surrogate model
 explanation_list$sur_xgboost_cv <- explain(
@@ -1059,7 +1284,6 @@ explanation_list$sur_xgboost_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
@@ -1072,6 +1296,21 @@ explanation_list$sur_xgboost_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:15:29 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18764162f6f8.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with default parameters as the surrogate model
 explanation_list$sur_rf <- explain(
@@ -1079,12 +1318,26 @@ explanation_list$sur_rf <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:15:31 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18767b67ab19.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with parameters tuned by cross-validation as the surrogate model
 explanation_list$sur_rf_cv <- explain(
@@ -1092,7 +1345,6 @@ explanation_list$sur_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -1106,6 +1358,21 @@ explanation_list$sur_rf_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:15:32 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876c4ce446.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 
@@ -1127,7 +1394,7 @@ can cause it to be slower than running the code sequentially
 for smaller problems.
 
 
-```r
+``` r
 # Cross validate the number of trees in parallel on four threads
 future::plan(future::multisession, workers = 4)
 explanation_list$sur_rf_cv_par <- explain(
@@ -1135,7 +1402,6 @@ explanation_list$sur_rf_cv_par <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -1149,6 +1415,21 @@ explanation_list$sur_rf_cv_par <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:15:56 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18763a6d5131.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 future::plan(future::sequential) # To return to non-parallel computation
 
 # Check that we get identical Shapley value explanations
@@ -1170,31 +1451,31 @@ identical and independent of whether they were run sequentially
 or in parallel.
 
 
-```r
+``` r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  2.22
-#> sep_lm               745.21  0.77
-#> sep_pcr              784.91  1.32
-#> sep_splines          165.13  1.09
-#> sep_reicpe_example   687.45  1.74
-#> sep_tree_stump       218.05  1.03
-#> sep_tree_default     177.68  0.89
-#> sep_tree_cv          169.96 17.31
-#> sep_tree_cv_2        166.17 35.01
-#> sep_rf               210.99  1.58
-#> sep_rf_cv            212.88 38.41
-#> sep_xgboost          197.72  0.99
-#> sep_xgboost_cv       164.69 20.72
-#> sep_xgboost_cv_par   164.69 17.53
-#> sep_xgboost_cv_2_par 146.51 21.94
-#> sur_lm               649.61  0.31
-#> sur_xgboost          169.92  0.26
-#> sur_xgboost_cv       169.87  2.37
-#> sur_rf               195.10  0.52
-#> sur_rf_cv            171.84 30.55
-#> sur_rf_cv_par        171.84 33.24
+#> MC_empirical         179.43  4.27
+#> sep_lm               745.21  0.71
+#> sep_pcr              784.91  0.90
+#> sep_splines          165.13  0.93
+#> sep_reicpe_example   687.45  1.28
+#> sep_tree_stump       218.05  0.79
+#> sep_tree_default     177.68  0.79
+#> sep_tree_cv          222.71 12.98
+#> sep_tree_cv_2        219.45 26.48
+#> sep_rf               217.00  1.24
+#> sep_rf_cv            212.64 31.76
+#> sep_xgboost          197.72  0.92
+#> sep_xgboost_cv       169.83 15.07
+#> sep_xgboost_cv_par   169.83 12.72
+#> sep_xgboost_cv_2_par 153.13 14.58
+#> sur_lm               649.61  0.45
+#> sur_xgboost          169.92  0.49
+#> sur_xgboost_cv       169.87  2.07
+#> sur_rf               201.23  0.71
+#> sur_rf_cv            172.09 23.63
+#> sur_rf_cv_par        172.09 19.69
 
 # Compare the MSEv criterion of the different explanation methods.
 # Include vertical line corresponding to the MSEv of the empirical method.
@@ -1221,7 +1502,7 @@ on adding new regression models. We refer to that guide for more
 details and explanations of the code below.
 
 
-```r
+``` r
 # Step 1: register the model, modes, and arguments
 parsnip::set_new_model(model = "ppr_reg")
 parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
@@ -1338,19 +1619,33 @@ terms `num_terms` to a specific value or use cross-validation
 to tune the hyperparameter. We do all four combinations below.
 
 
-```r
+``` r
 # PPR separate with specified number of terms
 explanation_list$sep_ppr <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = ppr_reg(num_terms = 2)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:16:17 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876877ce97.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # PPR separate with cross-validated number of terms
 explanation_list$sep_ppr_cv <- explain(
@@ -1358,7 +1653,6 @@ explanation_list$sep_ppr_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = ppr_reg(num_terms = hardhat::tune()),
   regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 4)), levels = 3),
@@ -1366,6 +1660,21 @@ explanation_list$sep_ppr_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:16:17 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876785fc43a.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # PPR surrogate with specified number of terms
 explanation_list$sur_ppr <- explain(
@@ -1373,12 +1682,26 @@ explanation_list$sur_ppr <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = ppr_reg(num_terms = 3)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:16:28 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187667ef9ee4.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # PPR surrogate with cross-validated number of terms
 explanation_list$sur_ppr_cv <- explain(
@@ -1386,7 +1709,6 @@ explanation_list$sur_ppr_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = ppr_reg(num_terms = hardhat::tune()),
   regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 8)), levels = 4),
@@ -1394,6 +1716,21 @@ explanation_list$sur_ppr_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:16:29 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18767a5af0d2.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 We can then compare the $\operatorname{MSE}_v$ and some of the Shapley value explanations.
@@ -1401,35 +1738,35 @@ We see that conducting cross-validation improves the evaluation criterion,
 but also increase the running time.
 
 
-```r
+``` r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  2.22
-#> sep_lm               745.21  0.77
-#> sep_pcr              784.91  1.32
-#> sep_splines          165.13  1.09
-#> sep_reicpe_example   687.45  1.74
-#> sep_tree_stump       218.05  1.03
-#> sep_tree_default     177.68  0.89
-#> sep_tree_cv          169.96 17.31
-#> sep_tree_cv_2        166.17 35.01
-#> sep_rf               210.99  1.58
-#> sep_rf_cv            212.88 38.41
-#> sep_xgboost          197.72  0.99
-#> sep_xgboost_cv       164.69 20.72
-#> sep_xgboost_cv_par   164.69 17.53
-#> sep_xgboost_cv_2_par 146.51 21.94
-#> sur_lm               649.61  0.31
-#> sur_xgboost          169.92  0.26
-#> sur_xgboost_cv       169.87  2.37
-#> sur_rf               195.10  0.52
-#> sur_rf_cv            171.84 30.55
-#> sur_rf_cv_par        171.84 33.24
-#> sep_ppr              327.23  1.41
-#> sep_ppr_cv           269.74 15.46
-#> sur_ppr              395.42  0.29
-#> sur_ppr_cv           415.62  1.86
+#> MC_empirical         179.43  4.27
+#> sep_lm               745.21  0.71
+#> sep_pcr              784.91  0.90
+#> sep_splines          165.13  0.93
+#> sep_reicpe_example   687.45  1.28
+#> sep_tree_stump       218.05  0.79
+#> sep_tree_default     177.68  0.79
+#> sep_tree_cv          222.71 12.98
+#> sep_tree_cv_2        219.45 26.48
+#> sep_rf               217.00  1.24
+#> sep_rf_cv            212.64 31.76
+#> sep_xgboost          197.72  0.92
+#> sep_xgboost_cv       169.83 15.07
+#> sep_xgboost_cv_par   169.83 12.72
+#> sep_xgboost_cv_2_par 153.13 14.58
+#> sur_lm               649.61  0.45
+#> sur_xgboost          169.92  0.49
+#> sur_xgboost_cv       169.87  2.07
+#> sur_rf               201.23  0.71
+#> sur_rf_cv            172.09 23.63
+#> sur_rf_cv_par        172.09 19.69
+#> sep_ppr              327.23  0.80
+#> sep_ppr_cv           246.28 10.70
+#> sur_ppr              395.42  0.43
+#> sur_ppr_cv           415.62  1.68
 
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
@@ -1450,7 +1787,7 @@ In the code chunk below, we compute the Shapley value explanations using
 the different Monte Carlo-based methods.
 
 
-```r
+``` r
 explanation_list_MC <- list()
 
 # Compute the Shapley value explanations using the independence method
@@ -1458,12 +1795,26 @@ explanation_list_MC$MC_independence <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  n_batches = 4,
   approach = "independence",
   prediction_zero = p0
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:16:31 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: independence
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187642229bc6.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Copy the Shapley value explanations for the empirical method
 explanation_list_MC$MC_empirical <- explanation_list$MC_empirical
@@ -1473,49 +1824,105 @@ explanation_list_MC$MC_gaussian <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  n_batches = 4,
   approach = "gaussian",
   prediction_zero = p0
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:16:32 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: gaussian
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18765d1c7e24.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Compute the Shapley value explanations using the copula method
 explanation_list_MC$MC_copula <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  n_batches = 4,
   approach = "copula",
   prediction_zero = p0
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:16:32 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: copula
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18767e5194b5.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Compute the Shapley value explanations using the ctree method
 explanation_list_MC$MC_ctree <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  n_batches = 4,
   approach = "ctree",
   prediction_zero = p0
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:16:33 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: ctree
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187671d33cfd.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Compute the Shapley value explanations using the vaeac method
 explanation_list_MC$MC_vaeac <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  n_batches = 4,
   approach = "vaeac",
   prediction_zero = p0,
   vaeac.epochs = 10
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:16:34 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: vaeac
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18764a74529.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Combine the two explanations lists
 explanation_list$MC_empirical <- NULL
@@ -1528,40 +1935,40 @@ include a vertical line corresponding to the $\operatorname{MSE}_v$ of
 the `MC_empirical` method to make the comparison easier.
 
 
-```r
+``` r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_independence      206.92  0.50
-#> MC_empirical         179.43  2.22
-#> MC_gaussian          245.19  0.49
-#> MC_copula            247.29  0.46
-#> MC_ctree             191.82  1.72
-#> MC_vaeac             141.88 72.61
-#> sep_lm               745.21  0.77
-#> sep_pcr              784.91  1.32
-#> sep_splines          165.13  1.09
-#> sep_reicpe_example   687.45  1.74
-#> sep_tree_stump       218.05  1.03
-#> sep_tree_default     177.68  0.89
-#> sep_tree_cv          169.96 17.31
-#> sep_tree_cv_2        166.17 35.01
-#> sep_rf               210.99  1.58
-#> sep_rf_cv            212.88 38.41
-#> sep_xgboost          197.72  0.99
-#> sep_xgboost_cv       164.69 20.72
-#> sep_xgboost_cv_par   164.69 17.53
-#> sep_xgboost_cv_2_par 146.51 21.94
-#> sur_lm               649.61  0.31
-#> sur_xgboost          169.92  0.26
-#> sur_xgboost_cv       169.87  2.37
-#> sur_rf               195.10  0.52
-#> sur_rf_cv            171.84 30.55
-#> sur_rf_cv_par        171.84 33.24
-#> sep_ppr              327.23  1.41
-#> sep_ppr_cv           269.74 15.46
-#> sur_ppr              395.42  0.29
-#> sur_ppr_cv           415.62  1.86
+#> MC_independence      206.92  0.66
+#> MC_empirical         179.43  4.27
+#> MC_gaussian          235.15  0.52
+#> MC_copula            237.35  0.58
+#> MC_ctree             190.82  1.79
+#> MC_vaeac             145.06  2.12
+#> sep_lm               745.21  0.71
+#> sep_pcr              784.91  0.90
+#> sep_splines          165.13  0.93
+#> sep_reicpe_example   687.45  1.28
+#> sep_tree_stump       218.05  0.79
+#> sep_tree_default     177.68  0.79
+#> sep_tree_cv          222.71 12.98
+#> sep_tree_cv_2        219.45 26.48
+#> sep_rf               217.00  1.24
+#> sep_rf_cv            212.64 31.76
+#> sep_xgboost          197.72  0.92
+#> sep_xgboost_cv       169.83 15.07
+#> sep_xgboost_cv_par   169.83 12.72
+#> sep_xgboost_cv_2_par 153.13 14.58
+#> sur_lm               649.61  0.45
+#> sur_xgboost          169.92  0.49
+#> sur_xgboost_cv       169.87  2.07
+#> sur_rf               201.23  0.71
+#> sur_rf_cv            172.09 23.63
+#> sur_rf_cv_par        172.09 19.69
+#> sep_ppr              327.23  0.80
+#> sep_ppr_cv           246.28 10.70
+#> sur_ppr              395.42  0.43
+#> sur_ppr_cv           415.62  1.68
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the MC_empirical method
@@ -1580,7 +1987,7 @@ We can also order the methods to more easily look at the order of the methods
 according to the $\operatorname{MSE}_v$ criterion.
 
 
-```r
+``` r
 order <- get_k_best_methods(explanation_list, k = length(explanation_list))
 plot_MSEv_scores(explanation_list[order], method_line = "MC_empirical")
 ```
@@ -1595,19 +2002,19 @@ some differences for the less important features. These tendencies/discrepancies
 are often more visible for the methods with poor/larger $\operatorname{MSE}_v$ values.
 
 
-```r
+``` r
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(1, 2), facet_ncol = 1)
 ```
 
 ![](figure_regression/SV-sum-1.png)
 
-```r
+``` r
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(3, 4), facet_ncol = 1)
 ```
 
 ![](figure_regression/SV-sum-2.png)
 
-```r
+``` r
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(5, 6), facet_ncol = 1)
 ```
 
@@ -1618,7 +2025,7 @@ easier to analyze the individual Shapley value explanations, and we see
 a quite strong agreement between the different methods.
 
 
-```r
+``` r
 # Extract the 5 best methods (and empirical)
 best_methods <- get_k_best_methods(explanation_list, k = 5)
 if (!"MC_empirical" %in% best_methods) best_methods <- c(best_methods, "MC_empirical")
@@ -1646,7 +2053,7 @@ this below using the `regression.recipe_func` function.
 First, we copy the setup from the main vignette.
 
 
-```r
+``` r
 # convert the month variable to a factor
 data_cat <- copy(data)[, Month_factor := as.factor(Month)]
 
@@ -1677,33 +2084,75 @@ explanation_list_mixed <- list()
 Second, we compute the explanations using the Monte Carlo-based methods.
 
 
-```r
+``` r
 explanation_list_mixed$MC_independence <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "independence"
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:18:45 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: independence
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187649548cac.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 explanation_list_mixed$MC_ctree <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "ctree"
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:18:46 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: ctree
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18763bd63adf.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 explanation_list_mixed$MC_vaeac <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "vaeac"
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:18:48 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: vaeac
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187658b05f43.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 
@@ -1714,17 +2163,31 @@ regression methods. We use many of the same regression models
 as we did above for the continuous data examples.
 
 
-```r
+``` r
 # Standard linear regression
 explanation_list_mixed$sep_lm <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg()
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:22:11 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18763c8f338e.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Linear regression where we have added splines to the numerical features
 explanation_list_mixed$sep_splines <- explain(
@@ -1732,13 +2195,27 @@ explanation_list_mixed$sep_splines <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = function(regression_recipe) {
     return(step_ns(regression_recipe, all_numeric_predictors(), deg_free = 2))
   }
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:22:12 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18764ac0dcfe.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Decision tree with default parameters
 explanation_list_mixed$sep_tree <- explain(
@@ -1746,10 +2223,24 @@ explanation_list_mixed$sep_tree <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:22:13 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187611313f7d.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Use trees with cross-validation on the depth and cost complexity. Manually set the values.
 explanation_list_mixed$sep_tree_cv <- explain(
@@ -1757,7 +2248,6 @@ explanation_list_mixed$sep_tree_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(),
@@ -1769,6 +2259,21 @@ explanation_list_mixed$sep_tree_cv <- explain(
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
   regression.vfold_cv_para = list(v = 5)
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:22:14 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187664fb36e5.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Random forest with default hyperparameters. Do NOT need to use dummy features.
 explanation_list_mixed$sep_rf <- explain(
@@ -1776,10 +2281,24 @@ explanation_list_mixed$sep_rf <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:22:44 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18761500adf5.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Random forest with cross validated hyperparameters.
 explanation_list_mixed$sep_rf_cv <- explain(
@@ -1787,7 +2306,6 @@ explanation_list_mixed$sep_rf_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -1798,6 +2316,21 @@ explanation_list_mixed$sep_rf_cv <- explain(
     },
   regression.vfold_cv_para = list(v = 5)
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:22:46 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18766af223df.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Xgboost with default hyperparameters, but we have to dummy encode the factors
 explanation_list_mixed$sep_xgboost <- explain(
@@ -1805,13 +2338,27 @@ explanation_list_mixed$sep_xgboost <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
   regression.recipe_func = function(regression_recipe) {
     return(step_dummy(regression_recipe, all_factor_predictors()))
   }
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:23:26 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187695249ed.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Xgboost with cross validated hyperparameters and we dummy encode the factors
 explanation_list_mixed$sep_xgboost_cv <- explain(
@@ -1819,7 +2366,6 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
@@ -1833,6 +2379,21 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression.vfold_cv_para = list(v = 5)
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:23:27 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18764174cab8.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 
@@ -1843,17 +2404,31 @@ regression methods. We use the same regression models as we did
 above for separate regression method class.
 
 
-```r
+``` r
 # Standard linear regression
 explanation_list_mixed$sur_lm <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:23:47 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18767adcc2a7.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Linear regression where we have added splines to the numerical features
 # NOTE, that we remove the augmented mask variables to avoid a rank-deficient fit
@@ -1862,13 +2437,27 @@ explanation_list_mixed$sur_splines <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = function(recipe) {
     return(step_ns(recipe, all_numeric_predictors(), -starts_with("mask_"), deg_free = 2))
   }
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:23:47 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18766add98f1.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Decision tree with default parameters
 explanation_list_mixed$sur_tree <- explain(
@@ -1876,10 +2465,24 @@ explanation_list_mixed$sur_tree <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:23:48 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18767848027.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Use trees with cross-validation on the depth and cost complexity. Manually set the values.
 explanation_list_mixed$sur_tree_cv <- explain(
@@ -1887,7 +2490,6 @@ explanation_list_mixed$sur_tree_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(),
@@ -1899,6 +2501,21 @@ explanation_list_mixed$sur_tree_cv <- explain(
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
   regression.vfold_cv_para = list(v = 5)
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:23:48 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187674dc3671.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Random forest with default hyperparameters. Do NOT need to use dummy features.
 explanation_list_mixed$sur_rf <- explain(
@@ -1906,10 +2523,24 @@ explanation_list_mixed$sur_rf <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:23:51 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187631bd7b76.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Random forest with cross validated hyperparameters.
 explanation_list_mixed$sur_rf_cv <- explain(
@@ -1917,7 +2548,6 @@ explanation_list_mixed$sur_rf_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -1925,6 +2555,21 @@ explanation_list_mixed$sur_rf_cv <- explain(
   regression.tune_values = expand.grid(mtry = c(1, 2, 4), trees = c(50, 250, 500, 750)),
   regression.vfold_cv_para = list(v = 5)
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:23:51 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18763a596175.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Xgboost with default hyperparameters, but we have to dummy encode the factors
 explanation_list_mixed$sur_xgboost <- explain(
@@ -1932,13 +2577,27 @@ explanation_list_mixed$sur_xgboost <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
   regression.recipe_func = function(regression_recipe) {
     return(step_dummy(regression_recipe, all_factor_predictors()))
   }
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:24:04 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187654cedcd1.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Xgboost with cross validated hyperparameters and we dummy encode the factors
 explanation_list_mixed$sur_xgboost_cv <- explain(
@@ -1946,7 +2605,6 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   prediction_zero = p0_cat,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
@@ -1960,6 +2618,21 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression.vfold_cv_para = list(v = 5)
 )
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:24:04 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <lm>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876213e5a19.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 ```
 
 
@@ -1973,29 +2646,29 @@ methods. More specifically, three separate regression methods and
 three surrogate regression methods.
 
 
-```r
+``` r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list_mixed)
-#>                   MSEv   Time
-#> MC_independence 641.82   0.69
-#> MC_ctree        554.50   2.36
-#> MC_vaeac        629.43 147.26
-#> sep_lm          550.06   1.53
-#> sep_splines     541.36   1.80
-#> sep_tree        753.84   0.84
-#> sep_tree_cv     756.27  41.75
-#> sep_rf          521.79   1.10
-#> sep_rf_cv       609.58  51.42
-#> sep_xgboost     792.17   1.13
-#> sep_xgboost_cv  595.98  26.29
-#> sur_lm          610.61   0.51
-#> sur_splines     596.86   0.55
-#> sur_tree        677.04   0.38
-#> sur_tree_cv     789.37   3.34
-#> sur_rf          414.15   0.55
-#> sur_rf_cv       533.06  15.50
-#> sur_xgboost     606.92   0.40
-#> sur_xgboost_cv  429.06   3.05
+#>                   MSEv  Time
+#> MC_independence 641.82  0.86
+#> MC_ctree        555.58  1.81
+#> MC_vaeac        629.56  3.37
+#> sep_lm          550.06  0.87
+#> sep_splines     541.36  1.08
+#> sep_tree        753.84  0.97
+#> sep_tree_cv     756.27 30.72
+#> sep_rf          518.27  1.25
+#> sep_rf_cv       619.81 40.65
+#> sep_xgboost     792.17  1.09
+#> sep_xgboost_cv  595.98 18.59
+#> sur_lm          610.61  0.46
+#> sur_splines     596.86  0.51
+#> sur_tree        677.04  0.47
+#> sur_tree_cv     789.37  2.56
+#> sur_rf          407.76  0.76
+#> sur_rf_cv       520.63 12.05
+#> sur_xgboost     606.92  0.49
+#> sur_xgboost_cv  429.06  2.58
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
@@ -2013,7 +2686,7 @@ We can also order the methods to more easily look at the order
 of the methods according to the $\operatorname{MSE}_v$ criterion.
 
 
-```r
+``` r
 order <- get_k_best_methods(explanation_list_mixed, k = length(explanation_list_mixed))
 plot_MSEv_scores(explanation_list_mixed[order], method_line = "MC_ctree")
 ```
@@ -2024,7 +2697,7 @@ We also look at some of the Shapley value explanations and
 see that many methods produce similar explanations.
 
 
-```r
+``` r
 plot_SV_several_approaches(explanation_list_mixed[order], index_explicands = c(1, 2), facet_ncol = 1)
 ```
 
@@ -2035,7 +2708,7 @@ methods according to the $\operatorname{MSE}_v$ criterion. We also
 include the `ctree` method, the best-performing Monte Carlo-based method.
 
 
-```r
+``` r
 best_methods <- get_k_best_methods(explanation_list_mixed, k = 5)
 if (!"MC_ctree" %in% best_methods) best_methods <- c(best_methods, "MC_ctree")
 plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicands = 1:4)
@@ -2057,26 +2730,39 @@ that we obtain identical $\operatorname{MSE}_v$ scores for
 the string and non-string versions.
 
 
-```r
+``` r
 explanation_list_str <- list()
 explanation_list_str$sep_lm <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = "parsnip::linear_reg()"
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:24:09 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876235f515f.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 explanation_list_str$sep_pcr <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = "parsnip::linear_reg()",
   regression.recipe_func = "function(regression_recipe) {
@@ -2085,13 +2771,27 @@ explanation_list_str$sep_pcr <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:24:10 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876437d5b94.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 explanation_list_str$sep_splines <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = "function(regression_recipe) {
@@ -2100,13 +2800,27 @@ explanation_list_str$sep_splines <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:24:11 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187632223395.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 explanation_list_str$sep_tree_cv <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_separate",
   regression.model = "parsnip::decision_tree(
     tree_depth = hardhat::tune(), engine = 'rpart', mode = 'regression'
@@ -2116,6 +2830,21 @@ explanation_list_str$sep_tree_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:24:12 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c18766919e2a5.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with parameters tuned by cross-validation
 explanation_list_str$sep_rf_cv <- explain(
@@ -2123,7 +2852,6 @@ explanation_list_str$sep_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 1, # As we used this for the non-string version
   approach = "regression_separate",
   regression.model = "parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'
@@ -2136,6 +2864,21 @@ explanation_list_str$sep_rf_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:24:25 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_separate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c1876616a45e6.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with parameters tuned by cross-validation as the surrogate model
 explanation_list_str$sur_rf_cv <- explain(
@@ -2143,7 +2886,6 @@ explanation_list_str$sur_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   prediction_zero = p0,
-  n_batches = 4,
   approach = "regression_surrogate",
   regression.model = "parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'
@@ -2157,24 +2899,39 @@ explanation_list_str$sur_rf_cv <- explain(
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
+#> Success with message:
+#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+#> and is therefore set to 2^n_features = 16.
+#> 
+#> ── Starting `shapr::explain()` at 2024-10-05 23:24:56 ───────────────────────────────────────────────────────────────────────────────
+#> • Model class: <xgb.Booster>
+#> • Approach: regression_surrogate
+#> • Adaptive estimation: FALSE
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 20
+#> • Computations (temporary) saved at: '/tmp/RtmpPIciRY/shapr_obj_c187639202932.rds'
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions.
 
 # See that the evaluation scores match the non-string versions.
 print_MSEv_scores_and_time(explanation_list_str)
 #>               MSEv  Time
-#> sep_lm      745.21  1.14
-#> sep_pcr     784.91  1.19
-#> sep_splines 165.13  1.15
-#> sep_tree_cv 169.96 20.65
-#> sep_rf_cv   212.88 39.29
-#> sur_rf_cv   171.84 30.51
+#> sep_lm      745.21  0.73
+#> sep_pcr     784.91  0.94
+#> sep_splines 165.13  0.99
+#> sep_tree_cv 222.71 13.04
+#> sep_rf_cv   212.64 31.34
+#> sur_rf_cv   172.09 23.58
 print_MSEv_scores_and_time(explanation_list[names(explanation_list_str)])
 #>               MSEv  Time
-#> sep_lm      745.21  0.77
-#> sep_pcr     784.91  1.32
-#> sep_splines 165.13  1.09
-#> sep_tree_cv 169.96 17.31
-#> sep_rf_cv   212.88 38.41
-#> sur_rf_cv   171.84 30.55
+#> sep_lm      745.21  0.71
+#> sep_pcr     784.91  0.90
+#> sep_splines 165.13  0.93
+#> sep_tree_cv 222.71 12.98
+#> sep_rf_cv   212.64 31.76
+#> sur_rf_cv   172.09 23.63
 ```
 
 

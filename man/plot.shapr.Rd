@@ -129,7 +129,7 @@ x <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -179,7 +179,7 @@ x <- explain(
   x_train = x_train,
   approach = "ctree",
   prediction_zero = p,
-  n_samples = 1e2
+  n_MC_samples = 1e2
 )
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {

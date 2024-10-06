@@ -11,7 +11,7 @@
       "N",
       "id_all",
       "id",
-      "id_combination",
+      "id_coalition",
       "w",
       "id_all",
       "joint_prob",
@@ -77,7 +77,7 @@
       "batch",
       "type",
       "feature_value_factor",
-      "horizon_id_combination",
+      "horizon_id_coalition",
       "tmp_features",
       "Method",
       "MSEv",
@@ -107,7 +107,6 @@
       "x_train_torch",
       "self",
       "..current_comb",
-      "..regression.response_var" # test
     )
   )
 
