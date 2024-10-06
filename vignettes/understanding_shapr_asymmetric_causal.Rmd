@@ -1228,7 +1228,7 @@ table(sapply(S_causal_steps_freq, paste0, collapse = ","))
 
 The `independence`, `empirical`, `ctree`, and `categorical` approaches produce
 weighted Monte Carlo samples. That means that they do not necessarily generate
-`n_samples`. To ensure `n_samples`, we sample `n_samples` samples using weighted
+`n_MC_samples`. To ensure `n_MC_samples`, we sample `n_MC_samples` samples using weighted
 sampling with replacements where the weights are the weights returned by the approaches. 
 
 The marginal Shapley value explanation framework can be extended to

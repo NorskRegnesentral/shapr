@@ -12,7 +12,7 @@ test_that("output_asymmetric_conditional", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = NULL,
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_conditional"
   )
@@ -50,7 +50,7 @@ test_that("output_symmetric_conditional", {
       asymmetric = FALSE,
       causal_ordering = list(1:2, 3, 4:5), # Does not matter when asymmetric = TRUE and confounding = NULL
       confounding = NULL,
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_symmetric_conditional"
   )
@@ -69,7 +69,7 @@ test_that("output_symmetric_marginal_independence", {
       asymmetric = FALSE,
       causal_ordering = list(1:5),
       confounding = TRUE,
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_symmetric_marginal_independence"
   )
@@ -88,7 +88,7 @@ test_that("output_symmetric_marginal_gaussian", {
       asymmetric = FALSE,
       causal_ordering = list(1:5),
       confounding = TRUE,
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_symmetric_marginal_gaussian"
   )
@@ -107,7 +107,7 @@ test_that("output_asymmetric_causal_confounding_TRUE", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = TRUE,
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_TRUE"
   )
@@ -126,7 +126,7 @@ test_that("output_asymmetric_causal_confounding_FALSE", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = FALSE,
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_FALSE"
   )
@@ -145,7 +145,7 @@ test_that("output_asymmetric_causal_confounding_mix", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_mix"
   )
@@ -164,7 +164,7 @@ test_that("output_asymmetric_causal_confounding_mix_n_comb", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      n_samples = 5, # Just for speed
+      n_MC_samples = 5, # Just for speed
       n_combinations = 6
     ),
     "output_asymmetric_causal_confounding_mix_n_comb"
@@ -184,7 +184,7 @@ test_that("output_asymmetric_causal_confounding_mix_empirical", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_mix_empirical"
   )
@@ -203,7 +203,7 @@ test_that("output_asymmetric_causal_confounding_mix_ctree", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_mix_ctree"
   )
@@ -222,7 +222,7 @@ test_that("output_symmetric_causal_confounding_TRUE", {
       asymmetric = FALSE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = TRUE,
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_symmetric_causal_confounding_TRUE"
   )
@@ -241,7 +241,7 @@ test_that("output_symmetric_causal_confounding_FALSE", {
       asymmetric = FALSE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = FALSE,
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_symmetric_causal_confounding_FALSE"
   )
@@ -260,7 +260,7 @@ test_that("output_symmetric_causal_confounding_mix", {
       asymmetric = FALSE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_symmetric_causal_confounding_mix"
   )
@@ -282,7 +282,7 @@ test_that("output_symmetric_causal_confounding_TRUE_group", {
       causal_ordering = list(1:2, 3),
       confounding = TRUE,
       group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_symmetric_causal_confounding_TRUE_group"
   )
@@ -303,7 +303,7 @@ test_that("output_symmetric_causal_confounding_mix_group", {
       causal_ordering = list(1, 2, 3),
       confounding = c(TRUE, TRUE, FALSE),
       group = list("A" = c("Solar.R"), B = c("Wind", "Temp"), C = c("Month", "Day")),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_symmetric_causal_confounding_mix_group"
   )
@@ -326,7 +326,7 @@ test_that("output_mixed_symmetric_causal_confounding_TRUE", {
       asymmetric = FALSE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = TRUE,
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_mixed_symmetric_causal_confounding_TRUE"
   )
@@ -345,7 +345,7 @@ test_that("output_mixed_asymmetric_causal_confounding_mixed", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_mixed_symmetric_causal_confounding_mixed"
   )
@@ -364,7 +364,7 @@ test_that("output_mixed_asymmetric_causal_confounding_mixed_2", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(FALSE, TRUE, TRUE),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_mixed_symmetric_causal_confounding_mixed_2"
   )
@@ -406,7 +406,7 @@ test_that("output_categorical_asymmetric_causal_mixed_categorical", {
       asymmetric = FALSE,
       causal_ordering = list(3:4, 2, 1),
       confounding = c(TRUE, FALSE, FALSE),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_categorical_asymmetric_causal_mixed_categorical"
   )
@@ -425,7 +425,7 @@ test_that("output_categorical_asymmetric_causal_mixed_ctree", {
       asymmetric = FALSE,
       causal_ordering = list(3:4, 2, 1),
       confounding = c(TRUE, FALSE, FALSE),
-      n_samples = 5 # Just for speed
+      n_MC_samples = 5 # Just for speed
     ),
     "output_categorical_asymmetric_causal_mixed_ctree"
   )
