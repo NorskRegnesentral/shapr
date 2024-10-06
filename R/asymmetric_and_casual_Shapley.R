@@ -116,13 +116,13 @@ sort_feature_list = function(features_list, sort_features = TRUE, sort_size = TR
 #' @keywords internal
 #'
 #' @author Lars Henry Berge Olsen
-check_categorical_valid_MCsamp = function(dt, n_explain, n_samples, joint_probability_dt) {
+check_categorical_valid_MCsamp = function(dt, n_explain, n_MC_samples, joint_probability_dt) {
   dt_factor = dt[ , .SD, .SDcols = is.factor] # Get the columns that have been inserted into
   dt_factor_names = copy(names(dt_factor)) # Get their names. Copy as we are to change dt_factor
-  dt_factor[, id := rep(seq(n_explain), each = n_samples)] # Add an id column
-  dt_valid_comb = joint_probability_dt[, ..dt_factor_names] # Get the valid feature coalitions
-  dt_invalid = dt_factor[!dt_valid_comb, on = dt_factor_names] # Get non valid coalitions
-  explicand_all_invalid = dt_invalid[,.N, by = id][N == n_samples] # Get if all samples for an expli are invalid
+  dt_factor[, id := rep(seq(n_explain), each = n_MC_samples)] # Add an id column
+  dt_valid_coals = joint_probability_dt[, ..dt_factor_names] # Get the valid feature coalitions
+  dt_invalid = dt_factor[!dt_valid_coals, on = dt_factor_names] # Get non valid coalitions
+  explicand_all_invalid = dt_invalid[,.N, by = id][N == n_MC_samples] # Get if all samples for an explicand are invalid
   if (nrow(explicand_all_invalid) > 0) {
     stop(paste0("An explicand has no valid MC feature coalitions. Increase `n_MC_samples` or provide ",
                 "`joint_prob_dt` containing the probaibilities for unlikely coalitions, too."))
@@ -288,18 +288,18 @@ convert_feature_name_to_idx = function(causal_ordering, labels) {
 #'
 #' @param n_explain Integer. The number of explicands/observations to explain.
 #' @param Sbar_features Vector of integers containing the features indices to generate marginal observations for.
-#' That is, if `Sbar_features` is `c(1,4)`, then we sample `n_samples` observations from \eqn{P(X_1, X_4)} using the
+#' That is, if `Sbar_features` is `c(1,4)`, then we sample `n_MC_samples` observations from \eqn{P(X_1, X_4)} using the
 #' empirical training observations (with replacements). That is, we sample the first and fourth feature values from
 #' the same training observation, so we do not break the dependence between them.
 #' @param n_explain Integer. The number of explicands/observations to explain.
-#' @param stable_version Logical. If `TRUE` and `n_samples` > `n_train`, then we include each training observation
-#' `n_samples %/% n_train` times and then sample the remaining `n_samples %% n_train samples`. Only the latter is
-#' done when `n_samples < n_train`. This is done separately for each explicand. If `FALSE`, we randomly sample the
+#' @param stable_version Logical. If `TRUE` and `n_MC_samples` > `n_train`, then we include each training observation
+#' `n_MC_samples %/% n_train` times and then sample the remaining `n_MC_samples %% n_train samples`. Only the latter is
+#' done when `n_MC_samples < n_train`. This is done separately for each explicand. If `FALSE`, we randomly sample the
 #' from the observations.
 #'
 #' @inheritParams explain
 #'
-#' @return Data table of dimension \eqn{`n_samples` \times `length(Sbar_features)`} with the sampled observations.
+#' @return Data table of dimension \eqn{`n_MC_samples` \times `length(Sbar_features)`} with the sampled observations.
 #'
 #' @examples
 #' data("airquality")
@@ -312,24 +312,29 @@ convert_feature_name_to_idx = function(causal_ordering, labels) {
 #' ind_x_explain <- 1:6
 #' x_train <- data[-ind_x_explain, ..x_var]
 #' x_train
-#' create_marginal_data__training(x_train = x_train, Sbar_features = c(1, 4), n_samples = 10)
+#' create_marginal_data__training(x_train = x_train, Sbar_features = c(1, 4), n_MC_samples = 10)
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-create_marginal_data_training <- function(x_train, n_explain, Sbar_features, n_samples = 10e3, stable_version = TRUE) {
+create_marginal_data_training <- function(x_train,
+                                          n_explain,
+                                          Sbar_features,
+                                          n_MC_samples = 1000,
+                                          stable_version = TRUE) {
 
   # Get the number of training observations
   n_train <- nrow(x_train)
 
   if (stable_version) {
-    # If n_samples > n_train, then we include each training observations n_samples %/% n_train times and
-    # then sample the remaining n_samples %% n_train samples. Only the latter is done when n_samples < n_train.
+    # If n_MC_samples > n_train, then we include each training observations n_MC_samples %/% n_train times and
+    # then sample the remaining n_MC_samples %% n_train samples. Only the latter is done when n_MC_samples < n_train.
     # This is done separately for each explicand
-    sampled_indices <- as.vector(sapply(seq(n_explain), function(x) c(rep(seq(n_train), each = n_samples %/% n_train),
-                                                                      sample(n_train, n_samples %% n_train))))
+    sampled_indices <- as.vector(sapply(seq(n_explain),
+                                        function(x) c(rep(seq(n_train), each = n_MC_samples %/% n_train),
+                                                      sample(n_train, n_MC_samples %% n_train))))
   } else {
     # sample everything and not guarantee that we use all training observations
-    sampled_indices = sample(n_train, n_samples * n_explain, replace = TRUE)
+    sampled_indices = sample(n_train, n_MC_samples * n_explain, replace = TRUE)
   }
 
   # Sample the marginal data and return them
@@ -354,7 +359,7 @@ create_marginal_data_training <- function(x_train, n_explain, Sbar_features, n_s
 #' We sample from the valid coalitions using the MARGINAL probabilities.
 #'
 #' @param Sbar_features Vector of integers containing the features indices to generate marginal observations for.
-#' That is, if `Sbar_features` is `c(1,4)`, then we sample `n_samples` observations from \eqn{P(X_1, X_4)}.
+#' That is, if `Sbar_features` is `c(1,4)`, then we sample `n_MC_samples` observations from \eqn{P(X_1, X_4)}.
 #' That is, we sample the first and fourth feature values from the same valid feature coalition using
 #' the marginal probability, so we do not break the dependence between them.
 #' @param S_original Vector of integers containing the features indices of the original coalition `S`. I.e., not the
@@ -362,13 +367,13 @@ create_marginal_data_training <- function(x_train, n_explain, Sbar_features, n_s
 #' @param joint_prob_dt Data.table containing the joint probability distribution for each coalition of feature values.
 #' @inheritParams explain
 #'
-#' @return Data table of dimension \eqn{(`n_samples` * `nrow(x_explain)`) \times `length(Sbar_features)`} with the
+#' @return Data table of dimension \eqn{(`n_MC_samples` * `nrow(x_explain)`) \times `length(Sbar_features)`} with the
 #' sampled observations.
 #'
 #' @keywords internal
 #'
 #' @author Lars Henry Berge Olsen
-create_marginal_data_categoric = function(n_samples,
+create_marginal_data_categoric = function(n_MC_samples,
                                           x_explain,
                                           Sbar_features,
                                           S_original,
@@ -403,14 +408,16 @@ create_marginal_data_categoric = function(n_samples,
                                                                 allow.cartesian = TRUE)
 
   # Merge the relevant feature coalitions with their marginal probabilities
-  dt_valid_comb_marg_prob = data.table::merge.data.table(dt_valid_coalitions_relevant,
+  dt_valid_coal_marg_prob = data.table::merge.data.table(dt_valid_coalitions_relevant,
                                                          marginal_prob_dt,
                                                          by = relevant_features_names)
-  dt_valid_comb_marg_prob[, prob := prob/sum(prob), by = id] # Make prob sum to 1 for each explicand
-  data.table::setkey(dt_valid_comb_marg_prob, "id") # Set id to key so id is in increasing order
+  dt_valid_coal_marg_prob[, prob := prob/sum(prob), by = id] # Make prob sum to 1 for each explicand
+  data.table::setkey(dt_valid_coal_marg_prob, "id") # Set id to key so id is in increasing order
 
-  # Sample n_samples from the valid coalitions using the marginal probabilities and extract the Sbar columns
-  return(dt_valid_comb_marg_prob[, .SD[sample(.N, n_samples, replace = TRUE, prob = prob)], by = id][,..Sbar_now_names])
+  # Sample n_MC_samples from the valid coalitions using the marginal probabilities and extract the Sbar columns
+  dt_return <-
+    dt_valid_coal_marg_prob[, .SD[sample(.N, n_MC_samples, replace = TRUE, prob = prob)], by = id][,..Sbar_now_names]
+  return(dt_return)
 }
 
 
@@ -660,13 +667,13 @@ feature_not_exact_causal <- function(m, causal_ordering, n_coalitions = 200, wei
   check_n_coalitions_causal(n_coalitions = n_coalitions, causal_ordering = causal_ordering)
 
   # Get all legit coalitions
-  all_combs <- feature_exact_causal(m = m, causal_ordering = causal_ordering, weight_zero_m = weight_zero_m)
+  all_coals <- feature_exact_causal(m = m, causal_ordering = causal_ordering, weight_zero_m = weight_zero_m)
 
   # Sample the `n_coalitions` relevant coalitions using the `shapley_weights` entries as probabilities
-  rel_combs <- sample(seq(2, nrow(all_combs) - 1), size = n_coalitions - 2, prob = all_combs[-c(1, .N), shapley_weight])
+  rel_coals <- sample(seq(2, nrow(all_coals) - 1), size = n_coalitions - 2, prob = all_coals[-c(1, .N), shapley_weight])
 
   # Extract the empty, sampled/relevant (sorted), and grand coalition, and update the id_coalition counter.
-  return(all_combs[c(1, sort(rel_combs), .N), ][, id_coalition := seq(.N)])
+  return(all_coals[c(1, sort(rel_coals), .N), ][, id_coalition := seq(.N)])
 }
 
 
@@ -705,6 +712,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   X <- internal$iter_list[[iter]]$X
   S <- internal$iter_list[[iter]]$S
   S_causal_steps <- internal$iter_list[[iter]]$S_causal_steps
+  S_causal_steps_strings = internal$iter_list[[iter]]$S_causal_steps_strings
 
   # Extract the needed variables
   x_train <- internal$data$x_train
@@ -712,25 +720,14 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
   n_features <- internal$parameters$n_features
-  n_samples <- internal$parameters$n_samples
+  n_MC_samples <- internal$parameters$n_MC_samples
   feature_names <- internal$parameters$feature_names
   verbose <- internal$parameters$verbose
-
-  # Extract extra object for better messages
-  if (verbose == "vS_details") {
-    n_index_features = length(index_features)
-    S_causal_steps_strings = internal$iter_list[[iter]]$S_causal_steps_strings
-    id_batch = X[id_coalition == index_features[1], batch]
-    n_batches = internal$parameters$n_batches
-
-    message(paste0("In `prepare_data_causal()` with batch ", id_batch, " of ", n_batches,
-                   " (id_coalition = ", paste0(index_features, collapse = ","), ")."))
-  }
 
   # Create a list to store the populated data tables with the MC samples
   dt_list <- list()
 
-  # Create a copy of the internal list. We will change its x_explain, n_explain, and n_samples such
+  # Create a copy of the internal list. We will change its x_explain, n_explain, and n_MC_samples such
   # that we can the prepare_data() function which was not originally designed for the step-wise/iterative
   # sampling process which is needed for Causal Shapley values where we sample from P(Sbar_i | S_i) and
   # the S and Sbar changes in the iterative process. So those also the number of MC samples we need to generate.
@@ -745,28 +742,28 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
     # Give message if verbose
     if (verbose == "vS_details") {
-      message(paste0("Batch ", id_batch, " of ", n_batches, ". Coalition ", index_feature_idx,
-                     " of ", n_index_features, " (id_coalition = ", index_feature, ")."))
+      message(paste0("Coalition ", index_feature_idx, " of ", length(index_features),
+                     " (id_coalition = ", index_feature, ")."))
     }
 
     # Reset the internal_copy list for each new coalition
     if (index_feature_idx > 1) {
       internal_copy$data$x_explain <- x_explain
       internal_copy$parameters$n_explain <- n_explain
-      internal_copy$parameters$n_samples <- n_samples
+      internal_copy$parameters$n_MC_samples <- n_MC_samples
     }
 
     # Create the empty data table which we are to populate with the Monte Carlo samples for each coalition
-    dt <- data.table(matrix(nrow = n_explain * n_samples, ncol = n_features))
+    dt <- data.table(matrix(nrow = n_explain * n_MC_samples, ncol = n_features))
     #if (approach == "categorical") dt[, names(dt) := lapply(.SD, as.factor)] # Needed for the categorical approach
     colnames(dt) <- feature_names
 
     # Populate the data table with the features we condition on
     S_names <- feature_names[as.logical(S[index_feature, ])]
-    dt[, (S_names) := x_explain[rep(seq(n_explain), each = n_samples), .SD, .SDcols = S_names]]
+    dt[, (S_names) := x_explain[rep(seq(n_explain), each = n_MC_samples), .SD, .SDcols = S_names]]
 
     # Get the iterative sampling process for the current coalition
-    S_causal_steps_now <- S_causal_steps[[index_feature]]
+    S_causal_steps_now <- internal$iter_list[[iter]]$S_causal_steps[[index_feature]]
 
     # Loop over the steps in the iterative sampling process to generate MC samples for the unconditional features
     sampling_step_idx <- 1
@@ -795,7 +792,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         if (approach == "gaussian") {
           # Sample marginal data from the marginal gaussian distribution
           dt_Sbar_now_marginal_values = create_marginal_data_gaussian(
-            n_samples = n_samples * n_explain,
+            n_MC_samples = n_MC_samples * n_explain,
             Sbar_features = Sbar_now,
             mu = internal$parameters$gaussian.mu,
             cov_mat = internal$parameters$gaussian.cov_mat
@@ -805,7 +802,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
           # For categorical approach with several sampling steps, we make sure to only sample feature coalitions
           # that are present in `categorical.joint_prob_dt` when combined with the features in `S_names`.
           dt_Sbar_now_marginal_values = create_marginal_data_categoric(
-            n_samples = n_samples,
+            n_MC_samples = n_MC_samples,
             x_explain = x_explain,
             Sbar_features = Sbar_now,
             S_original = seq(n_features)[as.logical(S[index_feature, ])],
@@ -819,7 +816,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
             x_train = x_train,
             n_explain = n_explain,
             Sbar_features = Sbar_now,
-            n_samples = n_samples,
+            n_MC_samples = n_MC_samples,
             stable_version = TRUE
           )
         }
@@ -839,15 +836,15 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         dt_new <- prepare_data(internal_copy, index_features = 1, ...)
 
         if (approach %in% c("independence", "empirical", "ctree", "categorical")) {
-          # These approaches produce weighted MC samples, i.e., the do not necessarily generate n_samples MC samples.
-          # We ensure n_samples by weighted sampling (with replacements) those ids with not n_samples MC samples.
-          n_samp_now = internal_copy$parameters$n_samples
+          # These approaches produce weighted MC samples, i.e., the do not necessarily generate n_MC_samples MC samples.
+          # We ensure n_MC_samples by weighted sampling (with replacements) those ids with not n_MC_samples MC samples.
+          n_samp_now = internal_copy$parameters$n_MC_samples
           dt_new <-
             dt_new[, .SD[if (.N == n_samp_now) seq(.N) else sample(.N, n_samp_now, replace = TRUE, prob = w)], by = id]
 
           # TODO: remove
           # Check that dt_new has the right number of rows.
-          if (nrow(dt_new) != n_explain * n_samples) stop("`dt_new` does not have the right number of rows.\n")
+          if (nrow(dt_new) != n_explain * n_MC_samples) stop("`dt_new` does not have the right number of rows.\n")
         }
 
         # Insert/keep only the features in Sbar_now into dt
@@ -858,16 +855,16 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
       if (approach == "categorical" && length(S_causal_steps_now) > 1) {
         check_categorical_valid_MCsamp(dt = dt,
                                        n_explain = n_explain,
-                                       n_samples = n_samples,
+                                       n_MC_samples = n_MC_samples,
                                        joint_probability_dt = internal$parameters$categorical.joint_prob_dt)
       }
 
       # Update the x_explain in internal_copy such that in the next sampling step use the values in dt
-      # as the conditional feature values. Furthermore, we set n_samples to 1 such that we in the next
-      # step generate one new value for each of the n_samples MC samples we have begun to generate.
+      # as the conditional feature values. Furthermore, we set n_MC_samples to 1 such that we in the next
+      # step generate one new value for each of the n_MC_samples MC samples we have begun to generate.
       internal_copy$data$x_explain <- dt
       internal_copy$parameters$n_explain <- nrow(dt)
-      internal_copy$parameters$n_samples <- 1
+      internal_copy$parameters$n_MC_samples <- 1
     }
 
     # Save the now populated data table
@@ -876,9 +873,9 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
   # Combine the list of data tables and add the id columns
   dt <- data.table::rbindlist(dt_list, fill = TRUE)
-  dt[, id_coalition := rep(index_features, each = n_samples * n_explain)]
-  dt[, id := rep(seq(n_explain), each = n_samples, times = length(index_features))]
-  dt[, w := 1 / n_samples]
+  dt[, id_coalition := rep(index_features, each = n_MC_samples * n_explain)]
+  dt[, id := rep(seq(n_explain), each = n_MC_samples, times = length(index_features))]
+  dt[, w := 1 / n_MC_samples]
   data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
   # Aggregate the weights for the non-unique rows such that we only return a data table with unique rows.
