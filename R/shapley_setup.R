@@ -116,7 +116,7 @@ shapley_setup <- function(internal) {
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
   internal$iter_list[[iter]]$coal_samples <- coal_samples
 
-  # If we are doing causal Shapley values, then get the step-wise data generating process for each combination
+  # If we are doing causal Shapley values, then get the step-wise data generating process for each coalition
   if (causal_sampling) {
     # Convert causal_ordering to be on the feature level also for group-wise Shapley values,
     # as must know the features to include in each causal sampling step and not the group.
@@ -266,7 +266,7 @@ shapley_reweighting <- function(X, reweight = "on_N") {
 
 #' @keywords internal
 exact_coalition_table <- function(m, legit_causal_coalitions = NULL, weight_zero_m = 10^6) {
-  # TODO: I have verified that we get the same combinations and weights as Heskes with their version. REMOVE THIS
+  # TODO: I have verified that we get the same coalitions and weights as Heskes with their version. REMOVE THIS
 
   # Create all valid coalitions for regular/symmetric or asymmetric Shapley values
   if (is.null(legit_causal_coalitions)) {
@@ -321,11 +321,11 @@ sample_coalition_table <- function(m,
     # Vi snakket om at jeg skulle sample med tilbakelegging. Men blir litt usikker på hva jeg skal
     # Ta som vekter og om N skal være antallet mulige koalisjoner av en størrelse eller om det bare skal være de lovlige
 
-    # Create all combinations respecting the causal ordering and then sample based on Shapley kernel weights
+    # Create all coalitions respecting the causal ordering and then sample based on Shapley kernel weights
     X <- exact_coalition_table(m = m, legit_causal_coalitions = legit_causal_coalitions, weight_zero_m = weight_zero_m)
     X <- rbind(X[1], X[-c(1,.N)][sort(sample(.N, n_coalitions - 2, prob = shapley_weight))], X[.N])
-    X[, id_combination := .I] # Update the indices
-    X[, p := NA] # Just needed as `feature_combinations()` requires there to be a p-column that it removes.
+    X[, id_coalition := .I] # Update the indices
+    X[, p := NA] # Just needed as `create_coalition_table()` requires there to be a p-column that it removes.
     return(X)
   }
 

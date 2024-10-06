@@ -95,7 +95,8 @@
 #' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `adaptive = TRUE`)
 #' + the final estimates.
 #' `"vS_details"` displays information about the v_S estimates.
-#' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`).
+#' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`), and
+#' for causal Shapley values when `causal_ordering` and `confounding` is specified.
 #' `NULL` means no printout.
 #' Note that any combination of four strings can be used.
 #' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the vS estimation process.

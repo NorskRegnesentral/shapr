@@ -120,12 +120,12 @@ check_categorical_valid_MCsamp = function(dt, n_explain, n_samples, joint_probab
   dt_factor = dt[ , .SD, .SDcols = is.factor] # Get the columns that have been inserted into
   dt_factor_names = copy(names(dt_factor)) # Get their names. Copy as we are to change dt_factor
   dt_factor[, id := rep(seq(n_explain), each = n_samples)] # Add an id column
-  dt_valid_comb = joint_probability_dt[, ..dt_factor_names] # Get the valid feature combinations
-  dt_invalid = dt_factor[!dt_valid_comb, on = dt_factor_names] # Get non valid combinations
+  dt_valid_comb = joint_probability_dt[, ..dt_factor_names] # Get the valid feature coalitions
+  dt_invalid = dt_factor[!dt_valid_comb, on = dt_factor_names] # Get non valid coalitions
   explicand_all_invalid = dt_invalid[,.N, by = id][N == n_samples] # Get if all samples for an expli are invalid
   if (nrow(explicand_all_invalid) > 0) {
-    stop(paste0("An explicand has no valid MC feature combinations. Increase `n_samples` or provide ",
-                "`joint_prob_dt` containing the probaibilities for unlikely combinations, too."))
+    stop(paste0("An explicand has no valid MC feature coalitions. Increase `n_MC_samples` or provide ",
+                "`joint_prob_dt` containing the probaibilities for unlikely coalitions, too."))
   }
 }
 
@@ -234,20 +234,19 @@ check_coalitions_respect_order_slow <- function(coalitions, causal_ordering) {
   return(coalition_respects_order)
 }
 
-#' Auxiliary function that verifies that the number of combinations is possible
+#' Auxiliary function that verifies that the number of coalitions is valid
 #'
-#' @param n_combinations
-#' @param causal_ordering
+#' @inheritParams explain
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-check_n_combinations_causal <- function(n_combinations, causal_ordering) {
-  # Check that we have a legit number of combinations.
-  n_combinations_max <- get_max_n_coalitions_causal(causal_ordering)
-  if (n_combinations < 2 || n_combinations > n_combinations_max) {
+check_n_coalitions_causal <- function(n_coalitions, causal_ordering) {
+  # Check that we have a legit number of coalitions.
+  n_coalitions_max <- get_max_n_coalitions_causal(causal_ordering)
+  if (n_coalitions < 2 || n_coalitions > n_coalitions_max) {
     stop(paste0(
-      "`n_combinations` (", n_combinations, ") must be a strictly postive integer larger than or equal to ",
-      "two and less than the number of coalitions respecting the causal ordering (", n_combinations_max, ")."
+      "`n_coalitions` (", n_coalitions, ") must be a strictly postive integer larger than or equal to ",
+      "two and less than the number of coalitions respecting the causal ordering (", n_coalitions_max, ")."
     ))
   }
 }
@@ -340,7 +339,7 @@ create_marginal_data_training <- function(x_train, n_explain, Sbar_features, n_s
 #' Create marginal categorical data for causal Shapley values
 #'
 #' @description
-#' This function is used when we are to generate marginal data for the categorical approach when we have several sampling
+#' This function is used when we generate marginal data for the categorical approach when we have several sampling
 #' steps. We need to treat this separately, as we here in the marginal step CANNOT make feature values such
 #' that the combination of those and the feature values we condition in S are NOT in
 #' `categorical.joint_prob_dt`. If we do this, then we cannot progress further in the chain of sampling
@@ -350,17 +349,17 @@ create_marginal_data_training <- function(x_train, n_explain, Sbar_features, n_s
 #' generating X1 = 3, as we then cannot generate X3.
 #' The solution is only to generate the values which can proceed through the whole
 #' chain of sampling steps. To do that, we have to ensure the the marginal sampling
-#' respects the valid feature combinations for all sets of conditional features, i.e.,
+#' respects the valid feature coalitions for all sets of conditional features, i.e.,
 #' the features in `features_steps_cond_on`.
-#' We sample from the valid combinations using the MARGINAL probabilities.
+#' We sample from the valid coalitions using the MARGINAL probabilities.
 #'
 #' @param Sbar_features Vector of integers containing the features indices to generate marginal observations for.
 #' That is, if `Sbar_features` is `c(1,4)`, then we sample `n_samples` observations from \eqn{P(X_1, X_4)}.
-#' That is, we sample the first and fourth feature values from the same valid feature combination using
+#' That is, we sample the first and fourth feature values from the same valid feature coalition using
 #' the marginal probability, so we do not break the dependence between them.
 #' @param S_original Vector of integers containing the features indices of the original coalition `S`. I.e., not the
 #' features in the current sampling step, but the features are known to us before starting the chain of sampling steps.
-#' @param joint_prob_dt Data.table containing the joint probability distribution for each combination of feature values.
+#' @param joint_prob_dt Data.table containing the joint probability distribution for each coalition of feature values.
 #' @inheritParams explain
 #'
 #' @return Data table of dimension \eqn{(`n_samples` * `nrow(x_explain)`) \times `length(Sbar_features)`} with the
@@ -391,26 +390,26 @@ create_marginal_data_categoric = function(n_samples,
   relevant_features = sort(c(Sbar_features, S_original))
   relevant_features_names = feature_names[relevant_features]
 
-  # Get the marginal probabilities for the relevant feature combinations
+  # Get the marginal probabilities for the relevant feature coalitions
   marginal_prob_dt = joint_prob_dt[, list(prob = sum(joint_prob)), by = relevant_features_names]
 
-  # Get all valid feature combinations for the relevant features
-  dt_valid_combinations = unique(joint_prob_dt[, ..relevant_features])
+  # Get all valid feature coalitions for the relevant features
+  dt_valid_coalitions = unique(joint_prob_dt[, ..relevant_features])
 
-  # Get relevant feature combinations that are valid for the explicands
-  dt_valid_combinations_relevant = data.table::merge.data.table(x_explain_copy[, ..S_original_names_with_id],
-                                                                dt_valid_combinations,
+  # Get relevant feature coalitions that are valid for the explicands
+  dt_valid_coalitions_relevant = data.table::merge.data.table(x_explain_copy[, ..S_original_names_with_id],
+                                                                dt_valid_coalitions,
                                                                 by = S_original_names,
                                                                 allow.cartesian = TRUE)
 
-  # Merge the relevant feature combinations with their marginal probabilities
-  dt_valid_comb_marg_prob = data.table::merge.data.table(dt_valid_combinations_relevant,
+  # Merge the relevant feature coalitions with their marginal probabilities
+  dt_valid_comb_marg_prob = data.table::merge.data.table(dt_valid_coalitions_relevant,
                                                          marginal_prob_dt,
                                                          by = relevant_features_names)
   dt_valid_comb_marg_prob[, prob := prob/sum(prob), by = id] # Make prob sum to 1 for each explicand
   data.table::setkey(dt_valid_comb_marg_prob, "id") # Set id to key so id is in increasing order
 
-  # Sample n_samples from the valid combinations using the marginal probabilities and extract the Sbar columns
+  # Sample n_samples from the valid coalitions using the marginal probabilities and extract the Sbar columns
   return(dt_valid_comb_marg_prob[, .SD[sample(.N, n_samples, replace = TRUE, prob = prob)], by = id][,..Sbar_now_names])
 }
 
@@ -449,7 +448,7 @@ create_marginal_data_categoric = function(n_samples,
 #'
 #' @author Lars Henry Berge Olsen
 get_legit_causal_coalitions <- function(causal_ordering, sort_features_in_coalitions = TRUE) {
-  # Create a list to store the possible coalitions/combinations and start with the empty coalition
+  # Create a list to store the possible coalitions and start with the empty coalition
   coalitions = list(numeric(0))
 
   # Iterate over the remaining partial causal orderings
@@ -500,7 +499,7 @@ get_legit_causal_coalitions <- function(causal_ordering, sort_features_in_coalit
 #' get_max_n_coalitions_causal(list(1:3, c(4, 8), c(5, 7), 6, 9:10)) # 18
 #' get_max_n_coalitions_causal(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) # 11
 #'
-#' @return Integer. The (maximum) number of combinations that respects the causal ordering.
+#' @return Integer. The (maximum) number of coalitions that respects the causal ordering.
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 get_max_n_coalitions_causal <- function(causal_ordering) {
@@ -565,7 +564,7 @@ get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALS
 
   # List to store the sampling process
   results = vector("list", nrow(S))
-  names(results) = paste0("id_combination_", seq(nrow(S)))
+  names(results) = paste0("id_coalition_", seq(nrow(S)))
 
   # Iterate over the coalitions
   for (j in seq(2, nrow(S) - 1)) {
@@ -588,7 +587,7 @@ get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALS
         # Save Sbar and S (sorting is for the visual)
         to_sample <- sort(to_sample)
         to_condition <- sort(to_condition)
-        tmp_name = paste0("id_combination_", j)
+        tmp_name = paste0("id_coalition_", j)
         if (as_string) {
           results[[j]] <-
             c(results[[tmp_name]], paste0(paste0(to_sample, collapse = ","), "|", paste0(to_condition, collapse = ",")))
@@ -625,15 +624,15 @@ feature_exact_causal <- function(m, causal_ordering, weight_zero_m = 10^6) {
 
   if (length(causal_ordering[[1]]) == m) {
     # Regular
-    combinations <- unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
+    coalitions <- unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
   } else {
     # New version using the causal ordering
-    combinations <- get_legit_causal_coalitions(causal_ordering)
+    coalitions <- get_legit_causal_coalitions(causal_ordering)
   }
 
-  dt <- data.table::data.table(id_combination = seq(length(combinations)))
-  dt[, features := combinations]
-  dt[, n_features := length(features[[1]]), id_combination]
+  dt <- data.table::data.table(id_coalition = seq(length(coalitions)))
+  dt[, features := coalitions]
+  dt[, n_features := length(features[[1]]), id_coalition]
   dt[, N := .N, n_features]
   dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m)]
 
@@ -644,30 +643,30 @@ feature_exact_causal <- function(m, causal_ordering, weight_zero_m = 10^6) {
 #'
 #' @param m
 #' @param causal_ordering
-#' @param n_combinations
+#' @param n_coalitions
 #' @param weight_zero_m
 #'
 #' @examples
 #' m <- 5
 #' causal_ordering <- list(1:2, 3:4, 5)
-#' n_combinations <- 5
-#' X <- feature_not_exact_causal(m = m, causal_ordering = causal_ordering, n_combinations = n_combinations)
+#' n_coalitions <- 5
+#' X <- feature_not_exact_causal(m = m, causal_ordering = causal_ordering, n_coalitions = n_coalitions)
 #' X
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-feature_not_exact_causal <- function(m, causal_ordering, n_combinations = 200, weight_zero_m = 10^6) {
-  # Check that n_combinations is a valid number of combinations
-  check_n_combinations_causal(n_combinations = n_combinations, causal_ordering = causal_ordering)
+feature_not_exact_causal <- function(m, causal_ordering, n_coalitions = 200, weight_zero_m = 10^6) {
+  # Check that n_coalitions is a valid number of coalitions
+  check_n_coalitions_causal(n_coalitions = n_coalitions, causal_ordering = causal_ordering)
 
-  # Get all legit combinations
+  # Get all legit coalitions
   all_combs <- feature_exact_causal(m = m, causal_ordering = causal_ordering, weight_zero_m = weight_zero_m)
 
-  # Sample the `n_combinations` relevant combinations using the `shapley_weights` entries as probabilities
-  rel_combs <- sample(seq(2, nrow(all_combs) - 1), size = n_combinations - 2, prob = all_combs[-c(1, .N), shapley_weight])
+  # Sample the `n_coalitions` relevant coalitions using the `shapley_weights` entries as probabilities
+  rel_combs <- sample(seq(2, nrow(all_combs) - 1), size = n_coalitions - 2, prob = all_combs[-c(1, .N), shapley_weight])
 
-  # Extract the empty, sampled/relevant (sorted), and grand combination, and update the id_combination counter.
-  return(all_combs[c(1, sort(rel_combs), .N), ][, id_combination := seq(.N)])
+  # Extract the empty, sampled/relevant (sorted), and grand coalition, and update the id_coalition counter.
+  return(all_combs[c(1, sort(rel_combs), .N), ][, id_coalition := seq(.N)])
 }
 
 
@@ -697,31 +696,35 @@ feature_not_exact_causal <- function(m, causal_ordering, n_combinations = 200, w
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_causal <- function(internal, index_features = NULL, ...) {
-  # Recall that here, index_features is a vector of id_combinations, i.e., indicating which rows in S to use.
+  # Recall that here, index_features is a vector of id_coalitions, i.e., indicating which rows in S to use.
   # Also note that we are guaranteed that index_features does not include the empty or grand coalition
 
+
+  # Extract iteration specific variables
+  iter <- length(internal$iter_list)
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
+  S_causal_steps <- internal$iter_list[[iter]]$S_causal_steps
+
   # Extract the needed variables
-  x_train = internal$data$x_train
-  X = internal$objects$X
-  S <- internal$objects$S
-  S_causal_steps <- internal$objects$S_causal_steps
+  x_train <- internal$data$x_train
   approach <- internal$parameters$approach # Can only be single approach
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  verbose = internal$parameters$verbose >= 1
+  verbose <- internal$parameters$verbose
 
   # Extract extra object for better messages
-  if (verbose) {
+  if (verbose == "vS_details") {
     n_index_features = length(index_features)
-    S_causal_steps_strings = internal$objects$S_causal_steps_strings
-    id_batch = internal$objects$X[id_combination == index_features[1], batch]
+    S_causal_steps_strings = internal$iter_list[[iter]]$S_causal_steps_strings
+    id_batch = X[id_coalition == index_features[1], batch]
     n_batches = internal$parameters$n_batches
 
     message(paste0("In `prepare_data_causal()` with batch ", id_batch, " of ", n_batches,
-                   " (id_combination = ", paste0(index_features, collapse = ","), ")."))
+                   " (id_coalition = ", paste0(index_features, collapse = ","), ")."))
   }
 
   # Create a list to store the populated data tables with the MC samples
@@ -737,23 +740,23 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   index_feature_idx <- 1
   for (index_feature_idx in seq_along(index_features)) {
 
-    # Extract the index of the current combination
+    # Extract the index of the current coalition
     index_feature <- index_features[index_feature_idx]
 
     # Give message if verbose
-    if (verbose) {
-      message(paste0("Batch ", id_batch, " of ", n_batches, ". Combination ", index_feature_idx,
-                     " of ", n_index_features, " (id_combination = ", index_feature, ")."))
+    if (verbose == "vS_details") {
+      message(paste0("Batch ", id_batch, " of ", n_batches, ". Coalition ", index_feature_idx,
+                     " of ", n_index_features, " (id_coalition = ", index_feature, ")."))
     }
 
-    # Reset the internal_copy list for each new combination
+    # Reset the internal_copy list for each new coalition
     if (index_feature_idx > 1) {
       internal_copy$data$x_explain <- x_explain
       internal_copy$parameters$n_explain <- n_explain
       internal_copy$parameters$n_samples <- n_samples
     }
 
-    # Create the empty data table which we are to populate with the Monte Carlo samples for each combination
+    # Create the empty data table which we are to populate with the Monte Carlo samples for each coalition
     dt <- data.table(matrix(nrow = n_explain * n_samples, ncol = n_features))
     #if (approach == "categorical") dt[, names(dt) := lapply(.SD, as.factor)] # Needed for the categorical approach
     colnames(dt) <- feature_names
@@ -762,14 +765,14 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
     S_names <- feature_names[as.logical(S[index_feature, ])]
     dt[, (S_names) := x_explain[rep(seq(n_explain), each = n_samples), .SD, .SDcols = S_names]]
 
-    # Get the iterative sampling process for the current combination
+    # Get the iterative sampling process for the current coalition
     S_causal_steps_now <- S_causal_steps[[index_feature]]
 
     # Loop over the steps in the iterative sampling process to generate MC samples for the unconditional features
     sampling_step_idx <- 1
     for (sampling_step_idx in seq_along(S_causal_steps_now)) {
       # Small message if verbose
-      if (verbose) {
+      if (verbose == "vS_details") {
         message(paste0("Sampling step ", sampling_step_idx, " of ", length(S_causal_steps_now),
                        " (", S_causal_steps_strings[[index_feature]][sampling_step_idx], ")."))
       }
@@ -799,7 +802,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
           )
 
         } else if (approach == "categorical" && length(S_causal_steps_now) > 1) {
-          # For categorical approach with several sampling steps, we make sure to only sample feature combinations
+          # For categorical approach with several sampling steps, we make sure to only sample feature coalitions
           # that are present in `categorical.joint_prob_dt` when combined with the features in `S_names`.
           dt_Sbar_now_marginal_values = create_marginal_data_categoric(
             n_samples = n_samples,
@@ -830,7 +833,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         # Create dummy versions of S and X only containing the current conditional features, and index_features is 1.
         internal_copy$objects$S = matrix(0, ncol = n_features, nrow = 1)
         internal_copy$objects$S[1, S_now] = 1
-        internal_copy$objects$X = data.table(id_combination = 1, features = list(S_now), n_features = length(S_now))
+        internal_copy$objects$X = data.table(id_coalition = 1, features = list(S_now), n_features = length(S_now))
 
         # Generate the MC samples conditioning on S_now
         dt_new <- prepare_data(internal_copy, index_features = 1, ...)
@@ -873,28 +876,16 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
   # Combine the list of data tables and add the id columns
   dt <- data.table::rbindlist(dt_list, fill = TRUE)
-  dt[, id_combination := rep(index_features, each = n_samples * n_explain)]
+  dt[, id_coalition := rep(index_features, each = n_samples * n_explain)]
   dt[, id := rep(seq(n_explain), each = n_samples, times = length(index_features))]
   dt[, w := 1 / n_samples]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
   # Aggregate the weights for the non-unique rows such that we only return a data table with unique rows.
   # Only done for these approaches as they are the only approaches that are likely to return duplicates.
   if (approach %in% c("independence", "empirical", "ctree", "categorical")) {
-    dt <- dt[, list(w = sum(w)), by = c("id_combination", "id", feature_names)]
+    dt <- dt[, list(w = sum(w)), by = c("id_coalition", "id", feature_names)]
   }
 
   return(dt)
 }
-
-
-
-
-
-
-
-
-
-
-
-
