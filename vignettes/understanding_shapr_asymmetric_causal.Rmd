@@ -245,6 +245,11 @@ library(shapr)
 conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
 
 # Set up the data
+# Can also download the data set from the source https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset
+# temp <- tempfile()
+# download.file("https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip", temp)
+# bike <- read.csv(unz(temp, "day.csv"))
+# unlink(temp)
 bike <- read.csv("../inst/extdata/day.csv")
 # Difference in days, which takes DST into account
 bike$trend <- as.numeric(difftime(bike$dteday, bike$dteday[1], units = "days"))
@@ -1148,7 +1153,7 @@ print_time(explanation_group_gaussian)
 ```
 
 We can then make the beeswarm plots and Shapley values plots for the six selected explicands.
-For the beeswarm plots, we set `groupwise_feature_means = TRUE` to make the plots.
+For the beeswarm plots, we set `include_group_feature_means = TRUE` to make the plots.
 This means that the plot function use the mean of the `temp` and `atemp` features as the feature
 value. This only makes sense due to the high correlation between the two features.
 
@@ -1163,7 +1168,7 @@ obtained Shapley values between (around) $-500$ to $500$, while the grouped vers
 ```{r group_gaussian_plot_beeswarm, cache = TRUE, fig.height = 15, fig.width = 7.2}
 plot_beeswarms(explanation_group_gaussian,
                title = "Group Shapley values (gaussian)",
-               groupwise_feature_means = TRUE,)
+               include_group_feature_means = TRUE,)
 
 ```
 

@@ -1069,7 +1069,7 @@ plot_SV_several_approaches(list(feature = explanation_asymmetric_causal),
 plot_SV_several_approaches(list(exact = explanation_group_asymmetric_causal,
                                 non_exact = explanation_group_asymmetric_causal_sampled),
                            index_explicands = index_x_explain,
-                           groupwise_feature_means = TRUE)
+                           include_group_feature_means = TRUE)
 
 plot_SV_several_approaches(
   list(
@@ -1084,4 +1084,4 @@ plot_SV_several_approaches(
   ),
   index_explicands = index_x_explain,
   brewer_palette = "Paired",
-  groupwise_feature_means = FALSE)
+  include_group_feature_means = FALSE)
