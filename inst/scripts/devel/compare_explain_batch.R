@@ -23,7 +23,7 @@ model <- xgboost(
 # THIS IS GENERATED FROM MASTER BRANCH
 # Prepare the data for explanation
 library(shapr)
-explainer <- shapr(x_train, model,n_combinations = 100)
+explainer <- shapr(x_train, model,n_coalitions = 100)
 p = mean(y_train)
 gauss = explain(x_test, explainer, "gaussian", prediction_zero = p, n_samples = 10000)
 emp =  explain(x_test, explainer, "empirical", prediction_zero = p, n_samples = 10000)
@@ -40,7 +40,7 @@ detach("package:shapr", unload = TRUE)
 devtools::load_all()
 nobs = 6
 x_test <- as.matrix(Boston[1:nobs, x_var])
-explainer <- shapr(x_train, model,n_combinations = 100)
+explainer <- shapr(x_train, model,n_coalitions = 100)
 p = mean(y_train)
 gauss = explain(x_test, explainer, "gaussian", prediction_zero = p, n_samples = 10000, n_batches = 1)
 emp =  explain(x_test, explainer, "empirical", prediction_zero = p, n_samples = 10000, n_batches = 1)
@@ -87,7 +87,7 @@ explain.independence2 <- function(x, explainer, approach, prediction_zero,
 
 
 prepare_data.independence2 <- function(x, index_features = NULL, ...) {
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+  id <- id_coalition <- w <- NULL # due to NSE notes in R CMD check
 
   if (is.null(index_features)) {
     index_features <- x$X[, .I]
@@ -122,7 +122,7 @@ prepare_data.independence2 <- function(x, index_features = NULL, ...) {
     # Add keys
     dt_l[[i]] <- data.table::as.data.table(dt_p)
     data.table::setnames(dt_l[[i]], colnames(x_train))
-    dt_l[[i]][, id_combination := index_s]
+    dt_l[[i]][, id_coalition := index_s]
     dt_l[[i]][, w := w] # IS THIS NECESSARY?
     dt_l[[i]][, id := i]
   }

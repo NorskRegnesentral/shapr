@@ -27,11 +27,13 @@
 #' Typically we set this value equal to the mean of the response variable in our training data, but other choices
 #' such as the mean of the predictions in the training data are also reasonable.
 #'
-#' @param n_combinations Integer.
-#' If `group = NULL`, `n_combinations` represents the number of unique feature combinations to sample.
-#' If `group != NULL`, `n_combinations` represents the number of unique group combinations to sample.
-#' If `n_combinations = NULL`, the exact method is used and all combinations are considered.
-#' The maximum number of combinations equals `2^m`, where `m` is the number of features.
+#' @param max_n_coalitions Integer.
+#' The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
+#' (if `adaptive = TRUE`).
+#' If `adaptive = FALSE` it represents the number of feature/group coalitions to use directly.
+#' The quantity refers to the number of unique feature coalitions if `group = NULL`,
+#' and group coalitions if `group != NULL`.
+#' `max_n_coalitions = NULL` corresponds to `max_n_coalitions=2^n_features`.
 #'
 #' @param group List.
 #' If `NULL` regular feature wise Shapley values are computed.
@@ -39,39 +41,34 @@
 #' the number of groups. The list element contains character vectors with the features included
 #' in each of the different groups.
 #'
-#' @param n_samples Positive integer.
-#' Indicating the maximum number of samples to use in the
-#' Monte Carlo integration for every conditional expectation. See also details.
-#'
-#' @param n_batches Positive integer (or NULL).
-#' Specifies how many batches the total number of feature combinations should be split into when calculating the
-#' contribution function for each test observation.
-#' The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-#' which depends on `approach` and `n_combinations`.
-#' For models with many features, increasing the number of batches reduces the RAM allocation significantly.
-#' This typically comes with a small increase in computation time.
+#' @param n_MC_samples Positive integer.
+#' Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+#' For `approach="ctree"`, `n_MC_samples` corresponds to the number of samples
+#' from the leaf node (see an exception related to the `ctree.sample` argument [shapr::setup_approach.ctree()]).
+#' For `approach="empirical"`, `n_MC_samples` is  the \eqn{K} parameter in equations (14-15) of
+#' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+#' `empirical.eta` argument [shapr::setup_approach.empirical()].
 #'
 #' @param seed Positive integer.
 #' Specifies the seed before any randomness based code is being run.
-#' If `NULL` the seed will be inherited from the calling environment.
+#' If `NULL` no seed is set in the calling environment.
 #'
 #' @param keep_samp_for_vS Logical.
-#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
-#' (in `internal$output`)
+#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal$output`).
+#' Not used for `approach="regression_separate"` or `approach="regression_surrogate"`.
 #'
 #' @param predict_model Function.
 #' The prediction function used when `model` is not natively supported.
-#' (Run [get_supported_models()] for a list of natively supported
-#' models.)
+#' (Run [get_supported_models()] for a list of natively supported models.)
 #' The function must have two arguments, `model` and `newdata` which specify, respectively, the model
-#' and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
+#' and a data.frame/data.table to compute predictions for.
+#' The function must give the prediction as a numeric vector.
 #' `NULL` (the default) uses functions specified internally.
 #' Can also be used to override the default function for natively supported model classes.
 #'
 #' @param get_model_specs Function.
 #' An optional function for checking model/data consistency when `model` is not natively supported.
-#' (Run [get_supported_models()] for a list of natively supported
-#' models.)
+#' (Run [get_supported_models()] for a list of natively supported models.)
 #' The function takes `model` as argument and provides a list with 3 elements:
 #' \describe{
 #'   \item{labels}{Character vector with the names of each feature.}
@@ -82,19 +79,65 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
-#' @param MSEv_uniform_comb_weights Logical. If `TRUE` (default), then the function weights the combinations
-#' uniformly when computing the MSEv criterion. If `FALSE`, then the function use the Shapley kernel weights to
-#' weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-#' sampling frequency when not all combinations are considered.
+#' @param MSEv_uniform_comb_weights Logical.
+#' If `TRUE` (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
+#' If `FALSE`, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
+#' criterion.
+#' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
 #'
-#' @param timing Logical.
-#' Whether the timing of the different parts of the `explain()` should saved in the model object.
+#' @param verbose String vector or NULL.
+#' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
+#'  `"convergence"`, `"shapley"`  and `"vS_details"`.
+#' `"basic"` (default) displays basic information about the computation which is being performed.
+#' `"progress` displays information about where in the calculation process the function currently is.
+#' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
+#' (only when `adaptive = TRUE`) .
+#' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `adaptive = TRUE`)
+#' + the final estimates.
+#' `"vS_details"` displays information about the v_S estimates.
+#' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`).
+#' `NULL` means no printout.
+#' Note that any combination of four strings can be used.
+#' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the vS estimation process.
 #'
-#' @param verbose An integer specifying the level of verbosity. If `0`, `shapr` will stay silent.
-#' If `1`, it will print information about performance. If `2`, some additional information will be printed out.
-#' Use `0` (default) for no verbosity, `1` for low verbose, and `2` for high verbose.
-#' TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.
+#' @param paired_shap_sampling Logical.
+#' If `TRUE` (default), paired versions of all sampled coalitions are also included in the computation.
+#' That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
+#' computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.
 #'
+#' @param adaptive Logical or NULL
+#' If `NULL` (default), the argument is set to `TRUE` if there are more than 5 features/groups, and `FALSE` otherwise.
+#' If eventually `TRUE`, the Shapley values are estimated adaptively in an iterative manner.
+#' This provides sufficiently accurate Shapley value estimates faster.
+#' First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+#' values.
+#' A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+#' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
+#' coalitions.
+#' The process is repeated until the variances are below the threshold.
+#' Specifics related to the adaptive process and convergence criterion are set through `adaptive_arguments`.
+#'
+#' @param adaptive_arguments Named list.
+#' Specifices the arguments for the adaptive procedure.
+#' See [shapr::get_adaptive_arguments_default()] for description of the arguments and their default values.
+#' @param shapley_reweighting String.
+#' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+#' the randomness and thereby the variance of the Shapley value estimates.
+#' One of `'none'`, `'on_N'`, `'on_all'`, `'on_all_cond'` (default).
+#' `'none'` means no reweighting, i.e. the sampling frequency weights are used as is.
+#' `'on_coal_size'` means the sampling frequencies are averaged over all coalitions of the same size.
+#' `'on_N'` means the sampling frequencies are averaged over all coalitions with the same original sampling
+#' probabilities.
+#' `'on_all'` means the original sampling probabilities are used for all coalitions.
+#' `'on_all_cond'` means the original sampling probabilities are used for all coalitions, while adjusting for the
+#' probability that they are sampled at least once.
+#' This method is preferred as it has performed the best in simulation studies.
+#'
+#' @param prev_shapr_object `shapr` object or string.
+#' If an object of class `shapr` is provided or string with a path to where intermediate results are strored,
+#' then the function will use the previous object to continue the computation.
+#' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
+#' want to continue the adaptive estimation. See the vignette for examples.
 #' @param ... Further arguments passed to specific approaches
 #'
 #' @inheritDotParams setup_approach.empirical
@@ -108,56 +151,42 @@
 #' @inheritDotParams setup_approach.regression_surrogate
 #' @inheritDotParams setup_approach.timeseries
 #'
-#' @details The most important thing to notice is that `shapr` has implemented eight different
-#' Monte Carlo-based approaches for estimating the conditional distributions of the data, namely `"empirical"`,
-#' `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
-#' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`,
-#' and see the separate vignette on the regression-based approaches for more information.
-#' In addition, the user also has the option of combining the different Monte Carlo-based approaches.
-#' E.g., if you're in a situation where you have trained a model that consists of 10 features,
-#' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
-#' the `"empirical"` approach if you condition on 2-5 features, and `"copula"` version
-#' if you condition on more than 5 features this can be done by simply passing
-#' `approach = c("gaussian", rep("empirical", 4), rep("copula", 4))`. If
-#' `"approach[i]" = "gaussian"` means that you'd like to use the `"gaussian"` approach
-#' when conditioning on `i` features. Conditioning on all features needs no approach as that is given
-#' by the complete prediction itself, and should thus not be part of the vector.
+#' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
+#' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
+#' `"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
+#' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
+#' It is also possible to combine the different approaches, see the vignettes for more information.
 #'
-#' For `approach="ctree"`, `n_samples` corresponds to the number of samples
-#' from the leaf node (see an exception related to the `sample` argument).
-#' For `approach="empirical"`, `n_samples` is  the \eqn{K} parameter in equations (14-15) of
-#' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-#' `empirical.eta` argument.
-#'
+#' The package allows for parallelized computation with progress updates through the tightly connected
+#' [future::future] and [progressr::progressr] packages. See the examples below.
+#' For adaptive estimation (`adaptive=TRUE`), intermediate results may also be printed to the console
+#' (according to the `verbose` argument).
+#' Moreover, the intermediate results are written to disk.
+#' This combined with adaptive estimation with (optional) intermediate results printed to the console (and temporary
+#' written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
+#' in a memory friendly manner.
 #'
 #' @return Object of class `c("shapr", "list")`. Contains the following items:
 #' \describe{
-#'   \item{shapley_values}{data.table with the estimated Shapley values}
-#'   \item{internal}{List with the different parameters, data and functions used internally}
+#'   \item{shapley_values}{data.table with the estimated Shapley values with explained observation in the rows and
+#'   features along the columns.
+#'   The column `none` is the prediction not devoted to any of the features (given by the argument `prediction_zero`)}
+#'   \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
+#'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
+#'   definition 0 when all coalitions is used.
+#'   Only present when `adaptive = TRUE` and `adaptive_arguments$compute_sd=TRUE`.}
+#'   \item{internal}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
-#'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach.}
+#'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
+#'   \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
+#'   }{MSEv evaluation section in the vignette for details}.}
+#'   \item{timing}{List containing timing information for the different parts of the computation.
+#'   `init_time` and `end_time` gives the time stamps for the start and end of the computation.
+#'   `total_time_secs` gives the total time in seconds for the complete execution of `explain()`.
+#'   `main_timing_secs` gives the time in seconds for the main computations.
+#'   `iter_timing_secs` gives for each iteration of the adaptive estimation, the time spent on the different parts
+#'   adaptive estimation routine.}
 #' }
-#'
-#' `shapley_values` is a data.table where the number of rows equals
-#' the number of observations you'd like to explain, and the number of columns equals `m +1`,
-#' where `m` equals the total number of features in your model.
-#'
-#' If `shapley_values[i, j + 1] > 0` it indicates that the j-th feature increased the prediction for
-#' the i-th observation. Likewise, if `shapley_values[i, j + 1] < 0` it indicates that the j-th feature
-#' decreased the prediction for the i-th observation.
-#' The magnitude of the value is also important to notice. E.g. if `shapley_values[i, k + 1]` and
-#' `shapley_values[i, j + 1]` are greater than `0`, where `j != k`, and
-#' `shapley_values[i, k + 1]` > `shapley_values[i, j + 1]` this indicates that feature
-#' `j` and `k` both increased the value of the prediction, but that the effect of the k-th
-#' feature was larger than the j-th feature.
-#'
-#' The first column in `dt`, called `none`, is the prediction value not assigned to any of the features
-#' (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
-#' It's equal for all observations and set by the user through the argument `prediction_zero`.
-#' The difference between the prediction and `none` is distributed among the other features.
-#' In theory this value should be the expected prediction without conditioning on any features.
-#' Typically we set this value equal to the mean of the response variable in our training data, but other choices
-#' such as the mean of the predictions in the training data are also reasonable.
 #'
 #' @examples
 #'
@@ -181,6 +210,18 @@
 #' # Explain predictions
 #' p <- mean(data_train[, y_var])
 #'
+#' \dontrun{
+#' # (Optionally) enable parallelization via the future package
+#' if (requireNamespace("future", quietly = TRUE)) {
+#'   future::plan("multisession", workers = 2)
+#' }
+#' }
+#'
+#' # (Optionally) enable progress updates within every iteration via the progressr package
+#' if (requireNamespace("progressr", quietly = TRUE)) {
+#'   progressr::handlers(global = TRUE)
+#' }
+#'
 #' # Empirical approach
 #' explain1 <- explain(
 #'   model = model,
@@ -188,7 +229,7 @@
 #'   x_train = x_train,
 #'   approach = "empirical",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Gaussian approach
@@ -198,7 +239,7 @@
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Gaussian copula approach
@@ -208,7 +249,7 @@
 #'   x_train = x_train,
 #'   approach = "copula",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # ctree approach
@@ -218,7 +259,7 @@
 #'   x_train = x_train,
 #'   approach = "ctree",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Combined approach
@@ -229,7 +270,7 @@
 #'   x_train = x_train,
 #'   approach = approach,
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Print the Shapley values
@@ -251,7 +292,7 @@
 #'   group = group_list,
 #'   approach = "empirical",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #' print(explain_groups$shapley_values)
 #'
@@ -279,6 +320,21 @@
 #'   regression.model = parsnip::linear_reg()
 #' )
 #'
+#' ## Adaptive estimation
+#' # For illustration purposes only. By default not used for such small dimensions as here
+#'
+#' # Gaussian approach
+#' explain_adaptive <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = "gaussian",
+#'   prediction_zero = p,
+#'   n_MC_samples = 1e2,
+#'   adaptive = TRUE,
+#'   adaptive_arguments = list(initial_n_coalitions = 10)
+#' )
+#'
 #' @export
 #'
 #' @author Martin Jullum, Lars Henry Berge Olsen
@@ -290,24 +346,30 @@ explain <- function(model,
                     x_explain,
                     x_train,
                     approach,
+                    paired_shap_sampling = TRUE,
                     prediction_zero,
-                    n_combinations = NULL,
+                    max_n_coalitions = NULL,
+                    adaptive = NULL,
                     group = NULL,
-                    n_samples = 1e3,
-                    n_batches = NULL,
+                    n_MC_samples = 1e3,
                     seed = 1,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     MSEv_uniform_comb_weights = TRUE,
-                    timing = TRUE,
-                    verbose = 0,
+                    verbose = "basic",
+                    adaptive_arguments = list(),
+                    shapley_reweighting = "on_all_cond",
+                    prev_shapr_object = NULL,
                     ...) { # ... is further arguments passed to specific approaches
 
-  timing_list <- list(init_time = Sys.time())
 
-  set.seed(seed)
 
+  init_time <- Sys.time()
+
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
@@ -318,21 +380,24 @@ explain <- function(model,
     x_train = x_train,
     x_explain = x_explain,
     approach = approach,
+    paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
-    n_combinations = n_combinations,
+    max_n_coalitions = max_n_coalitions,
     group = group,
-    n_samples = n_samples,
-    n_batches = n_batches,
+    n_MC_samples = n_MC_samples,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
-    timing = timing,
     verbose = verbose,
+    adaptive = adaptive,
+    adaptive_arguments = adaptive_arguments,
+    shapley_reweighting = shapley_reweighting,
+    init_time = init_time,
+    prev_shapr_object = prev_shapr_object,
     ...
   )
 
-  timing_list$setup <- Sys.time()
 
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(predict_model = predict_model, model = model)
@@ -345,55 +410,104 @@ explain <- function(model,
     internal = internal
   )
 
-  timing_list$test_prediction <- Sys.time()
+  internal$timing_list$test_prediction <- Sys.time()
 
 
-  # Add the predicted response of the training and explain data to the internal list for regression-based methods.
-  # Use isTRUE as `regression` is not present (NULL) for non-regression methods (i.e., Monte Carlo-based methods).
-  if (isTRUE(internal$parameters$regression)) {
-    internal <- regression.get_y_hat(internal = internal, model = model, predict_model = predict_model)
+  internal <- additional_regression_setup(internal, model = model, predict_model = predict_model)
+
+  # Not called for approach %in% c("regression_surrogate","vaeac")
+  internal <- setup_approach(internal, model = model, predict_model = predict_model)
+
+  internal$main_timing_list <- internal$timing_list
+
+  converged <- FALSE
+  iter <- length(internal$iter_list)
+
+  if (!is.null(seed)) {
+    set.seed(seed)
   }
 
-  # Sets up the Shapley (sampling) framework and prepares the
-  # conditional expectation computation for the chosen approach
-  # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-  internal <- setup_computation(internal, model, predict_model)
+  cli_startup(internal, model, verbose)
 
-  timing_list$setup_computation <- Sys.time()
 
-  # Compute the v(S):
-  # MC:
-  # 1. Get the samples for the conditional distributions with the specified approach
-  # 2. Predict with these samples
-  # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
-  # Regression:
-  # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
-  vS_list <- compute_vS(internal, model, predict_model)
+  while (converged == FALSE) {
+    cli_iter(verbose, internal, iter)
 
-  timing_list$compute_vS <- Sys.time()
+    internal$timing_list <- list(init = Sys.time())
 
-  # Compute Shapley values based on conditional expectations (v(S))
-  # Organize function output
-  output <- finalize_explanation(vS_list = vS_list, internal = internal)
+    # Setup the Shapley framework
+    internal <- shapley_setup(internal)
 
-  timing_list$shapley_computation <- Sys.time()
+    # Only actually called for approach %in% c("regression_surrogate","vaeac")
+    internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
-  # Compute the elapsed time for the different steps
-  if (timing == TRUE) output$timing <- compute_time(timing_list)
+    # Compute the vS
+    vS_list <- compute_vS(internal, model, predict_model)
 
-  # Temporary to avoid failing tests
-  output <- remove_outputs_to_pass_tests(output)
+    # Compute shapley value estimated and bootstrapped standard deviations
+    internal <- compute_estimates(internal, vS_list)
+
+    # Check convergence based on estimates and standard deviations (and thresholds)
+    internal <- check_convergence(internal)
+
+    # Save intermediate results
+    save_results(internal)
+
+    # Preparing parameters for next iteration (does not do anything if already converged)
+    internal <- prepare_next_iteration(internal)
+
+    # Printing iteration information
+    print_iter(internal)
+
+    ### Setting globals for to simplify the loop
+    converged <- internal$iter_list[[iter]]$converged
+
+    internal$timing_list$postprocess_res <- Sys.time()
+
+    internal$iter_timing_list[[iter]] <- internal$timing_list
+
+    iter <- iter + 1
+  }
+
+  internal$main_timing_list$main_computation <- Sys.time()
+
+
+  # Rerun after convergence to get the same output format as for the non-adaptive approach
+  output <- finalize_explanation(internal = internal)
+
+  internal$main_timing_list$finalize_explanation <- Sys.time()
+
+  output$timing <- compute_time(internal)
+
+
+  # Some cleanup when doing testing
+  testing <- internal$parameters$testing
+  if (isTRUE(testing)) {
+    output <- testing_cleanup(output)
+  }
+
+
 
   return(output)
 }
 
+#' Cleans out certain output arguments to allow perfect reproducability of the output
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
 #' @keywords internal
-#' @author Lars Henry Berge Olsen
-remove_outputs_to_pass_tests <- function(output) {
-  output$internal$objects$id_combination_mapper_dt <- NULL
-  output$internal$objects$cols_per_horizon <- NULL
-  output$internal$objects$W_list <- NULL
+#' @author Lars Henry Berge Olsen, Martin Jullum
+testing_cleanup <- function(output) {
+  # Removing the timing of different function calls
+  output$timing <- NULL
 
+  # Clearing out the timing lists as well
+  output$internal$main_timing_list <- NULL
+  output$internal$iter_timing_list <- NULL
+  output$internal$timing_list <- NULL
+
+  # Removing paths to non-reproducable vaeac model objects
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters[c(
       "vaeac", "vaeac.sampler", "vaeac.model", "vaeac.activation_function", "vaeac.checkpoint"
@@ -402,8 +516,15 @@ remove_outputs_to_pass_tests <- function(output) {
       NULL
   }
 
-  # Remove the `regression` parameter from the output list when we are not doing regression
-  if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
+  # Removing the fit times for regression surrogate models
+  if ("regression_surrogate" %in% output$internal$parameters$approach) {
+    # Deletes the fit_times for approach = regression_surrogate to make tests pass.
+    # In the future we could delete this only when a new argument in explain called testing is TRUE
+    output$internal$objects$regression.surrogate_model$pre$mold$blueprint$recipe$fit_times <- NULL
+  }
+
+  # Delete the saving_path
+  output$internal$parameters$adaptive_arguments$saving_path <- NULL
 
   return(output)
 }

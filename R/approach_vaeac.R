@@ -31,6 +31,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.epochs = 100,
                                  vaeac.extra_parameters = list(),
                                  ...) {
+  verbose <- internal$parameters$verbose
+
   # Check that torch is installed
   if (!requireNamespace("torch", quietly = TRUE)) {
     stop("`torch` is not installed. Please run `install.packages('torch')`.")
@@ -38,12 +40,12 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   if (!torch::torch_is_installed()) stop("`torch` is not properly installed. Please run `torch::install_torch()`.")
 
   # Extract the objects we will use later
-  S <- internal$objects$S
-  X <- internal$objects$X
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
   parameters <- internal$parameters
 
-  # Small printout to user
-  if (parameters$verbose == 2) message("Setting up the `vaeac` approach.")
 
   # Check if we are doing a combination of approaches
   combined_approaches <- length(parameters$approach) > 1
@@ -76,18 +78,18 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Check if vaeac is to be applied on a subset of coalitions.
   if (!parameters$exact || parameters$is_groupwise || combined_approaches) {
     # We have either:
-    # 1) sampled `n_combinations` different subsets of coalitions (i.e., not exact),
+    # 1) sampled `n_coalitions` different subsets of coalitions (i.e., not exact),
     # 2) using the coalitions which respects the groups in group Shapley values, and/or
     # 3) using a combination of approaches where vaeac is only used on a subset of the coalitions.
     # Here, objects$S contains the coalitions while objects$X contains the information about the approach.
 
     # Extract the the coalitions / masks which are estimated using vaeac as a matrix
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions <-
-      S[X[approach == "vaeac"]$id_combination, , drop = FALSE]
+      S[X[approach == "vaeac"]$id_coalition, , drop = FALSE]
 
     # Extract the weights for the corresponding coalitions / masks.
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob <-
-      X$shapley_weight[X[approach == "vaeac"]$id_combination]
+      X$shapley_weight[X[approach == "vaeac"]$id_coalition]
 
     # Normalize the weights/probabilities such that they sum to one.
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob <-
@@ -101,8 +103,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Check if user provided a pre-trained vaeac model, otherwise, we train one from scratch.
   if (is.null(parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model)) {
     # We train a vaeac model with the parameters in `parameters`, as user did not provide pre-trained vaeac model
-    if (parameters$verbose == 2) {
-      message(paste0(
+    if ("vS_details" %in% verbose) {
+      cli::cli_text(paste0(
         "Training the `vaeac` model with the provided parameters from scratch on ",
         ifelse(parameters$vaeac.extra_parameter$vaeac.cuda, "GPU", "CPU"), "."
       ))
@@ -137,7 +139,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # The pre-trained vaeac model is either:
     # 1. The explanation$internal$parameters$vaeac list of type "vaeac" from an earlier call to explain().
     # 2. A string containing the path to where the "vaeac" model is stored on disk.
-    if (parameters$verbose == 2) message("Loading the provided `vaeac` model.")
+    if ("vS_details" %in% verbose) cli::cli_text("Loading the provided `vaeac` model.")
 
     # Boolean representing that a pre-trained vaeac model was provided
     parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- TRUE
@@ -146,8 +148,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     parameters <- vaeac_update_pretrained_model(parameters = parameters)
 
     # Small printout informing about the location of the model
-    if (parameters$verbose == 2) {
-      message(paste0(
+    if ("vS_details" %in% verbose) {
+      cli::cli_text(paste0(
         "The `vaeac` model runs/is trained on ", ifelse(parameters$vaeac$parameters$cuda, "GPU", "CPU"), "."
       ))
     }
@@ -172,8 +174,18 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Update/overwrite the parameters list in the internal list.
   internal$parameters <- parameters
 
-  # Small printout to user
-  if (parameters$verbose == 2) message("Done with setting up the `vaeac` approach.\n")
+  if ("vS_details" %in% verbose) {
+    folder_to_save_model <- parameters$vaeac$parameters$folder_to_save_model
+    vaeac_save_file_names <- parameters$vaeac$parameters$vaeac_save_file_names
+
+    cli::cli_alert_info(c(
+      "The trained `vaeac` models are saved to folder {.path {folder_to_save_model}} at\n",
+      "{.path {vaeac_save_file_names[1]}}\n",
+      "{.path {vaeac_save_file_names[2]}}\n",
+      "{.path {vaeac_save_file_names[3]}}"
+    ))
+  }
+
 
   # Return the updated internal list.
   return(internal)
@@ -185,23 +197,25 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
+  iter <- length(internal$iter_list)
+
+  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
+  S <- internal$iter_list[[iter]]$S
+
   # If not provided, then set `index_features` to all non trivial coalitions
-  if (is.null(index_features)) index_features <- seq(2, internal$parameters$n_combinations - 1)
+  if (is.null(index_features)) index_features <- seq(2, n_coalitions - 1)
 
   # Extract objects we are going to need later
-  S <- internal$objects$S
   seed <- internal$parameters$seed
   verbose <- internal$parameters$verbose
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
-  n_samples <- internal$parameters$n_samples
+  n_MC_samples <- internal$parameters$n_MC_samples
   vaeac.model <- internal$parameters$vaeac.model
   vaeac.sampler <- internal$parameters$vaeac.sampler
   vaeac.checkpoint <- internal$parameters$vaeac.checkpoint
   vaeac.batch_size_sampling <- internal$parameters$vaeac.extra_parameters$vaeac.batch_size_sampling
 
-  # Small printout to the user about which batch we are working on
-  if (verbose == 2) vaeac_prep_message_batch(internal = internal, index_features = index_features)
 
   # Apply all coalitions to all explicands to get a data table where `vaeac` will impute the `NaN` values
   x_explain_extended <- vaeac_get_x_explain_extended(x_explain = x_explain, S = S, index_features = index_features)
@@ -215,7 +229,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   x_explain_with_MC_samples_dt <- vaeac_impute_missing_entries(
     x_explain_with_NaNs = x_explain_extended,
     n_explain = n_explain,
-    n_samples = n_samples,
+    n_MC_samples = n_MC_samples,
     vaeac_model = vaeac.model,
     checkpoint = vaeac.checkpoint,
     sampler = vaeac.sampler,
@@ -314,8 +328,8 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' `mask_gen_coalitions` is specified.
 #' @param mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
 #' `vaeac` model will be trained on, see [shapr::specified_masks_mask_generator()]. This parameter is used internally
-#' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
-#' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+#' in `shapr` when we only consider a subset of coalitions, i.e., when
+#' `n_coalitions` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 #' when `group` is specified in [shapr::explain()].
 #' @param mask_gen_coalitions_prob Numeric array (default is `NULL`). Array of length equal to the height
 #' of `mask_gen_coalitions` containing the probabilities of sampling the corresponding coalitions in
@@ -334,8 +348,6 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using `vaeac`.
 #' If `TRUE`, then [shapr::vaeac_postprocess_data()] will take the \eqn{\exp} of the results to get back to strictly
 #' positive values when using the `vaeac` model to impute missing values/generate the Monte Carlo samples.
-#' @param verbose Boolean. An integer specifying the level of verbosity. Use `0` (default) for no verbosity,
-#' `1` for low verbose, and `2` for high verbose.
 #' @param seed Positive integer (default is `1`). Seed for reproducibility. Specifies the seed before any randomness
 #' based code is being run.
 #' @param which_vaeac_model String (default is `best`). The name of the `vaeac` model (snapshots from different
@@ -344,6 +356,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' Note that additional choices are available if `vaeac.save_every_nth_epoch` is provided. For example, if
 #' `vaeac.save_every_nth_epoch = 5`, then `vaeac.which_vaeac_model` can also take the values `"epoch_5"`, `"epoch_10"`,
 #' `"epoch_15"`, and so on.
+#' @inheritParams explain
 #' @param ... List of extra parameters, currently not used.
 #'
 #' @return A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
@@ -472,14 +485,14 @@ vaeac_train_model <- function(x_train,
     # Add the number of trainable parameters in the vaeac model to the state list
     if (initialization_idx == 1) {
       state_list$n_trainable_parameters <- vaeac_model$n_train_param
-      if (verbose == 2) {
-        message(paste0("The vaeac model contains ", vaeac_model$n_train_param[1, 1], " trainable parameters."))
+      if ("vS_details" %in% verbose) {
+        cli::cli_text(paste0("The vaeac model contains ", vaeac_model$n_train_param[1, 1], " trainable parameters."))
       }
     }
 
     # Print which initialization vaeac the function is working on
-    if (verbose == 2) {
-      message(paste0("Initializing vaeac number ", initialization_idx, " of ", n_vaeacs_initialize, "."))
+    if ("vS_details" %in% verbose) {
+      cli::cli_text(paste0("Initializing vaeac model number ", initialization_idx, " of ", n_vaeacs_initialize, "."))
     }
 
     # Create the ADAM optimizer
@@ -515,8 +528,8 @@ vaeac_train_model <- function(x_train,
 
   # Check if we are printing detailed debug information
   # Small printout to the user stating which initiated vaeac model was the best.
-  if (verbose == 2) {
-    message(paste0(
+  if ("vS_details" %in% verbose) {
+    cli::cli_text(paste0(
       "Best vaeac inititalization was number ", vaeac_model_best_list$initialization_idx, " (of ", n_vaeacs_initialize,
       ") with a training VLB = ", round(as.numeric(vaeac_model_best_list$train_vlb[-1]$cpu()), 3),
       " after ", epochs_initiation_phase, " epochs. Continue to train this inititalization."
@@ -705,20 +718,17 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       # Save if current vaeac model has the lowest validation IWAE error
       if ((max(val_iwae) <= val_iwae_now)$item() || is.null(best_epoch)) {
         best_epoch <- epoch
-        if (verbose == 2) message("Saving `best` vaeac model at epoch ", epoch, ".")
         vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[1])
       }
 
       # Save if current vaeac model has the lowest running validation IWAE error
       if ((max(val_iwae_running) <= val_iwae_running_now)$item() || is.null(best_epoch_running)) {
         best_epoch_running <- epoch
-        if (verbose == 2) message("Saving `best_running` vaeac model at epoch ", epoch, ".")
         vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[2])
       }
 
       # Save if we are in an n'th epoch and are to save every n'th epoch
       if (is.numeric(save_every_nth_epoch) && epoch %% save_every_nth_epoch == 0) {
-        if (verbose == 2) message("Saving `nth_epoch` vaeac model at epoch ", epoch, ".")
         vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
       }
     }
@@ -742,8 +752,8 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     # Check if we are to apply early stopping, i.e., no improvement in the IWAE for `epochs_early_stopping` epochs.
     if (is.numeric(epochs_early_stopping)) {
       if (epoch - best_epoch >= epochs_early_stopping) {
-        if (verbose == 2) {
-          message(paste0(
+        if ("vS_details" %in% verbose) {
+          cli::cli_text(paste0(
             "No IWAE improvment in ", epochs_early_stopping, " epochs. Apply early stopping at epoch ",
             epoch, "."
           ))
@@ -771,11 +781,10 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     )
   } else {
     # Save the vaeac model at the last epoch
-    if (verbose == 2) message("Saving `last` vaeac model at epoch ", epoch, ".")
     last_state <- vaeac_save_state(state_list = state_list, file_name = vaeac_save_file_names[3], return_state = TRUE)
 
     # Summary printout
-    if (verbose == 2) vaeac_print_train_summary(best_epoch, best_epoch_running, last_state)
+    if ("vS_details" %in% verbose) vaeac_print_train_summary(best_epoch, best_epoch_running, last_state)
 
     # Create a return list
     return_list <- list(
@@ -825,14 +834,14 @@ vaeac_train_model_continue <- function(explanation,
                                        lr_new = NULL,
                                        x_train = NULL,
                                        save_data = FALSE,
-                                       verbose = 0,
+                                       verbose = NULL,
                                        seed = 1) {
   # Check the input
   if (!"shapr" %in% class(explanation)) stop("`explanation` must be a list of class `shapr`.")
   if (!"vaeac" %in% explanation$internal$parameters$approach) stop("`vaeac` is not an approach in `explanation`.")
   if (!is.null(lr_new)) vaeac_check_positive_numerics(list(lr_new = lr_new))
   if (!is.null(x_train) && !data.table::is.data.table(x_train)) stop("`x_train` must be a `data.table` object.")
-  vaeac_check_verbose(verbose)
+  check_verbose(verbose)
   vaeac_check_positive_integers(list(epochs_new = epochs_new, seed = seed))
   vaeac_check_logicals(list(save_data = save_data))
 
@@ -998,25 +1007,26 @@ vaeac_train_model_continue <- function(explanation,
 #'
 #' @inheritParams vaeac_train_model
 #' @param x_explain_with_NaNs A 2D matrix, where the missing entries to impute are represented by `NaN`.
-#' @param n_samples Integer. The number of imputed versions we create for each row in `x_explain_with_NaNs`.
+#' @param n_MC_samples Integer. The number of imputed versions we create for each row in `x_explain_with_NaNs`.
 #' @param index_features Optional integer vector. Used internally in shapr package to index the coalitions.
 #' @param n_explain Positive integer. The number of explicands.
 #' @param vaeac_model An initialized `vaeac` model that we are going to use to generate the MC samples.
 #' @param checkpoint List containing the parameters of the `vaeac` model.
 #' @param sampler A sampler object used to sample the MC samples.
 #'
-#' @return A data.table where the missing values (`NaN`) in `x_explain_with_NaNs` have been imputed `n_samples` times.
+#' @return A data.table where the missing values (`NaN`) in `x_explain_with_NaNs` have been imputed `n_MC_samples`
+#' times.
 #' The data table will contain extra id columns if `index_features` and `n_explain` are provided.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
-                                         n_samples,
+                                         n_MC_samples,
                                          vaeac_model,
                                          checkpoint,
                                          sampler,
                                          batch_size,
-                                         verbose = 0,
+                                         verbose = NULL,
                                          seed = NULL,
                                          n_explain = NULL,
                                          index_features = NULL) {
@@ -1030,8 +1040,6 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     set.seed(seed)
     torch::torch_manual_seed(seed)
   }
-
-  if (verbose == 2) message("Preprocessing the explicands.")
 
   # Preprocess `x_explain_with_NaNs`. Turn factor names into numerics 1,2,...,K, (vaeac only accepts numerics) and keep
   # track of the maping of names. Optionally log-transform the continuous features. Then, finally, normalize the data
@@ -1051,11 +1059,9 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
   # Create a data loader that load/iterate over the data set in chronological order.
   dataloader <- torch::dataloader(dataset = dataset, batch_size = batch_size, shuffle = FALSE)
 
-  if (verbose == 2) message("Generating the MC samples.")
-
   # Create an auxiliary list of lists to store the imputed values combined with the original values. The structure is
   # [[i'th MC sample]][[b'th batch]], where the entries are tensors of dimension batch_size x n_features.
-  results <- lapply(seq(n_samples), function(k) list())
+  results <- lapply(seq(n_MC_samples), function(k) list())
 
   # Generate the conditional Monte Carlo samples for the observation `x_explain_with_NaNs`, one batch at the time.
   coro::loop(for (batch in dataloader) {
@@ -1079,10 +1085,14 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     # Do not need to keep track of the gradients, as we are not fitting the model.
     torch::with_no_grad({
       # Compute the distribution parameters for the generative models inferred by the masked encoder and decoder.
-      # This is a tensor of shape [batch_size, n_samples, n_generative_parameters]. Note that, for only continuous
+      # This is a tensor of shape [batch_size, n_MC_samples, n_generative_parameters]. Note that, for only continuous
       # features we have that n_generative_parameters = 2*n_features, but for categorical data the number depends
       # on the number of categories.
-      samples_params <- vaeac_model$generate_samples_params(batch = batch_extended, mask = mask_extended, K = n_samples)
+      samples_params <- vaeac_model$generate_samples_params(
+        batch = batch_extended,
+        mask = mask_extended,
+        K = n_MC_samples
+      )
 
       # Remove the parameters belonging to added instances in batch_extended.
       samples_params <- samples_params[1:batch$shape[1], , ]
@@ -1094,7 +1104,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     batch_zeroed_nans[mask] <- 0
 
     # Iterate over the number of imputations and generate the imputed samples
-    for (i in seq(n_samples)) {
+    for (i in seq(n_MC_samples)) {
       # Extract the i'th inferred generative parameters for the whole batch.
       # sample_params is a tensor of shape [batch_size, n_generative_parameters].
       sample_params <- samples_params[, i, ]
@@ -1110,24 +1120,26 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
       # Make a deep copy and add it to correct location in the results list.
       results[[i]] <- append(results[[i]], sample$clone()$detach()$cpu())
-    } # End of iterating over the n_samples
+    } # End of iterating over the n_MC_samples
   }) # End of iterating over the batches. Done imputing.
 
-  if (verbose == 2) message("Postprocessing the Monte Carlo samples.")
-
-  # Order the MC samples into a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]. The lapply function
+  # Order the MC samples into a tensor of shape [nrow(x_explain_with_NaNs), n_MC_samples, n_features].
+  # The lapply function
   # creates a list of tensors of shape [nrow(x_explain_with_NaNs), 1, n_features] by concatenating the batches for the
   # i'th MC sample to a tensor of shape [nrow(x_explain_with_NaNs), n_features] and then add unsqueeze to add a new
   # singleton dimension as the second dimension to get the shape [nrow(x_explain_with_NaNs), 1, n_features]. Then
-  # outside of the lapply function, we concatenate the n_samples torch elements to form a final torch result of shape
-  # [nrow(x_explain_with_NaNs), n_samples, n_features].
-  result <- torch::torch_cat(lapply(seq(n_samples), function(i) torch::torch_cat(results[[i]])$unsqueeze(2)), dim = 2)
+  # outside of the lapply function, we concatenate the n_MC_samples torch elements to form a final torch result of shape
+  # [nrow(x_explain_with_NaNs), n_MC_samples, n_features].
+  result <- torch::torch_cat(lapply(
+    seq(n_MC_samples),
+    function(i) torch::torch_cat(results[[i]])$unsqueeze(2)
+  ), dim = 2)
 
   # Get back to the original distribution by undoing the normalization by multiplying with the std and adding the mean
   result <- result * checkpoint$norm_std + checkpoint$norm_mean
 
-  # Convert from a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]
-  # to a matrix of shape [(nrow(x_explain_with_NaNs) * n_samples), n_features].
+  # Convert from a tensor of shape [nrow(x_explain_with_NaNs), n_MC_samples, n_features]
+  # to a matrix of shape [(nrow(x_explain_with_NaNs) * n_MC_samples), n_features].
   result <- data.table::as.data.table(as.matrix(result$view(c(
     result$shape[1] * result$shape[2],
     result$shape[3]
@@ -1138,15 +1150,15 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
   # If user provide `index_features`, then we add columns needed for shapr computations
   if (!is.null(index_features)) {
-    # Add id, id_combination and weights (uniform for the `vaeac` approach) to the result.
-    result[, c("id", "id_combination", "w") := list(
-      rep(x = seq(n_explain), each = length(index_features) * n_samples),
-      rep(x = index_features, each = n_samples, times = n_explain),
-      1 / n_samples
+    # Add id, id_coalition and weights (uniform for the `vaeac` approach) to the result.
+    result[, c("id", "id_coalition", "w") := list(
+      rep(x = seq(n_explain), each = length(index_features) * n_MC_samples),
+      rep(x = index_features, each = n_MC_samples, times = n_explain),
+      1 / n_MC_samples
     )]
 
     # Set the key in the data table
-    data.table::setkeyv(result, c("id", "id_combination"))
+    data.table::setkeyv(result, c("id", "id_coalition"))
   }
 
   return(result)
@@ -1364,19 +1376,6 @@ vaeac_check_mask_gen <- function(mask_gen_coalitions, mask_gen_coalitions_prob, 
   }
 }
 
-#' Function that checks the verbose parameter
-#'
-#' @inheritParams vaeac_train_model
-#'
-#' @return The function does not return anything.
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-vaeac_check_verbose <- function(verbose) {
-  if (!is.numeric(verbose) || !(verbose %in% c(0, 1, 2))) {
-    stop("`vaeac.verbose` must be either `0` (no verbosity), `1` (low verbosity), or `2` (high verbosity).")
-  }
-}
 
 #' Function that checks that the save folder exists and for a valid file name
 #'
@@ -1529,7 +1528,7 @@ vaeac_check_parameters <- function(x_train,
                                    seed,
                                    ...) {
   # Check verbose parameter
-  vaeac_check_verbose(verbose = verbose)
+  check_verbose(verbose = verbose)
 
   # Check that the activation function is valid torch::nn_module object
   vaeac_check_activation_func(activation_function = activation_function)
@@ -1655,9 +1654,10 @@ vaeac_check_parameters <- function(x_train,
 #' during the training of the vaeac model. Used in [torch::dataloader()].
 #' @param vaeac.batch_size_sampling Positive integer (default is `NULL`) The number of samples to include in
 #' each batch when generating the Monte Carlo samples. If `NULL`, then the function generates the Monte Carlo samples
-#' for the provided coalitions/combinations and all explicands sent to [shapr::explain()] at the time.
-#' The number of coalitions are determined by `n_batches` in [shapr::explain()]. We recommend to tweak `n_batches`
-#' rather  than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
+#' for the provided coalitions and all explicands sent to [shapr::explain()] at the time.
+#' The number of coalitions are determined by the `n_batches` used by [shapr::explain()]. We recommend to tweak
+#' `adaptive_arguments$max_batch_size` and `adaptive_arguments$min_n_batches`
+#' rather than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
 #' @param vaeac.running_avg_n_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
 #' @param vaeac.skip_conn_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
@@ -1682,8 +1682,8 @@ vaeac_check_parameters <- function(x_train,
 #' `vaeac.mask_gen_coalitions` is specified.
 #' @param vaeac.mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
 #' `vaeac` model will be trained on, see [shapr::specified_masks_mask_generator()]. This parameter is used internally
-#' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
-#' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+#' in `shapr` when we only consider a subset of coalitions, i.e., when
+#' `n_coalitions` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 #' when `group` is specified in [shapr::explain()].
 #' @param vaeac.mask_gen_coalitions_prob Numeric array (default is `NULL`). Array of length equal to the height
 #' of `vaeac.mask_gen_coalitions` containing the probabilities of sampling the corresponding coalitions in
@@ -1817,8 +1817,8 @@ vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
     mask_generator_name <- "specified_masks_mask_generator"
 
     # Small printout
-    if (verbose == 2) {
-      message(paste0("Using 'specified_masks_mask_generator' with '", nrow(mask_gen_coalitions), "' coalitions."))
+    if ("vS_details" %in% verbose) {
+      cli::cli_text(paste0("Using 'specified_masks_mask_generator' with '", nrow(mask_gen_coalitions), "' coalitions."))
     }
   } else if (length(masking_ratio) == 1) {
     # We are going to use 'mcar_mask_generator' as masking_ratio is a singleton.
@@ -1826,15 +1826,21 @@ vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
     mask_generator_name <- "mcar_mask_generator"
 
     # Small printout
-    if (verbose == 2) message(paste0("Using 'mcar_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
+    if ("vS_details" %in% verbose) {
+      cli::cli_text(paste0(
+        "Using 'mcar_mask_generator' with 'masking_ratio = ",
+        masking_ratio,
+        "'."
+      ))
+    }
   } else if (length(masking_ratio) > 1) {
     # We are going to use 'specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
     # I.e., masking_ratio[5] specifies the probability of masking 5 features
     mask_generator_name <- "specified_prob_mask_generator"
 
     # We have an array of masking ratios. Then we are using the specified_prob_mask_generator.
-    if (verbose == 2) {
-      message(paste0(
+    if ("vS_details" %in% verbose) {
+      cli::cli_text(paste0(
         "Using 'specified_prob_mask_generator' mask generator with 'masking_ratio = [",
         paste(masking_ratio, collapse = ", "), "]'."
       ))
@@ -2104,10 +2110,12 @@ vaeac_get_data_objects <- function(x_train,
 
   # Ensure a valid batch size
   if (batch_size > length(train_indices)) {
-    message(paste0(
-      "Decrease `batch_size` (", batch_size, ") to largest allowed value (", length(train_indices), "), ",
-      "i.e., the number of training observations."
-    ))
+    if ("vS_details" %in% verbose) {
+      cli::cli_text(paste0(
+        "Decrease `batch_size` (", batch_size, ") to largest allowed value (", length(train_indices), "), ",
+        "i.e., the number of training observations."
+      ))
+    }
     batch_size <- length(train_indices)
   }
 
@@ -2429,17 +2437,31 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     last_state$val_iwae[-1]$cpu(),
     last_state$val_iwae_running[-1]$cpu()
   ))
-}
 
-#' Produce message about which batch prepare_data is working on
-#' @inheritParams default_doc
-#' @inheritParams default_doc_explain
-#' @author Lars Henry Berge Olsen
-#' @keywords internal
-vaeac_prep_message_batch <- function(internal, index_features) {
-  id_batch <- internal$objects$X[id_combination == index_features[1]]$batch
-  n_batches <- internal$parameters$n_batches
-  message(paste0("Generating Monte Carlo samples using `vaeac` for batch ", id_batch, " of ", n_batches, "."))
+  # Trying to replace the above, but have not succeeded really.
+  # msg <- c("\nResults of the `vaeac` training process:",
+  #   sprintf("Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
+  #           best_epoch,
+  #           last_state$train_vlb[best_epoch]$cpu(),
+  #           last_state$val_iwae[best_epoch]$cpu(),
+  #           last_state$val_iwae_running[best_epoch]$cpu()
+  #   ),
+  #   sprintf("Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
+  #           best_epoch_running,
+  #           last_state$train_vlb[best_epoch_running]$cpu(),
+  #           last_state$val_iwae[best_epoch_running]$cpu(),
+  #           last_state$val_iwae_running[best_epoch_running]$cpu()
+  #   ),
+  #   sprintf("Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
+  #           last_state$epoch,
+  #           last_state$train_vlb[-1]$cpu(),
+  #           last_state$val_iwae[-1]$cpu(),
+  #           last_state$val_iwae_running[-1]$cpu()
+  #   )
+  # )
+  #
+  #
+  # cli::cli_text(msg)
 }
 
 # Plot functions =======================================================================================================
@@ -2501,7 +2523,7 @@ vaeac_prep_message_batch <- function(internal, index_features) {
 #'   x_train = x_train,
 #'   approach = approach,
 #'   prediction_zero = p0,
-#'   n_samples = 1, # As we are only interested in the training of the vaeac
+#'   n_MC_samples = 1, # As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 10, # Should be higher in applications.
 #'   vaeac.n_vaeacs_initialize = 1,
 #'   vaeac.width = 16,
@@ -2515,7 +2537,7 @@ vaeac_prep_message_batch <- function(internal, index_features) {
 #'   x_train = x_train,
 #'   approach = approach,
 #'   prediction_zero = p0,
-#'   n_samples = 1, # As we are only interested in the training of the vaeac
+#'   n_MC_samples = 1, # As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 10, # Should be higher in applications.
 #'   vaeac.width = 16,
 #'   vaeac.depth = 2,
@@ -2736,7 +2758,7 @@ vaeac_plot_eval_crit <- function(explanation_list,
 #'   x_train = x_train,
 #'   approach = "vaeac",
 #'   prediction_zero = mean(y_train),
-#'   n_samples = 1,
+#'   n_MC_samples = 1,
 #'   vaeac.epochs = 10,
 #'   vaeac.n_vaeacs_initialize = 1
 #' )
@@ -2815,7 +2837,7 @@ vaeac_plot_imputed_ggpairs <- function(
   checkpoint <- torch::torch_load(vaeac_model_path)
 
   # Get the number of observations in the x_true and features
-  n_samples <- if (is.null(x_true)) 500 else nrow(x_true)
+  n_MC_samples <- if (is.null(x_true)) 500 else nrow(x_true)
   n_features <- checkpoint$n_features
 
   # Checking for valid dimension
@@ -2830,12 +2852,12 @@ vaeac_plot_imputed_ggpairs <- function(
 
   # Impute the missing entries using the vaeac approach. Here we generate x from p(x), so no conditioning.
   imputed_values <- vaeac_impute_missing_entries(
-    x_explain_with_NaNs = matrix(NaN, n_samples, checkpoint$n_features),
-    n_samples = 1,
+    x_explain_with_NaNs = matrix(NaN, n_MC_samples, checkpoint$n_features),
+    n_MC_samples = 1,
     vaeac_model = vaeac_model,
     checkpoint = checkpoint,
     sampler = explanation$internal$parameters$vaeac.sampler,
-    batch_size = n_samples,
+    batch_size = n_MC_samples,
     verbose = explanation$internal$parameters$verbose,
     seed = explanation$internal$parameters$seed
   )
@@ -2847,7 +2869,7 @@ vaeac_plot_imputed_ggpairs <- function(
 
   # Add type variable representing if they are imputed samples or from `x_true`
   combined_data$type <-
-    factor(rep(c("True", "Imputed"), times = c(ifelse(is.null(nrow(x_true)), 0, nrow(x_true)), n_samples)))
+    factor(rep(c("True", "Imputed"), times = c(ifelse(is.null(nrow(x_true)), 0, nrow(x_true)), n_MC_samples)))
 
   # Create the ggpairs figure and potentially add title based on the description of the used vaeac model
   figure <- GGally::ggpairs(

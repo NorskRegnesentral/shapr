@@ -94,17 +94,15 @@ explain_forecast <- function(model,
                              horizon,
                              approach,
                              prediction_zero,
-                             n_combinations = NULL,
+                             max_n_coalitions = NULL,
                              group_lags = TRUE,
                              group = NULL,
-                             n_samples = 1e3,
-                             n_batches = NULL,
+                             n_MC_samples = 1e3,
                              seed = 1,
                              keep_samp_for_vS = FALSE,
                              predict_model = NULL,
                              get_model_specs = NULL,
-                             timing = TRUE,
-                             verbose = 0,
+                             verbose = "basic",
                              ...) { # ... is further arguments passed to specific approaches
   timing_list <- list(
     init_time = Sys.time()
@@ -128,9 +126,10 @@ explain_forecast <- function(model,
     approach = approach,
     prediction_zero = prediction_zero,
     output_size = horizon,
-    n_combinations = n_combinations,
-    n_samples = n_samples,
-    n_batches = n_batches,
+    max_n_coalitions = max_n_coalitions,
+    n_MC_samples = n_MC_samples,
+    #    n_batches = n_batches, # TODO: This is not used anymore, but the code does not use the adaptive version of it
+    #                 either I think... I have now just set it to always 10 in the create_S_batches_forecast function.
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
@@ -144,7 +143,6 @@ explain_forecast <- function(model,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     group = group,
-    timing = timing,
     verbose = verbose,
     ...
   )
@@ -177,48 +175,38 @@ explain_forecast <- function(model,
   timing_list$setup_computation <- Sys.time()
 
 
+  ### Temporary solution for forecast
+  internal$iter_list[[1]]$X <- internal$objects$X
+  internal$iter_list[[1]]$S <- internal$objects$S
+
+
   # Compute the v(S):
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model, method = "regular")
+  vS_list <- compute_vS_forecast(internal, model, predict_model, method = "regular")
 
   timing_list$compute_vS <- Sys.time()
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
-  output <- finalize_explanation(
+  output <- finalize_explanation_forecast(
     vS_list = vS_list,
     internal = internal
   )
 
-  if (timing == TRUE) {
-    output$timing <- compute_time(timing_list)
-  }
+  output$timing <- compute_time(timing_list)
 
-  # Temporary to avoid failing tests
-  output <- remove_outputs_pass_tests_fore(output)
+
+  # Some cleanup when doing testing
+  testing <- internal$parameters$testing
+  if (isTRUE(testing)) {
+    output <- testing_cleanup(output)
+  }
 
   return(output)
 }
 
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-remove_outputs_pass_tests_fore <- function(output) {
-  # Temporary to avoid failing tests related to vaeac approach
-  if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
-    output$internal$parameters[c(
-      "vaeac", "vaeac.sampler", "vaeac.model", "vaeac.activation_function", "vaeac.checkpoint"
-    )] <- NULL
-    output$internal$parameters$vaeac.extra_parameters[c("vaeac.folder_to_save_model", "vaeac.model_description")] <-
-      NULL
-  }
-
-  # Remove the `regression` parameter from the output list when we are not doing regression
-  if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
-
-  return(output)
-}
 
 #' Set up data for explain_forecast
 #'

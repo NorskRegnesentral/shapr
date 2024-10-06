@@ -51,21 +51,24 @@ setup_approach.gaussian <- function(internal,
 #' @author Lars Henry Berge Olsen
 prepare_data.gaussian <- function(internal, index_features, ...) {
   # Extract used variables
-  S <- internal$objects$S[index_features, , drop = FALSE]
   feature_names <- internal$parameters$feature_names
   n_explain <- internal$parameters$n_explain
   n_features <- internal$parameters$n_features
-  n_samples <- internal$parameters$n_samples
-  n_combinations_now <- length(index_features)
+  n_MC_samples <- internal$parameters$n_MC_samples
+  n_coalitions_now <- length(index_features)
   x_explain_mat <- as.matrix(internal$data$x_explain)
   mu <- internal$parameters$gaussian.mu
   cov_mat <- internal$parameters$gaussian.cov_mat
 
+  iter <- length(internal$iter_list)
+
+  S <- internal$iter_list[[iter]]$S[index_features, , drop = FALSE]
+
   # Generate the MC samples from N(0, 1)
-  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+  MC_samples_mat <- matrix(rnorm(n_MC_samples * n_features), nrow = n_MC_samples, ncol = n_features)
 
   # Use Cpp to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
-  # The object `dt` is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features).
+  # The object `dt` is a 3D array of dimension (n_MC_samples, n_explain * n_coalitions, n_features).
   dt <- prepare_data_gaussian_cpp(
     MC_samples_mat = MC_samples_mat,
     x_explain_mat = x_explain_mat,
@@ -74,17 +77,17 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
     cov_mat = cov_mat
   )
 
-  # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
-  dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  # Reshape `dt` to a 2D array of dimension (n_MC_samples * n_explain * n_coalitions, n_features).
+  dim(dt) <- c(n_coalitions_now * n_explain * n_MC_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)
   data.table::setnames(dt, feature_names)
-  dt[, id_combination := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
-  dt[, id := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  dt[, w := 1 / n_samples]
-  dt[, id_combination := index_features[id_combination]]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  dt[, id_coalition := rep(seq_len(nrow(S)), each = n_MC_samples * n_explain)]
+  dt[, id := rep(seq(n_explain), each = n_MC_samples, times = nrow(S))]
+  dt[, w := 1 / n_MC_samples]
+  dt[, id_coalition := index_features[id_coalition]]
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
   return(dt)
 }

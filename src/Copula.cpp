@@ -54,8 +54,8 @@ arma::vec quantile_type7_cpp(const arma::vec& x, const arma::vec& probs) {
 // [[Rcpp::export]]
 arma::mat inv_gaussian_transform_cpp(const arma::mat& z, const arma::mat& x) {
   int n_features = z.n_cols;
-  int n_samples = z.n_rows;
-  arma::mat z_new(n_samples, n_features);
+  int n_MC_samples = z.n_rows;
+  arma::mat z_new(n_MC_samples, n_features);
   arma::mat u = arma::normcdf(z);
   for (int feature_idx = 0; feature_idx < n_features; feature_idx++) {
     z_new.col(feature_idx) = quantile_type7_cpp(x.col(feature_idx), u.col(feature_idx));
@@ -65,7 +65,7 @@ arma::mat inv_gaussian_transform_cpp(const arma::mat& z, const arma::mat& x) {
 
 //' Generate (Gaussian) Copula MC samples
 //'
-//' @param MC_samples_mat arma::mat. Matrix of dimension (`n_samples`, `n_features`) containing samples from the
+//' @param MC_samples_mat arma::mat. Matrix of dimension (`n_MC_samples`, `n_features`) containing samples from the
 //' univariate standard normal.
 //' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
 //' to explain on the original scale.
@@ -73,7 +73,7 @@ arma::mat inv_gaussian_transform_cpp(const arma::mat& z, const arma::mat& x) {
 //' observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
 //' transformed to a standardized normal distribution.
 //' @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
-//' @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
+//' @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
 //' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
 //' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
 //' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
@@ -82,8 +82,8 @@ arma::mat inv_gaussian_transform_cpp(const arma::mat& z, const arma::mat& x) {
 //' between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
 //' transformed to a standardized normal distribution.
 //'
-//' @return An arma::cube/3D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
-//' the columns (_,j,_) are matrices of dimension (`n_samples`, `n_features`) containing the conditional Gaussian
+//' @return An arma::cube/3D array of dimension (`n_MC_samples`, `n_explain` * `n_coalitions`, `n_features`), where
+//' the columns (_,j,_) are matrices of dimension (`n_MC_samples`, `n_features`) containing the conditional Gaussian
 //' copula MC samples for each explicand and coalition on the original scale.
 //'
 //' @export
@@ -99,13 +99,13 @@ arma::cube prepare_data_copula_cpp(const arma::mat& MC_samples_mat,
                                    const arma::mat& cov_mat) {
 
   int n_explain = x_explain_mat.n_rows;
-  int n_samples = MC_samples_mat.n_rows;
+  int n_MC_samples = MC_samples_mat.n_rows;
   int n_features = MC_samples_mat.n_cols;
   int n_coalitions = S.n_rows;
 
   // Initialize auxiliary matrix and result cube
-  arma::mat aux_mat(n_samples, n_features);
-  arma::cube result_cube(n_samples, n_explain*n_coalitions, n_features);
+  arma::mat aux_mat(n_MC_samples, n_features);
+  arma::cube result_cube(n_MC_samples, n_explain*n_coalitions, n_features);
 
   // Iterate over the coalitions
   for (int S_ind = 0; S_ind < n_coalitions; S_ind++) {
@@ -150,7 +150,7 @@ arma::cube prepare_data_copula_cpp(const arma::mat& MC_samples_mat,
 
       // Transform the MC samples to be from N(mu_{Sbar|S}, Sigma_{Sbar|S}) for one coalition and one explicand
       arma::mat MC_samples_mat_now_now =
-        MC_samples_mat_now + repmat(trans(x_Sbar_gaussian_mean.col(idx_now)), n_samples, 1);
+        MC_samples_mat_now + repmat(trans(x_Sbar_gaussian_mean.col(idx_now)), n_MC_samples, 1);
 
       // Transform the MC to the original scale using the inverse Gaussian transform
       arma::mat MC_samples_mat_now_now_trans =
@@ -158,7 +158,7 @@ arma::cube prepare_data_copula_cpp(const arma::mat& MC_samples_mat,
 
       // Insert the generate Gaussian copula MC samples and the feature values we condition on into an auxiliary matrix
       aux_mat.cols(Sbar_now_idx) = MC_samples_mat_now_now_trans;
-      aux_mat.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1);
+      aux_mat.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_MC_samples, 1);
 
       // Insert the auxiliary matrix into the result cube
       result_cube.col(S_ind*n_explain + idx_now) = aux_mat;

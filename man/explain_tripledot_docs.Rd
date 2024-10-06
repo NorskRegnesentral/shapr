@@ -20,7 +20,7 @@ If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest wei
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
     \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
-Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
+Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
 Only used when \code{empirical.type = "fixed_sigma"}}
     \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
 Number of samples to consider in AICc optimization.
@@ -52,13 +52,13 @@ Determines minimum value that the sum of the left and right daughter nodes requi
     \item{\code{ctree.minbucket}}{Numeric scalar. (default = 7)
 Determines the minimum sum of weights in a terminal node required for a split}
     \item{\code{ctree.sample}}{Boolean. (default = TRUE)
-If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
-If FALSE and the number of observations in the leaf node is less than \code{n_samples},
+If TRUE, then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
+If FALSE and the number of observations in the leaf node is less than \code{n_MC_samples},
 the method will take all observations in the leaf.
-If FALSE and the number of observations in the leaf node is more than \code{n_samples},
-the method will sample \code{n_samples} observations (with replacement).
+If FALSE and the number of observations in the leaf node is more than \code{n_MC_samples},
+the method will sample \code{n_MC_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
-\code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+\code{sample} = FALSE AND the number of obs in the node is less than \code{n_MC_samples}.}
     \item{\code{gaussian.mu}}{Numeric vector. (Optional)
 Containing the mean of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
@@ -75,8 +75,8 @@ is also a valid input. It is essential to include the package prefix if the pack
 The data.frame must contain the possible hyperparameter value combinations to try.
 The column names must match the names of the tuneable parameters specified in \code{regression.model}.
 If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
-for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
-Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
+Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
 vignette for several examples.
 Note, to make it easier to call \code{explain()} from Python, the \code{regression.tune_values} can also be a string
 containing an R function. For example,
@@ -92,13 +92,17 @@ Note, to make it easier to call \code{explain()} from Python, the \code{regressi
 containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}
-    \item{\code{regression.surrogate_n_comb}}{Integer (default is \code{internal$parameters$used_n_combinations}) specifying the
-number of unique combinations/coalitions to apply to each training observation. Maximum allowed value is
-"\code{internal$parameters$used_n_combinations} - 2". By default, we use all coalitions, but this can take a lot of memory
-in larger dimensions. Note that by "all", we mean all coalitions chosen by \code{shapr} to be used. This will be all
-\eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in the exact mode. If the
-user sets a lower value than \code{internal$parameters$used_n_combinations}, then we sample this amount of unique
-coalitions separately for each training observations. That is, on average, all coalitions should be equally trained.}
+    \item{\code{regression.surrogate_n_comb}}{Integer.
+(default is \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions}) specifying the
+number of unique coalitions to apply to each training observation. Maximum allowed value is
+"\code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions} - 2".
+By default, we use all coalitions, but this can take a lot of memory in larger dimensions.
+Note that by "all", we mean all coalitions chosen by \code{shapr} to be used.
+This will be all \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in
+the exact mode.
+If the user sets a lower value than \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions},
+then we sample this amount of unique coalitions separately for each training observations.
+That is, on average, all coalitions should be equally trained.}
     \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
 Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
     \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
@@ -125,7 +129,7 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 \description{
 This helper function displays the specific arguments applicable to the different
 approaches. Note that when calling \code{\link[=explain]{explain()}} from Python, the parameters
-are renamed from the form \code{approach.parameter_name} to \code{approach_parameter_name}.
+are renamed from the from \code{approach.parameter_name} to \code{approach_parameter_name}.
 That is, an underscore has replaced the dot as the dot is reserved in Python.
 }
 \author{

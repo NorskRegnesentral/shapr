@@ -32,7 +32,7 @@ exp <- explain_forecast(model = model_arima_temp,
                        group_lags = FALSE,
                        n_batches = 1,
                        timing = FALSE,
-                       n_combinations = 50
+                       n_coalitions = 50
 )
 
 

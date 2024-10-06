@@ -98,7 +98,7 @@
 #'   x_train = x_train,
 #'   approach = "empirical",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -148,7 +148,7 @@
 #'   x_train = x_train,
 #'   approach = "ctree",
 #'   prediction_zero = p,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -186,7 +186,7 @@ plot.shapr <- function(x,
   is_groupwise <- x$internal$parameters$is_groupwise
 
   # melting Kshap
-  shap_names <- colnames(x$shapley_values)[-1]
+  shap_names <- x$internal$parameters$shap_names
   dt_shap <- round(data.table::copy(x$shapley_values), digits = digits)
   dt_shap[, id := .I]
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
@@ -787,8 +787,8 @@ make_waterfall_plot <- function(dt_plot,
 #' Make plots to visualize and compare the MSEv evaluation criterion for a list of
 #' [shapr::explain()] objects applied to the same data and model. The function creates
 #' bar plots and line plots with points to illustrate the overall MSEv evaluation
-#' criterion, but also for each observation/explicand and combination by only averaging over
-#' the combinations and observations/explicands, respectively.
+#' criterion, but also for each observation/explicand and coalition by only averaging over
+#' the coalitions and observations/explicands, respectively.
 #'
 #' @inheritParams plot.shapr
 #' @inheritParams default_doc
@@ -796,26 +796,26 @@ make_waterfall_plot <- function(dt_plot,
 #' @param explanation_list A list of [shapr::explain()] objects applied to the same data and model.
 #' If the entries in the list are named, then the function use these names. Otherwise, they default to
 #' the approach names (with integer suffix for duplicates) for the explanation objects in `explanation_list`.
-#' @param id_combination Integer vector. Which of the combinations (coalitions) to plot.
-#' E.g. if you used `n_combinations = 16` in [explain()], you can generate a plot for the
-#' first 5 combinations and the 10th by setting `id_combination = c(1:5, 10)`.
+#' @param id_coalition Integer vector. Which of the coalitions to plot.
+#' E.g. if you used `n_coalitions = 16` in [explain()], you can generate a plot for the
+#' first 5 coalitions and the 10th by setting `id_coalition = c(1:5, 10)`.
 #' @param CI_level Positive numeric between zero and one. Default is `0.95` if the number of observations to explain is
 #' larger than 20, otherwise `CI_level = NULL`, which removes the confidence intervals. The level of the approximate
-#' confidence intervals for the overall MSEv and the MSEv_combination. The confidence intervals are based on that
+#' confidence intervals for the overall MSEv and the MSEv_coalition. The confidence intervals are based on that
 #' the MSEv scores are means over the observations/explicands, and that means are approximation normal. Since the
 #' standard deviations are estimated, we use the quantile t from the T distribution with N_explicands - 1 degrees of
 #' freedom corresponding to the provided level. Here, N_explicands is the number of observations/explicands.
-#' MSEv ± t*SD(MSEv)/sqrt(N_explicands). Note that the `explain()` function already scales the standard deviation by
-#' sqrt(N_explicands), thus, the CI are MSEv ± t*MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
+#' MSEv +/- t*SD(MSEv)/sqrt(N_explicands). Note that the `explain()` function already scales the standard deviation by
+#' sqrt(N_explicands), thus, the CI are MSEv \/- t*MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
 #' MSEv data.tables in the objects in the `explanation_list`.
 #' @param geom_col_width Numeric. Bar width. By default, set to 90% of the [ggplot2::resolution()] of the data.
 #' @param plot_type Character vector. The possible options are "overall" (default), "comb", and "explicand".
 #' If `plot_type = "overall"`, then the plot (one bar plot) associated with the overall MSEv evaluation criterion
-#' for each method is created, i.e., when averaging over both the combinations/coalitions and observations/explicands.
+#' for each method is created, i.e., when averaging over both the coalitions and observations/explicands.
 #' If `plot_type = "comb"`, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
-#' criterion for each combination/coalition are created, i.e., when we only average over the observations/explicands.
+#' criterion for each coalition are created, i.e., when we only average over the observations/explicands.
 #' If `plot_type = "explicand"`, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
-#' criterion for each observations/explicands are created, i.e., when we only average over the combinations/coalitions.
+#' criterion for each observations/explicands are created, i.e., when we only average over the coalitions.
 #' If `plot_type` is a vector of one or several of "overall", "comb", and "explicand", then the associated plots are
 #' created.
 #'
@@ -862,7 +862,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = "independence",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Gaussian 1e1 approach
@@ -872,7 +872,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e1
+#'   n_MC_samples = 1e1
 #' )
 #'
 #' # Gaussian 1e2 approach
@@ -882,7 +882,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # ctree approach
@@ -892,7 +892,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = "ctree",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Combined approach
@@ -902,7 +902,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_train = x_train,
 #'   approach = c("gaussian", "independence", "ctree"),
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Create a list of explanations with names
@@ -915,24 +915,24 @@ make_waterfall_plot <- function(dt_plot,
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   # Create the default MSEv plot where we average over both the combinations and observations
+#'   # Create the default MSEv plot where we average over both the coalitions and observations
 #'   # with approximate 95% confidence intervals
 #'   plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95, plot_type = "overall")
 #'
-#'   # Can also create plots of the MSEv criterion averaged only over the combinations or observations.
+#'   # Can also create plots of the MSEv criterion averaged only over the coalitions or observations.
 #'   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
 #'     CI_level = 0.95,
 #'     plot_type = c("overall", "comb", "explicand")
 #'   )
 #'   MSEv_figures$MSEv_bar
-#'   MSEv_figures$MSEv_combination_bar
+#'   MSEv_figures$MSEv_coalition_bar
 #'   MSEv_figures$MSEv_explicand_bar
 #'
-#'   # When there are many combinations or observations, then it can be easier to look at line plots
-#'   MSEv_figures$MSEv_combination_line_point
+#'   # When there are many coalitions or observations, then it can be easier to look at line plots
+#'   MSEv_figures$MSEv_coalition_line_point
 #'   MSEv_figures$MSEv_explicand_line_point
 #'
-#'   # We can specify which observations or combinations to plot
+#'   # We can specify which observations or coalitions to plot
 #'   plot_MSEv_eval_crit(explanation_list_named,
 #'     plot_type = "explicand",
 #'     index_x_explain = c(1, 3:4, 6),
@@ -940,9 +940,9 @@ make_waterfall_plot <- function(dt_plot,
 #'   )$MSEv_explicand_bar
 #'   plot_MSEv_eval_crit(explanation_list_named,
 #'     plot_type = "comb",
-#'     id_combination = c(3, 4, 9, 13:15),
+#'     id_coalition = c(3, 4, 9, 13:15),
 #'     CI_level = 0.95
-#'   )$MSEv_combination_bar
+#'   )$MSEv_coalition_bar
 #'
 #'   # We can alter the figures if other palette schemes or design is wanted
 #'   bar_text_n_decimals <- 1
@@ -972,7 +972,7 @@ make_waterfall_plot <- function(dt_plot,
 #' @author Lars Henry Berge Olsen
 plot_MSEv_eval_crit <- function(explanation_list,
                                 index_x_explain = NULL,
-                                id_combination = NULL,
+                                id_coalition = NULL,
                                 CI_level = if (length(explanation_list[[1]]$pred_explain) < 20) NULL else 0.95,
                                 geom_col_width = 0.9,
                                 plot_type = "overall") {
@@ -1004,20 +1004,22 @@ plot_MSEv_eval_crit <- function(explanation_list,
   # Check that the explanation objects explain the same observations
   MSEv_check_explanation_list(explanation_list)
 
-  # Get the number of observations and combinations and the quantile of the T distribution
+  # Get the number of observations and coalitions and the quantile of the T distribution
+  iter <- length(explanation_list[[1]]$internal$iter_list)
+  n_coalitions <- explanation_list[[1]]$internal$iter_list[[iter]]$n_coalitions
+
   n_explain <- explanation_list[[1]]$internal$parameters$n_explain
-  n_combinations <- explanation_list[[1]]$internal$parameters$n_combinations
   tfrac <- if (is.null(CI_level)) NULL else qt((1 + CI_level) / 2, n_explain - 1)
 
   # Create data.tables of the MSEv values
   MSEv_dt_list <- MSEv_extract_MSEv_values(
     explanation_list = explanation_list,
     index_x_explain = index_x_explain,
-    id_combination = id_combination
+    id_coalition = id_coalition
   )
   MSEv_dt <- MSEv_dt_list$MSEv
   MSEv_explicand_dt <- MSEv_dt_list$MSEv_explicand
-  MSEv_combination_dt <- MSEv_dt_list$MSEv_combination
+  MSEv_coalition_dt <- MSEv_dt_list$MSEv_coalition
 
   # Warnings related to the approximate confidence intervals
   if (!is.null(CI_level)) {
@@ -1045,23 +1047,23 @@ plot_MSEv_eval_crit <- function(explanation_list,
   return_object <- list()
 
   if ("explicand" %in% plot_type) {
-    # MSEv averaged over only the combinations for each observation
+    # MSEv averaged over only the coalitions for each observation
     return_object <- c(
       return_object,
       make_MSEv_explicand_plots(
         MSEv_explicand_dt = MSEv_explicand_dt,
-        n_combinations = n_combinations,
+        n_coalitions = n_coalitions,
         geom_col_width = geom_col_width
       )
     )
   }
 
   if ("comb" %in% plot_type) {
-    # MSEv averaged over only the observations for each combinations
+    # MSEv averaged over only the observations for each coalitions
     return_object <- c(
       return_object,
-      make_MSEv_combination_plots(
-        MSEv_combination_dt = MSEv_combination_dt,
+      make_MSEv_coalition_plots(
+        MSEv_coalition_dt = MSEv_coalition_dt,
         n_explain = n_explain,
         geom_col_width = geom_col_width,
         tfrac = tfrac
@@ -1070,10 +1072,10 @@ plot_MSEv_eval_crit <- function(explanation_list,
   }
 
   if ("overall" %in% plot_type) {
-    # MSEv averaged over both the combinations and observations
+    # MSEv averaged over both the coalitions and observations
     return_object$MSEv_bar <- make_MSEv_bar_plot(
       MSEv_dt = MSEv_dt,
-      n_combinations = n_combinations,
+      n_coalitions = n_coalitions,
       n_explain = n_explain,
       geom_col_width = geom_col_width,
       tfrac = tfrac
@@ -1148,7 +1150,7 @@ MSEv_check_explanation_list <- function(explanation_list) {
     ))
   }
 
-  # Check that all explanation objects use the same combinations
+  # Check that all explanation objects use the same coalitions
   entries_using_diff_combs <- sapply(explanation_list, function(explanation) {
     !identical(explanation_list[[1]]$internal$objects$X$features, explanation$internal$objects$X$features)
   })
@@ -1156,7 +1158,7 @@ MSEv_check_explanation_list <- function(explanation_list) {
     methods_with_diff_comb_str <- paste(names(entries_using_diff_combs)[entries_using_diff_combs], collapse = "', '")
     stop(paste0(
       "The object/objects '", methods_with_diff_comb_str, "' in `explanation_list` uses/use different ",
-      "coaltions than '", names(explanation_list)[1], "'. Cannot compare them."
+      "coalitions than '", names(explanation_list)[1], "'. Cannot compare them."
     ))
   }
 }
@@ -1165,9 +1167,9 @@ MSEv_check_explanation_list <- function(explanation_list) {
 #' @author Lars Henry Berge Olsen
 MSEv_extract_MSEv_values <- function(explanation_list,
                                      index_x_explain = NULL,
-                                     id_combination = NULL) {
-  # Function that extract the MSEv values from the different explanations objects in ´explanation_list´,
-  # put the values in data.tables, and keep only the desired observations and combinations.
+                                     id_coalition = NULL) {
+  # Function that extract the MSEv values from the different explanations objects in explanation_list,
+  # put the values in data.tables, and keep only the desired observations and coalitions.
 
   # The overall MSEv criterion
   MSEv <- rbindlist(lapply(explanation_list, function(explanation) explanation$MSEv$MSEv),
@@ -1182,27 +1184,27 @@ MSEv_extract_MSEv_values <- function(explanation_list,
   MSEv_explicand$id <- factor(MSEv_explicand$id)
   MSEv_explicand$Method <- factor(MSEv_explicand$Method, levels = names(explanation_list))
 
-  # The MSEv evaluation criterion for each combination.
-  MSEv_combination <- rbindlist(lapply(explanation_list, function(explanation) explanation$MSEv$MSEv_combination),
+  # The MSEv evaluation criterion for each coalition.
+  MSEv_coalition <- rbindlist(lapply(explanation_list, function(explanation) explanation$MSEv$MSEv_coalition),
     use.names = TRUE, idcol = "Method"
   )
-  MSEv_combination$id_combination <- factor(MSEv_combination$id_combination)
-  MSEv_combination$Method <- factor(MSEv_combination$Method, levels = names(explanation_list))
+  MSEv_coalition$id_coalition <- factor(MSEv_coalition$id_coalition)
+  MSEv_coalition$Method <- factor(MSEv_coalition$Method, levels = names(explanation_list))
 
-  # Only keep the desired observations and combinations
+  # Only keep the desired observations and coalitions
   if (!is.null(index_x_explain)) MSEv_explicand <- MSEv_explicand[id %in% index_x_explain]
-  if (!is.null(id_combination)) {
-    id_combination_aux <- id_combination
-    MSEv_combination <- MSEv_combination[id_combination %in% id_combination_aux]
+  if (!is.null(id_coalition)) {
+    id_coalition_aux <- id_coalition
+    MSEv_coalition <- MSEv_coalition[id_coalition %in% id_coalition_aux]
   }
 
-  return(list(MSEv = MSEv, MSEv_explicand = MSEv_explicand, MSEv_combination = MSEv_combination))
+  return(list(MSEv = MSEv, MSEv_explicand = MSEv_explicand, MSEv_coalition = MSEv_coalition))
 }
 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 make_MSEv_bar_plot <- function(MSEv_dt,
-                               n_combinations,
+                               n_coalitions,
                                n_explain,
                                tfrac = NULL,
                                geom_col_width = 0.9) {
@@ -1215,16 +1217,16 @@ make_MSEv_bar_plot <- function(MSEv_dt,
     ggplot2::labs(
       x = "Method",
       y = bquote(MSE[v]),
-      title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_combinations) ~
-        "combinations and" ~ .(n_explain) ~ "explicands")
+      title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_coalitions) ~
+        "coalitions and" ~ .(n_explain) ~ "explicands")
     )
 
   if (!is.null(tfrac)) {
     CI_level <- 1 - 2 * (1 - pt(tfrac, n_explain - 1))
 
     MSEv_bar <- MSEv_bar +
-      ggplot2::labs(title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_combinations) ~
-        "combinations and" ~ .(n_explain) ~ "explicands with" ~
+      ggplot2::labs(title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_coalitions) ~
+        "coalitions and" ~ .(n_explain) ~ "explicands with" ~
         .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
@@ -1243,15 +1245,15 @@ make_MSEv_bar_plot <- function(MSEv_dt,
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
-                                      n_combinations,
+                                      n_coalitions,
                                       geom_col_width = 0.9) {
   MSEv_explicand_source <-
     ggplot2::ggplot(MSEv_explicand_dt, ggplot2::aes(x = id, y = MSEv)) +
     ggplot2::labs(
       x = "index_x_explain",
       y = bquote(MSE[v] ~ "(explicand)"),
-      title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_combinations) ~
-        "combinations for each explicand")
+      title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_coalitions) ~
+        "coalitions for each explicand")
     )
 
   MSEv_explicand_bar <-
@@ -1277,21 +1279,21 @@ make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-make_MSEv_combination_plots <- function(MSEv_combination_dt,
-                                        n_explain,
-                                        tfrac = NULL,
-                                        geom_col_width = 0.9) {
-  MSEv_combination_source <-
-    ggplot2::ggplot(MSEv_combination_dt, ggplot2::aes(x = id_combination, y = MSEv)) +
+make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
+                                      n_explain,
+                                      tfrac = NULL,
+                                      geom_col_width = 0.9) {
+  MSEv_coalition_source <-
+    ggplot2::ggplot(MSEv_coalition_dt, ggplot2::aes(x = id_coalition, y = MSEv)) +
     ggplot2::labs(
-      x = "id_combination",
-      y = bquote(MSE[v] ~ "(combination)"),
+      x = "id_coalition",
+      y = bquote(MSE[v] ~ "(coalition)"),
       title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_explain) ~
-        "explicands for each combination")
+        "explicands for each coalition")
     )
 
-  MSEv_combination_bar <-
-    MSEv_combination_source +
+  MSEv_coalition_bar <-
+    MSEv_coalition_source +
     ggplot2::geom_col(
       width = geom_col_width,
       position = ggplot2::position_dodge(geom_col_width),
@@ -1301,10 +1303,10 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
   if (!is.null(tfrac)) {
     CI_level <- 1 - 2 * (1 - pt(tfrac, n_explain - 1))
 
-    MSEv_combination_bar <-
-      MSEv_combination_bar +
+    MSEv_coalition_bar <-
+      MSEv_coalition_bar +
       ggplot2::labs(title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_explain) ~
-        "explicands for each combination with" ~ .(CI_level * 100) * "% CI")) +
+        "explicands for each coalition with" ~ .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
         width = 0.25,
@@ -1316,16 +1318,16 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
       )
   }
 
-  MSEv_combination_line_point <-
-    MSEv_combination_source +
-    ggplot2::aes(x = as.numeric(id_combination)) +
-    ggplot2::labs(x = "id_combination") +
+  MSEv_coalition_line_point <-
+    MSEv_coalition_source +
+    ggplot2::aes(x = as.numeric(id_coalition)) +
+    ggplot2::labs(x = "id_coalition") +
     ggplot2::geom_point(ggplot2::aes(col = Method)) +
     ggplot2::geom_line(ggplot2::aes(group = Method, col = Method))
 
   return(list(
-    MSEv_combination_bar = MSEv_combination_bar,
-    MSEv_combination_line_point = MSEv_combination_line_point
+    MSEv_coalition_bar = MSEv_coalition_bar,
+    MSEv_coalition_line_point = MSEv_coalition_line_point
   ))
 }
 
@@ -1409,7 +1411,7 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #'   x_train = x_train,
 #'   approach = "independence",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Empirical approach
@@ -1419,7 +1421,7 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #'   x_train = x_train,
 #'   approach = "empirical",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Gaussian 1e1 approach
@@ -1429,7 +1431,7 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e1
+#'   n_MC_samples = 1e1
 #' )
 #'
 #' # Gaussian 1e2 approach
@@ -1439,7 +1441,7 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Combined approach
@@ -1449,7 +1451,7 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #'   x_train = x_train,
 #'   approach = c("gaussian", "ctree", "empirical"),
 #'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
+#'   n_MC_samples = 1e2
 #' )
 #'
 #' # Create a list of explanations with names
@@ -1647,7 +1649,7 @@ update_only_these_features <- function(explanation_list,
   # Update the `only_these_features` parameter vector based on `plot_phi0` or in case it is NULL
 
   # Get the common feature names for all explanation objects (including `none`) and one without `none`
-  feature_names_with_none <- colnames(explanation_list[[1]]$shapley_values)
+  feature_names_with_none <- colnames(explanation_list[[1]]$shapley_values)[-1]
   feature_names_without_none <- feature_names_with_none[feature_names_with_none != "none"]
 
   # Only keep the desired features/columns
