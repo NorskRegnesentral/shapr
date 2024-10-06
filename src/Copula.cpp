@@ -187,8 +187,8 @@ arma::cube prepare_data_copula_cpp(const arma::mat& MC_samples_mat,
 //' between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
 //' transformed to a standardized normal distribution.
 //'
-//' @return An arma::mat/2D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
-//' the columns (_,j,_) are matrices of dimension (`n_samples`, `n_features`) containing the conditional Gaussian
+//' @return An arma::mat/2D array of dimension (`n_MC_samples`, `n_explain` * `n_coalitions`, `n_features`), where
+//' the columns (_,j,_) are matrices of dimension (`n_MC_samples`, `n_features`) containing the conditional Gaussian
 //' copula MC samples for each explicand and coalition on the original scale.
 //'
 //' @return An arma::mat/2D array of dimension (`n_explain` * `n_coalitions`, `n_features`),
