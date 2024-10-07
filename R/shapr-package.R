@@ -29,7 +29,7 @@
 #'
 #' @importFrom Rcpp sourceCpp
 #'
-#' @imporFrom utils capture.output
+#' @importFrom utils capture.output
 #'
 #' @keywords internal
 #'
