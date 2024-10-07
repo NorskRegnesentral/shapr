@@ -241,12 +241,12 @@ finalize_explanation_forecast <- function(vS_list, internal) { # Temporary used 
   # Extract the predictions we are explaining
   p <- get_p(processed_vS_list$dt_vS, internal)
 
-  # internal$timing$postprocessing <- Sys.time()
-
   # Compute the Shapley values
   dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
 
-  # internal$timing$shapley_computation <- Sys.time()
+  # Clearing out the timing lists as they are added to the output separately
+  internal$main_timing_list <- internal$iter_timing_list <- internal$timing_list <- NULL
+
 
   # Clearing out the timing lists as they are added to the output separately
   internal$main_timing_list <- internal$iter_timing_list <- internal$timing_list <- NULL
