@@ -106,7 +106,7 @@
       "x_train_preprocessed",
       "x_train_torch",
       "self",
-      "..current_comb",
+      "..current_comb"
     )
   )
 
