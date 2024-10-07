@@ -3,7 +3,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = c(
-          "regression_surrogate", "gaussian", "independence", "empirical"), adaptive = FALSE)
+          "regression_surrogate", "gaussian", "independence", "empirical"), iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -18,7 +18,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = c(
-          "regression_separate", "gaussian", "independence", "empirical"), adaptive = FALSE)
+          "regression_separate", "gaussian", "independence", "empirical"), iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -130,7 +130,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "regression_surrogate",
-        regression.tune_values = data.frame(tree_depth = c(1, 2, 3)), adaptive = FALSE)
+        regression.tune_values = data.frame(tree_depth = c(1, 2, 3)), iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -138,7 +138,7 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -272,7 +272,7 @@
         x_train = x_train_numeric, prediction_zero = p0, approach = "regression_surrogate",
         regression.recipe_func = function(x) {
           return(2)
-        }, adaptive = FALSE)
+        }, iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -280,7 +280,7 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -296,7 +296,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "regression_surrogate",
-        regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1, adaptive = FALSE)
+        regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1, iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -304,7 +304,7 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -320,7 +320,7 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = "regression_surrogate",
-        regression.surrogate_n_comb = 0, adaptive = FALSE)
+        regression.surrogate_n_comb = 0, iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -328,7 +328,7 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       

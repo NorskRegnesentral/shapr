@@ -1,4 +1,4 @@
-#' Prepares the next iteration of the adaptive sampling algorithm
+#' Prepares the next iteration of the iterative sampling algorithm
 #'
 #' @inheritParams default_doc_explain
 #'
@@ -14,9 +14,9 @@ prepare_next_iteration <- function(internal) {
     next_iter_list <- list()
 
     n_shapley_values <- internal$parameters$n_shapley_values
-    reduction_factor_vec <- internal$parameters$adaptive_args$reduction_factor_vec
-    fixed_n_coalitions_per_iter <- internal$parameters$adaptive_args$fixed_n_coalitions_per_iter
-    max_n_coalitions <- internal$parameters$adaptive_args$max_n_coalitions
+    reduction_factor_vec <- internal$parameters$iterative_args$reduction_factor_vec
+    fixed_n_coalitions_per_iter <- internal$parameters$iterative_args$fixed_n_coalitions_per_iter
+    max_n_coalitions <- internal$parameters$iterative_args$max_n_coalitions
 
 
     est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions

@@ -3,20 +3,20 @@ cli_startup <- function(internal, model, verbose) {
 
   is_groupwise <- internal$parameters$is_groupwise
   approach <- internal$parameters$approach
-  adaptive <- internal$parameters$adaptive
+  iterative <- internal$parameters$iterative
   n_shapley_values <- internal$parameters$n_shapley_values
   n_explain <- internal$parameters$n_explain
-  saving_path <- internal$parameters$adaptive_args$saving_path
+  saving_path <- internal$parameters$iterative_args$saving_path
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
-  adaptive_txt <- ifelse(adaptive, "adaptive", "non-adaptive")
+  iterative_txt <- ifelse(iterative, "iterative", "non-iterative")
 
   testing <- internal$parameters$testing
 
 
   line_vec <- "Model class: {.cls {class(model)}}"
   line_vec <- c(line_vec, "Approach: {.emph {approach}}")
-  line_vec <- c(line_vec, "Adaptive estimation: {.emph {adaptive}}")
+  line_vec <- c(line_vec, "iterative estimation: {.emph {iterative}}")
   line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {n_shapley_values}")
   line_vec <- c(line_vec, "Number of observations to explain: {n_explain}")
   if (isFALSE(testing)) {
@@ -40,8 +40,8 @@ cli_startup <- function(internal, model, verbose) {
   }
 
   if ("basic" %in% verbose) {
-    if (isTRUE(adaptive)) {
-      msg <- "Adaptive computation started"
+    if (isTRUE(iterative)) {
+      msg <- "iterative computation started"
     } else {
       msg <- "Main computation started"
     }
@@ -51,9 +51,9 @@ cli_startup <- function(internal, model, verbose) {
 
 
 cli_iter <- function(verbose, internal, iter) {
-  adaptive <- internal$parameters$adaptive
+  iterative <- internal$parameters$iterative
 
-  if (!is.null(verbose) && isTRUE(adaptive)) {
+  if (!is.null(verbose) && isTRUE(iterative)) {
     cli::cli_h1("Iteration {iter}")
   }
 
@@ -62,7 +62,7 @@ cli_iter <- function(verbose, internal, iter) {
     tot_coal <- internal$iter_list[[iter]]$n_coalitions
     all_coal <- 2^internal$parameters$n_shapley_values
 
-    extra_msg <- ifelse(adaptive, ", {new_coal} new", "")
+    extra_msg <- ifelse(iterative, ", {new_coal} new", "")
 
     msg <- paste0("Using {tot_coal} of {all_coal} coalitions", extra_msg, ". ")
 

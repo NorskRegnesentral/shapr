@@ -75,9 +75,9 @@ Typically we set this value equal to the mean of the response variable in our tr
 such as the mean of the predictions in the training data are also reasonable.}
 
 \item{max_n_coalitions}{Integer.
-The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
-(if \code{adaptive = TRUE}).
-If \code{adaptive = FALSE} it represents the number of feature/group coalitions to use directly.
+The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+(if \code{iterative = TRUE}).
+If \code{iterative = FALSE} it represents the number of feature/group coalitions to use directly.
 The quantity refers to the number of unique feature coalitions if \code{group = NULL},
 and group coalitions if \code{group != NULL}.
 \code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
@@ -136,8 +136,8 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed.
 \verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{adaptive = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
+(only when \code{iterative = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 \itemize{
 \item the final estimates.
 \code{"vS_details"} displays information about the v_S estimates.
@@ -239,7 +239,7 @@ The column \code{none} is the prediction not devoted to any of the features (giv
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{adaptive = TRUE} and \code{adaptive_args$compute_sd=TRUE}.}
+Only present when \code{iterative = TRUE} and \code{iterative_args$compute_sd=TRUE}.}
 \item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -249,8 +249,8 @@ Only present when \code{adaptive = TRUE} and \code{adaptive_args$compute_sd=TRUE
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
 \code{main_timing_secs} gives the time in seconds for the main computations.
-\code{iter_timing_secs} gives for each iteration of the adaptive estimation, the time spent on the different parts
-adaptive estimation routine.}
+\code{iter_timing_secs} gives for each iteration of the iterative estimation, the time spent on the different parts
+iterative estimation routine.}
 }
 }
 \description{

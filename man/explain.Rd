@@ -12,7 +12,7 @@ explain(
   paired_shap_sampling = TRUE,
   prediction_zero,
   max_n_coalitions = NULL,
-  adaptive = NULL,
+  iterative = NULL,
   group = NULL,
   n_MC_samples = 1000,
   seed = 1,
@@ -21,7 +21,7 @@ explain(
   get_model_specs = NULL,
   MSEv_uniform_comb_weights = TRUE,
   verbose = "basic",
-  adaptive_args = list(),
+  iterative_args = list(),
   shapley_reweighting = "on_all_cond",
   prev_shapr_object = NULL,
   ...
@@ -58,16 +58,16 @@ Typically we set this value equal to the mean of the response variable in our tr
 such as the mean of the predictions in the training data are also reasonable.}
 
 \item{max_n_coalitions}{Integer.
-The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
-(if \code{adaptive = TRUE}).
-If \code{adaptive = FALSE} it represents the number of feature/group coalitions to use directly.
+The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+(if \code{iterative = TRUE}).
+If \code{iterative = FALSE} it represents the number of feature/group coalitions to use directly.
 The quantity refers to the number of unique feature coalitions if \code{group = NULL},
 and group coalitions if \code{group != NULL}.
 \code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
-\item{adaptive}{Logical or NULL
+\item{iterative}{Logical or NULL
 If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
-If eventually \code{TRUE}, the Shapley values are estimated adaptively in an iterative manner.
+If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
@@ -75,7 +75,7 @@ A convergence criterion is used to determine if the variances of the Shapley val
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
-Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_args}.}
+Specifics related to the iterative process and convergence criterion are set through \code{iterative_args}.}
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
@@ -133,8 +133,8 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed.
 \verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{adaptive = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
+(only when \code{iterative = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 \itemize{
 \item the final estimates.
 \code{"vS_details"} displays information about the v_S estimates.
@@ -144,9 +144,9 @@ Note that any combination of four strings can be used.
 E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
 }}
 
-\item{adaptive_args}{Named list.
-Specifices the arguments for the adaptive procedure.
-See \code{\link[=get_adaptive_args_default]{get_adaptive_args_default()}} for description of the arguments and their default values.}
+\item{iterative_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{shapley_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
@@ -165,7 +165,7 @@ This method is preferred as it has performed the best in simulation studies.}
 If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
-want to continue the adaptive estimation. See the vignette for examples.}
+want to continue the iterative estimation. See the vignette for examples.}
 
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
@@ -297,7 +297,7 @@ The column \code{none} is the prediction not devoted to any of the features (giv
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{adaptive = TRUE} and \code{adaptive_args$compute_sd=TRUE}.}
+Only present when \code{iterative = TRUE} and \code{iterative_args$compute_sd=TRUE}.}
 \item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -307,8 +307,8 @@ Only present when \code{adaptive = TRUE} and \code{adaptive_args$compute_sd=TRUE
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
 \code{main_timing_secs} gives the time in seconds for the main computations.
-\code{iter_timing_secs} gives for each iteration of the adaptive estimation, the time spent on the different parts
-adaptive estimation routine.}
+\code{iter_timing_secs} gives for each iteration of the iterative estimation, the time spent on the different parts
+iterative estimation routine.}
 }
 }
 \description{
@@ -324,10 +324,10 @@ It is also possible to combine the different approaches, see the vignettes for m
 
 The package allows for parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
-For adaptive estimation (\code{adaptive=TRUE}), intermediate results may also be printed to the console
+For iterative estimation (\code{iterative=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).
 Moreover, the intermediate results are written to disk.
-This combined with adaptive estimation with (optional) intermediate results printed to the console (and temporary
+This combined with iterative estimation with (optional) intermediate results printed to the console (and temporary
 written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 in a memory friendly manner.
 }
@@ -463,19 +463,19 @@ explain_surrogate_lm <- explain(
   regression.model = parsnip::linear_reg()
 )
 
-## Adaptive estimation
+## iterative estimation
 # For illustration purposes only. By default not used for such small dimensions as here
 
 # Gaussian approach
-explain_adaptive <- explain(
+explain_iterative <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p,
   n_MC_samples = 1e2,
-  adaptive = TRUE,
-  adaptive_args = list(initial_n_coalitions = 10)
+  iterative = TRUE,
+  iterative_args = list(initial_n_coalitions = 10)
 )
 
 }

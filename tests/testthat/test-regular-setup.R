@@ -1211,7 +1211,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
       max_n_coalitions = NULL,
-      adaptive = FALSE
+      iterative = FALSE
     )
   )
 
@@ -1225,9 +1225,9 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       prediction_zero = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
-      adaptive_args = list(compute_sd = FALSE),
+      iterative_args = list(compute_sd = FALSE),
       max_n_coalitions = 2^ncol(x_explain_numeric),
-      adaptive = FALSE
+      iterative = FALSE
     )
   )
 
@@ -1243,9 +1243,9 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       prediction_zero = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
-      adaptive_args = list(compute_sd = FALSE),
+      iterative_args = list(compute_sd = FALSE),
       max_n_coalitions = 2^ncol(x_explain_numeric) + 1,
-      adaptive = FALSE
+      iterative = FALSE
     )
   )
 
@@ -1558,7 +1558,7 @@ test_that("vaeac_set_seed_works", {
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   explanation_vaeac_2 <- explain(
@@ -1575,7 +1575,7 @@ test_that("vaeac_set_seed_works", {
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   # Check for equal Shapley values
@@ -1600,7 +1600,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   #### We can do this by reusing the vaeac model OBJECT
@@ -1620,7 +1620,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     vaeac.extra_parameters = list(
       vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_model
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   # Check for equal Shapley values
@@ -1643,7 +1643,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     vaeac.extra_parameters = list(
       vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_path
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   # Check for equal Shapley values

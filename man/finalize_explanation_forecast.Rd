@@ -24,7 +24,7 @@ The column \code{none} is the prediction not devoted to any of the features (giv
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{adaptive = TRUE} and \code{adaptive_args$compute_sd=TRUE}.}
+Only present when \code{iterative = TRUE} and \code{iterative_args$compute_sd=TRUE}.}
 \item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -34,8 +34,8 @@ Only present when \code{adaptive = TRUE} and \code{adaptive_args$compute_sd=TRUE
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
 \code{main_timing_secs} gives the time in seconds for the main computations.
-\code{iter_timing_secs} gives for each iteration of the adaptive estimation, the time spent on the different parts
-adaptive estimation routine.}
+\code{iter_timing_secs} gives for each iteration of the iterative estimation, the time spent on the different parts
+iterative estimation routine.}
 }
 }
 \description{
@@ -51,10 +51,10 @@ It is also possible to combine the different approaches, see the vignettes for m
 
 The package allows for parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
-For adaptive estimation (\code{adaptive=TRUE}), intermediate results may also be printed to the console
+For iterative estimation (\code{iterative=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).
 Moreover, the intermediate results are written to disk.
-This combined with adaptive estimation with (optional) intermediate results printed to the console (and temporary
+This combined with iterative estimation with (optional) intermediate results printed to the console (and temporary
 written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 in a memory friendly manner.
 }
@@ -190,19 +190,19 @@ explain_surrogate_lm <- explain(
   regression.model = parsnip::linear_reg()
 )
 
-## Adaptive estimation
+## iterative estimation
 # For illustration purposes only. By default not used for such small dimensions as here
 
 # Gaussian approach
-explain_adaptive <- explain(
+explain_iterative <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p,
   n_MC_samples = 1e2,
-  adaptive = TRUE,
-  adaptive_args = list(initial_n_coalitions = 10)
+  iterative = TRUE,
+  iterative_args = list(initial_n_coalitions = 10)
 )
 
 }

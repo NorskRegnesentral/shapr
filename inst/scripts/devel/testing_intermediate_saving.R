@@ -6,13 +6,13 @@ aa = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_args = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.01,
     reduction_factor_vec = rep(10^(-5), 10),
     max_iter = 30
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,shapley_reweighting = "on_N"
 )
@@ -23,13 +23,13 @@ bb = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_args = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
     reduction_factor_vec = rep(10^(-5), 10),
     max_iter = 30
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,shapley_reweighting = "on_N",prev_shapr_object = aa
 )
@@ -48,13 +48,13 @@ full = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_args = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
     reduction_factor_vec = rep(10^(-5), 10),
     max_iter = 7
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
   shapley_reweighting = "on_N",
@@ -68,13 +68,13 @@ first = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_args = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
     reduction_factor_vec = rep(10^(-5), 10),
     max_iter = 4
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
   shapley_reweighting = "on_N",
@@ -88,13 +88,13 @@ second = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_args = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
     reduction_factor_vec = rep(10^(-5), 10),
     max_iter = 7
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
   shapley_reweighting = "on_N",
@@ -111,18 +111,18 @@ second_path = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_args = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
     reduction_factor_vec = rep(10^(-5), 10),
     max_iter = 5
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
   shapley_reweighting = "on_N",
   seed=NULL,
-  prev_shapr_object = first$internal$parameters$adaptive_args$saving_path
+  prev_shapr_object = first$internal$parameters$iterative_args$saving_path
 )
 
 

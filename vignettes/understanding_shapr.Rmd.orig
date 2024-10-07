@@ -39,7 +39,7 @@ library(shapr)
 
 > [Estimation approaches and plotting functionality](#ex)
 
-> [Adaptive estimation](#adaptive)
+> [iterative estimation](#iterative)
 
 > [Parallelization](#para)
 
@@ -99,10 +99,10 @@ on the process of estimating the `v(S)`'s (and training the `"vaeac"` model) is 
 `progressr` package, supporting progress updates also for parallelized computation.
 See [Verbosity and progress updates](#verbose) for details.
 
-Moreover, the default behavior is to estimate the Shapley values adaptively/iteratively, with increasing number of
+Moreover, the default behavior is to estimate the Shapley values iteratively/iteratively, with increasing number of
 feature coalitions being added, and to stop estimation as the estimated Shapley values has achieved a certain level of
 stability.
-More information about this is provided in [Adaptive estimation](#adaptive)
+More information about this is provided in [iterative estimation](#iterative)
 The above, combined with batch computation of the `v(S)` values, enables fast and accurate estimation of the
 Shapley values in a memory friendly manner.
 
@@ -117,18 +117,18 @@ Below we provide brief descriptions of the most important parts of the default b
 By default `explain` always compute feature-wise Shapley values.
 Groups of features can be explained by providing the feature groups through the `group` argument.
 
-When there are five or less features (or feature groups), adaptive estimation is by default disabled.
+When there are five or less features (or feature groups), iterative estimation is by default disabled.
 The reason for this is that it is usually faster to estimate the Shapley values for all possible coalitions (`v(S)`),
 than to estimate the uncertainty of the Shapley values, and potentially stop estimation earlier.
-While adaptive estimation is the default starting from six features, it is mainly when there are more than ten features,
+While iterative estimation is the default starting from six features, it is mainly when there are more than ten features,
 that it is most beneficial, and can save a lot of computation time.
 The reason for this is that the number of possible coalitions grows exponentially.
-These defaults can be overridden by setting the `adaptive` argument to `TRUE` or `FALSE`.
-When using the `adaptive` argument, the estimation for an observation is stopped when all Shapley value
+These defaults can be overridden by setting the `iterative` argument to `TRUE` or `FALSE`.
+When using the `iterative` argument, the estimation for an observation is stopped when all Shapley value
 standard deviations are below `t` times the range of the Shapley values.
-The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `adaptive_args$convergence_tolerance` argument, see [Adaptive estimation](#adaptive) for more details.
+The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tolerance` argument, see [iterative estimation](#iterative) for more details.
 
-Since the adaptiveness default changes based on the number of features (or feature groups), the default is also to have
+Since the iterativeness default changes based on the number of features (or feature groups), the default is also to have
 no upper bound on the number of coalitions considered.
 This can be controlled through the `max_n_coalitions` argument.
 
@@ -486,7 +486,7 @@ explanation <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p0,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 # Printing the Shapley values for the test data.
@@ -525,7 +525,7 @@ explanation_plot <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p0,
-  adaptive = FALSE
+  iterative = FALSE
 )
 plot(explanation_plot, plot_type = "beeswarm")
 ```
@@ -566,7 +566,7 @@ explanation_lm_cat <- explain(
   x_train = x_train_cat,
   approach = "ctree",
   prediction_zero = p0,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding
@@ -591,7 +591,7 @@ explanation_ctree <- explain(
   ctree.mincriterion = 0.80,
   ctree.minsplit = 20,
   ctree.minbucket = 20,
-  adaptive = FALSE
+  iterative = FALSE
 )
 # Default parameters (based on (Hothorn, 2006)) are:
 # mincriterion = 0.95
@@ -629,7 +629,7 @@ explanation_cat_method <- explain(
   x_train = x_train_all_cat,
   approach = "categorical",
   prediction_zero = p0,
-  adaptive = FALSE
+  iterative = FALSE
 )
 ```
 
@@ -691,7 +691,7 @@ explanation_timeseries <- explain(
   approach = "timeseries",
   prediction_zero = p0_ts,
   group = group_ts,
-  adaptive = FALSE
+  iterative = FALSE
 )
 ```
 
@@ -933,20 +933,20 @@ plot_MSEv_eval_crit(explanation_list_named) +
   )
 ```
 
-<a id="adaptive"></a>
+<a id="iterative"></a>
 
-# Adaptive estimation
+# iterative estimation
 
-Adaptive estimation is the default when computing Shapley values with six or more features (or feature groups), and
-can always be manually overridden by setting `adaptive = FALSE` in the `explain()` function.
-The idea behind adaptive estimation is to estimate sufficiently accurate Shapley value estimates faster.
+iterative estimation is the default when computing Shapley values with six or more features (or feature groups), and
+can always be manually overridden by setting `iterative = FALSE` in the `explain()` function.
+The idea behind iterative estimation is to estimate sufficiently accurate Shapley value estimates faster.
 First, an initial number of coalitions is sampled, then, bootsrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
-Specifics related to the adaptive process and convergence criterion are set through `adaptive_args` argument.
+Specifics related to the iterative process and convergence criterion are set through `iterative_args` argument.
 
 The convergence criterion we use is adopted from @covert2021improving, and slightly modified to work for multiple
 observations
@@ -955,7 +955,7 @@ observations
 
 where $\hat{\phi}_{ij}$ is the Shapley value of feature $j$ for observation $i$, and $\text{sd}(\phi_{ij})$
 is the its (bootstrap) estimated standard deviation. The default value of $t$ is 0.02.
-Below we provide some examples of how to use the adaptive estimation procedure
+Below we provide some examples of how to use the iterative estimation procedure
 
 
 
@@ -996,8 +996,8 @@ ex <- explain(
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = p0,
-  adaptive = TRUE,
-  adaptive_args = list(convergence_tolerance = 0.1)
+  iterative = TRUE,
+  iterative_args = list(convergence_tolerance = 0.1)
 )
 
 ```
@@ -1026,8 +1026,8 @@ computations (the computation of v(S)) in sequential batches with
 different feature subsets $S$, the memory usage can be significantly
 reduces.
 The user can control the number of batches by setting the two arguments
-`adaptive_args$max_batch_size` (defaults to 10) and
-`adaptive_args$min_n_batches` (defaults to 10).
+`iterative_args$max_batch_size` (defaults to 10) and
+`iterative_args$min_n_batches` (defaults to 10).
 
 ## Parallelized computation
 
@@ -1072,7 +1072,7 @@ and allows one or more of the strings `"basic"`, `"progress"`, `"convergence"`, 
 `"basic"` (default) displays basic information about the computation which is being performed,
 `"progress` displays information about where in the calculation process the function currently is,
 `"convergence"` displays information on how close to convergence the Shapley value estimates are
-(for adaptive estimation),
+(for iterative estimation),
 `"shapley"` displays (intermediate) Shapley value estimates and standard deviations + the final estimates,
 while `"vS_details"` displays information about the `v(S)` estimates for some of the approaches.
 If the user wants no printout, the argument can be set to `NULL`.
@@ -1246,7 +1246,7 @@ explanation_group <- explain(
   approach = "empirical",
   prediction_zero = p0,
   group = group_list,
-  adaptive = FALSE
+  iterative = FALSE
 )
 # Prints the group-wise explanations
 explanation_group
@@ -1425,7 +1425,7 @@ explanation_tidymodels <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p0,
-  adaptive = FALSE
+  iterative = FALSE
   )
 
 # See that the Shapley value explanations are identical too
@@ -1461,7 +1461,7 @@ explanation_vaeac <- explain(
   vaeac.depth = 2,
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2,
-  adaptive = FALSE
+  iterative = FALSE
 )
 ```
 
@@ -1498,7 +1498,7 @@ explanation_vaeac_early_stop <- explain(
   vaeac.epochs = 1000, # Set it to a large number
   vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2),
-  adaptive = FALSE
+  iterative = FALSE
 )
 ```
 
@@ -1519,15 +1519,15 @@ plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stop
 
 ## Continued computation {#cont_computation}
 In this section, we demonstrate how to continue to improve estimation accuracy with additional coalition samples,
-from a previous Shapley value computation based on `shapr::explain()` with the adaptive estimation procedure.
+from a previous Shapley value computation based on `shapr::explain()` with the iterative estimation procedure.
 This can be done either by passing an existing object of class `shapr`, or by passing a string with the path to
 the intermediately saved results.
-The latter is found at `SHAPR_OBJ$internal$parameters$adaptive_args$saving_path`, defaults to a temporary folder,
+The latter is found at `SHAPR_OBJ$internal$parameters$iterative_args$saving_path`, defaults to a temporary folder,
 and is updated after each iteration.
 This can be particularly handy for long-running computations.
 
 ```{r}
-# First we run the computation with the adaptive estimation procedure for a limited number of coalition samples
+# First we run the computation with the iterative estimation procedure for a limited number of coalition samples
 library(xgboost)
 library(data.table)
 
@@ -1565,7 +1565,7 @@ ex_init <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = 20,
-  adaptive = TRUE
+  iterative = TRUE
 )
 
 # Using the ex_init object to continue the computation with 5 more coalition samples
@@ -1576,11 +1576,11 @@ ex_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = 25,
-  adaptive_args = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
+  iterative_args = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_init
 )
 
-print(ex_further$internal$parameters$adaptive_args$saving_path)
+print(ex_further$internal$parameters$iterative_args$saving_path)
 
 # Using the ex_init object to continue the computation for the remaining coalition samples
 # but this time using the path to the saved intermediate estimation object
@@ -1591,7 +1591,7 @@ ex_even_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = NULL,
-  prev_shapr_object = ex_further$internal$parameters$adaptive_args$saving_path
+  prev_shapr_object = ex_further$internal$parameters$iterative_args$saving_path
 )
 
 

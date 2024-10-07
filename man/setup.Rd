@@ -28,8 +28,8 @@ setup(
   explain_xreg_lags = NULL,
   group_lags = NULL,
   verbose,
-  adaptive = NULL,
-  adaptive_args = list(),
+  iterative = NULL,
+  iterative_args = list(),
   shapley_reweighting = "none",
   is_python = FALSE,
   testing = FALSE,
@@ -65,9 +65,9 @@ such as the mean of the predictions in the training data are also reasonable.}
 \item{output_size}{TODO: Document}
 
 \item{max_n_coalitions}{Integer.
-The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
-(if \code{adaptive = TRUE}).
-If \code{adaptive = FALSE} it represents the number of feature/group coalitions to use directly.
+The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+(if \code{iterative = TRUE}).
+If \code{iterative = FALSE} it represents the number of feature/group coalitions to use directly.
 The quantity refers to the number of unique feature coalitions if \code{group = NULL},
 and group coalitions if \code{group != NULL}.
 \code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
@@ -151,8 +151,8 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed.
 \verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{adaptive = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
+(only when \code{iterative = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 \itemize{
 \item the final estimates.
 \code{"vS_details"} displays information about the v_S estimates.
@@ -162,9 +162,9 @@ Note that any combination of four strings can be used.
 E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
 }}
 
-\item{adaptive}{Logical or NULL
+\item{iterative}{Logical or NULL
 If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
-If eventually \code{TRUE}, the Shapley values are estimated adaptively in an iterative manner.
+If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
@@ -172,11 +172,11 @@ A convergence criterion is used to determine if the variances of the Shapley val
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
-Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_args}.}
+Specifics related to the iterative process and convergence criterion are set through \code{iterative_args}.}
 
-\item{adaptive_args}{Named list.
-Specifices the arguments for the adaptive procedure.
-See \code{\link[=get_adaptive_args_default]{get_adaptive_args_default()}} for description of the arguments and their default values.}
+\item{iterative_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{shapley_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
@@ -207,7 +207,7 @@ Used to calculate the time it took to run the full \code{explain} call.}
 If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
-want to continue the adaptive estimation. See the vignette for examples.}
+want to continue the iterative estimation. See the vignette for examples.}
 
 \item{...}{Further arguments passed to specific approaches}
 }

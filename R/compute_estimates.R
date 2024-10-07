@@ -16,7 +16,7 @@ compute_estimates <- function(internal, vS_list) {
   iter <- length(internal$iter_list)
   compute_sd <- internal$iter_list[[iter]]$compute_sd
 
-  n_boot_samps <- internal$parameters$adaptive_args$n_boot_samps
+  n_boot_samps <- internal$parameters$iterative_args$n_boot_samps
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,

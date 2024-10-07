@@ -37,53 +37,53 @@ p0 <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation_adaptive <- explain(
+explanation_iterative <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
   max_n_coalitions = 500,
   prediction_zero = p0,
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
   shapley_reweighting = "on_N"
 )
 
-explanation_adaptive <- explain(
+explanation_iterative <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
   n_coalitions = 500,
   prediction_zero = p0,
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
   shapley_reweighting = "on_N"
 )
 
 
-explanation_nonadaptive <- explain(
+explanation_noniterative <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
   n_coalitions = 400,
   prediction_zero = p0,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 
-explanation_adaptive <- explain(
+explanation_iterative <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
   n_coalitions = 500,
   prediction_zero = p0,
-  adaptive = TRUE,
-  adaptive_args = list(initial_n_coalitions=10,convergence_tolerance=0.0001),
+  iterative = TRUE,
+  iterative_args = list(initial_n_coalitions=10,convergence_tolerance=0.0001),
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
   shapley_reweighting = "on_N"
@@ -98,43 +98,43 @@ explanation_adaptive <- explain(
 
 
 
-plot(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
-     explanation_adaptive$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==1,Solar.R],type="l")
-sd_full <- explanation_adaptive$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==1][.N,Solar.R]
-n_samples_full <- explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res[.N,n_current_samples]
+plot(explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
+     explanation_iterative$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==1,Solar.R],type="l")
+sd_full <- explanation_iterative$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==1][.N,Solar.R]
+n_samples_full <- explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res[.N,n_current_samples]
 sd_full0 <- sd_full*sqrt(n_samples_full)
-lines(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
-      sd_full0/sqrt(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples),type="l",col=2)
+lines(explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
+      sd_full0/sqrt(explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples),type="l",col=2)
 
 
-plot(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
-     explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$estimated_required_samples,type="l",ylim=c(0,4000),lwd=4)
+plot(explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
+     explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$estimated_required_samples,type="l",ylim=c(0,4000),lwd=4)
 for(i in 1:20){
-  lines(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
-        explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res[[5+i]],type="l",col=1+i)
+  lines(explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
+        explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res[[5+i]],type="l",col=1+i)
 }
 
 
-plot(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
-     explanation_adaptive$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==1,Solar.R],type="l",ylim=c(0,2))
-sd_full <- explanation_adaptive$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==1][.N,Solar.R]
-n_samples_full <- explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res[.N,n_current_samples]
+plot(explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
+     explanation_iterative$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==1,Solar.R],type="l",ylim=c(0,2))
+sd_full <- explanation_iterative$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==1][.N,Solar.R]
+n_samples_full <- explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res[.N,n_current_samples]
 sd_full0 <- sd_full*sqrt(n_samples_full)
-lines(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
-      sd_full0/sqrt(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples),type="l",col=2,lwd=3)
+lines(explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
+      sd_full0/sqrt(explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples),type="l",col=2,lwd=3)
 
 for(i in 1:20){
-  lines(explanation_adaptive$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
-       explanation_adaptive$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==i,Solar.R],type="l",col=1+i)
+  lines(explanation_iterative$internal$output$iter_objects$dt_iter_convergence_res$n_current_samples,
+       explanation_iterative$internal$output$iter_objects$dt_iter_shapley_sd[explain_id==i,Solar.R],type="l",col=1+i)
 }
 
 
 
-lines(explanation_adaptive$internal$output$dt_iter_convergence_res$n_current_samples,
-      sd_full0/sqrt(explanation_adaptive$internal$output$dt_iter_convergence_res$n_current_samples),type="l",col=2)
+lines(explanation_iterative$internal$output$dt_iter_convergence_res$n_current_samples,
+      sd_full0/sqrt(explanation_iterative$internal$output$dt_iter_convergence_res$n_current_samples),type="l",col=2)
 
 
-plot(explanation_adaptive$internal$output$dt_iter_convergence_res$estimated_required_samples)
+plot(explanation_iterative$internal$output$dt_iter_convergence_res$estimated_required_samples)
 
 explanation_regular <- explain(
   model = model,
@@ -143,6 +143,6 @@ explanation_regular <- explain(
   approach = "gaussian",
   n_coalitions = NULL,
   prediction_zero = p0,
-  adaptive = FALSE
+  iterative = FALSE
 )
 

@@ -121,7 +121,7 @@ Current methodological restrictions:
 Future releases will include:
 
 -   Computational improvement of the AICc optimization approach,
--   Adaptive selection of method to account for the feature dependence.
+-   iterative selection of method to account for the feature dependence.
 -->
 
 Note the prediction outcome must be numeric. All approaches except

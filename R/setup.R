@@ -44,8 +44,8 @@ setup <- function(x_train,
                   explain_xreg_lags = NULL,
                   group_lags = NULL,
                   verbose,
-                  adaptive = NULL,
-                  adaptive_args = list(),
+                  iterative = NULL,
+                  iterative_args = list(),
                   shapley_reweighting = "none",
                   is_python = FALSE,
                   testing = FALSE,
@@ -64,7 +64,7 @@ setup <- function(x_train,
     prev_iter_list <- prev_internal$iter_list
 
     # Overwrite the input arguments set in explain() with those from in prev_shapr_object
-    # except model, x_explain, x_train, max_n_coalitions, adaptive_args, seed
+    # except model, x_explain, x_train, max_n_coalitions, iterative_args, seed
     list2env(prev_internal$parameters)
   }
 
@@ -86,8 +86,8 @@ setup <- function(x_train,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     verbose = verbose,
-    adaptive = adaptive,
-    adaptive_args = adaptive_args,
+    iterative = iterative,
+    iterative_args = iterative_args,
     shapley_reweighting = shapley_reweighting,
     is_python = is_python,
     testing = testing,
@@ -118,7 +118,7 @@ setup <- function(x_train,
 
   internal <- check_and_set_parameters(internal)
 
-  internal <- set_adaptive_parameters(internal, prev_iter_list)
+  internal <- set_iterative_parameters(internal, prev_iter_list)
 
   internal$timing_list <- list(
     init_time = init_time,
@@ -129,7 +129,7 @@ setup <- function(x_train,
 }
 
 get_prev_internal <- function(prev_shapr_object,
-                              exclude_parameters = c("max_n_coalitions", "adaptive_args", "seed")) {
+                              exclude_parameters = c("max_n_coalitions", "iterative_args", "seed")) {
   cl <- class(prev_shapr_object)[1]
 
   if (cl == "character") {
@@ -169,8 +169,8 @@ get_parameters <- function(approach,
                            explain_xreg_lags,
                            group_lags = NULL,
                            verbose = "basic",
-                           adaptive = FALSE,
-                           adaptive_args = list(),
+                           iterative = FALSE,
+                           iterative_args = list(),
                            shapley_reweighting = "none",
                            testing,
                            is_python,
@@ -183,11 +183,11 @@ get_parameters <- function(approach,
     stop("`paired_shap_sampling` must be a single logical.")
   }
 
-  if (!is.logical(adaptive) && length(adaptive) == 1) {
-    stop("`adaptive` must be a single logical.")
+  if (!is.logical(iterative) && length(iterative) == 1) {
+    stop("`iterative` must be a single logical.")
   }
-  if (!is.list(adaptive_args)) {
-    stop("`adaptive_args` must be a list.")
+  if (!is.list(iterative_args)) {
+    stop("`iterative_args` must be a list.")
   }
   if (!is.list(output_args)) {
     stop("`output_args` must be a list.")
@@ -308,8 +308,8 @@ get_parameters <- function(approach,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     verbose = verbose,
     shapley_reweighting = shapley_reweighting,
-    adaptive = adaptive,
-    adaptive_args = adaptive_args,
+    iterative = iterative,
+    iterative_args = iterative_args,
     output_args = output_args,
     testing = testing
   )
@@ -572,7 +572,7 @@ check_and_set_parameters <- function(internal) {
 
   internal <- set_output_parameters(internal)
 
-  internal <- check_and_set_adaptive(internal) # sets the adaptive parameter if it is NULL (default)
+  internal <- check_and_set_iterative(internal) # sets the iterative parameter if it is NULL (default)
 
   internal <- set_exact(internal)
 
@@ -718,7 +718,7 @@ set_output_parameters <- function(internal) {
 
   # Get defaults
   output_args <- utils::modifyList(get_output_args_default(internal),
-                                   adaptive_args,
+                                   iterative_args,
                                    keep.null = TRUE
   )
 
@@ -761,29 +761,29 @@ get_output_args_default <- function(keep_samp_for_vS = FALSE,
 }
 
 
-check_and_set_adaptive <- function(internal) {
-  adaptive <- internal$parameters$adaptive
+check_and_set_iterative <- function(internal) {
+  iterative <- internal$parameters$iterative
   approach <- internal$parameters$approach
 
-  # Always adaptive = FALSE for vaeac and regression_surrogate
+  # Always iterative = FALSE for vaeac and regression_surrogate
   if (any(approach %in% c("vaeac", "regression_surrogate"))) {
     unsupported <- approach[approach %in% c("vaeac", "regression_surrogate")]
 
-    if (isTRUE(adaptive)) {
+    if (isTRUE(iterative)) {
       warning(
         paste0(
-          "Adaptive estimation of Shapley values are not supported for approach = ",
-          paste0(unsupported, collapse = ", "), ". Setting adaptive = FALSE."
+          "iterative estimation of Shapley values are not supported for approach = ",
+          paste0(unsupported, collapse = ", "), ". Setting iterative = FALSE."
         )
       )
     }
 
-    internal$parameters$adaptive <- FALSE
+    internal$parameters$iterative <- FALSE
   } else {
-    # Sets the default value of adaptive to TRUE if computing more than 5 Shapley values for all other approaches
-    if (is.null(adaptive)) {
+    # Sets the default value of iterative to TRUE if computing more than 5 Shapley values for all other approaches
+    if (is.null(iterative)) {
       n_shapley_values <- internal$parameters$n_shapley_values # n_features if feature-wise and n_groups if group-wise
-      internal$parameters$adaptive <- isTRUE(n_shapley_values > 5)
+      internal$parameters$iterative <- isTRUE(n_shapley_values > 5)
     }
   }
 
@@ -796,9 +796,9 @@ set_exact <- function(internal) {
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
   is_groupwise <- internal$parameters$is_groupwise
-  adaptive <- internal$parameters$adaptive
+  iterative <- internal$parameters$iterative
 
-  if (isFALSE(adaptive) &&
+  if (isFALSE(iterative) &&
     (
       (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
         (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
@@ -831,7 +831,7 @@ check_computability <- function(internal) {
         paste0(
           "Due to computation time, we recommend not computing Shapley values exactly \n",
           "with all 2^n_features (", 2^n_features, ") coalitions for n_features > 13.\n",
-          "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
+          "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE.\n"
         )
       )
     }
@@ -840,20 +840,20 @@ check_computability <- function(internal) {
         paste0(
           "Due to computation time, we recommend not computing Shapley values exactly \n",
           "with all 2^n_groups (", 2^n_groups, ") coalitions for n_groups > 13.\n",
-          "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
+          "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE.\n"
         )
       )
     }
   } else {
     if (isFALSE(is_groupwise) && n_features > 30) {
       warning(
-        "Due to computation time, we strongly recommend enabling adaptive estimation with adaptive = TRUE",
+        "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE",
         " when n_features > 30.\n",
       )
     }
     if (isTRUE(is_groupwise) && n_groups > 30) {
       warning(
-        "Due to computation time, we strongly recommend enabling adaptive estimation with adaptive = TRUE",
+        "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE",
         " when n_groups > 30.\n",
       )
     }
@@ -1030,43 +1030,43 @@ check_groups <- function(feature_names, group) {
 
 
 #' @keywords internal
-set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
-  adaptive <- internal$parameters$adaptive
+set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
+  iterative <- internal$parameters$iterative
 
-  adaptive_args <- internal$parameters$adaptive_args
+  iterative_args <- internal$parameters$iterative_args
 
-  adaptive_args <- utils::modifyList(get_adaptive_args_default(internal),
-    adaptive_args,
+  iterative_args <- utils::modifyList(get_iterative_args_default(internal),
+    iterative_args,
     keep.null = TRUE
   )
 
-  # Force setting the number of coalitions and iterations for non-adaptive method
-  if (isFALSE(adaptive)) {
-    adaptive_args$max_iter <- 1
-    adaptive_args$initial_n_coalitions <- adaptive_args$max_n_coalitions
+  # Force setting the number of coalitions and iterations for non-iterative method
+  if (isFALSE(iterative)) {
+    iterative_args$max_iter <- 1
+    iterative_args$initial_n_coalitions <- iterative_args$max_n_coalitions
   }
 
-  check_adaptive_args(adaptive_args)
+  check_iterative_args(iterative_args)
 
   # Translate any null input
-  adaptive_args <- trans_null_adaptive_args(adaptive_args)
+  iterative_args <- trans_null_iterative_args(iterative_args)
 
-  internal$parameters$adaptive_args <- adaptive_args
+  internal$parameters$iterative_args <- iterative_args
 
   if (!is.null(prev_iter_list)) {
     # Update internal with the iter_list from prev_shapr_object
     internal$iter_list <- prev_iter_list
 
-    # Conveniently allow running non-adaptive estimation one step further
-    if (isFALSE(internal$parameters$adaptive)) {
-      internal$parameters$adaptive_args$max_iter <- length(internal$iter_list) + 1
-      internal$parameters$adaptive_args$reduction_factor_vec <- NULL
+    # Conveniently allow running non-iterative estimation one step further
+    if (isFALSE(internal$parameters$iterative)) {
+      internal$parameters$iterative_args$max_iter <- length(internal$iter_list) + 1
+      internal$parameters$iterative_args$reduction_factor_vec <- NULL
     }
 
-    # Update convergence data with NEW adaptive arguments
+    # Update convergence data with NEW iterative arguments
     internal <- check_convergence(internal)
 
-    # Check for convergence based on last iter_list with new adaptive arguments
+    # Check for convergence based on last iter_list with new iterative arguments
     check_vs_prev_shapr_object(internal)
 
     # Prepare next iteration
@@ -1074,20 +1074,20 @@ set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
   } else {
     internal$iter_list <- list()
     internal$iter_list[[1]] <- list(
-      n_coalitions = adaptive_args$initial_n_coalitions,
-      new_n_coalitions = adaptive_args$initial_n_coalitions,
+      n_coalitions = iterative_args$initial_n_coalitions,
+      new_n_coalitions = iterative_args$initial_n_coalitions,
       exact = internal$parameters$exact,
-      compute_sd = adaptive_args$compute_sd,
-      reduction_factor = adaptive_args$reduction_factor_vec[1],
-      n_batches = set_n_batches(adaptive_args$initial_n_coalitions, internal)
+      compute_sd = iterative_args$compute_sd,
+      reduction_factor = iterative_args$reduction_factor_vec[1],
+      n_batches = set_n_batches(iterative_args$initial_n_coalitions, internal)
     )
   }
 
   return(internal)
 }
 
-check_adaptive_args <- function(adaptive_args) {
-  list2env(adaptive_args, envir = environment())
+check_iterative_args <- function(iterative_args) {
+  list2env(iterative_args, envir = environment())
 
 
   # initial_n_coalitions
@@ -1096,7 +1096,7 @@ check_adaptive_args <- function(adaptive_args) {
     !is.na(initial_n_coalitions) &&
     initial_n_coalitions <= max_n_coalitions &&
     initial_n_coalitions > 2)) {
-    stop("`adaptive_args$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.")
+    stop("`iterative_args$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.")
   }
 
   # fixed_n_coalitions
@@ -1107,7 +1107,7 @@ check_adaptive_args <- function(adaptive_args) {
       fixed_n_coalitions_per_iter <= max_n_coalitions &&
       fixed_n_coalitions_per_iter > 0)) {
     stop(
-      "`adaptive_args$fixed_n_coalitions_per_iter` must be NULL or a single positive integer no larger than",
+      "`iterative_args$fixed_n_coalitions_per_iter` must be NULL or a single positive integer no larger than",
       "`max_n_coalitions`."
     )
   }
@@ -1118,7 +1118,7 @@ check_adaptive_args <- function(adaptive_args) {
       length(max_iter) == 1 &&
       !is.na(max_iter) &&
       max_iter > 0)) {
-    stop("`adaptive_args$max_iter` must be NULL, Inf or a single positive integer.")
+    stop("`iterative_args$max_iter` must be NULL, Inf or a single positive integer.")
   }
 
   # convergence_tolerance
@@ -1126,7 +1126,7 @@ check_adaptive_args <- function(adaptive_args) {
     !(length(convergence_tolerance) == 1 &&
       !is.na(convergence_tolerance) &&
       convergence_tolerance >= 0)) {
-    stop("`adaptive_args$convergence_tolerance` must be NULL, 0, or a positive numeric.")
+    stop("`iterative_args$convergence_tolerance` must be NULL, 0, or a positive numeric.")
   }
 
   # reduction_factor_vec
@@ -1134,7 +1134,7 @@ check_adaptive_args <- function(adaptive_args) {
     !(all(!is.na(reduction_factor_vec)) &&
       all(reduction_factor_vec <= 1) &&
       all(reduction_factor_vec >= 0))) {
-    stop("`adaptive_args$reduction_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
+    stop("`iterative_args$reduction_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
   }
 
   # n_boot_samps
@@ -1142,13 +1142,13 @@ check_adaptive_args <- function(adaptive_args) {
     length(n_boot_samps) == 1 &&
     !is.na(n_boot_samps) &&
     n_boot_samps > 0)) {
-    stop("`adaptive_args$n_boot_samps` must be a single positive integer.")
+    stop("`iterative_args$n_boot_samps` must be a single positive integer.")
   }
 
   # compute_sd
   if (!(is.logical(compute_sd) &&
     length(compute_sd) == 1)) {
-    stop("`adaptive_args$compute_sd` must be a single logical.")
+    stop("`iterative_args$compute_sd` must be a single logical.")
   }
 
 
@@ -1158,7 +1158,7 @@ check_adaptive_args <- function(adaptive_args) {
       length(min_n_batches) == 1 &&
       !is.na(min_n_batches) &&
       min_n_batches > 0)) {
-    stop("`adaptive_args$min_n_batches` must be NULL or a single positive integer.")
+    stop("`iterative_args$min_n_batches` must be NULL or a single positive integer.")
   }
 
   # max_batch_size
@@ -1167,41 +1167,41 @@ check_adaptive_args <- function(adaptive_args) {
       length(max_batch_size) == 1 &&
       !is.na(max_batch_size) &&
       max_batch_size > 0)) {
-    stop("`adaptive_args$max_batch_size` must be NULL, Inf or a single positive integer.")
+    stop("`iterative_args$max_batch_size` must be NULL, Inf or a single positive integer.")
   }
 
   # saving_path
   if (!(is.character(saving_path) &&
     length(saving_path) == 1)) {
-    stop("`adaptive_args$saving_path` must be a single character.")
+    stop("`iterative_args$saving_path` must be a single character.")
   }
 
   # Check that the saving_path exists, and abort if not...
   if (!dir.exists(dirname(saving_path))) {
     stop(
       paste0(
-        "Directory ", dirname(saving_path), " in the adaptive_args$saving_path does not exists.\n",
+        "Directory ", dirname(saving_path), " in the iterative_args$saving_path does not exists.\n",
         "Please create the directory with `dir.create('", dirname(saving_path), "')` or use another directory."
       )
     )
   }
 }
 
-trans_null_adaptive_args <- function(adaptive_args) {
-  list2env(adaptive_args, envir = environment())
+trans_null_iterative_args <- function(iterative_args) {
+  list2env(iterative_args, envir = environment())
 
   # Translating NULL to always return n_batches = 1 (if just one approach)
-  adaptive_args$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
-  adaptive_args$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
-  adaptive_args$max_iter <- ifelse(is.null(max_iter), Inf, max_iter)
+  iterative_args$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
+  iterative_args$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
+  iterative_args$max_iter <- ifelse(is.null(max_iter), Inf, max_iter)
 
-  return(adaptive_args)
+  return(iterative_args)
 }
 
 
 set_n_batches <- function(n_coalitions, internal) {
-  min_n_batches <- internal$parameters$adaptive_args$min_n_batches
-  max_batch_size <- internal$parameters$adaptive_args$max_batch_size
+  min_n_batches <- internal$parameters$iterative_args$min_n_batches
+  max_batch_size <- internal$parameters$iterative_args$max_batch_size
   n_unique_approaches <- internal$parameters$n_unique_approaches
 
 
@@ -1234,13 +1234,13 @@ check_vs_prev_shapr_object <- function(internal) {
     if (isTRUE(converged_sd)) {
       message0 <- c(
         message0,
-        "Convergence tolerance reached. Consider decreasing `adaptive_args$tolerance`.\n"
+        "Convergence tolerance reached. Consider decreasing `iterative_args$tolerance`.\n"
       )
     }
     if (isTRUE(converged_max_iter)) {
       message0 <- c(
         message0,
-        "Maximum number of iterations reached. Consider increasing `adaptive_args$max_iter`.\n"
+        "Maximum number of iterations reached. Consider increasing `iterative_args$max_iter`.\n"
       )
     }
     if (isTRUE(converged_max_n_coalitions)) {
@@ -1254,11 +1254,11 @@ check_vs_prev_shapr_object <- function(internal) {
 }
 
 # Get functions ========================================================================================================
-#' Function to specify arguments of the adaptive estimation procedure
+#' Function to specify arguments of the iterative estimation procedure
 #'
-#' @details The functions sets default values for the adaptive estimation procedure, according to the function defaults.
-#' If the argument `adaptive` of [shapr::explain()] is FALSE, it sets parameters corresponding to the use of a
-#' non-adaptive estimation procedure
+#' @details The functions sets default values for the iterative estimation procedure, according to the function defaults.
+#' If the argument `iterative` of [shapr::explain()] is FALSE, it sets parameters corresponding to the use of a
+#' non-iterative estimation procedure
 #'
 #' @param max_iter Integer. Maximum number of estimation iterations
 #' @param initial_n_coalitions Integer. Number of coalitions to use in the first estimation iteration.
@@ -1282,13 +1282,13 @@ check_vs_prev_shapr_object <- function(internal) {
 #' Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
 #' than the number of parallel workers.
 #' @param saving_path String.
-#' The path to the directory where the results of the adaptive estimation procedure should be saved.
+#' The path to the directory where the results of the iterative estimation procedure should be saved.
 #' Defaults to a temporary directory.
 #' @inheritParams default_doc_explain
 #'
 #' @export
 #' @author Martin Jullum
-get_adaptive_args_default <- function(internal,
+get_iterative_args_default <- function(internal,
                                            initial_n_coalitions = ceiling(
                                              min(
                                                200,
@@ -1304,16 +1304,16 @@ get_adaptive_args_default <- function(internal,
                                            convergence_tolerance = 0.02,
                                            reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
                                            n_boot_samps = 100,
-                                           compute_sd = isTRUE(internal$parameters$adaptive),
+                                           compute_sd = isTRUE(internal$parameters$iterative),
                                            max_batch_size = 10,
                                            min_n_batches = 10,
                                            saving_path = tempfile("shapr_obj_", fileext = ".rds")) {
-  adaptive <- internal$parameters$adaptive
+  iterative <- internal$parameters$iterative
   max_n_coalitions <- internal$parameters$max_n_coalitions
   exact <- internal$parameters$exact
   is_groupwise <- internal$parameters$is_groupwise
 
-  if (isTRUE(adaptive)) {
+  if (isTRUE(iterative)) {
     ret_list <- mget(
       c(
         "initial_n_coalitions",
