@@ -4,8 +4,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: gaussian
@@ -31,8 +31,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: regression_separate
@@ -58,8 +58,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: regression_separate
@@ -168,8 +168,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: gaussian
@@ -196,8 +196,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: gaussian
@@ -224,8 +224,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: gaussian
@@ -276,8 +276,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: empirical
@@ -304,8 +304,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: ctree
@@ -565,8 +565,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: ctree
@@ -593,8 +593,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: ctree
@@ -621,8 +621,8 @@
       (out <- code)
     Message
       Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, 
-       and is therefore set to 8.
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
       
       * Model class: <lm>
       * Approach: regression_separate
