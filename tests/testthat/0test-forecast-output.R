@@ -32,7 +32,8 @@ test_that("forecast_output_arima_numeric", {
       approach = "empirical",
       prediction_zero = p0_ar,
       group_lags = FALSE,
-      n_batches = 1
+      max_n_coalitions = 150,
+      adaptive = FALSE
     ),
     "forecast_output_arima_numeric"
   )
@@ -115,7 +116,8 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1:3],
     group_lags = FALSE,
     n_batches = 1,
-    max_n_coalitions = 200
+    max_n_coalitions = 200,
+    adaptive = FALSE
   )
 
 
@@ -133,7 +135,8 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1:2],
     group_lags = FALSE,
     n_batches = 1,
-    max_n_coalitions = 100
+    max_n_coalitions = 100,
+    adaptive = FALSE
   )
 
   h1 <- explain_forecast(
@@ -150,7 +153,8 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1],
     group_lags = FALSE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 50,
+    adaptive = FALSE
   )
 
   cols_horizon1 <- h2$internal$objects$cols_per_horizon[[1]]
@@ -186,7 +190,8 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     prediction_zero = p0_ar[1:3],
     group_lags = TRUE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 50,
+    adaptive = FALSE
   )
 
 
@@ -204,7 +209,8 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     prediction_zero = p0_ar[1:2],
     group_lags = TRUE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 50,
+    adaptive = FALSE
   )
 
   h1 <- explain_forecast(
@@ -221,7 +227,8 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     prediction_zero = p0_ar[1],
     group_lags = TRUE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 50,
+    adaptive = FALSE
   )
 
   expect_equal(

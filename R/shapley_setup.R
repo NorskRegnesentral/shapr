@@ -607,9 +607,7 @@ shapley_setup_forecast <- function(internal) {
     }
 
     n_this_featcomb <- length(this_coal_feature_list)
-
     n_coalitions_here <- min(2^n_this_featcomb, n_coalitions)
-    exact_here <- ifelse(n_coalitions_here == 2^n_this_featcomb, TRUE, exact)
 
     X_list[[i]] <- create_coalition_table(
       m = n_this_featcomb,
@@ -650,6 +648,10 @@ shapley_setup_forecast <- function(internal) {
 
   W <- NULL # Included for consistency. Necessary weights are in W_list instead
 
+  coalition_map <- X[, .(id_coalition,
+    coalitions_str = sapply(coalitions, paste, collapse = " ")
+  )]
+
   ## Get feature matrix ---------
   S <- coalition_matrix_cpp(
     coalitions = X[["features"]],
@@ -661,6 +663,7 @@ shapley_setup_forecast <- function(internal) {
 
   # Updating parameters$exact as done in create_coalition_table
   if (!exact && n_coalitions >= 2^n_shapley_values) {
+    internal$iter_list[[iter]]$exact <- TRUE
     internal$parameters$exact <- TRUE # Note that this is exact only if all horizons use the exact method.
   }
 
@@ -670,18 +673,15 @@ shapley_setup_forecast <- function(internal) {
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
 
-  internal$objects$X <- X
-  internal$objects$W <- W
-  internal$objects$S <- S
-  internal$iter_list[[1]]$X <- internal$objects$X
+  internal$iter_list[[iter]]$X <- X
+  internal$iter_list[[iter]]$W <- W
+  internal$iter_list[[iter]]$S <- S
   internal$objects$id_coalition_mapper_dt <- id_coalition_mapper_dt
-  internal$objects$S_batch <- create_S_batch(internal)
-  internal$iter_list[[1]]$X <- NULL
+  internal$iter_list[[iter]]$coalition_map <- coalition_map
+  internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
 
   internal$objects$cols_per_horizon <- cols_per_horizon
   internal$objects$W_list <- W_list
-  internal$objects$X_list <- X_list
-
 
   return(internal)
 }

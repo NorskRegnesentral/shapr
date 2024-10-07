@@ -95,6 +95,7 @@ explain_forecast <- function(model,
                              approach,
                              prediction_zero,
                              max_n_coalitions = NULL,
+                             adaptive = NULL,
                              group_lags = TRUE,
                              group = NULL,
                              n_MC_samples = 1e3,
@@ -104,11 +105,11 @@ explain_forecast <- function(model,
                              get_model_specs = NULL,
                              verbose = "basic",
                              ...) { # ... is further arguments passed to specific approaches
-  timing_list <- list(
-    init_time = Sys.time()
-  )
+  init_time <- Sys.time()
 
-  set.seed(seed)
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
 
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
@@ -117,7 +118,6 @@ explain_forecast <- function(model,
   if (is.null(train_idx)) {
     train_idx <- seq.int(from = max(c(explain_y_lags, explain_xreg_lags)), to = nrow(y))[-explain_idx]
   }
-
 
   # Sets up and organizes input parameters
   # Checks the input parameters and their compatability
@@ -128,14 +128,12 @@ explain_forecast <- function(model,
     output_size = horizon,
     max_n_coalitions = max_n_coalitions,
     n_MC_samples = n_MC_samples,
-    #    n_batches = n_batches, # TODO: This is not used anymore, but the code does not use the adaptive version of it
-    #                 either I think... I have now just set it to always 10 in the create_S_batches_forecast function.
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
     type = "forecast",
     horizon = horizon,
-    adaptive = FALSE,
+    adaptive = adaptive,
     y = y,
     xreg = xreg,
     train_idx = train_idx,
@@ -148,14 +146,12 @@ explain_forecast <- function(model,
     ...
   )
 
-  timing_list$setup <- Sys.time()
 
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(
     predict_model = predict_model,
     model = model
   )
-
 
   # Checks that predict_model gives correct format
   test_predict_model(
@@ -165,45 +161,71 @@ explain_forecast <- function(model,
     internal = internal
   )
 
-  timing_list$test_prediction <- Sys.time()
-
-
-  # Sets up the Shapley (sampling) framework and prepares the
-  # conditional expectation computation for the chosen approach
-  # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-
-  # setup the Shapley framework
-  internal <- shapley_setup_forecast(internal)
+  internal$timing_list$test_prediction <- Sys.time()
 
   # Setup for approach
   internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
-  timing_list$setup_computation <- Sys.time()
+  internal$main_timing_list <- internal$timing_list
 
-  ### Temporary solution for forecast
-  internal$iter_list[[1]]$X <- internal$objects$X
-  internal$iter_list[[1]]$S <- internal$objects$S
-  internal$iter_list[[1]]$S_batch <- internal$objects$S_batch
+  converged <- FALSE
+  iter <- length(internal$iter_list)
 
-  # Compute the v(S):
-  # Get the samples for the conditional distributions with the specified approach
-  # Predict with these samples
-  # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model, method = "regular")
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
 
-  timing_list$compute_vS <- Sys.time()
+  cli_startup(internal, model, verbose)
 
-  # Compute Shapley values based on conditional expectations (v(S))
-  # Organize function output
-  internal <- compute_estimates(
-    vS_list = vS_list,
-    internal = internal
-  )
-  internal$iter_list[[2]] <- numeric()
+  while (converged == FALSE) {
+    cli_iter(verbose, internal, iter)
+
+    internal$timing_list <- list(init = Sys.time())
+
+    # setup the Shapley framework
+    internal <- shapley_setup_forecast(internal)
+
+    # May not need to be called here?
+    internal <- setup_approach(internal, model = model, predict_model = predict_model)
+
+    # Compute the vS
+    vS_list <- compute_vS(internal, model, predict_model, method = "regular")
+
+    # Compute Shapley values based on conditional expectations (v(S))
+    internal <- compute_estimates(
+      vS_list = vS_list,
+      internal = internal
+    )
+
+    # Check convergence based on estimates and standard deviations (and thresholds)
+    internal <- check_convergence(internal)
+
+    # Save intermediate results
+    save_results(internal)
+
+    # Preparing parameters for next iteration (does not do anything if already converged)
+    internal <- prepare_next_iteration(internal)
+
+    # Printing iteration information
+    print_iter(internal)
+
+    ### Setting globals for to simplify the loop
+    converged <- internal$iter_list[[iter]]$converged
+
+    internal$timing_list$postprocess_res <- Sys.time()
+
+    internal$iter_timing_list[[iter]] <- internal$timing_list
+
+    iter <- iter + 1
+  }
+
+  internal$main_timing_list$main_computation <- Sys.time()
 
   output <- finalize_explanation(internal = internal)
 
-  output$timing <- compute_time(timing_list)
+  internal$main_timing_list$finalize_explanation <- Sys.time()
+
+  output$timing <- compute_time(internal)
 
   # Some cleanup when doing testing
   testing <- internal$parameters$testing
