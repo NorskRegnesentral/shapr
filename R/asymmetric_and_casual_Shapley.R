@@ -664,7 +664,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
   X <- internal$iter_list[[iter]]$X
   S <- internal$iter_list[[iter]]$S
   S_causal_steps <- internal$iter_list[[iter]]$S_causal_steps
-  S_causal_steps_strings <- internal$iter_list[[iter]]$S_causal_steps_strings # TODO: REMOVE
 
   # Extract the needed variables
   x_train <- internal$data$x_train
@@ -690,12 +689,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
     # Extract the index of the current coalition
     index_feature <- index_features[index_feature_idx]
 
-    # TODO: REMOVE
-    message(paste0(
-      "Coalition ", index_feature_idx, " of ", length(index_features),
-      " (id_coalition = ", index_feature, ")."
-    ))
-
     # Reset the internal_copy list for each new coalition
     if (index_feature_idx > 1) {
       internal_copy$data$x_explain <- x_explain
@@ -718,11 +711,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
     # Loop over the steps in the iterative sampling process to generate MC samples for the unconditional features
     sampling_step_idx <- 2
     for (sampling_step_idx in seq_along(S_causal_steps_now)) {
-      # TODO: REMOVE
-      message(paste0(
-        "Sampling step ", sampling_step_idx, " of ", length(S_causal_steps_now),
-        " (", S_causal_steps_strings[[index_feature]][sampling_step_idx], ")."
-      ))
 
       # Set flag indicating whether or not we are in the first sampling step, as the the gaussian and copula
       # approaches need to know this to change their sampling procedure to ensure correctly generated MC samples
@@ -738,7 +726,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         # Marginal distribution as there are no variables to condition on
 
         # Generate the marginal data either form the Gaussian or categorical distribution or the training data
-        # TODO: Can extend to also sample from the marginals of the (gaussian) copula and vaeac
+        # TODO: Can extend to also sample from the marginals of the gaussian copula and vaeac
         if (approach == "gaussian") {
           # Sample marginal data from the marginal gaussian distribution
           dt_Sbar_now_marginal_values <- create_marginal_data_gaussian(
@@ -790,7 +778,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
           dt_new <-
             dt_new[, .SD[if (.N == n_samp_now) seq(.N) else sample(.N, n_samp_now, replace = TRUE, prob = w)], by = id]
 
-          # TODO: remove
           # Check that dt_new has the right number of rows.
           if (nrow(dt_new) != n_explain * n_MC_samples) stop("`dt_new` does not have the right number of rows.\n")
         }
