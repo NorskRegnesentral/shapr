@@ -11,6 +11,7 @@ test_that("output_asymmetric_conditional", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = NULL,
+      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_conditional"
@@ -29,7 +30,8 @@ test_that("output_asymmetric_conditional_regression", {
       prediction_zero = p0,
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
-      confounding = NULL
+      confounding = NULL,
+      paired_shap_sampling = FALSE
     ),
     "output_asymmetric_conditional_regression"
   )
@@ -48,9 +50,10 @@ test_that("output_asymmetric_conditional_regression_adaptive", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = NULL,
+      paired_shap_sampling = FALSE,
       adaptive = TRUE
     ),
-    "output_asymmetric_conditional_regression"
+    "output_asymmetric_conditional_regression_adaptive"
   )
 })
 
@@ -120,6 +123,7 @@ test_that("output_asymmetric_causal_confounding_TRUE", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = TRUE,
+      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_TRUE"
@@ -140,6 +144,7 @@ test_that("output_asymmetric_causal_confounding_FALSE", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = FALSE,
+      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_FALSE"
@@ -158,6 +163,7 @@ test_that("output_asymmetric_causal_confounding_mix", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
+      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_mix"
@@ -177,6 +183,7 @@ test_that("output_asymmetric_causal_confounding_mix_n_coal", {
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
       n_MC_samples = 5, # Just for speed
+      paired_shap_sampling = FALSE,
       max_n_coalitions = 6
     ),
     "output_asymmetric_causal_confounding_mix_n_coal"
@@ -195,6 +202,7 @@ test_that("output_asymmetric_causal_confounding_mix_empirical", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
+      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_mix_empirical"
@@ -208,11 +216,12 @@ test_that("output_asymmetric_causal_confounding_mix_ctree", {
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
-      approach = "empirical",
+      approach = "ctree",
       prediction_zero = p0,
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
+      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_causal_confounding_mix_ctree"
@@ -314,6 +323,28 @@ test_that("output_symmetric_causal_confounding_mix_group", {
   )
 })
 
+test_that("output_symmetric_causal_confounding_mix_group_adaptive", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      prediction_zero = p0,
+      asymmetric = FALSE,
+      causal_ordering = list(1, 2, 3),
+      confounding = c(TRUE, TRUE, FALSE),
+      group = list("A" = c("Solar.R"), B = c("Wind", "Temp"), C = c("Month", "Day")),
+      n_MC_samples = 5, # Just for speed,
+      verbose = c("convergence"),
+      adaptive = TRUE
+    ),
+    "output_symmetric_causal_confounding_mix_group_adaptive"
+  )
+})
+
+
 
 
 
@@ -336,6 +367,25 @@ test_that("output_mixed_symmetric_causal_confounding_TRUE", {
   )
 })
 
+test_that("output_mixed_symmetric_causal_confounding_TRUE_adaptive", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_mixed,
+      x_explain = x_explain_mixed,
+      x_train = x_train_mixed,
+      approach = "ctree",
+      prediction_zero = p0,
+      asymmetric = FALSE,
+      causal_ordering = list(1:2, 3, 4:5),
+      confounding = TRUE,
+      n_MC_samples = 5, # Just for speed
+      adaptive = TRUE
+    ),
+    "output_mixed_symmetric_causal_confounding_TRUE_adaptive"
+  )
+})
+
 test_that("output_mixed_asymmetric_causal_confounding_mixed", {
   expect_snapshot_rds(
     explain(
@@ -348,6 +398,7 @@ test_that("output_mixed_asymmetric_causal_confounding_mixed", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
+      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_mixed_symmetric_causal_confounding_mixed"
@@ -366,6 +417,7 @@ test_that("output_mixed_asymmetric_causal_confounding_mixed_2", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(FALSE, TRUE, TRUE),
+      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_mixed_symmetric_causal_confounding_mixed_2"
@@ -385,7 +437,9 @@ test_that("output_mixed_asymmetric_conditional_regression", {
       prediction_zero = p0,
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
-      confounding = NULL
+      paired_shap_sampling = FALSE,
+      confounding = NULL,
+      adaptive = TRUE
     ),
     "output_mixed_asymmetric_conditional_regression"
   )
@@ -409,6 +463,25 @@ test_that("output_categorical_asymmetric_causal_mixed_categorical", {
       n_MC_samples = 5 # Just for speed
     ),
     "output_categorical_asymmetric_causal_mixed_categorical"
+  )
+})
+
+test_that("output_categorical_asymmetric_causal_mixed_categorical_adaptive", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical,
+      x_train = x_train_categorical,
+      approach = "categorical",
+      prediction_zero = p0,
+      asymmetric = FALSE,
+      causal_ordering = list(3:4, 2, 1),
+      confounding = c(TRUE, FALSE, FALSE),
+      n_MC_samples = 5, # Just for speed
+      adaptive = TRUE
+    ),
+    "output_categorical_asymmetric_causal_mixed_categorical_adaptive"
   )
 })
 
