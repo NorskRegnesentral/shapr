@@ -554,7 +554,7 @@ it produces more negative values for the `cosyear` feature.
 When going from symmetric to asymmetric Shapley values, we see that many of the features'
 Shapley values are now shrunken closer to zero, especially `temp` and `atemp`.
 
-```{r explanation_asym_con_beeswarm, fig.height = 9}
+```{r explanation_asym_con_beeswarm, fig.height = 9, cache = TRUE}
 plot_beeswarms(explanation_asym_con, title = "Asymmetric conditional Shapley values")
 ```
 
@@ -1311,7 +1311,7 @@ have a major impact on the time. However, for, e.g., the `ctree` approach which
 is much slower, this will take a significant amount of extra time. The `vaeac`
 approach trains only on these relecant coalitions.
 ```{r implementation_details, cache = TRUE}
-S_causal_steps <- explanation_sym_cau$gaussian$internal$objects$S_causal_steps
+S_causal_steps <- explanation_sym_cau$gaussian$internal$iter_list[[1]]$S_causal_steps
 S_causal_unlist <- do.call(c, unlist(S_causal_steps, recursive = FALSE))
 S_causal_steps_freq <- S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)]
 S_causal_steps_freq <- S_causal_steps_freq[!sapply(S_causal_steps_freq, is.null)] # Remove NULLs
