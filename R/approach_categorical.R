@@ -228,9 +228,9 @@ prepare_data_single_coalition <- function(internal, index_features) {
 
   # Merge (right outer join) the joint_probability_dt data with the conditional feature values
   results_id_coalition <- data.table::merge.data.table(joint_probability_dt,
-                                                         dt_conditional_feature_values,
-                                                         by = cond_cols,
-                                                         allow.cartesian = TRUE
+    dt_conditional_feature_values,
+    by = cond_cols,
+    allow.cartesian = TRUE
   )
 
   # Get the weights/conditional probabilities for each valid X_sbar conditioned on X_s for all explicands

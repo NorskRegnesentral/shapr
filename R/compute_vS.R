@@ -169,7 +169,7 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   y <- internal$data$y
   xreg <- internal$data$xreg
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
-  causal_sampling = internal$parameters$causal_sampling
+  causal_sampling <- internal$parameters$causal_sampling
 
   # Make it optional to store and return the dt_list
   dt <- batch_prepare_vS_MC_aux_causal(S = S, internal = internal, causal_sampling = causal_sampling)
@@ -201,7 +201,7 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
 batch_prepare_vS_MC_aux_causal <- function(S, internal, causal_sampling) {
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
-  prepare_data_function = if (causal_sampling) prepare_data_causal else prepare_data
+  prepare_data_function <- if (causal_sampling) prepare_data_causal else prepare_data
 
   iter <- length(internal$iter_list)
   X <- internal$iter_list[[iter]]$X

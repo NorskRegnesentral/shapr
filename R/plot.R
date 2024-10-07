@@ -60,9 +60,10 @@
 #' character vector, indicating the name(s) of the feature(s) to plot.
 #' @param scatter_hist Logical.
 #' Only used for `plot_type = "scatter"`.
-#' Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note that the
-#' bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.
-#' @param include_group_feature_means Logical. Whether to include the average feature value in a group on the y-axis or not.
+#' Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note
+#' that the bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.
+#' @param include_group_feature_means Logical.
+#' Whether to include the average feature value in a group on the y-axis or not.
 #' If `FALSE` (default), then no value is shown for the groups. If `TRUE`, then `shapr` includes the mean of the
 #' features in each group.
 #' @param ... Currently not used.
@@ -185,7 +186,7 @@ plot.shapr <- function(x,
   }
 
   # Remove the explain_id column
-  x$shapley_values = x$shapley_values[, -"explain_id"]
+  x$shapley_values <- x$shapley_values[, -"explain_id"]
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
@@ -195,15 +196,17 @@ plot.shapr <- function(x,
   # For group-wise Shapley values, we check if we are to take the mean over grouped features
   if (is_groupwise) {
     if (is.na(include_group_feature_means) ||
-        !is.logical(include_group_feature_means) ||
-        length(include_group_feature_means) > 1){
+      !is.logical(include_group_feature_means) ||
+      length(include_group_feature_means) > 1) {
       stop("`include_group_feature_means` must be single logical.")
     }
     if (!include_group_feature_means && plot_type %in% c("scatter", "beeswarm")) {
-      stop(paste0("`shapr` cannot make a `", plot_type, "` plot for group-wise Shapley values, as the plot needs a ",
-                  "single feature value for the whole group.\n",
-                  "For numerical data, the user can set `include_group_feature_means = TRUE` to use the mean of all ",
-                  "grouped features. The user should use this option cautiously to not misinterpret the explanations."))
+      stop(paste0(
+        "`shapr` cannot make a `", plot_type, "` plot for group-wise Shapley values, as the plot needs a ",
+        "single feature value for the whole group.\n",
+        "For numerical data, the user can set `include_group_feature_means = TRUE` to use the mean of all ",
+        "grouped features. The user should use this option cautiously to not misinterpret the explanations."
+      ))
     }
 
     if (any(x$internal$objects$feature_specs$classes != "numeric")) {
@@ -212,12 +215,16 @@ plot.shapr <- function(x,
 
     # Take the mean over the grouped features and update the feature name to the group name
     x$internal$data$x_explain <-
-      x$internal$data$x_explain[, lapply(x$internal$parameters$group,
-                                         function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE))]
+      x$internal$data$x_explain[, lapply(
+        x$internal$parameters$group,
+        function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE)
+      )]
 
     x$internal$data$x_train <-
-      x$internal$data$x_train[, lapply(x$internal$parameters$group,
-                                       function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE))]
+      x$internal$data$x_train[, lapply(
+        x$internal$parameters$group,
+        function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE)
+      )]
   }
 
   # melting Kshap
@@ -1835,7 +1842,6 @@ create_feature_descriptions_dt <- function(explanation_list,
                                            horizontal_bars,
                                            digits,
                                            include_group_feature_means) {
-
   # Check if are dealing with group-wise or feature-wise Shapley values
   if (explanation_list[[1]]$internal$parameters$is_groupwise) {
     # Group-wise Shapley values
@@ -1849,21 +1855,20 @@ create_feature_descriptions_dt <- function(explanation_list,
 
     # Check if we are to compute the mean feature value within each group for each explicand
     if (include_group_feature_means) {
-      feature_groups = explanation_list[[1]]$internal$parameters$group
+      feature_groups <- explanation_list[[1]]$internal$parameters$group
       x_explain <-
         x_explain[, lapply(feature_groups, function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE))]
 
       # Extract only the relevant columns
-      x_explain = x_explain[, only_these_features_wo_none, with = FALSE]
+      x_explain <- x_explain[, only_these_features_wo_none, with = FALSE]
 
       # Create the description matrix
       desc_mat <- trimws(format(x_explain, digits = digits))
       for (i in seq_len(ncol(desc_mat))) desc_mat[, i] <- paste0(colnames(desc_mat)[i], " = ", desc_mat[, i])
-
     } else {
       # Create the description matrix
-      desc_mat = matrix(rep(only_these_features_wo_none, each = nrow(x_explain)), nrow = nrow(x_explain))
-      colnames(desc_mat) = only_these_features_wo_none
+      desc_mat <- matrix(rep(only_these_features_wo_none, each = nrow(x_explain)), nrow = nrow(x_explain))
+      colnames(desc_mat) <- only_these_features_wo_none
     }
   } else {
     # Feature-wise Shapley values
@@ -1880,9 +1885,9 @@ create_feature_descriptions_dt <- function(explanation_list,
   # Converting and melting the explicands
   dt_desc <- data.table::as.data.table(cbind(none = "None", desc_mat))
   dt_desc_long <- data.table::melt(dt_desc[, .id := index_explicands],
-                                   id.vars = ".id",
-                                   variable.name = ".feature",
-                                   value.name = ".description"
+    id.vars = ".id",
+    variable.name = ".feature",
+    value.name = ".description"
   )
 
   # Make the description into an ordered factor such that the features in the

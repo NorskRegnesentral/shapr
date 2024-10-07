@@ -213,8 +213,8 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
 
       # Extract the paired coalitions from X_samp
       X_boot00_paired <- merge(X_boot00[, .(features_dup_tmp)],
-                               X_samp[, .(id_coalition, features, n_features, N, features_tmp)],
-                               by.x = "features_dup_tmp", by.y = "features_tmp"
+        X_samp[, .(id_coalition, features, n_features, N, features_tmp)],
+        by.x = "features_dup_tmp", by.y = "features_tmp"
       )
       X_boot0 <- rbind(
         X_boot00[, .(id_coalition, features, n_features, N)],
@@ -307,8 +307,8 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
 
     # Extract the paired coalitions from X_samp
     X_boot00_paired <- merge(X_boot00_paired,
-                             X_samp[, .(id_coalition, coalition_size, N, shapley_weight, coalitions_tmp)],
-                             by = "coalitions_tmp"
+      X_samp[, .(id_coalition, coalition_size, N, shapley_weight, coalitions_tmp)],
+      by = "coalitions_tmp"
     )
     X_boot0 <- rbind(
       X_boot00[, .(boot_id, id_coalition, coalitions, coalition_size, N)],

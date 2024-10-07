@@ -129,10 +129,10 @@ shapley_setup <- function(internal) {
     S_causal_steps_unique_S <- coalition_matrix_cpp(coalitions = S_causal_steps_unique, m = n_shapley_values)
 
     # Insert into the internal list
-    internal$iter_list[[iter]]$S_causal_steps = S_causal_steps
-    internal$iter_list[[iter]]$S_causal_steps_strings = S_causal_steps_strings
-    internal$iter_list[[iter]]$S_causal_steps_unique = S_causal_steps_unique
-    internal$iter_list[[iter]]$S_causal_steps_unique_S = S_causal_steps_unique_S
+    internal$iter_list[[iter]]$S_causal_steps <- S_causal_steps
+    internal$iter_list[[iter]]$S_causal_steps_strings <- S_causal_steps_strings
+    internal$iter_list[[iter]]$S_causal_steps_unique <- S_causal_steps_unique
+    internal$iter_list[[iter]]$S_causal_steps_unique_S <- S_causal_steps_unique_S
   }
 
   return(internal)
@@ -182,17 +182,21 @@ create_coalition_table <- function(m,
                                    shapley_reweighting = "none",
                                    dt_valid_causal_coalitions = NULL) {
   if (exact) {
-    dt <- exact_coalition_table(m = m,
-                                weight_zero_m = weight_zero_m,
-                                dt_valid_causal_coalitions = dt_valid_causal_coalitions)
+    dt <- exact_coalition_table(
+      m = m,
+      weight_zero_m = weight_zero_m,
+      dt_valid_causal_coalitions = dt_valid_causal_coalitions
+    )
   } else {
-    dt <- sample_coalition_table(m = m,
-                                 n_coalitions = n_coalitions,
-                                 weight_zero_m = weight_zero_m,
-                                 paired_shap_sampling = paired_shap_sampling,
-                                 prev_coal_samples = prev_coal_samples,
-                                 shapley_reweighting = shapley_reweighting,
-                                 dt_valid_causal_coalitions = dt_valid_causal_coalitions)
+    dt <- sample_coalition_table(
+      m = m,
+      n_coalitions = n_coalitions,
+      weight_zero_m = weight_zero_m,
+      paired_shap_sampling = paired_shap_sampling,
+      prev_coal_samples = prev_coal_samples,
+      shapley_reweighting = shapley_reweighting,
+      dt_valid_causal_coalitions = dt_valid_causal_coalitions
+    )
     stopifnot(
       data.table::is.data.table(dt),
       !is.null(dt[["p"]])
@@ -307,7 +311,6 @@ sample_coalition_table <- function(m,
 
   # Split in whether we do asymmetric or symmetric/regular Shapley values
   if (!is.null(dt_valid_causal_coalitions)) {
-
     # Asymmetric Shapley values
     while (unique_samples < n_coalitions - 2) { # Sample until we have the right number of unique coalitions
 
@@ -318,7 +321,7 @@ sample_coalition_table <- function(m,
       # The weights of each coalition size is split evenly among the members of each coalition size, such that
       # all.equal(p, dt_valid_causal_coalitions[-c(1,.N), sum(shapley_weight), by = coalition_size][, V1])
       coal_sample <-
-        dt_valid_causal_coalitions[-c(1,.N)][sample(.N, n_samps, replace = TRUE, prob = shapley_weight), coalitions]
+        dt_valid_causal_coalitions[-c(1, .N)][sample(.N, n_samps, replace = TRUE, prob = shapley_weight), coalitions]
 
       # Add the samples
       coal_sample_all <- c(coal_sample_all, coal_sample)
@@ -327,7 +330,6 @@ sample_coalition_table <- function(m,
       unique_samples <- length(unique(coal_sample_all))
     }
   } else {
-
     # Symmetric/regular Shapley values
     while (unique_samples < n_coalitions - 2) { # Sample until we have the right number of unique coalitions
       if (paired_shap_sampling == TRUE) {

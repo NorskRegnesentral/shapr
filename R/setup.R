@@ -205,30 +205,30 @@ get_parameters <- function(approach,
 
   # max_n_coalitions
   if (!is.null(max_n_coalitions) &&
-      !(is.wholenumber(max_n_coalitions) &&
-        length(max_n_coalitions) == 1 &&
-        !is.na(max_n_coalitions) &&
-        max_n_coalitions > 0)) {
+    !(is.wholenumber(max_n_coalitions) &&
+      length(max_n_coalitions) == 1 &&
+      !is.na(max_n_coalitions) &&
+      max_n_coalitions > 0)) {
     stop("`max_n_coalitions` must be NULL or a single positive integer.")
   }
 
   # group (checked more thoroughly later)
   if (!is.null(group) &&
-      !is.list(group)) {
+    !is.list(group)) {
     stop("`group` must be NULL or a list")
   }
 
   # n_MC_samples
   if (!(is.wholenumber(n_MC_samples) &&
-        length(n_MC_samples) == 1 &&
-        !is.na(n_MC_samples) &&
-        n_MC_samples > 0)) {
+    length(n_MC_samples) == 1 &&
+    !is.na(n_MC_samples) &&
+    n_MC_samples > 0)) {
     stop("`n_MC_samples` must be a single positive integer.")
   }
 
   # keep_samp_for_vS
   if (!(is.logical(keep_samp_for_vS) &&
-        length(keep_samp_for_vS) == 1)) {
+    length(keep_samp_for_vS) == 1)) {
     stop("`keep_samp_for_vS` must be single logical.")
   }
 
@@ -240,7 +240,7 @@ get_parameters <- function(approach,
   # verbose
   check_verbose(verbose)
   if (!is.null(verbose) &&
-      (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
+    (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
   ) {
     stop(
       paste0(
@@ -294,8 +294,8 @@ get_parameters <- function(approach,
   #### Tests combining more than one parameter ####
   # prediction_zero vs output_size
   if (!all((is.numeric(prediction_zero)) &&
-           all(length(prediction_zero) == output_size) &&
-           all(!is.na(prediction_zero)))) {
+    all(length(prediction_zero) == output_size) &&
+    all(!is.na(prediction_zero)))) {
     stop(paste0(
       "`prediction_zero` (", paste0(prediction_zero, collapse = ", "),
       ") must be numeric and match the output size of the model (",
@@ -305,7 +305,7 @@ get_parameters <- function(approach,
 
   # type
   if (!(length(shapley_reweighting) == 1 && shapley_reweighting %in%
-        c("none", "on_N", "on_coal_size", "on_all", "on_N_sum", "on_all_cond", "on_all_cond_paired", "comb"))) {
+    c("none", "on_N", "on_coal_size", "on_all", "on_N_sum", "on_all_cond", "on_all_cond_paired", "comb"))) {
     stop(
       "`shapley_reweighting` must be one of `none`, `on_N`, `on_coal_size`, `on_N_sum`, ",
       "`on_all`, `on_all_cond`, `on_all_cond_paired` or `comb`.\n"
@@ -358,7 +358,7 @@ get_parameters <- function(approach,
 #' @author Lars Henry Berge Olsen, Martin Jullum
 check_verbose <- function(verbose) {
   if (!is.null(verbose) &&
-      (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
+    (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
   ) {
     stop(
       paste0(
@@ -659,8 +659,10 @@ check_and_set_causal_ordering <- function(internal) {
   # Check that the we have n_features elements and that they are 1 through n_features (i.e., no duplicates).
   causal_ordering_vec_sort <- sort(unlist(causal_ordering))
   if (length(causal_ordering_vec_sort) != n_shapley_values || any(causal_ordering_vec_sort != seq(n_shapley_values))) {
-    stop(paste0("`causal_ordering` is incomplete/incorrect. It must contain all ",
-                feat_group_txt, " names or indices exactly once.\n"))
+    stop(paste0(
+      "`causal_ordering` is incomplete/incorrect. It must contain all ",
+      feat_group_txt, " names or indices exactly once.\n"
+    ))
   }
 
   # For groups we need to convert from group level to feature level
@@ -705,9 +707,9 @@ check_and_set_confounding <- function(internal) {
 
   # String with information about which components that are subject to confounding (used by cli)
   if (all(!confounding)) {
-    internal$parameters$confounding_string = "No component with confounding"
+    internal$parameters$confounding_string <- "No component with confounding"
   } else {
-    internal$parameters$confounding_string =
+    internal$parameters$confounding_string <-
       paste0("{", paste(sapply(causal_ordering_names[confounding], paste, collapse = ", "), collapse = "}, {"), "}")
   }
 
@@ -742,16 +744,18 @@ check_and_set_causal_sampling <- function(internal) {
 #' @author Lars Henry Berge Olsen
 check_and_set_asymmetric <- function(internal) {
   asymmetric <- internal$parameters$asymmetric
-  #exact <- internal$parameters$exact
+  # exact <- internal$parameters$exact
   causal_ordering <- internal$parameters$causal_ordering
   max_n_coalitions <- internal$parameters$max_n_coalitions
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
 
   # Check that we are not doing paired sampling
   if (paired_shap_sampling) {
-    stop(paste0("Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.\n",
-                "Asymmetric Shapley values do not support paired sampling as the paired ",
-                "coalitions will not necessarily respect the causal ordering."))
+    stop(paste0(
+      "Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.\n",
+      "Asymmetric Shapley values do not support paired sampling as the paired ",
+      "coalitions will not necessarily respect the causal ordering."
+    ))
   }
 
 
@@ -763,12 +767,12 @@ check_and_set_asymmetric <- function(internal) {
   internal$objects$dt_valid_causal_coalitions <- exact_coalition_table(
     m = internal$parameters$n_shapley_values,
     dt_valid_causal_coalitions = data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering))
-  )#[, c("coalitions", "shapley_weight")] TODO: TA MED ELLER IKKE?
+  ) # [, c("coalitions", "shapley_weight")] TODO: TA MED ELLER IKKE?
 
   # Normalize the weights. Note that weight of a coalition size is even spread out among the valid coalitions
   # of each size. I.e., if there is only one valid coalition of size |S|, then it gets the weight of the
   # choose(M, |S|) coalitions of said size.
-  internal$objects$dt_valid_causal_coalitions[-c(1,.N), shapley_weight_norm := shapley_weight / sum(shapley_weight)]
+  internal$objects$dt_valid_causal_coalitions[-c(1, .N), shapley_weight_norm := shapley_weight / sum(shapley_weight)]
 
   # Convert the coalitions to strings. Needed when sampling the coalitions in `sample_coalition_table()`.
   internal$objects$dt_valid_causal_coalitions[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
@@ -806,7 +810,7 @@ adjust_max_n_coalitions <- function(internal) {
 
     # Set max_n_coalitions to lower bound
     if (isFALSE(is.null(max_n_coalitions)) &&
-        max_n_coalitions < min(10, n_shapley_values + 1, max_n_coalitions_causal)) {
+      max_n_coalitions < min(10, n_shapley_values + 1, max_n_coalitions_causal)) {
       if (max_n_coalitions_causal <= 10) {
         max_n_coalitions <- max_n_coalitions_causal
         message(
@@ -830,7 +834,6 @@ adjust_max_n_coalitions <- function(internal) {
         )
       }
     }
-
   } else {
     # Symmetric/regular Shapley values
 
@@ -987,11 +990,11 @@ set_exact <- function(internal) {
   max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal
 
   if (isFALSE(adaptive) &&
-      (
-        (isTRUE(asymmetric) && max_n_coalitions == max_n_coalitions_causal) ||
+    (
+      (isTRUE(asymmetric) && max_n_coalitions == max_n_coalitions_causal) ||
         (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
         (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
-      )
+    )
   ) {
     exact <- TRUE
   } else {
@@ -1096,8 +1099,8 @@ check_approach <- function(internal) {
   supported_approaches <- get_supported_approaches()
 
   if (!(is.character(approach) &&
-        (length(approach) == 1 || length(approach) == n_features - 1) &&
-        all(is.element(approach, supported_approaches)))
+    (length(approach) == 1 || length(approach) == n_features - 1) &&
+    all(is.element(approach, supported_approaches)))
   ) {
     stop(
       paste0(
@@ -1261,8 +1264,8 @@ set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
   adaptive_arguments <- internal$parameters$adaptive_arguments
 
   adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
-                                          adaptive_arguments,
-                                          keep.null = TRUE
+    adaptive_arguments,
+    keep.null = TRUE
   )
 
   # Force setting the number of coalitions and iterations for non-adaptive method
@@ -1317,20 +1320,20 @@ check_adaptive_arguments <- function(adaptive_arguments) {
 
   # initial_n_coalitions
   if (!(is.wholenumber(initial_n_coalitions) &&
-        length(initial_n_coalitions) == 1 &&
-        !is.na(initial_n_coalitions) &&
-        initial_n_coalitions <= max_n_coalitions &&
-        initial_n_coalitions > 2)) {
+    length(initial_n_coalitions) == 1 &&
+    !is.na(initial_n_coalitions) &&
+    initial_n_coalitions <= max_n_coalitions &&
+    initial_n_coalitions > 2)) {
     stop("`adaptive_arguments$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.")
   }
 
   # fixed_n_coalitions
   if (!is.null(fixed_n_coalitions_per_iter) &&
-      !(is.wholenumber(fixed_n_coalitions_per_iter) &&
-        length(fixed_n_coalitions_per_iter) == 1 &&
-        !is.na(fixed_n_coalitions_per_iter) &&
-        fixed_n_coalitions_per_iter <= max_n_coalitions &&
-        fixed_n_coalitions_per_iter > 0)) {
+    !(is.wholenumber(fixed_n_coalitions_per_iter) &&
+      length(fixed_n_coalitions_per_iter) == 1 &&
+      !is.na(fixed_n_coalitions_per_iter) &&
+      fixed_n_coalitions_per_iter <= max_n_coalitions &&
+      fixed_n_coalitions_per_iter > 0)) {
     stop(
       "`adaptive_arguments$fixed_n_coalitions_per_iter` must be NULL or a single positive integer no larger than",
       "`max_n_coalitions`."
@@ -1339,65 +1342,65 @@ check_adaptive_arguments <- function(adaptive_arguments) {
 
   # max_iter
   if (!is.null(max_iter) &&
-      !((is.wholenumber(max_iter) || is.infinite(max_iter)) &&
-        length(max_iter) == 1 &&
-        !is.na(max_iter) &&
-        max_iter > 0)) {
+    !((is.wholenumber(max_iter) || is.infinite(max_iter)) &&
+      length(max_iter) == 1 &&
+      !is.na(max_iter) &&
+      max_iter > 0)) {
     stop("`adaptive_arguments$max_iter` must be NULL, Inf or a single positive integer.")
   }
 
   # convergence_tolerance
   if (!is.null(convergence_tolerance) &&
-      !(length(convergence_tolerance) == 1 &&
-        !is.na(convergence_tolerance) &&
-        convergence_tolerance >= 0)) {
+    !(length(convergence_tolerance) == 1 &&
+      !is.na(convergence_tolerance) &&
+      convergence_tolerance >= 0)) {
     stop("`adaptive_arguments$convergence_tolerance` must be NULL, 0, or a positive numeric.")
   }
 
   # reduction_factor_vec
   if (!is.null(reduction_factor_vec) &&
-      !(all(!is.na(reduction_factor_vec)) &&
-        all(reduction_factor_vec <= 1) &&
-        all(reduction_factor_vec >= 0))) {
+    !(all(!is.na(reduction_factor_vec)) &&
+      all(reduction_factor_vec <= 1) &&
+      all(reduction_factor_vec >= 0))) {
     stop("`adaptive_arguments$reduction_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
   }
 
   # n_boot_samps
   if (!(is.wholenumber(n_boot_samps) &&
-        length(n_boot_samps) == 1 &&
-        !is.na(n_boot_samps) &&
-        n_boot_samps > 0)) {
+    length(n_boot_samps) == 1 &&
+    !is.na(n_boot_samps) &&
+    n_boot_samps > 0)) {
     stop("`adaptive_arguments$n_boot_samps` must be a single positive integer.")
   }
 
   # compute_sd
   if (!(is.logical(compute_sd) &&
-        length(compute_sd) == 1)) {
+    length(compute_sd) == 1)) {
     stop("`adaptive_arguments$compute_sd` must be a single logical.")
   }
 
 
   # min_n_batches
   if (!is.null(min_n_batches) &&
-      !(is.wholenumber(min_n_batches) &&
-        length(min_n_batches) == 1 &&
-        !is.na(min_n_batches) &&
-        min_n_batches > 0)) {
+    !(is.wholenumber(min_n_batches) &&
+      length(min_n_batches) == 1 &&
+      !is.na(min_n_batches) &&
+      min_n_batches > 0)) {
     stop("`adaptive_arguments$min_n_batches` must be NULL or a single positive integer.")
   }
 
   # max_batch_size
   if (!is.null(max_batch_size) &&
-      !((is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
-        length(max_batch_size) == 1 &&
-        !is.na(max_batch_size) &&
-        max_batch_size > 0)) {
+    !((is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
+      length(max_batch_size) == 1 &&
+      !is.na(max_batch_size) &&
+      max_batch_size > 0)) {
     stop("`adaptive_arguments$max_batch_size` must be NULL, Inf or a single positive integer.")
   }
 
   # saving_path
   if (!(is.character(saving_path) &&
-        length(saving_path) == 1)) {
+    length(saving_path) == 1)) {
     stop("`adaptive_arguments$saving_path` must be a single character.")
   }
 

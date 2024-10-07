@@ -253,8 +253,8 @@ conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
 bike <- read.csv("../inst/extdata/day.csv")
 # Difference in days, which takes DST into account
 bike$trend <- as.numeric(difftime(bike$dteday, bike$dteday[1], units = "days"))
-bike$cosyear <- cospi(bike$trend/365*2)
-bike$sinyear <- sinpi(bike$trend/365*2)
+bike$cosyear <- cospi(bike$trend / 365 * 2)
+bike$sinyear <- sinpi(bike$trend / 365 * 2)
 # Unnormalize variables (see data set information in link above)
 bike$temp <- bike$temp * (39 - (-8)) + (-8)
 bike$atemp <- bike$atemp * (50 - (-16)) + (-16)
@@ -263,9 +263,11 @@ bike$hum <- 100 * bike$hum
 
 # Plot the data
 ggplot(bike, aes(x = trend, y = cnt, color = temp)) +
-  geom_point(size = 0.75) + scale_color_gradient(low = "blue", high = "red") +
+  geom_point(size = 0.75) +
+  scale_color_gradient(low = "blue", high = "red") +
   labs(colour = "temp") +
-  xlab( "Days since 1 January 2011") + ylab("Number of bikes rented") +
+  xlab("Days since 1 January 2011") +
+  ylab("Number of bikes rented") +
   theme_minimal() +
   theme(legend.position = "right", legend.title = element_text(size = 10))
 ```
@@ -295,8 +297,8 @@ y_explain_nc <- as.matrix(bike[-train_index, y_var]) # not centered
 y_explain <- y_explain_nc - mean(y_train_nc)
 
 # Get 6 explicands to plot the Shapley values of with a wide spread in their predicted outcome
-n_index_x_explain = 6
-index_x_explain = order(y_explain)[seq(1, length(y_explain), length.out = n_index_x_explain)]
+n_index_x_explain <- 6
+index_x_explain <- order(y_explain)[seq(1, length(y_explain), length.out = n_index_x_explain)]
 y_explain[index_x_explain]
 
 # Fit an XGBoost model to the training data
@@ -310,10 +312,13 @@ model <- xgboost::xgboost(
 # Save the phi0
 prediction_zero <- mean(y_train)
 
-# Look at the root mean squared error 
+# Look at the root mean squared error
 sqrt(mean((predict(model, x_explain) - y_explain)^2))
-ggplot(data.table("response" = y_explain[,1], "predicted_response" = predict(model, x_explain)),
-       aes(response, predicted_response)) + geom_point()
+ggplot(
+  data.table("response" = y_explain[, 1], "predicted_response" = predict(model, x_explain)),
+  aes(response, predicted_response)
+) +
+  geom_point()
 ```
 
 
@@ -325,9 +330,9 @@ an effect on the weather) and no confounding for the third component (i.e., we d
 how to model the intricate relations between the weather features).
 
 ```{r causal_ordering, cache = TRUE}
-causal_ordering = list(1, c(2, 3), c(4:7))
-causal_ordering = list("trend", c("cosyear", "sinyear"), c("temp", "atemp", "windspeed", "hum"))
-confounding = c(FALSE, TRUE, FALSE)
+causal_ordering <- list(1, c(2, 3), c(4:7))
+causal_ordering <- list("trend", c("cosyear", "sinyear"), c("temp", "atemp", "windspeed", "hum"))
+confounding <- c(FALSE, TRUE, FALSE)
 ```
 
 
@@ -341,9 +346,11 @@ print_MSEv_scores_and_time <- function(explanation_list) {
   res <- as.data.frame(t(sapply(
     explanation_list,
     function(explanation) {
-      round(c(explanation$MSEv$MSEv$MSEv,
-              explanation$MSEv$MSEv$MSEv_sd,
-              difftime(explanation$timing$end_time, explanation$timing$init_time, units="secs")), 2)
+      round(c(
+        explanation$MSEv$MSEv$MSEv,
+        explanation$MSEv$MSEv$MSEv_sd,
+        difftime(explanation$timing$end_time, explanation$timing$init_time, units = "secs")
+      ), 2)
     }
   )))
   colnames(res) <- c("MSEv", "MSEv_sd", "Time (secs)")
@@ -356,28 +363,29 @@ print_time <- function(explanation_list) {
 }
 
 # Make beeswarm plots
-plot_beeswarms = function(explanation_list, title = "", ...) {
+plot_beeswarms <- function(explanation_list, title = "", ...) {
   # Make the beeswarm plots
-  grobs = lapply(seq(length(explanation_list)), function(explanation_idx) {
-    gg = plot(explanation_list[[explanation_idx]], plot_type = "beeswarm", ...) +
+  grobs <- lapply(seq(length(explanation_list)), function(explanation_idx) {
+    gg <- plot(explanation_list[[explanation_idx]], plot_type = "beeswarm", ...) +
       ggplot2::ggtitle(tools::toTitleCase(gsub("_", " ", names(explanation_list)[[explanation_idx]])))
-    
+
     # Flip the order such that the features comes in the right order
-    gg = gg + 
+    gg <- gg +
       ggplot2::scale_x_discrete(limits = rev(levels(gg$data$variable)[levels(gg$data$variable) != "none"]))
-      
   })
-  
+
   # Get the limits
-  ylim = sapply(grobs, function(grob) ggplot2::ggplot_build(grob)$layout$panel_scales_y[[1]]$range$range)
-  ylim = c(min(ylim), max(ylim))
+  ylim <- sapply(grobs, function(grob) ggplot2::ggplot_build(grob)$layout$panel_scales_y[[1]]$range$range)
+  ylim <- c(min(ylim), max(ylim))
 
   # Update the limits
-  grobs = suppressMessages(lapply(grobs, function(grob) grob + ggplot2::coord_flip(ylim = ylim)))
+  grobs <- suppressMessages(lapply(grobs, function(grob) grob + ggplot2::coord_flip(ylim = ylim)))
 
   # Make the combined plot
-  gridExtra::grid.arrange(grobs = grobs, ncol = 1,
-                          top = grid::textGrob(title, gp = grid::gpar(fontsize = 18, font = 8)))
+  gridExtra::grid.arrange(
+    grobs = grobs, ncol = 1,
+    top = grid::textGrob(title, gp = grid::gpar(fontsize = 18, font = 8))
+  )
 }
 ```
 
@@ -394,7 +402,7 @@ or `regression_surrogate` (@olsen2024comparative).
 
 ```{r sym_con, cache = TRUE}
 # list to store the results
-explanation_sym_con = list()
+explanation_sym_con <- list()
 
 explanation_sym_con[["gaussian"]] <- explain(
   model = model,
@@ -467,7 +475,7 @@ types of Shapley values, we have to specify that `asymmetric = TRUE` and a
 
 
 ```{r asym_con_gaussian, cache = TRUE}
-explanation_asym_con = list()
+explanation_asym_con <- list()
 
 explanation_asym_con[["gaussian"]] <- explain(
   model = model,
@@ -558,11 +566,11 @@ values to the distal/root causes, i.e., `trend` and `cosyear`, than the symmetri
 version. This is in line with Section 3.2 in @frye2020asymmetric.
 ```{r sym_and_asym_Shapley_values, fig.height = 7, cache = TRUE}
 # Order the symmetric and asymmetric conditional explanations into a joint list
-explanation_sym_con_tmp = copy(explanation_sym_con)
-names(explanation_sym_con_tmp) = paste0(names(explanation_sym_con_tmp), "_sym")
-explanation_asym_con_tmp = copy(explanation_asym_con)
-names(explanation_asym_con_tmp) = paste0(names(explanation_asym_con_tmp), "_asym")
-explanation_asym_sym_con = c(explanation_sym_con_tmp, explanation_asym_con_tmp)[c(1,4,2,5,3,6)]
+explanation_sym_con_tmp <- copy(explanation_sym_con)
+names(explanation_sym_con_tmp) <- paste0(names(explanation_sym_con_tmp), "_sym")
+explanation_asym_con_tmp <- copy(explanation_asym_con)
+names(explanation_asym_con_tmp) <- paste0(names(explanation_asym_con_tmp), "_asym")
+explanation_asym_sym_con <- c(explanation_sym_con_tmp, explanation_asym_con_tmp)[c(1, 4, 2, 5, 3, 6)]
 plot_SV_several_approaches(explanation_asym_sym_con, index_x_explain, brewer_palette = "Paired") +
   theme(legend.position = "bottom")
 ```
@@ -584,7 +592,7 @@ conditional Shapley value framework with the `independence` approach. However, n
 be a minuscule difference in the produced Shapley values due to different sampling setups/orders.
 
 ```{r sym_marg, cache = TRUE}
-explanation_sym_marg = list()
+explanation_sym_marg <- list()
 
 # Here we sample from the estimated Gaussian marginals
 explanation_sym_marg[["gaussian"]] <- explain(
@@ -594,9 +602,9 @@ explanation_sym_marg[["gaussian"]] <- explain(
   prediction_zero = prediction_zero,
   n_MC_samples = 10, # Just for speed
   approach = "gaussian",
-  asymmetric = FALSE, 
-  causal_ordering = list(1:7), 
-  confounding = TRUE 
+  asymmetric = FALSE,
+  causal_ordering = list(1:7),
+  confounding = TRUE
 )
 
 # Here we sample from the marginals of the training data
@@ -607,9 +615,9 @@ explanation_sym_marg[["independence_marg"]] <- explain(
   prediction_zero = prediction_zero,
   n_MC_samples = 10, # Just for speed
   approach = "independence",
-  asymmetric = FALSE, 
-  causal_ordering = list(1:7), 
-  confounding = TRUE 
+  asymmetric = FALSE,
+  causal_ordering = list(1:7),
+  confounding = TRUE
 )
 
 # Here we use the conditional Shapley value framework with the `independence` approach
@@ -655,7 +663,7 @@ For causal Shapley values, only the Monte Carlo-based approaches are applicable.
 
 ### Symmetric 
 ```{r sym_cau, cache = TRUE}
-explanation_sym_cau = list()
+explanation_sym_cau <- list()
 
 explanation_sym_cau[["gaussian"]] <- explain(
   model = model,
@@ -664,7 +672,7 @@ explanation_sym_cau[["gaussian"]] <- explain(
   prediction_zero = prediction_zero,
   n_MC_samples = 10, # Just for speed
   approach = "gaussian",
-  asymmetric = FALSE, 
+  asymmetric = FALSE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE),
   adaptive = FALSE, # Set to FALSE to get a single iteration to illustrate sampling steps below
@@ -682,7 +690,7 @@ explanation_sym_cau[["copula"]] <- explain(
   prediction_zero = prediction_zero,
   n_MC_samples = 10, # Just for speed
   approach = "copula",
-  asymmetric = FALSE, 
+  asymmetric = FALSE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
 )
@@ -703,7 +711,7 @@ that respects the causal ordering. Thus, the computations are faster as the numb
 coalitions are reduced.
 
 ```{r asym_cau, cache = TRUE}
-explanation_asym_cau = list()
+explanation_asym_cau <- list()
 
 explanation_asym_cau[["gaussian"]] <- explain(
   model = model,
@@ -713,7 +721,7 @@ explanation_asym_cau[["gaussian"]] <- explain(
   n_MC_samples = 10, # Just for speed
   approach = "gaussian",
   paired_shap_sampling = FALSE,
-  asymmetric = TRUE, 
+  asymmetric = TRUE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
 )
@@ -727,7 +735,7 @@ explanation_asym_cau[["copula"]] <- explain(
   n_MC_samples = 10, # Just for speed
   approach = "copula",
   paired_shap_sampling = FALSE,
-  asymmetric = TRUE, 
+  asymmetric = TRUE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
 )
@@ -741,7 +749,7 @@ explanation_asym_cau[["ctree"]] <- explain(
   n_MC_samples = 10, # Just for speed
   approach = "ctree",
   paired_shap_sampling = FALSE,
-  asymmetric = TRUE, 
+  asymmetric = TRUE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
 )
@@ -755,7 +763,7 @@ explanation_asym_cau[["ctree"]] <- explain(
 #   n_MC_samples = 10, # Just for speed
 #   approach = "vaeac",
 #   paired_shap_sampling = FALSE,
-#   asymmetric = TRUE, 
+#   asymmetric = TRUE,
 #   causal_ordering = list(1, 2:3, 4:7),
 #   confounding = c(FALSE, TRUE, FALSE)
 # )
@@ -774,7 +782,7 @@ plot_beeswarms(explanation_asym_cau, title = "Asymmetric causal Shapley values")
 ```
 
 ```{r explanation_asym_cau_SV, fig.height = 8, cache = TRUE}
-# Plot the Shapley values 
+# Plot the Shapley values
 plot_SV_several_approaches(explanation_asym_cau, index_x_explain) +
   theme(legend.position = "bottom")
 ```
@@ -794,17 +802,18 @@ values on the more direct effect, and symmetric conditional/causal Shapley
 consider both for a more natural explanation.
 
 ```{r compare_plots, cache = TRUE, fig.height = 8, cache = TRUE}
-explanation_gaussian = list(
+explanation_gaussian <- list(
   symmetric_marginal = explanation_sym_marg$gaussian,
-    symmetric_conditional = explanation_sym_con$gaussian,
-    symmetric_causal = explanation_sym_cau$gaussian,
-    asymmetric_conditional = explanation_asym_con$gaussian,
-    asymmetric_causal = explanation_asym_cau$gaussian)
+  symmetric_conditional = explanation_sym_con$gaussian,
+  symmetric_causal = explanation_sym_cau$gaussian,
+  asymmetric_conditional = explanation_asym_con$gaussian,
+  asymmetric_causal = explanation_asym_cau$gaussian
+)
 
 plot_SV_several_approaches(explanation_gaussian, index_x_explain) +
-  theme(legend.position = "bottom") + 
+  theme(legend.position = "bottom") +
   guides(fill = guide_legend(nrow = 2)) +
-  ggtitle("Shapley value prediction explanation (approach = 'gaussian')") + 
+  ggtitle("Shapley value prediction explanation (approach = 'gaussian')") +
   guides(color = guide_legend(title = "Framework"))
 ```
 
@@ -820,17 +829,17 @@ these values to replicate Figure 3 in @heskes2020causal.
 
 ```{r scatter_plots, cache = TRUE, fig.height = 6, cache = TRUE}
 # The color of the points
-color = "temp"
+color <- "temp"
 
 # The features we want to compare
-feature_1 = "cosyear"
-feature_2 = "temp"
+feature_1 <- "cosyear"
+feature_2 <- "temp"
 
 # The Shapley value frameworks we want to compare
-sv_framework_1 = explanation_sym_marg[["gaussian"]]
-sv_framework_1_str = "Marginal SV"
-sv_framework_2 = explanation_sym_cau[["gaussian"]]
-sv_framework_2_str = "Causal SV"
+sv_framework_1 <- explanation_sym_marg[["gaussian"]]
+sv_framework_1_str <- "Marginal SV"
+sv_framework_2 <- explanation_sym_cau[["gaussian"]]
+sv_framework_2_str <- "Causal SV"
 
 # Set up the data.frame we are going to plot
 sv_correlation_df <- data.frame(
@@ -843,72 +852,92 @@ sv_correlation_df <- data.frame(
 
 # Make the plots
 scatterplot_topleft <-
-  ggplot(sv_correlation_df,
-         aes(x = sv_framework_1_feature_2, y = sv_framework_1_feature_1, color = color)) +
+  ggplot(
+    sv_correlation_df,
+    aes(x = sv_framework_1_feature_2, y = sv_framework_1_feature_1, color = color)
+  ) +
   geom_point(size = 1) +
   xlab(paste(sv_framework_1_str, feature_2)) +
-  ylab(paste(sv_framework_1_str, feature_1))+
+  ylab(paste(sv_framework_1_str, feature_1)) +
   scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
-  scale_y_continuous(limits = c(-500, 500), breaks = c(-500, 0, 500))  +
-  scale_color_gradient(low="blue", high="red") +
+  scale_y_continuous(limits = c(-500, 500), breaks = c(-500, 0, 500)) +
+  scale_color_gradient(low = "blue", high = "red") +
   theme_minimal() +
-  theme(text = element_text(size = 12),
-        axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 12),
-        axis.ticks.x = element_blank(),
-        axis.title.x = element_blank())
+  theme(
+    text = element_text(size = 12),
+    axis.text.x = element_blank(),
+    axis.text.y = element_text(size = 12),
+    axis.ticks.x = element_blank(),
+    axis.title.x = element_blank()
+  )
 
 scatterplot_topright <-
-  ggplot(sv_correlation_df,
-         aes(x = sv_framework_2_feature_1, y = sv_framework_1_feature_1, color = color)) +
-  geom_point(size = 1) + scale_color_gradient(low="blue", high="red") +
+  ggplot(
+    sv_correlation_df,
+    aes(x = sv_framework_2_feature_1, y = sv_framework_1_feature_1, color = color)
+  ) +
+  geom_point(size = 1) +
+  scale_color_gradient(low = "blue", high = "red") +
   xlab(paste(sv_framework_2_str, feature_1)) +
   ylab(paste(sv_framework_1_str, feature_1)) +
   scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
   scale_y_continuous(limits = c(-500, 500), breaks = c(-500, 0, 500)) +
   theme_minimal() +
-  theme(text = element_text(size=12),
-        axis.title.x = element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
+  theme(
+    text = element_text(size = 12),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
 
 scatterplot_bottomleft <-
-  ggplot(sv_correlation_df,
-         aes(x = sv_framework_1_feature_2, y = sv_framework_2_feature_2, color = color)) +
-  geom_point(size = 1) + scale_color_gradient(low="blue", high="red") +
+  ggplot(
+    sv_correlation_df,
+    aes(x = sv_framework_1_feature_2, y = sv_framework_2_feature_2, color = color)
+  ) +
+  geom_point(size = 1) +
+  scale_color_gradient(low = "blue", high = "red") +
   xlab(paste(sv_framework_1_str, feature_2)) +
   ylab(paste(sv_framework_2_str, feature_2)) +
   scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
-  scale_y_continuous(limits = c(-1000, 1000), breaks = c(-500, 0, 500))  +
+  scale_y_continuous(limits = c(-1000, 1000), breaks = c(-500, 0, 500)) +
   theme_minimal() +
-  theme(text = element_text(size=12),
-        axis.text.x = element_text(size=12),
-        axis.text.y = element_text(size=12))
+  theme(
+    text = element_text(size = 12),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)
+  )
 
 scatterplot_bottomright <-
-  ggplot(sv_correlation_df,
-         aes(x = sv_framework_2_feature_1, y = sv_framework_2_feature_2, color = color)) +
+  ggplot(
+    sv_correlation_df,
+    aes(x = sv_framework_2_feature_1, y = sv_framework_2_feature_2, color = color)
+  ) +
   geom_point(size = 1) +
   xlab(paste(sv_framework_2_str, feature_1)) +
   ylab(paste(sv_framework_2_str, feature_2)) +
   scale_x_continuous(limits = c(-1500, 1000), breaks = c(-1000, 0, 1000)) +
-  scale_y_continuous(limits = c(-1000, 1000), breaks = c(-500, 0, 500))  +
-  scale_color_gradient(low="blue", high="red")+
+  scale_y_continuous(limits = c(-1000, 1000), breaks = c(-500, 0, 500)) +
+  scale_color_gradient(low = "blue", high = "red") +
   theme_minimal() +
-  theme(text = element_text(size=12),
-        axis.text.x=element_text(size=12),
-        axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
+  theme(
+    text = element_text(size = 12),
+    axis.text.x = element_text(size = 12),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
 
 # Plot of the trend of the data
 bike_plot_new <- ggplot(bike, aes(x = trend, y = cnt, color = get(color))) +
-  geom_point(size = 0.75) + scale_color_gradient(low = "blue", high = "red") +
+  geom_point(size = 0.75) +
+  scale_color_gradient(low = "blue", high = "red") +
   labs(color = color) +
-  xlab( "Days since 1 January 2011") + ylab("Number of bikes rented") +
+  xlab("Days since 1 January 2011") +
+  ylab("Number of bikes rented") +
   theme_minimal() +
   theme(legend.position = "right", legend.title = element_text(size = 10))
 
@@ -920,8 +949,10 @@ ggpubr::ggarrange(
     scatterplot_topright,
     scatterplot_bottomleft,
     scatterplot_bottomright,
-    legend = "none"),
-  nrow = 2, heights = c(1,2))
+    legend = "none"
+  ),
+  nrow = 2, heights = c(1, 2)
+)
 ```
 
 ## Investigating two similar days
@@ -954,19 +985,21 @@ conditional/causal Shapley consider both for a more natural explanation.
 
 ```{r two_dates_1, cache = TRUE, fig.height = 5, cache = TRUE}
 # Features of interest
-features = c("cosyear", "temp")
+features <- c("cosyear", "temp")
 
 # Get explicands with similar temperature: 2012-10-09 (October) and 2012-12-03 (December)
-dates = c("2012-10-09", "2012-12-03")
-dates_idx = sapply(dates, function(data) which(as.integer(row.names(x_explain)) == which(bike$dteday == data)))
+dates <- c("2012-10-09", "2012-12-03")
+dates_idx <- sapply(dates, function(data) which(as.integer(row.names(x_explain)) == which(bike$dteday == data)))
 # predict(model, x_explain)[dates_idx] + mean(y_train_nc) # predicted values for the two points
 
 # List of the Shapley value explanations
-explanations = list("Sym. Mar." = explanation_sym_marg[["gaussian"]],
-                    "Sym. Con." = explanation_sym_con[["gaussian"]],
-                    "Sym. Cau." = explanation_sym_cau[["gaussian"]],
-                    "Asym. Con." = explanation_asym_con[["gaussian"]],
-                    "Asym. Cau." = explanation_asym_cau[["gaussian"]])
+explanations <- list(
+  "Sym. Mar." = explanation_sym_marg[["gaussian"]],
+  "Sym. Con." = explanation_sym_con[["gaussian"]],
+  "Sym. Cau." = explanation_sym_cau[["gaussian"]],
+  "Asym. Con." = explanation_asym_con[["gaussian"]],
+  "Asym. Cau." = explanation_asym_cau[["gaussian"]]
+)
 
 # Extract the relevant Shapley values
 explanations_extracted <- data.table::rbindlist(lapply(seq_along(explanations), function(idx) {
@@ -979,21 +1012,28 @@ explanations_extracted <- data.table::rbindlist(lapply(seq_along(explanations), 
 explanations_extracted[, type := factor(type, levels = names(explanations), ordered = TRUE)]
 
 # Convert from wide to long data table
-dt_all = data.table::melt(explanations_extracted,
-                          id.vars = c("Date", "type"),
-                          variable.name = "feature")
+dt_all <- data.table::melt(explanations_extracted,
+  id.vars = c("Date", "type"),
+  variable.name = "feature"
+)
 
 # Make the plot
-ggplot(dt_all, aes(x = feature, y = value, group = interaction(Date, feature),
-                                fill = Date, label = round(value, 2))) +
+ggplot(dt_all, aes(
+  x = feature, y = value, group = interaction(Date, feature),
+  fill = Date, label = round(value, 2)
+)) +
   geom_col(position = "dodge") +
-  theme_classic() + ylab("Shapley value") +
-  facet_wrap(vars(type)) + theme(axis.title.x = element_blank()) +
-  scale_fill_manual(values = c('indianred4', 'ivory4')) +
-  theme(legend.position.inside = c(0.75, 0.25), axis.title = element_text(size = 20),
-        legend.title = element_text(size = 16), legend.text = element_text(size = 14),
-        axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 12),
-        strip.text.x = element_text(size = 14))
+  theme_classic() +
+  ylab("Shapley value") +
+  facet_wrap(vars(type)) +
+  theme(axis.title.x = element_blank()) +
+  scale_fill_manual(values = c("indianred4", "ivory4")) +
+  theme(
+    legend.position.inside = c(0.75, 0.25), axis.title = element_text(size = 20),
+    legend.title = element_text(size = 16), legend.text = element_text(size = 14),
+    axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 12),
+    strip.text.x = element_text(size = 14)
+  )
 ```
 
 
@@ -1003,11 +1043,12 @@ but then we get each explicand in a separate facet instead of a facet for each f
 ```{r two_dates_2, cache = TRUE, fig.height = 4, cache = TRUE}
 # Here 2012-10-09 is the left facet and 2012-12-03 the right facet
 plot_SV_several_approaches(explanations,
-                           index_explicands = dates_idx,
-                           only_these_features = features, # Can include more features.
-                           facet_scales = "free_x", 
-                           horizontal_bars = FALSE, 
-                           axis_labels_n_dodge = 1) + theme(legend.position = "bottom")
+  index_explicands = dates_idx,
+  only_these_features = features, # Can include more features.
+  facet_scales = "free_x",
+  horizontal_bars = FALSE,
+  axis_labels_n_dodge = 1
+) + theme(legend.position = "bottom")
 ```
 
 Furthermore, instead of doing as @heskes2020causal and only considering the features
@@ -1015,11 +1056,12 @@ Furthermore, instead of doing as @heskes2020causal and only considering the feat
 ```{r two_dates_3, cache = TRUE, fig.height = 5, cache = TRUE}
 # Here 2012-10-09 is the left facet and 2012-12-03 the right facet
 plot_SV_several_approaches(explanations,
-                           index_explicands = dates_idx,
-                           facet_scales = "free_x", 
-                           horizontal_bars = FALSE, 
-                           axis_labels_rotate_angle = 45,
-                           digits = 2) + theme(legend.position = "bottom")
+  index_explicands = dates_idx,
+  facet_scales = "free_x",
+  horizontal_bars = FALSE,
+  axis_labels_rotate_angle = 45,
+  digits = 2
+) + theme(legend.position = "bottom")
 ```
 
 
@@ -1036,7 +1078,7 @@ asymmetric and symmetric causal Shapley value explanation frameworks.
 We half the the number of coalitions for both versions
 and see that the elapsed times are approximately halved, too.
 ```{r n_coalitions, cache = TRUE, cache = TRUE}
-explanation_n_coal = list()
+explanation_n_coal <- list()
 
 explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
   model = model,
@@ -1044,7 +1086,7 @@ explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
   x_explain = x_explain,
   approach = "gaussian",
   prediction_zero = prediction_zero,
-  asymmetric = FALSE, 
+  asymmetric = FALSE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE),
   max_n_coalitions = 64 # Instead of 128
@@ -1056,7 +1098,7 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
   x_explain = x_explain,
   approach = "gaussian",
   prediction_zero = prediction_zero,
-  asymmetric = TRUE, 
+  asymmetric = TRUE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE),
   paired_shap_sampling = FALSE,
@@ -1065,9 +1107,9 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
 )
 
 # Look at the times
-explanation_n_coal[["sym_cau_gaussian_all_128"]] = explanation_sym_cau$gaussian
-explanation_n_coal[["asym_cau_gaussian_all_20"]] = explanation_asym_cau$gaussian
-explanation_n_coal = explanation_n_coal[c(1,3,2,4)]
+explanation_n_coal[["sym_cau_gaussian_all_128"]] <- explanation_sym_cau$gaussian
+explanation_n_coal[["asym_cau_gaussian_all_20"]] <- explanation_asym_cau$gaussian
+explanation_n_coal <- explanation_n_coal[c(1, 3, 2, 4)]
 print_time(explanation_n_coal)
 ```
 
@@ -1098,7 +1140,7 @@ In the pairs plot above (and below), we see that it can be natural to group the
 features `temp` and `atemp` due to their (conceptual) similarity and high correlation. 
 
 ```{r group_cor, cache = TRUE, fig.height = 4, cache = TRUE}
-GGally::ggpairs(x_train[,4:5])
+GGally::ggpairs(x_train[, 4:5])
 ```
 
 We set up the groups and update the causal ordering to be on the group level.
@@ -1109,53 +1151,54 @@ group_list <- list(
   sinyear = "sinyear",
   temp_group = c("temp", "atemp"),
   windspeed = "windspeed",
-  hum = "hum")
+  hum = "hum"
+)
 
-causal_ordering_group = 
+causal_ordering_group <-
   list("trend", c("cosyear", "sinyear"), c("temp_group", "windspeed", "hum"))
-confounding = c(FALSE, TRUE, FALSE)
+confounding <- c(FALSE, TRUE, FALSE)
 ```
 
 
 We can then compute the (group) Shapley values using the different Shapley value frameworks.
 ```{r group_gaussian, cache = TRUE, cache = TRUE}
-explanation_group_gaussian = list()
+explanation_group_gaussian <- list()
 
-explanation_group_gaussian[["symmetric_marginal"]] <- 
+explanation_group_gaussian[["symmetric_marginal"]] <-
   explain(
     model = model,
     x_train = x_train,
-    x_explain = x_explain, 
+    x_explain = x_explain,
     approach = "gaussian",
     prediction_zero = prediction_zero,
-    asymmetric = FALSE, 
+    asymmetric = FALSE,
     causal_ordering = list(seq(length(group_list))), # or `NULL`
     confounding = TRUE,
     n_MC_samples = 10, # Just for speed
     group = group_list
   )
 
-explanation_group_gaussian[["symmetric_conditional"]] <- 
+explanation_group_gaussian[["symmetric_conditional"]] <-
   explain(
     model = model,
     x_train = x_train,
-    x_explain = x_explain, 
+    x_explain = x_explain,
     approach = "gaussian",
     prediction_zero = prediction_zero,
     asymmetric = FALSE,
-    causal_ordering = list(seq(length(group_list))), # or `NULL` 
+    causal_ordering = list(seq(length(group_list))), # or `NULL`
     confounding = NULL,
     n_MC_samples = 10, # Just for speed
     group = group_list
   )
 
-explanation_group_gaussian[["asymmetric_conditional"]] <- 
+explanation_group_gaussian[["asymmetric_conditional"]] <-
   explain(
     model = model,
     x_train = x_train,
-    x_explain = x_explain, 
+    x_explain = x_explain,
     approach = "gaussian",
-    prediction_zero = prediction_zero, 
+    prediction_zero = prediction_zero,
     asymmetric = TRUE,
     causal_ordering = causal_ordering_group,
     confounding = NULL,
@@ -1164,7 +1207,7 @@ explanation_group_gaussian[["asymmetric_conditional"]] <-
     group = group_list
   )
 
-explanation_group_gaussian[["symmetric_causal"]] <- 
+explanation_group_gaussian[["symmetric_causal"]] <-
   explain(
     model = model,
     x_train = x_train,
@@ -1178,7 +1221,7 @@ explanation_group_gaussian[["symmetric_causal"]] <-
     group = group_list
   )
 
-explanation_group_gaussian[["asymmetric_causal"]] <- 
+explanation_group_gaussian[["asymmetric_causal"]] <-
   explain(
     model = model,
     x_train = x_train,
@@ -1212,9 +1255,9 @@ obtained Shapley values between (around) $-500$ to $500$, while the grouped vers
 
 ```{r group_gaussian_plot_beeswarm, cache = TRUE, fig.height = 15, fig.width = 7.2, cache = TRUE}
 plot_beeswarms(explanation_group_gaussian,
-               title = "Group Shapley values (gaussian)",
-               include_group_feature_means = TRUE)
-
+  title = "Group Shapley values (gaussian)",
+  include_group_feature_means = TRUE
+)
 ```
 
 
@@ -1268,9 +1311,9 @@ have a major impact on the time. However, for, e.g., the `ctree` approach which
 is much slower, this will take a significant amount of extra time. The `vaeac`
 approach trains only on these relecant coalitions.
 ```{r implementation_details, cache = TRUE}
-S_causal_steps = explanation_sym_cau$gaussian$internal$objects$S_causal_steps
-S_causal_unlist = do.call(c, unlist(S_causal_steps, recursive=FALSE))
-S_causal_steps_freq = S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)]
+S_causal_steps <- explanation_sym_cau$gaussian$internal$objects$S_causal_steps
+S_causal_unlist <- do.call(c, unlist(S_causal_steps, recursive = FALSE))
+S_causal_steps_freq <- S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)]
 S_causal_steps_freq <- S_causal_steps_freq[!sapply(S_causal_steps_freq, is.null)] # Remove NULLs
 S_causal_steps_freq <- S_causal_steps_freq[sapply(S_causal_steps_freq, length) > 0] # Remove extra integer(0)
 table(sapply(S_causal_steps_freq, paste0, collapse = ","))

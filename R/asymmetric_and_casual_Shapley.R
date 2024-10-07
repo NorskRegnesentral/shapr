@@ -25,7 +25,8 @@ mixedorder <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE
   delim <- "\\$\\@\\$"
   if (numeric.type == "decimal") {
     if (scientific) {
-      regex <- "((?:(?i)(?:[-+]?)(?:(?=[.]?[0123456789])(?:[0123456789]*)(?:(?:[.])(?:[0123456789]{0,}))?)(?:(?:[eE])(?:(?:[-+]?)(?:[0123456789]+))|)))"
+      regex <- paste0("((?:(?i)(?:[-+]?)(?:(?=[.]?[0123456789])(?:[0123456789]*)(?:(?:[.])(?:[0123456789]{0,}))?)",
+                      "(?:(?:[eE])(?:(?:[-+]?)(?:[0123456789]+))|)))")
     } else {
       regex <- "((?:(?i)(?:[-+]?)(?:(?=[.]?[0123456789])(?:[0123456789]*)(?:(?:[.])(?:[0123456789]{0,}))?)))"
     }
@@ -131,7 +132,7 @@ check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_pr
   dt_factor[, id := rep(seq(n_explain), each = n_MC_samples)] # Add an id column
   dt_valid_coals <- joint_probability_dt[, ..dt_factor_names] # Get the valid feature coalitions
   dt_invalid <- dt_factor[!dt_valid_coals, on = dt_factor_names] # Get non valid coalitions
-  explicand_all_invalid <- dt_invalid[, .N, by = id][N == n_MC_samples] # Get if all samples for an explicand are invalid
+  explicand_all_invalid <- dt_invalid[, .N, by = id][N == n_MC_samples] # If all samples for an explicand are invalid
   if (nrow(explicand_all_invalid) > 0) {
     stop(paste0(
       "An explicand has no valid MC feature coalitions. Increase `n_MC_samples` or provide ",
@@ -202,15 +203,15 @@ check_coalitions_respect_order <- function(coalitions, causal_ordering) {
 #' @examples
 #' coalitions <- list(c(1, 2, 3, 5), c(1, 2, 4), c(1, 4))
 #' causal_ordering <- list(1:3, 4:7, 8:10)
-#' check_coalitions_respect_order_slow(coalitions, causal_ordering) # c(TRUE, FALSE, FALSE)
-#' check_coalitions_respect_order_slow(c(1, 2, 3, 5), causal_ordering) # TRUE
-#' check_coalitions_respect_order_slow(list(c(1, 2, 3, 5)), causal_ordering) # TRUE
-#' check_coalitions_respect_order_slow(list(c(1, 2, 5)), causal_ordering) # FALSE
-#' check_coalitions_respect_order_slow(list(c(1:7, 10)), causal_ordering) # TRUE
-#' check_coalitions_respect_order_slow(list(c(1:3, 5:6, 10)), causal_ordering) # FALSE
+#' check_coals_respect_order_slow(coalitions, causal_ordering) # c(TRUE, FALSE, FALSE)
+#' check_coals_respect_order_slow(c(1, 2, 3, 5), causal_ordering) # TRUE
+#' check_coals_respect_order_slow(list(c(1, 2, 3, 5)), causal_ordering) # TRUE
+#' check_coals_respect_order_slow(list(c(1, 2, 5)), causal_ordering) # FALSE
+#' check_coals_respect_order_slow(list(c(1:7, 10)), causal_ordering) # TRUE
+#' check_coals_respect_order_slow(list(c(1:3, 5:6, 10)), causal_ordering) # FALSE
 #'
 #' @author Lars Henry Berge Olsen
-check_coalitions_respect_order_slow <- function(coalitions, causal_ordering) {
+check_coals_respect_order_slow <- function(coalitions, causal_ordering) {
   if (!is.list(coalitions)) coalitions <- list(coalitions) # Ensure that we are given a list and not a vector
   n_causal_ordering <- length(causal_ordering) # Get the number of causal orderings
 
@@ -468,7 +469,8 @@ create_marginal_data_categoric <- function(n_MC_samples,
 #' # This function is equivalent of creating all coalitions and only keeping the valid coalitions
 #' m <- 11
 #' causal_ordering <- list(3:1, c(8, 4), c(7, 5), 6, 9:10, 11) # All m features must be in this list
-#' dt <- data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE))
+#' dt <-
+#'  data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE))
 #' all.equal(
 #'   get_valid_causal_coalitions(causal_ordering, sort_features_in_coalitions = TRUE),
 #'   dt[check_coalitions_respect_order(features, causal_ordering)]$features
@@ -542,7 +544,8 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 #' @param confounding Boolean or boolean vector specifying which features are affected by confounding. If a single
 #' boolean is given, then each component is given this value. Otherwise, `confounding` must be a vector of length
 #' `causal_ordering` specifying if each component in the causal order is subject to confounding or not.
-#' @param as_string Boolean. If the returned object is to be a list of lists of integers or a list of vectors of strings.
+#' @param as_string Boolean.
+#' If the returned object is to be a list of lists of integers or a list of vectors of strings.
 #'
 #' @return Depends on the value of the parameter `as_string`. If a string, then `results[j]` is a vector specifying
 #' the process of generating the samples for coalition `j`. The length of `results[j]` is the number of steps, and
@@ -591,16 +594,16 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALSE) {
   # List to store the sampling process
   results <- vector("list", nrow(S))
-  names(results) <- paste0("id_coalition_", seq(nrow(S)))
+  names(results) <- paste0("id_coalition_", seq_len(nrow(S)))
 
   # Iterate over the coalitions
   for (j in seq(2, nrow(S) - 1)) {
     # Get the given and dependent features for this coalition
-    index_given <- seq(ncol(S))[as.logical(S[j, ])]
-    index_dependent <- seq(ncol(S))[as.logical(1 - S[j, ])]
+    index_given <- seq_len(ncol(S))[as.logical(S[j, ])]
+    index_dependent <- seq_len(ncol(S))[as.logical(1 - S[j, ])]
 
     # Iterate over the causal orderings
-    for (i in seq(length(causal_ordering))) {
+    for (i in seq_along(ausal_ordering)) {
       # check overlap between index_dependent and ith causal component
       to_sample <- intersect(causal_ordering[[i]], index_dependent)
 
