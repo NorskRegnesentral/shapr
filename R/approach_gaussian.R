@@ -131,7 +131,6 @@ get_mu_vec <- function(x_train) {
 #' @param cov_mat Numeric matrix containing the covariance between all features
 #' in the multivariate Gaussian distribution.
 #'
-#' @return
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 create_marginal_data_gaussian <- function(n_MC_samples, Sbar_features, mu, cov_mat) {

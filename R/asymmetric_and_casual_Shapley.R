@@ -83,7 +83,6 @@ mixedorder <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE
 #' The user either has to do this prior or set `sort_features = TRUE`.
 #' @param sort_features Logical. If `TRUE` (default), then we sort the features in each coalition.
 #'
-#' @return
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 #' @examples

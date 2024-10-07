@@ -156,6 +156,7 @@ shapley_setup <- function(internal) {
 #' Contains the approach to be used for eastimation of each coalition size. Same as `approach` in `explain()`.
 #' @param coal_feature_list List.
 #' A list mapping each coalition to the features it contains.
+#' @param dt_valid_causal_coalitions data.table containing information about the valid causal coalitions.
 #' @inheritParams explain
 #' @return A data.table with columns about the that contains the following columns:
 #'
