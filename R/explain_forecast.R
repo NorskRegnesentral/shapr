@@ -102,7 +102,7 @@ explain_forecast <- function(model,
                              keep_samp_for_vS = FALSE,
                              predict_model = NULL,
                              get_model_specs = NULL,
-                             verbose = 0,
+                             verbose = "basic",
                              ...) { # ... is further arguments passed to specific approaches
   timing_list <- list(
     init_time = Sys.time()
