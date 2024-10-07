@@ -184,6 +184,9 @@ plot.shapr <- function(x,
                bar_plot_order='smallest_first' or bar_plot_order='original'."))
   }
 
+  # Remove the explain_id column
+  x$shapley_values = x$shapley_values[, -"explain_id"]
+
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
 
