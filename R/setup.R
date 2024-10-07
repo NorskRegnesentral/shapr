@@ -26,7 +26,7 @@
 setup <- function(x_train,
                   x_explain,
                   approach,
-                  paired_shap_sampling = FALSE,
+                  paired_shap_sampling = TRUE,
                   prediction_zero,
                   output_size = 1,
                   max_n_coalitions,
@@ -164,7 +164,7 @@ get_prev_internal <- function(prev_shapr_object,
 get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, max_n_coalitions, group,
                            n_MC_samples, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
                            explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights,
-                           verbose, adaptive = FALSE, adaptive_arguments = adaptive_arguments,
+                           verbose, adaptive = FALSE, adaptive_arguments = adaptive_arguments, # TODO: stemmer dette?
                            shapley_reweighting = "none", testing, asymmetric, causal_ordering, confounding,
                            is_python, ...) {
   # Check input type for approach
@@ -719,16 +719,26 @@ check_and_set_asymmetric <- function(internal) {
   exact <- internal$parameters$exact
   causal_ordering <- internal$parameters$causal_ordering
   max_n_coalitions <- internal$parameters$max_n_coalitions
+  paired_shap_sampling <- internal$parameters$paired_shap_sampling
+
+  # Check that we are not doing paired sampling
+  stop(paste0("Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.\n Asymmetric Shapley values do ",
+              "not support paired sampling as the paired coalition will not necessarily respect the causal ordering."))
 
   # Get the number of coalitions that respects the (partial) causal ordering
   max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
   internal$parameters$max_n_coalitions_causal <- max_n_coalitions_causal
 
   # Get the coalitions that respects the (partial) causal ordering
-  internal$objects$dt_valid_casual_coalitions <- exact_coalition_table(
+  internal$objects$dt_valid_causal_coalitions <- exact_coalition_table(
     m = internal$parameters$n_shapley_values,
     valid_causal_coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering)
   )#[, c("coalitions", "shapley_weight")] TODO: TA MED ELLER IKKE?
+
+  # Normalize the weights. Note that weight of a coalition size is even spread out among the valid coalitions
+  # of each size. I.e., if there is only one valid coalition of size |S|, then it gets the weight of the
+  # choose(M, |S|) coalitions of said size.
+  internal$objects$dt_valid_causal_coalitions[-c(1,.N), shapley_weight := shapley_weight / sum(shapley_weight)]
 
   # Check that we have a legit number of coalitions that does not exceed the maximum
   if (!exact && max_n_coalitions >= max_n_coalitions_causal) {
