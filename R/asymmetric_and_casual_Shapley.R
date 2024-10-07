@@ -1,6 +1,6 @@
 # Sort functions --------------------------------------------------------------------------------------------------
 # Copied from `gtools` package
-#' @keyword internal
+#' @keywords internal
 mixedsort <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE, numeric.type = c("decimal", "roman"),
                       roman.case = c("upper", "lower", "both"), scientific = TRUE) {
   x[mixedorder(x,
@@ -9,7 +9,7 @@ mixedsort <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE,
   )]
 }
 
-#' @keyword internal
+#' @keywords internal
 mixedorder <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE, numeric.type = c("decimal", "roman"),
                        roman.case = c("upper", "lower", "both"), scientific = TRUE) {
   numeric.type <- match.arg(numeric.type)
@@ -84,7 +84,7 @@ mixedorder <- function(x, decreasing = FALSE, na.last = TRUE, blank.last = FALSE
 #' @param sort_features Logical. If `TRUE` (default), then we sort the features in each coalition.
 #'
 #' @return
-#' @keyword internal
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 #' @examples
 #' sort_feature_list(list(3, 1, c(101, 7, 111), c(7, 101, 1), c(7, 99, 111), c(2, 1), c(1, 101)))
