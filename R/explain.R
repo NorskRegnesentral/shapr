@@ -86,17 +86,16 @@
 #' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
 #'
 #' @param verbose String vector or NULL.
-#' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"convergence"`
-#'  `"shapley"`  and `"vS_details"`.
-#' `"basic"` (default) displays basic information about the estimation and where in the calculation process the function
-#' currently is.
+#' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
+#'  `"convergence"`, `"shapley"`  and `"vS_details"`.
+#' `"basic"` (default) displays basic information about the computation which is being performed.
+#' `"progress` displays information about where in the calculation process the function currently is.
 #' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
 #' (only when `adaptive = TRUE`) .
 #' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `adaptive = TRUE`)
 #' + the final estimates.
 #' `"vS_details"` displays information about the v_S estimates.
-#' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`), and
-#' for causal Shapley values when `causal_ordering` and `confounding` is specified.
+#' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`).
 #' `NULL` means no printout.
 #' Note that any combination of four strings can be used.
 #' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the vS estimation process.
@@ -121,6 +120,7 @@
 #' @param adaptive_arguments Named list.
 #' Specifices the arguments for the adaptive procedure.
 #' See [shapr::get_adaptive_arguments_default()] for description of the arguments and their default values.
+#'
 #' @param shapley_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 #' the randomness and thereby the variance of the Shapley value estimates.
@@ -196,7 +196,7 @@
 #' Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
 #' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
-#' The package is allows for parallelized computation with progress updates through the tightly connected
+#' The package allows for parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages. See the examples below.
 #' For adaptive estimation (`adaptive=TRUE`), intermediate results may also be printed to the console
 #' (according to the `verbose` argument).
@@ -488,7 +488,7 @@ explain <- function(model,
 
     internal$timing_list <- list(init = Sys.time())
 
-    # setup the Shapley framework
+    # Setup the Shapley framework
     internal <- shapley_setup(internal)
 
     # Only actually called for approach %in% c("regression_surrogate","vaeac")
@@ -512,7 +512,7 @@ explain <- function(model,
     # Printing iteration information
     print_iter(internal)
 
-    ### Setting globals for to simplify the loop
+    # Setting globals for to simplify the loop
     converged <- internal$iter_list[[iter]]$converged
 
     internal$timing_list$postprocess_res <- Sys.time()
@@ -522,7 +522,7 @@ explain <- function(model,
     iter <- iter + 1
   }
 
-  internal$main_timing_list$adaptive_estimation <- Sys.time()
+  internal$main_timing_list$main_computation <- Sys.time()
 
 
   # Rerun after convergence to get the same output format as for the non-adaptive approach
