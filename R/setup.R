@@ -161,12 +161,33 @@ get_prev_internal <- function(prev_shapr_object,
 
 
 #' @keywords internal
-get_parameters <- function(approach, paired_shap_sampling, prediction_zero, output_size = 1, max_n_coalitions, group,
-                           n_MC_samples, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx,
-                           explain_y_lags, explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights,
-                           verbose, adaptive = FALSE, adaptive_arguments = adaptive_arguments, # TODO: stemmer dette?
-                           shapley_reweighting = "none", testing, asymmetric, causal_ordering, confounding,
-                           is_python, ...) {
+get_parameters <- function(approach,
+                           paired_shap_sampling,
+                           prediction_zero,
+                           output_size = 1,
+                           max_n_coalitions,
+                           group,
+                           n_MC_samples,
+                           seed,
+                           keep_samp_for_vS,
+                           type,
+                           horizon,
+                           train_idx,
+                           explain_idx,
+                           explain_y_lags,
+                           explain_xreg_lags,
+                           group_lags = NULL,
+                           MSEv_uniform_comb_weights,
+                           verbose = "basic",
+                           adaptive = FALSE,
+                           adaptive_arguments = list(),
+                           shapley_reweighting = "none",
+                           testing,
+                           asymmetric,
+                           causal_ordering,
+                           confounding,
+                           is_python,
+                           ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -1300,7 +1321,7 @@ check_adaptive_arguments <- function(adaptive_arguments) {
         !is.na(initial_n_coalitions) &&
         initial_n_coalitions <= max_n_coalitions &&
         initial_n_coalitions > 2)) {
-    stop(paste0("`adaptive_arguments$initial_n_coalitions` (", initial_n_coalitions , ") must be a single integer between 2 and `max_n_coalitions`."))
+    stop("`adaptive_arguments$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.")
   }
 
   # fixed_n_coalitions
@@ -1432,25 +1453,25 @@ check_vs_prev_shapr_object <- function(internal) {
     if (isTRUE(converged_exact)) {
       message0 <- c(
         message0,
-        paste0("All coalitions estimated. No need for further estimation.\n")
+        "All coalitions estimated. No need for further estimation.\n"
       )
     }
     if (isTRUE(converged_sd)) {
       message0 <- c(
         message0,
-        paste0("Convergence tolerance reached. Consider decreasing `adaptive_arguments$tolerance`.\n")
+        "Convergence tolerance reached. Consider decreasing `adaptive_arguments$tolerance`.\n"
       )
     }
     if (isTRUE(converged_max_iter)) {
       message0 <- c(
         message0,
-        paste0("Maximum number of iterations reached. Consider increasing `adaptive_arguments$max_iter`.\n")
+        "Maximum number of iterations reached. Consider increasing `adaptive_arguments$max_iter`.\n"
       )
     }
     if (isTRUE(converged_max_n_coalitions)) {
       message0 <- c(
         message0,
-        paste0("Maximum number of coalitions reached. Consider increasing `max_n_coalitions`.\n")
+        "Maximum number of coalitions reached. Consider increasing `max_n_coalitions`.\n"
       )
     }
     stop(message0)
