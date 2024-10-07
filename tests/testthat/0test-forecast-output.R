@@ -57,6 +57,7 @@ test_that("forecast_output_arima_numeric_no_xreg", {
   )
 })
 
+# Old snap does not correspond to the results from the master branch, why is unclear.
 test_that("forecast_output_forecast_ARIMA_group_numeric", {
   expect_snapshot_rds(
     explain_forecast(
@@ -114,7 +115,7 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1:3],
     group_lags = FALSE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 200
   )
 
 
@@ -132,7 +133,7 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1:2],
     group_lags = FALSE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 100
   )
 
   h1 <- explain_forecast(

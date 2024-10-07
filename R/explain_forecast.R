@@ -183,8 +183,6 @@ explain_forecast <- function(model,
   internal$iter_list[[1]]$X <- internal$objects$X
   internal$iter_list[[1]]$S <- internal$objects$S
   internal$iter_list[[1]]$S_batch <- internal$objects$S_batch
-  internal$iter_list[[1]]$compute_sd <- FALSE
-
 
   # Compute the v(S):
   # Get the samples for the conditional distributions with the specified approach

@@ -265,6 +265,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
 
 bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   iter <- length(internal$iter_list)
+  type <- internal$parameters$type
 
   X <- internal$iter_list[[iter]]$X
 
@@ -273,6 +274,9 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
   is_groupwise <- internal$parameters$is_groupwise
 
   n_explain <- internal$parameters$n_explain
+  if (internal$parameters$type == "forecast") {
+    n_explain <- n_explain * internal$parameters$horizon
+  }
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweight <- internal$parameters$shapley_reweighting
   shap_names <- internal$parameters$shap_names
@@ -323,7 +327,14 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
     X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
-    X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+    if (type == "forecast") {
+      # Filter out everything which represents empty (i.e. no changed features) and everything which is all (i.e. all features are changed, will be multiple to filter out for horizon > 1).
+      full_ids <- internal$objects$id_coalition_mapper_dt$id_coalition[internal$objects$id_coalition_mapper_dt$full]
+      X_boot[coalition_size == 0 | id_coalition %in% full_ids, shapley_weight := X_org[1, shapley_weight]]
+    } else {
+      X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+    }
+
   } else {
     X_boot0 <- X_samp[
       sample.int(
@@ -341,7 +352,12 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
     X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
-    X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+    if (type == "forecast") {
+      full_ids <- internal$objects$id_coalition_mapper_dt$id_coalition[internal$objects$id_coalition_mapper_dt$full]
+      X_boot[coalition_size == 0 | id_coalition %in% full_ids, shapley_weight := X_org[1, shapley_weight]]
+    } else {
+      X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+    }
   }
 
   for (i in seq_len(n_boot_samps)) {
