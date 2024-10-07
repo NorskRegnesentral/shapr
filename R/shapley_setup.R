@@ -13,13 +13,11 @@ shapley_setup <- function(internal) {
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweighting <- internal$parameters$shapley_reweighting
   coal_feature_list <- internal$objects$coal_feature_list
-  asymmetric <- internal$parameters$asymmetric
   causal_sampling <- internal$parameters$causal_sampling
   causal_ordering <- internal$parameters$causal_ordering
   causal_ordering_features <- internal$parameters$causal_ordering_features
   confounding <- internal$parameters$confounding
   dt_valid_causal_coalitions <- internal$objects$dt_valid_causal_coalitions
-  # valid_causal_coalitions <- dt_valid_causal_coalitions[,coalitions] # NULL if asymmetric is FALSE
   max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal # NULL if asymmetric is FALSE
 
 
@@ -45,11 +43,6 @@ shapley_setup <- function(internal) {
     approach0 = approach,
     shapley_reweighting = shapley_reweighting,
     dt_valid_causal_coalitions = dt_valid_causal_coalitions
-    # asymmetric = asymmetric, # TODO: DO I need all of these, maybe not the last three
-    # causal_ordering = causal_ordering
-    # causal_sampling = causal_sampling,
-    # causal_ordering_features = causal_ordering_features,
-    # confounding = confounding
   )
 
 
@@ -268,8 +261,6 @@ shapley_reweighting <- function(X, reweight = "on_N") {
 
 #' @keywords internal
 exact_coalition_table <- function(m, dt_valid_causal_coalitions = NULL, weight_zero_m = 10^6) {
-  # TODO: I have verified that we get the same coalitions and weights as Heskes with their version. REMOVE THIS
-
   # Create all valid coalitions for regular/symmetric or asymmetric Shapley values
   if (is.null(dt_valid_causal_coalitions)) {
     # Regular/symmetric Shapley values: use all 2^m coalitions
@@ -312,9 +303,6 @@ sample_coalition_table <- function(m,
     coal_sample_all <- list()
     unique_samples <- 0
   }
-
-  # TODO: Also change to an if-else, so we have only one return. Did it like this, to get less changes on Github for
-  #       Martin to read through.
 
   # Split in whether we do asymmetric or symmetric/regular Shapley values
   if (!is.null(dt_valid_causal_coalitions)) {
@@ -404,7 +392,6 @@ sample_coalition_table <- function(m,
     coalitions = coalitions[1]
   ), coalitions_tmp]
 
-
   #### End of possible removal ####
 
   data.table::setorder(X, coalition_size)
@@ -415,9 +402,9 @@ sample_coalition_table <- function(m,
   ind <- X[, .I[data.table::between(coalition_size, 1, m - 1)]]
   X[ind, p := p[coalition_size]]
 
-  # Discuss with Martin. Should N be:
+  # TODO: Discuss with Martin. Should N be
   #  1. the total number of coalitions of a size
-  #  2. or only the number of validt coalitions of said size (This verson is now implemented below)
+  #  2. or only the number of valid coalitions of said size (This verson is now implemented below)
   if (!is.null(dt_valid_causal_coalitions)) {
     # Asymmetric Shapley values
     # Get the number of coalitions of each coalition size from the `dt_valid_causal_coalitions` data table
