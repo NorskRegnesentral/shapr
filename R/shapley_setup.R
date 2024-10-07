@@ -18,7 +18,9 @@ shapley_setup <- function(internal) {
   causal_ordering <- internal$parameters$causal_ordering
   causal_ordering_features <- internal$parameters$causal_ordering_features
   confounding <- internal$parameters$confounding
-  valid_causal_coalitions <- internal$objects$dt_valid_causal_coalitions[,coalitions] # NULL if asymmetric is FALSE
+  dt_valid_causal_coalitions <- internal$objects$dt_valid_causal_coalitions
+  # valid_causal_coalitions <- dt_valid_causal_coalitions[,coalitions] # NULL if asymmetric is FALSE
+  max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal # NULL if asymmetric is FALSE
 
 
   iter <- length(internal$iter_list)
@@ -42,7 +44,7 @@ shapley_setup <- function(internal) {
     coal_feature_list = coal_feature_list,
     approach0 = approach,
     shapley_reweighting = shapley_reweighting,
-    valid_causal_coalitions = valid_causal_coalitions
+    dt_valid_causal_coalitions = dt_valid_causal_coalitions
     # asymmetric = asymmetric, # TODO: DO I need all of these, maybe not the last three
     # causal_ordering = causal_ordering
     # causal_sampling = causal_sampling,
@@ -74,7 +76,7 @@ shapley_setup <- function(internal) {
 
   # Updating parameters$exact as done in create_coalition_table. I don't think this is necessary now. TODO: Check.
   # Moreover, it does not apply to grouping, so must be adjusted anyway.
-  if (!exact && n_coalitions >= 2^n_shapley_values) {
+  if (!exact && n_coalitions >= min(2^n_shapley_values, max_n_coalitions_causal)) {
     internal$iter_list[[iter]]$exact <- TRUE
     internal$parameters$exact <- TRUE # Since this means that all coalitions have been sampled
   }
@@ -119,7 +121,7 @@ shapley_setup <- function(internal) {
   # If we are doing causal Shapley values, then get the step-wise data generating process for each coalition
   if (causal_sampling) {
     # Convert causal_ordering to be on the feature level also for group-wise Shapley values,
-    # as must know the features to include in each causal sampling step and not the group.
+    # as shapr must know the features to include in each causal sampling step and not the group.
     causal_ordering <- if (is_groupwise) causal_ordering_features else causal_ordering
     S_causal_steps <- get_S_causal_steps(S = S, causal_ordering = causal_ordering, confounding = confounding)
     S_causal_steps_strings <-
@@ -184,11 +186,11 @@ create_coalition_table <- function(m,
                                    coal_feature_list = as.list(seq_len(m)),
                                    approach0 = "gaussian",
                                    shapley_reweighting = "none",
-                                   valid_causal_coalitions = NULL) {
+                                   dt_valid_causal_coalitions = NULL) {
   if (exact) {
     dt <- exact_coalition_table(m = m,
                                 weight_zero_m = weight_zero_m,
-                                valid_causal_coalitions = valid_causal_coalitions)
+                                dt_valid_causal_coalitions = dt_valid_causal_coalitions)
   } else {
     dt <- sample_coalition_table(m = m,
                                  n_coalitions = n_coalitions,
@@ -196,7 +198,7 @@ create_coalition_table <- function(m,
                                  paired_shap_sampling = paired_shap_sampling,
                                  prev_coal_samples = prev_coal_samples,
                                  shapley_reweighting = shapley_reweighting,
-                                 valid_causal_coalitions = valid_causal_coalitions)
+                                 dt_valid_causal_coalitions = dt_valid_causal_coalitions)
     stopifnot(
       data.table::is.data.table(dt),
       !is.null(dt[["p"]])
@@ -265,16 +267,16 @@ shapley_reweighting <- function(X, reweight = "on_N") {
 
 
 #' @keywords internal
-exact_coalition_table <- function(m, valid_causal_coalitions = NULL, weight_zero_m = 10^6) {
+exact_coalition_table <- function(m, dt_valid_causal_coalitions = NULL, weight_zero_m = 10^6) {
   # TODO: I have verified that we get the same coalitions and weights as Heskes with their version. REMOVE THIS
 
   # Create all valid coalitions for regular/symmetric or asymmetric Shapley values
-  if (is.null(valid_causal_coalitions)) {
+  if (is.null(dt_valid_causal_coalitions)) {
     # Regular/symmetric Shapley values: use all 2^m coalitions
     coalitions0 <- unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
   } else {
     # Asymmetric Shapley values: use only the coalitions that respect the causal ordering
-    coalitions0 <- valid_causal_coalitions
+    coalitions0 <- dt_valid_causal_coalitions[, coalitions]
   }
 
   dt <- data.table::data.table(id_coalition = seq_along(coalitions0))
@@ -293,7 +295,8 @@ sample_coalition_table <- function(m,
                                    paired_shap_sampling = TRUE,
                                    prev_coal_samples = NULL,
                                    shapley_reweighting = "none",
-                                   valid_causal_coalitions = NULL) {
+                                   valid_causal_coalitions = NULL,
+                                   dt_valid_causal_coalitions = NULL) {
   # Setup
   coal_samp_vec <- seq(m - 1)
   n <- choose(m, coal_samp_vec)
@@ -314,47 +317,54 @@ sample_coalition_table <- function(m,
   #       Martin to read through.
 
   # Split in whether we do asymmetric or symmetric/regular Shapley values
-  if (!is.null(valid_causal_coalitions)) {
+  if (!is.null(dt_valid_causal_coalitions)) {
+
     # Asymmetric Shapley values
+    while (unique_samples < n_coalitions - 2) { # Sample until we have the right number of unique coalitions
 
-    # TODO: Talk with Martin if this is the best way to do it.
-    # Vi snakket om at jeg skulle sample med tilbakelegging. Men blir litt usikker på hva jeg skal
-    # Ta som vekter og om N skal være antallet mulige koalisjoner av en størrelse eller om det bare skal være de lovlige
-
-    # Create all coalitions respecting the causal ordering and then sample based on Shapley kernel weights
-    X <- exact_coalition_table(m = m, valid_causal_coalitions = valid_causal_coalitions, weight_zero_m = weight_zero_m)
-    X <- rbind(X[1], X[-c(1,.N)][sort(sample(.N, n_coalitions - 2, prob = shapley_weight))], X[.N])
-    X[, id_coalition := .I] # Update the indices
-    X[, p := NA] # Just needed as `create_coalition_table()` requires there to be a p-column that it removes.
-    return(X)
-  }
-
-
-  # Symmetric/regular Shapley values
-  while (unique_samples < n_coalitions - 2) {
-    if (paired_shap_sampling == TRUE) {
-      n_samps <- ceiling((n_coalitions - unique_samples - 2) / 2) # Sample -2 as we add zero and m samples below
-    } else {
+      # Get the number of causal coalitions to sample
       n_samps <- n_coalitions - unique_samples - 2 # Sample -2 as we add zero and m samples below
-    }
 
-    # Sample the coalition size ----------
-    coal_size_sample <- sample(
-      x = coal_samp_vec,
-      size = n_samps,
-      replace = TRUE,
-      prob = p
-    )
+      # Sample the causal coalitions from the valid causal coalitions with the Shapley weight as the probability
+      # The weights of each coalition size is split evenly among the members of each coalition size, such that
+      # all.equal(p, dt_valid_causal_coalitions[-c(1,.N), sum(shapley_weight), by = coalition_size][, V1])
+      coal_sample <-
+        dt_valid_causal_coalitions[-c(1,.N)][sample(.N, n_samps, replace = TRUE, prob = shapley_weight), coalitions]
 
-    # Sample specific coalitions -------
-    coal_sample <- sample_features_cpp(m, coal_size_sample)
-    if (paired_shap_sampling == TRUE) {
-      coal_sample_paired <- lapply(coal_sample, function(x) seq(m)[-x])
-      coal_sample_all <- c(coal_sample_all, coal_sample, coal_sample_paired)
-    } else {
+      # Add the samples
       coal_sample_all <- c(coal_sample_all, coal_sample)
+
+      # Find the number of unique samples
+      unique_samples <- length(unique(coal_sample_all))
     }
-    unique_samples <- length(unique(coal_sample_all))
+  } else {
+
+    # Symmetric/regular Shapley values
+    while (unique_samples < n_coalitions - 2) { # Sample until we have the right number of unique coalitions
+      if (paired_shap_sampling == TRUE) {
+        n_samps <- ceiling((n_coalitions - unique_samples - 2) / 2) # Sample -2 as we add zero and m samples below
+      } else {
+        n_samps <- n_coalitions - unique_samples - 2 # Sample -2 as we add zero and m samples below
+      }
+
+      # Sample the coalition size ----------
+      coal_size_sample <- sample(
+        x = coal_samp_vec,
+        size = n_samps,
+        replace = TRUE,
+        prob = p
+      )
+
+      # Sample specific coalitions -------
+      coal_sample <- sample_features_cpp(m, coal_size_sample)
+      if (paired_shap_sampling == TRUE) {
+        coal_sample_paired <- lapply(coal_sample, function(x) seq(m)[-x])
+        coal_sample_all <- c(coal_sample_all, coal_sample, coal_sample_paired)
+      } else {
+        coal_sample_all <- c(coal_sample_all, coal_sample)
+      }
+      unique_samples <- length(unique(coal_sample_all))
+    }
   }
 
   # Add zero and full prediction
@@ -394,7 +404,7 @@ sample_coalition_table <- function(m,
     coalitions = coalitions[1]
   ), coalitions_tmp]
 
-  X[, coalitions_tmp := NULL]
+
   #### End of possible removal ####
 
   data.table::setorder(X, coalition_size)
@@ -404,7 +414,20 @@ sample_coalition_table <- function(m,
   X[, N := 1]
   ind <- X[, .I[data.table::between(coalition_size, 1, m - 1)]]
   X[ind, p := p[coalition_size]]
-  X[ind, N := n[coalition_size]]
+
+  # Discuss with Martin. Should N be:
+  #  1. the total number of coalitions of a size
+  #  2. or only the number of validt coalitions of said size (This verson is now implemented below)
+  if (!is.null(dt_valid_causal_coalitions)) {
+    # Asymmetric Shapley values
+    # Get the number of coalitions of each coalition size from the `dt_valid_causal_coalitions` data table
+    X[dt_valid_causal_coalitions, on = "coalitions_tmp", N := i.N]
+  } else {
+    # Symmetric/regular Shapley values
+    X[ind, N := n[coalition_size]]
+  }
+
+  X[, coalitions_tmp := NULL]
 
   # Set column order and key table
   data.table::setkeyv(X, "coalition_size")

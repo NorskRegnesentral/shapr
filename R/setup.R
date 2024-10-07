@@ -722,8 +722,12 @@ check_and_set_asymmetric <- function(internal) {
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
 
   # Check that we are not doing paired sampling
-  stop(paste0("Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.\n Asymmetric Shapley values do ",
-              "not support paired sampling as the paired coalition will not necessarily respect the causal ordering."))
+  if (paired_shap_sampling) {
+    stop(paste0("Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.\n",
+                "Asymmetric Shapley values do not support paired sampling as the paired ",
+                "coalitions will not necessarily respect the causal ordering."))
+  }
+
 
   # Get the number of coalitions that respects the (partial) causal ordering
   max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
@@ -732,13 +736,16 @@ check_and_set_asymmetric <- function(internal) {
   # Get the coalitions that respects the (partial) causal ordering
   internal$objects$dt_valid_causal_coalitions <- exact_coalition_table(
     m = internal$parameters$n_shapley_values,
-    valid_causal_coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering)
+    dt_valid_causal_coalitions = data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering))
   )#[, c("coalitions", "shapley_weight")] TODO: TA MED ELLER IKKE?
 
   # Normalize the weights. Note that weight of a coalition size is even spread out among the valid coalitions
   # of each size. I.e., if there is only one valid coalition of size |S|, then it gets the weight of the
   # choose(M, |S|) coalitions of said size.
-  internal$objects$dt_valid_causal_coalitions[-c(1,.N), shapley_weight := shapley_weight / sum(shapley_weight)]
+  internal$objects$dt_valid_causal_coalitions[-c(1,.N), shapley_weight_norm := shapley_weight / sum(shapley_weight)]
+
+  # Convert the coalitions to strings. Needed when sampling the coalitions in `sample_coalition_table()`.
+  internal$objects$dt_valid_causal_coalitions[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
 
   # Check that we have a legit number of coalitions that does not exceed the maximum
   if (!exact && max_n_coalitions >= max_n_coalitions_causal) {
