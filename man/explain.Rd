@@ -22,7 +22,7 @@ explain(
   MSEv_uniform_comb_weights = TRUE,
   verbose = "basic",
   iterative_args = list(),
-  shapley_reweighting = "on_all_cond",
+  kernelSHAP_reweighting = "on_all_cond",
   prev_shapr_object = NULL,
   ...
 )
@@ -148,7 +148,7 @@ E.g. \code{verbose = c("basic", "vS_details")} will display basic information + 
 Specifices the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
-\item{shapley_reweighting}{String.
+\item{kernelSHAP_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 the randomness and thereby the variance of the Shapley value estimates.
 One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).

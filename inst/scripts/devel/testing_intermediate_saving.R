@@ -14,7 +14,7 @@ aa = explain(
   ),
   iterative = TRUE,
   print_shapleyres = TRUE,
-  print_iter_info = TRUE,shapley_reweighting = "on_N"
+  print_iter_info = TRUE,kernelSHAP_reweighting = "on_N"
 )
 
 bb = explain(
@@ -31,7 +31,7 @@ bb = explain(
   ),
   iterative = TRUE,
   print_shapleyres = TRUE,
-  print_iter_info = TRUE,shapley_reweighting = "on_N",prev_shapr_object = aa
+  print_iter_info = TRUE,kernelSHAP_reweighting = "on_N",prev_shapr_object = aa
 )
 
 
@@ -57,7 +57,7 @@ full = explain(
   iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
-  shapley_reweighting = "on_N",
+  kernelSHAP_reweighting = "on_N",
   seed=NULL
 )
 
@@ -77,7 +77,7 @@ first = explain(
   iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
-  shapley_reweighting = "on_N",
+  kernelSHAP_reweighting = "on_N",
   seed=NULL
 )
 
@@ -97,7 +97,7 @@ second = explain(
   iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
-  shapley_reweighting = "on_N",
+  kernelSHAP_reweighting = "on_N",
   seed=NULL,
   prev_shapr_object = first
 )
@@ -120,7 +120,7 @@ second_path = explain(
   iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
-  shapley_reweighting = "on_N",
+  kernelSHAP_reweighting = "on_N",
   seed=NULL,
   prev_shapr_object = first$internal$parameters$iterative_args$saving_path
 )

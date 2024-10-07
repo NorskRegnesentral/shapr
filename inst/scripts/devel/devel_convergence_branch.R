@@ -47,7 +47,7 @@ explanation_iterative <- explain(
   iterative = TRUE,
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
-  shapley_reweighting = "on_N"
+  kernelSHAP_reweighting = "on_N"
 )
 
 explanation_iterative <- explain(
@@ -60,7 +60,7 @@ explanation_iterative <- explain(
   iterative = TRUE,
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
-  shapley_reweighting = "on_N"
+  kernelSHAP_reweighting = "on_N"
 )
 
 
@@ -86,7 +86,7 @@ explanation_iterative <- explain(
   iterative_args = list(initial_n_coalitions=10,convergence_tolerance=0.0001),
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
-  shapley_reweighting = "on_N"
+  kernelSHAP_reweighting = "on_N"
 )
 
 

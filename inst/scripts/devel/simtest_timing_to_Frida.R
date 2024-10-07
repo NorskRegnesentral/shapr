@@ -92,7 +92,7 @@ expl <- explain(
                             max_iter = 10,
                             convergence_tolerance = 10^(-10),
                             compute_sd = TRUE),
-  shapley_reweighting = "none",
+  kernelSHAP_reweighting = "none",
   print_iter_info = TRUE
 )
 

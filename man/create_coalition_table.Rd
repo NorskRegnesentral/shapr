@@ -13,7 +13,7 @@ create_coalition_table(
   prev_coal_samples = NULL,
   coal_feature_list = as.list(seq_len(m)),
   approach0 = "gaussian",
-  shapley_reweighting = "none"
+  kernelSHAP_reweighting = "none"
 )
 }
 \arguments{
@@ -41,7 +41,7 @@ A list mapping each coalition to the features it contains.}
 \item{approach0}{Character vector.
 Contains the approach to be used for eastimation of each coalition size. Same as \code{approach} in \code{explain()}.}
 
-\item{shapley_reweighting}{String.
+\item{kernelSHAP_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 the randomness and thereby the variance of the Shapley value estimates.
 One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).

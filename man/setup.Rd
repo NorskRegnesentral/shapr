@@ -30,7 +30,7 @@ setup(
   verbose,
   iterative = NULL,
   iterative_args = list(),
-  shapley_reweighting = "none",
+  kernelSHAP_reweighting = "none",
   is_python = FALSE,
   testing = FALSE,
   init_time = NULL,
@@ -178,7 +178,7 @@ Specifics related to the iterative process and convergence criterion are set thr
 Specifices the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
-\item{shapley_reweighting}{String.
+\item{kernelSHAP_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 the randomness and thereby the variance of the Shapley value estimates.
 One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).

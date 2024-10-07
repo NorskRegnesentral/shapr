@@ -114,7 +114,7 @@
 #' @param output_args Named list.
 #' Specifices the arguments for the iterative procedure.
 #' See [shapr::get_output_args_default()] for description of the arguments and their default values.
-#' @param shapley_reweighting String.
+#' @param kernelSHAP_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 #' the randomness and thereby the variance of the Shapley value estimates.
 #' One of `'none'`, `'on_N'`, `'on_all'`, `'on_all_cond'` (default).
@@ -351,7 +351,7 @@ explain <- function(model,
                     get_model_specs = NULL,
                     verbose = "basic",
                     iterative_args = list(),
-                    shapley_reweighting = "on_all_cond",
+                    kernelSHAP_reweighting = "on_all_cond",
                     prev_shapr_object = NULL,
                     output_args = list(),
                     ...) { # ... is further arguments passed to specific approaches
@@ -383,7 +383,7 @@ explain <- function(model,
     verbose = verbose,
     iterative = iterative,
     iterative_args = iterative_args,
-    shapley_reweighting = shapley_reweighting,
+    kernelSHAP_reweighting = kernelSHAP_reweighting,
     init_time = init_time,
     prev_shapr_object = prev_shapr_object,
     output_args = output_args,

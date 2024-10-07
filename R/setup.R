@@ -46,7 +46,7 @@ setup <- function(x_train,
                   verbose,
                   iterative = NULL,
                   iterative_args = list(),
-                  shapley_reweighting = "none",
+                  kernelSHAP_reweighting = "none",
                   is_python = FALSE,
                   testing = FALSE,
                   init_time = NULL,
@@ -88,7 +88,7 @@ setup <- function(x_train,
     verbose = verbose,
     iterative = iterative,
     iterative_args = iterative_args,
-    shapley_reweighting = shapley_reweighting,
+    kernelSHAP_reweighting = kernelSHAP_reweighting,
     is_python = is_python,
     testing = testing,
     output_args = output_args,
@@ -171,7 +171,7 @@ get_parameters <- function(approach,
                            verbose = "basic",
                            iterative = FALSE,
                            iterative_args = list(),
-                           shapley_reweighting = "none",
+                           kernelSHAP_reweighting = "none",
                            testing,
                            is_python,
                            output_args = list(),
@@ -281,10 +281,10 @@ get_parameters <- function(approach,
   }
 
   # type
-  if (!(length(shapley_reweighting) == 1 && shapley_reweighting %in%
+  if (!(length(kernelSHAP_reweighting) == 1 && kernelSHAP_reweighting %in%
     c("none", "on_N", "on_coal_size", "on_all", "on_N_sum", "on_all_cond", "on_all_cond_paired", "comb"))) {
     stop(
-      "`shapley_reweighting` must be one of `none`, `on_N`, `on_coal_size`, `on_N_sum`, ",
+      "`kernelSHAP_reweighting` must be one of `none`, `on_N`, `on_coal_size`, `on_N_sum`, ",
       "`on_all`, `on_all_cond`, `on_all_cond_paired` or `comb`.\n"
     )
   }
@@ -307,7 +307,7 @@ get_parameters <- function(approach,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     verbose = verbose,
-    shapley_reweighting = shapley_reweighting,
+    kernelSHAP_reweighting = kernelSHAP_reweighting,
     iterative = iterative,
     iterative_args = iterative_args,
     output_args = output_args,
