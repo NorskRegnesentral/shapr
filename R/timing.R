@@ -39,8 +39,8 @@ compute_time <- function(internal) {
     init_time = main_timing_list[[1]],
     end_time = main_timing_list[[length(main_timing_list)]],
     total_time_secs = total_time_secs,
-    main_timing_secs = main_timing_secs,
-    iter_timing_secs_dt = iter_timing_secs_dt[]
+    overall_timing_secs = main_timing_secs,
+    main_computation_timing_secs = iter_timing_secs_dt[]
   )
   internal$main_timing_list <- internal$iter_timing_list <- NULL
 
