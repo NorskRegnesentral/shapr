@@ -1,4 +1,6 @@
-#' Computes the Shapley values given `v(S)`
+library(Rcpp)
+Rcpp::sourceCpp("R/frida_utils.cpp")
+
 #'
 #' @inherit explain
 #' @inheritParams default_doc
@@ -32,23 +34,24 @@ compute_estimates <- function(internal, vS_list) {
   shapley_frida <- internal$iter_list[[iter]]$frida_shapley_values
 
   inds = which(colnames(dt_shapley_est) %in% internal$parameters$feature_names )
-  # print(sum(abs(dt_shapley_est[, ..inds] - shapley_frida))/length(shapley_frida))
+  print(sum(abs(dt_shapley_est[, ..inds] - shapley_frida))/length(shapley_frida))
   # print(dt_shapley_est[, ..inds] - shapley_frida)
 
   internal$timing_list$compute_shapley <- Sys.time()
 
   if (compute_sd) {
     dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
-    dt_shapley_sd2 <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS, seed = 8456)
+    dt_shapley_sd2 <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS, seed = 685153)
     internal <- bootstrap_shapley_frida(internal, n_boot_samps = n_boot_samps)
     frida_boot_shapley_values <- internal$iter_list[[iter]]$frida_boot_shapley_values
 
     inds = which(colnames(dt_shapley_sd) %in% internal$parameters$feature_names )
 
-    # print(dt_shapley_sd[, ..inds] - frida_boot_shapley_values)
+    # print(dt_shapley_sd[, ..inds])
+    # print(frida_boot_shapley_values)
     print(sum(abs(dt_shapley_sd[, ..inds] - frida_boot_shapley_values))/length(frida_boot_shapley_values))
     print(sum(abs(dt_shapley_sd2[, ..inds] - frida_boot_shapley_values))/length(frida_boot_shapley_values))
-    print(sum(abs(dt_shapley_sd2[, ..inds] - dt_shapley_sd[, ..inds]))/length(frida_boot_shapley_values))
+    print(sum(abs(dt_shapley_sd[, ..inds] - dt_shapley_sd2[, ..inds] ))/length(frida_boot_shapley_values))
     writeLines(" ")
   } else {
     dt_shapley_sd <- dt_shapley_est * 0
@@ -200,16 +203,12 @@ compute_b <- function(b, dt_vS, X, S, n_row_all, n_row_this_iter, p0){
   return(b)
 }
 
-calculate_shapley_values_frida <- function(A, b, dt_vS, preds, p0){
+calculate_shapley_values_frida <- function(A, b, preds, p0){
 
   n_features = ncol(A)
 
-  tryCatch({
-    A_inv_one = solve(A, rep(1, n_features))
-    A_inv_vec = solve(A, t(b))
-  }, error = function(e){
-      stop("Matrix A is singular, try increasing the batch_size. Original error:", e$message)
-  })
+  A_inv_one = as.vector(solve_cpp(A, as.matrix(rep(1, n_features))))
+  A_inv_vec = solve_cpp(A, t(b))
 
   numerator = colSums(A_inv_vec) - (preds - p0)
   numerator = matrix(rep(as.numeric(numerator), n_features), nrow = n_features, byrow = TRUE)
@@ -295,7 +294,7 @@ compute_shapley_frida <- function(internal, dt_vS){
   b = compute_b(b, dt_vS_curr, X_curr, S_curr, n_row_all, n_row_this_iter, p0)
   internal$iter_list[[iter]]$b = b
 
-  shapley_values = calculate_shapley_values_frida(A, b, dt_vS_curr, preds, p0)
+  shapley_values = calculate_shapley_values_frida(A, b, preds, p0)
   internal$iter_list[[iter]]$frida_shapley_values = shapley_values
   return(internal)
 }
@@ -721,7 +720,7 @@ bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
     A_list[[i]] = compute_A(A_list[[i]], this_X, this_S, n_row_all, n_row_this_iter)
 
     b_list[[i]] = compute_b(b_list[[i]], this_dt_vS, this_X, this_S, n_row_all, n_row_this_iter, p0)
-    boot_sd_array[, , i] = calculate_shapley_values_frida(A_list[[i]], b_list[[i]], this_dt_vS, preds, p0)
+    boot_sd_array[, , i] = calculate_shapley_values_frida(A_list[[i]], b_list[[i]], preds, p0)
   }
 
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)

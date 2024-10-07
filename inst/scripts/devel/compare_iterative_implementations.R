@@ -79,8 +79,8 @@ x_train = x_train
 approach = "gaussian"
 prediction_zero = p0
 adaptive = TRUE
-adaptive_arguments = list(initial_n_coalitions = 256,
-                          fixed_n_coalitions_per_iter = 256,
+adaptive_arguments = list(initial_n_coalitions = 10,
+                          fixed_n_coalitions_per_iter = 10,
                          convergence_tolerance = 0.00001)
 
 paired_shap_sampling = FALSE # TODO: Make TRUE the default later on
@@ -112,5 +112,9 @@ expl <- explain(
   prediction_zero = prediction_zero,
   adaptive = adaptive,
   adaptive_arguments = adaptive_arguments,
-  shapley_reweighting = shapley_reweighting
+  shapley_reweighting = shapley_reweighting,
+  # seed = 15,
+  # verbose = 2,
+  # print_iter_info = TRUE,
+  # print_shapleyres = TRUE
 )
