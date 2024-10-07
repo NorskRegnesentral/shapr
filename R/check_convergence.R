@@ -7,9 +7,9 @@
 check_convergence <- function(internal) {
   iter <- length(internal$iter_list)
 
-  convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
-  max_iter <- internal$parameters$adaptive_arguments$max_iter
-  max_n_coalitions <- internal$parameters$adaptive_arguments$max_n_coalitions
+  convergence_tolerance <- internal$parameters$adaptive_args$convergence_tolerance
+  max_iter <- internal$parameters$adaptive_args$max_iter
+  max_n_coalitions <- internal$parameters$adaptive_args$max_n_coalitions
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   n_shapley_values <- internal$parameters$n_shapley_values
 

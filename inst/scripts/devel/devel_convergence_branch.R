@@ -83,7 +83,7 @@ explanation_adaptive <- explain(
   n_coalitions = 500,
   prediction_zero = p0,
   adaptive = TRUE,
-  adaptive_arguments = list(initial_n_coalitions=10,convergence_tolerance=0.0001),
+  adaptive_args = list(initial_n_coalitions=10,convergence_tolerance=0.0001),
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
   shapley_reweighting = "on_N"

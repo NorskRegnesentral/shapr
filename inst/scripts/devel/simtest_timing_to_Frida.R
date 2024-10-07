@@ -87,7 +87,7 @@ expl <- explain(
   mu=mu,
   adaptive = TRUE,
   unique_sampling = FALSE,
-  adaptive_arguments = list(initial_n_coalitions = 50,
+  adaptive_args = list(initial_n_coalitions = 50,
                             fixed_n_coalitions_per_iter = 50,
                             max_iter = 10,
                             convergence_tolerance = 10^(-10),

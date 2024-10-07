@@ -26,7 +26,7 @@ test_that("output_lm_numeric_independence_converges_tol", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      adaptive_arguments = list(
+      adaptive_args = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.1
       ),
@@ -46,7 +46,7 @@ test_that("output_lm_numeric_independence_converges_maxit", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      adaptive_arguments = list(
+      adaptive_args = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.001,
         reduction_factor_vec = rep(10^(-5), 10),
@@ -93,7 +93,7 @@ test_that("output_lm_numeric_gaussian_group_converges_tol", {
       approach = "gaussian",
       group = groups,
       prediction_zero = p0,
-      adaptive_arguments = list(
+      adaptive_args = list(
         initial_n_coalitions = 5,
         convergence_tolerance = 0.1
       ),
@@ -113,7 +113,7 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      adaptive_arguments = list(
+      adaptive_args = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.1
       ),
@@ -137,7 +137,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     approach = "independence",
     prediction_zero = p0,
     paired_shap_sampling = FALSE,
-    adaptive_arguments = list(
+    adaptive_args = list(
       initial_n_coalitions = 10,
       convergence_tolerance = 0.001,
       reduction_factor_vec = rep(10^(-5), 10),
@@ -159,7 +159,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     approach = "independence",
     prediction_zero = p0,
     paired_shap_sampling = FALSE,
-    adaptive_arguments = list(
+    adaptive_args = list(
       initial_n_coalitions = 10,
       convergence_tolerance = 0.001,
       reduction_factor_vec = rep(10^(-5), 10),
@@ -180,7 +180,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       approach = "independence",
       prediction_zero = p0,
       paired_shap_sampling = FALSE,
-      adaptive_arguments = list(
+      adaptive_args = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.001,
         reduction_factor_vec = rep(10^(-5), 10),
@@ -208,7 +208,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     approach = "independence",
     prediction_zero = p0,
     paired_shap_sampling = FALSE,
-    adaptive_arguments = list(
+    adaptive_args = list(
       initial_n_coalitions = 10,
       convergence_tolerance = 0.001,
       reduction_factor_vec = rep(10^(-5), 10),
@@ -229,7 +229,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       approach = "independence",
       prediction_zero = p0,
       paired_shap_sampling = FALSE,
-      adaptive_arguments = list(
+      adaptive_args = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.001,
         reduction_factor_vec = rep(10^(-5), 10),
@@ -237,7 +237,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       ),
       adaptive = TRUE,
       verbose = NULL,
-      prev_shapr_object = e_init_path$internal$parameters$adaptive_arguments$saving_path,
+      prev_shapr_object = e_init_path$internal$parameters$adaptive_args$saving_path,
       seed = NULL
     ),
     "output_lm_numeric_independence_cont_est_path"

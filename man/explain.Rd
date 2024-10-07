@@ -21,7 +21,7 @@ explain(
   get_model_specs = NULL,
   MSEv_uniform_comb_weights = TRUE,
   verbose = "basic",
-  adaptive_arguments = list(),
+  adaptive_args = list(),
   shapley_reweighting = "on_all_cond",
   prev_shapr_object = NULL,
   ...
@@ -75,7 +75,7 @@ A convergence criterion is used to determine if the variances of the Shapley val
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
-Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_arguments}.}
+Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_args}.}
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
@@ -144,9 +144,9 @@ Note that any combination of four strings can be used.
 E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
 }}
 
-\item{adaptive_arguments}{Named list.
+\item{adaptive_args}{Named list.
 Specifices the arguments for the adaptive procedure.
-See \code{\link[=get_adaptive_arguments_default]{get_adaptive_arguments_default()}} for description of the arguments and their default values.}
+See \code{\link[=get_adaptive_args_default]{get_adaptive_args_default()}} for description of the arguments and their default values.}
 
 \item{shapley_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
@@ -297,7 +297,7 @@ The column \code{none} is the prediction not devoted to any of the features (giv
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{adaptive = TRUE} and \code{adaptive_arguments$compute_sd=TRUE}.}
+Only present when \code{adaptive = TRUE} and \code{adaptive_args$compute_sd=TRUE}.}
 \item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -475,7 +475,7 @@ explain_adaptive <- explain(
   prediction_zero = p,
   n_MC_samples = 1e2,
   adaptive = TRUE,
-  adaptive_arguments = list(initial_n_coalitions = 10)
+  adaptive_args = list(initial_n_coalitions = 10)
 )
 
 }

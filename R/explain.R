@@ -115,11 +115,11 @@
 #' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 #' coalitions.
 #' The process is repeated until the variances are below the threshold.
-#' Specifics related to the adaptive process and convergence criterion are set through `adaptive_arguments`.
+#' Specifics related to the adaptive process and convergence criterion are set through `adaptive_args`.
 #'
-#' @param adaptive_arguments Named list.
+#' @param adaptive_args Named list.
 #' Specifices the arguments for the adaptive procedure.
-#' See [shapr::get_adaptive_arguments_default()] for description of the arguments and their default values.
+#' See [shapr::get_adaptive_args_default()] for description of the arguments and their default values.
 #' @param shapley_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 #' the randomness and thereby the variance of the Shapley value estimates.
@@ -174,7 +174,7 @@
 #'   \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 #'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 #'   definition 0 when all coalitions is used.
-#'   Only present when `adaptive = TRUE` and `adaptive_arguments$compute_sd=TRUE`.}
+#'   Only present when `adaptive = TRUE` and `adaptive_args$compute_sd=TRUE`.}
 #'   \item{internal}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 #'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -332,7 +332,7 @@
 #'   prediction_zero = p,
 #'   n_MC_samples = 1e2,
 #'   adaptive = TRUE,
-#'   adaptive_arguments = list(initial_n_coalitions = 10)
+#'   adaptive_args = list(initial_n_coalitions = 10)
 #' )
 #'
 #' @export
@@ -358,7 +358,7 @@ explain <- function(model,
                     get_model_specs = NULL,
                     MSEv_uniform_comb_weights = TRUE,
                     verbose = "basic",
-                    adaptive_arguments = list(),
+                    adaptive_args = list(),
                     shapley_reweighting = "on_all_cond",
                     prev_shapr_object = NULL,
                     ...) { # ... is further arguments passed to specific approaches
@@ -391,7 +391,7 @@ explain <- function(model,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     verbose = verbose,
     adaptive = adaptive,
-    adaptive_arguments = adaptive_arguments,
+    adaptive_args = adaptive_args,
     shapley_reweighting = shapley_reweighting,
     init_time = init_time,
     prev_shapr_object = prev_shapr_object,
@@ -524,7 +524,7 @@ testing_cleanup <- function(output) {
   }
 
   # Delete the saving_path
-  output$internal$parameters$adaptive_arguments$saving_path <- NULL
+  output$internal$parameters$adaptive_args$saving_path <- NULL
 
   return(output)
 }

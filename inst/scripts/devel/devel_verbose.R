@@ -6,7 +6,7 @@ ex <- explain(
   approach = "independence",
   prediction_zero = p0,
   max_n_coalitions = 30,
-  adaptive_arguments = list(
+  adaptive_args = list(
     initial_n_coalitions = 6,
     convergence_tolerance = 0.0005,
     reduction_factor_vec = rep(10^(-6), 10),
@@ -111,7 +111,7 @@ ex <- explain(
   approach = "empirical",
   prediction_zero = p0,
   max_n_coalitions = 30,
-  adaptive_arguments = list(
+  adaptive_args = list(
     initial_n_coalitions = 6,
     convergence_tolerance = 0.0005,
     reduction_factor_vec = rep(10^(-6), 10),
@@ -129,7 +129,7 @@ explain(
   approach = "independence",
   prediction_zero = p0,
   adaptive = TRUE,
-  adaptive_arguments <- list(n_initial_)
+  adaptive_args <- list(n_initial_)
   verbose = c("basic"),
   paired_shap_sampling = TRUE
 )

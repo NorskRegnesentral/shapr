@@ -111,7 +111,7 @@ The reason for this is that the number of possible coalitions grows exponentiall
 These defaults can be overridden by setting the `adaptive` argument to `TRUE` or `FALSE`.
 When using the `adaptive` argument, the estimation for an observation is stopped when all Shapley value
 standard deviations are below `t` times the range of the Shapley values.
-The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `adaptive_arguments$convergence_tolerance` argument, see [Adaptive estimation](#adaptive) for more details.
+The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `adaptive_args$convergence_tolerance` argument, see [Adaptive estimation](#adaptive) for more details.
 
 Since the adaptiveness default changes based on the number of features (or feature groups), the default is also to have
 no upper bound on the number of coalitions considered.
@@ -1163,7 +1163,7 @@ A convergence criterion is used to determine if the variances of the Shapley val
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
-Specifics related to the adaptive process and convergence criterion are set through `adaptive_arguments` argument.
+Specifics related to the adaptive process and convergence criterion are set through `adaptive_args` argument.
 
 The convergence criterion we use is adopted from @covert2021improving, and slightly modified to work for multiple
 observations
@@ -1215,7 +1215,7 @@ ex <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   adaptive = TRUE,
-  adaptive_arguments = list(convergence_tolerance = 0.1)
+  adaptive_args = list(convergence_tolerance = 0.1)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -1282,8 +1282,8 @@ computations (the computation of v(S)) in sequential batches with
 different feature subsets $S$, the memory usage can be significantly
 reduces.
 The user can control the number of batches by setting the two arguments
-`adaptive_arguments$max_batch_size` (defaults to 10) and
-`adaptive_arguments$min_n_batches` (defaults to 10).
+`adaptive_args$max_batch_size` (defaults to 10) and
+`adaptive_args$min_n_batches` (defaults to 10).
 
 ## Parallelized computation
 
@@ -1944,7 +1944,7 @@ In this section, we demonstrate how to continue to improve estimation accuracy w
 from a previous Shapley value computation based on `shapr::explain()` with the adaptive estimation procedure.
 This can be done either by passing an existing object of class `shapr`, or by passing a string with the path to
 the intermediately saved results.
-The latter is found at `SHAPR_OBJ$internal$parameters$adaptive_arguments$saving_path`, defaults to a temporary folder,
+The latter is found at `SHAPR_OBJ$internal$parameters$adaptive_args$saving_path`, defaults to a temporary folder,
 and is updated after each iteration.
 This can be particularly handy for long-running computations.
 
@@ -2017,7 +2017,7 @@ ex_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = 25,
-  adaptive_arguments = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
+  adaptive_args = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_init
 )
 #> Note: Feature classes extracted from the model contains NA.
@@ -2035,7 +2035,7 @@ ex_further <- explain(
 #> 
 #> ℹ Using 26 of 32 coalitions.
 
-print(ex_further$internal$parameters$adaptive_arguments$saving_path)
+print(ex_further$internal$parameters$adaptive_args$saving_path)
 #> [1] "/tmp/RtmpPIciRY/shapr_obj_c1876481fd8a.rds"
 
 # Using the ex_init object to continue the computation for the remaining coalition samples
@@ -2047,7 +2047,7 @@ ex_even_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = NULL,
-  prev_shapr_object = ex_further$internal$parameters$adaptive_arguments$saving_path
+  prev_shapr_object = ex_further$internal$parameters$adaptive_args$saving_path
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.

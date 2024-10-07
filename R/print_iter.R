@@ -16,12 +16,12 @@ print_iter <- function(internal) {
   overall_conv_measure <- internal$iter_list[[iter]]$overall_conv_measure
   reduction_factor <- internal$iter_list[[iter]]$reduction_factor
 
-  saving_path <- internal$parameters$adaptive_arguments$saving_path
-  convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
+  saving_path <- internal$parameters$adaptive_args$saving_path
+  convergence_tolerance <- internal$parameters$adaptive_args$convergence_tolerance
   testing <- internal$parameters$testing
 
   if ("convergence" %in% verbose) {
-    convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
+    convergence_tolerance <- internal$parameters$adaptive_args$convergence_tolerance
 
     current_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
     est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions

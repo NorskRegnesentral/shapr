@@ -47,7 +47,7 @@ setup <- function(x_train,
                   group_lags = NULL,
                   verbose,
                   adaptive = NULL,
-                  adaptive_arguments = list(),
+                  adaptive_args = list(),
                   shapley_reweighting = "none",
                   is_python = FALSE,
                   testing = FALSE,
@@ -65,7 +65,7 @@ setup <- function(x_train,
     prev_iter_list <- prev_internal$iter_list
 
     # Overwrite the input arguments set in explain() with those from in prev_shapr_object
-    # except model, x_explain, x_train, max_n_coalitions, adaptive_arguments, seed
+    # except model, x_explain, x_train, max_n_coalitions, adaptive_args, seed
     list2env(prev_internal$parameters)
   }
 
@@ -90,7 +90,7 @@ setup <- function(x_train,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     verbose = verbose,
     adaptive = adaptive,
-    adaptive_arguments = adaptive_arguments,
+    adaptive_args = adaptive_args,
     shapley_reweighting = shapley_reweighting,
     is_python = is_python,
     testing = testing,
@@ -131,7 +131,7 @@ setup <- function(x_train,
 }
 
 get_prev_internal <- function(prev_shapr_object,
-                              exclude_parameters = c("max_n_coalitions", "adaptive_arguments", "seed")) {
+                              exclude_parameters = c("max_n_coalitions", "adaptive_args", "seed")) {
   cl <- class(prev_shapr_object)[1]
 
   if (cl == "character") {
@@ -174,7 +174,7 @@ get_parameters <- function(approach,
                            MSEv_uniform_comb_weights,
                            verbose = "basic",
                            adaptive = FALSE,
-                           adaptive_arguments = list(),
+                           adaptive_args = list(),
                            shapley_reweighting = "none",
                            testing, is_python, ...) {
   # Check input type for approach
@@ -187,8 +187,8 @@ get_parameters <- function(approach,
   if (!is.logical(adaptive) && length(adaptive) == 1) {
     stop("`adaptive` must be a single logical.")
   }
-  if (!is.list(adaptive_arguments)) {
-    stop("`adaptive_arguments` must be a list.")
+  if (!is.list(adaptive_args)) {
+    stop("`adaptive_args` must be a list.")
   }
 
 
@@ -316,7 +316,7 @@ get_parameters <- function(approach,
     verbose = verbose,
     shapley_reweighting = shapley_reweighting,
     adaptive = adaptive,
-    adaptive_arguments = adaptive_arguments,
+    adaptive_args = adaptive_args,
     testing = testing
   )
 
@@ -987,25 +987,25 @@ check_groups <- function(feature_names, group) {
 set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
   adaptive <- internal$parameters$adaptive
 
-  adaptive_arguments <- internal$parameters$adaptive_arguments
+  adaptive_args <- internal$parameters$adaptive_args
 
-  adaptive_arguments <- utils::modifyList(get_adaptive_arguments_default(internal),
-    adaptive_arguments,
+  adaptive_args <- utils::modifyList(get_adaptive_args_default(internal),
+    adaptive_args,
     keep.null = TRUE
   )
 
   # Force setting the number of coalitions and iterations for non-adaptive method
   if (isFALSE(adaptive)) {
-    adaptive_arguments$max_iter <- 1
-    adaptive_arguments$initial_n_coalitions <- adaptive_arguments$max_n_coalitions
+    adaptive_args$max_iter <- 1
+    adaptive_args$initial_n_coalitions <- adaptive_args$max_n_coalitions
   }
 
-  check_adaptive_arguments(adaptive_arguments)
+  check_adaptive_args(adaptive_args)
 
   # Translate any null input
-  adaptive_arguments <- trans_null_adaptive_arguments(adaptive_arguments)
+  adaptive_args <- trans_null_adaptive_args(adaptive_args)
 
-  internal$parameters$adaptive_arguments <- adaptive_arguments
+  internal$parameters$adaptive_args <- adaptive_args
 
   if (!is.null(prev_iter_list)) {
     # Update internal with the iter_list from prev_shapr_object
@@ -1013,8 +1013,8 @@ set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
 
     # Conveniently allow running non-adaptive estimation one step further
     if (isFALSE(internal$parameters$adaptive)) {
-      internal$parameters$adaptive_arguments$max_iter <- length(internal$iter_list) + 1
-      internal$parameters$adaptive_arguments$reduction_factor_vec <- NULL
+      internal$parameters$adaptive_args$max_iter <- length(internal$iter_list) + 1
+      internal$parameters$adaptive_args$reduction_factor_vec <- NULL
     }
 
     # Update convergence data with NEW adaptive arguments
@@ -1028,20 +1028,20 @@ set_adaptive_parameters <- function(internal, prev_iter_list = NULL) {
   } else {
     internal$iter_list <- list()
     internal$iter_list[[1]] <- list(
-      n_coalitions = adaptive_arguments$initial_n_coalitions,
-      new_n_coalitions = adaptive_arguments$initial_n_coalitions,
+      n_coalitions = adaptive_args$initial_n_coalitions,
+      new_n_coalitions = adaptive_args$initial_n_coalitions,
       exact = internal$parameters$exact,
-      compute_sd = adaptive_arguments$compute_sd,
-      reduction_factor = adaptive_arguments$reduction_factor_vec[1],
-      n_batches = set_n_batches(adaptive_arguments$initial_n_coalitions, internal)
+      compute_sd = adaptive_args$compute_sd,
+      reduction_factor = adaptive_args$reduction_factor_vec[1],
+      n_batches = set_n_batches(adaptive_args$initial_n_coalitions, internal)
     )
   }
 
   return(internal)
 }
 
-check_adaptive_arguments <- function(adaptive_arguments) {
-  list2env(adaptive_arguments, envir = environment())
+check_adaptive_args <- function(adaptive_args) {
+  list2env(adaptive_args, envir = environment())
 
 
   # initial_n_coalitions
@@ -1050,7 +1050,7 @@ check_adaptive_arguments <- function(adaptive_arguments) {
     !is.na(initial_n_coalitions) &&
     initial_n_coalitions <= max_n_coalitions &&
     initial_n_coalitions > 2)) {
-    stop("`adaptive_arguments$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.")
+    stop("`adaptive_args$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.")
   }
 
   # fixed_n_coalitions
@@ -1061,7 +1061,7 @@ check_adaptive_arguments <- function(adaptive_arguments) {
       fixed_n_coalitions_per_iter <= max_n_coalitions &&
       fixed_n_coalitions_per_iter > 0)) {
     stop(
-      "`adaptive_arguments$fixed_n_coalitions_per_iter` must be NULL or a single positive integer no larger than",
+      "`adaptive_args$fixed_n_coalitions_per_iter` must be NULL or a single positive integer no larger than",
       "`max_n_coalitions`."
     )
   }
@@ -1072,7 +1072,7 @@ check_adaptive_arguments <- function(adaptive_arguments) {
       length(max_iter) == 1 &&
       !is.na(max_iter) &&
       max_iter > 0)) {
-    stop("`adaptive_arguments$max_iter` must be NULL, Inf or a single positive integer.")
+    stop("`adaptive_args$max_iter` must be NULL, Inf or a single positive integer.")
   }
 
   # convergence_tolerance
@@ -1080,7 +1080,7 @@ check_adaptive_arguments <- function(adaptive_arguments) {
     !(length(convergence_tolerance) == 1 &&
       !is.na(convergence_tolerance) &&
       convergence_tolerance >= 0)) {
-    stop("`adaptive_arguments$convergence_tolerance` must be NULL, 0, or a positive numeric.")
+    stop("`adaptive_args$convergence_tolerance` must be NULL, 0, or a positive numeric.")
   }
 
   # reduction_factor_vec
@@ -1088,7 +1088,7 @@ check_adaptive_arguments <- function(adaptive_arguments) {
     !(all(!is.na(reduction_factor_vec)) &&
       all(reduction_factor_vec <= 1) &&
       all(reduction_factor_vec >= 0))) {
-    stop("`adaptive_arguments$reduction_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
+    stop("`adaptive_args$reduction_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
   }
 
   # n_boot_samps
@@ -1096,13 +1096,13 @@ check_adaptive_arguments <- function(adaptive_arguments) {
     length(n_boot_samps) == 1 &&
     !is.na(n_boot_samps) &&
     n_boot_samps > 0)) {
-    stop("`adaptive_arguments$n_boot_samps` must be a single positive integer.")
+    stop("`adaptive_args$n_boot_samps` must be a single positive integer.")
   }
 
   # compute_sd
   if (!(is.logical(compute_sd) &&
     length(compute_sd) == 1)) {
-    stop("`adaptive_arguments$compute_sd` must be a single logical.")
+    stop("`adaptive_args$compute_sd` must be a single logical.")
   }
 
 
@@ -1112,7 +1112,7 @@ check_adaptive_arguments <- function(adaptive_arguments) {
       length(min_n_batches) == 1 &&
       !is.na(min_n_batches) &&
       min_n_batches > 0)) {
-    stop("`adaptive_arguments$min_n_batches` must be NULL or a single positive integer.")
+    stop("`adaptive_args$min_n_batches` must be NULL or a single positive integer.")
   }
 
   # max_batch_size
@@ -1121,41 +1121,41 @@ check_adaptive_arguments <- function(adaptive_arguments) {
       length(max_batch_size) == 1 &&
       !is.na(max_batch_size) &&
       max_batch_size > 0)) {
-    stop("`adaptive_arguments$max_batch_size` must be NULL, Inf or a single positive integer.")
+    stop("`adaptive_args$max_batch_size` must be NULL, Inf or a single positive integer.")
   }
 
   # saving_path
   if (!(is.character(saving_path) &&
     length(saving_path) == 1)) {
-    stop("`adaptive_arguments$saving_path` must be a single character.")
+    stop("`adaptive_args$saving_path` must be a single character.")
   }
 
   # Check that the saving_path exists, and abort if not...
   if (!dir.exists(dirname(saving_path))) {
     stop(
       paste0(
-        "Directory ", dirname(saving_path), " in the adaptive_arguments$saving_path does not exists.\n",
+        "Directory ", dirname(saving_path), " in the adaptive_args$saving_path does not exists.\n",
         "Please create the directory with `dir.create('", dirname(saving_path), "')` or use another directory."
       )
     )
   }
 }
 
-trans_null_adaptive_arguments <- function(adaptive_arguments) {
-  list2env(adaptive_arguments, envir = environment())
+trans_null_adaptive_args <- function(adaptive_args) {
+  list2env(adaptive_args, envir = environment())
 
   # Translating NULL to always return n_batches = 1 (if just one approach)
-  adaptive_arguments$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
-  adaptive_arguments$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
-  adaptive_arguments$max_iter <- ifelse(is.null(max_iter), Inf, max_iter)
+  adaptive_args$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
+  adaptive_args$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
+  adaptive_args$max_iter <- ifelse(is.null(max_iter), Inf, max_iter)
 
-  return(adaptive_arguments)
+  return(adaptive_args)
 }
 
 
 set_n_batches <- function(n_coalitions, internal) {
-  min_n_batches <- internal$parameters$adaptive_arguments$min_n_batches
-  max_batch_size <- internal$parameters$adaptive_arguments$max_batch_size
+  min_n_batches <- internal$parameters$adaptive_args$min_n_batches
+  max_batch_size <- internal$parameters$adaptive_args$max_batch_size
   n_unique_approaches <- internal$parameters$n_unique_approaches
 
 
@@ -1188,13 +1188,13 @@ check_vs_prev_shapr_object <- function(internal) {
     if (isTRUE(converged_sd)) {
       message0 <- c(
         message0,
-        "Convergence tolerance reached. Consider decreasing `adaptive_arguments$tolerance`.\n"
+        "Convergence tolerance reached. Consider decreasing `adaptive_args$tolerance`.\n"
       )
     }
     if (isTRUE(converged_max_iter)) {
       message0 <- c(
         message0,
-        "Maximum number of iterations reached. Consider increasing `adaptive_arguments$max_iter`.\n"
+        "Maximum number of iterations reached. Consider increasing `adaptive_args$max_iter`.\n"
       )
     }
     if (isTRUE(converged_max_n_coalitions)) {
@@ -1242,7 +1242,7 @@ check_vs_prev_shapr_object <- function(internal) {
 #'
 #' @export
 #' @author Martin Jullum
-get_adaptive_arguments_default <- function(internal,
+get_adaptive_args_default <- function(internal,
                                            initial_n_coalitions = ceiling(
                                              min(
                                                200,

@@ -1225,7 +1225,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       prediction_zero = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
-      adaptive_arguments = list(compute_sd = FALSE),
+      adaptive_args = list(compute_sd = FALSE),
       max_n_coalitions = 2^ncol(x_explain_numeric),
       adaptive = FALSE
     )
@@ -1243,7 +1243,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       prediction_zero = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
-      adaptive_arguments = list(compute_sd = FALSE),
+      adaptive_args = list(compute_sd = FALSE),
       max_n_coalitions = 2^ncol(x_explain_numeric) + 1,
       adaptive = FALSE
     )

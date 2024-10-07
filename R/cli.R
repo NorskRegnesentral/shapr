@@ -6,7 +6,7 @@ cli_startup <- function(internal, model, verbose) {
   adaptive <- internal$parameters$adaptive
   n_shapley_values <- internal$parameters$n_shapley_values
   n_explain <- internal$parameters$n_explain
-  saving_path <- internal$parameters$adaptive_arguments$saving_path
+  saving_path <- internal$parameters$adaptive_args$saving_path
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
   adaptive_txt <- ifelse(adaptive, "adaptive", "non-adaptive")

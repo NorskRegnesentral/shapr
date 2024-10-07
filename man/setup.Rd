@@ -29,7 +29,7 @@ setup(
   group_lags = NULL,
   verbose,
   adaptive = NULL,
-  adaptive_arguments = list(),
+  adaptive_args = list(),
   shapley_reweighting = "none",
   is_python = FALSE,
   testing = FALSE,
@@ -172,11 +172,11 @@ A convergence criterion is used to determine if the variances of the Shapley val
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
-Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_arguments}.}
+Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_args}.}
 
-\item{adaptive_arguments}{Named list.
+\item{adaptive_args}{Named list.
 Specifices the arguments for the adaptive procedure.
-See \code{\link[=get_adaptive_arguments_default]{get_adaptive_arguments_default()}} for description of the arguments and their default values.}
+See \code{\link[=get_adaptive_args_default]{get_adaptive_args_default()}} for description of the arguments and their default values.}
 
 \item{shapley_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
