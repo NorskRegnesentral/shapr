@@ -603,7 +603,7 @@ get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALS
     index_dependent <- seq_len(ncol(S))[as.logical(1 - S[j, ])]
 
     # Iterate over the causal orderings
-    for (i in seq_along(ausal_ordering)) {
+    for (i in seq_along(causal_ordering)) {
       # check overlap between index_dependent and ith causal component
       to_sample <- intersect(causal_ordering[[i]], index_dependent)
 
