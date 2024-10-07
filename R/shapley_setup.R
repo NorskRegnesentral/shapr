@@ -18,7 +18,7 @@ shapley_setup <- function(internal) {
   causal_ordering <- internal$parameters$causal_ordering
   causal_ordering_features <- internal$parameters$causal_ordering_features
   confounding <- internal$parameters$confounding
-  legit_causal_coalitions <- internal$objects$legit_causal_coalitions # NULL if asymmetric is FALSE
+  valid_causal_coalitions <- internal$objects$dt_valid_causal_coalitions[,coalitions] # NULL if asymmetric is FALSE
 
 
   iter <- length(internal$iter_list)
@@ -42,7 +42,7 @@ shapley_setup <- function(internal) {
     coal_feature_list = coal_feature_list,
     approach0 = approach,
     shapley_reweighting = shapley_reweighting,
-    legit_causal_coalitions = legit_causal_coalitions
+    valid_causal_coalitions = valid_causal_coalitions
     # asymmetric = asymmetric, # TODO: DO I need all of these, maybe not the last three
     # causal_ordering = causal_ordering
     # causal_sampling = causal_sampling,
@@ -184,11 +184,11 @@ create_coalition_table <- function(m,
                                    coal_feature_list = as.list(seq_len(m)),
                                    approach0 = "gaussian",
                                    shapley_reweighting = "none",
-                                   legit_causal_coalitions = NULL) {
+                                   valid_causal_coalitions = NULL) {
   if (exact) {
     dt <- exact_coalition_table(m = m,
                                 weight_zero_m = weight_zero_m,
-                                legit_causal_coalitions = legit_causal_coalitions)
+                                valid_causal_coalitions = valid_causal_coalitions)
   } else {
     dt <- sample_coalition_table(m = m,
                                  n_coalitions = n_coalitions,
@@ -196,7 +196,7 @@ create_coalition_table <- function(m,
                                  paired_shap_sampling = paired_shap_sampling,
                                  prev_coal_samples = prev_coal_samples,
                                  shapley_reweighting = shapley_reweighting,
-                                 legit_causal_coalitions = legit_causal_coalitions)
+                                 valid_causal_coalitions = valid_causal_coalitions)
     stopifnot(
       data.table::is.data.table(dt),
       !is.null(dt[["p"]])
@@ -265,16 +265,16 @@ shapley_reweighting <- function(X, reweight = "on_N") {
 
 
 #' @keywords internal
-exact_coalition_table <- function(m, legit_causal_coalitions = NULL, weight_zero_m = 10^6) {
+exact_coalition_table <- function(m, valid_causal_coalitions = NULL, weight_zero_m = 10^6) {
   # TODO: I have verified that we get the same coalitions and weights as Heskes with their version. REMOVE THIS
 
   # Create all valid coalitions for regular/symmetric or asymmetric Shapley values
-  if (is.null(legit_causal_coalitions)) {
+  if (is.null(valid_causal_coalitions)) {
     # Regular/symmetric Shapley values: use all 2^m coalitions
     coalitions0 <- unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
   } else {
     # Asymmetric Shapley values: use only the coalitions that respect the causal ordering
-    coalitions0 <- legit_causal_coalitions
+    coalitions0 <- valid_causal_coalitions
   }
 
   dt <- data.table::data.table(id_coalition = seq_along(coalitions0))
@@ -293,7 +293,7 @@ sample_coalition_table <- function(m,
                                    paired_shap_sampling = TRUE,
                                    prev_coal_samples = NULL,
                                    shapley_reweighting = "none",
-                                   legit_causal_coalitions = NULL) {
+                                   valid_causal_coalitions = NULL) {
   # Setup
   coal_samp_vec <- seq(m - 1)
   n <- choose(m, coal_samp_vec)
@@ -314,7 +314,7 @@ sample_coalition_table <- function(m,
   #       Martin to read through.
 
   # Split in whether we do asymmetric or symmetric/regular Shapley values
-  if (!is.null(legit_causal_coalitions)) {
+  if (!is.null(valid_causal_coalitions)) {
     # Asymmetric Shapley values
 
     # TODO: Talk with Martin if this is the best way to do it.
@@ -322,7 +322,7 @@ sample_coalition_table <- function(m,
     # Ta som vekter og om N skal være antallet mulige koalisjoner av en størrelse eller om det bare skal være de lovlige
 
     # Create all coalitions respecting the causal ordering and then sample based on Shapley kernel weights
-    X <- exact_coalition_table(m = m, legit_causal_coalitions = legit_causal_coalitions, weight_zero_m = weight_zero_m)
+    X <- exact_coalition_table(m = m, valid_causal_coalitions = valid_causal_coalitions, weight_zero_m = weight_zero_m)
     X <- rbind(X[1], X[-c(1,.N)][sort(sample(.N, n_coalitions - 2, prob = shapley_weight))], X[.N])
     X[, id_coalition := .I] # Update the indices
     X[, p := NA] # Just needed as `create_coalition_table()` requires there to be a p-column that it removes.

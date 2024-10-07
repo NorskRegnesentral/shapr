@@ -462,21 +462,21 @@ create_marginal_data_categoric <- function(n_MC_samples,
 #' @keywords internal
 #'
 #' @examples
-#' get_legit_causal_coalitions(list(1:3, 4:7, 8:10))
-#' get_legit_causal_coalitions(list(1:3, c(4, 8), c(5, 7), 6, 9:10))
-#' get_legit_causal_coalitions(list(3:1, c(8, 4), c(7, 5), 6, 9:10)) # Same as previous due to sorting
+#' get_valid_causal_coalitions(list(1:3, 4:7, 8:10))
+#' get_valid_causal_coalitions(list(1:3, c(4, 8), c(5, 7), 6, 9:10))
+#' get_valid_causal_coalitions(list(3:1, c(8, 4), c(7, 5), 6, 9:10)) # Same as previous due to sorting
 #'
 #' # This function is equivalent of creating all coalitions and only keeping the valid coalitions
 #' m <- 11
 #' causal_ordering <- list(3:1, c(8, 4), c(7, 5), 6, 9:10, 11) # All m features must be in this list
 #' dt <- data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE))
 #' all.equal(
-#'   get_legit_causal_coalitions(causal_ordering, sort_features_in_coalitions = TRUE),
+#'   get_valid_causal_coalitions(causal_ordering, sort_features_in_coalitions = TRUE),
 #'   dt[check_coalitions_respect_order(features, causal_ordering)]$features
 #' )
 #'
 #' @author Lars Henry Berge Olsen
-get_legit_causal_coalitions <- function(causal_ordering, sort_features_in_coalitions = TRUE) {
+get_valid_causal_coalitions <- function(causal_ordering, sort_features_in_coalitions = TRUE) {
   # Create a list to store the possible coalitions and start with the empty coalition
   coalitions <- list(numeric(0))
 
@@ -555,7 +555,7 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 #' @examples
 #' m <- 5
 #' causal_ordering <- list(1:2, 3:4, 5)
-#' S <- shapr::feature_matrix_cpp(get_legit_causal_coalitions(causal_ordering = causal_ordering), m = m)
+#' S <- shapr::feature_matrix_cpp(get_valid_causal_coalitions(causal_ordering = causal_ordering), m = m)
 #' confounding <- c(TRUE, TRUE, FALSE)
 #' get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)
 #'
