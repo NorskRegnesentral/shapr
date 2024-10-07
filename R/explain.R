@@ -53,10 +53,6 @@
 #' Specifies the seed before any randomness based code is being run.
 #' If `NULL` no seed is set in the calling environment.
 #'
-#' @param keep_samp_for_vS Logical.
-#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal$output`).
-#' Not used for `approach="regression_separate"` or `approach="regression_surrogate"`.
-#'
 #' @param predict_model Function.
 #' The prediction function used when `model` is not natively supported.
 #' (Run [get_supported_models()] for a list of natively supported models.)
@@ -79,11 +75,6 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
-#' @param MSEv_uniform_comb_weights Logical.
-#' If `TRUE` (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
-#' If `FALSE`, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
-#' criterion.
-#' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
 #'
 #' @param verbose String vector or NULL.
 #' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
@@ -120,6 +111,9 @@
 #' @param adaptive_args Named list.
 #' Specifices the arguments for the adaptive procedure.
 #' See [shapr::get_adaptive_args_default()] for description of the arguments and their default values.
+#' @param output_args Named list.
+#' Specifices the arguments for the adaptive procedure.
+#' See [shapr::get_output_args_default()] for description of the arguments and their default values.
 #' @param shapley_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 #' the randomness and thereby the variance of the Shapley value estimates.
@@ -353,14 +347,13 @@ explain <- function(model,
                     group = NULL,
                     n_MC_samples = 1e3,
                     seed = 1,
-                    keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
-                    MSEv_uniform_comb_weights = TRUE,
                     verbose = "basic",
                     adaptive_args = list(),
                     shapley_reweighting = "on_all_cond",
                     prev_shapr_object = NULL,
+                    output_args = list(),
                     ...) { # ... is further arguments passed to specific approaches
 
 
@@ -386,15 +379,14 @@ explain <- function(model,
     group = group,
     n_MC_samples = n_MC_samples,
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
-    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     verbose = verbose,
     adaptive = adaptive,
     adaptive_args = adaptive_args,
     shapley_reweighting = shapley_reweighting,
     init_time = init_time,
     prev_shapr_object = prev_shapr_object,
+    output_args = output_args,
     ...
   )
 

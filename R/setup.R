@@ -33,9 +33,7 @@ setup <- function(x_train,
                   group,
                   n_MC_samples,
                   seed,
-                  keep_samp_for_vS,
                   feature_specs,
-                  MSEv_uniform_comb_weights = TRUE,
                   type = "normal",
                   horizon = NULL,
                   y = NULL,
@@ -53,6 +51,7 @@ setup <- function(x_train,
                   testing = FALSE,
                   init_time = NULL,
                   prev_shapr_object = NULL,
+                  output_args = list(),
                   ...) {
   internal <- list()
 
@@ -79,7 +78,6 @@ setup <- function(x_train,
     group = group,
     n_MC_samples = n_MC_samples,
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS,
     type = type,
     horizon = horizon,
     train_idx = train_idx,
@@ -87,13 +85,13 @@ setup <- function(x_train,
     explain_y_lags = explain_y_lags,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
-    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     verbose = verbose,
     adaptive = adaptive,
     adaptive_args = adaptive_args,
     shapley_reweighting = shapley_reweighting,
     is_python = is_python,
     testing = testing,
+    output_args = output_args,
     ...
   )
 
@@ -163,7 +161,6 @@ get_parameters <- function(approach,
                            group,
                            n_MC_samples,
                            seed,
-                           keep_samp_for_vS,
                            type,
                            horizon,
                            train_idx,
@@ -171,12 +168,14 @@ get_parameters <- function(approach,
                            explain_y_lags,
                            explain_xreg_lags,
                            group_lags = NULL,
-                           MSEv_uniform_comb_weights,
                            verbose = "basic",
                            adaptive = FALSE,
                            adaptive_args = list(),
                            shapley_reweighting = "none",
-                           testing, is_python, ...) {
+                           testing,
+                           is_python,
+                           output_args = list(),
+                           ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -189,6 +188,9 @@ get_parameters <- function(approach,
   }
   if (!is.list(adaptive_args)) {
     stop("`adaptive_args` must be a list.")
+  }
+  if (!is.list(output_args)) {
+    stop("`output_args` must be a list.")
   }
 
 
@@ -215,11 +217,6 @@ get_parameters <- function(approach,
     stop("`n_MC_samples` must be a single positive integer.")
   }
 
-  # keep_samp_for_vS
-  if (!(is.logical(keep_samp_for_vS) &&
-    length(keep_samp_for_vS) == 1)) {
-    stop("`keep_samp_for_vS` must be single logical.")
-  }
 
   # type
   if (!(type %in% c("normal", "forecast"))) {
@@ -270,10 +267,6 @@ get_parameters <- function(approach,
     }
   }
 
-  # Parameter used in the MSEv evaluation criterion
-  if (!(is.logical(MSEv_uniform_comb_weights) && length(MSEv_uniform_comb_weights) == 1)) {
-    stop("`MSEv_uniform_comb_weights` must be single logical.")
-  }
 
   #### Tests combining more than one parameter ####
   # prediction_zero vs output_size
@@ -317,6 +310,7 @@ get_parameters <- function(approach,
     shapley_reweighting = shapley_reweighting,
     adaptive = adaptive,
     adaptive_args = adaptive_args,
+    output_args = output_args,
     testing = testing
   )
 
@@ -576,6 +570,8 @@ check_and_set_parameters <- function(internal) {
 
   check_max_n_coalitions_fc(internal)
 
+  internal <- set_output_parameters(internal)
+
   internal <- check_and_set_adaptive(internal) # sets the adaptive parameter if it is NULL (default)
 
   internal <- set_exact(internal)
@@ -713,6 +709,57 @@ check_max_n_coalitions_fc <- function(internal) {
     }
   }
 }
+
+#' @author Martin Jullum
+#' @keywords internal
+set_output_parameters <- function(internal) {
+
+  output_args <- internal$parameters$output_args
+
+  # Get defaults
+  output_args <- utils::modifyList(get_output_args_default(internal),
+                                   adaptive_args,
+                                   keep.null = TRUE
+  )
+
+  list2env(output_args, envir = environment()) # Make accessible in the environment
+
+  # Check the output_args elements
+
+  # keep_samp_for_vS
+  if (!(is.logical(keep_samp_for_vS) &&
+        length(keep_samp_for_vS) == 1)) {
+    stop("`keep_samp_for_vS` must be single logical.")
+  }
+
+  # Parameter used in the MSEv evaluation criterion
+  if (!(is.logical(MSEv_uniform_comb_weights) && length(MSEv_uniform_comb_weights) == 1)) {
+    stop("`MSEv_uniform_comb_weights` must be single logical.")
+  }
+
+  internal$parameters$MSEv_uniform_comb_weights <- MSEv_uniform_comb_weights
+  internal$parameters$keep_samp_for_vS <- keep_samp_for_vS
+
+  return(internal)
+}
+
+#' Gets the default values for the output arguments
+#'
+#' @param keep_samp_for_vS Logical.
+#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal$output`).
+#' Not used for `approach="regression_separate"` or `approach="regression_surrogate"`.
+#' @param MSEv_uniform_comb_weights Logical.
+#' If `TRUE` (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
+#' If `FALSE`, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
+#' criterion.
+#' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
+#' @export
+#' @author Martin Jullum
+get_output_args_default <- function(keep_samp_for_vS = FALSE,
+                                    MSEv_uniform_comb_weights = TRUE){
+  return(mget(methods::formalArgs(get_output_args_default)))
+}
+
 
 check_and_set_adaptive <- function(internal) {
   adaptive <- internal$parameters$adaptive
@@ -979,7 +1026,6 @@ check_groups <- function(feature_names, group) {
     )
   }
 }
-
 
 
 
