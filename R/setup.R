@@ -802,8 +802,8 @@ adjust_max_n_coalitions <- function(internal) {
       message(
         paste0(
           "Success with message:\n",
-          "max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering ",
-          max_n_coalitions_causal, ", \n and is therefore set to ", max_n_coalitions_causal, ".\n"
+          "max_n_coalitions is NULL or larger than or number of coalitions respecting the causal\n",
+          "ordering ", max_n_coalitions_causal, ", and is therefore set to ", max_n_coalitions_causal, ".\n"
         )
       )
     }
@@ -816,8 +816,8 @@ adjust_max_n_coalitions <- function(internal) {
         message(
           paste0(
             "Success with message:\n",
-            "max_n_coalitions_causal is smaller than or equal to 10, meaning there are so few unique causal ",
-            "coalitions that we should use all to get reliable results.\n",
+            "max_n_coalitions_causal is smaller than or equal to 10, meaning there are\n",
+            "so few unique causal coalitions that we should use all to get reliable results.\n",
             "max_n_coalitions is therefore set to ", max_n_coalitions_causal, ".\n"
           )
         )
