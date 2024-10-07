@@ -48,7 +48,7 @@ default_doc_explain <- function(internal, index_features) {
 #' @description
 #' This helper function displays the specific arguments applicable to the different
 #' approaches. Note that when calling [shapr::explain()] from Python, the parameters
-#' are renamed from the from `approach.parameter_name` to `approach_parameter_name`.
+#' are renamed from the `approach.parameter_name` to `approach_parameter_name`.
 #' That is, an underscore has replaced the dot as the dot is reserved in Python.
 #'
 #' @inheritDotParams setup_approach.independence -internal
