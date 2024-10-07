@@ -6,7 +6,8 @@
 \usage{
 get_adaptive_arguments_default(
   internal,
-  initial_n_coalitions = ceiling(min(200, max(5, internal$parameters$n_features,
+  initial_n_coalitions = ceiling(min(200, internal$parameters$max_n_coalitions_causal,
+    internal$parameters$max_n_coalitions, max(5, internal$parameters$n_features,
     (2^internal$parameters$n_features)/10))),
   fixed_n_coalitions_per_iter = NULL,
   max_iter = 20,

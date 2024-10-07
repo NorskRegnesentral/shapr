@@ -40,7 +40,7 @@ values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
     \item{\code{categorical.epsilon}}{Numeric value. (Optional)
 If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
-estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
+estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
     \item{\code{ctree.mincriterion}}{Numeric scalar or vector. (default = 0.95)
@@ -129,7 +129,7 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 \description{
 This helper function displays the specific arguments applicable to the different
 approaches. Note that when calling \code{\link[=explain]{explain()}} from Python, the parameters
-are renamed from the from \code{approach.parameter_name} to \code{approach_parameter_name}.
+are renamed from the \code{approach.parameter_name} to \code{approach_parameter_name}.
 That is, an underscore has replaced the dot as the dot is reserved in Python.
 }
 \author{

@@ -24,6 +24,9 @@ explain(
   adaptive_arguments = list(),
   shapley_reweighting = "on_all_cond",
   prev_shapr_object = NULL,
+  asymmetric = FALSE,
+  causal_ordering = NULL,
+  confounding = NULL,
   ...
 )
 }
@@ -128,10 +131,10 @@ criterion.
 Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
 \item{verbose}{String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"convergence"}
-\code{"shapley"}  and \code{"vS_details"}.
-\code{"basic"} (default) displays basic information about the estimation and where in the calculation process the function
-currently is.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the computation which is being performed.
+\verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
 (only when \code{adaptive = TRUE}) .
 \code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
@@ -166,6 +169,34 @@ If an object of class \code{shapr} is provided or string with a path to where in
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the adaptive estimation. See the vignette for examples.}
+
+\item{asymmetric}{Logical. If \code{FALSE} (default), we compute symmetric Shapley values,
+If \code{TRUE}, then we compute asymmetric Shapley values based on the (partial) causal ordering
+given by \code{causal_ordering}. That is, we only use the feature combinations/coalitions that
+respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and \verb{ }confounding\code{is}NULL\verb{(default), then}shapr\verb{computes asymmetric conditional Shapley values as specified in Frye et al. (2020). If}confounding\verb{is provided, i.e., not}NULL\verb{, then }shapr` computes asymmetric causal
+Shapley values as specified in Heskes et al. (2020).}
+
+\item{causal_ordering}{List of vectors specifying the components of the partial causal ordering.
+The features in each component are given by the feature/group names or their indices.
+If \code{causal_ordering} is \code{NULL} (default), then no causal ordering is assumed, i.e., a causal ordering with
+a single component containing all features \code{list(1:n_features)} or groups \code{list(1:n_groups)} for
+feature-wise and group-wise Shapley values, respectively. If the user specifies the features/groups
+by their names (strings), then \code{shapr} will convert them to the feature/group indices specified by the
+order in \code{get_model_specs} for features and \code{groups} for groups. For feature-wise Shapley values,
+the elements in the \code{causal_ordering} list represents the components in the causal ordering and can either
+be a single feature index or a vector of feature indices. For example, \code{list(c(1, 2), c(3, 4))} implies that
+\verb{1,2 -> 3} and \verb{1,2 -> 4}, i.e., feature one and two are the ancestors of feature three and four, but feature
+three and four are not related. All features/groups must be included in \code{causal_ordering} without any duplicates.}
+
+\item{confounding}{Logical (vector) specifying whether confounding is assumed or not for each component in the
+\code{causal_ordering}. If \code{NULL} (default), then no assumption about the confounding structure is made and \code{shapr}
+computes asymmetric/symmetric conditional Shapley values, depending on the value of \code{asymmetric}.
+If \code{confounding} is a single logical, i.e., \code{FALSE} or \code{TRUE}, then this assumption is set globally
+for all components. Otherwise, \code{confounding} must be a vector of logicals of the same length as \code{causal_ordering},
+indicating the confounding assumption for each component. When \code{confounding} is specified, \code{shapr} computes
+asymmetric/symmetric causal Shapley values, depending on the value of \code{asymmetric}. The \code{approach} cannot be
+\code{regression_separate} and \code{regression_surrogate} as the regression-based approaches are not applicable to the
+causal Shapley value methodology.}
 
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
@@ -239,7 +270,7 @@ values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
     \item{\code{categorical.epsilon}}{Numeric value. (Optional)
 If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
-estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
+estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
     \item{\code{regression.model}}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
@@ -322,7 +353,14 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 \code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"}.
 It is also possible to combine the different approaches, see the vignettes for more information.
 
-The package is allows for parallelized computation with progress updates through the tightly connected
+The package also supports the computation of causal and asymmetric Shapley values as introduced by
+Heskes et al. (2020) and Frye et al. (2020). Asymmetric Shapley values were proposed by Heskes et al. (2020)
+as a way to incorporate causal knowledge in the real world by restricting the possible feature
+combinations/coalitions when computing the Shapley values to those consistent with a (partial) causal ordering.
+Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
+on the prediction, taking into account their causal relationships, by adapting the sampling procedure in \code{shapr}.
+
+The package allows for parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
 For adaptive estimation (\code{adaptive=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).
@@ -480,8 +518,18 @@ explain_adaptive <- explain(
 
 }
 \references{
-Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
+\itemize{
+\item Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+\item Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
+incorporating causal knowledge into model-agnostic explainability.
+Advances in neural information processing systems, 33, 1229-1239.
+\item Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal shapley values:
+Exploiting causal knowledge to explain individual predictions of complex models.
+Advances in neural information processing systems, 33, 4778-4789.
+\item Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
+model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
+}
 }
 \author{
 Martin Jullum, Lars Henry Berge Olsen
