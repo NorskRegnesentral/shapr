@@ -129,7 +129,7 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 \description{
 This helper function displays the specific arguments applicable to the different
 approaches. Note that when calling \code{\link[=explain]{explain()}} from Python, the parameters
-are renamed from the from \code{approach.parameter_name} to \code{approach_parameter_name}.
+are renamed from the \code{approach.parameter_name} to \code{approach_parameter_name}.
 That is, an underscore has replaced the dot as the dot is reserved in Python.
 }
 \author{
