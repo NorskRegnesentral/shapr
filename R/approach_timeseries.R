@@ -137,7 +137,6 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
     }
 
     dt_l[[i]] <- rbindlist(tmp, idcol = "id_coalition")
-    # dt_l[[i]][, w := 1 / .N, by = id_coalition] # IS THIS NECESSARY?
     dt_l[[i]][, id := i]
   }
 

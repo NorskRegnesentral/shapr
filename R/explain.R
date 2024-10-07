@@ -459,7 +459,7 @@ explain <- function(model,
     # Printing iteration information
     print_iter(internal)
 
-    ### Setting globals for to simplify the loop
+    # Setting globals for to simplify the loop
     converged <- internal$iter_list[[iter]]$converged
 
     internal$timing_list$postprocess_res <- Sys.time()
