@@ -725,7 +725,10 @@ check_and_set_asymmetric <- function(internal) {
   internal$parameters$max_n_coalitions_causal <- max_n_coalitions_causal
 
   # Get the coalitions that respects the (partial) causal ordering
-  internal$objects$legit_causal_coalitions <- get_legit_causal_coalitions(causal_ordering = causal_ordering)
+  internal$objects$dt_valid_casual_coalitions <- exact_coalition_table(
+    m = internal$parameters$n_shapley_values,
+    valid_causal_coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering)
+  )#[, c("coalitions", "shapley_weight")] TODO: TA MED ELLER IKKE?
 
   # Check that we have a legit number of coalitions that does not exceed the maximum
   if (!exact && max_n_coalitions >= max_n_coalitions_causal) {
