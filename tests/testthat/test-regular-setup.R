@@ -837,7 +837,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1
+        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1)
       )
     },
     error = TRUE
@@ -854,7 +854,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2
+        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2)
       )
     },
     error = TRUE
@@ -871,7 +871,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long
+        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long)
       )
     },
     error = TRUE

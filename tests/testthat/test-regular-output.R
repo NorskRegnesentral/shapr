@@ -24,7 +24,7 @@ test_that("output_lm_numeric_independence_MSEv_Shapley_weights", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      MSEv_uniform_comb_weights = FALSE,
+      output_args = list(MSEv_uniform_comb_weights = FALSE),
       iterative = FALSE
     ),
     "output_lm_numeric_independence_MSEv_Shapley_weights"

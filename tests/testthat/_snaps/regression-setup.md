@@ -3,7 +3,8 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = c(
-          "regression_surrogate", "gaussian", "independence", "empirical"), iterative = FALSE)
+          "regression_surrogate", "gaussian", "independence", "empirical"),
+        iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
