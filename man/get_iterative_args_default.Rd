@@ -11,11 +11,7 @@ get_iterative_args_default(
   fixed_n_coalitions_per_iter = NULL,
   max_iter = 20,
   convergence_tolerance = 0.02,
-  reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
-  n_boot_samps = 100,
-  compute_sd = isTRUE(internal$parameters$iterative),
-  max_batch_size = 10,
-  min_n_batches = 10
+  reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))
 )
 }
 \arguments{
@@ -39,18 +35,6 @@ The number of \code{n_coalitions} actually used in the next iteration is set to 
 \code{reduction_factor_vec[i]} for iteration \code{i}.
 It is wise to start with smaller numbers to avoid using too many \code{n_coalitions} due to uncertain estimates in
 the first iterations.}
-
-\item{n_boot_samps}{Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
-coalitions used to estimate the standard deviations of the Shapley value estimates.}
-
-\item{compute_sd}{Logical. Whether to estimate the standard deviations of the Shapley value estimates.}
-
-\item{max_batch_size}{Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
-A larger numbers requires more memory, but may have a slight computational advantage.}
-
-\item{min_n_batches}{Integer. The minimum number of batches to split the computation into within each iteration.
-Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
-than the number of parallel workers.}
 }
 \description{
 Function to specify arguments of the iterative estimation procedure

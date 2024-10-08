@@ -306,13 +306,11 @@ get_parameters <- function(approach,
     group = group,
     n_MC_samples = n_MC_samples,
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS,
     is_python = is_python,
     output_size = output_size,
     type = type,
     horizon = horizon,
     group_lags = group_lags,
-    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     verbose = verbose,
     kernelSHAP_reweighting = kernelSHAP_reweighting,
     iterative = iterative,
@@ -727,7 +725,7 @@ set_output_parameters <- function(internal) {
   output_args <- internal$parameters$output_args
 
   # Get defaults
-  output_args <- utils::modifyList(get_output_args_default(internal),
+  output_args <- utils::modifyList(get_output_args_default(),
                                    output_args,
                                    keep.null = TRUE
   )
@@ -1203,7 +1201,7 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
       n_coalitions = iterative_args$initial_n_coalitions,
       new_n_coalitions = iterative_args$initial_n_coalitions,
       exact = internal$parameters$exact,
-      compute_sd = internal$parameters$compute_sd,
+      compute_sd = internal$parameters$extra_estimation_args$compute_sd,
       reduction_factor = iterative_args$reduction_factor_vec[1],
       n_batches = set_n_batches(iterative_args$initial_n_coalitions, internal)
     )

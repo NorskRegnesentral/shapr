@@ -34,6 +34,7 @@ setup(
   init_time = NULL,
   prev_shapr_object = NULL,
   output_args = list(),
+  extra_estimation_args = list(),
   ...
 )
 }
