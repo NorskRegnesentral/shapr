@@ -516,7 +516,7 @@ testing_cleanup <- function(output) {
   }
 
   # Delete the saving_path
-  output$internal$parameters$iterative_args$saving_path <- NULL
+  output$internal$parameters$saving_path <- NULL
 
   return(output)
 }

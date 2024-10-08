@@ -16,7 +16,7 @@ print_iter <- function(internal) {
   overall_conv_measure <- internal$iter_list[[iter]]$overall_conv_measure
   reduction_factor <- internal$iter_list[[iter]]$reduction_factor
 
-  saving_path <- internal$parameters$iterative_args$saving_path
+  saving_path <- internal$parameters$saving_path
   convergence_tolerance <- internal$parameters$iterative_args$convergence_tolerance
   testing <- internal$parameters$testing
 

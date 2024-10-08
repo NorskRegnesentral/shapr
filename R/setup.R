@@ -729,16 +729,35 @@ set_output_parameters <- function(internal) {
   # keep_samp_for_vS
   if (!(is.logical(keep_samp_for_vS) &&
         length(keep_samp_for_vS) == 1)) {
-    stop("`keep_samp_for_vS` must be single logical.")
+    stop("`output_args$keep_samp_for_vS` must be single logical.")
   }
 
   # Parameter used in the MSEv evaluation criterion
   if (!(is.logical(MSEv_uniform_comb_weights) && length(MSEv_uniform_comb_weights) == 1)) {
-    stop("`MSEv_uniform_comb_weights` must be single logical.")
+    stop("`output_args$MSEv_uniform_comb_weights` must be single logical.")
   }
+
+  # saving_path
+  if (!(is.character(saving_path) &&
+        length(saving_path) == 1)) {
+    stop("`output_args$saving_path` must be a single character.")
+  }
+
+  # Also check that saving_path exists, and abort if not...
+  if (!dir.exists(dirname(saving_path))) {
+    stop(
+      paste0(
+        "Directory ", dirname(saving_path), " in the output_args$saving_path does not exists.\n",
+        "Please create the directory with `dir.create('", dirname(saving_path), "')` or use another directory."
+      )
+    )
+  }
+
+
 
   internal$parameters$MSEv_uniform_comb_weights <- MSEv_uniform_comb_weights
   internal$parameters$keep_samp_for_vS <- keep_samp_for_vS
+  internal$parameters$saving_path <- saving_path
 
   return(internal)
 }
@@ -753,10 +772,14 @@ set_output_parameters <- function(internal) {
 #' If `FALSE`, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
 #' criterion.
 #' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
+#' @param saving_path String.
+#' The path to the directory where the results of the iterative estimation procedure should be saved.
+#' Defaults to a temporary directory.
 #' @export
 #' @author Martin Jullum
 get_output_args_default <- function(keep_samp_for_vS = FALSE,
-                                    MSEv_uniform_comb_weights = TRUE){
+                                    MSEv_uniform_comb_weights = TRUE,
+                                    saving_path = tempfile("shapr_obj_", fileext = ".rds")){
   return(mget(methods::formalArgs(get_output_args_default)))
 }
 
@@ -1170,21 +1193,7 @@ check_iterative_args <- function(iterative_args) {
     stop("`iterative_args$max_batch_size` must be NULL, Inf or a single positive integer.")
   }
 
-  # saving_path
-  if (!(is.character(saving_path) &&
-    length(saving_path) == 1)) {
-    stop("`iterative_args$saving_path` must be a single character.")
-  }
 
-  # Check that the saving_path exists, and abort if not...
-  if (!dir.exists(dirname(saving_path))) {
-    stop(
-      paste0(
-        "Directory ", dirname(saving_path), " in the iterative_args$saving_path does not exists.\n",
-        "Please create the directory with `dir.create('", dirname(saving_path), "')` or use another directory."
-      )
-    )
-  }
 }
 
 trans_null_iterative_args <- function(iterative_args) {
@@ -1281,9 +1290,6 @@ check_vs_prev_shapr_object <- function(internal) {
 #' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
 #' Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
 #' than the number of parallel workers.
-#' @param saving_path String.
-#' The path to the directory where the results of the iterative estimation procedure should be saved.
-#' Defaults to a temporary directory.
 #' @inheritParams default_doc_explain
 #'
 #' @export
@@ -1306,8 +1312,7 @@ get_iterative_args_default <- function(internal,
                                            n_boot_samps = 100,
                                            compute_sd = isTRUE(internal$parameters$iterative),
                                            max_batch_size = 10,
-                                           min_n_batches = 10,
-                                           saving_path = tempfile("shapr_obj_", fileext = ".rds")) {
+                                           min_n_batches = 10) {
   iterative <- internal$parameters$iterative
   max_n_coalitions <- internal$parameters$max_n_coalitions
   exact <- internal$parameters$exact
@@ -1325,8 +1330,7 @@ get_iterative_args_default <- function(internal,
         "n_boot_samps",
         "compute_sd",
         "max_batch_size",
-        "min_n_batches",
-        "saving_path"
+        "min_n_batches"
       )
     )
   } else {
@@ -1340,8 +1344,7 @@ get_iterative_args_default <- function(internal,
       n_boot_samps = n_boot_samps,
       compute_sd = isFALSE(exact) && isFALSE(is_groupwise),
       max_batch_size = max_batch_size,
-      min_n_batches = min_n_batches,
-      saving_path = saving_path
+      min_n_batches = min_n_batches
     )
   }
   return(ret_list)

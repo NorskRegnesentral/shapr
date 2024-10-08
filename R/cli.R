@@ -6,7 +6,7 @@ cli_startup <- function(internal, model, verbose) {
   iterative <- internal$parameters$iterative
   n_shapley_values <- internal$parameters$n_shapley_values
   n_explain <- internal$parameters$n_explain
-  saving_path <- internal$parameters$iterative_args$saving_path
+  saving_path <- internal$parameters$saving_path
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
   iterative_txt <- ifelse(iterative, "iterative", "non-iterative")
