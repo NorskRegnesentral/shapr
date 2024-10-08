@@ -138,7 +138,9 @@
       "max_iter",
       "convergence_tolerance",
       "conv_measure",
-      "verbose"
+      "verbose",
+      "MSEv_uniform_comb_weights",
+      "keep_samp_for_vS"
     )
   )
 

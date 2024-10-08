@@ -721,13 +721,12 @@ check_max_n_coalitions_fc <- function(internal) {
 #' @author Martin Jullum
 #' @keywords internal
 set_output_parameters <- function(internal) {
-
   output_args <- internal$parameters$output_args
 
   # Get defaults
   output_args <- utils::modifyList(get_output_args_default(),
-                                   output_args,
-                                   keep.null = TRUE
+    output_args,
+    keep.null = TRUE
   )
 
   check_output_args(output_args)
@@ -754,18 +753,18 @@ set_output_parameters <- function(internal) {
 #' @author Martin Jullum
 get_output_args_default <- function(keep_samp_for_vS = FALSE,
                                     MSEv_uniform_comb_weights = TRUE,
-                                    saving_path = tempfile("shapr_obj_", fileext = ".rds")){
+                                    saving_path = tempfile("shapr_obj_", fileext = ".rds")) {
   return(mget(methods::formalArgs(get_output_args_default)))
 }
 
-check_output_args <- function(output_args){
+check_output_args <- function(output_args) {
   list2env(output_args, envir = environment()) # Make accessible in the environment
 
   # Check the output_args elements
 
   # keep_samp_for_vS
   if (!(is.logical(keep_samp_for_vS) &&
-        length(keep_samp_for_vS) == 1)) {
+    length(keep_samp_for_vS) == 1)) {
     stop("`output_args$keep_samp_for_vS` must be single logical.")
   }
 
@@ -776,7 +775,7 @@ check_output_args <- function(output_args){
 
   # saving_path
   if (!(is.character(saving_path) &&
-        length(saving_path) == 1)) {
+    length(saving_path) == 1)) {
     stop("`output_args$saving_path` must be a single character.")
   }
 
@@ -789,20 +788,18 @@ check_output_args <- function(output_args){
       )
     )
   }
-
 }
 
 
 #' @author Martin Jullum
 #' @keywords internal
 set_extra_estimation_params <- function(internal) {
-
   extra_computation_args <- internal$parameters$extra_computation_args
 
   # Get defaults
   extra_computation_args <- utils::modifyList(get_extra_est_args_default(internal),
-                                             extra_computation_args,
-                                             keep.null = TRUE
+    extra_computation_args,
+    keep.null = TRUE
   )
 
   # Check the output_args elements
@@ -833,45 +830,44 @@ get_extra_est_args_default <- function(internal, # Only used to get the default 
                                        compute_sd = isFALSE(internal$parameters$exact),
                                        n_boot_samps = 100,
                                        max_batch_size = 10,
-                                       min_n_batches = 10){
+                                       min_n_batches = 10) {
   return(mget(methods::formalArgs(get_extra_est_args_default)[-1])) # [-1] to exclude internal
 }
 
-check_extra_computation_args <- function(extra_computation_args){
+check_extra_computation_args <- function(extra_computation_args) {
   list2env(extra_computation_args, envir = environment()) # Make accessible in the environment
 
   # compute_sd
   if (!(is.logical(compute_sd) &&
-        length(compute_sd) == 1)) {
+    length(compute_sd) == 1)) {
     stop("`extra_computation_args$compute_sd` must be single logical.")
   }
 
   # n_boot_samps
   if (!(is.wholenumber(n_boot_samps) &&
-        length(n_boot_samps) == 1 &&
-        !is.na(n_boot_samps) &&
-        n_boot_samps > 0)) {
+    length(n_boot_samps) == 1 &&
+    !is.na(n_boot_samps) &&
+    n_boot_samps > 0)) {
     stop("`extra_computation_args$n_boot_samps` must be a single positive integer.")
   }
 
   # max_batch_size
   if (!is.null(max_batch_size) &&
-      !((is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
-        length(max_batch_size) == 1 &&
-        !is.na(max_batch_size) &&
-        max_batch_size > 0)) {
+    !((is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
+      length(max_batch_size) == 1 &&
+      !is.na(max_batch_size) &&
+      max_batch_size > 0)) {
     stop("`extra_computation_args$max_batch_size` must be NULL, Inf or a single positive integer.")
   }
 
   # min_n_batches
   if (!is.null(min_n_batches) &&
-      !(is.wholenumber(min_n_batches) &&
-        length(min_n_batches) == 1 &&
-        !is.na(min_n_batches) &&
-        min_n_batches > 0)) {
+    !(is.wholenumber(min_n_batches) &&
+      length(min_n_batches) == 1 &&
+      !is.na(min_n_batches) &&
+      min_n_batches > 0)) {
     stop("`extra_computation_args$min_n_batches` must be NULL or a single positive integer.")
   }
-
 }
 
 trans_null_extra_est_args <- function(extra_computation_args) {
@@ -1260,7 +1256,6 @@ check_iterative_args <- function(iterative_args) {
       all(n_coal_next_iter_factor_vec >= 0))) {
     stop("`iterative_args$n_coal_next_iter_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
   }
-
 }
 
 trans_null_iterative_args <- function(iterative_args) {
@@ -1330,7 +1325,8 @@ check_vs_prev_shapr_object <- function(internal) {
 # Get functions ========================================================================================================
 #' Function to specify arguments of the iterative estimation procedure
 #'
-#' @details The functions sets default values for the iterative estimation procedure, according to the function defaults.
+#' @details The functions sets default values for the iterative estimation procedure, according to the function
+#' defaults.
 #' If the argument `iterative` of [shapr::explain()] is FALSE, it sets parameters corresponding to the use of a
 #' non-iterative estimation procedure
 #'
@@ -1341,8 +1337,8 @@ check_vs_prev_shapr_object <- function(internal) {
 #' @param convergence_tolerance Numeric. The t variable in the convergence threshold formula on page 6 in the paper
 #' Covert and Lee (2021), 'Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression'
 #' https://arxiv.org/pdf/2012.01536. Smaller values requires more coalitions before convergence is reached.
-#' @param n_coal_next_iter_factor_vec Numeric vector. The number of `n_coalitions` that must be used to reach convergence
-#' in the next iteration is estimated.
+#' @param n_coal_next_iter_factor_vec Numeric vector. The number of `n_coalitions` that must be used to reach
+#' convergence in the next iteration is estimated.
 #' The number of `n_coalitions` actually used in the next iteration is set to this estimate multiplied by
 #' `n_coal_next_iter_factor_vec[i]` for iteration `i`.
 #' It is wise to start with smaller numbers to avoid using too many `n_coalitions` due to uncertain estimates in
@@ -1352,20 +1348,20 @@ check_vs_prev_shapr_object <- function(internal) {
 #' @export
 #' @author Martin Jullum
 get_iterative_args_default <- function(internal,
-                                           initial_n_coalitions = ceiling(
-                                             min(
-                                               200,
-                                               max(
-                                                 5,
-                                                 internal$parameters$n_features,
-                                                 (2^internal$parameters$n_features) / 10
-                                               )
-                                             )
-                                           ),
-                                           fixed_n_coalitions_per_iter = NULL,
-                                           max_iter = 20,
-                                           convergence_tolerance = 0.02,
-                                           n_coal_next_iter_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))) {
+                                       initial_n_coalitions = ceiling(
+                                         min(
+                                           200,
+                                           max(
+                                             5,
+                                             internal$parameters$n_features,
+                                             (2^internal$parameters$n_features) / 10
+                                           )
+                                         )
+                                       ),
+                                       fixed_n_coalitions_per_iter = NULL,
+                                       max_iter = 20,
+                                       convergence_tolerance = 0.02,
+                                       n_coal_next_iter_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))) {
   iterative <- internal$parameters$iterative
   max_n_coalitions <- internal$parameters$max_n_coalitions
 
