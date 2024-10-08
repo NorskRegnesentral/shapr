@@ -10,7 +10,7 @@ test_that("iterative_args are respected", {
     iterative_args = list(
       initial_n_coalitions = 6,
       convergence_tolerance = 0.0005,
-      reduction_factor_vec = rep(10^(-6), 10),
+      n_coal_next_iter_factor_vec = rep(10^(-6), 10),
       max_iter = 8
     ),
     iterative = TRUE

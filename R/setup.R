@@ -1184,7 +1184,7 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
     # Conveniently allow running non-iterative estimation one step further
     if (isFALSE(internal$parameters$iterative)) {
       internal$parameters$iterative_args$max_iter <- length(internal$iter_list) + 1
-      internal$parameters$iterative_args$reduction_factor_vec <- NULL
+      internal$parameters$iterative_args$n_coal_next_iter_factor_vec <- NULL
     }
 
     # Update convergence data with NEW iterative arguments
@@ -1202,7 +1202,7 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
       new_n_coalitions = iterative_args$initial_n_coalitions,
       exact = internal$parameters$exact,
       compute_sd = internal$parameters$extra_estimation_args$compute_sd,
-      reduction_factor = iterative_args$reduction_factor_vec[1],
+      n_coal_next_iter_factor = iterative_args$n_coal_next_iter_factor_vec[1],
       n_batches = set_n_batches(iterative_args$initial_n_coalitions, internal)
     )
   }
@@ -1253,12 +1253,12 @@ check_iterative_args <- function(iterative_args) {
     stop("`iterative_args$convergence_tolerance` must be NULL, 0, or a positive numeric.")
   }
 
-  # reduction_factor_vec
-  if (!is.null(reduction_factor_vec) &&
-    !(all(!is.na(reduction_factor_vec)) &&
-      all(reduction_factor_vec <= 1) &&
-      all(reduction_factor_vec >= 0))) {
-    stop("`iterative_args$reduction_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
+  # n_coal_next_iter_factor_vec
+  if (!is.null(n_coal_next_iter_factor_vec) &&
+    !(all(!is.na(n_coal_next_iter_factor_vec)) &&
+      all(n_coal_next_iter_factor_vec <= 1) &&
+      all(n_coal_next_iter_factor_vec >= 0))) {
+    stop("`iterative_args$n_coal_next_iter_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
   }
 
 }
@@ -1341,10 +1341,10 @@ check_vs_prev_shapr_object <- function(internal) {
 #' @param convergence_tolerance Numeric. The t variable in the convergence threshold formula on page 6 in the paper
 #' Covert and Lee (2021), 'Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression'
 #' https://arxiv.org/pdf/2012.01536. Smaller values requires more coalitions before convergence is reached.
-#' @param reduction_factor_vec Numeric vector. The number of `n_coalitions` that must be used to reach convergence
+#' @param n_coal_next_iter_factor_vec Numeric vector. The number of `n_coalitions` that must be used to reach convergence
 #' in the next iteration is estimated.
 #' The number of `n_coalitions` actually used in the next iteration is set to this estimate multiplied by
-#' `reduction_factor_vec[i]` for iteration `i`.
+#' `n_coal_next_iter_factor_vec[i]` for iteration `i`.
 #' It is wise to start with smaller numbers to avoid using too many `n_coalitions` due to uncertain estimates in
 #' the first iterations.
 #' @inheritParams default_doc_explain
@@ -1365,7 +1365,7 @@ get_iterative_args_default <- function(internal,
                                            fixed_n_coalitions_per_iter = NULL,
                                            max_iter = 20,
                                            convergence_tolerance = 0.02,
-                                           reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))) {
+                                           n_coal_next_iter_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))) {
   iterative <- internal$parameters$iterative
   max_n_coalitions <- internal$parameters$max_n_coalitions
 
@@ -1377,7 +1377,7 @@ get_iterative_args_default <- function(internal,
         "max_n_coalitions",
         "max_iter",
         "convergence_tolerance",
-        "reduction_factor_vec"
+        "n_coal_next_iter_factor_vec"
       )
     )
   } else {
@@ -1387,7 +1387,7 @@ get_iterative_args_default <- function(internal,
       max_n_coalitions = max_n_coalitions,
       max_iter = 1,
       convergence_tolerance = NULL,
-      reduction_factor_vec = NULL
+      n_coal_next_iter_factor_vec = NULL
     )
   }
   return(ret_list)

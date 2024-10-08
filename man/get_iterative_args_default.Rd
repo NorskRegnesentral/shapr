@@ -11,7 +11,7 @@ get_iterative_args_default(
   fixed_n_coalitions_per_iter = NULL,
   max_iter = 20,
   convergence_tolerance = 0.02,
-  reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))
+  n_coal_next_iter_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))
 )
 }
 \arguments{
@@ -29,10 +29,10 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 Covert and Lee (2021), 'Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression'
 https://arxiv.org/pdf/2012.01536. Smaller values requires more coalitions before convergence is reached.}
 
-\item{reduction_factor_vec}{Numeric vector. The number of \code{n_coalitions} that must be used to reach convergence
+\item{n_coal_next_iter_factor_vec}{Numeric vector. The number of \code{n_coalitions} that must be used to reach convergence
 in the next iteration is estimated.
 The number of \code{n_coalitions} actually used in the next iteration is set to this estimate multiplied by
-\code{reduction_factor_vec[i]} for iteration \code{i}.
+\code{n_coal_next_iter_factor_vec[i]} for iteration \code{i}.
 It is wise to start with smaller numbers to avoid using too many \code{n_coalitions} due to uncertain estimates in
 the first iterations.}
 }

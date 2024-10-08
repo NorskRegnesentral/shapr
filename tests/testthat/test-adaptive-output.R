@@ -49,7 +49,7 @@ test_that("output_lm_numeric_independence_converges_maxit", {
       iterative_args = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.001,
-        reduction_factor_vec = rep(10^(-5), 10),
+        n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
       ),
       iterative = TRUE,
@@ -140,7 +140,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     iterative_args = list(
       initial_n_coalitions = 10,
       convergence_tolerance = 0.001,
-      reduction_factor_vec = rep(10^(-5), 10),
+      n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 8
     ),
     iterative = TRUE,
@@ -162,7 +162,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     iterative_args = list(
       initial_n_coalitions = 10,
       convergence_tolerance = 0.001,
-      reduction_factor_vec = rep(10^(-5), 10),
+      n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 5
     ),
     iterative = TRUE,
@@ -183,7 +183,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       iterative_args = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.001,
-        reduction_factor_vec = rep(10^(-5), 10),
+        n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
       ),
       iterative = TRUE,
@@ -211,7 +211,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     iterative_args = list(
       initial_n_coalitions = 10,
       convergence_tolerance = 0.001,
-      reduction_factor_vec = rep(10^(-5), 10),
+      n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 5
     ),
     iterative = TRUE,
@@ -232,7 +232,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       iterative_args = list(
         initial_n_coalitions = 10,
         convergence_tolerance = 0.001,
-        reduction_factor_vec = rep(10^(-5), 10),
+        n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
       ),
       iterative = TRUE,

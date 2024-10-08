@@ -14,18 +14,18 @@ prepare_next_iteration <- function(internal) {
     next_iter_list <- list()
 
     n_shapley_values <- internal$parameters$n_shapley_values
-    reduction_factor_vec <- internal$parameters$iterative_args$reduction_factor_vec
+    n_coal_next_iter_factor_vec <- internal$parameters$iterative_args$n_coal_next_iter_factor_vec
     fixed_n_coalitions_per_iter <- internal$parameters$iterative_args$fixed_n_coalitions_per_iter
     max_n_coalitions <- internal$parameters$iterative_args$max_n_coalitions
 
 
     est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions
-    reduction_factor <- internal$iter_list[[iter]]$reduction_factor
+    n_coal_next_iter_factor <- internal$iter_list[[iter]]$n_coal_next_iter_factor
     current_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
     current_coal_samples <- internal$iter_list[[iter]]$coal_samples
 
     if (is.null(fixed_n_coalitions_per_iter)) {
-      proposal_next_n_coalitions <- current_n_coalitions + ceiling(est_remaining_coalitions * reduction_factor)
+      proposal_next_n_coalitions <- current_n_coalitions + ceiling(est_remaining_coalitions * n_coal_next_iter_factor)
     } else {
       proposal_next_n_coalitions <- current_n_coalitions + fixed_n_coalitions_per_iter
     }
@@ -53,14 +53,14 @@ prepare_next_iteration <- function(internal) {
       next_iter_list$compute_sd <- TRUE
     }
 
-    if (!is.null(reduction_factor_vec[1])) {
-      next_iter_list$reduction_factor <- ifelse(
-        length(reduction_factor_vec) >= iter,
-        reduction_factor_vec[iter],
-        reduction_factor_vec[length(reduction_factor_vec)]
+    if (!is.null(n_coal_next_iter_factor_vec[1])) {
+      next_iter_list$n_coal_next_iter_factor <- ifelse(
+        length(n_coal_next_iter_factor_vec) >= iter,
+        n_coal_next_iter_factor_vec[iter],
+        n_coal_next_iter_factor_vec[length(n_coal_next_iter_factor_vec)]
       )
     } else {
-      next_iter_list$reduction_factor <- NULL
+      next_iter_list$n_coal_next_iter_factor <- NULL
     }
 
     next_iter_list$new_n_coalitions <- next_iter_list$n_coalitions - current_n_coalitions

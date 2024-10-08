@@ -9,7 +9,7 @@ aa = explain(
   iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.01,
-    reduction_factor_vec = rep(10^(-5), 10),
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 30
   ),
   iterative = TRUE,
@@ -26,7 +26,7 @@ bb = explain(
   iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 30
   ),
   iterative = TRUE,
@@ -51,7 +51,7 @@ full = explain(
   iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 7
   ),
   iterative = TRUE,
@@ -71,7 +71,7 @@ first = explain(
   iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 4
   ),
   iterative = TRUE,
@@ -91,7 +91,7 @@ second = explain(
   iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 7
   ),
   iterative = TRUE,
@@ -114,7 +114,7 @@ second_path = explain(
   iterative_args = list(
     initial_n_coalitions = 10,
     convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 5
   ),
   iterative = TRUE,

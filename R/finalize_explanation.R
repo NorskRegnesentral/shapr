@@ -70,7 +70,7 @@ get_iter_results <- function(iter_list) {
 }
 
 iter_list_to_dt <- function(iter_list, what = c(
-                              "exact", "compute_sd", "reduction_factor", "n_coalitions", "n_batches",
+                              "exact", "compute_sd", "n_coal_next_iter_factor", "n_coalitions", "n_batches",
                               "converged", "converged_exact", "converged_sd", "converged_max_iter",
                               "est_required_coalitions", "est_remaining_coalitions", "overall_conv_measure"
                             )) {

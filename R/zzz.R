@@ -126,7 +126,7 @@
       "initial_n_coalitions",
       "max_n_coalitions",
       "fixed_n_coalitions_per_iter",
-      "reduction_factor_vec",
+      "n_coal_next_iter_factor_vec",
       "n_boot_samps",
       "compute_sd",
       "min_n_batches",
