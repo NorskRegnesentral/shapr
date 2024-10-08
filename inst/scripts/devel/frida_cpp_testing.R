@@ -16,6 +16,27 @@ preds = 1
 
 n_row_all = n_row_this_iter = sum(X[-c(1, .N), shapley_weight])
 
+# Comparing R and C++ implementations for computing A_new
+
+library(Rcpp)
+Rcpp::sourceCpp("R/frida_utils.cpp")
+
+
+A_new = matrix(0, nrow = n_features, n_features)
+for (i in 2:(nrow(S) - 1)) {
+    A_new = A_new + X[i, shapley_weight] * S[i, ]%*%t(S[i, ])/n_row_this_iter
+}
+
+SS = S[2:(nrow(S) - 1), ]
+W = diag(X[2:(nrow(S) - 1), shapley_weight])
+n_row_this_iter = sum(W)
+A_new_cpp = create_A_new_cpp(SS, W)
+
+A_new - A_new_cpp
+
+
+
+
 A = compute_A(0, X, S, n_row_all, n_row_this_iter)
 
 b = compute_b(0, vS, X, S, n_row_all, n_row_this_iter, p0)

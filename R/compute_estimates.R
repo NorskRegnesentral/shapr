@@ -43,15 +43,15 @@ compute_estimates <- function(internal, vS_list) {
     dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
     dt_shapley_sd2 <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS, seed = 685153)
     internal <- bootstrap_shapley_frida(internal, n_boot_samps = n_boot_samps)
-    frida_boot_shapley_values <- internal$iter_list[[iter]]$frida_boot_shapley_values
+    frida_boot_sd <- internal$iter_list[[iter]]$frida_boot_shapley_values
 
     inds = which(colnames(dt_shapley_sd) %in% internal$parameters$feature_names )
 
     # print(dt_shapley_sd[, ..inds])
     # print(frida_boot_shapley_values)
-    print(sum(abs(dt_shapley_sd[, ..inds] - frida_boot_shapley_values))/length(frida_boot_shapley_values))
-    print(sum(abs(dt_shapley_sd2[, ..inds] - frida_boot_shapley_values))/length(frida_boot_shapley_values))
-    print(sum(abs(dt_shapley_sd[, ..inds] - dt_shapley_sd2[, ..inds] ))/length(frida_boot_shapley_values))
+    print(sum(abs(dt_shapley_sd[, ..inds] - frida_boot_sd))/length(frida_boot_sd))
+    # print(sum(abs(dt_shapley_sd2[, ..inds] - frida_boot_sd))/length(frida_boot_sd))
+    # print(sum(abs(dt_shapley_sd[, ..inds] - dt_shapley_sd2[, ..inds] ))/length(frida_boot_sd))
     writeLines(" ")
   } else {
     dt_shapley_sd <- dt_shapley_est * 0
@@ -181,10 +181,12 @@ compute_shapley_new <- function(internal, dt_vS) {
 compute_A <- function(A, X, S, n_row_all, n_row_this_iter){
   n_features = ncol(S)
 
-  A_new = matrix(0, nrow = n_features, n_features)
-  for (i in 2:(nrow(S) - 1)) {
-    A_new = A_new + X[i, shapley_weight] * S[i, ]%*%t(S[i, ])/n_row_this_iter
-  }
+  # A_new = matrix(0, nrow = n_features, n_features)
+  # for (i in 2:(nrow(S) - 1)) {
+  #   A_new = A_new + X[i, shapley_weight] * S[i, ]%*%t(S[i, ])/n_row_this_iter
+  # }
+
+  A_new = create_A_new_cpp(S[2:(nrow(S) - 1), ], diag(X[2:(nrow(S) - 1), shapley_weight]))
 
   A = A * (n_row_all - n_row_this_iter)/n_row_all + A_new * n_row_this_iter/n_row_all
 
