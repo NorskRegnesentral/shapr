@@ -81,12 +81,14 @@ x_train = x_train
 approach = "gaussian"
 prediction_zero = p0
 adaptive = TRUE
-adaptive_arguments = list(initial_n_coalitions = 50,
+n_boot_samps = 10
+adaptive_arguments = list(initial_n_coalitions = 10,
                           fixed_n_coalitions_per_iter = 10,
-                         convergence_tolerance = 0.001)
+                          convergence_tolerance = 0.00001,
+                          n_boot_samps = n_boot_samps)
 
-paired_shap_sampling = FALSE # TODO: Make TRUE the default later on
-max_n_coalitions = 500
+paired_shap_sampling = TRUE
+max_n_coalitions = 200
 group = NULL
 n_MC_samples = 1e3
 n_batches = NULL
@@ -102,7 +104,7 @@ shapley_reweighting = "none" # tmp # "on_N" # TODO: Make "on_N" the default late
 prev_shapr_object = NULL
 #
 
-# devtools::load_all()
+devtools::load_all()
 # rm(list = c("predict_model"))
 
 # debugonce(explain)
@@ -116,6 +118,7 @@ expl <- explain(
   adaptive_arguments = adaptive_arguments,
   shapley_reweighting = shapley_reweighting,
   max_n_coalitions = max_n_coalitions,
+  paired_shap_sampling = paired_shap_sampling,
   # seed = 15,
   # verbose = 2,
   # print_iter_info = TRUE,
@@ -142,9 +145,9 @@ expl <- explain(
 
 ############## Compare standard deviation estimates ##############
 
-adaptive_arguments$initial_n_coalitions = 100
-adaptive_arguments$fixed_n_coalitions_per_iter = 100
-max_n_coalitions = 1000
+# adaptive_arguments$initial_n_coalitions = 100
+# adaptive_arguments$fixed_n_coalitions_per_iter = 100
+# max_n_coalitions = 1000
 
 filename = paste0("sd_comparison_", adaptive_arguments$initial_n_coalitions, "_", adaptive_arguments$fixed_n_coalitions_per_iter, "_", max_n_coalitions, ".csv")
 
@@ -152,7 +155,6 @@ if (file.exists(filename)){
   df = read.csv(filename)
 } else {
 
-  n_boot_samps = 100
   true_sd = list()
   set.seed(432)
   seeds = sample.int(1000, n_boot_samps, replace = FALSE)
