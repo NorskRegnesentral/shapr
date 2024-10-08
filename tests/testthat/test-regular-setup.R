@@ -782,7 +782,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        keep_samp_for_vS = keep_samp_for_vS_non_logical_1
+        output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_1)
       )
     },
     error = TRUE
@@ -799,7 +799,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        keep_samp_for_vS = keep_samp_for_vS_non_logical_2
+        output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_2)
       )
     },
     error = TRUE
@@ -816,7 +816,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        keep_samp_for_vS = keep_samp_for_vS_too_long
+        output_args = list(keep_samp_for_vS = keep_samp_for_vS_too_long)
       )
     },
     error = TRUE

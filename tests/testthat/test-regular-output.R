@@ -576,7 +576,7 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      keep_samp_for_vS = TRUE,
+      output_args = list(keep_samp_for_vS = TRUE),
       iterative = FALSE
     )),
     "output_lm_numeric_independence_keep_samp_for_vS"
