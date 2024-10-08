@@ -34,7 +34,7 @@ setup(
   init_time = NULL,
   prev_shapr_object = NULL,
   output_args = list(),
-  extra_estimation_args = list(),
+  extra_computation_args = list(),
   ...
 )
 }
@@ -200,8 +200,12 @@ This is useful if the computation is interrupted or you want higher accuracy tha
 want to continue the iterative estimation. See the vignette for examples.}
 
 \item{output_args}{Named list.
-Specifices the arguments for the iterative procedure.
+Specifices certain arguments related to the output of the function.
 See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
+
+\item{extra_computation_args}{Named list.
+Specifices extra arguments related to the computation of the Shapley values.
+See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{Further arguments passed to specific approaches}
 }

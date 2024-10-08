@@ -83,7 +83,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        extra_estimation_args = list(min_n_batches = n_batches_non_numeric_1)
+        extra_computation_args = list(min_n_batches = n_batches_non_numeric_1)
       )
     },
     error = TRUE
@@ -100,7 +100,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        extra_estimation_args = list(min_n_batches = n_batches_non_numeric_2)
+        extra_computation_args = list(min_n_batches = n_batches_non_numeric_2)
       )
     },
     error = TRUE
@@ -117,7 +117,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        extra_estimation_args = list(min_n_batches = n_batches_non_integer)
+        extra_computation_args = list(min_n_batches = n_batches_non_integer)
       )
     },
     error = TRUE
@@ -134,7 +134,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        extra_estimation_args = list(min_n_batches = n_batches_too_long)
+        extra_computation_args = list(min_n_batches = n_batches_too_long)
       )
     },
     error = TRUE
@@ -151,7 +151,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        extra_estimation_args = list(min_n_batches = n_batches_is_NA)
+        extra_computation_args = list(min_n_batches = n_batches_is_NA)
       )
     },
     error = TRUE
@@ -168,7 +168,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        extra_estimation_args = list(min_n_batches = n_batches_non_positive)
+        extra_computation_args = list(min_n_batches = n_batches_non_positive)
       )
     },
     error = TRUE
@@ -184,7 +184,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "empirical",
     prediction_zero = p0,
-    extra_estimation_args = list(min_n_batches = 5, max_batch_size = 10)
+    extra_computation_args = list(min_n_batches = 5, max_batch_size = 10)
   )
 
   explain.empirical_n_batches_10 <- explain(
@@ -194,7 +194,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "empirical",
     prediction_zero = p0,
-    extra_estimation_args = list(min_n_batches = 10, max_batch_size = 10)
+    extra_computation_args = list(min_n_batches = 10, max_batch_size = 10)
   )
 
   # Difference in the objects (n_batches and related)
@@ -216,7 +216,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "ctree",
     prediction_zero = p0,
-    extra_estimation_args = list(min_n_batches = 5, max_batch_size = 10)
+    extra_computation_args = list(min_n_batches = 5, max_batch_size = 10)
   )
 
   explain.ctree_n_batches_10 <- explain(
@@ -226,7 +226,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "ctree",
     prediction_zero = p0,
-    extra_estimation_args = list(min_n_batches = 10, max_batch_size = 10)
+    extra_computation_args = list(min_n_batches = 10, max_batch_size = 10)
   )
 
   # Difference in the objects (n_batches and related)

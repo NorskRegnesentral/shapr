@@ -80,7 +80,7 @@ during the training of the vaeac model. Used in \code{\link[torch:dataloader]{to
 each batch when generating the Monte Carlo samples. If \code{NULL}, then the function generates the Monte Carlo samples
 for the provided coalitions and all explicands sent to \code{\link[=explain]{explain()}} at the time.
 The number of coalitions are determined by the \code{n_batches} used by \code{\link[=explain]{explain()}}. We recommend to tweak
-\code{extra_estimation_args$max_batch_size} and \code{extra_estimation_args$min_n_batches}
+\code{extra_computation_args$max_batch_size} and \code{extra_computation_args$min_n_batches}
 rather than \code{vaeac.batch_size_sampling}. Larger batch sizes are often much faster provided sufficient memory.}
 
 \item{vaeac.running_avg_n_values}{Positive integer (default is \code{5}). The number of previous IWAE values to include

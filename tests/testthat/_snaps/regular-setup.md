@@ -1008,7 +1008,7 @@
     Code
       explanation_equal <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
-        prediction_zero = p0, n_MC_samples = 2, seed = 123, extra_estimation_args = list(
+        prediction_zero = p0, n_MC_samples = 2, seed = 123, extra_computation_args = list(
           compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric),
         iterative = FALSE)
     Message
@@ -1027,7 +1027,7 @@
     Code
       explanation_larger <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
-        prediction_zero = p0, n_MC_samples = 2, seed = 123, extra_estimation_args = list(
+        prediction_zero = p0, n_MC_samples = 2, seed = 123, extra_computation_args = list(
           compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric) + 1,
         iterative = FALSE)
     Message

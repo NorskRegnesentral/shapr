@@ -1656,7 +1656,7 @@ vaeac_check_parameters <- function(x_train,
 #' each batch when generating the Monte Carlo samples. If `NULL`, then the function generates the Monte Carlo samples
 #' for the provided coalitions and all explicands sent to [shapr::explain()] at the time.
 #' The number of coalitions are determined by the `n_batches` used by [shapr::explain()]. We recommend to tweak
-#' `extra_estimation_args$max_batch_size` and `extra_estimation_args$min_n_batches`
+#' `extra_computation_args$max_batch_size` and `extra_computation_args$min_n_batches`
 #' rather than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
 #' @param vaeac.running_avg_n_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.

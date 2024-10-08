@@ -112,8 +112,11 @@
 #' Specifices the arguments for the iterative procedure.
 #' See [shapr::get_iterative_args_default()] for description of the arguments and their default values.
 #' @param output_args Named list.
-#' Specifices the arguments for the iterative procedure.
+#' Specifices certain arguments related to the output of the function.
 #' See [shapr::get_output_args_default()] for description of the arguments and their default values.
+#' @param extra_computation_args Named list.
+#' Specifices extra arguments related to the computation of the Shapley values.
+#' See [shapr::get_extra_est_args_default()] for description of the arguments and their default values.
 #' @param kernelSHAP_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 #' the randomness and thereby the variance of the Shapley value estimates.
@@ -168,7 +171,7 @@
 #'   \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 #'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 #'   definition 0 when all coalitions is used.
-#'   Only present when `extra_estimation_args$compute_sd=TRUE`.}
+#'   Only present when `extra_computation_args$compute_sd=TRUE`.}
 #'   \item{internal}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 #'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -352,7 +355,7 @@ explain <- function(model,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     prev_shapr_object = NULL,
-                    extra_estimation_args = list(),
+                    extra_computation_args = list(),
                     iterative_args = list(),
                     output_args = list(),
                     ...) { # ... is further arguments passed to specific approaches
@@ -388,7 +391,7 @@ explain <- function(model,
     init_time = init_time,
     prev_shapr_object = prev_shapr_object,
     output_args = output_args,
-    extra_estimation_args = extra_estimation_args,
+    extra_computation_args = extra_computation_args,
     ...
   )
 

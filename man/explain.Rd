@@ -21,7 +21,7 @@ explain(
   predict_model = NULL,
   get_model_specs = NULL,
   prev_shapr_object = NULL,
-  extra_estimation_args = list(),
+  extra_computation_args = list(),
   iterative_args = list(),
   output_args = list(),
   ...
@@ -153,12 +153,16 @@ then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the vignette for examples.}
 
+\item{extra_computation_args}{Named list.
+Specifices extra arguments related to the computation of the Shapley values.
+See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
+
 \item{iterative_args}{Named list.
 Specifices the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{output_args}{Named list.
-Specifices the arguments for the iterative procedure.
+Specifices certain arguments related to the output of the function.
 See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
@@ -291,7 +295,7 @@ The column \code{none} is the prediction not devoted to any of the features (giv
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{extra_estimation_args$compute_sd=TRUE}.}
+Only present when \code{extra_computation_args$compute_sd=TRUE}.}
 \item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the

@@ -52,7 +52,7 @@ setup <- function(x_train,
                   init_time = NULL,
                   prev_shapr_object = NULL,
                   output_args = list(),
-                  extra_estimation_args = list(),
+                  extra_computation_args = list(),
                   ...) {
   internal <- list()
 
@@ -93,7 +93,7 @@ setup <- function(x_train,
     is_python = is_python,
     testing = testing,
     output_args = output_args,
-    extra_estimation_args = extra_estimation_args,
+    extra_computation_args = extra_computation_args,
     ...
   )
 
@@ -177,7 +177,7 @@ get_parameters <- function(approach,
                            testing,
                            is_python,
                            output_args = list(),
-                           extra_estimation_args = list(),
+                           extra_computation_args = list(),
                            ...) {
   # Check input type for approach
 
@@ -195,8 +195,8 @@ get_parameters <- function(approach,
   if (!is.list(output_args)) {
     stop("`output_args` must be a list.")
   }
-  if (!is.list(extra_estimation_args)) {
-    stop("`extra_estimation_args` must be a list.")
+  if (!is.list(extra_computation_args)) {
+    stop("`extra_computation_args` must be a list.")
   }
 
 
@@ -316,7 +316,7 @@ get_parameters <- function(approach,
     iterative = iterative,
     iterative_args = iterative_args,
     output_args = output_args,
-    extra_estimation_args = extra_estimation_args,
+    extra_computation_args = extra_computation_args,
     testing = testing
   )
 
@@ -797,20 +797,20 @@ check_output_args <- function(output_args){
 #' @keywords internal
 set_extra_estimation_params <- function(internal) {
 
-  extra_estimation_args <- internal$parameters$extra_estimation_args
+  extra_computation_args <- internal$parameters$extra_computation_args
 
   # Get defaults
-  extra_estimation_args <- utils::modifyList(get_extra_est_args_default(internal),
-                                             extra_estimation_args,
+  extra_computation_args <- utils::modifyList(get_extra_est_args_default(internal),
+                                             extra_computation_args,
                                              keep.null = TRUE
   )
 
   # Check the output_args elements
-  check_extra_estimation_args(extra_estimation_args)
+  check_extra_computation_args(extra_computation_args)
 
-  extra_estimation_args <- trans_null_extra_est_args(extra_estimation_args)
+  extra_computation_args <- trans_null_extra_est_args(extra_computation_args)
 
-  internal$parameters$extra_estimation_args <- extra_estimation_args
+  internal$parameters$extra_computation_args <- extra_computation_args
 
   return(internal)
 }
@@ -837,13 +837,13 @@ get_extra_est_args_default <- function(internal, # Only used to get the default 
   return(mget(methods::formalArgs(get_extra_est_args_default)[-1])) # [-1] to exclude internal
 }
 
-check_extra_estimation_args <- function(extra_estimation_args){
-  list2env(extra_estimation_args, envir = environment()) # Make accessible in the environment
+check_extra_computation_args <- function(extra_computation_args){
+  list2env(extra_computation_args, envir = environment()) # Make accessible in the environment
 
   # compute_sd
   if (!(is.logical(compute_sd) &&
         length(compute_sd) == 1)) {
-    stop("`extra_estimation_args$compute_sd` must be single logical.")
+    stop("`extra_computation_args$compute_sd` must be single logical.")
   }
 
   # n_boot_samps
@@ -851,7 +851,7 @@ check_extra_estimation_args <- function(extra_estimation_args){
         length(n_boot_samps) == 1 &&
         !is.na(n_boot_samps) &&
         n_boot_samps > 0)) {
-    stop("`extra_estimation_args$n_boot_samps` must be a single positive integer.")
+    stop("`extra_computation_args$n_boot_samps` must be a single positive integer.")
   }
 
   # max_batch_size
@@ -860,7 +860,7 @@ check_extra_estimation_args <- function(extra_estimation_args){
         length(max_batch_size) == 1 &&
         !is.na(max_batch_size) &&
         max_batch_size > 0)) {
-    stop("`extra_estimation_args$max_batch_size` must be NULL, Inf or a single positive integer.")
+    stop("`extra_computation_args$max_batch_size` must be NULL, Inf or a single positive integer.")
   }
 
   # min_n_batches
@@ -869,19 +869,19 @@ check_extra_estimation_args <- function(extra_estimation_args){
         length(min_n_batches) == 1 &&
         !is.na(min_n_batches) &&
         min_n_batches > 0)) {
-    stop("`extra_estimation_args$min_n_batches` must be NULL or a single positive integer.")
+    stop("`extra_computation_args$min_n_batches` must be NULL or a single positive integer.")
   }
 
 }
 
-trans_null_extra_est_args <- function(extra_estimation_args) {
-  list2env(extra_estimation_args, envir = environment())
+trans_null_extra_est_args <- function(extra_computation_args) {
+  list2env(extra_computation_args, envir = environment())
 
   # Translating NULL to always return n_batches = 1 (if just one approach)
-  extra_estimation_args$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
-  extra_estimation_args$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
+  extra_computation_args$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
+  extra_computation_args$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
 
-  return(extra_estimation_args)
+  return(extra_computation_args)
 }
 
 
@@ -1201,7 +1201,7 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
       n_coalitions = iterative_args$initial_n_coalitions,
       new_n_coalitions = iterative_args$initial_n_coalitions,
       exact = internal$parameters$exact,
-      compute_sd = internal$parameters$extra_estimation_args$compute_sd,
+      compute_sd = internal$parameters$extra_computation_args$compute_sd,
       n_coal_next_iter_factor = iterative_args$n_coal_next_iter_factor_vec[1],
       n_batches = set_n_batches(iterative_args$initial_n_coalitions, internal)
     )
@@ -1274,8 +1274,8 @@ trans_null_iterative_args <- function(iterative_args) {
 
 
 set_n_batches <- function(n_coalitions, internal) {
-  min_n_batches <- internal$parameters$extra_estimation_args$min_n_batches
-  max_batch_size <- internal$parameters$extra_estimation_args$max_batch_size
+  min_n_batches <- internal$parameters$extra_computation_args$min_n_batches
+  max_batch_size <- internal$parameters$extra_computation_args$max_batch_size
   n_unique_approaches <- internal$parameters$n_unique_approaches
 
 
