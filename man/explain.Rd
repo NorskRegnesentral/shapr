@@ -9,21 +9,20 @@ explain(
   x_explain,
   x_train,
   approach,
-  paired_shap_sampling = TRUE,
   prediction_zero,
-  max_n_coalitions = NULL,
   iterative = NULL,
+  max_n_coalitions = NULL,
   group = NULL,
+  paired_shap_sampling = TRUE,
   n_MC_samples = 1000,
+  kernelSHAP_reweighting = "on_all_cond",
   seed = 1,
-  keep_samp_for_vS = FALSE,
+  verbose = "basic",
   predict_model = NULL,
   get_model_specs = NULL,
-  MSEv_uniform_comb_weights = TRUE,
-  verbose = "basic",
-  iterative_args = list(),
-  kernelSHAP_reweighting = "on_all_cond",
   prev_shapr_object = NULL,
+  iterative_args = list(),
+  output_args = list(),
   ...
 )
 }
@@ -46,24 +45,11 @@ All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empiri
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
 The two regression approaches can not be combined with any other approach. See details for more information.}
 
-\item{paired_shap_sampling}{Logical.
-If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
-That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
-computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
-
 \item{prediction_zero}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
 features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
-
-\item{max_n_coalitions}{Integer.
-The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
-(if \code{iterative = TRUE}).
-If \code{iterative = FALSE} it represents the number of feature/group coalitions to use directly.
-The quantity refers to the number of unique feature coalitions if \code{group = NULL},
-and group coalitions if \code{group != NULL}.
-\code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
 \item{iterative}{Logical or NULL
 If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
@@ -77,11 +63,24 @@ coalitions.
 The process is repeated until the variances are below the threshold.
 Specifics related to the iterative process and convergence criterion are set through \code{iterative_args}.}
 
+\item{max_n_coalitions}{Integer.
+The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+(if \code{iterative = TRUE}).
+If \code{iterative = FALSE} it represents the number of feature/group coalitions to use directly.
+The quantity refers to the number of unique feature coalitions if \code{group = NULL},
+and group coalitions if \code{group != NULL}.
+\code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
+
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed. \code{group} then has length equal to
 the number of groups. The list element contains character vectors with the features included
 in each of the different groups.}
+
+\item{paired_shap_sampling}{Logical.
+If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
+That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
+computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
 
 \item{n_MC_samples}{Positive integer.
 Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
@@ -91,13 +90,39 @@ For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter i
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
+\item{kernelSHAP_reweighting}{String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+the randomness and thereby the variance of the Shapley value estimates.
+One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
+\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
+\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+\code{'on_all'} means the original sampling probabilities are used for all coalitions.
+\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+This method is preferred as it has performed the best in simulation studies.}
+
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
 If \code{NULL} no seed is set in the calling environment.}
 
-\item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in \code{internal$output}).
-Not used for \code{approach="regression_separate"} or \code{approach="regression_surrogate"}.}
+\item{verbose}{String vector or NULL.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the computation which is being performed.
+\verb{"progress} displays information about where in the calculation process the function currently is.
+#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+(only when \code{iterative = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
+\itemize{
+\item the final estimates.
+\code{"vS_details"} displays information about the v_S estimates.
+This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{NULL} means no printout.
+Note that any combination of four strings can be used.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+}}
 
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
@@ -121,51 +146,19 @@ If \code{NULL} (the default) internal functions are used for natively supported 
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
-\item{MSEv_uniform_comb_weights}{Logical.
-If \code{TRUE} (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
-If \code{FALSE}, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
-criterion.
-Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
-
-\item{verbose}{String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
-\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
-\code{"basic"} (default) displays basic information about the computation which is being performed.
-\verb{"progress} displays information about where in the calculation process the function currently is.
-#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{iterative = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
-\itemize{
-\item the final estimates.
-\code{"vS_details"} displays information about the v_S estimates.
-This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
-\code{NULL} means no printout.
-Note that any combination of four strings can be used.
-E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
-}}
-
-\item{iterative_args}{Named list.
-Specifices the arguments for the iterative procedure.
-See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
-
-\item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
-the randomness and thereby the variance of the Shapley value estimates.
-One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
-\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
-\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
-\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
-probabilities.
-\code{'on_all'} means the original sampling probabilities are used for all coalitions.
-\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once.
-This method is preferred as it has performed the best in simulation studies.}
-
 \item{prev_shapr_object}{\code{shapr} object or string.
 If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the vignette for examples.}
+
+\item{iterative_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
+
+\item{output_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}

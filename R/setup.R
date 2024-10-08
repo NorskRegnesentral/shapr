@@ -52,6 +52,7 @@ setup <- function(x_train,
                   init_time = NULL,
                   prev_shapr_object = NULL,
                   output_args = list(),
+                  extra_estimation_args = list(),
                   ...) {
   internal <- list()
 
@@ -92,6 +93,7 @@ setup <- function(x_train,
     is_python = is_python,
     testing = testing,
     output_args = output_args,
+    extra_estimation_args = extra_estimation_args,
     ...
   )
 
@@ -175,6 +177,7 @@ get_parameters <- function(approach,
                            testing,
                            is_python,
                            output_args = list(),
+                           extra_estimation_args = list(),
                            ...) {
   # Check input type for approach
 
@@ -192,6 +195,10 @@ get_parameters <- function(approach,
   if (!is.list(output_args)) {
     stop("`output_args` must be a list.")
   }
+  if (!is.list(extra_estimation_args)) {
+    stop("`extra_estimation_args` must be a list.")
+  }
+
 
 
   # max_n_coalitions
@@ -311,6 +318,7 @@ get_parameters <- function(approach,
     iterative = iterative,
     iterative_args = iterative_args,
     output_args = output_args,
+    extra_estimation_args = extra_estimation_args,
     testing = testing
   )
 
@@ -576,6 +584,8 @@ check_and_set_parameters <- function(internal) {
 
   internal <- set_exact(internal)
 
+  internal <- set_extra_estimation_params(internal)
+
   check_computability(internal)
 
   # Check approach
@@ -718,10 +728,39 @@ set_output_parameters <- function(internal) {
 
   # Get defaults
   output_args <- utils::modifyList(get_output_args_default(internal),
-                                   iterative_args,
+                                   output_args,
                                    keep.null = TRUE
   )
 
+  check_output_args(output_args)
+
+  internal$parameters$output_args <- output_args
+
+  return(internal)
+}
+
+#' Gets the default values for the output arguments
+#'
+#' @param keep_samp_for_vS Logical.
+#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal$output`).
+#' Not used for `approach="regression_separate"` or `approach="regression_surrogate"`.
+#' @param MSEv_uniform_comb_weights Logical.
+#' If `TRUE` (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
+#' If `FALSE`, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
+#' criterion.
+#' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
+#' @param saving_path String.
+#' The path to the directory where the results of the iterative estimation procedure should be saved.
+#' Defaults to a temporary directory.
+#' @export
+#' @author Martin Jullum
+get_output_args_default <- function(keep_samp_for_vS = FALSE,
+                                    MSEv_uniform_comb_weights = TRUE,
+                                    saving_path = tempfile("shapr_obj_", fileext = ".rds")){
+  return(mget(methods::formalArgs(get_output_args_default)))
+}
+
+check_output_args <- function(output_args){
   list2env(output_args, envir = environment()) # Make accessible in the environment
 
   # Check the output_args elements
@@ -753,34 +792,98 @@ set_output_parameters <- function(internal) {
     )
   }
 
+}
 
 
-  internal$parameters$MSEv_uniform_comb_weights <- MSEv_uniform_comb_weights
-  internal$parameters$keep_samp_for_vS <- keep_samp_for_vS
-  internal$parameters$saving_path <- saving_path
+#' @author Martin Jullum
+#' @keywords internal
+set_extra_estimation_params <- function(internal) {
+
+  extra_estimation_args <- internal$parameters$extra_estimation_args
+
+  # Get defaults
+  extra_estimation_args <- utils::modifyList(get_extra_est_args_default(internal),
+                                             extra_estimation_args,
+                                             keep.null = TRUE
+  )
+
+  # Check the output_args elements
+  check_extra_estimation_args(extra_estimation_args)
+
+  extra_estimation_args <- trans_null_extra_est_args(extra_estimation_args)
+
+  internal$parameters$extra_estimation_args <- extra_estimation_args
 
   return(internal)
 }
 
-#' Gets the default values for the output arguments
+#' Gets the default values for the extra estimation arguments
 #'
-#' @param keep_samp_for_vS Logical.
-#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal$output`).
-#' Not used for `approach="regression_separate"` or `approach="regression_surrogate"`.
-#' @param MSEv_uniform_comb_weights Logical.
-#' If `TRUE` (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
-#' If `FALSE`, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
-#' criterion.
-#' Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.
-#' @param saving_path String.
-#' The path to the directory where the results of the iterative estimation procedure should be saved.
-#' Defaults to a temporary directory.
+#' @param compute_sd Logical. Whether to estimate the standard deviations of the Shapley value estimates. This is TRUE
+#' whenever sampling based kernelSHAP is applied (either iteratively or with a fixed number of coalitions).
+#' @param n_boot_samps Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
+#' coalitions used to estimate the standard deviations of the Shapley value estimates.
+#' @param max_batch_size Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
+#' A larger numbers requires more memory, but may have a slight computational advantage.
+#' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
+#' Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
+#' than the number of parallel workers.
+#' @inheritParams default_doc_explain
 #' @export
 #' @author Martin Jullum
-get_output_args_default <- function(keep_samp_for_vS = FALSE,
-                                    MSEv_uniform_comb_weights = TRUE,
-                                    saving_path = tempfile("shapr_obj_", fileext = ".rds")){
-  return(mget(methods::formalArgs(get_output_args_default)))
+get_extra_est_args_default <- function(internal, # Only used to get the default value of compute_sd
+                                       compute_sd = isFALSE(internal$parameters$exact),
+                                       n_boot_samps = 100,
+                                       max_batch_size = 10,
+                                       min_n_batches = 10){
+  return(mget(methods::formalArgs(get_extra_est_args_default)[-1])) # [-1] to exclude internal
+}
+
+check_extra_estimation_args <- function(extra_estimation_args){
+  list2env(extra_estimation_args, envir = environment()) # Make accessible in the environment
+
+  # compute_sd
+  if (!(is.logical(compute_sd) &&
+        length(compute_sd) == 1)) {
+    stop("`extra_estimation_args$compute_sd` must be single logical.")
+  }
+
+  # n_boot_samps
+  if (!(is.wholenumber(n_boot_samps) &&
+        length(n_boot_samps) == 1 &&
+        !is.na(n_boot_samps) &&
+        n_boot_samps > 0)) {
+    stop("`extra_estimation_args$n_boot_samps` must be a single positive integer.")
+  }
+
+  # max_batch_size
+  if (!is.null(max_batch_size) &&
+      !((is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
+        length(max_batch_size) == 1 &&
+        !is.na(max_batch_size) &&
+        max_batch_size > 0)) {
+    stop("`extra_estimation_args$max_batch_size` must be NULL, Inf or a single positive integer.")
+  }
+
+  # min_n_batches
+  if (!is.null(min_n_batches) &&
+      !(is.wholenumber(min_n_batches) &&
+        length(min_n_batches) == 1 &&
+        !is.na(min_n_batches) &&
+        min_n_batches > 0)) {
+    stop("`extra_estimation_args$min_n_batches` must be NULL or a single positive integer.")
+  }
+
+}
+
+trans_null_extra_est_args <- function(extra_estimation_args) {
+  list2env(extra_estimation_args, envir = environment())
+
+  # Translating NULL to always return n_batches = 1 (if just one approach)
+  extra_estimation_args$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
+  extra_estimation_args$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
+
+  return(extra_estimation_args)
 }
 
 
@@ -939,7 +1042,7 @@ check_regression <- function(internal) {
   }
 
   # Check that we are not to keep the Monte Carlo samples
-  if (internal$parameters$keep_samp_for_vS) {
+  if (internal$parameters$output_args$keep_samp_for_vS) {
     stop(paste(
       "`keep_samp_for_vS` must be `FALSE` for the `regression_separate` and `regression_surrogate`",
       "approaches as there are no Monte Carlo samples to keep for these approaches."
@@ -1100,7 +1203,7 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
       n_coalitions = iterative_args$initial_n_coalitions,
       new_n_coalitions = iterative_args$initial_n_coalitions,
       exact = internal$parameters$exact,
-      compute_sd = iterative_args$compute_sd,
+      compute_sd = internal$parameters$compute_sd,
       reduction_factor = iterative_args$reduction_factor_vec[1],
       n_batches = set_n_batches(iterative_args$initial_n_coalitions, internal)
     )
@@ -1160,48 +1263,12 @@ check_iterative_args <- function(iterative_args) {
     stop("`iterative_args$reduction_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
   }
 
-  # n_boot_samps
-  if (!(is.wholenumber(n_boot_samps) &&
-    length(n_boot_samps) == 1 &&
-    !is.na(n_boot_samps) &&
-    n_boot_samps > 0)) {
-    stop("`iterative_args$n_boot_samps` must be a single positive integer.")
-  }
-
-  # compute_sd
-  if (!(is.logical(compute_sd) &&
-    length(compute_sd) == 1)) {
-    stop("`iterative_args$compute_sd` must be a single logical.")
-  }
-
-
-  # min_n_batches
-  if (!is.null(min_n_batches) &&
-    !(is.wholenumber(min_n_batches) &&
-      length(min_n_batches) == 1 &&
-      !is.na(min_n_batches) &&
-      min_n_batches > 0)) {
-    stop("`iterative_args$min_n_batches` must be NULL or a single positive integer.")
-  }
-
-  # max_batch_size
-  if (!is.null(max_batch_size) &&
-    !((is.wholenumber(max_batch_size) || is.infinite(max_batch_size)) &&
-      length(max_batch_size) == 1 &&
-      !is.na(max_batch_size) &&
-      max_batch_size > 0)) {
-    stop("`iterative_args$max_batch_size` must be NULL, Inf or a single positive integer.")
-  }
-
-
 }
 
 trans_null_iterative_args <- function(iterative_args) {
   list2env(iterative_args, envir = environment())
 
   # Translating NULL to always return n_batches = 1 (if just one approach)
-  iterative_args$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
-  iterative_args$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
   iterative_args$max_iter <- ifelse(is.null(max_iter), Inf, max_iter)
 
   return(iterative_args)
@@ -1209,8 +1276,8 @@ trans_null_iterative_args <- function(iterative_args) {
 
 
 set_n_batches <- function(n_coalitions, internal) {
-  min_n_batches <- internal$parameters$iterative_args$min_n_batches
-  max_batch_size <- internal$parameters$iterative_args$max_batch_size
+  min_n_batches <- internal$parameters$extra_estimation_args$min_n_batches
+  max_batch_size <- internal$parameters$extra_estimation_args$max_batch_size
   n_unique_approaches <- internal$parameters$n_unique_approaches
 
 
@@ -1282,14 +1349,6 @@ check_vs_prev_shapr_object <- function(internal) {
 #' `reduction_factor_vec[i]` for iteration `i`.
 #' It is wise to start with smaller numbers to avoid using too many `n_coalitions` due to uncertain estimates in
 #' the first iterations.
-#' @param n_boot_samps Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
-#' coalitions used to estimate the standard deviations of the Shapley value estimates.
-#' @param compute_sd Logical. Whether to estimate the standard deviations of the Shapley value estimates.
-#' @param max_batch_size Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
-#' A larger numbers requires more memory, but may have a slight computational advantage.
-#' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
-#' Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
-#' than the number of parallel workers.
 #' @inheritParams default_doc_explain
 #'
 #' @export
@@ -1308,15 +1367,9 @@ get_iterative_args_default <- function(internal,
                                            fixed_n_coalitions_per_iter = NULL,
                                            max_iter = 20,
                                            convergence_tolerance = 0.02,
-                                           reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10)),
-                                           n_boot_samps = 100,
-                                           compute_sd = isTRUE(internal$parameters$iterative),
-                                           max_batch_size = 10,
-                                           min_n_batches = 10) {
+                                           reduction_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))) {
   iterative <- internal$parameters$iterative
   max_n_coalitions <- internal$parameters$max_n_coalitions
-  exact <- internal$parameters$exact
-  is_groupwise <- internal$parameters$is_groupwise
 
   if (isTRUE(iterative)) {
     ret_list <- mget(
@@ -1326,11 +1379,7 @@ get_iterative_args_default <- function(internal,
         "max_n_coalitions",
         "max_iter",
         "convergence_tolerance",
-        "reduction_factor_vec",
-        "n_boot_samps",
-        "compute_sd",
-        "max_batch_size",
-        "min_n_batches"
+        "reduction_factor_vec"
       )
     )
   } else {
@@ -1340,11 +1389,7 @@ get_iterative_args_default <- function(internal,
       max_n_coalitions = max_n_coalitions,
       max_iter = 1,
       convergence_tolerance = NULL,
-      reduction_factor_vec = NULL,
-      n_boot_samps = n_boot_samps,
-      compute_sd = isFALSE(exact) && isFALSE(is_groupwise),
-      max_batch_size = max_batch_size,
-      min_n_batches = min_n_batches
+      reduction_factor_vec = NULL
     )
   }
   return(ret_list)

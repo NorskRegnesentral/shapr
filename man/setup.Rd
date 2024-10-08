@@ -15,9 +15,7 @@ setup(
   group,
   n_MC_samples,
   seed,
-  keep_samp_for_vS,
   feature_specs,
-  MSEv_uniform_comb_weights = TRUE,
   type = "normal",
   horizon = NULL,
   y = NULL,
@@ -35,6 +33,7 @@ setup(
   testing = FALSE,
   init_time = NULL,
   prev_shapr_object = NULL,
+  output_args = list(),
   ...
 )
 }
@@ -90,10 +89,6 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 Specifies the seed before any randomness based code is being run.
 If \code{NULL} no seed is set in the calling environment.}
 
-\item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in \code{internal$output}).
-Not used for \code{approach="regression_separate"} or \code{approach="regression_surrogate"}.}
-
 \item{feature_specs}{List. The output from \code{\link[=get_model_specs]{get_model_specs()}} or \code{\link[=get_data_specs]{get_data_specs()}}.
 Contains the 3 elements:
 \describe{
@@ -101,12 +96,6 @@ Contains the 3 elements:
 \item{classes}{Character vector with the classes of each features.}
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
-
-\item{MSEv_uniform_comb_weights}{Logical.
-If \code{TRUE} (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
-If \code{FALSE}, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
-criterion.
-Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
 \item{type}{Character.
 Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
@@ -208,6 +197,10 @@ If an object of class \code{shapr} is provided or string with a path to where in
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the vignette for examples.}
+
+\item{output_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{Further arguments passed to specific approaches}
 }

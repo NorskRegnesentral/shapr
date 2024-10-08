@@ -4,7 +4,7 @@
 #'
 #' @export
 finalize_explanation <- function(internal) {
-  MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
+  MSEv_uniform_comb_weights <- internal$parameters$output_args$MSEv_uniform_comb_weights
   output_size <- internal$parameters$output_size
   dt_vS <- internal$output$dt_vS
 
@@ -53,7 +53,7 @@ finalize_explanation <- function(internal) {
     pred_explain = p,
     MSEv = MSEv,
     iterative_results = iterative_results,
-    saving_path = internal$parameters$saving_path,
+    saving_path = internal$parameters$output_args$saving_path,
     internal = internal
   )
   attr(output, "class") <- c("shapr", "list")
@@ -233,7 +233,7 @@ compute_MSEv_eval_crit <- function(internal,
 #'
 #' @export
 finalize_explanation_forecast <- function(vS_list, internal) { # Temporary used for forecast only (the old function)
-  MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
+  MSEv_uniform_comb_weights <- internal$parameters$output_args$MSEv_uniform_comb_weights
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,

@@ -10,7 +10,7 @@ setup_computation(internal, model, predict_model)
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
-\code{main_timing_list}, \code{output}, \code{iter_timing_list} and \code{iter_results}.}
+\code{main_timing_list}, \code{output}, and \code{iter_timing_list}.}
 
 \item{model}{Objects.
 The model object that ought to be explained.

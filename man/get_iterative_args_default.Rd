@@ -15,8 +15,7 @@ get_iterative_args_default(
   n_boot_samps = 100,
   compute_sd = isTRUE(internal$parameters$iterative),
   max_batch_size = 10,
-  min_n_batches = 10,
-  saving_path = tempfile("shapr_obj_", fileext = ".rds")
+  min_n_batches = 10
 )
 }
 \arguments{
@@ -52,10 +51,6 @@ A larger numbers requires more memory, but may have a slight computational advan
 \item{min_n_batches}{Integer. The minimum number of batches to split the computation into within each iteration.
 Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
 than the number of parallel workers.}
-
-\item{saving_path}{String.
-The path to the directory where the results of the iterative estimation procedure should be saved.
-Defaults to a temporary directory.}
 }
 \description{
 Function to specify arguments of the iterative estimation procedure

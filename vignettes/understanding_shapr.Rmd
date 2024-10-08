@@ -1282,8 +1282,8 @@ computations (the computation of v(S)) in sequential batches with
 different feature subsets $S$, the memory usage can be significantly
 reduces.
 The user can control the number of batches by setting the two arguments
-`iterative_args$max_batch_size` (defaults to 10) and
-`iterative_args$min_n_batches` (defaults to 10).
+`extra_estimation_args$max_batch_size` (defaults to 10) and
+`extra_estimation_args$min_n_batches` (defaults to 10).
 
 ## Parallelized computation
 

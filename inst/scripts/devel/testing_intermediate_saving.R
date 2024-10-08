@@ -122,7 +122,7 @@ second_path = explain(
   print_iter_info = TRUE,
   kernelSHAP_reweighting = "on_N",
   seed=NULL,
-  prev_shapr_object = first$internal$parameters$saving_path
+  prev_shapr_object = first$internal$parameters$output_args$saving_path
 )
 
 

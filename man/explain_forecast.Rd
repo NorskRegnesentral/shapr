@@ -104,10 +104,6 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 Specifies the seed before any randomness based code is being run.
 If \code{NULL} no seed is set in the calling environment.}
 
-\item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in \code{internal$output}).
-Not used for \code{approach="regression_separate"} or \code{approach="regression_surrogate"}.}
-
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
 (Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported models.)

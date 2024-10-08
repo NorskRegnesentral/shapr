@@ -168,7 +168,7 @@
 #'   \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 #'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 #'   definition 0 when all coalitions is used.
-#'   Only present when `iterative = TRUE` and `iterative_args$compute_sd=TRUE`.}
+#'   Only present when `extra_estimation_args$compute_sd=TRUE`.}
 #'   \item{internal}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 #'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -352,6 +352,7 @@ explain <- function(model,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     prev_shapr_object = NULL,
+                    extra_estimation_args = list(),
                     iterative_args = list(),
                     output_args = list(),
                     ...) { # ... is further arguments passed to specific approaches
@@ -387,6 +388,7 @@ explain <- function(model,
     init_time = init_time,
     prev_shapr_object = prev_shapr_object,
     output_args = output_args,
+    extra_estimation_args = extra_estimation_args,
     ...
   )
 
@@ -516,7 +518,7 @@ testing_cleanup <- function(output) {
   }
 
   # Delete the saving_path
-  output$internal$parameters$saving_path <- NULL
+  output$internal$parameters$output_args$saving_path <- NULL
   output$saving_path <- NULL
 
   return(output)
