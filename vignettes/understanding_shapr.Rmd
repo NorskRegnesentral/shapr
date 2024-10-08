@@ -1944,7 +1944,7 @@ In this section, we demonstrate how to continue to improve estimation accuracy w
 from a previous Shapley value computation based on `shapr::explain()` with the iterative estimation procedure.
 This can be done either by passing an existing object of class `shapr`, or by passing a string with the path to
 the intermediately saved results.
-The latter is found at `SHAPR_OBJ$internal$parameters$saving_path`, defaults to a temporary folder,
+The latter is found at `SHAPR_OBJ$saving_path`, defaults to a temporary folder,
 and is updated after each iteration.
 This can be particularly handy for long-running computations.
 
@@ -2035,7 +2035,7 @@ ex_further <- explain(
 #> 
 #> ℹ Using 26 of 32 coalitions.
 
-print(ex_further$internal$parameters$saving_path)
+print(ex_further$saving_path)
 #> [1] "/tmp/RtmpPIciRY/shapr_obj_c1876481fd8a.rds"
 
 # Using the ex_init object to continue the computation for the remaining coalition samples
@@ -2047,7 +2047,7 @@ ex_even_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = NULL,
-  prev_shapr_object = ex_further$internal$parameters$saving_path
+  prev_shapr_object = ex_further$saving_path
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.

@@ -45,14 +45,16 @@ finalize_explanation <- function(internal) {
   }
 
   # Extract iterative results in a simplified format
-  internal$iter_results <- get_iter_results(internal$iter_list)
+  iterative_results <- get_iter_results(internal$iter_list)
 
   output <- list(
     shapley_values = dt_shapley_est,
     shapley_values_sd = dt_shapley_sd,
-    internal = internal,
     pred_explain = p,
-    MSEv = MSEv
+    MSEv = MSEv,
+    iterative_results = iterative_results,
+    saving_path = internal$parameters$saving_path,
+    internal = internal
   )
   attr(output, "class") <- c("shapr", "list")
 

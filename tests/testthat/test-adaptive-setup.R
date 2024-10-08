@@ -21,7 +21,7 @@ test_that("iterative_args are respected", {
 
   # Check that max_iter is respected
   expect_equal(length(ex$internal$iter_list), 8)
-  expect_true(ex$internal$iter_results$iter_info_dt[.N, converged_max_iter])
+  expect_true(ex$iterative_results$iter_info_dt[.N, converged_max_iter])
 })
 
 
@@ -66,7 +66,7 @@ test_that("iterative feature wise and groupwise computations identical", {
 
 
   # Checking equality in the list with all final and intermediate results
-  expect_equal(expl_feat$internal$iter_results, expl_group$internal$iter_results)
+  expect_equal(expl_feat$iter_results, expl_group$iter_results)
 })
 
 test_that("erroneous input: `min_n_batches`", {

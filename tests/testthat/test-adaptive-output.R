@@ -237,7 +237,7 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       ),
       iterative = TRUE,
       verbose = NULL,
-      prev_shapr_object = e_init_path$internal$parameters$saving_path,
+      prev_shapr_object = e_init_path$saving_path,
       seed = NULL
     ),
     "output_lm_numeric_independence_cont_est_path"
