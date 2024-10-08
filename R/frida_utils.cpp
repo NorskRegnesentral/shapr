@@ -1,3 +1,4 @@
+#define ARMA_WARN_LEVEL 1   // Deprecate "Matrix is singular, trying apporximate soulition" types of warnings
 #include <RcppArmadillo.h>
 // [[Rcpp::depends(RcppArmadillo)]]
 
