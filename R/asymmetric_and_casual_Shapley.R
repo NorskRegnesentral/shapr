@@ -217,7 +217,8 @@ check_coals_respect_order_slow <- function(coalitions, causal_ordering) {
 
   # Create a vector to store all ancestors for each causal position/component
   ancestors <- list(integer(0)) # The root component has no ancestors
-  if (n_causal_ordering > 1) ancestors <- c(ancestors, Reduce(c, causal_ordering[-n_causal_ordering], acc = TRUE))
+  if (n_causal_ordering > 1) ancestors <- c(ancestors, Reduce(c, causal_ordering[-n_causal_ordering],
+                                                              accumulate = TRUE))
 
   # Array to store which coalitions respects the `causal_ordering`. Change to FALSE if coalition does not.
   coalition_respects_order <- rep(TRUE, length(coalitions))

@@ -121,7 +121,7 @@ get_mu_vec <- function(x_train) {
   unname(colMeans(x_train))
 }
 
-#' Generate marginal Gaussian data
+#' Generate marginal Gaussian data using Cholesky decomposition
 #'
 #' Given a multivariate Gaussian distribution, this function creates data from specified marginals of said distribution.
 #'
@@ -134,9 +134,20 @@ get_mu_vec <- function(x_train) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 create_marginal_data_gaussian <- function(n_MC_samples, Sbar_features, mu, cov_mat) {
-  return(data.table(mvnfast::rmvn(
-    n = n_MC_samples,
-    mu = mu[Sbar_features],
-    sigma = cov_mat[Sbar_features, Sbar_features]
-  )))
+  # Extract the sub covariance matrix for the selected features
+  cov_submat <- cov_mat[Sbar_features, Sbar_features]
+
+  # Perform the Cholesky decomposition of the covariance matrix
+  chol_decomp <- chol(cov_submat)
+
+  # Generate independent standard normal samples
+  Z <- matrix(rnorm(n_MC_samples * length(Sbar_features)), nrow = n_MC_samples)
+
+  # Transform the standard normal samples to have the desired covariance structure
+  samples <- Z %*% chol_decomp
+
+  # Shift by the mean vector
+  samples <- sweep(samples, 2, mu[Sbar_features], '+')
+
+  return(data.table(samples))
 }
