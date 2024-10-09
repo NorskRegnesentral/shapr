@@ -23,7 +23,7 @@ explain_forecast(
   keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
-  verbose = 0,
+  verbose = "basic",
   ...
 )
 }
@@ -131,10 +131,10 @@ disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{verbose}{String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"convergence"}
-\code{"shapley"}  and \code{"vS_details"}.
-\code{"basic"} (default) displays basic information about the estimation and where in the calculation process the function
-currently is.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the computation which is being performed.
+\verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
 (only when \code{adaptive = TRUE}) .
 \code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
@@ -219,7 +219,7 @@ values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
     \item{\code{categorical.epsilon}}{Numeric value. (Optional)
 If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
-estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
+estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
     \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
@@ -295,8 +295,18 @@ explain_forecast(
 
 }
 \references{
-Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
+\itemize{
+\item Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+\item Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
+incorporating causal knowledge into model-agnostic explainability.
+Advances in neural information processing systems, 33, 1229-1239.
+\item Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal shapley values:
+Exploiting causal knowledge to explain individual predictions of complex models.
+Advances in neural information processing systems, 33, 4778-4789.
+\item Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
+model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
+}
 }
 \author{
 Martin Jullum, Lars Henry Berge Olsen

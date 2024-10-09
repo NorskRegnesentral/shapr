@@ -20,7 +20,8 @@ two are the ancestors of three and four, but three and four are not related.}
 boolean is given, then each component is given this value. Otherwise, \code{confounding} must be a vector of length
 \code{causal_ordering} specifying if each component in the causal order is subject to confounding or not.}
 
-\item{as_string}{Boolean. If the returned object is to be a list of lists of integers or a list of vectors of strings.}
+\item{as_string}{Boolean.
+If the returned object is to be a list of lists of integers or a list of vectors of strings.}
 }
 \value{
 Depends on the value of the parameter \code{as_string}. If a string, then \code{results[j]} is a vector specifying

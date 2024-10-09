@@ -87,10 +87,11 @@ character vector, indicating the name(s) of the feature(s) to plot.}
 
 \item{scatter_hist}{Logical.
 Only used for \code{plot_type = "scatter"}.
-Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note that the
-bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.}
+Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note
+that the bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.}
 
-\item{include_group_feature_means}{Logical. Whether to include the average feature value in a group on the y-axis or not.
+\item{include_group_feature_means}{Logical.
+Whether to include the average feature value in a group on the y-axis or not.
 If \code{FALSE} (default), then no value is shown for the groups. If \code{TRUE}, then \code{shapr} includes the mean of the
 features in each group.}
 

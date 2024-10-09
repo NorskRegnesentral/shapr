@@ -36,7 +36,8 @@ get_valid_causal_coalitions(list(3:1, c(8, 4), c(7, 5), 6, 9:10)) # Same as prev
 # This function is equivalent of creating all coalitions and only keeping the valid coalitions
 m <- 11
 causal_ordering <- list(3:1, c(8, 4), c(7, 5), 6, 9:10, 11) # All m features must be in this list
-dt <- data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE))
+dt <-
+ data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE))
 all.equal(
   get_valid_causal_coalitions(causal_ordering, sort_features_in_coalitions = TRUE),
   dt[check_coalitions_respect_order(features, causal_ordering)]$features
