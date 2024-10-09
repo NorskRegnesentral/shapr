@@ -20,7 +20,6 @@ explain_forecast(
   group = NULL,
   n_MC_samples = 1000,
   seed = 1,
-  keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
   verbose = "basic",

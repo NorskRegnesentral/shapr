@@ -130,7 +130,6 @@ explain_forecast <- function(model,
     #    n_batches = n_batches, # TODO: This is not used anymore, but the code does not use the iterative version of it
     #                 either I think... I have now just set it to always 10 in the create_S_batches_forecast function.
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
     type = "forecast",
     horizon = horizon,

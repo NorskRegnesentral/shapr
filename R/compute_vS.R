@@ -115,7 +115,8 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   if (regression) {
     dt_vS <- batch_prepare_vS_regression(S = S, internal = internal)
   } else {
-    # Here dt_vS is either only dt_vS or a list containing dt_vS and dt if internal$parameters$output_args$keep_samp_for_vS = TRUE
+    # Here dt_vS is either only dt_vS or a list containing dt_vS and dt if
+    # internal$parameters$output_args$keep_samp_for_vS = TRUE
     dt_vS <- batch_prepare_vS_MC(S = S, internal = internal, model = model, predict_model = predict_model)
   }
 
