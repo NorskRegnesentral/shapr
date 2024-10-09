@@ -18,7 +18,7 @@ test_that("output_asymmetric_conditional", {
   )
 })
 
-test_that("output_asymmetric_conditional_regression", {
+test_that("output_asym_cond_reg", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -33,11 +33,11 @@ test_that("output_asymmetric_conditional_regression", {
       confounding = NULL,
       paired_shap_sampling = FALSE
     ),
-    "output_asymmetric_conditional_regression"
+    "output_asym_cond_reg"
   )
 })
 
-test_that("output_asymmetric_conditional_regression_adaptive", {
+test_that("output_asym_cond_reg_adaptive", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -53,7 +53,7 @@ test_that("output_asymmetric_conditional_regression_adaptive", {
       paired_shap_sampling = FALSE,
       adaptive = TRUE
     ),
-    "output_asymmetric_conditional_regression_adaptive"
+    "output_asym_cond_reg_adaptive"
   )
 })
 
@@ -448,7 +448,7 @@ test_that("output_mixed_asymmetric_conditional_regression", {
 
 
 # Categorical data ------------------------------------------------------------------------------------------------
-test_that("output_categorical_asymmetric_causal_mixed_categorical", {
+test_that("output_categorical_asym_causal_mixed_cat", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -462,11 +462,11 @@ test_that("output_categorical_asymmetric_causal_mixed_categorical", {
       confounding = c(TRUE, FALSE, FALSE),
       n_MC_samples = 5 # Just for speed
     ),
-    "output_categorical_asymmetric_causal_mixed_categorical"
+    "output_categorical_asym_causal_mixed_cat"
   )
 })
 
-test_that("output_categorical_asymmetric_causal_mixed_categorical_adaptive", {
+test_that("output_categorical_asym_causal_mixed_cat_adaptive", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -481,11 +481,11 @@ test_that("output_categorical_asymmetric_causal_mixed_categorical_adaptive", {
       n_MC_samples = 5, # Just for speed
       adaptive = TRUE
     ),
-    "output_categorical_asymmetric_causal_mixed_categorical_adaptive"
+    "output_categorical_asym_causal_mixed_cat_adaptive"
   )
 })
 
-test_that("output_categorical_asymmetric_causal_mixed_ctree", {
+test_that("output_categorical_asym_causal_mixed_ctree", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -499,6 +499,6 @@ test_that("output_categorical_asymmetric_causal_mixed_ctree", {
       confounding = c(TRUE, FALSE, FALSE),
       n_MC_samples = 5 # Just for speed
     ),
-    "output_categorical_asymmetric_causal_mixed_ctree"
+    "output_categorical_asym_causal_mixed_ctree"
   )
 })
