@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_gaussian.R
 \name{create_marginal_data_gaussian}
 \alias{create_marginal_data_gaussian}
-\title{Generate marginal Gaussian data}
+\title{Generate marginal Gaussian data using Cholesky decomposition}
 \usage{
 create_marginal_data_gaussian(n_MC_samples, Sbar_features, mu, cov_mat)
 }
