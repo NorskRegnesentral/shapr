@@ -111,7 +111,7 @@ test_that("output_symmetric_marginal_gaussian", {
   )
 })
 
-test_that("output_asymmetric_causal_confounding_TRUE", {
+test_that("output_asym_caus_conf_TRUE", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -126,13 +126,13 @@ test_that("output_asymmetric_causal_confounding_TRUE", {
       paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_asymmetric_causal_confounding_TRUE"
+    "output_asym_caus_conf_TRUE"
   )
 })
 
 
 
-test_that("output_asymmetric_causal_confounding_FALSE", {
+test_that("output_asym_caus_conf_FALSE", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -147,11 +147,11 @@ test_that("output_asymmetric_causal_confounding_FALSE", {
       paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_asymmetric_causal_confounding_FALSE"
+    "output_asym_caus_conf_FALSE"
   )
 })
 
-test_that("output_asymmetric_causal_confounding_mix", {
+test_that("output_asym_caus_conf_mix", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -166,11 +166,11 @@ test_that("output_asymmetric_causal_confounding_mix", {
       paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_asymmetric_causal_confounding_mix"
+    "output_asym_caus_conf_mix"
   )
 })
 
-test_that("output_asymmetric_causal_confounding_mix_n_coal", {
+test_that("output_asym_caus_conf_mix_n_coal", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -186,11 +186,11 @@ test_that("output_asymmetric_causal_confounding_mix_n_coal", {
       paired_shap_sampling = FALSE,
       max_n_coalitions = 6
     ),
-    "output_asymmetric_causal_confounding_mix_n_coal"
+    "output_asym_caus_conf_mix_n_coal"
   )
 })
 
-test_that("output_asymmetric_causal_confounding_mix_empirical", {
+test_that("output_asym_caus_conf_mix_empirical", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -205,11 +205,11 @@ test_that("output_asymmetric_causal_confounding_mix_empirical", {
       paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_asymmetric_causal_confounding_mix_empirical"
+    "output_asym_caus_conf_mix_empirical"
   )
 })
 
-test_that("output_asymmetric_causal_confounding_mix_ctree", {
+test_that("output_asym_caus_conf_mix_ctree", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -224,11 +224,11 @@ test_that("output_asymmetric_causal_confounding_mix_ctree", {
       paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_asymmetric_causal_confounding_mix_ctree"
+    "output_asym_caus_conf_mix_ctree"
   )
 })
 
-test_that("output_symmetric_causal_confounding_TRUE", {
+test_that("output_sym_caus_conf_TRUE", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -242,11 +242,11 @@ test_that("output_symmetric_causal_confounding_TRUE", {
       confounding = TRUE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_symmetric_causal_confounding_TRUE"
+    "output_sym_caus_conf_TRUE"
   )
 })
 
-test_that("output_symmetric_causal_confounding_FALSE", {
+test_that("output_sym_caus_conf_FALSE", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -260,11 +260,11 @@ test_that("output_symmetric_causal_confounding_FALSE", {
       confounding = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_symmetric_causal_confounding_FALSE"
+    "output_sym_caus_conf_FALSE"
   )
 })
 
-test_that("output_symmetric_causal_confounding_mix", {
+test_that("output_sym_caus_conf_mix", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -278,13 +278,13 @@ test_that("output_symmetric_causal_confounding_mix", {
       confounding = c(TRUE, FALSE, FALSE),
       n_MC_samples = 5 # Just for speed
     ),
-    "output_symmetric_causal_confounding_mix"
+    "output_sym_caus_conf_mix"
   )
 })
 
 
 ## Group-wise  -----------------------------------------------------------------------------------------------------
-test_that("output_symmetric_causal_confounding_TRUE_group", {
+test_that("output_sym_caus_conf_TRUE_group", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -299,12 +299,12 @@ test_that("output_symmetric_causal_confounding_TRUE_group", {
       group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
       n_MC_samples = 5 # Just for speed
     ),
-    "output_symmetric_causal_confounding_TRUE_group"
+    "output_sym_caus_conf_TRUE_group"
   )
 })
 
 
-test_that("output_symmetric_causal_confounding_mix_group", {
+test_that("output_sym_caus_conf_mix_group", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -319,11 +319,11 @@ test_that("output_symmetric_causal_confounding_mix_group", {
       group = list("A" = c("Solar.R"), B = c("Wind", "Temp"), C = c("Month", "Day")),
       n_MC_samples = 5 # Just for speed
     ),
-    "output_symmetric_causal_confounding_mix_group"
+    "output_sym_caus_conf_mix_group"
   )
 })
 
-test_that("output_symmetric_causal_confounding_mix_group_adaptive", {
+test_that("output_sym_caus_conf_mix_group_adaptive", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -340,7 +340,7 @@ test_that("output_symmetric_causal_confounding_mix_group_adaptive", {
       verbose = c("convergence"),
       adaptive = TRUE
     ),
-    "output_symmetric_causal_confounding_mix_group_adaptive"
+    "output_sym_caus_conf_mix_group_adaptive"
   )
 })
 
@@ -349,7 +349,7 @@ test_that("output_symmetric_causal_confounding_mix_group_adaptive", {
 
 
 # Mixed data ------------------------------------------------------------------------------------------------------
-test_that("output_mixed_symmetric_causal_confounding_TRUE", {
+test_that("output_mixed_sym_caus_conf_TRUE", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -363,11 +363,11 @@ test_that("output_mixed_symmetric_causal_confounding_TRUE", {
       confounding = TRUE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_mixed_symmetric_causal_confounding_TRUE"
+    "output_mixed_sym_caus_conf_TRUE"
   )
 })
 
-test_that("output_mixed_symmetric_causal_confounding_TRUE_adaptive", {
+test_that("output_mixed_sym_caus_conf_TRUE_adaptive", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -382,11 +382,11 @@ test_that("output_mixed_symmetric_causal_confounding_TRUE_adaptive", {
       n_MC_samples = 5, # Just for speed
       adaptive = TRUE
     ),
-    "output_mixed_symmetric_causal_confounding_TRUE_adaptive"
+    "output_mixed_sym_caus_conf_TRUE_adaptive"
   )
 })
 
-test_that("output_mixed_asymmetric_causal_confounding_mixed", {
+test_that("output_mixed_asym_caus_conf_mixed", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -401,11 +401,11 @@ test_that("output_mixed_asymmetric_causal_confounding_mixed", {
       paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_mixed_symmetric_causal_confounding_mixed"
+    "output_mixed_sym_caus_conf_mixed"
   )
 })
 
-test_that("output_mixed_asymmetric_causal_confounding_mixed_2", {
+test_that("output_mixed_asym_caus_conf_mixed_2", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -420,7 +420,7 @@ test_that("output_mixed_asymmetric_causal_confounding_mixed_2", {
       paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
-    "output_mixed_symmetric_causal_confounding_mixed_2"
+    "output_mixed_sym_caus_conf_mixed_2"
   )
 })
 

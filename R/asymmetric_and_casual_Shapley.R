@@ -369,7 +369,7 @@ create_marginal_data_training <- function(x_train,
 #' steps. We need to treat this separately, as we here in the marginal step CANNOT make feature values such
 #' that the combination of those and the feature values we condition in S are NOT in
 #' `categorical.joint_prob_dt`. If we do this, then we cannot progress further in the chain of sampling
-#' steps. E.g., X1 \in {1,2,3}, X2 \in {1,2,3}, and X3 \in {1,2,3}.
+#' steps. E.g., X1 in {1,2,3}, X2 in {1,2,3}, and X3 in {1,2,3}.
 #' We know X2 = 2, and let causal structure be X1 -> X2 -> X3. Assume that
 #' P(X1 = 1, X2 = 2, X = 3) = P(X1 = 2, X2 = 2, X = 3) = 1/2. Then there is no point
 #' generating X1 = 3, as we then cannot generate X3.

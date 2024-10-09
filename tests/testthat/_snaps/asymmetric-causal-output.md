@@ -162,7 +162,7 @@
       2:          2 42.44  -2.268   2.141 -4.222 -6.110 -3.420
       3:          3 42.44   6.365 -15.974 -1.009 -5.139 -1.811
 
-# output_asymmetric_causal_confounding_TRUE
+# output_asym_caus_conf_TRUE
 
     Code
       (out <- code)
@@ -190,7 +190,7 @@
       2:          2 42.44   2.172  -0.7866 -8.50483 -4.592 -2.168
       3:          3 42.44  15.004 -32.3367 -0.03088 -1.430  1.225
 
-# output_asymmetric_causal_confounding_FALSE
+# output_asym_caus_conf_FALSE
 
     Code
       (out <- code)
@@ -218,7 +218,7 @@
       2:          2 42.44  -0.8741  -0.4898 -5.682 -4.634 -2.200
       3:          3 42.44   7.2517 -30.3922  5.763 -1.347  1.156
 
-# output_asymmetric_causal_confounding_mix
+# output_asym_caus_conf_mix
 
     Code
       (out <- code)
@@ -246,7 +246,7 @@
       2:          2 42.44   2.172  -0.7866 -8.43148 -4.634 -2.200
       3:          3 42.44  15.004 -32.3367 -0.04537 -1.347  1.156
 
-# output_asymmetric_causal_confounding_mix_n_coal
+# output_asym_caus_conf_mix_n_coal
 
     Code
       (out <- code)
@@ -270,7 +270,7 @@
       2:          2 42.44   1.473   1.499 -3.561 -11.136 -2.154
       3:          3 42.44  21.052 -42.877 10.992  -8.054  1.319
 
-# output_asymmetric_causal_confounding_mix_empirical
+# output_asym_caus_conf_mix_empirical
 
     Code
       (out <- code)
@@ -298,7 +298,7 @@
       2:          2 42.44  14.220 -17.195 -7.333 -1.904 -1.6682
       3:          3 42.44   0.661 -20.737  7.258 -5.048  0.2978
 
-# output_asymmetric_causal_confounding_mix_ctree
+# output_asym_caus_conf_mix_ctree
 
     Code
       (out <- code)
@@ -326,7 +326,7 @@
       2:          2 42.44  19.188 -15.28 -9.429 -8.159 -0.1952
       3:          3 42.44   5.409 -29.78  8.986 -1.464 -0.7140
 
-# output_symmetric_causal_confounding_TRUE
+# output_sym_caus_conf_TRUE
 
     Code
       (out <- code)
@@ -353,7 +353,7 @@
       2:          2 42.44 -1.5960  -5.278 -5.487 -6.285 4.767
       3:          3 42.44 -0.3679 -25.948  5.342 -1.279 4.684
 
-# output_symmetric_causal_confounding_FALSE
+# output_sym_caus_conf_FALSE
 
     Code
       (out <- code)
@@ -380,7 +380,7 @@
       2:          2 42.44   3.637  -6.474 -9.6711 -1.850  0.4779
       3:          3 42.44   1.926 -27.039  0.7298  1.404  5.4112
 
-# output_symmetric_causal_confounding_mix
+# output_sym_caus_conf_mix
 
     Code
       (out <- code)
@@ -407,7 +407,7 @@
       2:          2 42.44 -1.5897  -5.271 -5.491 -6.274 4.747
       3:          3 42.44 -0.3561 -25.936  5.339 -1.215 4.599
 
-# output_symmetric_causal_confounding_TRUE_group
+# output_sym_caus_conf_TRUE_group
 
     Code
       (out <- code)
@@ -434,7 +434,7 @@
       2:          2 42.44   5.181 -6.781 -12.279
       3:          3 42.44 -16.591  1.234  -2.211
 
-# output_symmetric_causal_confounding_mix_group
+# output_sym_caus_conf_mix_group
 
     Code
       (out <- code)
@@ -461,7 +461,7 @@
       2:          2 42.44  5.655  -3.816 -15.718
       3:          3 42.44  6.486 -16.039  -8.015
 
-# output_symmetric_causal_confounding_mix_group_adaptive
+# output_sym_caus_conf_mix_group_adaptive
 
     Code
       (out <- code)
@@ -483,7 +483,7 @@
       2:          2 42.44  -4.294  -9.63  0.04491
       3:          3 42.44  -1.155 -10.65 -5.75917
 
-# output_mixed_symmetric_causal_confounding_TRUE
+# output_mixed_sym_caus_conf_TRUE
 
     Code
       (out <- code)
@@ -510,7 +510,7 @@
       2:          2 42.44   4.729 -11.40 -7.837  1.6971       -2.570
       3:          3 42.44   3.010 -23.62  3.218  4.8728        1.922
 
-# output_mixed_symmetric_causal_confounding_TRUE_adaptive
+# output_mixed_sym_caus_conf_TRUE_adaptive
 
     Code
       (out <- code)
@@ -559,7 +559,7 @@
       2:          2 42.44  0.07793  -7.916 -3.340 -1.378       -2.828
       3:          3 42.44 -2.32289 -13.512  4.116 -1.343        2.462
 
-# output_mixed_asymmetric_causal_confounding_mixed
+# output_mixed_asym_caus_conf_mixed
 
     Code
       (out <- code)
@@ -587,7 +587,7 @@
       2:          2 42.44   0.6492  -4.826 -0.02641 -5.053       -6.127
       3:          3 42.44 -10.7232 -14.690  8.32742  1.080        5.406
 
-# output_mixed_asymmetric_causal_confounding_mixed_2
+# output_mixed_asym_caus_conf_mixed_2
 
     Code
       (out <- code)
