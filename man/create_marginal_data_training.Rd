@@ -44,6 +44,7 @@ Data table of dimension \eqn{`n_MC_samples` \times `length(Sbar_features)`} with
 Sample observations from the empirical distribution P(X) using the training dataset.
 }
 \examples{
+\dontrun{
 data("airquality")
 data <- data.table::as.data.table(airquality)
 data <- data[complete.cases(data), ]
@@ -55,6 +56,7 @@ ind_x_explain <- 1:6
 x_train <- data[-ind_x_explain, ..x_var]
 x_train
 create_marginal_data__training(x_train = x_train, Sbar_features = c(1, 4), n_MC_samples = 10)
+}
 
 }
 \author{

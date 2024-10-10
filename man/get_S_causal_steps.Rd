@@ -35,6 +35,7 @@ For \code{as_string == FALSE}, then we rather return a vector where \code{result
 Get the steps for generating MC samples for coalitions following a causal ordering
 }
 \examples{
+\dontrun{
 m <- 5
 causal_ordering <- list(1:2, 3:4, 5)
 S <- shapr::feature_matrix_cpp(get_valid_causal_coalitions(causal_ordering = causal_ordering),
@@ -73,7 +74,7 @@ SS2[[6]]
 SS3[[6]]
 
 all.equal(SS3, SS4) # No difference as the last component is a singleton
-
+}
 }
 \author{
 Lars Henry Berge Olsen

@@ -24,70 +24,6 @@ check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_pr
   }
 }
 
-#' Auxiliary function that verifies that the coalitions respect the causal order
-#'
-#' @param coalitions List of integer vectors containing the coalitions indicating which
-#' features to conditioning on that we are to check against the causal ordering.
-#'
-#' @param causal_ordering List of vectors containing the partial causal ordering.
-#' The elements in the list represents the components in the causal ordering and can either
-#' be a single feature index or several, that is, a vector. For example, we can have
-#' `list(c(1,2), c(3, 4))`, which means that `1,2 -> 3` and `1,2 -> 4`, i.e., one and
-#' two are the ancestors of three and four, but three and four are not related.
-#'
-#' @return Logical array indicating whether the coalitions respect the causal order or not.
-#'
-#' @keywords internal
-#'
-#' @examples
-#' coalitions <- list(c(1, 2, 3, 5), c(1, 2, 4), c(1, 4))
-#' causal_ordering <- list(1:3, 4:7, 8:10)
-#' check_coals_respect_order_slow(coalitions, causal_ordering) # c(TRUE, FALSE, FALSE)
-#' check_coals_respect_order_slow(c(1, 2, 3, 5), causal_ordering) # TRUE
-#' check_coals_respect_order_slow(list(c(1, 2, 3, 5)), causal_ordering) # TRUE
-#' check_coals_respect_order_slow(list(c(1, 2, 5)), causal_ordering) # FALSE
-#' check_coals_respect_order_slow(list(c(1:7, 10)), causal_ordering) # TRUE
-#' check_coals_respect_order_slow(list(c(1:3, 5:6, 10)), causal_ordering) # FALSE
-#'
-#' @author Lars Henry Berge Olsen
-check_coals_respect_order_slow <- function(coalitions, causal_ordering) {
-  if (!is.list(coalitions)) coalitions <- list(coalitions) # Ensure that we are given a list and not a vector
-  n_causal_ordering <- length(causal_ordering) # Get the number of causal orderings
-
-  # Create a vector to store all ancestors for each causal position/component
-  ancestors <- list(integer(0)) # The root component has no ancestors
-  if (n_causal_ordering > 1) {
-    ancestors <- c(ancestors, Reduce(c, causal_ordering[-n_causal_ordering],
-      accumulate = TRUE
-    ))
-  }
-
-  # Array to store which coalitions respects the `causal_ordering`. Change to FALSE if coalition does not.
-  coalition_respects_order <- rep(TRUE, length(coalitions))
-
-  # Iterate over the coalitions
-  for (coalition_idx in seq_along(coalitions)) {
-    coalition <- coalitions[[coalition_idx]]
-
-    # Iterate over the features in the coalition
-    for (feature in coalition) {
-      # Extract which component the feature is part of (a number between 1 and `length(causal_ordering)`)
-      feature_component <- Position(function(ith_component) feature %in% ith_component, causal_ordering)
-
-      # # The feature should always be in the causal_ordering, thus, this is not necessary
-      # if (is.na(feature_position)) stop("`feature_position` should never be `NA`.")
-
-      # Get the ancestors of the feature from the pre-computed ancestors list
-      current_ancestors <- ancestors[[feature_component]]
-
-      # Check that all ancestors of the feature are present in the coalition, if not, then set to FALSE
-      if (!all(current_ancestors %in% coalition)) coalition_respects_order[coalition_idx] <- FALSE
-    }
-  }
-
-  # Return whether the coalitions respect the causal order or not
-  return(coalition_respects_order)
-}
 
 #' Auxiliary function that verifies that the number of coalitions is valid
 #'
@@ -160,7 +96,9 @@ convert_feature_name_to_idx <- function(causal_ordering, labels, feat_group_txt)
 #'
 #' @return Data table of dimension \eqn{`n_MC_samples` \times `length(Sbar_features)`} with the sampled observations.
 #'
+#'
 #' @examples
+#' \dontrun{
 #' data("airquality")
 #' data <- data.table::as.data.table(airquality)
 #' data <- data[complete.cases(data), ]
@@ -172,6 +110,7 @@ convert_feature_name_to_idx <- function(causal_ordering, labels, feat_group_txt)
 #' x_train <- data[-ind_x_explain, ..x_var]
 #' x_train
 #' create_marginal_data__training(x_train = x_train, Sbar_features = c(1, 4), n_MC_samples = 10)
+#' }
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
@@ -354,11 +293,13 @@ get_valid_causal_coalitions <- function(causal_ordering, sort_features_in_coalit
 #' empty coalition.
 #'
 #' @examples
+#' \dontrun{
 #' get_max_n_coalitions_causal(list(1:10)) # 2^10 = 1024 (no causal order)
 #' get_max_n_coalitions_causal(list(1:3, 4:7, 8:10)) # 30
 #' get_max_n_coalitions_causal(list(1:3, 4:5, 6:7, 8, 9:10)) # 18
 #' get_max_n_coalitions_causal(list(1:3, c(4, 8), c(5, 7), 6, 9:10)) # 18
 #' get_max_n_coalitions_causal(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) # 11
+#' }
 #'
 #' @return Integer. The (maximum) number of coalitions that respects the causal ordering.
 #' @keywords internal
@@ -386,6 +327,7 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 #' `Sbar` and `S` representing the features to sample and condition on, respectively.
 #'
 #' @examples
+#' \dontrun{
 #' m <- 5
 #' causal_ordering <- list(1:2, 3:4, 5)
 #' S <- shapr::feature_matrix_cpp(get_valid_causal_coalitions(causal_ordering = causal_ordering),
@@ -424,7 +366,7 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 #' SS3[[6]]
 #'
 #' all.equal(SS3, SS4) # No difference as the last component is a singleton
-#'
+#' }
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALSE) {
