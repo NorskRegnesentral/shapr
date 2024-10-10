@@ -24,26 +24,6 @@ check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_pr
   }
 }
 
-
-#' Auxiliary function that verifies that the number of coalitions is valid
-#'
-#' @inheritParams explain
-#' @param n_coalitions
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-check_n_coalitions_causal <- function(n_coalitions, causal_ordering) {
-  # Check that we have a legit number of coalitions.
-  n_coalitions_max <- get_max_n_coalitions_causal(causal_ordering)
-  if (n_coalitions < 2 || n_coalitions > n_coalitions_max) {
-    stop(paste0(
-      "`n_coalitions` (", n_coalitions, ") must be a strictly postive integer larger than or equal to ",
-      "two and less than the number of coalitions respecting the causal ordering (", n_coalitions_max, ")."
-    ))
-  }
-}
-
-
 # Convert function ------------------------------------------------------------------------------------------------
 #' Convert feature names into feature indices
 #'
