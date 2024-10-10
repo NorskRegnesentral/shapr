@@ -147,7 +147,7 @@ create_marginal_data_gaussian <- function(n_MC_samples, Sbar_features, mu, cov_m
   samples <- Z %*% chol_decomp
 
   # Shift by the mean vector
-  samples <- sweep(samples, 2, mu[Sbar_features], '+')
+  samples <- sweep(samples, 2, mu[Sbar_features], "+")
 
   return(data.table(samples))
 }

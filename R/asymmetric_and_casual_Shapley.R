@@ -100,8 +100,11 @@ check_coals_respect_order_slow <- function(coalitions, causal_ordering) {
 
   # Create a vector to store all ancestors for each causal position/component
   ancestors <- list(integer(0)) # The root component has no ancestors
-  if (n_causal_ordering > 1) ancestors <- c(ancestors, Reduce(c, causal_ordering[-n_causal_ordering],
-                                                              accumulate = TRUE))
+  if (n_causal_ordering > 1) {
+    ancestors <- c(ancestors, Reduce(c, causal_ordering[-n_causal_ordering],
+      accumulate = TRUE
+    ))
+  }
 
   # Array to store which coalitions respects the `causal_ordering`. Change to FALSE if coalition does not.
   coalition_respects_order <- rep(TRUE, length(coalitions))
@@ -323,7 +326,8 @@ create_marginal_data_categoric <- function(n_MC_samples,
   # Sample n_MC_samples from the valid coalitions using the marginal probabilities and extract the Sbar columns
   dt_return <-
     dt_valid_coal_marg_prob[, .SD[sample(.N, n_MC_samples, replace = TRUE, prob = prob)],
-                            by = id][, Sbar_now_names, with = FALSE]
+      by = id
+    ][, Sbar_now_names, with = FALSE]
   return(dt_return)
 }
 
@@ -355,8 +359,9 @@ create_marginal_data_categoric <- function(n_MC_samples,
 #' m <- 11
 #' causal_ordering <- list(3:1, c(8, 4), c(7, 5), 6, 9:10, 11) # All m features must be in this list
 #' dt <-
-#'  data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE),
-#'                                           recursive = FALSE))
+#'   data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE),
+#'     recursive = FALSE
+#'   ))
 #' all.equal(
 #'   get_valid_causal_coalitions(causal_ordering, sort_features_in_coalitions = TRUE),
 #'   dt[check_coalitions_respect_order(features, causal_ordering)]$features
@@ -444,13 +449,16 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 #' m <- 5
 #' causal_ordering <- list(1:2, 3:4, 5)
 #' S <- shapr::feature_matrix_cpp(get_valid_causal_coalitions(causal_ordering = causal_ordering),
-#'                                m = m)
+#'   m = m
+#' )
 #' confounding <- c(TRUE, TRUE, FALSE)
 #' get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)
 #'
 #' # Look at the effect of changing the confounding assumptions
-#' SS1 <- get_S_causal_steps(S, causal_ordering, confounding = c(FALSE, FALSE, FALSE),
-#'                           as_string = TRUE)
+#' SS1 <- get_S_causal_steps(S, causal_ordering,
+#'   confounding = c(FALSE, FALSE, FALSE),
+#'   as_string = TRUE
+#' )
 #' SS2 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, FALSE, FALSE), as_string = TRUE)
 #' SS3 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, FALSE), as_string = TRUE)
 #' SS4 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, TRUE), as_string = TRUE)
@@ -599,7 +607,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
     # Loop over the steps in the iterative sampling process to generate MC samples for the unconditional features
     sampling_step_idx <- 2
     for (sampling_step_idx in seq_along(S_causal_steps_now)) {
-
       # Set flag indicating whether or not we are in the first sampling step, as the the gaussian and copula
       # approaches need to know this to change their sampling procedure to ensure correctly generated MC samples
       internal_copy$parameters$causal_first_step <- sampling_step_idx == 1
