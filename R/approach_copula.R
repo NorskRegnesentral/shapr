@@ -101,7 +101,7 @@ prepare_data.copula <- function(internal, index_features, ...) {
   }
 
   # Generate the MC samples from N(0, 1)
-  MC_samples_mat <- matrix(rnorm(n_MC_samples_updated * n_features), nrow = n_MC_samples_updated, ncol = n_features)
+  MC_samples_mat <- matrix(rnorm(n_MC_samples * n_features), nrow = n_MC_samples, ncol = n_features)
 
   # Use C++ to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}), for all coalitions and explicands,
   # and then transforming them back to the original scale using the inverse Gaussian transform in C++.
