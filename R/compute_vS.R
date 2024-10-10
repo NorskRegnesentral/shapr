@@ -198,7 +198,7 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen and Martin Jullum
-batch_prepare_vS_MC_aux_causal <- function(S, internal, causal_sampling) {
+batch_prepare_vS_MC_auxiliary <- function(S, internal, causal_sampling) {
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
   prepare_data_function <- if (causal_sampling) prepare_data_causal else prepare_data
@@ -213,36 +213,6 @@ batch_prepare_vS_MC_aux_causal <- function(S, internal, causal_sampling) {
     setkey(dt, id, id_coalition)
   } else {
     dt <- prepare_data_function(internal, index_features = S)
-  }
-  return(dt)
-}
-
-#' @keywords internal
-batch_prepare_vS_MC_auxiliary <- function(S, internal) {
-  iter <- length(internal$iter_list)
-
-  X <- internal$iter_list[[iter]]$X
-
-  max_id_coalition <- X[, .N]
-  x_explain <- internal$data$x_explain
-  n_explain <- internal$parameters$n_explain
-
-  # TODO: Check what is the fastest approach to deal with the last observation.
-  # Not doing this for the largest id_coalition (should check if this is faster or slower, actually)
-  # An alternative would be to delete rows from the dt which is provided by prepare_data.
-  if (!(max_id_coalition %in% S)) {
-    # TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
-    dt <- prepare_data(internal, index_features = S)
-  } else {
-    if (length(S) > 1) {
-      S <- S[S != max_id_coalition]
-      dt <- prepare_data(internal, index_features = S)
-    } else {
-      dt <- NULL # Special case for when the batch only include the largest id
-    }
-    dt_max <- data.table(id_coalition = max_id_coalition, x_explain, w = 1, id = seq_len(n_explain))
-    dt <- rbind(dt, dt_max)
-    setkey(dt, id, id_coalition)
   }
   return(dt)
 }
