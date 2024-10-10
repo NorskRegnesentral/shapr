@@ -405,9 +405,6 @@ sample_coalition_table <- function(m,
   ind <- X[, .I[data.table::between(coalition_size, 1, m - 1)]]
   X[ind, p := p[coalition_size]]
 
-  # TODO: Discuss with Martin. Should N be
-  #  1. the total number of coalitions of a size
-  #  2. or only the number of valid coalitions of said size (This verson is now implemented below)
   if (!is.null(dt_valid_causal_coalitions)) {
     # Asymmetric Shapley values
     # Get the number of coalitions of each coalition size from the `dt_valid_causal_coalitions` data table
