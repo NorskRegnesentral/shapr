@@ -25,7 +25,7 @@
       2:          2 42.44  -7.632   8.053 -7.467 -4.634 -2.200
       3:          3 42.44  -3.458 -18.240  4.321 -1.347  1.156
 
-# output_asymmetric_conditional_regression
+# output_asym_cond_reg
 
     Code
       (out <- code)
@@ -52,7 +52,7 @@
       2:          2 42.44   5.546  -6.262 -4.518 -6.664 -1.982
       3:          3 42.44   9.720 -32.555  7.270 -3.377  1.374
 
-# output_asymmetric_conditional_regression_adaptive
+# output_asym_cond_reg_adaptive
 
     Code
       (out <- code)
@@ -156,11 +156,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp  Month    Day
-              <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -9.320   9.898 15.810 -7.768  3.981
-      2:          2 42.44  -2.268   2.141 -4.222 -6.110 -3.420
-      3:          3 42.44   6.365 -15.974 -1.009 -5.139 -1.811
+         explain_id  none Solar.R    Wind   Temp   Month    Day
+              <int> <num>   <num>   <num>  <num>   <num>  <num>
+      1:          1 42.44 -8.1241   6.631 15.251 -2.3173  1.161
+      2:          2 42.44  0.8798  -2.652 -6.971 -1.2012 -3.935
+      3:          3 42.44  3.3391 -14.550 -3.145 -0.4127 -2.800
 
 # output_asym_caus_conf_TRUE
 
@@ -184,11 +184,11 @@
       
       i Using 8 of 8 coalitions. 
     Output
-         explain_id  none Solar.R     Wind     Temp  Month    Day
-              <int> <num>   <num>    <num>    <num>  <num>  <num>
-      1:          1 42.44  -6.876  17.7182  5.48083 -0.499 -3.222
-      2:          2 42.44   2.172  -0.7866 -8.50483 -4.592 -2.168
-      3:          3 42.44  15.004 -32.3367 -0.03088 -1.430  1.225
+         explain_id  none Solar.R    Wind    Temp  Month    Day
+              <int> <num>   <num>   <num>   <num>  <num>  <num>
+      1:          1 42.44 -12.804  11.755 17.3723 -0.499 -3.222
+      2:          2 42.44   1.471  -2.609 -5.9820 -4.592 -2.168
+      3:          3 42.44  14.736 -31.711 -0.3884 -1.430  1.225
 
 # output_asym_caus_conf_FALSE
 
@@ -240,11 +240,11 @@
       
       i Using 8 of 8 coalitions. 
     Output
-         explain_id  none Solar.R     Wind     Temp  Month    Day
-              <int> <num>   <num>    <num>    <num>  <num>  <num>
-      1:          1 42.44  -6.876  17.7182  5.54631 -0.626 -3.161
-      2:          2 42.44   2.172  -0.7866 -8.43148 -4.634 -2.200
-      3:          3 42.44  15.004 -32.3367 -0.04537 -1.347  1.156
+         explain_id  none Solar.R    Wind    Temp  Month    Day
+              <int> <num>   <num>   <num>   <num>  <num>  <num>
+      1:          1 42.44 -12.804  11.755 17.4378 -0.626 -3.161
+      2:          2 42.44   1.471  -2.609 -5.9087 -4.634 -2.200
+      3:          3 42.44  14.736 -31.711 -0.4028 -1.347  1.156
 
 # output_asym_caus_conf_mix_n_coal
 
@@ -266,9 +266,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp   Month    Day
               <int> <num>   <num>   <num>  <num>   <num>  <num>
-      1:          1 42.44   4.373   4.522 13.958  -7.146 -3.105
-      2:          2 42.44   1.473   1.499 -3.561 -11.136 -2.154
-      3:          3 42.44  21.052 -42.877 10.992  -8.054  1.319
+      1:          1 42.44 -17.410  26.305 13.958  -7.146 -3.105
+      2:          2 42.44  -2.592   5.563 -3.561 -11.136 -2.154
+      3:          3 42.44  21.260 -43.085 10.992  -8.054  1.319
 
 # output_asym_caus_conf_mix_empirical
 
@@ -347,11 +347,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp  Month   Day
-              <int> <num>   <num>   <num>  <num>  <num> <num>
-      1:          1 42.44 -8.3306   3.836 15.607 -1.737 3.227
-      2:          2 42.44 -1.5960  -5.278 -5.487 -6.285 4.767
-      3:          3 42.44 -0.3679 -25.948  5.342 -1.279 4.684
+         explain_id  none Solar.R    Wind   Temp  Month     Day
+              <int> <num>   <num>   <num>  <num>  <num>   <num>
+      1:          1 42.44 -10.586   9.603 14.085 -2.429  1.9293
+      2:          2 42.44   1.626  -3.712 -2.724 -7.310 -1.7595
+      3:          3 42.44   9.581 -25.344  1.892 -4.089  0.3918
 
 # output_sym_caus_conf_FALSE
 
@@ -401,11 +401,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp  Month   Day
-              <int> <num>   <num>   <num>  <num>  <num> <num>
-      1:          1 42.44 -8.3287   3.834 15.596 -1.794 3.295
-      2:          2 42.44 -1.5897  -5.271 -5.491 -6.274 4.747
-      3:          3 42.44 -0.3561 -25.936  5.339 -1.215 4.599
+         explain_id  none Solar.R    Wind   Temp  Month     Day
+              <int> <num>   <num>   <num>  <num>  <num>   <num>
+      1:          1 42.44  -10.60   9.600 14.068 -2.464  1.9983
+      2:          2 42.44    1.62  -3.719 -2.722 -7.284 -1.7747
+      3:          3 42.44    9.58 -25.345  1.893 -4.005  0.3084
 
 # output_sym_caus_conf_TRUE_group
 
@@ -428,11 +428,11 @@
       
       i Using 8 of 8 coalitions. 
     Output
-         explain_id  none       A      B       C
-              <int> <num>   <num>  <num>   <num>
-      1:          1 42.44   8.869 15.597 -11.865
-      2:          2 42.44   5.181 -6.781 -12.279
-      3:          3 42.44 -16.591  1.234  -2.211
+         explain_id  none      A       B      C
+              <int> <num>  <num>   <num>  <num>
+      1:          1 42.44 11.547  16.725 -15.67
+      2:          2 42.44  7.269 -10.685 -10.46
+      3:          3 42.44 -5.058   1.578 -14.09
 
 # output_sym_caus_conf_mix_group
 
@@ -455,11 +455,11 @@
       
       i Using 8 of 8 coalitions. 
     Output
-         explain_id  none      A       B       C
-              <int> <num>  <num>   <num>   <num>
-      1:          1 42.44 -9.147  31.133  -9.384
-      2:          2 42.44  5.655  -3.816 -15.718
-      3:          3 42.44  6.486 -16.039  -8.015
+         explain_id  none       A       B       C
+              <int> <num>   <num>   <num>   <num>
+      1:          1 42.44 -13.728  31.822  -5.493
+      2:          2 42.44   3.126  -6.343 -10.662
+      3:          3 42.44   5.310 -17.036  -5.842
 
 # output_sym_caus_conf_mix_group_adaptive
 
@@ -477,11 +477,11 @@
       v Converged after 6 coalitions:
       Convergence tolerance reached!
     Output
-         explain_id  none       A      B        C
-              <int> <num>   <num>  <num>    <num>
-      1:          1 42.44 -17.964  24.48  6.08395
-      2:          2 42.44  -4.294  -9.63  0.04491
-      3:          3 42.44  -1.155 -10.65 -5.75917
+         explain_id  none       A      B      C
+              <int> <num>   <num>  <num>  <num>
+      1:          1 42.44 -17.921  39.86 -9.334
+      2:          2 42.44  -2.802  -5.92 -5.157
+      3:          3 42.44  -2.233 -20.16  4.828
 
 # output_mixed_sym_caus_conf_TRUE
 
@@ -646,7 +646,7 @@
       2:          2 42.44   5.495  -6.312 -4.640 -1.6405       -8.286
       3:          3 42.44   9.635 -32.764  7.451  0.8945        4.184
 
-# output_categorical_asymmetric_causal_mixed_categorical
+# output_categorical_asym_causal_mixed_cat
 
     Code
       (out <- code)
@@ -674,7 +674,7 @@
       2:          2 42.44       -3.868             -10.67         23.074     -23.367
       3:          3 42.44       22.619             -14.62         -4.992     -21.367
 
-# output_categorical_asymmetric_causal_mixed_categorical_adaptive
+# output_categorical_asym_causal_mixed_cat_adaptive
 
     Code
       (out <- code)
@@ -715,7 +715,7 @@
       2:          2 42.44       -1.083            -14.855        19.0929      -17.99
       3:          3 42.44       15.582            -17.251        -0.1388      -16.56
 
-# output_categorical_asymmetric_causal_mixed_ctree
+# output_categorical_asym_causal_mixed_ctree
 
     Code
       (out <- code)
