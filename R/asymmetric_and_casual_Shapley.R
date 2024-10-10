@@ -24,50 +24,6 @@ check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_pr
   }
 }
 
-
-#' Auxiliary function that verifies that the coalitions respect the causal order
-#'
-#' @param coalitions List of integer vectors containing the coalitions indicating which
-#' features to conditioning on that we are to check against the causal ordering.
-#'
-#' @param causal_ordering List of vectors containing the partial causal ordering.
-#' The elements in the list represents the components in the causal ordering and can either
-#' be a single feature index or several, that is, a vector. For example, we can have
-#' `list(c(1,2), c(3, 4))`, which means that `1,2 -> 3` and `1,2 -> 4`, i.e., one and
-#' two are the ancestors of three and four, but three and four are not related.
-#'
-#' @return Logical array indicating whether the coalitions respect the causal order or not.
-#'
-#' @keywords internal
-#'
-#' @examples
-#' coalitions <- list(c(1, 2, 3, 5), c(1, 2, 4), c(1, 4))
-#' causal_ordering <- list(1:3, 4:7, 8:10)
-#' check_coalitions_respect_order(coalitions, causal_ordering) # c(TRUE, FALSE, FALSE)
-#' check_coalitions_respect_order(c(1, 2, 3, 5), causal_ordering) # TRUE
-#' check_coalitions_respect_order(list(c(1, 2, 3, 5)), causal_ordering) # TRUE
-#' check_coalitions_respect_order(list(c(1, 2, 5)), causal_ordering) # FALSE
-#' check_coalitions_respect_order(list(c(1:7, 10)), causal_ordering) # TRUE
-#' check_coalitions_respect_order(list(c(1:3, 5:6, 10)), causal_ordering) # FALSE
-#'
-#' @author Lars Henry Berge Olsen
-check_coalitions_respect_order <- function(coalitions, causal_ordering) {
-  sapply(coalitions, function(coalition) {
-    for (feature in coalition) { # Iterate over the features in the coalition
-      # Get which component in the causal ordering the feature is part of
-      id_component <- Position(function(component) feature %in% component, causal_ordering, nomatch = 0)
-      if (id_component != 1) { # If not the root component
-        ancestors <- unlist(causal_ordering[1:(id_component - 1)]) # Get ancestors of the component
-        # if (!setequal(ancestors, intersect(ancestors, coalition))) return(FALSE) # Check all ancestors in coalition
-        if (!all(ancestors %in% coalition)) {
-          return(FALSE)
-        }
-      }
-    }
-    return(TRUE)
-  })
-}
-
 #' Auxiliary function that verifies that the coalitions respect the causal order
 #'
 #' @param coalitions List of integer vectors containing the coalitions indicating which
@@ -340,33 +296,17 @@ create_marginal_data_categoric <- function(n_MC_samples,
 # Get functions ---------------------------------------------------------------------------------------------------
 #' Get all coalitions satisfying the causal ordering
 #'
-#' @inheritParams check_coalitions_respect_order
+#' @param causal_ordering List of vectors containing the partial causal ordering.
+#' The elements in the list represents the components in the causal ordering and can either
+#' be a single feature index or several, that is, a vector. For example, we can have
+#' `list(c(1,2), c(3, 4))`, which means that `1,2 -> 3` and `1,2 -> 4`, i.e., one and
+#' two are the ancestors of three and four, but three and four are not related.
 #' @param sort_features_in_coalitions Boolean. If `TRUE`, then the feature indices in the
-#' coalitions are sorted in increasing order. Note that this gives the same order as creating
-#' all coalitions and then removing the coalitions that does not satisfy the causal ordering
-#' using [check_coalitions_respect_order()]. If `FALSE`, then the function maintains the
+#' coalitions are sorted in increasing order. If `FALSE`, then the function maintains the
 #' order of features within each group given in `causal_ordering`.
 #'
 #' @return List of vectors containing all coalitions that respects the causal ordering.
 #' @keywords internal
-#'
-#' @examples
-#' get_valid_causal_coalitions(list(1:3, 4:7, 8:10))
-#' get_valid_causal_coalitions(list(1:3, c(4, 8), c(5, 7), 6, 9:10))
-#' get_valid_causal_coalitions(list(3:1, c(8, 4), c(7, 5), 6, 9:10)) # Same as previous due to sorting
-#'
-#' # This function is equivalent of creating all coalitions and only keeping the valid coalitions
-#' m <- 11
-#' causal_ordering <- list(3:1, c(8, 4), c(7, 5), 6, 9:10, 11) # All m features must be in this list
-#' dt <-
-#'   data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE),
-#'     recursive = FALSE
-#'   ))
-#' all.equal(
-#'   get_valid_causal_coalitions(causal_ordering, sort_features_in_coalitions = TRUE),
-#'   dt[check_coalitions_respect_order(features, causal_ordering)]$features
-#' )
-#'
 #' @author Lars Henry Berge Olsen
 get_valid_causal_coalitions <- function(causal_ordering, sort_features_in_coalitions = TRUE) {
   # Create a list to store the possible coalitions and start with the empty coalition
@@ -403,7 +343,7 @@ get_valid_causal_coalitions <- function(causal_ordering, sort_features_in_coalit
 
 #' Get the number of coalitions that respects the causal ordering
 #'
-#' @inheritParams check_coalitions_respect_order
+#' @inheritParams get_valid_causal_coalitions
 #'
 #' @details The function computes the number of coalitions that respects the causal ordering by computing the number
 #' of coalitions in each partial causal component and then summing these. We compute
@@ -429,7 +369,7 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 
 #' Get the steps for generating MC samples for coalitions following a causal ordering
 #'
-#' @inheritParams check_coalitions_respect_order
+#' @inheritParams get_valid_causal_coalitions
 #' @param S ADD inheritParams from somewhere else. NOTE that we assume that this S has been checked. I.e., it only
 #' contains coalitions that respects the causal order.
 #' @param confounding Boolean or boolean vector specifying which features are affected by confounding. If a single

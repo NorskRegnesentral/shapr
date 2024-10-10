@@ -138,7 +138,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   data.table::setkeyv(joint_probability_mult, "id_all")
   j_S_dt <- cbind(joint_probability_mult, S_dt) # combine joint probability and S matrix
 
-  j_S_feat <- as.matrix(j_S_dt[, ..feature_names]) # with zeros
+  j_S_feat <- as.matrix(j_S_dt[, feature_names, with = FALSE]) # with zeros
   j_S_feat_cond <- as.matrix(j_S_dt[, feature_conditioned, with = FALSE])
 
   j_S_feat[which(is.na(j_S_feat_cond))] <- NA # with NAs

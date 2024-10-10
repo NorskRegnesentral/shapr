@@ -17,9 +17,7 @@ be a single feature index or several, that is, a vector. For example, we can hav
 two are the ancestors of three and four, but three and four are not related.}
 
 \item{sort_features_in_coalitions}{Boolean. If \code{TRUE}, then the feature indices in the
-coalitions are sorted in increasing order. Note that this gives the same order as creating
-all coalitions and then removing the coalitions that does not satisfy the causal ordering
-using \code{\link[=check_coalitions_respect_order]{check_coalitions_respect_order()}}. If \code{FALSE}, then the function maintains the
+coalitions are sorted in increasing order. If \code{FALSE}, then the function maintains the
 order of features within each group given in \code{causal_ordering}.}
 }
 \value{
@@ -27,24 +25,6 @@ List of vectors containing all coalitions that respects the causal ordering.
 }
 \description{
 Get all coalitions satisfying the causal ordering
-}
-\examples{
-get_valid_causal_coalitions(list(1:3, 4:7, 8:10))
-get_valid_causal_coalitions(list(1:3, c(4, 8), c(5, 7), 6, 9:10))
-get_valid_causal_coalitions(list(3:1, c(8, 4), c(7, 5), 6, 9:10)) # Same as previous due to sorting
-
-# This function is equivalent of creating all coalitions and only keeping the valid coalitions
-m <- 11
-causal_ordering <- list(3:1, c(8, 4), c(7, 5), 6, 9:10, 11) # All m features must be in this list
-dt <-
-  data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE),
-    recursive = FALSE
-  ))
-all.equal(
-  get_valid_causal_coalitions(causal_ordering, sort_features_in_coalitions = TRUE),
-  dt[check_coalitions_respect_order(features, causal_ordering)]$features
-)
-
 }
 \author{
 Lars Henry Berge Olsen

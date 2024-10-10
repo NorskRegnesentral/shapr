@@ -425,7 +425,7 @@ test_that("output_mixed_asym_caus_conf_mixed_2", {
 })
 
 
-test_that("output_mixed_asymmetric_conditional_regression", {
+test_that("output_mixed_asym_cond_reg", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -441,7 +441,7 @@ test_that("output_mixed_asymmetric_conditional_regression", {
       confounding = NULL,
       adaptive = TRUE
     ),
-    "output_mixed_asymmetric_conditional_regression"
+    "output_mixed_asym_cond_reg"
   )
 })
 
@@ -466,7 +466,7 @@ test_that("output_categorical_asym_causal_mixed_cat", {
   )
 })
 
-test_that("output_categorical_asym_causal_mixed_cat_adaptive", {
+test_that("output_cat_asym_causal_mixed_cat_ad", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -481,7 +481,7 @@ test_that("output_categorical_asym_causal_mixed_cat_adaptive", {
       n_MC_samples = 5, # Just for speed
       adaptive = TRUE
     ),
-    "output_categorical_asym_causal_mixed_cat_adaptive"
+    "output_cat_asym_causal_mixed_cat_ad"
   )
 })
 
