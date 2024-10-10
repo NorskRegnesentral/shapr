@@ -615,7 +615,7 @@
       2:          2 42.44  -2.941  -6.389  4.8876 -4.4941       -6.446
       3:          3 42.44   4.715 -34.627 13.1031  0.4327        5.776
 
-# output_mixed_asymmetric_conditional_regression
+# output_mixed_asym_cond_reg
 
     Code
       (out <- code)
@@ -674,7 +674,7 @@
       2:          2 42.44       -3.868             -10.67         23.074     -23.367
       3:          3 42.44       22.619             -14.62         -4.992     -21.367
 
-# output_categorical_asym_causal_mixed_cat_adaptive
+# output_cat_asym_causal_mixed_cat_ad
 
     Code
       (out <- code)
