@@ -44,6 +44,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   X <- internal$iter_list[[iter]]$X
   S <- internal$iter_list[[iter]]$S
   S_causal <- internal$iter_list[[iter]]$S_causal_steps_unique_S # NULL if not causal sampling
+  causal_sampling <- internal$parameters$causal_sampling # NULL if not causal sampling
   parameters <- internal$parameters
 
   # Check if we are doing a combination of approaches
@@ -73,7 +74,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters <- c(parameters[(length(vaeac_main_para) + 1):length(parameters)], parameters[seq_along(vaeac_main_para)])
 
   # Check if vaeac is to be applied on a subset of coalitions.
-  if (!is.null(S_causal)) {
+  if (isTRUE(causal_sampling)) {
     # We are doing causal Shapley values. Then we do not want to train on the full
     # coalitions, but rather the coalitions in the chain of sampling steps used
     # to generate the full MC sample. Casual Shapley does not support combined
