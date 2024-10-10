@@ -37,12 +37,17 @@ Get the steps for generating MC samples for coalitions following a causal orderi
 \examples{
 m <- 5
 causal_ordering <- list(1:2, 3:4, 5)
-S <- shapr::feature_matrix_cpp(get_valid_causal_coalitions(causal_ordering = causal_ordering), m = m)
+S <- shapr::feature_matrix_cpp(get_valid_causal_coalitions(causal_ordering = causal_ordering),
+  m = m
+)
 confounding <- c(TRUE, TRUE, FALSE)
 get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)
 
 # Look at the effect of changing the confounding assumptions
-SS1 <- get_S_causal_steps(S, causal_ordering, confounding = c(FALSE, FALSE, FALSE), as_string = TRUE)
+SS1 <- get_S_causal_steps(S, causal_ordering,
+  confounding = c(FALSE, FALSE, FALSE),
+  as_string = TRUE
+)
 SS2 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, FALSE, FALSE), as_string = TRUE)
 SS3 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, FALSE), as_string = TRUE)
 SS4 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, TRUE), as_string = TRUE)
