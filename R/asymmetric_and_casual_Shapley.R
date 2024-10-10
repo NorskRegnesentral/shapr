@@ -216,6 +216,7 @@ create_marginal_data_categoric <- function(n_MC_samples,
 # Get functions ---------------------------------------------------------------------------------------------------
 #' Get all coalitions satisfying the causal ordering
 #'
+#' @description
 #' This function is only relevant when we are computing asymmetric Shapley values.
 #' For symmetric Shapley values (both regular and causal), all coalitions are allowed.
 #'

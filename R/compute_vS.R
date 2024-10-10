@@ -172,7 +172,7 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   causal_sampling <- internal$parameters$causal_sampling
 
   # Make it optional to store and return the dt_list
-  dt <- batch_prepare_vS_MC_aux_causal(S = S, internal = internal, causal_sampling = causal_sampling)
+  dt <- batch_prepare_vS_MC_auxiliary(S = S, internal = internal, causal_sampling = causal_sampling)
 
   pred_cols <- paste0("p_hat", seq_len(output_size))
 
