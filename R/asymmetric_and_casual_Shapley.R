@@ -13,7 +13,7 @@ check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_pr
   dt_factor <- dt[, .SD, .SDcols = is.factor] # Get the columns that have been inserted into
   dt_factor_names <- copy(names(dt_factor)) # Get their names. Copy as we are to change dt_factor
   dt_factor[, id := rep(seq(n_explain), each = n_MC_samples)] # Add an id column
-  dt_valid_coals <- joint_probability_dt[, ..dt_factor_names] # Get the valid feature coalitions
+  dt_valid_coals <- joint_probability_dt[, dt_factor_names, with = FALSE] # Get the valid feature coalitions
   dt_invalid <- dt_factor[!dt_valid_coals, on = dt_factor_names] # Get non valid coalitions
   explicand_all_invalid <- dt_invalid[, .N, by = id][N == n_MC_samples] # If all samples for an explicand are invalid
   if (nrow(explicand_all_invalid) > 0) {
@@ -243,7 +243,7 @@ create_marginal_data_training <- function(x_train,
   }
 
   # Sample the marginal data and return them
-  return(x_train[sampled_indices, ..Sbar_features])
+  return(x_train[sampled_indices, Sbar_features, with = FALSE])
 }
 
 #' Create marginal categorical data for causal Shapley values
@@ -303,10 +303,10 @@ create_marginal_data_categoric <- function(n_MC_samples,
   marginal_prob_dt <- joint_prob_dt[, list(prob = sum(joint_prob)), by = relevant_features_names]
 
   # Get all valid feature coalitions for the relevant features
-  dt_valid_coalitions <- unique(joint_prob_dt[, ..relevant_features])
+  dt_valid_coalitions <- unique(joint_prob_dt[, relevant_features, with = FALSE])
 
   # Get relevant feature coalitions that are valid for the explicands
-  dt_valid_coalitions_relevant <- data.table::merge.data.table(x_explain_copy[, ..S_original_names_with_id],
+  dt_valid_coalitions_relevant <- data.table::merge.data.table(x_explain_copy[, S_original_names_with_id, with = FALSE],
     dt_valid_coalitions,
     by = S_original_names,
     allow.cartesian = TRUE
@@ -322,7 +322,8 @@ create_marginal_data_categoric <- function(n_MC_samples,
 
   # Sample n_MC_samples from the valid coalitions using the marginal probabilities and extract the Sbar columns
   dt_return <-
-    dt_valid_coal_marg_prob[, .SD[sample(.N, n_MC_samples, replace = TRUE, prob = prob)], by = id][, ..Sbar_now_names]
+    dt_valid_coal_marg_prob[, .SD[sample(.N, n_MC_samples, replace = TRUE, prob = prob)],
+                            by = id][, Sbar_now_names, with = FALSE]
   return(dt_return)
 }
 
@@ -354,7 +355,8 @@ create_marginal_data_categoric <- function(n_MC_samples,
 #' m <- 11
 #' causal_ordering <- list(3:1, c(8, 4), c(7, 5), 6, 9:10, 11) # All m features must be in this list
 #' dt <-
-#'  data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE))
+#'  data.table::data.table(features = unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE),
+#'                                           recursive = FALSE))
 #' all.equal(
 #'   get_valid_causal_coalitions(causal_ordering, sort_features_in_coalitions = TRUE),
 #'   dt[check_coalitions_respect_order(features, causal_ordering)]$features
@@ -441,12 +443,14 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 #' @examples
 #' m <- 5
 #' causal_ordering <- list(1:2, 3:4, 5)
-#' S <- shapr::feature_matrix_cpp(get_valid_causal_coalitions(causal_ordering = causal_ordering), m = m)
+#' S <- shapr::feature_matrix_cpp(get_valid_causal_coalitions(causal_ordering = causal_ordering),
+#'                                m = m)
 #' confounding <- c(TRUE, TRUE, FALSE)
 #' get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)
 #'
 #' # Look at the effect of changing the confounding assumptions
-#' SS1 <- get_S_causal_steps(S, causal_ordering, confounding = c(FALSE, FALSE, FALSE), as_string = TRUE)
+#' SS1 <- get_S_causal_steps(S, causal_ordering, confounding = c(FALSE, FALSE, FALSE),
+#'                           as_string = TRUE)
 #' SS2 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, FALSE, FALSE), as_string = TRUE)
 #' SS3 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, FALSE), as_string = TRUE)
 #' SS4 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, TRUE), as_string = TRUE)

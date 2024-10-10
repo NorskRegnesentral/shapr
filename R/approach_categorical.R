@@ -139,7 +139,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   j_S_dt <- cbind(joint_probability_mult, S_dt) # combine joint probability and S matrix
 
   j_S_feat <- as.matrix(j_S_dt[, ..feature_names]) # with zeros
-  j_S_feat_cond <- as.matrix(j_S_dt[, ..feature_conditioned])
+  j_S_feat_cond <- as.matrix(j_S_dt[, feature_conditioned, with = FALSE])
 
   j_S_feat[which(is.na(j_S_feat_cond))] <- NA # with NAs
   j_S_feat_with_NA <- data.table::as.data.table(j_S_feat)
@@ -176,7 +176,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   dt_just_explain <- cond_dt[x_explain_with_id, on = feature_names]
 
   # this is a really important step to get the proper "w" which will be used in compute_preds()
-  dt_explain_just_conditioned <- dt_just_explain[, ..feature_conditioned_id]
+  dt_explain_just_conditioned <- dt_just_explain[, feature_conditioned_id, with = FALSE]
 
   cond_dt[, id_all := NULL]
   dt <- cond_dt[dt_explain_just_conditioned, on = feature_conditioned, allow.cartesian = TRUE]
@@ -224,7 +224,7 @@ prepare_data_single_coalition <- function(internal, index_features) {
   cond_cols_with_id <- c("id", cond_cols)
 
   # Extract the feature values to condition and including the id column
-  dt_conditional_feature_values <- x_explain_copy[, ..cond_cols_with_id]
+  dt_conditional_feature_values <- x_explain_copy[, cond_cols_with_id, with = FALSE]
 
   # Merge (right outer join) the joint_probability_dt data with the conditional feature values
   results_id_coalition <- data.table::merge.data.table(joint_probability_dt,

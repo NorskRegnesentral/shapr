@@ -19,7 +19,7 @@ compute_conditional_prob <- function(S, index_features, x_explain, joint_probabi
     cond_cols_with_id = c("id", cond_cols)
 
     # Extract the feature values to condition and including the id column
-    dt_conditional_feature_values = x_explain_copy[, ..cond_cols_with_id]
+    dt_conditional_feature_values = x_explain_copy[, cond_cols_with_id, with = FALSE]
 
     # Merge (right outer join) the joint_probability_dt data with the conditional feature values
     results_id_combination = joint_probability_dt[dt_conditional_feature_values, on = cond_cols, allow.cartesian = TRUE]
@@ -65,7 +65,7 @@ compute_conditional_prob_merge <- function(S, index_features, x_explain, joint_p
     cond_cols_with_id = c("id", cond_cols)
 
     # Extract the feature values to condition and including the id column
-    dt_conditional_feature_values = x_explain[, ..cond_cols_with_id]
+    dt_conditional_feature_values = x_explain[, cond_cols_with_id, with = FALSE]
 
     # Merge (right outer join) the joint_probability_dt data with the conditional feature values
     results_id_combination <- data.table::merge.data.table(joint_probability_dt, dt_conditional_feature_values, by = cond_cols, allow.cartesian = TRUE)
@@ -100,7 +100,7 @@ compute_conditional_prob_merge_one_coalition <- function(S, index_features, x_ex
   cond_cols_with_id = c("id", cond_cols)
 
   # Extract the feature values to condition and including the id column
-  dt_conditional_feature_values = x_explain[, ..cond_cols_with_id]
+  dt_conditional_feature_values = x_explain[, cond_cols_with_id, with = FALSE]
 
   # Merge (right outer join) the joint_probability_dt data with the conditional feature values
   results_id_combination <- data.table::merge.data.table(joint_probability_dt, dt_conditional_feature_values, by = cond_cols, allow.cartesian = TRUE)
@@ -326,7 +326,6 @@ compute_conditional_prob_shapr_new <- function(S, index_features, x_explain, joi
 
   # this is a really important step to get the proper "w" which will be used in compute_preds()
   dt_explain_just_conditioned <- dt_just_explain[, feature_conditioned_id, with = FALSE]
-  dt_explain_just_conditioned <- dt_just_explain[, ..feature_conditioned_id]
 
   cond_dt[, id_all := NULL]
 

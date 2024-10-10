@@ -138,9 +138,22 @@
       "max_iter",
       "convergence_tolerance",
       "conv_measure",
-      "verbose"
+      "verbose",
+      "S_original_names_with_id",
+      "Sbar_features",
+      "Sbar_now_names",
+      "cond_cols_with_id",
+      "dt_factor_names",
+      "feature_conditioned",
+      "feature_conditioned_id",
+      "feature_names",
+      "relevant_features",
+      "i.N",
+      "prob",
+      "shapley_weight_norm"
     )
   )
+
 
   invisible()
 }
