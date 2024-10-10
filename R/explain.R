@@ -145,7 +145,7 @@
 #' If `FALSE` (default), `explain` computes regular symmetric Shapley values,
 #' If `TRUE`, then `explain` compute asymmetric Shapley values based on the (partial) causal ordering
 #' given by `causal_ordering`. That is, `explain` only uses the feature combinations/coalitions that
-#' respect the causal ordering when computing the asymmetric Shapley values. If `asymmetric` is `TRUE` and `
+#' respect the causal ordering when computing the asymmetric Shapley values. If `asymmetric` is `TRUE` and
 #' `confounding` is `NULL` (default), then `explain` computes asymmetric conditional Shapley values as specified in
 #' Frye et al. (2020). If `confounding` is provided, i.e., not `NULL`, then `explain` computes asymmetric causal
 #' Shapley values as specified in Heskes et al. (2020).
