@@ -217,7 +217,9 @@ Not applicable for (regular) non-causal or asymmetric explanations.
 If \code{FALSE} (default), \code{explain} computes regular symmetric Shapley values,
 If \code{TRUE}, then \code{explain} compute asymmetric Shapley values based on the (partial) causal ordering
 given by \code{causal_ordering}. That is, \code{explain} only uses the feature combinations/coalitions that
-respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and \verb{ }confounding\code{is}NULL\verb{(default), then}explain\verb{computes asymmetric conditional Shapley values as specified in Frye et al. (2020). If}confounding\verb{is provided, i.e., not}NULL\verb{, then }explain` computes asymmetric causal
+respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and
+\code{confounding} is \code{NULL} (default), then \code{explain} computes asymmetric conditional Shapley values as specified in
+Frye et al. (2020). If \code{confounding} is provided, i.e., not \code{NULL}, then \code{explain} computes asymmetric causal
 Shapley values as specified in Heskes et al. (2020).}
 
 \item{causal_ordering}{List.

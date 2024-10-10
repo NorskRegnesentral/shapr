@@ -10,11 +10,19 @@ get_valid_causal_coalitions(
 )
 }
 \arguments{
-\item{causal_ordering}{List of vectors containing the partial causal ordering.
-The elements in the list represents the components in the causal ordering and can either
-be a single feature index or several, that is, a vector. For example, we can have
-\code{list(c(1,2), c(3, 4))}, which means that \verb{1,2 -> 3} and \verb{1,2 -> 4}, i.e., one and
-two are the ancestors of three and four, but three and four are not related.}
+\item{causal_ordering}{List.
+Not applicable for (regular) non-causal or asymmetric explanations.
+\code{causal_ordering} is an unnamed list of vectors specifying the components of the
+partial causal ordering that the coalitions must respect. Each vector represents
+a component and contains one or more features/groups identified by their names
+(strings) or indices (integers). If \code{causal_ordering} is \code{NULL} (default), no causal
+ordering is assumed and all possible coalitions are allowed. No causal ordering is
+equivalent to a causal ordering with a single component that includes all features
+(\code{list(1:n_features)}) or groups (\code{list(1:n_groups)}) for feature-wise and group-wise
+Shapley values, respectively. For feature-wise Shapley values and
+\code{causal_ordering = list(c(1, 2), c(3, 4))}, the interpretation is that features 1 and 2
+are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
+Note: All features/groups must be included in the \code{causal_ordering} without any duplicates.}
 
 \item{sort_features_in_coalitions}{Boolean. If \code{TRUE}, then the feature indices in the
 coalitions are sorted in increasing order. If \code{FALSE}, then the function maintains the
@@ -24,7 +32,8 @@ order of features within each group given in \code{causal_ordering}.}
 List of vectors containing all coalitions that respects the causal ordering.
 }
 \description{
-Get all coalitions satisfying the causal ordering
+This function is only relevant when we are computing asymmetric Shapley values.
+For symmetric Shapley values (both regular and causal), all coalitions are allowed.
 }
 \author{
 Lars Henry Berge Olsen
