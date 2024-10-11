@@ -50,7 +50,7 @@ Monte Carlo-based approaches (`independence` (not recommended), `empirical`, `ga
 Shapley value framework works for both the Monte Carlo and regression-based approaches.
 Our generalization is of uttermost importance, as many real-world data sets
 are far from the Gaussian distribution, and, compared to `CauSHAPley`, our implementation
-can utilize all of `shapr`'s new features, such as batch computation, parallelization and 
+can utilize all of `shapr`'s new features, such as batch computation, parallelization and
 iterative computation for both feature-wise and group-wise Shapley values.
 
 The main differences between the marginal, conditional, and casual Shapley value
@@ -360,7 +360,7 @@ print_MSEv_scores_and_time <- function(explanation_list) {
 
 # Print the full time information
 print_time <- function(explanation_list) {
-  t(sapply(explanation_list, function(explanation) explanation$timing$main_timing_secs))
+  t(sapply(explanation_list, function(explanation) explanation$timing$total_time_secs))
 }
 
 # Make beeswarm plots
@@ -980,7 +980,7 @@ However, as we also include symmetric conditional Shapley values,
 we see that they are extremely similar to symmetric causal Shapley values.
 I.e., the conditional Shapley value explanation framework also provides
 a sensible balance between marginal and asymmetric Shapley values.
-To summarize: 
+To summarize:
 as concluded by @heskes2020causal in their Figure 4, the
 asymmetric conditional/causal Shapley values focus on the
 root cause, marginal Shapley values on the more direct effect, and symmetric

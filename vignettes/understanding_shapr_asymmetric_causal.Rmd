@@ -38,7 +38,7 @@ Monte Carlo-based approaches (`independence` (not recommended), `empirical`, `ga
 Shapley value framework works for both the Monte Carlo and regression-based approaches.
 Our generalization is of uttermost importance, as many real-world data sets
 are far from the Gaussian distribution, and, compared to `CauSHAPley`, our implementation
-can utilize all of `shapr`'s new features, such as batch computation, parallelization and 
+can utilize all of `shapr`'s new features, such as batch computation, parallelization and
 iterative computation for both feature-wise and group-wise Shapley values.
 
 The main differences between the marginal, conditional, and casual Shapley value
@@ -363,7 +363,7 @@ print_MSEv_scores_and_time <- function(explanation_list) {
 
 # Print the full time information
 print_time <- function(explanation_list) {
-  t(sapply(explanation_list, function(explanation) explanation$timing$main_timing_secs))
+  t(sapply(explanation_list, function(explanation) explanation$timing$total_time_secs))
 }
 
 # Make beeswarm plots
@@ -537,10 +537,10 @@ All approaches are comparable, but `xgboost` is clearly the fastest approach.
 
 ``` r
 print_MSEv_scores_and_time(explanation_sym_con)
-#>             MSEv  MSEv_sd Time (secs)
-#> gaussian 1098008 77896.33        8.41
-#> ctree    1095957 69223.49       48.06
-#> xgboost  1154565 66463.44        9.68
+#>             MSEv MSEv_sd Time (secs)
+#> gaussian 1098008   77896        8.41
+#> ctree    1095957   69223       48.06
+#> xgboost  1154565   66463        9.68
 ```
 
 We can then plot the Shapley values for the six explicands chosen above.
@@ -720,11 +720,11 @@ instead of all $128$ coalitions (see code below).
 
 ``` r
 print_MSEv_scores_and_time(explanation_asym_con)
-#>                           MSEv  MSEv_sd Time (secs)
-#> gaussian              330603.3 36828.70        2.00
-#> gaussian_non_adaptive 306457.7 35411.60        1.52
-#> ctree                 260562.1 29428.95        8.81
-#> xgboost               307562.1 39362.81        1.58
+#>                         MSEv MSEv_sd Time (secs)
+#> gaussian              330603   36829        2.00
+#> gaussian_non_adaptive 306458   35412        1.52
+#> ctree                 260562   29429        8.81
+#> xgboost               307562   39363        1.58
 
 # Look at the number of coalitions considered. Decreased from 128 to 20.
 explanation_sym_con$gaussian$internal$parameters$max_n_coalitions
@@ -1086,9 +1086,9 @@ explanation_sym_cau[["copula"]] <- explain(
 
 ``` r
 print_MSEv_scores_and_time(explanation_sym_cau)
-#>             MSEv  MSEv_sd Time (secs)
-#> gaussian 1113795 85800.41       29.47
-#> copula   1137608 88376.95       20.88
+#>             MSEv MSEv_sd Time (secs)
+#> gaussian 1113795   85800       29.47
+#> copula   1137608   88377       20.88
 plot_beeswarms(explanation_sym_cau, title = "Symmetric causal Shapley values")
 ```
 
@@ -1253,8 +1253,8 @@ See the [implementation details](#Implementation_details) for an explanation.
 
 ``` r
 print_time(explanation_asym_cau)
-#>      gaussian copula ctree vaeac
-#> [1,] NULL     NULL   NULL  NULL
+#>      gaussian copula  ctree vaeac
+#> [1,]   2.0941 4.0286 33.767 7.824
 ```
 We can then plot the beeswarm plots. We see that `ctree` provides more spread out Shapley values for the `trend` feature.
 
@@ -1474,7 +1474,7 @@ However, as we also include symmetric conditional Shapley values,
 we see that they are extremely similar to symmetric causal Shapley values.
 I.e., the conditional Shapley value explanation framework also provides
 a sensible balance between marginal and asymmetric Shapley values.
-To summarize: 
+To summarize:
 as concluded by @heskes2020causal in their Figure 4, the
 asymmetric conditional/causal Shapley values focus on the
 root cause, marginal Shapley values on the more direct effect, and symmetric
@@ -1599,7 +1599,7 @@ explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-11 09:33:08 ───────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-10-11 19:57:27 ────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Adaptive estimation: TRUE
@@ -1607,17 +1607,17 @@ explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
 #> • Number of observations to explain: 144
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
-#> • Computations (temporary) saved at: '/tmp/RtmpGRskpn/shapr_obj_156a4642c9ad9d.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmpXJrOHV/shapr_obj_15a809422e367d.rds'
 #> 
 #> ── Adaptive computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ───────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 13 of 128 coalitions, 13 new.
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ───────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 26 of 128 coalitions, 12 new.
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ───────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 36 of 128 coalitions, 10 new.
 
 explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
@@ -1636,7 +1636,7 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-11 09:33:19 ───────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-10-11 19:57:40 ────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Adaptive estimation: TRUE
@@ -1645,11 +1645,11 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
-#> • Computations (temporary) saved at: '/tmp/RtmpGRskpn/shapr_obj_156a462f6b85d1.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmpXJrOHV/shapr_obj_15a8091798d878.rds'
 #> 
 #> ── Adaptive computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ───────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 10 of 10 coalitions, 10 new.
 #> 
 #> ── Convergence info
@@ -1657,19 +1657,19 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
 #> Maximum number of coalitions reached!
 #> 
 #> ── Final estimated Shapley values (sd)
-#>              none               trend             cosyear            sinyear               temp
-#>            <char>              <char>              <char>             <char>             <char>
-#>   1: 0.00 (0.00)  -2181.910 (374.04)   -825.541 (352.22)  -236.730 (257.69)   -33.813 ( 53.47) 
-#>   2: 0.00 (0.00)  -2174.357 (371.76)   -846.615 (359.93)  -187.083 (274.61)   -44.966 ( 55.78) 
-#>   3: 0.00 (0.00)  -2088.959 (360.14)   -793.628 (341.68)  -186.335 (247.79)  -104.809 ( 41.77) 
-#>   4: 0.00 (0.00)  -2103.364 (368.62)   -798.135 (356.43)  -110.331 (268.86)   169.736 (102.28) 
-#>   5: 0.00 (0.00)  -2003.877 (349.11)   -723.936 (323.40)  -231.863 (226.28)    36.505 ( 31.04) 
-#>  ---                                                                                           
-#> 140: 0.00 (0.00)   1575.954 (585.55)  -1014.078 (542.93)   236.336 (357.62)   -68.170 (206.64) 
-#> 141: 0.00 (0.00)   1588.686 (607.20)  -1057.223 (537.25)    33.370 (256.33)     1.919 ( 28.84) 
-#> 142: 0.00 (0.00)   1466.745 (593.37)  -1109.151 (522.54)   -96.687 (257.10)   -44.555 ( 72.30) 
-#> 143: 0.00 (0.00)   1003.943 (616.41)  -1780.473 (602.42)  -101.586 (368.10)    19.062 ( 60.30) 
-#> 144: 0.00 (0.00)    711.139 (724.53)  -2635.898 (777.15)  -178.609 (570.02)    36.623 (145.89) 
+#>              none              trend             cosyear            sinyear               temp
+#>            <char>             <char>              <char>             <char>             <char>
+#>   1: 0.00 (0.00)  -2181.91 (374.04)   -825.541 (352.22)  -236.730 (257.69)   -33.813 ( 53.47) 
+#>   2: 0.00 (0.00)  -2174.36 (371.76)   -846.615 (359.93)  -187.083 (274.61)   -44.966 ( 55.78) 
+#>   3: 0.00 (0.00)  -2088.96 (360.14)   -793.628 (341.68)  -186.335 (247.79)  -104.809 ( 41.77) 
+#>   4: 0.00 (0.00)  -2103.36 (368.62)   -798.135 (356.43)  -110.331 (268.86)   169.736 (102.28) 
+#>   5: 0.00 (0.00)  -2003.88 (349.11)   -723.936 (323.40)  -231.863 (226.28)    36.505 ( 31.04) 
+#>  ---                                                                                          
+#> 140: 0.00 (0.00)   1575.95 (585.55)  -1014.078 (542.93)   236.336 (357.62)   -68.170 (206.64) 
+#> 141: 0.00 (0.00)   1588.69 (607.20)  -1057.223 (537.25)    33.370 (256.33)     1.919 ( 28.84) 
+#> 142: 0.00 (0.00)   1466.74 (593.37)  -1109.151 (522.54)   -96.687 (257.10)   -44.555 ( 72.30) 
+#> 143: 0.00 (0.00)   1003.94 (616.41)  -1780.473 (602.42)  -101.586 (368.10)    19.062 ( 60.30) 
+#> 144: 0.00 (0.00)    711.14 (724.53)  -2635.898 (777.15)  -178.609 (570.02)    36.623 (145.89) 
 #>                   atemp           windspeed                 hum
 #>                  <char>              <char>              <char>
 #>   1:   -0.059 ( 65.71)    116.495 ( 59.05)     10.180 ( 92.70) 
@@ -1690,7 +1690,7 @@ explanation_n_coal[["asym_cau_gaussian_all_20"]] <- explanation_asym_cau$gaussia
 explanation_n_coal <- explanation_n_coal[c(1, 3, 2, 4)]
 print_time(explanation_n_coal)
 #>      sym_cau_gaussian_64 sym_cau_gaussian_all_128 asym_cau_gaussian_10 asym_cau_gaussian_all_20
-#> [1,] NULL                NULL                     NULL                 NULL
+#> [1,]              13.595                   29.465                2.498                   2.0941
 ```
 
 We can then plot the beeswarm plots and the Shapley values for the six selected explicands.
