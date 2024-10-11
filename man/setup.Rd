@@ -212,33 +212,41 @@ then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the adaptive estimation. See the vignette for examples.}
 
-\item{asymmetric}{Logical. If \code{FALSE} (default), we compute symmetric Shapley values,
-If \code{TRUE}, then we compute asymmetric Shapley values based on the (partial) causal ordering
-given by \code{causal_ordering}. That is, we only use the feature combinations/coalitions that
-respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and \verb{ }confounding\code{is}NULL\verb{(default), then}shapr\verb{computes asymmetric conditional Shapley values as specified in Frye et al. (2020). If}confounding\verb{is provided, i.e., not}NULL\verb{, then }shapr` computes asymmetric causal
+\item{asymmetric}{Logical.
+Not applicable for (regular) non-causal or asymmetric explanations.
+If \code{FALSE} (default), \code{explain} computes regular symmetric Shapley values,
+If \code{TRUE}, then \code{explain} compute asymmetric Shapley values based on the (partial) causal ordering
+given by \code{causal_ordering}. That is, \code{explain} only uses the feature combinations/coalitions that
+respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and
+\code{confounding} is \code{NULL} (default), then \code{explain} computes asymmetric conditional Shapley values as specified in
+Frye et al. (2020). If \code{confounding} is provided, i.e., not \code{NULL}, then \code{explain} computes asymmetric causal
 Shapley values as specified in Heskes et al. (2020).}
 
-\item{causal_ordering}{List of vectors specifying the components of the partial causal ordering.
-The features in each component are given by the feature/group names or their indices.
-If \code{causal_ordering} is \code{NULL} (default), then no causal ordering is assumed, i.e., a causal ordering with
-a single component containing all features \code{list(1:n_features)} or groups \code{list(1:n_groups)} for
-feature-wise and group-wise Shapley values, respectively. If the user specifies the features/groups
-by their names (strings), then \code{shapr} will convert them to the feature/group indices specified by the
-order in \code{get_model_specs} for features and \code{groups} for groups. For feature-wise Shapley values,
-the elements in the \code{causal_ordering} list represents the components in the causal ordering and can either
-be a single feature index or a vector of feature indices. For example, \code{list(c(1, 2), c(3, 4))} implies that
-\verb{1,2 -> 3} and \verb{1,2 -> 4}, i.e., feature one and two are the ancestors of feature three and four, but feature
-three and four are not related. All features/groups must be included in \code{causal_ordering} without any duplicates.}
+\item{causal_ordering}{List.
+Not applicable for (regular) non-causal or asymmetric explanations.
+\code{causal_ordering} is an unnamed list of vectors specifying the components of the
+partial causal ordering that the coalitions must respect. Each vector represents
+a component and contains one or more features/groups identified by their names
+(strings) or indices (integers). If \code{causal_ordering} is \code{NULL} (default), no causal
+ordering is assumed and all possible coalitions are allowed. No causal ordering is
+equivalent to a causal ordering with a single component that includes all features
+(\code{list(1:n_features)}) or groups (\code{list(1:n_groups)}) for feature-wise and group-wise
+Shapley values, respectively. For feature-wise Shapley values and
+\code{causal_ordering = list(c(1, 2), c(3, 4))}, the interpretation is that features 1 and 2
+are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
+Note: All features/groups must be included in the \code{causal_ordering} without any duplicates.}
 
-\item{confounding}{Logical (vector) specifying whether confounding is assumed or not for each component in the
-\code{causal_ordering}. If \code{NULL} (default), then no assumption about the confounding structure is made and \code{shapr}
+\item{confounding}{Logical vector.
+Not applicable for (regular) non-causal or asymmetric explanations.
+\code{confounding} is a vector of logicals specifying whether confounding is assumed or not for each component in the
+\code{causal_ordering}. If \code{NULL} (default), then no assumption about the confounding structure is made and \code{explain}
 computes asymmetric/symmetric conditional Shapley values, depending on the value of \code{asymmetric}.
 If \code{confounding} is a single logical, i.e., \code{FALSE} or \code{TRUE}, then this assumption is set globally
-for all components. Otherwise, \code{confounding} must be a vector of logicals of the same length as \code{causal_ordering},
-indicating the confounding assumption for each component. When \code{confounding} is specified, \code{shapr} computes
-asymmetric/symmetric causal Shapley values, depending on the value of \code{asymmetric}. The \code{approach} cannot be
-\code{regression_separate} and \code{regression_surrogate} as the regression-based approaches are not applicable to the
-causal Shapley value methodology.}
+for all components in the causal ordering. Otherwise, \code{confounding} must be a vector of logicals of the same
+length as \code{causal_ordering}, indicating the confounding assumption for each component. When \code{confounding} is
+specified, then \code{explain} computes asymmetric/symmetric causal Shapley values, depending on the value of
+\code{asymmetric}. The \code{approach} cannot be \code{regression_separate} and \code{regression_surrogate} as the
+regression-based approaches are not applicable to the causal Shapley value methodology.}
 
 \item{...}{Further arguments passed to specific approaches}
 }

@@ -7,18 +7,35 @@
 get_S_causal_steps(S, causal_ordering, confounding, as_string = FALSE)
 }
 \arguments{
-\item{S}{ADD inheritParams from somewhere else. NOTE that we assume that this S has been checked. I.e., it only
-contains coalitions that respects the causal order.}
+\item{S}{Integer matrix of dimension \code{n_coalitions_valid x m}, where \code{n_coalitions_valid} equals
+the total number of valid coalitions that respect the causal ordering given in \code{causal_ordering} and \code{m} equals
+the total number of features.}
 
-\item{causal_ordering}{List of vectors containing the partial causal ordering.
-The elements in the list represents the components in the causal ordering and can either
-be a single feature index or several, that is, a vector. For example, we can have
-\code{list(c(1,2), c(3, 4))}, which means that \verb{1,2 -> 3} and \verb{1,2 -> 4}, i.e., one and
-two are the ancestors of three and four, but three and four are not related.}
+\item{causal_ordering}{List.
+Not applicable for (regular) non-causal or asymmetric explanations.
+\code{causal_ordering} is an unnamed list of vectors specifying the components of the
+partial causal ordering that the coalitions must respect. Each vector represents
+a component and contains one or more features/groups identified by their names
+(strings) or indices (integers). If \code{causal_ordering} is \code{NULL} (default), no causal
+ordering is assumed and all possible coalitions are allowed. No causal ordering is
+equivalent to a causal ordering with a single component that includes all features
+(\code{list(1:n_features)}) or groups (\code{list(1:n_groups)}) for feature-wise and group-wise
+Shapley values, respectively. For feature-wise Shapley values and
+\code{causal_ordering = list(c(1, 2), c(3, 4))}, the interpretation is that features 1 and 2
+are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
+Note: All features/groups must be included in the \code{causal_ordering} without any duplicates.}
 
-\item{confounding}{Boolean or boolean vector specifying which features are affected by confounding. If a single
-boolean is given, then each component is given this value. Otherwise, \code{confounding} must be a vector of length
-\code{causal_ordering} specifying if each component in the causal order is subject to confounding or not.}
+\item{confounding}{Logical vector.
+Not applicable for (regular) non-causal or asymmetric explanations.
+\code{confounding} is a vector of logicals specifying whether confounding is assumed or not for each component in the
+\code{causal_ordering}. If \code{NULL} (default), then no assumption about the confounding structure is made and \code{explain}
+computes asymmetric/symmetric conditional Shapley values, depending on the value of \code{asymmetric}.
+If \code{confounding} is a single logical, i.e., \code{FALSE} or \code{TRUE}, then this assumption is set globally
+for all components in the causal ordering. Otherwise, \code{confounding} must be a vector of logicals of the same
+length as \code{causal_ordering}, indicating the confounding assumption for each component. When \code{confounding} is
+specified, then \code{explain} computes asymmetric/symmetric causal Shapley values, depending on the value of
+\code{asymmetric}. The \code{approach} cannot be \code{regression_separate} and \code{regression_surrogate} as the
+regression-based approaches are not applicable to the causal Shapley value methodology.}
 
 \item{as_string}{Boolean.
 If the returned object is to be a list of lists of integers or a list of vectors of strings.}

@@ -17,7 +17,7 @@ shapley_setup <- function(internal) {
   causal_ordering <- internal$parameters$causal_ordering
   causal_ordering_features <- internal$parameters$causal_ordering_features
   confounding <- internal$parameters$confounding
-  dt_valid_causal_coalitions <- internal$objects$dt_valid_causal_coalitions
+  dt_valid_causal_coalitions <- internal$objects$dt_valid_causal_coalitions # NULL if asymmetric is FALSE
   max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal # NULL if asymmetric is FALSE
 
 
@@ -32,6 +32,7 @@ shapley_setup <- function(internal) {
   }
 
 
+  # dt_valid_causal_coalitions is only relevant for asymmetric Shapley values
   X <- create_coalition_table(
     m = n_shapley_values,
     exact = exact,
@@ -156,7 +157,9 @@ shapley_setup <- function(internal) {
 #' Contains the approach to be used for eastimation of each coalition size. Same as `approach` in `explain()`.
 #' @param coal_feature_list List.
 #' A list mapping each coalition to the features it contains.
-#' @param dt_valid_causal_coalitions data.table containing information about the valid causal coalitions.
+#' @param dt_valid_causal_coalitions data.table. Only applicable for asymmetric Shapley
+#' values explanations, and is `NULL` for symmetric Shapley values.
+#' The data.table contains information about the coalitions that respects the causal ordering.
 #' @inheritParams explain
 #' @return A data.table with columns about the that contains the following columns:
 #'
@@ -405,9 +408,6 @@ sample_coalition_table <- function(m,
   ind <- X[, .I[data.table::between(coalition_size, 1, m - 1)]]
   X[ind, p := p[coalition_size]]
 
-  # TODO: Discuss with Martin. Should N be
-  #  1. the total number of coalitions of a size
-  #  2. or only the number of valid coalitions of said size (This verson is now implemented below)
   if (!is.null(dt_valid_causal_coalitions)) {
     # Asymmetric Shapley values
     # Get the number of coalitions of each coalition size from the `dt_valid_causal_coalitions` data table

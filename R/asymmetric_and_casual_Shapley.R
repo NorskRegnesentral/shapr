@@ -24,25 +24,6 @@ check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_pr
   }
 }
 
-
-#' Auxiliary function that verifies that the number of coalitions is valid
-#'
-#' @inheritParams explain
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-check_n_coalitions_causal <- function(n_coalitions, causal_ordering) {
-  # Check that we have a legit number of coalitions.
-  n_coalitions_max <- get_max_n_coalitions_causal(causal_ordering)
-  if (n_coalitions < 2 || n_coalitions > n_coalitions_max) {
-    stop(paste0(
-      "`n_coalitions` (", n_coalitions, ") must be a strictly postive integer larger than or equal to ",
-      "two and less than the number of coalitions respecting the causal ordering (", n_coalitions_max, ")."
-    ))
-  }
-}
-
-
 # Convert function ------------------------------------------------------------------------------------------------
 #' Convert feature names into feature indices
 #'
@@ -235,11 +216,12 @@ create_marginal_data_categoric <- function(n_MC_samples,
 # Get functions ---------------------------------------------------------------------------------------------------
 #' Get all coalitions satisfying the causal ordering
 #'
-#' @param causal_ordering List of vectors containing the partial causal ordering.
-#' The elements in the list represents the components in the causal ordering and can either
-#' be a single feature index or several, that is, a vector. For example, we can have
-#' `list(c(1,2), c(3, 4))`, which means that `1,2 -> 3` and `1,2 -> 4`, i.e., one and
-#' two are the ancestors of three and four, but three and four are not related.
+#' @description
+#' This function is only relevant when we are computing asymmetric Shapley values.
+#' For symmetric Shapley values (both regular and causal), all coalitions are allowed.
+#'
+#' @inheritParams explain
+#'
 #' @param sort_features_in_coalitions Boolean. If `TRUE`, then the feature indices in the
 #' coalitions are sorted in increasing order. If `FALSE`, then the function maintains the
 #' order of features within each group given in `causal_ordering`.
@@ -282,7 +264,7 @@ get_valid_causal_coalitions <- function(causal_ordering, sort_features_in_coalit
 
 #' Get the number of coalitions that respects the causal ordering
 #'
-#' @inheritParams get_valid_causal_coalitions
+#' @inheritParams explain
 #'
 #' @details The function computes the number of coalitions that respects the causal ordering by computing the number
 #' of coalitions in each partial causal component and then summing these. We compute
@@ -310,12 +292,11 @@ get_max_n_coalitions_causal <- function(causal_ordering) {
 
 #' Get the steps for generating MC samples for coalitions following a causal ordering
 #'
-#' @inheritParams get_valid_causal_coalitions
-#' @param S ADD inheritParams from somewhere else. NOTE that we assume that this S has been checked. I.e., it only
-#' contains coalitions that respects the causal order.
-#' @param confounding Boolean or boolean vector specifying which features are affected by confounding. If a single
-#' boolean is given, then each component is given this value. Otherwise, `confounding` must be a vector of length
-#' `causal_ordering` specifying if each component in the causal order is subject to confounding or not.
+#' @inheritParams explain
+#'
+#' @param S  Integer matrix of dimension \code{n_coalitions_valid x m}, where \code{n_coalitions_valid} equals
+#' the total number of valid coalitions that respect the causal ordering given in `causal_ordering` and \code{m} equals
+#' the total number of features.
 #' @param as_string Boolean.
 #' If the returned object is to be a list of lists of integers or a list of vectors of strings.
 #'

@@ -140,35 +140,41 @@
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 #' want to continue the adaptive estimation. See the vignette for examples.
 #'
-#' @param asymmetric Logical. If `FALSE` (default), we compute symmetric Shapley values,
-#' If `TRUE`, then we compute asymmetric Shapley values based on the (partial) causal ordering
-#' given by `causal_ordering`. That is, we only use the feature combinations/coalitions that
-#' respect the causal ordering when computing the asymmetric Shapley values. If `asymmetric` is `TRUE` and `
-#' `confounding` is `NULL` (default), then `shapr` computes asymmetric conditional Shapley values as specified in
-#' Frye et al. (2020). If `confounding` is provided, i.e., not `NULL`, then `shapr` computes asymmetric causal
+#' @param asymmetric Logical.
+#' Not applicable for (regular) non-causal or asymmetric explanations.
+#' If `FALSE` (default), `explain` computes regular symmetric Shapley values,
+#' If `TRUE`, then `explain` compute asymmetric Shapley values based on the (partial) causal ordering
+#' given by `causal_ordering`. That is, `explain` only uses the feature combinations/coalitions that
+#' respect the causal ordering when computing the asymmetric Shapley values. If `asymmetric` is `TRUE` and
+#' `confounding` is `NULL` (default), then `explain` computes asymmetric conditional Shapley values as specified in
+#' Frye et al. (2020). If `confounding` is provided, i.e., not `NULL`, then `explain` computes asymmetric causal
 #' Shapley values as specified in Heskes et al. (2020).
 #'
-#' @param causal_ordering List of vectors specifying the components of the partial causal ordering.
-#' The features in each component are given by the feature/group names or their indices.
-#' If `causal_ordering` is `NULL` (default), then no causal ordering is assumed, i.e., a causal ordering with
-#' a single component containing all features `list(1:n_features)` or groups `list(1:n_groups)` for
-#' feature-wise and group-wise Shapley values, respectively. If the user specifies the features/groups
-#' by their names (strings), then `shapr` will convert them to the feature/group indices specified by the
-#' order in `get_model_specs` for features and `groups` for groups. For feature-wise Shapley values,
-#' the elements in the `causal_ordering` list represents the components in the causal ordering and can either
-#' be a single feature index or a vector of feature indices. For example, `list(c(1, 2), c(3, 4))` implies that
-#' `1,2 -> 3` and `1,2 -> 4`, i.e., feature one and two are the ancestors of feature three and four, but feature
-#' three and four are not related. All features/groups must be included in `causal_ordering` without any duplicates.
+#' @param causal_ordering List.
+#' Not applicable for (regular) non-causal or asymmetric explanations.
+#' `causal_ordering` is an unnamed list of vectors specifying the components of the
+#' partial causal ordering that the coalitions must respect. Each vector represents
+#' a component and contains one or more features/groups identified by their names
+#' (strings) or indices (integers). If `causal_ordering` is `NULL` (default), no causal
+#' ordering is assumed and all possible coalitions are allowed. No causal ordering is
+#' equivalent to a causal ordering with a single component that includes all features
+#' (`list(1:n_features)`) or groups (`list(1:n_groups)`) for feature-wise and group-wise
+#' Shapley values, respectively. For feature-wise Shapley values and
+#' `causal_ordering = list(c(1, 2), c(3, 4))`, the interpretation is that features 1 and 2
+#' are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
+#' Note: All features/groups must be included in the `causal_ordering` without any duplicates.
 #'
-#' @param confounding Logical (vector) specifying whether confounding is assumed or not for each component in the
-#' `causal_ordering`. If `NULL` (default), then no assumption about the confounding structure is made and `shapr`
+#' @param confounding Logical vector.
+#' Not applicable for (regular) non-causal or asymmetric explanations.
+#' `confounding` is a vector of logicals specifying whether confounding is assumed or not for each component in the
+#' `causal_ordering`. If `NULL` (default), then no assumption about the confounding structure is made and `explain`
 #' computes asymmetric/symmetric conditional Shapley values, depending on the value of `asymmetric`.
 #' If `confounding` is a single logical, i.e., `FALSE` or `TRUE`, then this assumption is set globally
-#' for all components. Otherwise, `confounding` must be a vector of logicals of the same length as `causal_ordering`,
-#' indicating the confounding assumption for each component. When `confounding` is specified, `shapr` computes
-#' asymmetric/symmetric causal Shapley values, depending on the value of `asymmetric`. The `approach` cannot be
-#' `regression_separate` and `regression_surrogate` as the regression-based approaches are not applicable to the
-#' causal Shapley value methodology.
+#' for all components in the causal ordering. Otherwise, `confounding` must be a vector of logicals of the same
+#' length as `causal_ordering`, indicating the confounding assumption for each component. When `confounding` is
+#' specified, then `explain` computes asymmetric/symmetric causal Shapley values, depending on the value of
+#' `asymmetric`. The `approach` cannot be `regression_separate` and `regression_surrogate` as the
+#' regression-based approaches are not applicable to the causal Shapley value methodology.
 #'
 #' @param ... Further arguments passed to specific approaches
 #'
