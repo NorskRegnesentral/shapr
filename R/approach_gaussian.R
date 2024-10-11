@@ -78,7 +78,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
     reshape_prepare_gauss_output <- ifelse(causal_first_step, TRUE, FALSE)
 
     # For not the first step, the number of MC samples for causal Shapley values are n_explain, see prepdare_data_causal
-    if (!causal_first_step) n_MC_samples <- n_explain
+    n_MC_samples_updated <- ifelse(causal_first_step, n_MC_samples, n_explain)
   } else {
     # Regular Shapley values (either symmetric or asymmetric)
 
@@ -87,10 +87,13 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
 
     # Set if we have to reshape the output of the prepare_gauss function
     reshape_prepare_gauss_output <- TRUE
+
+    # Set that the number of updated MC samples, only used when sampling from N(0, 1)
+    n_MC_samples_updated <- n_MC_samples
   }
 
   # Generate the MC samples from N(0, 1)
-  MC_samples_mat <- matrix(rnorm(n_MC_samples * n_features), nrow = n_MC_samples, ncol = n_features)
+  MC_samples_mat <- matrix(rnorm(n_MC_samples_updated * n_features), nrow = n_MC_samples_updated, ncol = n_features)
 
   # Use C++ to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
   # The `dt` object is a 3D array of dimension (n_MC_samples, n_explain * n_coalitions, n_features) for regular

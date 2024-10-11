@@ -75,11 +75,11 @@ prepare_data.copula <- function(internal, index_features, ...) {
     # Set if we have to reshape the output of the prepare_gauss function
     reshape_prepare_gauss_output <- ifelse(causal_first_step, TRUE, FALSE)
 
-    # Update variables when not in the first causal sampling step, see prepdare_data_causal for explanations.
-    if (!causal_first_step) {
-      # The number of MC samples for causal Shapley values not in the first step are n_explain
-      n_MC_samples <- n_explain
+    # For not the first step, the number of MC samples for causal Shapley values are n_explain, see prepdare_data_causal
+    n_MC_samples_updated <- ifelse(causal_first_step, n_MC_samples, n_explain)
 
+    # Update data when not in the first causal sampling step, see prepdare_data_causal for explanations
+    if (!causal_first_step) {
       # Update the `copula.x_explain_gaussian_mat`
       copula.x_explain_gaussian <- apply(
         X = rbind(x_explain_mat, x_train_mat),
@@ -98,10 +98,13 @@ prepare_data.copula <- function(internal, index_features, ...) {
 
     # Set if we have to reshape the output of the prepare_copula function
     reshape_prepare_copula_output <- TRUE
+
+    # Set that the number of updated MC samples, only used when sampling from N(0, 1)
+    n_MC_samples_updated <- n_MC_samples
   }
 
   # Generate the MC samples from N(0, 1)
-  MC_samples_mat <- matrix(rnorm(n_MC_samples * n_features), nrow = n_MC_samples, ncol = n_features)
+  MC_samples_mat <- matrix(rnorm(n_MC_samples_updated * n_features), nrow = n_MC_samples_updated, ncol = n_features)
 
   # Use C++ to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}), for all coalitions and explicands,
   # and then transforming them back to the original scale using the inverse Gaussian transform in C++.
