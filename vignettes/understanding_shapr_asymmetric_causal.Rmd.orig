@@ -169,7 +169,7 @@ Shapley values, see Corollary 1 to 3 in the supplement of @heskes2020causal.
 
 
 ```{r pressure, echo=FALSE, fig.cap="Schematic overview of the causal chain graph used in this vignette.", out.width = '50%'}
-knitr::include_graphics("figure_asymmetric_causal/causal_ordering.png")
+knitr::include_graphics("figure_asymmetric_causal/Causal_ordering.png")
 ```
 
 
