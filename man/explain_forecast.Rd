@@ -16,6 +16,7 @@ explain_forecast(
   approach,
   prediction_zero,
   max_n_coalitions = NULL,
+  adaptive = NULL,
   group_lags = TRUE,
   group = NULL,
   n_MC_samples = 1000,
@@ -81,6 +82,18 @@ If \code{adaptive = FALSE} it represents the number of feature/group coalitions 
 The quantity refers to the number of unique feature coalitions if \code{group = NULL},
 and group coalitions if \code{group != NULL}.
 \code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
+
+\item{adaptive}{Logical or NULL
+If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
+If eventually \code{TRUE}, the Shapley values are estimated adaptively in an iterative manner.
+This provides sufficiently accurate Shapley value estimates faster.
+First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+values.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
+coalitions.
+The process is repeated until the variances are below the threshold.
+Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_arguments}.}
 
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
