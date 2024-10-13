@@ -27,7 +27,7 @@ Determines minimum value that the sum of the left and right daughter nodes requi
 \item{minbucket}{Numeric scalar. (default = 7)
 Determines the minimum sum of weights in a terminal node required for a split}
 
-\item{use_partykit}{String. In some semi-rare cases \code{partyk::ctree} runs into an error related to the LINPACK
+\item{use_partykit}{String. In some semi-rare cases \code{partykit::ctree} runs into an error related to the LINPACK
 used by R. To get around this problem, one may fall back to using the newer (but slower) \code{partykit::ctree}
 function, which is a reimplementation of the same method. Setting this parameter to \code{"on_error"} (default)
 falls back to  \code{partykit::ctree}, if \code{party::ctree} fails. Other options are \code{"never"}, which always

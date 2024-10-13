@@ -9,17 +9,49 @@
 #'
 #' @export
 setup_approach <- function(internal, ...) {
+  verbose <- internal$parameters$verbose
+
   approach <- internal$parameters$approach
 
-  this_class <- ""
+  iter <- length(internal$iter_list)
+  X <- internal$iter_list[[iter]]$X
 
-  if (length(approach) > 1) {
-    class(this_class) <- "combined"
+
+
+  needs_X <- c("regression_surrogate", "vaeac")
+
+  run_now <- (isFALSE(any(needs_X %in% approach)) && isTRUE(is.null(X))) ||
+    (isTRUE(any(needs_X %in% approach)) && isFALSE(is.null(X)))
+
+  if (isFALSE(run_now)) { # Do nothing
+    return(internal)
   } else {
-    class(this_class) <- approach
-  }
+    if ("progress" %in% verbose) {
+      cli::cli_progress_step("Setting up approach(es)")
+    }
+    if ("vS_details" %in% verbose) {
+      if ("vaeac" %in% approach) {
+        pretrained_provided <- internal$parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided
+        if (isFALSE(pretrained_provided)) {
+          cli::cli_h2("Extra info about the training/tuning of the vaeac model")
+        } else {
+          cli::cli_h2("Extra info about the pretrained vaeac model")
+        }
+      }
+    }
 
-  UseMethod("setup_approach", this_class)
+    this_class <- ""
+
+    if (length(approach) > 1) {
+      class(this_class) <- "combined"
+    } else {
+      class(this_class) <- approach
+    }
+
+    UseMethod("setup_approach", this_class)
+
+    internal$timing_list$setup_approach <- Sys.time()
+  }
 }
 
 #' @inheritParams default_doc
@@ -49,6 +81,10 @@ setup_approach.combined <- function(internal, ...) {
 #' @export
 #' @keywords internal
 prepare_data <- function(internal, index_features = NULL, ...) {
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
   # Extract the used approach(es)
   approach <- internal$parameters$approach
 
@@ -57,9 +93,9 @@ prepare_data <- function(internal, index_features = NULL, ...) {
 
   # Check if the user provided one or several approaches.
   if (length(approach) > 1) {
-    # Picks the relevant approach from the internal$objects$X table which list the unique approach of the batch
+    # Picks the relevant approach from the X table which list the unique approach of the batch
     # matches by index_features
-    class(this_class) <- internal$objects$X[id_combination == index_features[1], approach]
+    class(this_class) <- X[id_coalition == index_features[1], approach]
   } else {
     # Only one approach for all coalitions sizes
     class(this_class) <- approach

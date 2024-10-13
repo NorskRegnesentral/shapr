@@ -100,7 +100,7 @@ internal <- setup(
   x_explain = x_explain,
   approach = approach,
   prediction_zero = prediction_zero,
-  n_combinations = 2^p,
+  n_coalitions = 2^p,
   group = NULL,
   n_samples = 1e3,
   n_batches = n_batches_use,

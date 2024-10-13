@@ -20,7 +20,7 @@ model <- xgboost(
 )
 # THIS IS GENERATED FROM MASTER BRANCH
 # Prepare the data for explanation
-explainer <- shapr(x_train, model,n_combinations = 100)
+explainer <- shapr(x_train, model,n_coalitions = 100)
 p = mean(y_train)
 gauss = explain(x_test, explainer, "gaussian", prediction_zero = p, n_samples = 10000)
 emp =  explain(x_test, explainer, "empirical", prediction_zero = p, n_samples = 10000)

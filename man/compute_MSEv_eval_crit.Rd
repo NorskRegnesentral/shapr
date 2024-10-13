@@ -14,38 +14,40 @@ compute_MSEv_eval_crit(
 \arguments{
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
+\code{main_timing_list}, \code{output}, \code{iter_timing_list} and \code{iter_results}.}
 
-\item{dt_vS}{Data.table of dimension \code{n_combinations} times \code{n_explain + 1} containing the contribution function
-estimates. The first column is assumed to be named \code{id_combination} and containing the ids of the combinations.
-The last row is assumed to be the full combination, i.e., it contains the predicted responses for the observations
+\item{dt_vS}{Data.table of dimension \code{n_coalitions} times \code{n_explain + 1} containing the contribution function
+estimates. The first column is assumed to be named \code{id_coalition} and containing the ids of the coalitions.
+The last row is assumed to be the full coalition, i.e., it contains the predicted responses for the observations
 which are to be explained.}
 
-\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the combinations
-uniformly when computing the MSEv criterion. If \code{FALSE}, then the function use the Shapley kernel weights to
-weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-sampling frequency when not all combinations are considered.}
+\item{MSEv_uniform_comb_weights}{Logical.
+If \code{TRUE} (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
+If \code{FALSE}, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
+criterion.
+Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
 \item{MSEv_skip_empty_full_comb}{Logical. If \code{TRUE} (default), we exclude the empty and grand
-combinations/coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
+coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
 for all methods, i.e., their contribution function is independent of the used method as they are special cases not
-effected by the used method. If \code{FALSE}, we include the empty and grand combinations/coalitions. In this situation,
+effected by the used method. If \code{FALSE}, we include the empty and grand coalitions. In this situation,
 we also recommend setting \code{MSEv_uniform_comb_weights = TRUE}, as otherwise the large weights for the empty and
-grand combinations/coalitions will outweigh all other combinations and make the MSEv criterion uninformative.}
+grand coalitions will outweigh all other coalitions and make the MSEv criterion uninformative.}
 }
 \value{
 List containing:
 \describe{
 \item{\code{MSEv}}{A \code{\link[data.table]{data.table}} with the overall MSEv evaluation criterion averaged
-over both the combinations/coalitions and observations/explicands. The \code{\link[data.table]{data.table}}
-also contains the standard deviation of the MSEv values for each explicand (only averaged over the combinations)
+over both the coalitions and observations/explicands. The \code{\link[data.table]{data.table}}
+also contains the standard deviation of the MSEv values for each explicand (only averaged over the coalitions)
 divided by the square root of the number of explicands.}
 \item{\code{MSEv_explicand}}{A \code{\link[data.table]{data.table}} with the mean squared error for each
-explicand, i.e., only averaged over the combinations/coalitions.}
-\item{\code{MSEv_combination}}{A \code{\link[data.table]{data.table}} with the mean squared error for each
-combination/coalition, i.e., only averaged over the explicands/observations.
+explicand, i.e., only averaged over the coalitions.}
+\item{\code{MSEv_coalition}}{A \code{\link[data.table]{data.table}} with the mean squared error for each
+coalition, i.e., only averaged over the explicands/observations.
 The \code{\link[data.table]{data.table}} also contains the standard deviation of the MSEv values for
-each combination divided by the square root of the number of explicands.}
+each coalition divided by the square root of the number of explicands.}
 }
 }
 \description{

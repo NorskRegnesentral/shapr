@@ -14,7 +14,7 @@ h3test <- explain_forecast(model = model_arima_temp,
                                 n_batches = 1,
                                 timing = FALSE,
                                 seed = i,
-                                n_combinations = 300
+                                n_coalitions = 300
 )
 
 h2test <- explain_forecast(model = model_arima_temp,
@@ -31,7 +31,7 @@ h2test <- explain_forecast(model = model_arima_temp,
                            n_batches = 1,
                            timing = FALSE,
                            seed = i,
-                           n_combinations = 10^7
+                           n_coalitions = 10^7
 )
 
 h1test <- explain_forecast(model = model_arima_temp,
@@ -48,7 +48,7 @@ h1test <- explain_forecast(model = model_arima_temp,
                            n_batches = 1,
                            timing = FALSE,
                            seed = i,
-                           n_combinations = 10^7
+                           n_coalitions = 10^7
 )
 
 w <- h3test$internal$objects$X_list[[1]][["shapley_weight"]]
@@ -127,7 +127,7 @@ for (i in 1:reps){
                          n_batches = 1,
                          timing = FALSE,
                          seed = i,
-                         n_combinations = ncomb
+                         n_coalitions = ncomb
   )
 
   h2list[[i]] <- explain_forecast(model = model_arima_temp,
@@ -144,7 +144,7 @@ for (i in 1:reps){
                          n_batches = 1,
                          timing = FALSE,
                          seed = i,
-                         n_combinations = ncomb
+                         n_coalitions = ncomb
   )
 
   h1list[[i]] <- explain_forecast(model = model_arima_temp,
@@ -161,7 +161,7 @@ for (i in 1:reps){
                          n_batches = 1,
                          timing = FALSE,
                          seed = i,
-                         n_combinations = min(ncomb,31)
+                         n_coalitions = min(ncomb,31)
   )
 
   print(i)

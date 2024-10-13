@@ -52,10 +52,10 @@ dt_time0 <- fread("inst/scripts/timing_test_2023_new2.csv")
 
 dt_time0[,n_batches_real:=pmin(2^p-2,n_batches)]
 
-dt_time <- dt_time0[,.(time,secs_explain,timing_setup,timing_test_prediction, timing_setup_computation ,timing_compute_vS ,timing_postprocessing ,timing_shapley_computation, rep,p,n_train,n_explain,n_batches_real,approach,n_combinations)]
+dt_time <- dt_time0[,.(time,secs_explain,timing_setup,timing_test_prediction, timing_setup_computation ,timing_compute_vS ,timing_postprocessing ,timing_shapley_computation, rep,p,n_train,n_explain,n_batches_real,approach,n_coalitions)]
 
 dt_time[n_batches_real==1,secs_explain_singlebatch :=secs_explain]
-dt_time[,secs_explain_singlebatch:=mean(secs_explain_singlebatch,na.rm=T),by=.(p,n_train,n_explain,approach,n_combinations)]
+dt_time[,secs_explain_singlebatch:=mean(secs_explain_singlebatch,na.rm=T),by=.(p,n_train,n_explain,approach,n_coalitions)]
 dt_time[,secs_explain_prop_singlebatch:=secs_explain/secs_explain_singlebatch]
 
 ggplot(dt_time[p<14],aes(x=n_batches_real,y=secs_explain,col=as.factor(n_explain),linetype=as.factor(n_train)))+
@@ -101,14 +101,14 @@ ggplot(dt_time[p<16& p>2 & approach=="empirical"],aes(x=n_batches_real,y=secs_ex
 # max 100, min 10
 
 n_batches_fun <- function(approach,p){
-  n_combinations <- 2^p-2
+  n_coalitions <- 2^p-2
 
   if(approach %in% c("ctree","gaussian","copula")){
-    init <- ceiling(n_combinations/10)
+    init <- ceiling(n_coalitions/10)
     floor <- max(c(10,init))
     ret <- min(c(1000,floor))
   } else {
-    init <- ceiling(n_combinations/100)
+    init <- ceiling(n_coalitions/100)
     floor <- max(c(2,init))
     ret <- min(c(100,floor))
   }

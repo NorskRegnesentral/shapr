@@ -4,7 +4,12 @@
 \alias{regression.cv_message}
 \title{Produce message about which batch prepare_data is working on}
 \usage{
-regression.cv_message(regression.results, regression.grid, n_cv = 10)
+regression.cv_message(
+  regression.results,
+  regression.grid,
+  n_cv = 10,
+  current_comb
+)
 }
 \arguments{
 \item{regression.results}{The results of the CV procedures.}

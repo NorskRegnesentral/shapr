@@ -228,7 +228,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 )$MSEv_explicand_bar
 plot_MSEv_eval_crit(explanation_list_named,
                     plot_type = "comb",
-  id_combination = c(3, 4, 9, 13:15)
+  id_coalition = c(3, 4, 9, 13:15)
 )$MSEv_combination_bar
 
 
@@ -236,11 +236,11 @@ plot_MSEv_eval_crit(explanation_list_named,
 MSEv_combination <- plot_MSEv_eval_crit(
   explanation_list_named,
   plot_type = "comb",
-  id_combination = c(3, 4, 9, 13:15)
+  id_coalition = c(3, 4, 9, 13:15)
 )$MSEv_combination_bar
 MSEv_combination$data$Method <- factor(MSEv_combination$data$Method, levels = rev(levels(MSEv_combination$data$Method)))
 MSEv_combination +
-  ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination$data$id_combination))) +
+  ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination$data$id_coalition))) +
   ggplot2::scale_fill_discrete(breaks = rev(levels(MSEv_combination$data$Method)), direction = -1) +
   ggplot2::coord_flip()
 
@@ -249,14 +249,14 @@ MSEv_combination +
 MSEv_combination_wo_CI <- plot_MSEv_eval_crit(
   explanation_list_named,
   plot_type = "comb",
-  id_combination = c(3, 4, 9, 13:15),
+  id_coalition = c(3, 4, 9, 13:15),
   CI_level = NULL
 )$MSEv_combination_bar
 MSEv_combination_wo_CI$data$Method <- factor(MSEv_combination_wo_CI$data$Method,
   levels = rev(levels(MSEv_combination_wo_CI$data$Method))
 )
 MSEv_combination_wo_CI +
-  ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination_wo_CI$data$id_combination))) +
+  ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination_wo_CI$data$id_coalition))) +
   ggplot2::scale_fill_brewer(
     breaks = rev(levels(MSEv_combination_wo_CI$data$Method)),
     palette = "Paired",
@@ -292,7 +292,7 @@ explanation_gaussian_seed_1 <- explain(
   approach = "gaussian",
   prediction_zero = prediction_zero,
   n_samples = 10,
-  n_combinations = 10,
+  n_coalitions = 10,
   seed = 1
 )
 
@@ -303,7 +303,7 @@ explanation_gaussian_seed_1_V2 <- explain(
   approach = "gaussian",
   prediction_zero = prediction_zero,
   n_samples = 10,
-  n_combinations = 10,
+  n_coalitions = 10,
   seed = 1
 )
 
@@ -314,7 +314,7 @@ explanation_gaussian_seed_2 <- explain(
   approach = "gaussian",
   prediction_zero = prediction_zero,
   n_samples = 10,
-  n_combinations = 10,
+  n_coalitions = 10,
   seed = 2
 )
 
@@ -325,7 +325,7 @@ explanation_gaussian_seed_3 <- explain(
   approach = "gaussian",
   prediction_zero = prediction_zero,
   n_samples = 10,
-  n_combinations = 10,
+  n_coalitions = 10,
   seed = 3
 )
 

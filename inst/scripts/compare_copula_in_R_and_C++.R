@@ -41,10 +41,10 @@ prepare_data.copula_old <- function(internal, index_features = NULL, ...) {
       x_train = as.matrix(x_train),
       x_explain_gaussian = as.matrix(copula.x_explain_gaussian)[i, , drop = FALSE]
     )
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_coalition")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+    if (!is.null(index_features)) dt_l[[i]][, id_coalition := index_features[id_coalition]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
@@ -171,7 +171,7 @@ prepare_data.copula_cpp_arma <- function(internal, index_features, ...) {
   n_explain <- internal$parameters$n_explain
   n_samples <- internal$parameters$n_samples
   n_features <- internal$parameters$n_features
-  n_combinations_now <- length(index_features)
+  n_coalitions_now <- length(index_features)
   x_train_mat <- as.matrix(internal$data$x_train)
   x_explain_mat <- as.matrix(internal$data$x_explain)
   copula.mu <- internal$parameters$copula.mu
@@ -199,16 +199,16 @@ prepare_data.copula_cpp_arma <- function(internal, index_features, ...) {
   )
 
   # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
-  dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  dim(dt) <- c(n_coalitions_now * n_explain * n_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)
   data.table::setnames(dt, feature_names)
-  dt[, id_combination := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
+  dt[, id_coalition := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
   dt[, id := rep(seq(n_explain), each = n_samples, times = nrow(S))]
   dt[, w := 1 / n_samples]
-  dt[, id_combination := index_features[id_combination]]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  dt[, id_coalition := index_features[id_coalition]]
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
   return(dt)
 }
@@ -229,7 +229,7 @@ prepare_data.copula_cpp_and_R <- function(internal, index_features, ...) {
   n_explain <- internal$parameters$n_explain
   n_samples <- internal$parameters$n_samples
   n_features <- internal$parameters$n_features
-  n_combinations_now <- length(index_features)
+  n_coalitions_now <- length(index_features)
   x_train_mat <- as.matrix(internal$data$x_train)
   x_explain_mat <- as.matrix(internal$data$x_explain)
   copula.mu <- internal$parameters$copula.mu
@@ -257,16 +257,16 @@ prepare_data.copula_cpp_and_R <- function(internal, index_features, ...) {
   )
 
   # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
-  dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  dim(dt) <- c(n_coalitions_now * n_explain * n_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)
   data.table::setnames(dt, feature_names)
-  dt[, id_combination := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
+  dt[, id_coalition := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
   dt[, id := rep(seq(n_explain), each = n_samples, times = nrow(S))]
   dt[, w := 1 / n_samples]
-  dt[, id_combination := index_features[id_combination]]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  dt[, id_coalition := index_features[id_coalition]]
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
   return(dt)
 }
@@ -327,7 +327,7 @@ prepare_data.copula_sourceCpp <- function(internal, index_features, ...) {
   n_explain <- internal$parameters$n_explain
   n_samples <- internal$parameters$n_samples
   n_features <- internal$parameters$n_features
-  n_combinations_now <- length(index_features)
+  n_coalitions_now <- length(index_features)
   x_train_mat <- as.matrix(internal$data$x_train)
   x_explain_mat <- as.matrix(internal$data$x_explain)
   copula.mu <- internal$parameters$copula.mu
@@ -351,16 +351,16 @@ prepare_data.copula_sourceCpp <- function(internal, index_features, ...) {
   )
 
   # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
-  dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+  dim(dt) <- c(n_coalitions_now * n_explain * n_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)
   data.table::setnames(dt, feature_names)
-  dt[, id_combination := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
+  dt[, id_coalition := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
   dt[, id := rep(seq(n_explain), each = n_samples, times = nrow(S))]
   dt[, w := 1 / n_samples]
-  dt[, id_combination := index_features[id_combination]]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  dt[, id_coalition := index_features[id_coalition]]
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
   return(dt)
 }
@@ -444,7 +444,7 @@ using namespace Rcpp;
 // observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
 // transformed to a standardized normal distribution.
 // @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
-// @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
+// @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
 // the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
 // This is not a problem internally in shapr as the empty and grand coalitions treated differently.
 // @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
@@ -642,7 +642,7 @@ arma::mat inv_gaussian_transform_cpp_arma(arma::mat z, arma::mat x) {
 // observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
 // transformed to a standardized normal distribution.
 // @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
-// @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
+// @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
 // the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
 // This is not a problem internally in shapr as the empty and grand coalitions treated differently.
 // @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
@@ -747,7 +747,7 @@ arma::cube prepare_data_copula_cpp_arma(arma::mat MC_samples_mat,
 // observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
 // transformed to a standardized normal distribution.
 // @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
-// @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
+// @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
 // the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
 // This is not a problem internally in shapr as the empty and grand coalitions treated differently.
 // @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
@@ -915,7 +915,7 @@ arma::cube prepare_data_copula_cpp_and_R(arma::mat MC_samples_mat,
   predict_model <- NULL
   get_model_specs <- NULL
   timing <- TRUE
-  n_combinations <- NULL
+  n_coalitions <- NULL
   group <- NULL
   feature_specs <- shapr:::get_feature_specs(get_model_specs, model)
   n_batches <- 1
@@ -926,7 +926,7 @@ arma::cube prepare_data_copula_cpp_and_R(arma::mat MC_samples_mat,
     x_explain = x_explain,
     approach = approach,
     prediction_zero = prediction_zero,
-    n_combinations = n_combinations,
+    n_coalitions = n_coalitions,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -959,7 +959,7 @@ feature_names <- internal$parameters$feature_names
 n_explain <- internal$parameters$n_explain
 n_samples <- internal$parameters$n_samples
 n_features <- internal$parameters$n_features
-n_combinations_now <- length(index_features)
+n_coalitions_now <- length(index_features)
 x_train_mat <- as.matrix(internal$data$x_train)
 x_explain_mat <- as.matrix(internal$data$x_explain)
 copula.mu <- internal$parameters$copula.mu
@@ -1060,7 +1060,7 @@ time_only_cpp <- system.time({
     index_features = internal$objects$S_batch$`1`[look_at_coalitions]
   )
 })
-data.table::setorderv(res_only_cpp, c("id", "id_combination"))
+data.table::setorderv(res_only_cpp, c("id", "id_coalition"))
 time_only_cpp
 
 # The C++ code with my own quantile function
@@ -1070,7 +1070,7 @@ time_only_cpp_sourceCpp <- system.time({
     index_features = internal$objects$S_batch$`1`[look_at_coalitions]
   )
 })
-data.table::setorderv(res_only_cpp_sourceCpp, c("id", "id_combination"))
+data.table::setorderv(res_only_cpp_sourceCpp, c("id", "id_coalition"))
 time_only_cpp_sourceCpp
 
 # The C++ code with quantile functions from arma
@@ -1080,7 +1080,7 @@ time_only_cpp_arma <- system.time({
     index_features = internal$objects$S_batch$`1`[look_at_coalitions]
   )
 })
-data.table::setorderv(res_only_cpp_arma, c("id", "id_combination"))
+data.table::setorderv(res_only_cpp_arma, c("id", "id_coalition"))
 time_only_cpp_arma
 
 # The new C++ code with quantile from R
@@ -1090,7 +1090,7 @@ time_cpp_and_R <- system.time({
     index_features = internal$objects$S_batch$`1`[look_at_coalitions]
   )
 })
-data.table::setorderv(res_cpp_and_R, c("id", "id_combination"))
+data.table::setorderv(res_cpp_and_R, c("id", "id_coalition"))
 time_cpp_and_R
 
 # Create a table of the times. Less is better
@@ -1131,11 +1131,11 @@ res_only_cpp <- res_only_cpp[, w := NULL]
 res_only_cpp_sourceCpp <- res_only_cpp_sourceCpp[, w := NULL]
 res_only_cpp_arma <- res_only_cpp_arma[, w := NULL]
 res_cpp_and_R <- res_cpp_and_R[, w := NULL]
-res_only_R_agr <- res_only_R[, lapply(.SD, mean), by = c("id", "id_combination")]
-res_only_cpp_agr <- res_only_cpp[, lapply(.SD, mean), by = c("id", "id_combination")]
-res_only_cpp_sourceCpp_agr <- res_only_cpp_sourceCpp[, lapply(.SD, mean), by = c("id", "id_combination")]
-res_only_cpp_arma_agr <- res_only_cpp_arma[, lapply(.SD, mean), by = c("id", "id_combination")]
-res_cpp_and_R_agr <- res_cpp_and_R[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_only_R_agr <- res_only_R[, lapply(.SD, mean), by = c("id", "id_coalition")]
+res_only_cpp_agr <- res_only_cpp[, lapply(.SD, mean), by = c("id", "id_coalition")]
+res_only_cpp_sourceCpp_agr <- res_only_cpp_sourceCpp[, lapply(.SD, mean), by = c("id", "id_coalition")]
+res_only_cpp_arma_agr <- res_only_cpp_arma[, lapply(.SD, mean), by = c("id", "id_coalition")]
+res_cpp_and_R_agr <- res_cpp_and_R[, lapply(.SD, mean), by = c("id", "id_coalition")]
 
 # Difference
 res_only_R_agr - res_only_cpp_agr
@@ -1409,7 +1409,7 @@ all.equal(shapr_mat_arma_res, sourceCpp_mat_arma_res)
   predict_model <- NULL
   get_model_specs <- NULL
   timing <- TRUE
-  n_combinations <- NULL
+  n_coalitions <- NULL
   group <- NULL
   feature_specs <- shapr:::get_feature_specs(get_model_specs, model)
   n_batches <- 1
@@ -1420,7 +1420,7 @@ all.equal(shapr_mat_arma_res, sourceCpp_mat_arma_res)
     x_explain = x_explain,
     approach = approach,
     prediction_zero = prediction_zero,
-    n_combinations = n_combinations,
+    n_coalitions = n_coalitions,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -1464,7 +1464,7 @@ time_only_cpp <- system.time({
     index_features = internal$objects$S_batch$`1`[look_at_coalitions]
   )
 })
-data.table::setorderv(res_only_cpp, c("id", "id_combination"))
+data.table::setorderv(res_only_cpp, c("id", "id_coalition"))
 time_only_cpp
 
 # The C++ code with my own quantile function
@@ -1474,7 +1474,7 @@ time_only_cpp_sourceCpp <- system.time({
     index_features = internal$objects$S_batch$`1`[look_at_coalitions]
   )
 })
-data.table::setorderv(res_only_cpp_sourceCpp, c("id", "id_combination"))
+data.table::setorderv(res_only_cpp_sourceCpp, c("id", "id_coalition"))
 time_only_cpp_sourceCpp
 
 # Look at the differences
@@ -1482,9 +1482,9 @@ time_only_cpp_sourceCpp
 # res_only_R <- res_only_R[, w := NULL]
 # res_only_cpp <- res_only_cpp[, w := NULL]
 # res_only_cpp_sourceCpp <- res_only_cpp_sourceCpp[, w := NULL]
-res_only_R_agr <- res_only_R[, lapply(.SD, mean), by = c("id", "id_combination")]
-res_only_cpp_agr <- res_only_cpp[, lapply(.SD, mean), by = c("id", "id_combination")]
-res_only_cpp_sourceCpp_agr <- res_only_cpp_sourceCpp[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_only_R_agr <- res_only_R[, lapply(.SD, mean), by = c("id", "id_coalition")]
+res_only_cpp_agr <- res_only_cpp[, lapply(.SD, mean), by = c("id", "id_coalition")]
+res_only_cpp_sourceCpp_agr <- res_only_cpp_sourceCpp[, lapply(.SD, mean), by = c("id", "id_coalition")]
 
 # Difference
 res_only_R_agr - res_only_cpp_agr
