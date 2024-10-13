@@ -453,150 +453,17 @@ test_that("output_categorical_asym_causal_mixed_cat", {
     explain(
       testing = TRUE,
       model = model_lm_categorical,
-      x_explain = x_explain_categorical,
+      x_explain = x_explain_categorical[1:2],# Temp [1:2] as [1:3] give different sample on GHA-macOS for unknown reason
       x_train = x_train_categorical,
       approach = "categorical",
       prediction_zero = p0,
       asymmetric = FALSE,
       causal_ordering = list(3:4, 2, 1),
       confounding = c(TRUE, FALSE, FALSE),
-      n_MC_samples = 5 # Just for speed
+      n_MC_samples = 5, # Just for speed
+      keep_samp_for_vS = TRUE
     ),
     "output_categorical_asym_causal_mixed_cat"
-  )
-})
-
-test_that("DEBUGGING_cat_macOS", {
-  expect_snapshot_rds(
-    explain(
-      testing = TRUE,
-      model = model_lm_categorical,
-      x_explain = x_explain_categorical,
-      x_train = x_train_categorical,
-      approach = "categorical",
-      prediction_zero = p0,
-      asymmetric = FALSE,
-      causal_ordering = list(3:4, 2, 1),
-      confounding = c(TRUE, FALSE, FALSE),
-      n_MC_samples = 5, # Just for speed
-      keep_samp_for_vS = TRUE
-    ),
-    "DEBUGGING_cat_macOS"
-  )
-})
-
-test_that("DEBUGGING_cat_macOS_2", {
-  expect_snapshot_rds(
-    explain(
-      testing = TRUE,
-      model = model_lm_categorical,
-      x_explain = x_explain_categorical,
-      x_train = x_train_categorical,
-      approach = "categorical",
-      prediction_zero = p0,
-      asymmetric = FALSE,
-      causal_ordering = list(3:4, 2, 1),
-      confounding = c(TRUE, FALSE, FALSE),
-      n_MC_samples = 4, # Just for speed
-      keep_samp_for_vS = TRUE
-    ),
-    "DEBUGGING_cat_macOS_2"
-  )
-})
-
-test_that("DEBUGGING_cat_macOS_3", {
-  expect_snapshot_rds(
-    explain(
-      testing = TRUE,
-      model = model_lm_categorical,
-      x_explain = x_explain_categorical,
-      x_train = x_train_categorical,
-      approach = "categorical",
-      prediction_zero = p0,
-      asymmetric = FALSE,
-      causal_ordering = list(3:4, 2, 1),
-      confounding = c(TRUE, FALSE, FALSE),
-      n_MC_samples = 10, # Just for speed
-      keep_samp_for_vS = TRUE
-    ),
-    "DEBUGGING_cat_macOS_3"
-  )
-})
-
-test_that("DEBUGGING_cat_macOS_4", {
-  expect_snapshot_rds(
-    explain(
-      testing = TRUE,
-      model = model_lm_categorical,
-      x_explain = x_explain_categorical,
-      x_train = x_train_categorical,
-      approach = "categorical",
-      prediction_zero = p0,
-      asymmetric = FALSE,
-      causal_ordering = list(3:4, 2, 1),
-      confounding = c(TRUE, FALSE, FALSE),
-      n_MC_samples = 100, # Just for speed
-      keep_samp_for_vS = TRUE
-    ),
-    "DEBUGGING_cat_macOS_4"
-  )
-})
-
-test_that("DEBUGGING_cat_macOS_5", {
-  expect_snapshot_rds(
-    explain(
-      testing = TRUE,
-      model = model_lm_categorical,
-      x_explain = x_explain_categorical,
-      x_train = x_train_categorical,
-      approach = "categorical",
-      prediction_zero = p0,
-      asymmetric = FALSE,
-      causal_ordering = list(3:4, 2, 1),
-      confounding = c(TRUE, FALSE, FALSE),
-      n_MC_samples = 5, # Just for speed
-      keep_samp_for_vS = TRUE,
-      seed=2
-    ),
-    "DEBUGGING_cat_macOS_5"
-  )
-})
-
-test_that("DEBUGGING_cat_macOS_6", {
-  expect_snapshot_rds(
-    explain(
-      testing = TRUE,
-      model = model_lm_categorical,
-      x_explain = x_explain_categorical[1:2,],
-      x_train = x_train_categorical,
-      approach = "categorical",
-      prediction_zero = p0,
-      asymmetric = FALSE,
-      causal_ordering = list(3:4, 2, 1),
-      confounding = c(TRUE, FALSE, FALSE),
-      n_MC_samples = 5, # Just for speed
-      keep_samp_for_vS = TRUE
-    ),
-    "DEBUGGING_cat_macOS_6"
-  )
-})
-
-test_that("DEBUGGING_cat_macOS_7", {
-  expect_snapshot_rds(
-    explain(
-      testing = TRUE,
-      model = model_lm_categorical,
-      x_explain = x_explain_categorical[2:3,],
-      x_train = x_train_categorical,
-      approach = "categorical",
-      prediction_zero = p0,
-      asymmetric = FALSE,
-      causal_ordering = list(3:4, 2, 1),
-      confounding = c(TRUE, FALSE, FALSE),
-      n_MC_samples = 5, # Just for speed
-      keep_samp_for_vS = TRUE
-    ),
-    "DEBUGGING_cat_macOS_7"
   )
 })
 

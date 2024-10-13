@@ -37,9 +37,9 @@ jobs:
         config:
 # Temporary disable all but ubuntu release to reduce compute while debugging
           - {os: macOS-latest,   r: 'release'}
-#          - {os: windows-latest, r: 'release'}
-#          - {os: ubuntu-20.04,   r: 'devel', http-user-agent: 'release'}
-#          - {os: ubuntu-20.04,   r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-20.04,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-20.04,   r: 'release'}
 #          Temporary disable the below check plattforms as they fail due to a change in how R reports error from R<4.3 to R>=4.3,
 #          which gives a different output in the snapshots produced by testthat>=3.2.0
 #          - {os: ubuntu-20.04,   r: 'oldrel-1'}
