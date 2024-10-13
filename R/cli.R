@@ -7,11 +7,17 @@ cli_startup <- function(internal, model, verbose) {
   n_shapley_values <- internal$parameters$n_shapley_values
   n_explain <- internal$parameters$n_explain
   saving_path <- internal$parameters$adaptive_arguments$saving_path
+  causal_ordering_names_string <- internal$parameters$causal_ordering_names_string
+  max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal
+  confounding_string <- internal$parameters$confounding_string
+
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
   adaptive_txt <- ifelse(adaptive, "adaptive", "non-adaptive")
 
   testing <- internal$parameters$testing
+  asymmetric <- internal$parameters$asymmetric
+  confounding <- internal$parameters$confounding
 
 
   line_vec <- "Model class: {.cls {class(model)}}"
@@ -19,10 +25,18 @@ cli_startup <- function(internal, model, verbose) {
   line_vec <- c(line_vec, "Adaptive estimation: {.emph {adaptive}}")
   line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {n_shapley_values}")
   line_vec <- c(line_vec, "Number of observations to explain: {n_explain}")
+  if (isTRUE(asymmetric)) {
+    line_vec <- c(line_vec, "Number of asymmetric coalitions: {max_n_coalitions_causal}")
+  }
+  if (isTRUE(asymmetric) || !is.null(confounding)) {
+    line_vec <- c(line_vec, "Causal ordering: {causal_ordering_names_string}")
+  }
+  if (!is.null(confounding)) {
+    line_vec <- c(line_vec, "Components with confounding: {confounding_string}")
+  }
   if (isFALSE(testing)) {
     line_vec <- c(line_vec, "Computations (temporary) saved at: {.path {saving_path}}")
   }
-
 
   if ("basic" %in% verbose) {
     if (isFALSE(testing)) {
@@ -52,6 +66,7 @@ cli_startup <- function(internal, model, verbose) {
 
 cli_iter <- function(verbose, internal, iter) {
   adaptive <- internal$parameters$adaptive
+  asymmetric <- internal$parameters$asymmetric
 
   if (!is.null(verbose) && isTRUE(adaptive)) {
     cli::cli_h1("Iteration {iter}")
@@ -60,7 +75,7 @@ cli_iter <- function(verbose, internal, iter) {
   if ("basic" %in% verbose) {
     new_coal <- internal$iter_list[[iter]]$new_n_coalitions
     tot_coal <- internal$iter_list[[iter]]$n_coalitions
-    all_coal <- 2^internal$parameters$n_shapley_values
+    all_coal <- ifelse(asymmetric, internal$parameters$max_n_coalitions, 2^internal$parameters$n_shapley_values)
 
     extra_msg <- ifelse(adaptive, ", {new_coal} new", "")
 

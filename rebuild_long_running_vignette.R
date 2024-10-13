@@ -15,4 +15,7 @@ knitr::knit("understanding_shapr_vaeac.Rmd.orig", output = "understanding_shapr_
 knitr::knit("understanding_shapr_regression.Rmd.orig", output = "understanding_shapr_regression.Rmd")
 # knitr::purl("understanding_shapr_regression.Rmd.orig", output = "understanding_shapr_regression.R") # Don't need this
 
+knitr::knit("understanding_shapr_asymmetric_causal.Rmd.orig", output = "understanding_shapr_asymmetric_causal.Rmd")
+# knitr::purl("understanding_shapr_asymmetric_causal.Rmd.orig", output = "understanding_shapr_asymmetric_causal.R")
+
 setwd(old_wd)

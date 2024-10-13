@@ -13,7 +13,8 @@ create_coalition_table(
   prev_coal_samples = NULL,
   coal_feature_list = as.list(seq_len(m)),
   approach0 = "gaussian",
-  shapley_reweighting = "none"
+  shapley_reweighting = "none",
+  dt_valid_causal_coalitions = NULL
 )
 }
 \arguments{
@@ -53,6 +54,10 @@ probabilities.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
 This method is preferred as it has performed the best in simulation studies.}
+
+\item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
+values explanations, and is \code{NULL} for symmetric Shapley values.
+The data.table contains information about the coalitions that respects the causal ordering.}
 }
 \value{
 A data.table with columns about the that contains the following columns:

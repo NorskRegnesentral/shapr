@@ -367,9 +367,9 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1 42.44       13.656             -19.73          4.369     -16.659
-      2:          2 42.44       -5.448              11.31        -11.445       5.078
-      3:          3 42.44       -7.493             -12.27         19.672     -14.744
+      1:          1 42.44       -5.448              11.31        -11.445       5.078
+      2:          2 42.44       -7.493             -12.27         19.672     -14.744
+      3:          3 42.44       13.656             -19.73          4.369     -16.659
 
 # output_lm_categorical_independence
 
