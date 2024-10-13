@@ -523,6 +523,83 @@ test_that("DEBUGGING_cat_macOS_3", {
   )
 })
 
+test_that("DEBUGGING_cat_macOS_4", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical,
+      x_train = x_train_categorical,
+      approach = "categorical",
+      prediction_zero = p0,
+      asymmetric = FALSE,
+      causal_ordering = list(3:4, 2, 1),
+      confounding = c(TRUE, FALSE, FALSE),
+      n_MC_samples = 100, # Just for speed
+      keep_samp_for_vS = TRUE
+    ),
+    "DEBUGGING_cat_macOS_4"
+  )
+})
+
+test_that("DEBUGGING_cat_macOS_5", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical,
+      x_train = x_train_categorical,
+      approach = "categorical",
+      prediction_zero = p0,
+      asymmetric = FALSE,
+      causal_ordering = list(3:4, 2, 1),
+      confounding = c(TRUE, FALSE, FALSE),
+      n_MC_samples = 5, # Just for speed
+      keep_samp_for_vS = TRUE,
+      seed=2
+    ),
+    "DEBUGGING_cat_macOS_5"
+  )
+})
+
+test_that("DEBUGGING_cat_macOS_6", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical[1:2,],
+      x_train = x_train_categorical,
+      approach = "categorical",
+      prediction_zero = p0,
+      asymmetric = FALSE,
+      causal_ordering = list(3:4, 2, 1),
+      confounding = c(TRUE, FALSE, FALSE),
+      n_MC_samples = 5, # Just for speed
+      keep_samp_for_vS = TRUE
+    ),
+    "DEBUGGING_cat_macOS_6"
+  )
+})
+
+test_that("DEBUGGING_cat_macOS_7", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical[2:3,],
+      x_train = x_train_categorical,
+      approach = "categorical",
+      prediction_zero = p0,
+      asymmetric = FALSE,
+      causal_ordering = list(3:4, 2, 1),
+      confounding = c(TRUE, FALSE, FALSE),
+      n_MC_samples = 5, # Just for speed
+      keep_samp_for_vS = TRUE
+    ),
+    "DEBUGGING_cat_macOS_7"
+  )
+})
+
 
 
 test_that("output_cat_asym_causal_mixed_cat_ad", {
