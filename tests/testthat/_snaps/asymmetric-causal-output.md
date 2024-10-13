@@ -702,6 +702,62 @@
       2:          2 42.44       -3.868             -10.67         23.074     -23.367
       3:          3 42.44       22.619             -14.62         -4.992     -21.367
 
+# DEBUGGING_cat_macOS_2
+
+    Code
+      (out <- code)
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+      and is therefore set to 2^n_features = 16.
+      
+      * Model class: <lm>
+      * Approach: categorical
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 4
+      * Number of observations to explain: 3
+      * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},
+      {Month_factor}
+      * Components with confounding: {Solar.R_factor, Wind_factor}
+      
+      -- Main computation started --
+      
+      i Using 16 of 16 coalitions. 
+    Output
+         explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+              <int> <num>        <num>              <num>          <num>       <num>
+      1:          1 42.44       -7.352              15.72        -12.488       3.613
+      2:          2 42.44       -8.063             -11.48         24.980     -20.263
+      3:          3 42.44       18.543             -15.63          2.018     -23.298
+
+# DEBUGGING_cat_macOS_3
+
+    Code
+      (out <- code)
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 16, 
+      and is therefore set to 2^n_features = 16.
+      
+      * Model class: <lm>
+      * Approach: categorical
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 4
+      * Number of observations to explain: 3
+      * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},
+      {Month_factor}
+      * Components with confounding: {Solar.R_factor, Wind_factor}
+      
+      -- Main computation started --
+      
+      i Using 16 of 16 coalitions. 
+    Output
+         explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+              <int> <num>        <num>              <num>          <num>       <num>
+      1:          1 42.44       -7.686              17.39       -10.6305      0.4155
+      2:          2 42.44       -2.666             -13.62        18.7253    -17.2698
+      3:          3 42.44       20.264             -17.15        -0.5274    -20.9461
+
 # output_cat_asym_causal_mixed_cat_ad
 
     Code

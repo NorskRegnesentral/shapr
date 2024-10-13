@@ -485,6 +485,45 @@ test_that("DEBUGGING_cat_macOS", {
   )
 })
 
+test_that("DEBUGGING_cat_macOS_2", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical,
+      x_train = x_train_categorical,
+      approach = "categorical",
+      prediction_zero = p0,
+      asymmetric = FALSE,
+      causal_ordering = list(3:4, 2, 1),
+      confounding = c(TRUE, FALSE, FALSE),
+      n_MC_samples = 4, # Just for speed
+      keep_samp_for_vS = TRUE
+    ),
+    "DEBUGGING_cat_macOS_2"
+  )
+})
+
+test_that("DEBUGGING_cat_macOS_3", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical,
+      x_train = x_train_categorical,
+      approach = "categorical",
+      prediction_zero = p0,
+      asymmetric = FALSE,
+      causal_ordering = list(3:4, 2, 1),
+      confounding = c(TRUE, FALSE, FALSE),
+      n_MC_samples = 10, # Just for speed
+      keep_samp_for_vS = TRUE
+    ),
+    "DEBUGGING_cat_macOS_3"
+  )
+})
+
+
 
 test_that("output_cat_asym_causal_mixed_cat_ad", {
   expect_snapshot_rds(
@@ -500,7 +539,7 @@ test_that("output_cat_asym_causal_mixed_cat_ad", {
       confounding = c(TRUE, FALSE, FALSE),
       n_MC_samples = 5, # Just for speed
       adaptive = TRUE
-    ),
+      ),
     "output_cat_asym_causal_mixed_cat_ad"
   )
 })
