@@ -659,7 +659,7 @@
       * Approach: categorical
       * Adaptive estimation: FALSE
       * Number of feature-wise Shapley values: 4
-      * Number of observations to explain: 3
+      * Number of observations to explain: 2
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},
       {Month_factor}
       * Components with confounding: {Solar.R_factor, Wind_factor}
@@ -670,9 +670,8 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1 42.44      -11.613              12.57         -8.702       7.235
-      2:          2 42.44       -3.868             -10.67         23.074     -23.367
-      3:          3 42.44       22.619             -14.62         -4.992     -21.367
+      1:          1 42.44      -10.128              15.35         -10.26       4.526
+      2:          2 42.44       -4.316             -10.80          21.06     -20.769
 
 # output_cat_asym_causal_mixed_cat_ad
 
