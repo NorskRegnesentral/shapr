@@ -453,7 +453,7 @@ test_that("output_categorical_asym_causal_mixed_cat", {
     explain(
       testing = TRUE,
       model = model_lm_categorical,
-      x_explain = x_explain_categorical[1:2],# Temp [1:2] as [1:3] give different sample on GHA-macOS for unknown reason
+      x_explain = x_explain_categorical[1:2], #Temp [1:2] as [1:3] give different sample on GHA-macOS for unknown reason
       x_train = x_train_categorical,
       approach = "categorical",
       prediction_zero = p0,
