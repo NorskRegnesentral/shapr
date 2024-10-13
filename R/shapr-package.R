@@ -31,6 +31,8 @@
 #'
 #' @importFrom utils capture.output
 #'
+#' @importFrom utils relist
+#'
 #' @keywords internal
 #'
 #' @useDynLib shapr, .registration = TRUE
