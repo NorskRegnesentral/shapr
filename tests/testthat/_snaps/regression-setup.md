@@ -5,11 +5,6 @@
         x_train = x_train_numeric, prediction_zero = p0, approach = c(
           "regression_surrogate", "gaussian", "independence", "empirical"),
         iterative = FALSE)
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
     Condition
       Error in `check_approach()`:
       ! The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.
@@ -20,11 +15,6 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, approach = c(
           "regression_separate", "gaussian", "independence", "empirical"), iterative = FALSE)
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
     Condition
       Error in `check_approach()`:
       ! The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.
