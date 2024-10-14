@@ -42,7 +42,7 @@ shapley_setup <- function(internal) {
     prev_coal_samples = prev_coal_samples,
     coal_feature_list = coal_feature_list,
     approach0 = approach,
-    kernelSHAP_reweighting = kernelSHAP_reweighting
+    kernelSHAP_reweighting = kernelSHAP_reweighting,
     dt_valid_causal_coalitions = dt_valid_causal_coalitions
   )
 

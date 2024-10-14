@@ -33,14 +33,11 @@ setup(
   testing = FALSE,
   init_time = NULL,
   prev_shapr_object = NULL,
-<<<<<<< HEAD
-  output_args = list(),
-  extra_computation_args = list(),
-=======
   asymmetric = FALSE,
   causal_ordering = NULL,
   confounding = NULL,
->>>>>>> origin/shapr-1.0.0
+  output_args = list(),
+  extra_computation_args = list(),
   ...
 )
 }
@@ -205,14 +202,6 @@ then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the vignette for examples.}
 
-\item{output_args}{Named list.
-Specifices certain arguments related to the output of the function.
-See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
-
-\item{extra_computation_args}{Named list.
-Specifices extra arguments related to the computation of the Shapley values.
-See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
-
 \item{asymmetric}{Logical.
 Not applicable for (regular) non-causal or asymmetric explanations.
 If \code{FALSE} (default), \code{explain} computes regular symmetric Shapley values,
@@ -248,6 +237,14 @@ length as \code{causal_ordering}, indicating the confounding assumption for each
 specified, then \code{explain} computes asymmetric/symmetric causal Shapley values, depending on the value of
 \code{asymmetric}. The \code{approach} cannot be \code{regression_separate} and \code{regression_surrogate} as the
 regression-based approaches are not applicable to the causal Shapley value methodology.}
+
+\item{output_args}{Named list.
+Specifices certain arguments related to the output of the function.
+See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
+
+\item{extra_computation_args}{Named list.
+Specifices extra arguments related to the computation of the Shapley values.
+See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{Further arguments passed to specific approaches}
 }

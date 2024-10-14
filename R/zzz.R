@@ -140,7 +140,7 @@
       "conv_measure",
       "verbose",
       "MSEv_uniform_comb_weights",
-      "keep_samp_for_vS"
+      "keep_samp_for_vS",
       "S_original_names_with_id",
       "Sbar_features",
       "Sbar_now_names",

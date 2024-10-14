@@ -332,7 +332,7 @@ get_parameters <- function(approach,
     extra_computation_args = extra_computation_args,
     asymmetric = asymmetric,
     causal_ordering = causal_ordering,
-    confounding = confounding
+    confounding = confounding,
     testing = testing
   )
 

@@ -21,15 +21,12 @@ explain(
   predict_model = NULL,
   get_model_specs = NULL,
   prev_shapr_object = NULL,
-<<<<<<< HEAD
-  extra_computation_args = list(),
-  iterative_args = list(),
-  output_args = list(),
-=======
   asymmetric = FALSE,
   causal_ordering = NULL,
   confounding = NULL,
->>>>>>> origin/shapr-1.0.0
+  extra_computation_args = list(),
+  iterative_args = list(),
+  output_args = list(),
   ...
 )
 }
@@ -159,18 +156,6 @@ then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the vignette for examples.}
 
-\item{extra_computation_args}{Named list.
-Specifices extra arguments related to the computation of the Shapley values.
-See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
-
-\item{iterative_args}{Named list.
-Specifices the arguments for the iterative procedure.
-See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
-
-\item{output_args}{Named list.
-Specifices certain arguments related to the output of the function.
-See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
-
 \item{asymmetric}{Logical.
 Not applicable for (regular) non-causal or asymmetric explanations.
 If \code{FALSE} (default), \code{explain} computes regular symmetric Shapley values,
@@ -206,6 +191,18 @@ length as \code{causal_ordering}, indicating the confounding assumption for each
 specified, then \code{explain} computes asymmetric/symmetric causal Shapley values, depending on the value of
 \code{asymmetric}. The \code{approach} cannot be \code{regression_separate} and \code{regression_surrogate} as the
 regression-based approaches are not applicable to the causal Shapley value methodology.}
+
+\item{extra_computation_args}{Named list.
+Specifices extra arguments related to the computation of the Shapley values.
+See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
+
+\item{iterative_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
+
+\item{output_args}{Named list.
+Specifices certain arguments related to the output of the function.
+See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}

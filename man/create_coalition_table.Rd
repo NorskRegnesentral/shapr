@@ -13,12 +13,8 @@ create_coalition_table(
   prev_coal_samples = NULL,
   coal_feature_list = as.list(seq_len(m)),
   approach0 = "gaussian",
-<<<<<<< HEAD
-  kernelSHAP_reweighting = "none"
-=======
-  shapley_reweighting = "none",
+  kernelSHAP_reweighting = "none",
   dt_valid_causal_coalitions = NULL
->>>>>>> origin/shapr-1.0.0
 )
 }
 \arguments{
