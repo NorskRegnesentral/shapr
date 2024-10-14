@@ -719,7 +719,7 @@ iterative_kshap_func <- function(model,
 
 
     #### Check for exclusion ####
-    if(converged==FALSE && any(as.vector(kshap_prob_mat)<shapley_threshold_prob)){
+    if(converged==FALSE && any(as.vector(kshap_prob_mat[-1])<shapley_threshold_prob)){
 
       #### Sorry, the following is a bit of a mess and hard to understand -- will have to clean it up later. I suggest not spending time trying to understand it ####
       # What we do is simply to remove the feature with the smallest shapley value fulfills the threshold condition #
