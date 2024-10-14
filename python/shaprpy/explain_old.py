@@ -25,23 +25,17 @@ def explain(
     x_train: pd.DataFrame,
     approach: str,
     prediction_zero: float,
-    iterative: bool | None = None,
-    max_n_coalitions: int | None = None,
+    n_combinations: int | None = None,
     group: dict | None = None,
-    paired_shap_sampling: bool = True,
-    n_MC_samples: int = 1e3,
-    kernelSHAP_reweighting: str = "on_all_cond",
+    n_samples: int = 1e3,
+    n_batches: int | None = None,
     seed: int | None = 1,
-    verbose: str = "basic",
+    keep_samp_for_vS: bool = False,
     predict_model: Callable = None,
     get_model_specs: Callable = None,
-    prev_shapr_object: None = None, # Currently not implemented
-    asymmetric: bool = False,
-    causal_ordering: dict | None = None,
-    confounding: bool | None = None,
-    extra_computation_args: dict | None = None,
-    iterative_args: dict | None = None,
-    output_args: dict | None = None,
+    MSEv_uniform_comb_weights: bool = True,
+    timing: bool = True,
+    verbose: int | None = 0,
     **kwargs,
   ):
     '''Explain the output of machine learning models with more accurately estimated Shapley values.
@@ -49,7 +43,6 @@ def explain(
     Computes dependence-aware Shapley values for observations in `x_explain` from the specified
     `model` by using the method specified in `approach` to estimate the conditional expectation.
 
-    TODO: The below needs to be updated in the end
     Parameters
     ----------
     model: The model whose predictions we want to explain.
@@ -122,11 +115,9 @@ def explain(
       only over the explicands, and only over the coalitions.
     '''
 
-    init_time = datetime.now()
+    timing_list = {"init_time": datetime.now()}
 
-
-    if seed is not None:
-      base.set_seed(seed)
+    base.set_seed(seed)
 
     # Gets and check feature specs from the model
     rfeature_specs = get_feature_specs(get_model_specs, model)
@@ -149,29 +140,67 @@ def explain(
         x_train = py2r(x_train),
         x_explain = py2r(x_explain),
         approach = approach,
-        paired_shap_sampling = paired_shap_sampling,
         prediction_zero = prediction_zero,
-        max_n_coalitions = maybe_null(max_n_coalitions),
+        n_combinations = maybe_null(n_combinations),
         group = r_group,
-        n_MC_samples = n_MC_samples,
-        seed = maybe_null(seed),
+        n_samples = n_samples,
+        n_batches = maybe_null(n_batches),
+        seed = seed,
+        keep_samp_for_vS = keep_samp_for_vS,
         feature_specs = rfeature_specs,
+        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+        timing = timing,
         verbose = verbose,
-        iterative = iterative,
-        iterative_args = maybe_null(iterative_args), # Might do some conversion here
-        kernelSHAP_reweighting = kernelSHAP_reweighting,
-        init_time = init_time, # Not sure about this
-        prev_shapr_object = maybe_null(prev_shapr_object),
-        asymmetric = asymmetric,
-        causal_ordering = maybe_null(causal_ordering), # Might do some conversion here
-        confounding = maybe_null(confounding), # Might do some conversion here
-        output_args = maybe_null(output_args), # Might do some conversion here
-        extra_computation_args = maybe_null(extra_computation_args), # Might do some conversion here
         is_python=True,
         **kwargs
     )
 
-    return rinternal
+    timing_list["setup"] = datetime.now()
+
+    # Gets predict_model (if not passed to explain) and checks that predict_model gives correct format
+    predict_model = get_predict_model(x_test=x_train.head(2), predict_model=predict_model, model=model)
+
+    timing_list["test_prediction"] = datetime.now()
+
+    # Add the predicted response of the training and explain data to the internal list for regression-based methods
+    using_regression_paradigm = rinternal.rx2("parameters").rx2("regression")[0]
+    if using_regression_paradigm:
+      rinternal = regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain)
+
+    # Sets up the Shapley framework and prepares the conditional expectation computation for the chosen approach
+    rinternal = shapr.setup_computation(rinternal, NULL, NULL)
+
+    # Compute the v(S):
+    # MC:
+    # 1. Get the samples for the conditional distributions with the specified approach
+    # 2. Predict with these samples
+    # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
+    # Regression:
+    # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
+    rvS_list = compute_vS(rinternal, model, predict_model)
+
+    timing_list["compute_vS"] = datetime.now()
+
+    # Compute Shapley values based on conditional expectations (v(S))
+    # Organize function output
+    routput = shapr.finalize_explanation(vS_list=rvS_list, internal=rinternal)
+
+    timing_list["shapley_computation"] = datetime.now()
+
+    # Compute the elapsed time for the different steps
+    timing = compute_time(timing_list) if timing else None
+
+    # If regression, then delete the regression/tidymodels objects in routput as they cannot be converted to python
+    if using_regression_paradigm:
+        routput = regression_remove_objects(routput)
+
+    # Convert R objects to Python objects
+    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values')))
+    pred_explain = r2py(routput.rx2('pred_explain'))
+    internal = recurse_r_tree(routput.rx2('internal'))
+    MSEv = recurse_r_tree(routput.rx2('MSEv'))
+
+    return df_shapley, pred_explain, internal, timing, MSEv
 
 
 def compute_vS(rinternal, model, predict_model):

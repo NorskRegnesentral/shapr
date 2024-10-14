@@ -142,32 +142,51 @@ def explain(
       if 'regression.vfold_cv_para' in kwargs:
         kwargs['regression.vfold_cv_para'] = ListVector(kwargs['regression.vfold_cv_para'])
 
+    # Convert from None or dict to a named list in R
+    if iterative_args is None:
+      iterative_args = ro.ListVector({})
+    else:
+      iterative_args = ListVector(iterative_args)
+
+    if output_args is None:
+      output_args = ro.ListVector({})
+    else:
+      output_args = ListVector(output_args)
+
+    if extra_computation_args is None:
+      extra_computation_args = ro.ListVector({})
+    else:
+      extra_computation_args = ListVector(extra_computation_args)
+
     # Sets up and organizes input parameters
     # Checks the input parameters and their compatability
     # Checks data/model compatability
+
+
+
     rinternal = shapr.setup(
-        x_train = py2r(x_train),
-        x_explain = py2r(x_explain),
-        approach = approach,
-        paired_shap_sampling = paired_shap_sampling,
-        prediction_zero = prediction_zero,
-        #max_n_coalitions = maybe_null(max_n_coalitions),
-        #group = r_group,
-        #n_MC_samples = n_MC_samples,
-        #seed = maybe_null(seed),
-        #feature_specs = rfeature_specs,
-        #verbose = verbose,
-        #iterative = iterative,
-        #iterative_args = maybe_null(iterative_args), # Might do some conversion here
-        #kernelSHAP_reweighting = kernelSHAP_reweighting,
-        #prev_shapr_object = maybe_null(prev_shapr_object),
-        #asymmetric = asymmetric,
-        #causal_ordering = maybe_null(causal_ordering), # Might do some conversion here
-        #confounding = maybe_null(confounding), # Might do some conversion here
-        #output_args = maybe_null(output_args), # Might do some conversion here
-        #extra_computation_args = maybe_null(extra_computation_args), # Might do some conversion here
-        is_python=True,
-        **kwargs
+      x_train = py2r(x_train),
+      x_explain = py2r(x_explain),
+      approach = approach,
+      paired_shap_sampling = paired_shap_sampling,
+      prediction_zero = prediction_zero,
+      max_n_coalitions = maybe_null(max_n_coalitions),
+      group = r_group,
+      n_MC_samples = n_MC_samples,
+      seed = maybe_null(seed),
+      feature_specs = rfeature_specs,
+      verbose = verbose,
+      iterative = maybe_null(iterative),
+      iterative_args = iterative_args, # Might do some conversion here
+      kernelSHAP_reweighting = kernelSHAP_reweighting,
+      prev_shapr_object = maybe_null(prev_shapr_object),
+      asymmetric = asymmetric,
+      causal_ordering = maybe_null(causal_ordering), # Might do some conversion here
+      confounding = maybe_null(confounding), # Might do some conversion here
+      output_args = output_args, # Might do some conversion here
+      extra_computation_args = extra_computation_args, # Might do some conversion here
+      is_python=True,
+      **kwargs
     )
 
     return rinternal
