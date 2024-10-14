@@ -371,6 +371,7 @@ iterative_kshap_func <- function(model,
                                  cutoff_feats, # Vector of feature names to be included in the estimation (features in x_explain/x_train which are not in cutoff_feats are fixed to the value in x_explain)
                                  initial_n_combinations = min(20,2^length(cutoff_feats)-2), # Number of features combinations to be used in the first iteration
                                  n_combinations_per_iter = 10, # Number of feature combination per iteration (where shapley values + variance is estimated and we test for reduction)
+                                 max_n_combinations = NULL,
                                  n_boot_ests = 50, # Number of bootstrap datasets to be used to estimate the variance of the shapley values
                                  unique_sampling = TRUE, # Whether to initial_n_combinations and n_combinations_per_iter refer to the number of unique samples (TRUE) or the total number of samples (FALSE)
                                  paired_sampling = TRUE, # whether the feature combinations should be sampled in a paired way (this also effects the bootstrap estimation)
@@ -389,6 +390,10 @@ iterative_kshap_func <- function(model,
                                  ctree.minbucket = 7, # The minimum bucket for the ctree method
                                  ctree.sample = TRUE, # Whether to sample in the ctree method
                                  all_trees = NULL){ # list of trees to reuse in the ctree method. This feature
+
+  if (!is.null(max_n_combinations)){
+    max_n_combinations = min(max_n_combinations, 2^nrow(x_train[, ..cutoff_feats]))
+  }
 
   ### SOME SETUP ###
 
@@ -444,6 +449,9 @@ iterative_kshap_func <- function(model,
 
     if(unique_sampling == TRUE && remaining_unique_feature_samples < n_combinations_per_iter){
       n_combinations_per_iter <- remaining_unique_feature_samples
+      converged = TRUE
+    }
+    if (!is.null(max_n_combinations) && (initial_n_combinations + n_combinations_per_iter * (iter-1)) >= max_n_combinations){
       converged = TRUE
     }
 

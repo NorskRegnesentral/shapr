@@ -123,6 +123,29 @@ predict_model_xgb <- function(object,newdata){
   xgboost:::predict.xgb.Booster(object,as.matrix(newdata))
 }
 
+library(profvis)
+kk = 5
+testObs_computed <- testObs_computed_vec[kk]
+full_pred <- predict(model,as.matrix(x_explain))[testObs_computed]
+shapsum_other_features <- 0
+
+
+p <-profvis({iterative_kshap_func(model,x_explain,x_train,
+                            testObs_computed = testObs_computed,
+                            cutoff_feats = cutoff_feats,
+                            initial_n_combinations = 50,
+                            full_pred = full_pred,
+                            shapsum_other_features = shapsum_other_features,
+                            p0 = p0,
+                            predict_model = predict_model_xgb,
+                            shapley_threshold_val = shapley_threshold_val,
+                            shapley_threshold_prob = shapley_threshold_prob,
+                            approach = approach,
+                            n_samples = n_samples,
+                            shapley_reweighting_strategy = shapley_reweighting_strategy)
+})
+saveRDS(p, file = paste0("profvis_iterative_kshap", kk, ".rds"))
+
 # Using threshold: 0.1
 runres_list <- runcomps_list <- list()
 for(kk in testObs_computed_vec){
