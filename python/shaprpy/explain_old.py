@@ -151,21 +151,22 @@ def explain(
         approach = approach,
         paired_shap_sampling = paired_shap_sampling,
         prediction_zero = prediction_zero,
-        #max_n_coalitions = maybe_null(max_n_coalitions),
-        #group = r_group,
-        #n_MC_samples = n_MC_samples,
-        #seed = maybe_null(seed),
-        #feature_specs = rfeature_specs,
-        #verbose = verbose,
-        #iterative = iterative,
-        #iterative_args = maybe_null(iterative_args), # Might do some conversion here
-        #kernelSHAP_reweighting = kernelSHAP_reweighting,
-        #prev_shapr_object = maybe_null(prev_shapr_object),
-        #asymmetric = asymmetric,
-        #causal_ordering = maybe_null(causal_ordering), # Might do some conversion here
-        #confounding = maybe_null(confounding), # Might do some conversion here
-        #output_args = maybe_null(output_args), # Might do some conversion here
-        #extra_computation_args = maybe_null(extra_computation_args), # Might do some conversion here
+        max_n_coalitions = maybe_null(max_n_coalitions),
+        group = r_group,
+        n_MC_samples = n_MC_samples,
+        seed = maybe_null(seed),
+        feature_specs = rfeature_specs,
+        verbose = verbose,
+        iterative = iterative,
+        iterative_args = maybe_null(iterative_args), # Might do some conversion here
+        kernelSHAP_reweighting = kernelSHAP_reweighting,
+        init_time = init_time, # Not sure about this
+        prev_shapr_object = maybe_null(prev_shapr_object),
+        asymmetric = asymmetric,
+        causal_ordering = maybe_null(causal_ordering), # Might do some conversion here
+        confounding = maybe_null(confounding), # Might do some conversion here
+        output_args = maybe_null(output_args), # Might do some conversion here
+        extra_computation_args = maybe_null(extra_computation_args), # Might do some conversion here
         is_python=True,
         **kwargs
     )
