@@ -26,7 +26,7 @@
 setup <- function(x_train,
                   x_explain,
                   approach,
-                  paired_shap_sampling = FALSE,
+                  paired_shap_sampling = TRUE,
                   prediction_zero,
                   output_size = 1,
                   max_n_coalitions,
@@ -51,6 +51,9 @@ setup <- function(x_train,
                   testing = FALSE,
                   init_time = NULL,
                   prev_shapr_object = NULL,
+                  asymmetric = FALSE,
+                  causal_ordering = NULL,
+                  confounding = NULL,
                   output_args = list(),
                   extra_computation_args = list(),
                   ...) {
@@ -92,6 +95,9 @@ setup <- function(x_train,
     kernelSHAP_reweighting = kernelSHAP_reweighting,
     is_python = is_python,
     testing = testing,
+    asymmetric = asymmetric,
+    causal_ordering = causal_ordering,
+    confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
     ...
@@ -174,7 +180,9 @@ get_parameters <- function(approach,
                            iterative = FALSE,
                            iterative_args = list(),
                            kernelSHAP_reweighting = "none",
-                           testing,
+                           asymmetric,
+                           causal_ordering,
+                           confounding,
                            is_python,
                            output_args = list(),
                            extra_computation_args = list(),
@@ -275,6 +283,11 @@ get_parameters <- function(approach,
   }
 
 
+  # Parameter used in asymmetric and causal Shapley values (more in-depth checks later)
+  if (!is.logical(asymmetric) || length(asymmetric) != 1) stop("`asymmetric` must be a single logical.\n")
+  if (!is.null(confounding) && !is.logical(confounding)) stop("`confounding` must be a logical (vector).\n")
+  if (!is.null(causal_ordering) && !is.list(causal_ordering)) stop("`causal_ordering` must be a list.\n")
+
   #### Tests combining more than one parameter ####
   # prediction_zero vs output_size
   if (!all((is.numeric(prediction_zero)) &&
@@ -317,13 +330,16 @@ get_parameters <- function(approach,
     iterative_args = iterative_args,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
+    asymmetric = asymmetric,
+    causal_ordering = causal_ordering,
+    confounding = confounding
     testing = testing
   )
 
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
 
-  # Setting that we are using regression based the approach name (any in case several approaches)
+  # Set boolean to represent if a regression approach is used (any in case of several approaches)
   parameters$regression <- any(grepl("regression", parameters$approach))
 
   return(parameters)
@@ -569,7 +585,20 @@ check_and_set_parameters <- function(internal) {
   feature_names <- internal$parameters$feature_names
   group <- internal$parameters$group
 
+  # Check group
   if (!is.null(group)) check_groups(feature_names, group)
+
+  # Check approach
+  check_approach(internal)
+
+  # Check the arguments related to asymmetric and causal Shapley
+  # Check the causal_ordering, which must happen before checking the causal sampling
+  internal <- check_and_set_causal_ordering(internal)
+  if (!is.null(internal$parameters$confounding)) internal <- check_and_set_confounding(internal)
+
+  # Check the causal sampling
+  internal <- check_and_set_causal_sampling(internal)
+  if (internal$parameters$asymmetric) internal <- check_and_set_asymmetric(internal)
 
   # Adjust max_n_coalitions
   internal$parameters$max_n_coalitions <- adjust_max_n_coalitions(internal)
@@ -580,17 +609,173 @@ check_and_set_parameters <- function(internal) {
 
   internal <- check_and_set_iterative(internal) # sets the iterative parameter if it is NULL (default)
 
+  # Set if we are to do exact Shapley value computations or not
   internal <- set_exact(internal)
 
   internal <- set_extra_estimation_params(internal)
 
+  # Give warnings to the user about long computation times
   check_computability(internal)
-
-  # Check approach
-  check_approach(internal)
 
   # Check regression if we are doing regression
   if (internal$parameters$regression) internal <- check_regression(internal)
+
+  return(internal)
+}
+
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+check_and_set_causal_ordering <- function(internal) {
+  # Extract the needed variables/objects from the internal list
+  n_shapley_values <- internal$parameters$n_shapley_values
+  causal_ordering <- internal$parameters$causal_ordering
+  is_groupwise <- internal$parameters$is_groupwise
+  feat_group_txt <- ifelse(is_groupwise, "group", "feature")
+  group <- internal$parameters$group
+  feature_names <- internal$parameters$feature_names
+  group_names <- internal$parameters$group_names
+
+  # Get the labels of the features or groups, and the number of them
+  labels_now <- if (is_groupwise) group_names else feature_names
+
+  # If `causal_ordering` is NULL, then convert it to a list with a single component containing all features/groups
+  if (is.null(causal_ordering)) causal_ordering <- list(seq(n_shapley_values))
+
+  # Ensure that causal_ordering represents the causal ordering using the feature/group index representation
+  if (is.character(unlist(causal_ordering))) {
+    causal_ordering <- convert_feature_name_to_idx(causal_ordering, labels_now, feat_group_txt)
+  }
+  if (!is.numeric(unlist(causal_ordering))) {
+    stop(paste0(
+      "`causal_ordering` must be a list containg either only integers representing the ", feat_group_txt,
+      " indices or the ", feat_group_txt, " names as strings. See the documentation for more details.\n"
+    ))
+  }
+
+  # Ensure that causal_ordering_names represents the causal ordering using the feature name representation
+  causal_ordering_names <- relist(labels_now[unlist(causal_ordering)], causal_ordering)
+
+  # Check that the we have n_features elements and that they are 1 through n_features (i.e., no duplicates).
+  causal_ordering_vec_sort <- sort(unlist(causal_ordering))
+  if (length(causal_ordering_vec_sort) != n_shapley_values || any(causal_ordering_vec_sort != seq(n_shapley_values))) {
+    stop(paste0(
+      "`causal_ordering` is incomplete/incorrect. It must contain all ",
+      feat_group_txt, " names or indices exactly once.\n"
+    ))
+  }
+
+  # For groups we need to convert from group level to feature level
+  if (is_groupwise) {
+    group_num <- unname(lapply(group, function(x) match(x, feature_names)))
+    causal_ordering_features <- lapply(causal_ordering, function(component_i) unlist(group_num[component_i]))
+    causal_ordering_features_names <- relist(feature_names[unlist(causal_ordering_features)], causal_ordering_features)
+    internal$parameters$causal_ordering_features <- causal_ordering_features
+    internal$parameters$causal_ordering_features_names <- causal_ordering_features_names
+  }
+
+  # Update the parameters in the internal list
+  internal$parameters$causal_ordering <- causal_ordering
+  internal$parameters$causal_ordering_names <- causal_ordering_names
+  internal$parameters$causal_ordering_names_string <-
+    paste0("{", paste(sapply(causal_ordering_names, paste, collapse = ", "), collapse = "}, {"), "}")
+
+  return(internal)
+}
+
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+check_and_set_confounding <- function(internal) {
+  causal_ordering <- internal$parameters$causal_ordering
+  causal_ordering_names <- internal$parameters$causal_ordering_names
+  confounding <- internal$parameters$confounding
+
+  # Check that confounding is either specified globally or locally
+  if (length(confounding) > 1 && length(confounding) != length(causal_ordering)) {
+    stop(paste0(
+      "`confounding` must either be a single logical or a vector of logicals of the same length as ",
+      "the number of components in `causal_ordering` (", length(causal_ordering), ").\n"
+    ))
+  }
+
+  # Replicate the global confounding value across all components
+  if (length(confounding) == 1) confounding <- rep(confounding, length(causal_ordering))
+
+  # Update the parameters in the internal list
+  internal$parameters$confounding <- confounding
+
+  # String with information about which components that are subject to confounding (used by cli)
+  if (all(!confounding)) {
+    internal$parameters$confounding_string <- "No component with confounding"
+  } else {
+    internal$parameters$confounding_string <-
+      paste0("{", paste(sapply(causal_ordering_names[confounding], paste, collapse = ", "), collapse = "}, {"), "}")
+  }
+
+  return(internal)
+}
+
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+check_and_set_causal_sampling <- function(internal) {
+  confounding <- internal$parameters$confounding
+  causal_ordering <- internal$parameters$causal_ordering
+
+  # The variable `causal_sampling` represents if we are to use the causal step-wise sampling procedure. We only want to
+  # do that when confounding is specified, and we have a causal ordering that contains more than one component or
+  # if we have a single component where the features are subject to confounding. We must use `all` to support
+  # `confounding` being a vector,  but then `length(causal_ordering) > 1`, so `causal` will be TRUE no matter what
+  # `confounding` vector we have.
+  internal$parameters$causal_sampling <- !is.null(confounding) && (length(causal_ordering) > 1 || all(confounding))
+
+  # For the causal/step-wise sampling procedure, we do not support multiple approaches and regression is inapplicable
+  if (internal$parameters$causal_sampling) {
+    if (internal$parameters$regression) stop("Causal Shapley values is not applicable for regression approaches.\n")
+    if (internal$parameters$n_approaches > 1) stop("Causal Shapley values is not applicable for combined approaches.\n")
+  }
+
+  return(internal)
+}
+
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+check_and_set_asymmetric <- function(internal) {
+  asymmetric <- internal$parameters$asymmetric
+  # exact <- internal$parameters$exact
+  causal_ordering <- internal$parameters$causal_ordering
+  max_n_coalitions <- internal$parameters$max_n_coalitions
+  paired_shap_sampling <- internal$parameters$paired_shap_sampling
+
+  # Check that we are not doing paired sampling
+  if (paired_shap_sampling) {
+    stop(paste0(
+      "Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.\n",
+      "Asymmetric Shapley values do not support paired sampling as the paired ",
+      "coalitions will not necessarily respect the causal ordering."
+    ))
+  }
+
+
+  # Get the number of coalitions that respects the (partial) causal ordering
+  max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
+  internal$parameters$max_n_coalitions_causal <- max_n_coalitions_causal
+
+  # Get the coalitions that respects the (partial) causal ordering
+  internal$objects$dt_valid_causal_coalitions <- exact_coalition_table(
+    m = internal$parameters$n_shapley_values,
+    dt_valid_causal_coalitions = data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering))
+  ) # [, c("coalitions", "shapley_weight")] TODO: TA MED ELLER IKKE?
+
+  # Normalize the weights. Note that weight of a coalition size is even spread out among the valid coalitions
+  # of each size. I.e., if there is only one valid coalition of size |S|, then it gets the weight of the
+  # choose(M, |S|) coalitions of said size.
+  internal$objects$dt_valid_causal_coalitions[-c(1, .N), shapley_weight_norm := shapley_weight / sum(shapley_weight)]
+
+  # Convert the coalitions to strings. Needed when sampling the coalitions in `sample_coalition_table()`.
+  internal$objects$dt_valid_causal_coalitions[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
 
   return(internal)
 }
@@ -602,83 +787,130 @@ adjust_max_n_coalitions <- function(internal) {
   max_n_coalitions <- internal$parameters$max_n_coalitions
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
+  n_shapley_values <- internal$parameters$n_shapley_values
+  asymmetric <- internal$parameters$asymmetric # NULL if regular/symmetric Shapley values
+  max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal # NULL if regular/symmetric Shapley values
 
 
   # Adjust max_n_coalitions
-  if (isFALSE(is_groupwise)) { # feature wise
+  if (isTRUE(asymmetric)) {
+    # Asymmetric Shapley values
+
     # Set max_n_coalitions to upper bound
-    if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_features) {
-      max_n_coalitions <- 2^n_features
+    if (is.null(max_n_coalitions) || max_n_coalitions > max_n_coalitions_causal) {
+      max_n_coalitions <- max_n_coalitions_causal
       message(
         paste0(
           "Success with message:\n",
-          "max_n_coalitions is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
-          "and is therefore set to 2^n_features = ", 2^n_features, ".\n"
+          "max_n_coalitions is NULL or larger than or number of coalitions respecting the causal\n",
+          "ordering ", max_n_coalitions_causal, ", and is therefore set to ", max_n_coalitions_causal, ".\n"
         )
       )
     }
+
     # Set max_n_coalitions to lower bound
-    if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_features + 1)) {
-      if (n_features <= 3) {
+    if (isFALSE(is.null(max_n_coalitions)) &&
+      max_n_coalitions < min(10, n_shapley_values + 1, max_n_coalitions_causal)) {
+      if (max_n_coalitions_causal <= 10) {
+        max_n_coalitions <- max_n_coalitions_causal
+        message(
+          paste0(
+            "Success with message:\n",
+            "max_n_coalitions_causal is smaller than or equal to 10, meaning there are\n",
+            "so few unique causal coalitions that we should use all to get reliable results.\n",
+            "max_n_coalitions is therefore set to ", max_n_coalitions_causal, ".\n"
+          )
+        )
+      } else {
+        max_n_coalitions <- min(10, n_shapley_values + 1, max_n_coalitions_causal)
+        message(
+          paste0(
+            "Success with message:\n",
+            "max_n_coalitions is smaller than max(10, n_shapley_values + 1 = ", n_shapley_values + 1,
+            " max_n_coalitions_causal = ", max_n_coalitions_causal, "),",
+            "which will result in unreliable results.\n",
+            "It is therefore set to ", min(10, n_shapley_values + 1, max_n_coalitions_causal), ".\n"
+          )
+        )
+      }
+    }
+  } else {
+    # Symmetric/regular Shapley values
+
+    if (isFALSE(is_groupwise)) { # feature wise
+      # Set max_n_coalitions to upper bound
+      if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_features) {
         max_n_coalitions <- 2^n_features
         message(
           paste0(
             "Success with message:\n",
-            "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",
-            2^n_features, ") that we should use all to get reliable results.\n",
-            "max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".\n"
-          )
-        )
-      } else {
-        max_n_coalitions <- min(10, n_features + 1)
-        message(
-          paste0(
-            "Success with message:\n",
-            "max_n_coalitions is smaller than max(10, n_features + 1 = ", n_features + 1, "),",
-            "which will result in unreliable results.\n",
-            "It is therefore set to ", max(10, n_features + 1), ".\n"
+            "max_n_coalitions is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
+            "and is therefore set to 2^n_features = ", 2^n_features, ".\n"
           )
         )
       }
-    }
-  } else { # group wise
-    # Set max_n_coalitions to upper bound
-    if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_groups) {
-      max_n_coalitions <- 2^n_groups
-      message(
-        paste0(
-          "Success with message:\n",
-          "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_groups, ", \n",
-          "and is therefore set to 2^n_groups = ", 2^n_groups, ".\n"
-        )
-      )
-    }
-    # Set max_n_coalitions to lower bound
-    if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_groups + 1)) {
-      if (n_groups <= 3) {
+      # Set max_n_coalitions to lower bound
+      if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_features + 1)) {
+        if (n_features <= 3) {
+          max_n_coalitions <- 2^n_features
+          message(
+            paste0(
+              "Success with message:\n",
+              "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",
+              2^n_features, ") that we should use all to get reliable results.\n",
+              "max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".\n"
+            )
+          )
+        } else {
+          max_n_coalitions <- min(10, n_features + 1)
+          message(
+            paste0(
+              "Success with message:\n",
+              "max_n_coalitions is smaller than max(10, n_features + 1 = ", n_features + 1, "),",
+              "which will result in unreliable results.\n",
+              "It is therefore set to ", max(10, n_features + 1), ".\n"
+            )
+          )
+        }
+      }
+    } else { # group wise
+      # Set max_n_coalitions to upper bound
+      if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_groups) {
         max_n_coalitions <- 2^n_groups
         message(
           paste0(
             "Success with message:\n",
-            "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (", 2^n_groups, ") ",
-            "that we should use all to get reliable results.\n",
-            "max_n_coalitions is therefore set to 2^n_groups = ", 2^n_groups, ".\n"
-          )
-        )
-      } else {
-        max_n_coalitions <- min(10, n_groups + 1)
-        message(
-          paste0(
-            "Success with message:\n",
-            "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_groups + 1, "),",
-            "which will result in unreliable results.\n",
-            "It is therefore set to ", max(10, n_groups + 1), ".\n"
+            "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_groups, ", \n",
+            "and is therefore set to 2^n_groups = ", 2^n_groups, ".\n"
           )
         )
       }
+      # Set max_n_coalitions to lower bound
+      if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_groups + 1)) {
+        if (n_groups <= 3) {
+          max_n_coalitions <- 2^n_groups
+          message(
+            paste0(
+              "Success with message:\n",
+              "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (", 2^n_groups, ") ",
+              "that we should use all to get reliable results.\n",
+              "max_n_coalitions is therefore set to 2^n_groups = ", 2^n_groups, ".\n"
+            )
+          )
+        } else {
+          max_n_coalitions <- min(10, n_groups + 1)
+          message(
+            paste0(
+              "Success with message:\n",
+              "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_groups + 1, "),",
+              "which will result in unreliable results.\n",
+              "It is therefore set to ", max(10, n_groups + 1), ".\n"
+            )
+          )
+        }
+      }
     }
   }
-
 
   return(max_n_coalitions)
 }
@@ -917,10 +1149,13 @@ set_exact <- function(internal) {
   n_groups <- internal$parameters$n_groups
   is_groupwise <- internal$parameters$is_groupwise
   iterative <- internal$parameters$iterative
+  asymmetric <- internal$parameters$asymmetric
+  max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal
 
   if (isFALSE(iterative) &&
     (
-      (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
+      (isTRUE(asymmetric) && max_n_coalitions == max_n_coalitions_causal) ||
+        (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
         (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
     )
   ) {
@@ -942,7 +1177,23 @@ check_computability <- function(internal) {
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
   exact <- internal$parameters$exact
+  causal_sampling <- internal$parameters$causal_sampling # NULL if regular/symmetric Shapley values
+  asymmetric <- internal$parameters$asymmetric # NULL if regular/symmetric Shapley values
+  max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal # NULL if regular/symmetric Shapley values
 
+  if (asymmetric) {
+    if (isTRUE(exact)) {
+      if (max_n_coalitions_causal > 5000 && max_n_coalitions > 5000) { # TODO check
+        warning(
+          paste0(
+            "Due to computation time, we recommend not computing asymmetric Shapley values exactly \n",
+            "with all valid causal coalitions (", max_n_coalitions_causal, ") when larger than 5000.\n",
+            "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
+          )
+        )
+      }
+    }
+  }
 
   # Force user to use a natural number for n_coalitions if m > 13
   if (isTRUE(exact)) {
@@ -964,6 +1215,13 @@ check_computability <- function(internal) {
         )
       )
     }
+    if (isTRUE(causal_sampling) && !is.null(max_n_coalitions_causal) && max_n_coalitions_causal > 1000) {
+      paste0(
+        "Due to computation time, we recommend not computing causal Shapley values exactly \n",
+        "with all valid causal coalitions when there are more than 1000 due to the long causal sampling time. \n",
+        "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
+      )
+    }
   } else {
     if (isFALSE(is_groupwise) && n_features > 30) {
       warning(
@@ -975,6 +1233,14 @@ check_computability <- function(internal) {
       warning(
         "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE",
         " when n_groups > 30.\n",
+      )
+    }
+    if (isTRUE(causal_sampling) && !is.null(max_n_coalitions_causal) && max_n_coalitions_causal > 1000) {
+      warning(
+        paste0(
+          "Due to computation time, we strongly recommend enabling adaptive estimation with adaptive = TRUE ",
+          "when the number of valid causal coalitions are more than 1000 due to the long causal sampling time. \n"
+        )
       )
     }
   }

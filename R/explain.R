@@ -135,6 +135,43 @@
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 #' want to continue the iterative estimation. See the vignette for examples.
+#'
+#' @param asymmetric Logical.
+#' Not applicable for (regular) non-causal or asymmetric explanations.
+#' If `FALSE` (default), `explain` computes regular symmetric Shapley values,
+#' If `TRUE`, then `explain` compute asymmetric Shapley values based on the (partial) causal ordering
+#' given by `causal_ordering`. That is, `explain` only uses the feature combinations/coalitions that
+#' respect the causal ordering when computing the asymmetric Shapley values. If `asymmetric` is `TRUE` and
+#' `confounding` is `NULL` (default), then `explain` computes asymmetric conditional Shapley values as specified in
+#' Frye et al. (2020). If `confounding` is provided, i.e., not `NULL`, then `explain` computes asymmetric causal
+#' Shapley values as specified in Heskes et al. (2020).
+#'
+#' @param causal_ordering List.
+#' Not applicable for (regular) non-causal or asymmetric explanations.
+#' `causal_ordering` is an unnamed list of vectors specifying the components of the
+#' partial causal ordering that the coalitions must respect. Each vector represents
+#' a component and contains one or more features/groups identified by their names
+#' (strings) or indices (integers). If `causal_ordering` is `NULL` (default), no causal
+#' ordering is assumed and all possible coalitions are allowed. No causal ordering is
+#' equivalent to a causal ordering with a single component that includes all features
+#' (`list(1:n_features)`) or groups (`list(1:n_groups)`) for feature-wise and group-wise
+#' Shapley values, respectively. For feature-wise Shapley values and
+#' `causal_ordering = list(c(1, 2), c(3, 4))`, the interpretation is that features 1 and 2
+#' are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
+#' Note: All features/groups must be included in the `causal_ordering` without any duplicates.
+#'
+#' @param confounding Logical vector.
+#' Not applicable for (regular) non-causal or asymmetric explanations.
+#' `confounding` is a vector of logicals specifying whether confounding is assumed or not for each component in the
+#' `causal_ordering`. If `NULL` (default), then no assumption about the confounding structure is made and `explain`
+#' computes asymmetric/symmetric conditional Shapley values, depending on the value of `asymmetric`.
+#' If `confounding` is a single logical, i.e., `FALSE` or `TRUE`, then this assumption is set globally
+#' for all components in the causal ordering. Otherwise, `confounding` must be a vector of logicals of the same
+#' length as `causal_ordering`, indicating the confounding assumption for each component. When `confounding` is
+#' specified, then `explain` computes asymmetric/symmetric causal Shapley values, depending on the value of
+#' `asymmetric`. The `approach` cannot be `regression_separate` and `regression_surrogate` as the
+#' regression-based approaches are not applicable to the causal Shapley value methodology.
+#'
 #' @param ... Further arguments passed to specific approaches
 #'
 #' @inheritDotParams setup_approach.empirical
@@ -153,6 +190,13 @@
 #' `"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
 #' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
 #' It is also possible to combine the different approaches, see the vignettes for more information.
+#'
+#' The package also supports the computation of causal and asymmetric Shapley values as introduced by
+#' Heskes et al. (2020) and Frye et al. (2020). Asymmetric Shapley values were proposed by Heskes et al. (2020)
+#' as a way to incorporate causal knowledge in the real world by restricting the possible feature
+#' combinations/coalitions when computing the Shapley values to those consistent with a (partial) causal ordering.
+#' Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
+#' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
 #' The package allows for parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages. See the examples below.
@@ -337,8 +381,16 @@
 #' @author Martin Jullum, Lars Henry Berge Olsen
 #'
 #' @references
-#'   Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
-#'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+#'   - Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
+#'     More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+#'   - Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
+#'     incorporating causal knowledge into model-agnostic explainability.
+#'     Advances in neural information processing systems, 33, 1229-1239.
+#'   - Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal shapley values:
+#'     Exploiting causal knowledge to explain individual predictions of complex models.
+#'     Advances in neural information processing systems, 33, 4778-4789.
+#'   - Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
+#'     model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
 explain <- function(model,
                     x_explain,
                     x_train,
@@ -355,6 +407,9 @@ explain <- function(model,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     prev_shapr_object = NULL,
+                    asymmetric = FALSE,
+                    causal_ordering = NULL,
+                    confounding = NULL,
                     extra_computation_args = list(),
                     iterative_args = list(),
                     output_args = list(),
@@ -390,6 +445,9 @@ explain <- function(model,
     kernelSHAP_reweighting = kernelSHAP_reweighting,
     init_time = init_time,
     prev_shapr_object = prev_shapr_object,
+    asymmetric = asymmetric,
+    causal_ordering = causal_ordering,
+    confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
     ...

@@ -49,6 +49,13 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 \code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"}.
 It is also possible to combine the different approaches, see the vignettes for more information.
 
+The package also supports the computation of causal and asymmetric Shapley values as introduced by
+Heskes et al. (2020) and Frye et al. (2020). Asymmetric Shapley values were proposed by Heskes et al. (2020)
+as a way to incorporate causal knowledge in the real world by restricting the possible feature
+combinations/coalitions when computing the Shapley values to those consistent with a (partial) causal ordering.
+Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
+on the prediction, taking into account their causal relationships, by adapting the sampling procedure in \code{shapr}.
+
 The package allows for parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
 For iterative estimation (\code{iterative=TRUE}), intermediate results may also be printed to the console
@@ -207,8 +214,18 @@ explain_iterative <- explain(
 
 }
 \references{
-Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
+\itemize{
+\item Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+\item Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
+incorporating causal knowledge into model-agnostic explainability.
+Advances in neural information processing systems, 33, 1229-1239.
+\item Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal shapley values:
+Exploiting causal knowledge to explain individual predictions of complex models.
+Advances in neural information processing systems, 33, 4778-4789.
+\item Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
+model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
+}
 }
 \author{
 Martin Jullum, Lars Henry Berge Olsen
