@@ -14,7 +14,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         causal_ordering = list(1:6),
         confounding = NULL,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -33,7 +33,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         causal_ordering = list(1:5, 5),
         confounding = NULL,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -52,7 +52,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         causal_ordering = list(2:5, 5),
         confounding = NULL,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -71,7 +71,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         causal_ordering = list(1:2, 4),
         confounding = NULL,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -90,7 +90,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         causal_ordering = list("Solar.R", "Wind", "Temp", "Month", "Day", "Invalid feature name"),
         confounding = NULL,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -109,7 +109,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         causal_ordering = list("Solar.R", "Wind", "Temp", "Month", "Day", "Day"),
         confounding = NULL,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -128,7 +128,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         causal_ordering = list("Solar.R", "Wind", "Temp", "Day", "Day"),
         confounding = NULL,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -147,7 +147,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         causal_ordering = list("Solar.R", "Wind"),
         confounding = NULL,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -167,7 +167,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         confounding = NULL,
         approach = "gaussian",
         group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -187,7 +187,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         confounding = NULL,
         approach = "gaussian",
         group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -207,7 +207,7 @@ test_that("asymmetric erroneous input: `causal_ordering`", {
         confounding = NULL,
         approach = "gaussian",
         group = list("A" = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -231,7 +231,7 @@ test_that("asymmetric erroneous input: `approach`", {
         causal_ordering = list(1:2, 3:4, 5),
         confounding = TRUE,
         approach = c("gaussian", "independence", "empirical", "gaussian"),
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -254,7 +254,7 @@ test_that("asymmetric erroneous input: `asymmetric`", {
         causal_ordering = list(1:2, 3:4, 5),
         confounding = TRUE,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -273,7 +273,7 @@ test_that("asymmetric erroneous input: `asymmetric`", {
         causal_ordering = list(1:2, 3:4, 5),
         confounding = TRUE,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -292,7 +292,7 @@ test_that("asymmetric erroneous input: `asymmetric`", {
         causal_ordering = list(1:2, 3:4, 5),
         confounding = TRUE,
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -315,8 +315,8 @@ test_that("asymmetric erroneous input: `confounding`", {
         asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5),
         confounding = c("A", "B", "C"),
-        approach = "gaussian", ,
-        adaptive = FALSE
+        approach = "gaussian",
+        iterative = FALSE
       )
     },
     error = TRUE
@@ -335,7 +335,7 @@ test_that("asymmetric erroneous input: `confounding`", {
         causal_ordering = list(1:2, 3:4, 5),
         confounding = c(TRUE, FALSE),
         approach = "gaussian",
-        adaptive = FALSE
+        iterative = FALSE
       )
     },
     error = TRUE

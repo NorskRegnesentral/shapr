@@ -16,7 +16,7 @@ compute_estimates <- function(internal, vS_list) {
   iter <- length(internal$iter_list)
   compute_sd <- internal$iter_list[[iter]]$compute_sd
 
-  n_boot_samps <- internal$parameters$adaptive_arguments$n_boot_samps
+  n_boot_samps <- internal$parameters$extra_computation_args$n_boot_samps
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,
@@ -73,7 +73,7 @@ compute_estimates <- function(internal, vS_list) {
 
 #' @keywords internal
 postprocess_vS_list <- function(vS_list, internal) {
-  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+  keep_samp_for_vS <- internal$parameters$output_args$keep_samp_for_vS
   prediction_zero <- internal$parameters$prediction_zero
   n_explain <- internal$parameters$n_explain
 
@@ -182,7 +182,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   n_features <- internal$parameters$n_features
   shap_names <- internal$parameters$shap_names
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  shapley_reweight <- internal$parameters$shapley_reweighting
+  shapley_reweight <- internal$parameters$kernelSHAP_reweighting
 
   boot_sd_array <- array(NA, dim = c(n_explain, n_features + 1, n_boot_samps))
 
@@ -239,7 +239,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
     X_boot <- rbind(X_keep, X_boot0)
     data.table::setorder(X_boot, id_coalition)
 
-    shapley_reweighting(X_boot, reweight = shapley_reweight) # reweights the shapley weights by reference
+    kernelSHAP_reweighting(X_boot, reweight = shapley_reweight) # reweights the shapley weights by reference
 
     W_boot <- shapr::weight_matrix(
       X = X_boot,
@@ -271,7 +271,7 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
 
   n_explain <- internal$parameters$n_explain
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  shapley_reweight <- internal$parameters$shapley_reweighting
+  shapley_reweight <- internal$parameters$kernelSHAP_reweighting
   shap_names <- internal$parameters$shap_names
   n_shapley_values <- internal$parameters$n_shapley_values
 
@@ -343,7 +343,7 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
 
   for (i in seq_len(n_boot_samps)) {
     this_X <- X_boot[boot_id == i] # This is highly inefficient, but the best way to deal with the reweighting for now
-    shapley_reweighting(this_X, reweight = shapley_reweight)
+    kernelSHAP_reweighting(this_X, reweight = shapley_reweight)
 
     W_boot <- weight_matrix(
       X = this_X,

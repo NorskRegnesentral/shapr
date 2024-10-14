@@ -15,9 +15,7 @@ setup(
   group,
   n_MC_samples,
   seed,
-  keep_samp_for_vS,
   feature_specs,
-  MSEv_uniform_comb_weights = TRUE,
   type = "normal",
   horizon = NULL,
   y = NULL,
@@ -28,9 +26,9 @@ setup(
   explain_xreg_lags = NULL,
   group_lags = NULL,
   verbose,
-  adaptive = NULL,
-  adaptive_arguments = list(),
-  shapley_reweighting = "none",
+  iterative = NULL,
+  iterative_args = list(),
+  kernelSHAP_reweighting = "none",
   is_python = FALSE,
   testing = FALSE,
   init_time = NULL,
@@ -38,6 +36,8 @@ setup(
   asymmetric = FALSE,
   causal_ordering = NULL,
   confounding = NULL,
+  output_args = list(),
+  extra_computation_args = list(),
   ...
 )
 }
@@ -68,9 +68,9 @@ such as the mean of the predictions in the training data are also reasonable.}
 \item{output_size}{TODO: Document}
 
 \item{max_n_coalitions}{Integer.
-The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
-(if \code{adaptive = TRUE}).
-If \code{adaptive = FALSE} it represents the number of feature/group coalitions to use directly.
+The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+(if \code{iterative = TRUE}).
+If \code{iterative = FALSE} it represents the number of feature/group coalitions to use directly.
 The quantity refers to the number of unique feature coalitions if \code{group = NULL},
 and group coalitions if \code{group != NULL}.
 \code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
@@ -93,10 +93,6 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 Specifies the seed before any randomness based code is being run.
 If \code{NULL} no seed is set in the calling environment.}
 
-\item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in \code{internal$output}).
-Not used for \code{approach="regression_separate"} or \code{approach="regression_surrogate"}.}
-
 \item{feature_specs}{List. The output from \code{\link[=get_model_specs]{get_model_specs()}} or \code{\link[=get_data_specs]{get_data_specs()}}.
 Contains the 3 elements:
 \describe{
@@ -104,12 +100,6 @@ Contains the 3 elements:
 \item{classes}{Character vector with the classes of each features.}
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
-
-\item{MSEv_uniform_comb_weights}{Logical.
-If \code{TRUE} (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
-If \code{FALSE}, then the function use the Shapley kernel weights to weight the coalitions when computing the MSEv
-criterion.
-Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
 \item{type}{Character.
 Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
@@ -154,8 +144,8 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed.
 \verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{adaptive = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
+(only when \code{iterative = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 \itemize{
 \item the final estimates.
 \code{"vS_details"} displays information about the v_S estimates.
@@ -165,9 +155,9 @@ Note that any combination of four strings can be used.
 E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
 }}
 
-\item{adaptive}{Logical or NULL
+\item{iterative}{Logical or NULL
 If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
-If eventually \code{TRUE}, the Shapley values are estimated adaptively in an iterative manner.
+If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
@@ -175,13 +165,13 @@ A convergence criterion is used to determine if the variances of the Shapley val
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
-Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_arguments}.}
+Specifics related to the iterative process and convergence criterion are set through \code{iterative_args}.}
 
-\item{adaptive_arguments}{Named list.
-Specifices the arguments for the adaptive procedure.
-See \code{\link[=get_adaptive_arguments_default]{get_adaptive_arguments_default()}} for description of the arguments and their default values.}
+\item{iterative_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
-\item{shapley_reweighting}{String.
+\item{kernelSHAP_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 the randomness and thereby the variance of the Shapley value estimates.
 One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
@@ -210,7 +200,7 @@ Used to calculate the time it took to run the full \code{explain} call.}
 If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
-want to continue the adaptive estimation. See the vignette for examples.}
+want to continue the iterative estimation. See the vignette for examples.}
 
 \item{asymmetric}{Logical.
 Not applicable for (regular) non-causal or asymmetric explanations.
@@ -247,6 +237,14 @@ length as \code{causal_ordering}, indicating the confounding assumption for each
 specified, then \code{explain} computes asymmetric/symmetric causal Shapley values, depending on the value of
 \code{asymmetric}. The \code{approach} cannot be \code{regression_separate} and \code{regression_surrogate} as the
 regression-based approaches are not applicable to the causal Shapley value methodology.}
+
+\item{output_args}{Named list.
+Specifices certain arguments related to the output of the function.
+See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
+
+\item{extra_computation_args}{Named list.
+Specifices extra arguments related to the computation of the Shapley values.
+See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{Further arguments passed to specific approaches}
 }

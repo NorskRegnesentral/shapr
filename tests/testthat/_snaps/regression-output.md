@@ -1,4 +1,4 @@
-# output_lm_numeric_lm_separate_adaptive
+# output_lm_numeric_lm_separate_iterative
 
     Code
       (out <- code)
@@ -9,11 +9,11 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: TRUE
+      * iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 32 coalitions, 5 new. 
@@ -47,7 +47,7 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -68,7 +68,7 @@
     Message
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -93,7 +93,7 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -118,7 +118,7 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -143,7 +143,7 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -168,7 +168,7 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -193,7 +193,7 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -218,7 +218,7 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -232,7 +232,7 @@
       2:          2 42.44   8.183  -1.463 -16.499   3.63       -9.233
       3:          3 42.44   3.364 -14.946   0.401 -11.32       11.905
 
-# output_lm_numeric_lm_surrogate_adaptive
+# output_lm_numeric_lm_surrogate_iterative
 
     Code
       (out <- code)
@@ -242,12 +242,12 @@
       and is therefore set to 2^n_features = 32.
       
     Condition
-      Warning in `check_and_set_adaptive()`:
-      Adaptive estimation of Shapley values are not supported for approach = regression_surrogate. Setting adaptive = FALSE.
+      Warning in `check_and_set_iterative()`:
+      iterative estimation of Shapley values are not supported for approach = regression_surrogate. Setting iterative = FALSE.
     Message
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -272,7 +272,7 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -293,7 +293,7 @@
     Message
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -314,7 +314,7 @@
     Message
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -339,7 +339,7 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -364,7 +364,7 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -389,7 +389,7 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -414,7 +414,7 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       

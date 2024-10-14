@@ -3,7 +3,7 @@
 #' @param internal List.
 #' Holds all parameters, data, functions and computed objects used within [explain()]
 #' The list contains one or more of the elements `parameters`, `data`, `objects`, `iter_list`, `timing_list`,
-#' `main_timing_list`, `output`, `iter_timing_list` and `iter_results`.
+#' `main_timing_list`, `output`, and `iter_timing_list`.
 #'
 #' @param model Objects.
 #' The model object that ought to be explained.

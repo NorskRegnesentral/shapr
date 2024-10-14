@@ -71,7 +71,7 @@ p0 <- mean(y_train)
 ### First run proper shapr call on this
 
 sim_results_saving_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/sim_lingauss_v2/"#"../effektiv_shapley_output/"
-shapley_reweighting_strategy = "none"
+kernelSHAP_reweighting_strategy = "none"
 
 set.seed(465132)
 inds = 1:n_explain
@@ -82,7 +82,7 @@ expl <- shapr::explain(model = model,
                        approach = "gaussian",
                        prediction_zero = p0,Sigma=Sigma,mu=mu)
 
-fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
+fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
 
 
 cutoff_feats <- paste0("VV",1:12)
@@ -127,7 +127,7 @@ for(kk in testObs_computed_vec){
                               n_samples = n_samples,
                               gaussian.mu = mu,
                               gaussian.cov_mat = Sigma,
-                              shapley_reweighting_strategy = shapley_reweighting_strategy)
+                              kernelSHAP_reweighting_strategy = kernelSHAP_reweighting_strategy)
   runres_list[[kk]] <- run$kshap_final
   runcomps_list[[kk]] <- sum(sapply(run$keep_list,"[[","no_computed_combinations"))
   print(kk)
@@ -135,7 +135,7 @@ for(kk in testObs_computed_vec){
 
 est <- rbindlist(runres_list)
 est[,other_features:=NULL]
-fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
+fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
 
 
 
@@ -157,7 +157,7 @@ for (i in testObs_computed_vec){
 }
 expl_approx <- as.data.table(expl_approx)
 colnames(expl_approx) <- colnames(truth)
-fwrite(expl_approx,paste0(sim_results_saving_folder,"approx_shapley_values_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
+fwrite(expl_approx,paste0(sim_results_saving_folder,"approx_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
 
 bias_vec <- colMeans(est-truth)
 rmse_vec <- sqrt(colMeans((est-truth)^2))
@@ -167,7 +167,7 @@ bias_vec_approx <- colMeans(expl_approx-truth)
 rmse_vec_approx <- sqrt(colMeans((expl_approx-truth)^2))
 mae_vec_approx <- colMeans(abs(expl_approx-truth))
 
-save.image(paste0(sim_results_saving_folder, "iterative_kernelshap_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".RData"))
+save.image(paste0(sim_results_saving_folder, "iterative_kernelshap_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".RData"))
 
 hist(unlist(runcomps_list),breaks = 20)
 

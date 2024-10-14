@@ -14,14 +14,14 @@ print_iter <- function(internal) {
   converged_max_iter <- internal$iter_list[[iter]]$converged_max_iter
   converged_max_n_coalitions <- internal$iter_list[[iter]]$converged_max_n_coalitions
   overall_conv_measure <- internal$iter_list[[iter]]$overall_conv_measure
-  reduction_factor <- internal$iter_list[[iter]]$reduction_factor
+  n_coal_next_iter_factor <- internal$iter_list[[iter]]$n_coal_next_iter_factor
 
-  saving_path <- internal$parameters$adaptive_arguments$saving_path
-  convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
+  saving_path <- internal$parameters$output_args$saving_path
+  convergence_tolerance <- internal$parameters$iterative_args$convergence_tolerance
   testing <- internal$parameters$testing
 
   if ("convergence" %in% verbose) {
-    convergence_tolerance <- internal$parameters$adaptive_arguments$convergence_tolerance
+    convergence_tolerance <- internal$parameters$iterative_args$convergence_tolerance
 
     current_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
     est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions
@@ -38,12 +38,12 @@ print_iter <- function(internal) {
       if (!is.null(convergence_tolerance)) {
         conv_nice <- signif(overall_conv_measure, 2)
         tol_nice <- format(signif(convergence_tolerance, 2), scientific = FALSE)
-        reduction_factor_nice <- format(signif(reduction_factor * 100, 2), scientific = FALSE)
+        n_coal_next_iter_factor_nice <- format(signif(n_coal_next_iter_factor * 100, 2), scientific = FALSE)
         msg <- paste0(
           msg,
           "Current convergence measure: {conv_nice} [needs {tol_nice}]\n",
           "Estimated remaining coalitions: {est_remaining_coalitions}\n",
-          "(Concervatively) adding {reduction_factor_nice}% of that ({next_new_n_coalitions} coalitions) ",
+          "(Concervatively) adding {n_coal_next_iter_factor_nice}% of that ({next_new_n_coalitions} coalitions) ",
           "in the next iteration."
         )
       }

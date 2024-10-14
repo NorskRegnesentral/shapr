@@ -9,11 +9,11 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Adaptive estimation: TRUE
+      * iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 32 coalitions, 5 new. 
@@ -621,11 +621,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: TRUE
+      * iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 32 coalitions, 5 new. 
@@ -659,11 +659,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: TRUE
+      * iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 32 coalitions, 5 new. 
@@ -725,11 +725,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: TRUE
+      * iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 32 coalitions, 5 new. 
@@ -859,11 +859,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: TRUE
+      * iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 32 coalitions, 5 new. 

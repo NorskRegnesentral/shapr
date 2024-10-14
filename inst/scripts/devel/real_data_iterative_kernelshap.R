@@ -88,7 +88,7 @@ Sigma = cov(x_train)
 ### First run proper shapr call on this
 
 sim_results_saving_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/gmc_data_v3/"#"../effektiv_shapley_output/"
-shapley_reweighting_strategy = "none"
+kernelSHAP_reweighting_strategy = "none"
 
 predict_model_xgb <- function(object,newdata){
   xgboost:::predict.xgb.Booster(object,as.matrix(newdata))
@@ -109,7 +109,7 @@ expl <- shapr::explain(model = model,
                        approach = "ctree",
                        prediction_zero = p0
 )
-fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_", shapley_reweighting_strategy, ".csv"))
+fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_", kernelSHAP_reweighting_strategy, ".csv"))
 print(Sys.time())
 
 # These are the parameters for for iterative_kshap_func
@@ -148,7 +148,7 @@ for(kk in seq_along(testObs_computed_vec)){
                               shapley_threshold_val = shapley_threshold_val,
                               shapley_threshold_prob = shapley_threshold_prob,
                               approach = approach,
-                              shapley_reweighting_strategy = shapley_reweighting_strategy)
+                              kernelSHAP_reweighting_strategy = kernelSHAP_reweighting_strategy)
 
   runres_list[[kk]] <- run$kshap_final
   runcomps_list[[kk]] <- sum(sapply(run$keep_list,"[[","no_computed_combinations"))
@@ -159,7 +159,7 @@ for(kk in seq_along(testObs_computed_vec)){
 
 est <- rbindlist(runres_list)
 est[,other_features:=NULL]
-fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_", shapley_reweighting_strategy, ".csv"))
+fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_", kernelSHAP_reweighting_strategy, ".csv"))
 
 expl_approx <- matrix(0, nrow = length(inds), ncol = m+1)
 expl_approx_obj_list <- list()
@@ -177,7 +177,7 @@ expl_approx <- as.data.table(expl_approx)
 truth <- expl$shapley_values
 
 colnames(expl_approx) <- colnames(truth)
-fwrite(expl_approx,paste0(sim_results_saving_folder,"approx_shapley_values_", shapley_reweighting_strategy, ".csv"))
+fwrite(expl_approx,paste0(sim_results_saving_folder,"approx_shapley_values_", kernelSHAP_reweighting_strategy, ".csv"))
 
 bias_vec <- colMeans(est-truth)
 rmse_vec <- sqrt(colMeans((est-truth)^2))
@@ -187,7 +187,7 @@ bias_vec_approx <- colMeans(expl_approx-truth)
 rmse_vec_approx <- sqrt(colMeans((expl_approx-truth)^2))
 mae_vec_approx <- colMeans(abs(expl_approx-truth))
 
-save.image(paste0(sim_results_saving_folder, "iterative_kernelshap_lingauss_p12_", shapley_reweighting_strategy, ".RData"))
+save.image(paste0(sim_results_saving_folder, "iterative_kernelshap_lingauss_p12_", kernelSHAP_reweighting_strategy, ".RData"))
 
 hist(unlist(runcomps_list),breaks = 20)
 

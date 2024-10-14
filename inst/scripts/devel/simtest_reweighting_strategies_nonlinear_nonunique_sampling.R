@@ -69,7 +69,7 @@ p0 <- mean(y_train)
 
 ### First run proper shapr call on this
 
-shapley_reweighting_strategy = "none"
+kernelSHAP_reweighting_strategy = "none"
 
 set.seed(465132)
 progressr::handlers(global = TRUE)
@@ -83,7 +83,7 @@ expl <- shapr::explain(model = model,
 dt_vS_map <- merge(expl$internal$iter_list[[1]]$coalition_map,expl$internal$output$dt_vS,by="id_coalition")[,-"id_coalition"]
 
 
-shapley_reweighting_strategy_vec <- c("none","on_N","on_coal_size","on_all","on_all_cond","on_all_cond_paired","comb")
+kernelSHAP_reweighting_strategy_vec <- c("none","on_N","on_coal_size","on_all","on_all_cond","on_all_cond_paired","comb")
 
 n_coalitions_vec <- c(50,100,200,400,800,1200,1600,2000,2400,2800,3200,3600,4000)
 
@@ -114,7 +114,7 @@ for(ii in seq_along(n_coalitions_vec)){
                              mu=mu,
                              seed = this_seed,
                              max_n_coalitions = this_n_coalitions,
-                             shapley_reweighting = "none",
+                             kernelSHAP_reweighting = "none",
                              unique_sampling = TRUE,
                              paired_shap_sampling = this_paired_shap_sampling)
 
@@ -125,12 +125,12 @@ for(ii in seq_along(n_coalitions_vec)){
       setorder(exact_dt_vS,id_coalition)
 
 
-      for(iii in seq_along(shapley_reweighting_strategy_vec)){
-        this_shapley_reweighting_strategy <- shapley_reweighting_strategy_vec[iii]
+      for(iii in seq_along(kernelSHAP_reweighting_strategy_vec)){
+        this_kernelSHAP_reweighting_strategy <- kernelSHAP_reweighting_strategy_vec[iii]
 
         this_X <- copy(this0_X)
 
-        shapr:::shapley_reweighting(this_X,reweight=this_shapley_reweighting_strategy)
+        shapr:::kernelSHAP_reweighting(this_X,reweight=this_kernelSHAP_reweighting_strategy)
 
         this_W <- weight_matrix(
           X = this_X,
@@ -148,7 +148,7 @@ for(ii in seq_along(n_coalitions_vec)){
 
         res_vec <- data.table(n_coalitions = this_n_coalitions,
                               paired_shap_sampling = this_paired_shap_sampling,
-                              shapley_reweighting_strategy = this_shapley_reweighting_strategy,
+                              kernelSHAP_reweighting_strategy = this_kernelSHAP_reweighting_strategy,
                               seed = this_seed,
                               bias=this_bias,
                               var = this_var,
@@ -162,7 +162,7 @@ for(ii in seq_along(n_coalitions_vec)){
 
         weight_dt[,n_coalitions:=this_n_coalitions]
         weight_dt[,paired_shap_sampling:=this_paired_shap_sampling]
-        weight_dt[,shapley_reweighting_strategy:=this_shapley_reweighting_strategy]
+        weight_dt[,kernelSHAP_reweighting_strategy:=this_kernelSHAP_reweighting_strategy]
         weight_dt[,seed:=this_seed]
 
         weight_list[[length(weight_list)+1]] <- copy(weight_dt)
@@ -184,19 +184,19 @@ res_dt <- rbindlist(res_list)
 
 fwrite(res_dt,file = "../../Div/extra_shapr_scripts_etc/res_dt_reweighting_sims_nonlingaus_nonunique_sampling_new.csv")
 
-resres <- res_dt[,lapply(.SD,mean),.SDcols=c("bias","var","MAE","RMSE"),by=.(paired_shap_sampling,n_coalitions,shapley_reweighting_strategy)]
-resres_sd <- res_dt[,lapply(.SD,sd),.SDcols=c("bias","var","MAE","RMSE"),by=.(paired_shap_sampling,n_coalitions,shapley_reweighting_strategy)]
+resres <- res_dt[,lapply(.SD,mean),.SDcols=c("bias","var","MAE","RMSE"),by=.(paired_shap_sampling,n_coalitions,kernelSHAP_reweighting_strategy)]
+resres_sd <- res_dt[,lapply(.SD,sd),.SDcols=c("bias","var","MAE","RMSE"),by=.(paired_shap_sampling,n_coalitions,kernelSHAP_reweighting_strategy)]
 
 
 library(ggplot2)
 
-ggplot(resres,aes(x=n_coalitions,y=MAE,col=shapley_reweighting_strategy,linetype= paired_shap_sampling))+
+ggplot(resres,aes(x=n_coalitions,y=MAE,col=kernelSHAP_reweighting_strategy,linetype= paired_shap_sampling))+
          geom_line()
 
-ggplot(resres[paired_shap_sampling==FALSE],aes(x=n_coalitions,y=MAE,col=shapley_reweighting_strategy,linetype= paired_shap_sampling))+
+ggplot(resres[paired_shap_sampling==FALSE],aes(x=n_coalitions,y=MAE,col=kernelSHAP_reweighting_strategy,linetype= paired_shap_sampling))+
   geom_line()+scale_y_log10()
 
-ggplot(resres[paired_shap_sampling==TRUE],aes(x=n_coalitions,y=MAE,col=shapley_reweighting_strategy,linetype= paired_shap_sampling))+
+ggplot(resres[paired_shap_sampling==TRUE],aes(x=n_coalitions,y=MAE,col=kernelSHAP_reweighting_strategy,linetype= paired_shap_sampling))+
   geom_line()+scale_y_log10()
 
 
@@ -205,13 +205,13 @@ ggplot(resres[paired_shap_sampling==TRUE],aes(x=n_coalitions,y=MAE,col=shapley_r
 weight_dt <- rbindlist(weight_list)
 
 
-weight_dt[!(coalition_size%in%c(0,12)),sum_shapley_weight:=sum(shapley_weight),by=.(seed,paired_shap_sampling,n_coalitions,shapley_reweighting_strategy)]
+weight_dt[!(coalition_size%in%c(0,12)),sum_shapley_weight:=sum(shapley_weight),by=.(seed,paired_shap_sampling,n_coalitions,kernelSHAP_reweighting_strategy)]
 
 weight_dt[!(coalition_size%in%c(0,12)),shapley_weight:=shapley_weight/sum_shapley_weight]
-weight_dt[!(coalition_size%in%c(0,12)),mean(shapley_weight),by=.(seed,paired_shap_sampling,n_coalitions,shapley_reweighting_strategy)]
+weight_dt[!(coalition_size%in%c(0,12)),mean(shapley_weight),by=.(seed,paired_shap_sampling,n_coalitions,kernelSHAP_reweighting_strategy)]
 
 
-ww_dt <- weight_dt[!(coalition_size%in%c(0,12)),list(mean_weight=mean(shapley_weight)),by=.(coalition_size,paired_shap_sampling,n_coalitions,shapley_reweighting_strategy)]
+ww_dt <- weight_dt[!(coalition_size%in%c(0,12)),list(mean_weight=mean(shapley_weight)),by=.(coalition_size,paired_shap_sampling,n_coalitions,kernelSHAP_reweighting_strategy)]
 
-ggplot(ww_dt[paired_shap_sampling==TRUE & shapley_reweighting_strategy %in% c("none","on_all_cond_paired","on_N")],aes(x=coalition_size,y=mean_weight,col=shapley_reweighting_strategy))+
+ggplot(ww_dt[paired_shap_sampling==TRUE & kernelSHAP_reweighting_strategy %in% c("none","on_all_cond_paired","on_N")],aes(x=coalition_size,y=mean_weight,col=kernelSHAP_reweighting_strategy))+
   geom_point()+facet_grid(~n_coalitions)

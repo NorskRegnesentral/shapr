@@ -56,7 +56,7 @@ expl <- explain(model = model,
                 prediction_zero = p0,
                 n_batches = 100,
                 n_samples = 1000,
-                adaptive = TRUE,
+                iterative = TRUE,
                 print_iter_info = TRUE,
                 print_shapleyres = TRUE)
 

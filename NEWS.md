@@ -1,7 +1,7 @@
 # shapr 1.0.0
 
 * (Just some notes so far)
-* Adaptive estimatio/convergence detection
+* iterative estimatio/convergence detection
 * Verbosity
 * Complete restructuring motivated by introducing the Python wrapper. The restructuring splits the explanation tasks into smaller pieces, which was necessary to allow the Python wrapper to move back and forth between R and Python.
 * As part of the restructuring, we also did a number of design changes, resulting in a series of breaking changes described below.

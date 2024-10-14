@@ -52,7 +52,7 @@ p0 <- mean(y_train)
 
 ### First run proper shapr call on this
 
-shapley_reweighting_strategy = "none"
+kernelSHAP_reweighting_strategy = "none"
 
 set.seed(465132)
 progressr::handlers(global = TRUE)
@@ -66,7 +66,7 @@ expl <- shapr::explain(model = model,
 dt_vS_map <- merge(expl$internal$iter_list[[1]]$coalition_map,expl$internal$output$dt_vS,by="id_coalition")[,-"id_coalition"]
 
 
-shapley_reweighting_strategy_vec <- c("none","on_N","on_coal_size","on_all","on_all_cond")
+kernelSHAP_reweighting_strategy_vec <- c("none","on_N","on_coal_size","on_all","on_all_cond")
 
 n_coalitions_vec <- c(50,100,200,400,800,1200,1600,2000,2400,2800,3200,3600,4000)
 
@@ -97,7 +97,7 @@ for(i0 in seq_along(paired_shap_sampling_vec)){
                              mu=mu,
                              seed = this_seed,
                              max_n_coalitions = this_n_coalitions,
-                             shapley_reweighting = "none",
+                             kernelSHAP_reweighting = "none",
                              paired_shap_sampling = this_paired_shap_sampling)
 
       this0_X <- this$internal$objects$X
@@ -107,12 +107,12 @@ for(i0 in seq_along(paired_shap_sampling_vec)){
       setorder(exact_dt_vS,id_coalition)
 
 
-      for(iii in seq_along(shapley_reweighting_strategy_vec)){
-        this_shapley_reweighting_strategy <- shapley_reweighting_strategy_vec[iii]
+      for(iii in seq_along(kernelSHAP_reweighting_strategy_vec)){
+        this_kernelSHAP_reweighting_strategy <- kernelSHAP_reweighting_strategy_vec[iii]
 
         this_X <- copy(this0_X)
 
-        shapr:::shapley_reweighting(this_X,reweight=this_shapley_reweighting_strategy)
+        shapr:::kernelSHAP_reweighting(this_X,reweight=this_kernelSHAP_reweighting_strategy)
 
         this_W <- weight_matrix(
           X = this_X,
@@ -130,7 +130,7 @@ for(i0 in seq_along(paired_shap_sampling_vec)){
 
         res_vec <- data.table(n_coalitions = this_n_coalitions,
                      paired_shap_sampling = this_paired_shap_sampling,
-                     shapley_reweighting_strategy = this_shapley_reweighting_strategy,
+                     kernelSHAP_reweighting_strategy = this_kernelSHAP_reweighting_strategy,
                      seed = this_seed,
                      bias=this_bias,
                      var = this_var,
@@ -154,11 +154,11 @@ res_dt <- rbindlist(res_list)
 
 fwrite(res_dt,file = "../../Div/extra_shapr_scripts_etc/res_dt_reweighting_sims_lingaus.csv")
 
-resres <- res_dt[,lapply(.SD,mean),.SDcols=c("bias","var","MAE","RMSE"),by=.(paired_shap_sampling,n_coalitions,shapley_reweighting_strategy)]
+resres <- res_dt[,lapply(.SD,mean),.SDcols=c("bias","var","MAE","RMSE"),by=.(paired_shap_sampling,n_coalitions,kernelSHAP_reweighting_strategy)]
 
 library(ggplot2)
 
-ggplot(resres[paired_shap_sampling==TRUE],aes(x=n_coalitions,y=MAE,col=shapley_reweighting_strategy,linetype= paired_shap_sampling))+
+ggplot(resres[paired_shap_sampling==TRUE],aes(x=n_coalitions,y=MAE,col=kernelSHAP_reweighting_strategy,linetype= paired_shap_sampling))+
          geom_line()
 
 
@@ -204,7 +204,7 @@ for(kk in testObs_computed_vec){
                               n_samples = n_samples,
                               gaussian.mu = mu,
                               gaussian.cov_mat = Sigma,
-                              shapley_reweighting_strategy = shapley_reweighting_strategy)
+                              kernelSHAP_reweighting_strategy = kernelSHAP_reweighting_strategy)
   runres_list[[kk]] <- run$kshap_final
   runcomps_list[[kk]] <- sum(sapply(run$keep_list,"[[","no_computed_combinations"))
   print(kk)
@@ -212,7 +212,7 @@ for(kk in testObs_computed_vec){
 
 est <- rbindlist(runres_list)
 est[,other_features:=NULL]
-fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
+fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
 
 
 
@@ -234,7 +234,7 @@ for (i in testObs_computed_vec){
 }
 expl_approx <- as.data.table(expl_approx)
 colnames(expl_approx) <- colnames(truth)
-fwrite(expl_approx,paste0(sim_results_saving_folder,"approx_shapley_values_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
+fwrite(expl_approx,paste0(sim_results_saving_folder,"approx_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
 
 bias_vec <- colMeans(est-truth)
 rmse_vec <- sqrt(colMeans((est-truth)^2))
@@ -244,7 +244,7 @@ bias_vec_approx <- colMeans(expl_approx-truth)
 rmse_vec_approx <- sqrt(colMeans((expl_approx-truth)^2))
 mae_vec_approx <- colMeans(abs(expl_approx-truth))
 
-save.image(paste0(sim_results_saving_folder, "iterative_kernelshap_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".RData"))
+save.image(paste0(sim_results_saving_folder, "iterative_kernelshap_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".RData"))
 
 hist(unlist(runcomps_list),breaks = 20)
 

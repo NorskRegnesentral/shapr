@@ -4,7 +4,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list(1:6), confounding = NULL, approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `check_and_set_causal_ordering()`:
       ! `causal_ordering` is incomplete/incorrect. It must contain all feature names or indices exactly once.
@@ -15,7 +15,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list(1:5, 5), confounding = NULL, approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `check_and_set_causal_ordering()`:
       ! `causal_ordering` is incomplete/incorrect. It must contain all feature names or indices exactly once.
@@ -26,7 +26,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list(2:5, 5), confounding = NULL, approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `check_and_set_causal_ordering()`:
       ! `causal_ordering` is incomplete/incorrect. It must contain all feature names or indices exactly once.
@@ -37,7 +37,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list(1:2, 4), confounding = NULL, approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `check_and_set_causal_ordering()`:
       ! `causal_ordering` is incomplete/incorrect. It must contain all feature names or indices exactly once.
@@ -49,7 +49,7 @@
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind", "Temp", "Month", "Day",
           "Invalid feature name"), confounding = NULL, approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `convert_feature_name_to_idx()`:
       ! `causal_ordering` contains feature names (`Invalid feature name`) that are not in the data (`Solar.R`, `Wind`, `Temp`, `Month`, `Day`).
@@ -60,7 +60,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind", "Temp", "Month", "Day", "Day"),
-        confounding = NULL, approach = "gaussian", adaptive = FALSE)
+        confounding = NULL, approach = "gaussian", iterative = FALSE)
     Condition
       Error in `check_and_set_causal_ordering()`:
       ! `causal_ordering` is incomplete/incorrect. It must contain all feature names or indices exactly once.
@@ -71,7 +71,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind", "Temp", "Day", "Day"), confounding = NULL,
-        approach = "gaussian", adaptive = FALSE)
+        approach = "gaussian", iterative = FALSE)
     Condition
       Error in `check_and_set_causal_ordering()`:
       ! `causal_ordering` is incomplete/incorrect. It must contain all feature names or indices exactly once.
@@ -82,7 +82,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind"), confounding = NULL, approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `check_and_set_causal_ordering()`:
       ! `causal_ordering` is incomplete/incorrect. It must contain all feature names or indices exactly once.
@@ -94,7 +94,7 @@
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list(c("Solar.R", "Wind", "Temp", "Month"), "Day"),
         confounding = NULL, approach = "gaussian", group = list(A = c("Solar.R",
-          "Wind"), B = "Temp", C = c("Month", "Day")), adaptive = FALSE)
+          "Wind"), B = "Temp", C = c("Month", "Day")), iterative = FALSE)
     Condition
       Error in `convert_feature_name_to_idx()`:
       ! `causal_ordering` contains group names (`Solar.R`, `Wind`, `Temp`, `Month`, `Day`) that are not in the data (`A`, `B`, `C`).
@@ -106,7 +106,7 @@
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list(c("A", "C"), "Wrong name"), confounding = NULL,
         approach = "gaussian", group = list(A = c("Solar.R", "Wind"), B = "Temp", C = c(
-          "Month", "Day")), adaptive = FALSE)
+          "Month", "Day")), iterative = FALSE)
     Condition
       Error in `convert_feature_name_to_idx()`:
       ! `causal_ordering` contains group names (`Wrong name`) that are not in the data (`A`, `B`, `C`).
@@ -118,7 +118,7 @@
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
         causal_ordering = list(c("A"), "B"), confounding = NULL, approach = "gaussian",
         group = list(A = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `check_and_set_causal_ordering()`:
       ! `causal_ordering` is incomplete/incorrect. It must contain all group names or indices exactly once.
@@ -129,7 +129,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5), confounding = TRUE, approach = c(
-          "gaussian", "independence", "empirical", "gaussian"), adaptive = FALSE)
+          "gaussian", "independence", "empirical", "gaussian"), iterative = FALSE)
     Condition
       Error in `check_and_set_causal_sampling()`:
       ! Causal Shapley values is not applicable for combined approaches.
@@ -140,7 +140,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = c(FALSE, FALSE),
         causal_ordering = list(1:2, 3:4, 5), confounding = TRUE, approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `get_parameters()`:
       ! `asymmetric` must be a single logical.
@@ -151,7 +151,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = "Must be a single logical",
         causal_ordering = list(1:2, 3:4, 5), confounding = TRUE, approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `get_parameters()`:
       ! `asymmetric` must be a single logical.
@@ -162,7 +162,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = 1L,
         causal_ordering = list(1:2, 3:4, 5), confounding = TRUE, approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `get_parameters()`:
       ! `asymmetric` must be a single logical.
@@ -173,7 +173,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5), confounding = c("A", "B", "C"),
-        approach = "gaussian", , adaptive = FALSE)
+        approach = "gaussian", iterative = FALSE)
     Condition
       Error in `get_parameters()`:
       ! `confounding` must be a logical (vector).
@@ -184,7 +184,7 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, prediction_zero = p0, asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5), confounding = c(TRUE, FALSE), approach = "gaussian",
-        adaptive = FALSE)
+        iterative = FALSE)
     Condition
       Error in `check_and_set_confounding()`:
       ! `confounding` must either be a single logical or a vector of logicals of the same length as the number of components in `causal_ordering` (3).
