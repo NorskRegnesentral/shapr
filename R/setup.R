@@ -186,6 +186,7 @@ get_parameters <- function(approach,
                            is_python,
                            output_args = list(),
                            extra_computation_args = list(),
+                           testing = FALSE,
                            ...) {
   # Check input type for approach
 
