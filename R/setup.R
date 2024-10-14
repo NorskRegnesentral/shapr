@@ -1189,7 +1189,7 @@ check_computability <- function(internal) {
           paste0(
             "Due to computation time, we recommend not computing asymmetric Shapley values exactly \n",
             "with all valid causal coalitions (", max_n_coalitions_causal, ") when larger than 5000.\n",
-            "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
+            "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE.\n"
           )
         )
       }
@@ -1220,7 +1220,7 @@ check_computability <- function(internal) {
       paste0(
         "Due to computation time, we recommend not computing causal Shapley values exactly \n",
         "with all valid causal coalitions when there are more than 1000 due to the long causal sampling time. \n",
-        "Consider reducing max_n_coalitions and enabling adaptive estimation with adaptive = TRUE.\n"
+        "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE.\n"
       )
     }
   } else {
