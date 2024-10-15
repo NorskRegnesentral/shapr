@@ -10,20 +10,12 @@
 #' @export
 setup_approach <- function(internal, ...) {
 
-  print("HERE1")
-
   verbose <- internal$parameters$verbose
-
-  print("HERE2")
 
   approach <- internal$parameters$approach
 
-  print("HERE3")
-
   iter <- length(internal$iter_list)
   X <- internal$iter_list[[iter]]$X
-
-  print("HERE4")
 
 
   needs_X <- c("regression_surrogate", "vaeac")

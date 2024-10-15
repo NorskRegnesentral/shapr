@@ -1,3 +1,10 @@
+#' Printing startup messages with cli
+#'
+#' @inheritParams default_doc_explain
+#' @inheritParams explain
+#'
+#' @export
+#' @keywords internal
 cli_startup <- function(internal, model, verbose) {
   init_time <- internal$timing_list$init_time
 

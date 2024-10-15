@@ -122,7 +122,7 @@ def explain(
       only over the explicands, and only over the coalitions.
     '''
 
-    init_time = datetime.now()
+    init_time = base.Sys_time()#datetime.now()
 
 
     if seed is not None:
@@ -185,9 +185,30 @@ def explain(
       confounding = maybe_null(confounding), # Might do some conversion here
       output_args = output_args, # Might do some conversion here
       extra_computation_args = extra_computation_args, # Might do some conversion here
+      init_time = init_time,
       is_python=True,
       **kwargs
     )
+
+    # Gets predict_model (if not passed to explain) and checks that predict_model gives correct format
+    predict_model = get_predict_model(x_test=x_train.head(2), predict_model=predict_model, model=model)
+
+    rinternal = additional_regression_setup(
+      rinternal, 
+      model, 
+      predict_model, 
+      x_train, 
+      x_explain)
+
+    rinternal = shapr.setup_approach(internal = rinternal) # model and predict_model are not supported in Python
+
+    converged = False
+    iter = len(rinternal.rx2('iter_list'))
+
+    if seed is not None:
+      base.set_seed(seed)
+
+    shapr.cli_startup(rinternal, "bla", verbose)
 
     return rinternal
 
@@ -373,6 +394,15 @@ def compute_time(timing_list):
   }
 
   return timing_output
+
+
+def additional_regression_setup(rinternal, model, predict_model, x_train, x_explain):
+  # Add the predicted response of the training and explain data to the internal list for regression-based methods
+  regression = rinternal.rx2("parameters").rx2("regression")[0]
+  if regression:
+    rinternal = regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain)
+  
+  return rinternal
 
 
 def regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain):

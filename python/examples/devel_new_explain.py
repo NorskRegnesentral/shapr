@@ -18,7 +18,11 @@ test = explain(
     approach = 'empirical',
     prediction_zero = dfy_train.mean().item(),
 )
-print(df_shapley)
+
+parameters = r2py(test.rx2('parameters'))
+
+parameters = recurse_r_tree(test.rx2('parameters'))
+test
 
 """ 
        none    MedInc  HouseAge  AveRooms  AveBedrms  Population  AveOccup  \
