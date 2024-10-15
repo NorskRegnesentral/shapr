@@ -406,6 +406,8 @@ explain <- function(model,
     # Check convergence based on estimates and standard deviations (and thresholds)
     internal <- check_convergence(internal)
 
+    internal <- check_reduction(internal)
+
     # Save intermediate results
     save_results(internal)
 

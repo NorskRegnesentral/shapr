@@ -5,6 +5,8 @@
 // [[Rcpp::export]]
 
 arma::mat solve_cpp(arma::mat A, arma::mat b){
+    // Using this function because it proceeds with the calculation even if the matrix is singular.
+    // In practice, meaning that also small batch sizes can be used.
     return solve(A, b);
 }
 

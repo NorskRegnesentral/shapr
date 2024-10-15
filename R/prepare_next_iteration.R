@@ -44,7 +44,7 @@ prepare_next_iteration <- function(internal) {
       # Sample more keeping the current samples
       next_iter_list$exact <- FALSE
       next_iter_list$n_coalitions <- proposal_next_n_coalitions
-      next_iter_list$compute_sd <- TRUE
+      next_iter_list$compute_sd <- TRUE # TODO: should this equal internal$parameters$adaptive_arguments$compute_sd?
     }
 
     next_iter_list$reduction_factor <- ifelse(

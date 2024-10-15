@@ -74,18 +74,22 @@ p0 <- mean(y_train)
 
 
 set.seed(465132)
-inds = 1:5#1:n_explain
+inds = 1:10#1:n_explain
 
 x_explain= x_explain[inds,]
 x_train = x_train
 approach = "gaussian"
 prediction_zero = p0
 adaptive = TRUE
-n_boot_samps = 10
-adaptive_arguments = list(initial_n_coalitions = 10,
-                          fixed_n_coalitions_per_iter = 10,
-                          convergence_tolerance = 0.00001,
-                          n_boot_samps = n_boot_samps)
+n_boot_samps = 1000
+adaptive_arguments = list(initial_n_coalitions = 60,
+                          fixed_n_coalitions_per_iter = 20,
+                          convergence_tolerance = 1e-6,
+                          n_boot_samps = n_boot_samps,
+                          shapley_threshold_val = 0.1,
+                          shapley_threshold_prob = 0.2,
+                          allow_feature_reduction = TRUE
+                          )
 
 paired_shap_sampling = TRUE
 max_n_coalitions = 200
@@ -104,7 +108,7 @@ shapley_reweighting = "none" # tmp # "on_N" # TODO: Make "on_N" the default late
 prev_shapr_object = NULL
 #
 
-devtools::load_all()
+# devtools::load_all()
 # rm(list = c("predict_model"))
 
 # debugonce(explain)
@@ -149,13 +153,16 @@ expl <- explain(
 # adaptive_arguments$fixed_n_coalitions_per_iter = 100
 # max_n_coalitions = 1000
 
-filename = paste0("sd_comparison_", adaptive_arguments$initial_n_coalitions, "_", adaptive_arguments$fixed_n_coalitions_per_iter, "_", max_n_coalitions, ".csv")
+filename = paste0("frida_results/sd_ests_", adaptive_arguments$initial_n_coalitions, "_", adaptive_arguments$fixed_n_coalitions_per_iter, "_", max_n_coalitions, ".RDS")
 
 if (file.exists(filename)){
-  df = read.csv(filename)
+  df_list = readRDS(filename)
+  true_sd = df_list$true_sd
+  mj_sd_est = df_list$mj_sd_est
+  frida_sd_est = df_list$frida_sd_est
 } else {
 
-  true_sd = list()
+  true_sd = array(NA, dim = c(length(expl$internal$iter_list), nrow(x_explain), m))
   set.seed(432)
   seeds = sample.int(1000, n_boot_samps, replace = FALSE)
   for (i in 1:length(expl$internal$iter_list)){
@@ -172,52 +179,87 @@ if (file.exists(filename)){
                       max_n_coalitions = n_coals,
                       adaptive_arguments = list(compute_sd = FALSE),
                       seed = seeds[j],
+                      paired_shap_sampling = paired_shap_sampling
                       )
 
       col_inds = which(colnames(kshap$shapley_values) %in% colnames(x_explain))
       true_sd_array[,,j] = as.matrix(kshap$shapley_values[, ..col_inds])
     }
 
-    true_sd[[i]] <- apply(true_sd_array, c(1, 2), sd)
+    true_sd[i, , ] <- apply(true_sd_array, c(1, 2), sd)
   }
 
 
-  mj_sd_est = list()
-  frida_sd_est = list()
+  mj_sd_est = array(NA, dim = c(length(expl$internal$iter_list), nrow(x_explain), m))
+  frida_sd_est = array(NA, dim = c(length(expl$internal$iter_list), nrow(x_explain), m))
   for (i in 1:length(expl$internal$iter_list)){
     sd_est = expl$internal$iter_list[[i]]$dt_shapley_sd
     col_inds = which(colnames(sd_est) %in% colnames(x_explain))
 
-    mj_sd_est[[i]] = sd_est[, ..col_inds]
+    mj_sd_est[i, ,] = as.matrix(sd_est[, ..col_inds])
 
-    frida_sd_est[[i]] = expl$internal$iter_list[[i]]$frida_boot_shapley_values
+    frida_sd_est[i, , ] = as.matrix(expl$internal$iter_list[[i]]$frida_boot_shapley_values)
   }
 
-  mae = function(x, y){
-    return(mean(abs(as.matrix(x) - as.matrix(y))))
-  }
+  ending = paste0(adaptive_arguments$initial_n_coalitions, "_", adaptive_arguments$fixed_n_coalitions_per_iter, "_", max_n_coalitions)
+  saveRDS(list(true_sd = true_sd, mj_sd_est = mj_sd_est, frida_sd_est = frida_sd_est),
+  paste0("frida_results/sd_ests_", ending, ".RDS"))
+
+#   mae = function(x, y){
+#     return(mean(abs(as.matrix(x) - as.matrix(y))))
+#   }
 
 
-  df = data.frame(mae_frida = numeric(length(true_sd)),
-                  mae_mj = numeric(length(true_sd)),
-                  n_coals = numeric(length(true_sd))
-                  )
+#   df = data.frame(mae_frida = numeric(length(true_sd)),
+#                   mae_mj = numeric(length(true_sd)),
+#                   n_coals = numeric(length(true_sd))
+#                   )
 
-  for (i in 1:length(true_sd)){
-    df$mae_frida[i] = mae(true_sd[[i]], frida_sd_est[[i]])
-    df$mae_mj[i] = mae(true_sd[[i]], mj_sd_est[[i]])
-    df$n_coals[i] = expl$internal$iter_list[[i]]$n_coalitions
-  }
+#   for (i in 1:length(true_sd)){
+#     df$mae_frida[i] = mae(true_sd[[i]], frida_sd_est[[i]])
+#     df$mae_mj[i] = mae(true_sd[[i]], mj_sd_est[[i]])
+#     df$n_coals[i] = expl$internal$iter_list[[i]]$n_coalitions
+#   }
 
-  df = melt(df, id.vars = "n_coals")
+#   df = melt(df, id.vars = "n_coals")
 
-  write.csv(df, filename)
+#   write.csv(df, filename)
+}
+obs_to_plot = 1
+df = data.frame(true = numeric(length(true_sd[, obs_to_plot, ])),
+                frida = numeric(length(true_sd[, obs_to_plot, ])),
+                martin = numeric(length(true_sd[, obs_to_plot, ]))
+                # iter_nr = numeric(length(true_sd[, obs_to_plot, ])),
+                # feature_name = string(length(true_sd[, obs_to_plot, ]))
+                )
+for (i in 1:dim(true_sd)[1]){
+  df[(1 + m*(i-1)):((i)*m), "true"] = true_sd[i, obs_to_plot, ]
+  df[(1 + m*(i-1)):((i)*m), "feature_name"] = colnames(x_explain)
+  df[(1 + m*(i-1)):((i)*m), "frida"] = frida_sd_est[i, obs_to_plot, ]
+  df[(1 + m*(i-1)):((i)*m), "martin"] = mj_sd_est[i, obs_to_plot, ]
 }
 
-ggplot(df, aes(x = n_coals, y = value, color = variable)) +
+n_coals = c()
+for (i in 1:length(expl$internal$iter_list)){
+  n_coals = c(n_coals, expl$internal$iter_list[[i]]$n_coalitions)
+}
+df$n_coals = sort(rep(n_coals, dim(true_sd)[3]))
+
+ggplot(df, aes(n_coals, y = true, color = "true")) +
   geom_line() +
+  geom_line(aes(y = frida, color = "frida")) +
+  geom_line(aes(y = martin, color = "martin")) +
+  facet_wrap(~feature_name) +
   labs(title = "Comparison of Shapley value standard deviation estimates",
        x = "Number of coalitions",
-       y = "Mean absolute error")
+       y = "Standard deviation")
+
+
+
+# ggplot(df, aes(x = n_coals, y = value, color = variable)) +
+#   geom_line() +
+#   labs(title = "Comparison of Shapley value standard deviation estimates",
+#        x = "Number of coalitions",
+#        y = "Mean absolute error")
 
 ####################################################
