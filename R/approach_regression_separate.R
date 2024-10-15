@@ -443,7 +443,7 @@ regression.check_namespaces <- function() {
   }
 }
 
-
+# Message functions ====================================================================================================
 #' Produce message about which batch prepare_data is working on
 #'
 #' @param regression.results The results of the CV procedures.
@@ -492,10 +492,8 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
       seq_along(feature_values_rmse),
       function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "left")
     )
-    msg <- c(msg, paste0(
-      "#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "),
-      "\n"
-    ))
+    msg <-
+      c(msg, paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), "\n"))
   }
   cli::cli({
     cli::cli_h3(msg0)

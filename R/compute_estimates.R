@@ -61,8 +61,6 @@ compute_estimates <- function(internal, vS_list) {
   internal$iter_list[[iter]]$vS_list <- vS_list
   internal$iter_list[[iter]]$dt_vS <- processed_vS_list$dt_vS
 
-  # internal$timing$shapley_computation <- Sys.time()
-
   # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
   internal$output <- processed_vS_list
 
