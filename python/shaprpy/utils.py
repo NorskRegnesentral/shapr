@@ -55,3 +55,4 @@ def recurse_r_tree(data):
           raise KeyError(f'Could not proceed, unknown data type {type(data)}')
       else:
           return data  # We reached the end of recursion
+      
