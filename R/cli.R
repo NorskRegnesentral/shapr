@@ -70,7 +70,38 @@ cli_startup <- function(internal, model, verbose) {
   }
 }
 
+#' Printing messages in compute_vS with cli
+#'
+#' @inheritParams default_doc_explain
+#' @inheritParams explain
+#'
+#' @export
+#' @keywords internal
+cli_compute_vS <- function(internal){
 
+  verbose <- internal$parameters$verbose
+  approach <- internal$parameters$approach
+
+  if ("progress" %in% verbose) {
+    cli::cli_progress_step("Computing vS")
+  }
+  if ("vS_details" %in% verbose) {
+    if ("regression_separate" %in% approach) {
+      tuning <- internal$parameters$regression.tune
+      if (isTRUE(tuning)) {
+        cli::cli_h2("Extra info about the tuning of the regression model")
+      }
+    }
+  }
+}
+
+#' Printing messages in iterative procedure with cli
+#'
+#' @inheritParams default_doc_explain
+#' @inheritParams explain
+#'
+#' @export
+#' @keywords internal
 cli_iter <- function(verbose, internal, iter) {
   iterative <- internal$parameters$iterative
   asymmetric <- internal$parameters$asymmetric

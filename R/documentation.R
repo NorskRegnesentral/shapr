@@ -37,6 +37,9 @@ default_doc <- function(internal, model, predict_model, output_size, extra, ...)
 #' @param index_features Positive integer vector. Specifies the id_coalition to
 #' apply to the present method. `NULL` means all coalitions. Only used internally.
 #'
+#' @param iter Integer.
+#' The iteration number. Only used internally.
+#'
 #' @keywords internal
 default_doc_explain <- function(internal, index_features) {
   NULL
