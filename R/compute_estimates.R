@@ -8,7 +8,7 @@
 #' @keywords internal
 compute_estimates <- function(internal, vS_list) {
   verbose <- internal$parameters$verbose
-  cli_id <- internal$parameter$cli_id
+  type <- internal$parameters$type
 
   internal$timing_list$compute_vS <- Sys.time()
 
@@ -50,10 +50,12 @@ compute_estimates <- function(internal, vS_list) {
 
 
   # Adding explain_id to the output dt
-  dt_shapley_est[, explain_id := .I]
-  setcolorder(dt_shapley_est, "explain_id")
-  dt_shapley_sd[, explain_id := .I]
-  setcolorder(dt_shapley_sd, "explain_id")
+  if(type != "forecast"){
+    dt_shapley_est[, explain_id := .I]
+    setcolorder(dt_shapley_est, "explain_id")
+    dt_shapley_sd[, explain_id := .I]
+    setcolorder(dt_shapley_sd, "explain_id")
+  }
 
 
   internal$iter_list[[iter]]$dt_shapley_est <- dt_shapley_est
