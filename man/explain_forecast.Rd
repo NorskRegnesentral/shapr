@@ -17,6 +17,8 @@ explain_forecast(
   prediction_zero,
   max_n_coalitions = NULL,
   adaptive = NULL,
+  adaptive_arguments = list(),
+  shapley_reweighting = "on_all_cond",
   group_lags = TRUE,
   group = NULL,
   n_MC_samples = 1000,
@@ -94,6 +96,23 @@ If the variances are too high, we estimate the number of required samples to rea
 coalitions.
 The process is repeated until the variances are below the threshold.
 Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_arguments}.}
+
+\item{adaptive_arguments}{Named list.
+Specifices the arguments for the adaptive procedure.
+See \code{\link[=get_adaptive_arguments_default]{get_adaptive_arguments_default()}} for description of the arguments and their default values.}
+
+\item{shapley_reweighting}{String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+the randomness and thereby the variance of the Shapley value estimates.
+One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
+\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
+\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+\code{'on_all'} means the original sampling probabilities are used for all coalitions.
+\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+This method is preferred as it has performed the best in simulation studies.}
 
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
