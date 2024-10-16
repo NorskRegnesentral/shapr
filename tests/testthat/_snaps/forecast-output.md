@@ -10,6 +10,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 4, 
       and is therefore set to 2^n_features = 4.
       
+      * Model class: <ar>
+      * Approach: empirical
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 2
+      * Number of observations to explain: 2
+      
+      -- Main computation started --
+      
+      i Using 4 of 4 coalitions. 
     Output
          explain_idx horizon  none  Temp.1  Temp.2
                <int>   <int> <num>   <num>   <num>
@@ -32,6 +41,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 128, 
       and is therefore set to 2^n_features = 128.
       
+      * Model class: <Arima>
+      * Approach: empirical
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 7
+      * Number of observations to explain: 2
+      
+      -- Main computation started --
+      
+      i Using 128 of 128 coalitions. 
     Output
          explain_idx horizon  none  Temp.1 Temp.2  Wind.1  Wind.2 Wind.F1 Wind.F2
                <int>   <int> <num>   <num>  <num>   <num>   <num>   <num>   <num>
@@ -62,6 +80,15 @@
       max_n_coalitions is NULL or larger than or 2^n_features = 4, 
       and is therefore set to 2^n_features = 4.
       
+      * Model class: <Arima>
+      * Approach: empirical
+      * Adaptive estimation: FALSE
+      * Number of feature-wise Shapley values: 2
+      * Number of observations to explain: 2
+      
+      -- Main computation started --
+      
+      i Using 4 of 4 coalitions. 
     Output
          explain_idx horizon  none  Temp.1 Temp.2
                <int>   <int> <num>   <num>  <num>

@@ -6,7 +6,7 @@
       explain_forecast(testing = TRUE, model = model_custom_arima_temp, y = data[1:
       150, "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
-      prediction_zero = p0_ar, n_batches = 1)
+      prediction_zero = p0_ar)
     Message
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
@@ -27,7 +27,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = y_wrong_format,
         xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
         explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
-        prediction_zero = p0_ar, n_batches = 1)
+        prediction_zero = p0_ar)
     Condition
       Error in `get_data_forecast()`:
       ! `y` has 2 columns (Temp,Wind).
@@ -41,7 +41,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = xreg_wrong_format, train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
-      prediction_zero = p0_ar, n_batches = 1)
+      prediction_zero = p0_ar)
     Condition
       Error in `get_data_forecast()`:
       ! `xreg` has 2 columns (Temp,Wind).
@@ -56,7 +56,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = xreg_no_column_names, train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
-      prediction_zero = p0_ar, n_batches = 1)
+      prediction_zero = p0_ar)
     Condition
       Error in `get_data_forecast()`:
       ! `xreg` misses column names.
@@ -66,8 +66,7 @@
     Code
       explain_forecast(testing = TRUE, y = data[1:150, "Temp"], xreg = data[, "Wind"],
       train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 2,
-      explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
-      n_batches = 1)
+      explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `explain_forecast()`:
       ! argument "model" is missing, with no default
@@ -79,7 +78,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
-      prediction_zero = p0_wrong_length, n_batches = 1)
+      prediction_zero = p0_wrong_length)
     Condition
       Error in `get_parameters()`:
       ! `prediction_zero` (77.8823529411765, 77.8823529411765) must be numeric and match the output size of the model (3).
@@ -159,7 +158,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = train_idx_too_short, explain_idx = 149:
         150, explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
-      prediction_zero = p0_ar, n_batches = 1)
+      prediction_zero = p0_ar)
     Condition
       Error in `get_parameters()`:
       ! `train_idx` must be a vector of positive finite integers and length > 1.
@@ -171,7 +170,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = train_idx_not_integer, explain_idx = 149:
         150, explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
-      prediction_zero = p0_ar, n_batches = 1)
+      prediction_zero = p0_ar)
     Condition
       Error in `get_parameters()`:
       ! `train_idx` must be a vector of positive finite integers and length > 1.
@@ -183,7 +182,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = train_idx_out_of_range,
       explain_idx = 149:150, explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3,
-      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_data_forecast()`:
       ! The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data.
@@ -196,7 +195,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = explain_idx_not_integer,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
-      prediction_zero = p0_ar, n_batches = 1)
+      prediction_zero = p0_ar)
     Condition
       Error in `get_parameters()`:
       ! `explain_idx` must be a vector of positive finite integers.
@@ -208,7 +207,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = explain_idx_out_of_range,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
-      prediction_zero = p0_ar, n_batches = 1)
+      prediction_zero = p0_ar)
     Condition
       Error in `get_data_forecast()`:
       ! The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data.
@@ -221,7 +220,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags_negative, explain_xreg_lags = 2, horizon = 3,
-      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_parameters()`:
       ! `explain_y_lags` must be a vector of positive finite integers.
@@ -233,7 +232,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags_not_integer, explain_xreg_lags = 2, horizon = 3,
-      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_parameters()`:
       ! `explain_y_lags` must be a vector of positive finite integers.
@@ -245,7 +244,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags_more_than_one, explain_xreg_lags = 2, horizon = 3,
-      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_data_forecast()`:
       ! `y` has 1 columns (Temp).
@@ -258,7 +257,7 @@
       explain_y_lags_zero <- 0
       explain_forecast(testing = TRUE, model = model_arima_temp_noxreg, y = data[1:
       150, "Temp"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 0,
-      horizon = 3, approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      horizon = 3, approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_data_forecast()`:
       ! `explain_y_lags=0` is not allowed for models without exogeneous variables
@@ -270,7 +269,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = explain_xreg_lags_negative, horizon = 3,
-      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_parameters()`:
       ! `explain_xreg_lags` must be a vector of positive finite integers.
@@ -282,7 +281,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = explain_xreg_lags_not_integer, horizon = 3,
-      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_parameters()`:
       ! `explain_xreg_lags` must be a vector of positive finite integers.
@@ -294,7 +293,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = explain_x_lags_wrong_length, horizon = 3,
-      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_data_forecast()`:
       ! `xreg` has 1 columns (Wind).
@@ -308,7 +307,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = horizon_negative,
-      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_parameters()`:
       ! `horizon` must be a vector (or scalar) of positive integers.
@@ -320,7 +319,7 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data[1:150,
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = horizon_not_integer,
-      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+      approach = "independence", prediction_zero = p0_ar)
     Condition
       Error in `get_parameters()`:
       ! `horizon` must be a vector (or scalar) of positive integers.
