@@ -531,6 +531,10 @@ create_S_batch <- function(internal, seed = NULL) {
 
   coalition_map <- internal$iter_list[[iter]]$coalition_map
 
+  if (type == "forecast") {
+    id_coalition_mapper_dt <- internal$objects$id_coalition_mapper_dt
+    full_ids <- id_coalition_mapper_dt$id_coalition[id_coalition_mapper_dt$full]
+  }
 
   X0 <- copy(internal$iter_list[[iter]]$X)
 
@@ -551,7 +555,6 @@ create_S_batch <- function(internal, seed = NULL) {
 
   if (length(approach0) > 1) {
     if (type == "forecast") {
-      full_ids <- internal$objects$id_coalition_mapper_dt$id_coalition[internal$objects$id_coalition_mapper_dt$full]
       X0[!(coalition_size == 0 | id_coalition %in% full_ids), approach := approach0[coalition_size]]
     } else {
       X0[!(coalition_size %in% c(0, n_shapley_values)), approach := approach0[coalition_size]]
@@ -604,7 +607,6 @@ create_S_batch <- function(internal, seed = NULL) {
     }
   } else {
     if (type == "forecast") {
-      full_ids <- internal$objects$id_coalition_mapper_dt$id_coalition[internal$objects$id_coalition_mapper_dt$full]
       X0[!(coalition_size == 0 | id_coalition %in% full_ids), approach := approach0]
     } else {
       X0[!(coalition_size %in% c(0, n_shapley_values)), approach := approach0]
@@ -615,7 +617,6 @@ create_S_batch <- function(internal, seed = NULL) {
     data.table::setorder(X0, randomorder)
     data.table::setorder(X0, shapley_weight)
     if (type == "forecast") {
-      full_ids <- internal$objects$id_coalition_mapper_dt$id_coalition[internal$objects$id_coalition_mapper_dt$full]
       X0[!(coalition_size == 0 | id_coalition %in% full_ids), batch := ceiling(.I / .N * n_batches)]
     } else {
       X0[!(coalition_size %in% c(0, n_shapley_values)), batch := ceiling(.I / .N * n_batches)]
@@ -625,7 +626,6 @@ create_S_batch <- function(internal, seed = NULL) {
   # Assigning batch 1 (which always is the smallest) to the full prediction.
   X0[, randomorder := NULL]
   if (type == "forecast") {
-    full_ids <- internal$objects$id_coalition_mapper_dt$id_coalition[internal$objects$id_coalition_mapper_dt$full]
     X0[id_coalition %in% full_ids, batch := 1]
   } else {
     X0[id_coalition == max(id_coalition), batch := 1]
@@ -686,10 +686,11 @@ shapley_setup_forecast <- function(internal) {
   # Apply create_coalition_table, weigth_matrix and coalition_matrix_cpp to each of the different horizons
   for (i in seq_along(horizon_features)) {
     if (is_groupwise && !is.null(horizon_group)) {
-      this_coal_feature_list <- coal_feature_list[sapply(names(coal_feature_list), function (x) x %in% horizon_group[[i]])]
+      this_coal_feature_list <- coal_feature_list[sapply(names(coal_feature_list),
+                                                         function(x) x %in% horizon_group[[i]])]
     } else {
       this_coal_feature_list <- lapply(coal_feature_list, function(x) x[x %in% horizon_features[[i]]])
-      this_coal_feature_list <- this_coal_feature_list[sapply(this_coal_feature_list, function (x) length(x) != 0)]
+      this_coal_feature_list <- this_coal_feature_list[sapply(this_coal_feature_list, function(x) length(x) != 0)]
     }
 
     n_this_featcomb <- length(this_coal_feature_list)

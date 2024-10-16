@@ -50,7 +50,7 @@ compute_estimates <- function(internal, vS_list) {
 
 
   # Adding explain_id to the output dt
-  if(type != "forecast"){
+  if (type != "forecast") {
     dt_shapley_est[, explain_id := .I]
     setcolorder(dt_shapley_est, "explain_id")
     dt_shapley_sd[, explain_id := .I]
@@ -328,13 +328,13 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
     if (type == "forecast") {
-      # Filter out everything which represents empty (i.e. no changed features) and everything which is all (i.e. all features are changed, will be multiple to filter out for horizon > 1).
+      # Filter out everything which represents empty (i.e. no changed features) and everything which is all
+      # (i.e. all features are changed, will be multiple to filter out for horizon > 1).
       full_ids <- internal$objects$id_coalition_mapper_dt$id_coalition[internal$objects$id_coalition_mapper_dt$full]
       X_boot[coalition_size == 0 | id_coalition %in% full_ids, shapley_weight := X_org[1, shapley_weight]]
     } else {
       X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
     }
-
   } else {
     X_boot0 <- X_samp[
       sample.int(

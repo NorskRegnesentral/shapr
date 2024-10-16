@@ -47,7 +47,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         horizon = 3,
         approach = "independence",
         prediction_zero = p0_ar
-        )
+      )
     },
     error = TRUE
   )
@@ -69,7 +69,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         horizon = 3,
         approach = "independence",
         prediction_zero = p0_ar
-        )
+      )
     },
     error = TRUE
   )
@@ -92,7 +92,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         horizon = 3,
         approach = "independence",
         prediction_zero = p0_ar
-        )
+      )
     },
     error = TRUE
   )
