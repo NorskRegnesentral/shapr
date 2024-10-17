@@ -19,8 +19,7 @@ test_that("error with custom model without providing predict_model", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -47,8 +46,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -70,8 +68,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -94,8 +91,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -118,8 +114,7 @@ test_that("erroneous input: `model`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -146,8 +141,7 @@ test_that("erroneous input: `prediction_zero`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_wrong_length,
-        n_batches = 1
+        prediction_zero = p0_wrong_length
       )
     },
     error = TRUE
@@ -177,7 +171,6 @@ test_that("erroneous input: `max_n_coalitions`", {
       horizon = horizon,
       approach = "independence",
       prediction_zero = p0_ar,
-      n_batches = 1,
       max_n_coalitions = n_coalitions,
       group_lags = FALSE
     )
@@ -204,7 +197,6 @@ test_that("erroneous input: `max_n_coalitions`", {
       horizon = horizon,
       approach = "independence",
       prediction_zero = p0_ar,
-      n_batches = 1,
       max_n_coalitions = n_coalitions,
       group_lags = TRUE
     )
@@ -231,8 +223,7 @@ test_that("erroneous input: `train_idx`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -255,8 +246,7 @@ test_that("erroneous input: `train_idx`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -278,8 +268,7 @@ test_that("erroneous input: `train_idx`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -305,8 +294,7 @@ test_that("erroneous input: `explain_idx`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -328,8 +316,7 @@ test_that("erroneous input: `explain_idx`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -355,8 +342,7 @@ test_that("erroneous input: `explain_y_lags`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -378,8 +364,7 @@ test_that("erroneous input: `explain_y_lags`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -401,8 +386,7 @@ test_that("erroneous input: `explain_y_lags`", {
         explain_xreg_lags = 2,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -423,8 +407,7 @@ test_that("erroneous input: `explain_y_lags`", {
         explain_y_lags = 0,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -451,8 +434,7 @@ test_that("erroneous input: `explain_x_lags`", {
         explain_xreg_lags = explain_xreg_lags_negative,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -474,8 +456,7 @@ test_that("erroneous input: `explain_x_lags`", {
         explain_xreg_lags = explain_xreg_lags_not_integer,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -497,8 +478,7 @@ test_that("erroneous input: `explain_x_lags`", {
         explain_xreg_lags = explain_x_lags_wrong_length,
         horizon = 3,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -524,8 +504,7 @@ test_that("erroneous input: `horizon`", {
         explain_xreg_lags = 2,
         horizon = horizon_negative,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE
@@ -547,8 +526,7 @@ test_that("erroneous input: `horizon`", {
         explain_xreg_lags = 2,
         horizon = horizon_not_integer,
         approach = "independence",
-        prediction_zero = p0_ar,
-        n_batches = 1
+        prediction_zero = p0_ar
       )
     },
     error = TRUE

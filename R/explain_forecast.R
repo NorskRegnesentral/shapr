@@ -96,6 +96,8 @@ explain_forecast <- function(model,
                              prediction_zero,
                              max_n_coalitions = NULL,
                              adaptive = NULL,
+                             adaptive_arguments = list(),
+                             shapley_reweighting = "on_all_cond",
                              group_lags = TRUE,
                              group = NULL,
                              n_MC_samples = 1e3,
@@ -134,6 +136,9 @@ explain_forecast <- function(model,
     type = "forecast",
     horizon = horizon,
     adaptive = adaptive,
+    adaptive_arguments = adaptive_arguments,
+    shapley_reweighting = shapley_reweighting,
+    init_time = init_time,
     y = y,
     xreg = xreg,
     train_idx = train_idx,
@@ -397,7 +402,7 @@ lag_data <- function(x, lags) {
 reg_forecast_setup <- function(x, horizon, group) {
   fcast <- matrix(NA, nrow(x) - horizon + 1, 0)
   names <- character()
-  horizon_group <- lapply(seq_len(horizon), function (i) names(group)[!(names(group) %in% colnames(x))])
+  horizon_group <- lapply(seq_len(horizon), function(i) names(group)[!(names(group) %in% colnames(x))])
   for (i in seq_len(ncol(x))) {
     names_i <- paste0(colnames(x)[i], ".F", seq_len(horizon))
     names <- c(names, names_i)

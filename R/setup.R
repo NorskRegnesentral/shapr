@@ -114,7 +114,6 @@ setup <- function(x_train,
     internal$parameters$group_lags <- group_lags
 
     # TODO: Consider handling this parameter update somewhere else (like in get_extra_parameters?)
-
   } else {
     internal$data <- get_data(x_train, x_explain)
   }
@@ -487,7 +486,8 @@ get_extra_parameters <- function(internal, type) {
     if (internal$parameters$group_lags) {
       internal$parameters$group <- internal$data$group
     }
-    internal$parameters$horizon_features <- lapply(internal$data$horizon_group, function (x) as.character(unlist(internal$data$group[x])))
+    internal$parameters$horizon_features <- lapply(internal$data$horizon_group,
+                                                   function(x) as.character(unlist(internal$data$group[x])))
   }
 
   # get number of features and observations to explain
@@ -528,6 +528,9 @@ get_extra_parameters <- function(internal, type) {
       } else {
         internal$parameters$shap_names <- internal$parameters$group_names
       }
+    } else {
+      # For normal explain
+      internal$parameters$shap_names <- internal$parameters$group_names
     }
 
     internal$parameters$n_groups <- length(group)
