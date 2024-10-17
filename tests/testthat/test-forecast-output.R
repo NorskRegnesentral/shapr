@@ -58,7 +58,7 @@ test_that("forecast_output_arima_numeric_adaptive", {
       adaptive = TRUE,
       adaptive_arguments = list(initial_n_coalitions = 10)
     ),
-    "forecast_output_arima_numeric"
+    "forecast_output_arima_numeric_adaptive"
   )
 })
 
@@ -81,7 +81,7 @@ test_that("forecast_output_arima_numeric_adaptive_groups", {
       adaptive = TRUE,
       adaptive_arguments = list(initial_n_coalitions = 10, convergence_tolerance = 7e-3)
     ),
-    "forecast_output_arima_numeric"
+    "forecast_output_arima_numeric_adaptive_groups"
   )
 })
 

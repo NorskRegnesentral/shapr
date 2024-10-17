@@ -68,6 +68,48 @@
       5:  0.5630
       6: -0.7615
 
+# forecast_output_arima_numeric_adaptive
+
+    Code
+      (out <- code)
+    Message
+      Note: Feature names extracted from the model contains NA.
+      Consistency checks between model and data is therefore disabled.
+      
+      * Model class: <Arima>
+      * Approach: empirical
+      * Adaptive estimation: TRUE
+      * Number of feature-wise Shapley values: 9
+      * Number of observations to explain: 2
+      
+      -- Adaptive computation started --
+      
+      -- Iteration 1 -----------------------------------------------------------------
+      i Using 10 of 512 coalitions, 10 new. 
+      
+      -- Iteration 2 -----------------------------------------------------------------
+      i Using 30 of 512 coalitions, 4 new. 
+      
+      -- Iteration 3 -----------------------------------------------------------------
+      i Using 78 of 512 coalitions, 6 new. 
+    Output
+         explain_idx horizon  none Temp.1  Temp.2 Temp.3 Wind.1  Wind.2  Wind.3
+               <int>   <int> <num>  <num>   <num>  <num>  <num>   <num>   <num>
+      1:         149       1 77.88 -2.795 -4.5597 -1.114  1.564 -1.8995  0.2087
+      2:         150       1 77.88  4.024 -0.5774 -4.589 -2.234  0.1985 -2.2827
+      3:         149       2 77.88 -3.701 -4.2427 -1.326  1.465 -1.9227  0.7060
+      4:         150       2 77.88  3.460 -0.9158 -5.264 -2.452  0.7709 -1.7864
+      5:         149       3 77.88 -4.721 -3.4208 -1.503  1.172 -0.4564 -0.6058
+      6:         150       3 77.88  2.811  0.4206 -5.361 -1.388  0.0752 -0.2130
+         Wind.F1 Wind.F2 Wind.F3
+           <num>   <num>   <num>
+      1: -1.9118      NA      NA
+      2: -0.1747      NA      NA
+      3: -1.1883 -0.6744      NA
+      4:  0.7128  1.9982      NA
+      5: -1.5436 -0.5418  2.8952
+      6: -0.6202 -0.8545  0.4549
+
 # forecast_output_arima_numeric_no_xreg
 
     Code

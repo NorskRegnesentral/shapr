@@ -12,8 +12,8 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
-      and is therefore set to 2^n_groups = 4.
+      max_n_coalitions is NULL or larger than or 2^n_groups = 16, 
+      and is therefore set to 2^n_groups = 16.
       
     Condition
       Error in `get_predict_model()`:
@@ -94,32 +94,42 @@
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
       horizon = horizon, approach = "independence", prediction_zero = p0_ar,
-      n_batches = 1, max_n_coalitions = n_coalitions, group_lags = FALSE)
+      max_n_coalitions = n_coalitions, group_lags = FALSE)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_coalitions is smaller than or n_features = 7, 
-      and is therefore set to n_features + 1  = 8.
+      max_n_coalitions is smaller than max(10, n_features + 1 = 8),which will result in unreliable results.
+      It is therefore set to 10.
       
+      * Model class: <Arima>
+      * Approach: independence
+      * Adaptive estimation: TRUE
+      * Number of feature-wise Shapley values: 7
+      * Number of observations to explain: 2
+      
+      -- Adaptive computation started --
+      
+      -- Iteration 1 -----------------------------------------------------------------
+      i Using 8 of 128 coalitions, 8 new. 
     Output
-         explain_idx horizon  none Temp.1 Temp.2     Wind.1     Wind.2    Wind.F1
-               <int>   <int> <num>  <num>  <num>      <num>      <num>      <num>
-      1:         149       1 77.88 -2.297 -2.540 -1.366e+00 -1.821e+00 -2.483e+00
-      2:         150       1 77.88  2.103 -1.587 -1.397e+00 -1.863e+00 -2.892e+00
-      3:         149       2 77.88 -7.307  1.332 -7.471e-08 -1.139e+00 -2.278e+00
-      4:         150       2 77.88 -3.021  2.374 -7.391e-08 -1.165e+00 -2.330e+00
-      5:         149       3 77.88 -7.313 -4.369  2.285e+00  1.559e-07  6.062e-08
-      6:         150       3 77.88 -3.028 -3.458  2.337e+00  1.620e-07  6.315e-08
-            Wind.F2 Wind.F3
-              <num>   <num>
-      1:         NA      NA
-      2:         NA      NA
-      3: -1.493e+00      NA
-      4:  6.661e-01      NA
-      5: -9.219e-08  0.6726
-      6: -9.643e-08 -0.5269
+         explain_idx horizon  none  Temp.1  Temp.2  Wind.1  Wind.2 Wind.F1    Wind.F2
+               <int>   <int> <num>   <num>   <num>   <num>   <num>   <num>      <num>
+      1:         149       1 77.88 -6.1669 -3.2230  0.5692  0.5692 -2.2557         NA
+      2:         150       1 77.88 -1.8556 -2.2854  0.5822  0.5822 -2.6587         NA
+      3:         149       2 77.88 -3.7482 -0.8043 -0.6402 -0.6402 -1.1390 -3.912e+00
+      4:         150       2 77.88 -0.3161 -0.7458 -0.1876 -0.1876 -1.1651 -8.742e-01
+      5:         149       3 77.88 -1.7783 -1.7783 -1.7783 -1.1423 -1.7783  2.781e-08
+      6:         150       3 77.88 -0.4531 -0.4531 -0.4531 -1.1683 -0.4531  2.755e-08
+         Wind.F3
+           <num>
+      1:      NA
+      2:      NA
+      3:      NA
+      4:      NA
+      5: -0.4697
+      6: -1.6952
 
 ---
 
@@ -132,24 +142,33 @@
       "Temp"], xreg = data[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
       horizon = horizon, approach = "independence", prediction_zero = p0_ar,
-      n_batches = 1, max_n_coalitions = n_coalitions, group_lags = TRUE)
+      max_n_coalitions = n_coalitions, group_lags = TRUE)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_coalitions is smaller than or n_groups = 2, 
-      and is therefore set to n_groups + 1  = 3.
+      max_n_coalitions is smaller than max(10, n_groups + 1 = 5),which will result in unreliable results.
+      It is therefore set to 10.
       
+      * Model class: <Arima>
+      * Approach: independence
+      * Adaptive estimation: FALSE
+      * Number of group-wise Shapley values: 4
+      * Number of observations to explain: 2
+      
+      -- Main computation started --
+      
+      i Using 5 of 16 coalitions. 
     Output
-         explain_idx horizon  none   Temp   Wind
-               <int>   <int> <num>  <num>  <num>
-      1:         149       1 77.88 -9.390 -1.117
-      2:         150       1 77.88 -4.141 -1.494
-      3:         149       2 77.88 -7.113 -3.771
-      4:         150       2 77.88 -1.812 -1.664
-      5:         149       3 77.88 -7.113 -1.612
-      6:         150       3 77.88 -1.812 -2.864
+         explain_idx horizon  none   Temp    Wind
+               <int>   <int> <num>  <num>   <num>
+      1:         149       1 77.88 -8.252 -2.2557
+      2:         150       1 77.88 -2.977 -2.6587
+      3:         149       2 77.88 -8.252 -2.6320
+      4:         150       2 77.88 -2.977 -0.4990
+      5:         149       3 77.88 -8.256 -0.4697
+      6:         150       3 77.88 -2.981 -1.6952
 
 # erroneous input: `train_idx`
 

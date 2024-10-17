@@ -272,7 +272,7 @@ bootstrap_shapley_outer <- function (internal, dt_vS, n_boot_samps = 100, seed =
   result <- list()
   if (type == "forecast") {
     n_explain <- internal$parameters$n_explain
-    for (i in seq_along(internal$objects$X_list)) {
+    for (i in seq_along(X_list)) {
       X <- X_list[[i]]
       if (is_groupwise) {
         n_shapley_values <- length(internal$data$shap_names)
