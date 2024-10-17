@@ -39,6 +39,52 @@ test_that("forecast_output_arima_numeric", {
   )
 })
 
+test_that("forecast_output_arima_numeric_adaptive", {
+  expect_snapshot_rds(
+    explain_forecast(
+      testing = TRUE,
+      model = model_arima_temp,
+      y = data[1:150, "Temp"],
+      xreg = data[, "Wind"],
+      train_idx = 3:148,
+      explain_idx = 149:150,
+      explain_y_lags = 3,
+      explain_xreg_lags = 3,
+      horizon = 3,
+      approach = "empirical",
+      prediction_zero = p0_ar,
+      group_lags = FALSE,
+      max_n_coalitions = 150,
+      adaptive = TRUE,
+      adaptive_arguments = list(initial_n_coalitions = 10)
+    ),
+    "forecast_output_arima_numeric"
+  )
+})
+
+test_that("forecast_output_arima_numeric_adaptive_groups", {
+  expect_snapshot_rds(
+    explain_forecast(
+      testing = TRUE,
+      model = model_arima_temp2,
+      y = data[1:150, "Temp"],
+      xreg = data[, c("Wind", "Solar.R", "Ozone")],
+      train_idx = 3:148,
+      explain_idx = 149:150,
+      explain_y_lags = 3,
+      explain_xreg_lags = c(3, 3, 3),
+      horizon = 3,
+      approach = "empirical",
+      prediction_zero = p0_ar,
+      group_lags = TRUE,
+      max_n_coalitions = 150,
+      adaptive = TRUE,
+      adaptive_arguments = list(initial_n_coalitions = 10, convergence_tolerance = 7e-3)
+    ),
+    "forecast_output_arima_numeric"
+  )
+})
+
 test_that("forecast_output_arima_numeric_no_xreg", {
   expect_snapshot_rds(
     explain_forecast(

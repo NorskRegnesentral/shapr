@@ -1,8 +1,8 @@
 options(digits = 5) # To avoid round off errors when printing output on different systems
 
-
-
 data <- data.table::as.data.table(airquality)
+data[, Solar.R := ifelse(is.na(Solar.R), mean(Solar.R, na.rm = TRUE), Solar.R)]
+data[, Ozone := ifelse(is.na(Ozone), mean(Ozone, na.rm = TRUE), Ozone)]
 
 model_ar_temp <- ar(data$Temp, order = 2)
 model_ar_temp$n.ahead <- 3
@@ -10,6 +10,7 @@ model_ar_temp$n.ahead <- 3
 p0_ar <- rep(mean(data$Temp), 3)
 
 model_arima_temp <- arima(data$Temp[1:150], c(2, 1, 0), xreg = data$Wind[1:150])
+model_arima_temp2 <- arima(data$Temp[1:150], c(2, 1, 0), xreg = data[1:150, c("Wind", "Solar.R", "Ozone")])
 
 model_arima_temp_noxreg <- arima(data$Temp[1:150], c(2, 1, 0))
 

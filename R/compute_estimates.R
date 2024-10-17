@@ -40,7 +40,7 @@ compute_estimates <- function(internal, vS_list) {
       cli::cli_progress_step("Boostrapping Shapley value sds")
     }
 
-    dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
+    dt_shapley_sd <- bootstrap_shapley_outer(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
 
     internal$timing_list$compute_bootstrap <- Sys.time()
   } else {
@@ -261,25 +261,46 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   return(dt_kshap_boot_sd)
 }
 
-bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
+bootstrap_shapley_outer <- function (internal, dt_vS, n_boot_samps = 100, seed = 123) {
   iter <- length(internal$iter_list)
   type <- internal$parameters$type
+  is_groupwise <- internal$parameters$is_groupwise
 
-  X <- internal$iter_list[[iter]]$X
+  result <- list()
+  if (type == "forecast") {
+    horizon <- internal$parameters$horizon
+    n_explain <- internal$parameters$n_explain
+    for (i in seq_along(internal$objects$X_list)) {
+      X <- internal$objects$X_list[[i]]
+      if (is_groupwise) {
+        n_shapley_values <- length(internal$data$shap_names)
+        shap_names <- internal$data$shap_names
+      } else {
+        n_shapley_values <- length(internal$parameters$horizon_features[[i]])
+        shap_names <- internal$parameters$horizon_features[[i]]
+      }
+      dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
+      dt_vS_this <- dt_vS[, ..dt_cols]
+      result[[i]] <- bootstrap_shapley_new(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps, seed)
+    }
+    result <- rbindlist(result, fill = TRUE)
+  } else {
+    X <- internal$iter_list[[iter]]$X
+    n_shapley_values <- internal$parameters$n_shapley_values
+    shap_names <- internal$parameters$shap_names
+    result <- bootstrap_shapley_new(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps, seed)
+  }
+  return(result)
+}
+
+bootstrap_shapley_new <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100, seed = 123) {
+  type <- internal$parameters$type
 
   set.seed(seed)
 
-  is_groupwise <- internal$parameters$is_groupwise
-
   n_explain <- internal$parameters$n_explain
-  if (internal$parameters$type == "forecast") {
-    n_explain <- n_explain * internal$parameters$horizon
-  }
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweight <- internal$parameters$shapley_reweighting
-  shap_names <- internal$parameters$shap_names
-  n_shapley_values <- internal$parameters$n_shapley_values
-
 
   X_org <- copy(X)
 
@@ -305,7 +326,6 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
 
     X_boot00[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot / 2)]
 
-
     X_boot00_paired <- copy(X_boot00[, .(coalitions, boot_id)])
     X_boot00_paired[, coalitions := lapply(coalitions, function(x) seq(n_shapley_values)[-x])]
     X_boot00_paired[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
@@ -325,14 +345,7 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
     X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
-    if (type == "forecast") {
-      # Filter out everything which represents empty (i.e. no changed features) and everything which is all (i.e. all features are changed, will be multiple to filter out for horizon > 1).
-      full_ids <- internal$objects$id_coalition_mapper_dt$id_coalition[internal$objects$id_coalition_mapper_dt$full]
-      X_boot[coalition_size == 0 | id_coalition %in% full_ids, shapley_weight := X_org[1, shapley_weight]]
-    } else {
-      X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
-    }
-
+    X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
   } else {
     X_boot0 <- X_samp[
       sample.int(

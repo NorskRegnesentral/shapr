@@ -735,7 +735,7 @@ shapley_setup_forecast <- function(internal) {
   W <- NULL # Included for consistency. Necessary weights are in W_list instead
 
   coalition_map <- X[, .(id_coalition,
-    coalitions_str = sapply(coalitions, paste, collapse = " ")
+    coalitions_str = sapply(features, paste, collapse = " ")
   )]
 
   ## Get feature matrix ---------
@@ -763,6 +763,7 @@ shapley_setup_forecast <- function(internal) {
   internal$iter_list[[iter]]$W <- W
   internal$iter_list[[iter]]$S <- S
   internal$objects$id_coalition_mapper_dt <- id_coalition_mapper_dt
+  internal$objects$X_list <- X_list
   internal$iter_list[[iter]]$coalition_map <- coalition_map
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
 
