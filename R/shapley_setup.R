@@ -516,92 +516,10 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 }
 
 #' @keywords internal
-create_S_batch_forecast <- function(internal, seed = NULL) { # This is temporary used for forecast only. to be removed
-  n_shapley_values <- internal$parameters$n_shapley_values
-  approach0 <- internal$parameters$approach
-  n_batches <- 10 # TODO: fix this! similartly to how it is done in non-forecast
-
-  iter <- length(internal$iter_list)
-
-  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
-
-  X <- internal$objects$X
-
-  if (!is.null(seed)) set.seed(seed)
-
-  if (length(approach0) > 1) {
-    X[!(n_coalitions %in% c(0, n_shapley_values)), approach := approach0[n_coalitions]]
-
-    # Finding the number of batches per approach
-    batch_count_dt <- X[!is.na(approach), list(
-      n_batches_per_approach =
-        pmax(1, round(.N / (n_coalitions - 2) * n_batches)),
-      n_S_per_approach = .N
-    ), by = approach]
-
-    # Ensures that the number of batches corresponds to `n_batches`
-    if (sum(batch_count_dt$n_batches_per_approach) != n_batches) {
-      # Ensure that the number of batches is not larger than `n_batches`.
-      # Remove one batch from the approach with the most batches.
-      while (sum(batch_count_dt$n_batches_per_approach) > n_batches) {
-        batch_count_dt[
-          which.max(n_batches_per_approach),
-          n_batches_per_approach := n_batches_per_approach - 1
-        ]
-      }
-
-      # Ensure that the number of batches is not lower than `n_batches`.
-      # Add one batch to the approach with most coalitions per batch
-      while (sum(batch_count_dt$n_batches_per_approach) < n_batches) {
-        batch_count_dt[
-          which.max(n_S_per_approach / n_batches_per_approach),
-          n_batches_per_approach := n_batches_per_approach + 1
-        ]
-      }
-    }
-
-    batch_count_dt[, n_leftover_first_batch := n_S_per_approach %% n_batches_per_approach]
-    data.table::setorder(batch_count_dt, -n_leftover_first_batch)
-
-    approach_vec <- batch_count_dt[, approach]
-    n_batch_vec <- batch_count_dt[, n_batches_per_approach]
-
-    # Randomize order before ordering spreading the batches on the different approaches as evenly as possible
-    # with respect to shapley_weight
-    X[, randomorder := sample(.N)]
-    data.table::setorder(X, randomorder) # To avoid smaller id_coalitions always proceeding large ones
-    data.table::setorder(X, shapley_weight)
-
-    batch_counter <- 0
-    for (i in seq_along(approach_vec)) {
-      X[approach == approach_vec[i], batch := ceiling(.I / .N * n_batch_vec[i]) + batch_counter]
-      batch_counter <- X[approach == approach_vec[i], max(batch)]
-    }
-  } else {
-    X[!(n_coalitions %in% c(0, n_shapley_values)), approach := approach0]
-
-    # Spreading the batches
-    X[, randomorder := sample(.N)]
-    data.table::setorder(X, randomorder)
-    data.table::setorder(X, shapley_weight)
-    X[!(coalition_size %in% c(0, n_shapley_values)), batch := ceiling(.I / .N * n_batches)]
-  }
-
-  # Assigning batch 1 (which always is the smallest) to the full prediction.
-  X[, randomorder := NULL]
-  X[id_coalition == max(id_coalition), batch := 1]
-  setkey(X, id_coalition)
-
-  # Create a list of the batch splits
-  S_groups <- split(X[id_coalition != 1, id_coalition], X[id_coalition != 1, batch])
-
-  return(S_groups)
-}
-
-#' @keywords internal
 create_S_batch <- function(internal, seed = NULL) {
   n_shapley_values <- internal$parameters$n_shapley_values
   approach0 <- internal$parameters$approach
+  type <- internal$parameters$type
 
   iter <- length(internal$iter_list)
 
@@ -613,6 +531,10 @@ create_S_batch <- function(internal, seed = NULL) {
 
   coalition_map <- internal$iter_list[[iter]]$coalition_map
 
+  if (type == "forecast") {
+    id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
+    full_ids <- id_coalition_mapper_dt$id_coalition[id_coalition_mapper_dt$full]
+  }
 
   X0 <- copy(internal$iter_list[[iter]]$X)
 
@@ -632,7 +554,11 @@ create_S_batch <- function(internal, seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
 
   if (length(approach0) > 1) {
-    X0[!(coalition_size %in% c(0, n_shapley_values)), approach := approach0[coalition_size]]
+    if (type == "forecast") {
+      X0[!(coalition_size == 0 | id_coalition %in% full_ids), approach := approach0[coalition_size]]
+    } else {
+      X0[!(coalition_size %in% c(0, n_shapley_values)), approach := approach0[coalition_size]]
+    }
 
     # Finding the number of batches per approach
     batch_count_dt <- X0[!is.na(approach), list(
@@ -680,18 +606,30 @@ create_S_batch <- function(internal, seed = NULL) {
       batch_counter <- X0[approach == approach_vec[i], max(batch)]
     }
   } else {
-    X0[!(coalition_size %in% c(0, n_shapley_values)), approach := approach0]
+    if (type == "forecast") {
+      X0[!(coalition_size == 0 | id_coalition %in% full_ids), approach := approach0]
+    } else {
+      X0[!(coalition_size %in% c(0, n_shapley_values)), approach := approach0]
+    }
 
     # Spreading the batches
     X0[, randomorder := sample(.N)]
     data.table::setorder(X0, randomorder)
     data.table::setorder(X0, shapley_weight)
-    X0[!(coalition_size %in% c(0, n_shapley_values)), batch := ceiling(.I / .N * n_batches)]
+    if (type == "forecast") {
+      X0[!(coalition_size == 0 | id_coalition %in% full_ids), batch := ceiling(.I / .N * n_batches)]
+    } else {
+      X0[!(coalition_size %in% c(0, n_shapley_values)), batch := ceiling(.I / .N * n_batches)]
+    }
   }
 
   # Assigning batch 1 (which always is the smallest) to the full prediction.
   X0[, randomorder := NULL]
-  X0[id_coalition == max(id_coalition), batch := 1]
+  if (type == "forecast") {
+    X0[id_coalition %in% full_ids, batch := 1]
+  } else {
+    X0[id_coalition == max(id_coalition), batch := 1]
+  }
   setkey(X0, id_coalition)
 
   # Create a list of the batch splits
@@ -707,7 +645,7 @@ create_S_batch <- function(internal, seed = NULL) {
 #' @inheritParams explain
 #' @inherit default_doc
 #' @export
-setup_computation <- function(internal, model, predict_model) {
+setup_computation <- function(internal, model, predict_model) { # Can this function be removed? /Jon
   # model and predict_model are only needed for type AICc of approach empirical, otherwise ignored
   type <- internal$parameters$type
 
@@ -731,6 +669,7 @@ shapley_setup_forecast <- function(internal) {
 
   coal_feature_list <- internal$objects$coal_feature_list
   horizon <- internal$parameters$horizon
+  horizon_group <- internal$parameters$horizon_group
   feature_names <- internal$parameters$feature_names
 
   iter <- length(internal$iter_list)
@@ -741,49 +680,35 @@ shapley_setup_forecast <- function(internal) {
 
   X_list <- W_list <- list()
 
-  # Find columns to be included in each of the different horizons
-  col_del_list <- list()
-  col_del_list[[1]] <- numeric()
-  if (horizon > 1) {
-    k <- 2
-    for (i in rev(seq_len(horizon)[-1])) {
-      col_del_list[[k]] <- c(unlist(col_del_list[[k - 1]]), grep(paste0(".F", i), feature_names))
-      k <- k + 1
-    }
-  }
-
-  cols_per_horizon <- lapply(rev(col_del_list), function(x) if (length(x) > 0) feature_names[-x] else feature_names)
-
+  cols_per_horizon <- internal$parameters$horizon_features
   horizon_features <- lapply(cols_per_horizon, function(x) which(internal$parameters$feature_names %in% x))
 
   # Apply create_coalition_table, weigth_matrix and coalition_matrix_cpp to each of the different horizons
   for (i in seq_along(horizon_features)) {
-    # TODO: Somethis is not correct in these next 20 lines of code. Something was messed up after
-    # Removing the group stuff and generalizing to coalitions.
-
-    this_featcomb <- horizon_features[[i]]
-
-    this_coal_feature_list <- lapply(coal_feature_list, function(x) x[x %in% this_featcomb])
-    this_coal_feature_list <- this_coal_feature_list[sapply(this_coal_feature_list, function(x) length(x) != 0)]
+    if (is_groupwise && !is.null(horizon_group)) {
+      this_coal_feature_list <- coal_feature_list[sapply(
+        names(coal_feature_list),
+        function(x) x %in% horizon_group[[i]]
+      )]
+    } else {
+      this_coal_feature_list <- lapply(coal_feature_list, function(x) x[x %in% horizon_features[[i]]])
+      this_coal_feature_list <- this_coal_feature_list[sapply(this_coal_feature_list, function(x) length(x) != 0)]
+    }
 
     n_this_featcomb <- length(this_coal_feature_list)
-
-
     n_coalitions_here <- min(2^n_this_featcomb, n_coalitions)
-    exact_here <- ifelse(n_coalitions_here == 2^n_this_featcomb, TRUE, exact)
-
 
     X_list[[i]] <- create_coalition_table(
       m = n_this_featcomb,
-      exact = exact_here,
+      exact = exact,
       n_coalitions = n_coalitions_here,
       weight_zero_m = 10^6,
       paired_shap_sampling = paired_shap_sampling,
       prev_coal_samples = prev_coal_samples,
       coal_feature_list = this_coal_feature_list,
-      approach0 = approach
+      approach0 = approach,
+      shapley_reweighting = shapley_reweighting
     )
-
 
     W_list[[i]] <- weight_matrix(
       X = X_list[[i]],
@@ -794,17 +719,16 @@ shapley_setup_forecast <- function(internal) {
   # Merge the coalition data.table to single one to use for computing conditional expectations later on
   X <- rbindlist(X_list, idcol = "horizon")
   X[, N := NA]
-  X[, shapley_weight := NA]
   data.table::setorderv(X, c("coalition_size", "horizon"), order = c(1, -1))
   X[, horizon_id_coalition := id_coalition]
   X[, id_coalition := 0]
-  X[!duplicated(coalitions), id_coalition := .I]
-  X[, tmp_coalitions := as.character(coalitions)]
+  X[!duplicated(features), id_coalition := .I]
+  X[, tmp_coalitions := as.character(features)]
   X[, id_coalition := max(id_coalition), by = tmp_coalitions]
   X[, tmp_coalitions := NULL]
 
   # Extracts a data.table allowing mapping from X to X_list/W_list to be used in the compute_shapley function
-  id_coalition_mapper_dt <- X[, .(horizon, horizon_id_coalition, id_coalition)]
+  id_coalition_mapper_dt <- X[, .(horizon, horizon_id_coalition, id_coalition, full = features %in% horizon_features)]
 
   X[, horizon := NULL]
   X[, horizon_id_coalition := NULL]
@@ -812,6 +736,10 @@ shapley_setup_forecast <- function(internal) {
   X <- X[!duplicated(id_coalition)]
 
   W <- NULL # Included for consistency. Necessary weights are in W_list instead
+
+  coalition_map <- X[, .(id_coalition,
+    coalitions_str = sapply(features, paste, collapse = " ")
+  )]
 
   ## Get feature matrix ---------
   S <- coalition_matrix_cpp(
@@ -824,6 +752,7 @@ shapley_setup_forecast <- function(internal) {
 
   # Updating parameters$exact as done in create_coalition_table
   if (!exact && n_coalitions >= 2^n_shapley_values) {
+    internal$iter_list[[iter]]$exact <- TRUE
     internal$parameters$exact <- TRUE # Note that this is exact only if all horizons use the exact method.
   }
 
@@ -833,16 +762,16 @@ shapley_setup_forecast <- function(internal) {
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
 
-  internal$objects$X <- X
-  internal$objects$W <- W
-  internal$objects$S <- S
-  internal$objects$S_batch <- create_S_batch_forecast(internal)
+  internal$iter_list[[iter]]$X <- X
+  internal$iter_list[[iter]]$W <- W
+  internal$iter_list[[iter]]$S <- S
+  internal$iter_list[[iter]]$id_coalition_mapper_dt <- id_coalition_mapper_dt
+  internal$iter_list[[iter]]$X_list <- X_list
+  internal$iter_list[[iter]]$coalition_map <- coalition_map
+  internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
 
-  internal$objects$id_coalition_mapper_dt <- id_coalition_mapper_dt
   internal$objects$cols_per_horizon <- cols_per_horizon
   internal$objects$W_list <- W_list
-  internal$objects$X_list <- X_list
-
 
   return(internal)
 }

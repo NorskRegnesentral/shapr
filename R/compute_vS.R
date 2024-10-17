@@ -236,8 +236,8 @@ compute_preds <- function(
   if (type == "forecast") {
     dt[, (pred_cols) := predict_model(
       x = model,
-      newdata = .SD[, 1:n_endo],
-      newreg = .SD[, -(1:n_endo)],
+      newdata = .SD[, .SD, .SDcols = seq_len(n_endo)],
+      newreg = .SD[, .SD, .SDcols = seq_len(length(feature_names) - n_endo) + n_endo],
       horizon = horizon,
       explain_idx = explain_idx[id],
       explain_lags = explain_lags,
@@ -262,39 +262,4 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
   # dt_mat[, id_coalition := NULL]
 
   return(dt_mat)
-}
-
-
-#' Computes `v(S)` for all features subsets `S`.
-#'
-#' @inheritParams default_doc
-#' @inheritParams explain
-#'
-#' @param method Character
-#' Indicates whether the lappy method (default) or loop method should be used.
-#'
-#' @export
-compute_vS_forecast <- function(internal, model, predict_model, method = "future") {
-  # old function used only for forecast temporary
-  S_batch <- internal$objects$S_batch
-
-
-
-  if (method == "future") {
-    ret <- future_compute_vS_batch(S_batch = S_batch, internal = internal, model = model, predict_model = predict_model)
-  } else {
-    # Doing the same as above without future without progressbar or paralellization
-    ret <- list()
-    for (i in seq_along(S_batch)) {
-      S <- S_batch[[i]]
-      ret[[i]] <- batch_compute_vS(
-        S = S,
-        internal = internal,
-        model = model,
-        predict_model = predict_model
-      )
-    }
-  }
-
-  return(ret)
 }

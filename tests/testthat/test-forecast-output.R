@@ -32,9 +32,56 @@ test_that("forecast_output_arima_numeric", {
       approach = "empirical",
       prediction_zero = p0_ar,
       group_lags = FALSE,
-      n_batches = 1
+      max_n_coalitions = 150,
+      adaptive = FALSE
     ),
     "forecast_output_arima_numeric"
+  )
+})
+
+test_that("forecast_output_arima_numeric_adaptive", {
+  expect_snapshot_rds(
+    explain_forecast(
+      testing = TRUE,
+      model = model_arima_temp,
+      y = data[1:150, "Temp"],
+      xreg = data[, "Wind"],
+      train_idx = 3:148,
+      explain_idx = 149:150,
+      explain_y_lags = 3,
+      explain_xreg_lags = 3,
+      horizon = 3,
+      approach = "empirical",
+      prediction_zero = p0_ar,
+      group_lags = FALSE,
+      max_n_coalitions = 150,
+      adaptive = TRUE,
+      adaptive_arguments = list(initial_n_coalitions = 10)
+    ),
+    "forecast_output_arima_numeric_adaptive"
+  )
+})
+
+test_that("forecast_output_arima_numeric_adaptive_groups", {
+  expect_snapshot_rds(
+    explain_forecast(
+      testing = TRUE,
+      model = model_arima_temp2,
+      y = data[1:150, "Temp"],
+      xreg = data[, c("Wind", "Solar.R", "Ozone")],
+      train_idx = 3:148,
+      explain_idx = 149:150,
+      explain_y_lags = 3,
+      explain_xreg_lags = c(3, 3, 3),
+      horizon = 3,
+      approach = "empirical",
+      prediction_zero = p0_ar,
+      group_lags = TRUE,
+      max_n_coalitions = 150,
+      adaptive = TRUE,
+      adaptive_arguments = list(initial_n_coalitions = 10, convergence_tolerance = 7e-3)
+    ),
+    "forecast_output_arima_numeric_adaptive_groups"
   )
 })
 
@@ -57,6 +104,7 @@ test_that("forecast_output_arima_numeric_no_xreg", {
   )
 })
 
+# Old snap does not correspond to the results from the master branch, why is unclear.
 test_that("forecast_output_forecast_ARIMA_group_numeric", {
   expect_snapshot_rds(
     explain_forecast(
@@ -78,6 +126,26 @@ test_that("forecast_output_forecast_ARIMA_group_numeric", {
   )
 })
 
+test_that("forecast_output_arima_numeric_no_lags", {
+  expect_snapshot_rds(
+    explain_forecast(
+      testing = TRUE,
+      model = model_arima_temp,
+      y = data[1:150, "Temp"],
+      xreg = data[, "Wind"],
+      train_idx = 2:148,
+      explain_idx = 149:150,
+      explain_y_lags = 0,
+      explain_xreg_lags = 0,
+      horizon = 3,
+      approach = "independence",
+      prediction_zero = p0_ar,
+      group_lags = FALSE,
+      n_batches = 1
+    ),
+    "forecast_output_arima_numeric_no_lags"
+  )
+})
 
 test_that("ARIMA gives the same output with different horizons", {
   h3 <- explain_forecast(
@@ -94,7 +162,8 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1:3],
     group_lags = FALSE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 200,
+    adaptive = FALSE
   )
 
 
@@ -112,7 +181,8 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1:2],
     group_lags = FALSE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 100,
+    adaptive = FALSE
   )
 
   h1 <- explain_forecast(
@@ -129,7 +199,8 @@ test_that("ARIMA gives the same output with different horizons", {
     prediction_zero = p0_ar[1],
     group_lags = FALSE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 50,
+    adaptive = FALSE
   )
 
   cols_horizon1 <- h2$internal$objects$cols_per_horizon[[1]]
@@ -165,7 +236,8 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     prediction_zero = p0_ar[1:3],
     group_lags = TRUE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 50,
+    adaptive = FALSE
   )
 
 
@@ -183,7 +255,8 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     prediction_zero = p0_ar[1:2],
     group_lags = TRUE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 50,
+    adaptive = FALSE
   )
 
   h1 <- explain_forecast(
@@ -200,7 +273,8 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     prediction_zero = p0_ar[1],
     group_lags = TRUE,
     n_batches = 1,
-    max_n_coalitions = 50
+    max_n_coalitions = 50,
+    adaptive = FALSE
   )
 
   expect_equal(
@@ -216,27 +290,5 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
   expect_equal(
     h3$shapley_values[horizon == 2],
     h2$shapley_values[horizon == 2]
-  )
-})
-
-test_that("forecast_output_arima_numeric_no_lags", {
-  # TODO: Need to check out this output. It gives lots of warnings, which indicates something might be wrong.
-  expect_snapshot_rds(
-    explain_forecast(
-      testing = TRUE,
-      model = model_arima_temp,
-      y = data[1:150, "Temp"],
-      xreg = data[, "Wind"],
-      train_idx = 2:148,
-      explain_idx = 149:150,
-      explain_y_lags = 0,
-      explain_xreg_lags = 0,
-      horizon = 3,
-      approach = "independence",
-      prediction_zero = p0_ar,
-      group_lags = FALSE,
-      n_batches = 1
-    ),
-    "forecast_output_arima_numeric_no_lags"
   )
 })
