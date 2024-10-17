@@ -686,8 +686,10 @@ shapley_setup_forecast <- function(internal) {
   # Apply create_coalition_table, weigth_matrix and coalition_matrix_cpp to each of the different horizons
   for (i in seq_along(horizon_features)) {
     if (is_groupwise && !is.null(horizon_group)) {
-      this_coal_feature_list <- coal_feature_list[sapply(names(coal_feature_list),
-                                                         function(x) x %in% horizon_group[[i]])]
+      this_coal_feature_list <- coal_feature_list[sapply(
+        names(coal_feature_list),
+        function(x) x %in% horizon_group[[i]]
+      )]
     } else {
       this_coal_feature_list <- lapply(coal_feature_list, function(x) x[x %in% horizon_features[[i]]])
       this_coal_feature_list <- this_coal_feature_list[sapply(this_coal_feature_list, function(x) length(x) != 0)]

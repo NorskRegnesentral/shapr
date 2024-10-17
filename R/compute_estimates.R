@@ -40,7 +40,7 @@ compute_estimates <- function(internal, vS_list) {
       cli::cli_progress_step("Boostrapping Shapley value sds")
     }
 
-    dt_shapley_sd <- bootstrap_shapley_outer(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
+    dt_shapley_sd <- bootstrap_shapley(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
 
     internal$timing_list$compute_bootstrap <- Sys.time()
   } else {
@@ -263,7 +263,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   return(dt_kshap_boot_sd)
 }
 
-bootstrap_shapley_outer <- function (internal, dt_vS, n_boot_samps = 100, seed = 123) {
+bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   iter <- length(internal$iter_list)
   type <- internal$parameters$type
   is_groupwise <- internal$parameters$is_groupwise
@@ -283,19 +283,19 @@ bootstrap_shapley_outer <- function (internal, dt_vS, n_boot_samps = 100, seed =
       }
       dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
       dt_vS_this <- dt_vS[, ..dt_cols]
-      result[[i]] <- bootstrap_shapley_new(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps, seed)
+      result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps, seed)
     }
     result <- rbindlist(result, fill = TRUE)
   } else {
     X <- internal$iter_list[[iter]]$X
     n_shapley_values <- internal$parameters$n_shapley_values
     shap_names <- internal$parameters$shap_names
-    result <- bootstrap_shapley_new(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps, seed)
+    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps, seed)
   }
   return(result)
 }
 
-bootstrap_shapley_new <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100, seed = 123) {
+bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100, seed = 123) {
   type <- internal$parameters$type
   iter <- length(internal$iter_list)
 

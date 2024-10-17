@@ -486,8 +486,10 @@ get_extra_parameters <- function(internal, type) {
     if (internal$parameters$group_lags) {
       internal$parameters$group <- internal$data$group
     }
-    internal$parameters$horizon_features <- lapply(internal$data$horizon_group,
-                                                   function(x) as.character(unlist(internal$data$group[x])))
+    internal$parameters$horizon_features <- lapply(
+      internal$data$horizon_group,
+      function(x) as.character(unlist(internal$data$group[x]))
+    )
   }
 
   # get number of features and observations to explain
