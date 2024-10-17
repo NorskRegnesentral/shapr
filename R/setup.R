@@ -523,6 +523,11 @@ get_extra_parameters <- function(internal, type) {
       match(x, internal$parameters$feature_names)
     })
 
+    internal$parameters$n_groups <- length(group)
+    internal$parameters$group_names <- names(group)
+    internal$parameters$group <- group
+    internal$parameters$n_shapley_values <- internal$parameters$n_groups
+
     if (type == "forecast") {
       if (internal$parameters$group_lags) {
         internal$parameters$horizon_group <- internal$data$horizon_group
@@ -535,10 +540,6 @@ get_extra_parameters <- function(internal, type) {
       internal$parameters$shap_names <- internal$parameters$group_names
     }
 
-    internal$parameters$n_groups <- length(group)
-    internal$parameters$group_names <- names(group)
-    internal$parameters$group <- group
-    internal$parameters$n_shapley_values <- internal$parameters$n_groups
   } else {
     internal$objects$coal_feature_list <- as.list(seq_len(internal$parameters$n_features))
 
