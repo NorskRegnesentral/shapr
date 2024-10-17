@@ -139,7 +139,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 
   # If multiple horizons with explain_forecast are used, we only distribute value to those used at each horizon
   if (type == "forecast") {
-    id_coalition_mapper_dt <- internal$objects$id_coalition_mapper_dt
+    id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
     horizon <- internal$parameters$horizon
     cols_per_horizon <- internal$objects$cols_per_horizon
     shap_names <- internal$parameters$shap_names
@@ -267,12 +267,13 @@ bootstrap_shapley_outer <- function (internal, dt_vS, n_boot_samps = 100, seed =
   iter <- length(internal$iter_list)
   type <- internal$parameters$type
   is_groupwise <- internal$parameters$is_groupwise
+  X_list <- internal$iter_list[[iter]]$X_list
 
   result <- list()
   if (type == "forecast") {
     n_explain <- internal$parameters$n_explain
     for (i in seq_along(internal$objects$X_list)) {
-      X <- internal$objects$X_list[[i]]
+      X <- X_list[[i]]
       if (is_groupwise) {
         n_shapley_values <- length(internal$data$shap_names)
         shap_names <- internal$data$shap_names
@@ -296,6 +297,7 @@ bootstrap_shapley_outer <- function (internal, dt_vS, n_boot_samps = 100, seed =
 
 bootstrap_shapley_new <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100, seed = 123) {
   type <- internal$parameters$type
+  iter <- length(internal$iter_list)
 
   set.seed(seed)
 
@@ -365,7 +367,8 @@ bootstrap_shapley_new <- function(X, n_shapley_values, shap_names, internal, dt_
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
     if (type == "forecast") {
-      full_ids <- internal$objects$id_coalition_mapper_dt$id_coalition[internal$objects$id_coalition_mapper_dt$full]
+      id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
+      full_ids <- id_coalition_mapper_dt$id_coalition[id_coalition_mapper_dt$full]
       X_boot[coalition_size == 0 | id_coalition %in% full_ids, shapley_weight := X_org[1, shapley_weight]]
     } else {
       X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]

@@ -532,7 +532,7 @@ create_S_batch <- function(internal, seed = NULL) {
   coalition_map <- internal$iter_list[[iter]]$coalition_map
 
   if (type == "forecast") {
-    id_coalition_mapper_dt <- internal$objects$id_coalition_mapper_dt
+    id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
     full_ids <- id_coalition_mapper_dt$id_coalition[id_coalition_mapper_dt$full]
   }
 
@@ -763,8 +763,8 @@ shapley_setup_forecast <- function(internal) {
   internal$iter_list[[iter]]$X <- X
   internal$iter_list[[iter]]$W <- W
   internal$iter_list[[iter]]$S <- S
-  internal$objects$id_coalition_mapper_dt <- id_coalition_mapper_dt
-  internal$objects$X_list <- X_list
+  internal$iter_list[[iter]]$id_coalition_mapper_dt <- id_coalition_mapper_dt
+  internal$iter_list[[iter]]$X_list <- X_list
   internal$iter_list[[iter]]$coalition_map <- coalition_map
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
 
