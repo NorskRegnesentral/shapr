@@ -282,7 +282,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
         shap_names <- internal$parameters$horizon_features[[i]]
       }
       dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
-      dt_vS_this <- dt_vS[, ..dt_cols]
+      dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
       result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps, seed)
     }
     result <- rbindlist(result, fill = TRUE)
