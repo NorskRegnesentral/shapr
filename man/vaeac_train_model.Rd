@@ -130,8 +130,8 @@ model can do arbitrary conditioning as all coalitions will be trained. \code{mas
 
 \item{mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
 \code{vaeac} model will be trained on, see \code{\link[=specified_masks_mask_generator]{specified_masks_mask_generator()}}. This parameter is used internally
-in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
-\code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+in \code{shapr} when we only consider a subset of coalitions, i.e., when
+\code{n_coalitions} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 when \code{group} is specified in \code{\link[=explain]{explain()}}.}
 
 \item{mask_gen_coalitions_prob}{Numeric array (default is \code{NULL}). Array of length equal to the height
@@ -163,8 +163,22 @@ Note that additional choices are available if \code{vaeac.save_every_nth_epoch} 
 \code{vaeac.save_every_nth_epoch = 5}, then \code{vaeac.which_vaeac_model} can also take the values \code{"epoch_5"}, \code{"epoch_10"},
 \code{"epoch_15"}, and so on.}
 
-\item{verbose}{Boolean. An integer specifying the level of verbosity. Use \code{0} (default) for no verbosity,
-\code{1} for low verbose, and \code{2} for high verbose.}
+\item{verbose}{String vector or NULL.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the computation which is being performed.
+\verb{"progress} displays information about where in the calculation process the function currently is.
+#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+(only when \code{iterative = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
+\itemize{
+\item the final estimates.
+\code{"vS_details"} displays information about the v_S estimates.
+This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{NULL} means no printout.
+Note that any combination of four strings can be used.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+}}
 
 \item{seed}{Positive integer (default is \code{1}). Seed for reproducibility. Specifies the seed before any randomness
 based code is being run.}

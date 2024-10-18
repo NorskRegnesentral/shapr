@@ -73,7 +73,7 @@ explanation <- explain(
   approach = approach,
   n_batches = n_batches_use,
   prediction_zero = prediction_zero,
-  n_combinations = 10^4
+  n_coalitions = 10^4
 )
 
 sys_time_end_explain <- Sys.time()
@@ -89,7 +89,7 @@ timing <- list(p = p,
                n_batches = n_batches,
                n_cores = n_cores,
                approach = approach,
-               n_combinations = explanation$internal$parameters$used_n_combinations,
+               n_coalitions = explanation$internal$parameters$used_n_coalitions,
                sys_time_initial = as.character(sys_time_initial),
                sys_time_start_explain = as.character(sys_time_start_explain),
                sys_time_end_explain = as.character(sys_time_end_explain),

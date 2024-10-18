@@ -1,3 +1,7 @@
+if (requireNamespace("testthat", quietly = TRUE)) {
+  testthat::set_max_fails(Inf)
+}
+
 #' Helper function for package development
 #'
 #' This is a manual extension of [testthat::snapshot_review()] which works for the \code{.rds} files used in
@@ -7,17 +11,19 @@
 #' @param ... Additional arguments passed to [waldo::compare()]
 #' Gives the relative path to the test files to review
 #'
-snapshot_review_man <- function(path, tolerance = NULL, ...) {
-  changed <- testthat:::snapshot_meta(path)
-  these_rds <- (tools::file_ext(changed$name) == "rds")
-  if (any(these_rds)) {
-    for (i in which(these_rds)) {
-      old <- readRDS(changed[i, "cur"])
-      new <- readRDS(changed[i, "new"])
+snapshot_review_man <- function(path, tolerance = 10^(-5), max_diffs = 200, ...) {
+  if (requireNamespace("testthat", quietly = TRUE) && requireNamespace("waldo", quietly = TRUE)) {
+    changed <- testthat:::snapshot_meta(path)
+    these_rds <- (tools::file_ext(changed$name) == "rds")
+    if (any(these_rds)) {
+      for (i in which(these_rds)) {
+        old <- readRDS(changed[i, "cur"])
+        new <- readRDS(changed[i, "new"])
 
-      cat(paste0("Difference for check ", changed[i, "name"], " in test ", changed[i, "test"], "\n"))
-      print(waldo::compare(old, new, max_diffs = 50, tolerance = tolerance, ...))
-      browser()
+        cat(paste0("Difference for check ", changed[i, "name"], " in test ", changed[i, "test"], "\n"))
+        print(waldo::compare(old, new, max_diffs = max_diffs, tolerance = tolerance, ...))
+        browser()
+      }
     }
   }
 }

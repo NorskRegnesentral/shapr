@@ -10,24 +10,28 @@ observation_impute(
   x_train,
   x_explain,
   empirical.eta = 0.7,
-  n_samples = 1000
+  n_MC_samples = 1000
 )
 }
 \arguments{
 \item{W_kernel}{Numeric matrix. Contains all nonscaled weights between training and test
-observations for all feature combinations. The dimension equals \verb{n_train x m}.}
+observations for all coalitions. The dimension equals \verb{n_train x m}.}
 
-\item{S}{Integer matrix of dimension \verb{n_combinations x m}, where \code{n_combinations}
-and \code{m} equals the total number of sampled/non-sampled feature combinations and
+\item{S}{Integer matrix of dimension \verb{n_coalitions x m}, where \code{n_coalitions}
+and \code{m} equals the total number of sampled/non-sampled coalitions and
 the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.}
 
 \item{x_train}{Numeric matrix}
 
 \item{x_explain}{Numeric matrix}
 
-\item{n_samples}{Positive integer.
-Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation. See also details.}
+\item{n_MC_samples}{Positive integer.
+Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
+from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
+For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
+Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+\code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 }
 \value{
 data.table

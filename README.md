@@ -121,7 +121,7 @@ Current methodological restrictions:
 Future releases will include:
 
 -   Computational improvement of the AICc optimization approach,
--   Adaptive selection of method to account for the feature dependence.
+-   iterative selection of method to account for the feature dependence.
 -->
 
 Note the prediction outcome must be numeric. All approaches except
@@ -236,7 +236,7 @@ explanation <- explain(
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 #>        none    Solar.R      Wind      Temp      Month
 #> 1: 43.08571 13.2117337  4.785645 -25.57222  -5.599230
 #> 2: 43.08571 -9.9727747  5.830694 -11.03873  -7.829954

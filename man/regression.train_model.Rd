@@ -7,14 +7,15 @@
 regression.train_model(
   x,
   seed = 1,
-  verbose = 0,
+  verbose = NULL,
   regression.model = parsnip::linear_reg(),
   regression.tune = FALSE,
   regression.tune_values = NULL,
   regression.vfold_cv_para = NULL,
   regression.recipe_func = NULL,
   regression.response_var = "y_hat",
-  regression.surrogate_n_comb = NULL
+  regression.surrogate_n_comb = NULL,
+  current_comb = NULL
 )
 }
 \arguments{
@@ -23,12 +24,24 @@ then \code{index_features} must be provided.}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
-If \code{NULL} the seed will be inherited from the calling environment.}
+If \code{NULL} no seed is set in the calling environment.}
 
-\item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
-If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
-Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
-TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
+\item{verbose}{String vector or NULL.
+Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"basic"} (default) displays basic information about the computation which is being performed.
+\verb{"progress} displays information about where in the calculation process the function currently is.
+#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+(only when \code{iterative = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
+\itemize{
+\item the final estimates.
+\code{"vS_details"} displays information about the v_S estimates.
+This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{NULL} means no printout.
+Note that any combination of four strings can be used.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+}}
 
 \item{regression.model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
 \code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
@@ -45,8 +58,8 @@ the values provided in \code{regression.tune_values}. Note that no checks are co
 The data.frame must contain the possible hyperparameter value combinations to try.
 The column names must match the names of the tuneable parameters specified in \code{regression.model}.
 If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
-for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
-Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
+Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
 vignette for several examples.
 Note, to make it easier to call \code{explain()} from Python, the \code{regression.tune_values} can also be a string
 containing an R function. For example,

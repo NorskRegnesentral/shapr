@@ -39,7 +39,7 @@ setup_approach.timeseries <- function(internal,
 #' @export
 #' @keywords internal
 prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
-  id <- id_combination <- w <- NULL
+  id <- id_coalition <- w <- NULL
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
@@ -48,8 +48,10 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
   timeseries.upper_bound <- internal$parameters$timeseries.bounds[1]
   timeseries.lower_bound <- internal$parameters$timeseries.bounds[2]
 
-  X <- internal$objects$X
-  S <- internal$objects$S
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+  S <- internal$iter_list[[iter]]$S
 
   if (is.null(index_features)) {
     features <- X$features
@@ -134,12 +136,11 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
       names(tmp[[j]]) <- names(tmp[[1]])
     }
 
-    dt_l[[i]] <- rbindlist(tmp, idcol = "id_combination")
-    # dt_l[[i]][, w := 1 / .N, by = id_combination] # IS THIS NECESSARY?
+    dt_l[[i]] <- rbindlist(tmp, idcol = "id_coalition")
     dt_l[[i]][, id := i]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  ret_col <- c("id_combination", "id", feature_names, "w")
-  return(dt[id_combination %in% index_features, mget(ret_col)])
+  ret_col <- c("id_coalition", "id", feature_names, "w")
+  return(dt[id_coalition %in% index_features, mget(ret_col)])
 }

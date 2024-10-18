@@ -12,8 +12,8 @@ Contains the the features, whose predictions ought to be explained.}
 
 \item{S}{The \code{internal$objects$S} matrix containing the possible coalitions.}
 
-\item{index_features}{Positive integer vector. Specifies the indices of combinations to
-apply to the present method. \code{NULL} means all combinations. Only used internally.}
+\item{index_features}{Positive integer vector. Specifies the id_coalition to
+apply to the present method. \code{NULL} means all coalitions. Only used internally.}
 }
 \value{
 The extended version of \code{x_explain} where the masks from \code{S} with indices \code{index_features} have been applied.

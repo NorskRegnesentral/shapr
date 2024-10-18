@@ -25,7 +25,13 @@
 #'
 #' @importFrom stats rnorm
 #'
+#' @importFrom stats median
+#'
 #' @importFrom Rcpp sourceCpp
+#'
+#' @importFrom utils capture.output
+#'
+#' @importFrom utils relist
 #'
 #' @keywords internal
 #'

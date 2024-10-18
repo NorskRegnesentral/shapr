@@ -4,10 +4,10 @@
 \alias{weight_matrix_cpp}
 \title{Calculate weight matrix}
 \usage{
-weight_matrix_cpp(subsets, m, n, w)
+weight_matrix_cpp(coalitions, m, n, w)
 }
 \arguments{
-\item{subsets}{List. Each of the elements equals an integer
+\item{coalitions}{List. Each of the elements equals an integer
 vector representing a valid combination of features/feature groups.}
 
 \item{m}{Integer. Number of features/feature groups}
@@ -16,7 +16,7 @@ vector representing a valid combination of features/feature groups.}
 
 \item{w}{Numeric vector of length \code{n}, i.e. \code{w[i]} equals
 the Shapley weight of feature/feature group combination \code{i}, represented by
-\code{subsets[[i]]}.}
+\code{coalitions[[i]]}.}
 }
 \value{
 Matrix of dimension n x m + 1
@@ -25,6 +25,6 @@ Matrix of dimension n x m + 1
 Calculate weight matrix
 }
 \author{
-Nikolai Sellereite
+Nikolai Sellereite, Martin Jullum
 }
 \keyword{internal}

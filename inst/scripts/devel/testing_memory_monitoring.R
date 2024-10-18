@@ -44,7 +44,7 @@ xy_train <- cbind(x_train,y=y_train)
 
 model <- lm(formula = y~.,data=xy_train)
 
-explainer <- shapr(x_train, model,n_combinations = 1000)
+explainer <- shapr(x_train, model,n_coalitions = 1000)
 p <- mean(y_train)
 
 

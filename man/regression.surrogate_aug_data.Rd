@@ -11,7 +11,7 @@ regression.surrogate_aug_data(
   index_features = NULL,
   augment_masks_as_factor = FALSE,
   augment_include_grand = FALSE,
-  augment_add_id_comb = FALSE,
+  augment_add_id_coal = FALSE,
   augment_comb_prob = NULL,
   augment_weights = NULL
 )
@@ -19,7 +19,8 @@ regression.surrogate_aug_data(
 \arguments{
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
+\code{main_timing_list}, \code{output}, and \code{iter_timing_list}.}
 
 \item{x}{Data.table containing the data. Either the training data or the explicands. If \code{x} is the explicands,
 then \code{index_features} must be provided.}
@@ -34,20 +35,20 @@ to factors. If \code{FALSE}, then the binary masks are numerics.}
 
 \item{augment_include_grand}{Logical (default is \code{FALSE}). If \code{TRUE}, then the grand coalition is included.
 If \code{index_features} are provided, then \code{augment_include_grand} has no effect. Note that if we sample the
-combinations then the grand coalition is equally likely to be samples as the other coalitions (or weighted if
+coalitions then the grand coalition is equally likely to be samples as the other coalitions (or weighted if
 \code{augment_comb_prob} is provided).}
 
-\item{augment_add_id_comb}{Logical (default is \code{FALSE}). If \code{TRUE}, an additional column is adding containing
+\item{augment_add_id_coal}{Logical (default is \code{FALSE}). If \code{TRUE}, an additional column is adding containing
 which coalition was applied.}
 
 \item{augment_comb_prob}{Array of numerics (default is \code{NULL}). The length of the array must match the number of
-combinations being considered, where each entry specifies the probability of sampling the corresponding coalition.
+coalitions being considered, where each entry specifies the probability of sampling the corresponding coalition.
 This is useful if we want to generate more training data for some specific coalitions. One possible choice would be
-\code{augment_comb_prob = if (use_Shapley_weights) internal$objects$X$shapley_weight[2:actual_n_combinations] else NULL}.}
+\code{augment_comb_prob = if (use_Shapley_weights) internal$objects$X$shapley_weight[2:actual_n_coalitions] else NULL}.}
 
 \item{augment_weights}{String (optional). Specifying which type of weights to add to the observations.
 If \code{NULL} (default), then no weights are added. If \code{"Shapley"}, then the Shapley weights for the different
-combinations are added to corresponding observations where the coalitions was applied. If \code{uniform}, then
+coalitions are added to corresponding observations where the coalitions was applied. If \code{uniform}, then
 all observations get an equal weight of one.}
 }
 \value{

@@ -19,9 +19,9 @@
 
 on:
   push:
-    branches: [main, master, cranversion, devel]
+    branches: [main, master, cranversion, devel, 'shapr-1.0.0']
   pull_request:
-    branches: [main, master, cranversion, devel]
+    branches: [main, master, cranversion, devel, 'shapr-1.0.0']
 
 name: R-CMD-check
 

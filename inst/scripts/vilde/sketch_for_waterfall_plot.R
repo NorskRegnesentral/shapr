@@ -29,11 +29,11 @@ res <- explain_final(x_train,x_test,model,approach="independence",prediction_zer
 plot(res)
 
 i<- 1 # index for observation we want to plot
-dt <- data.table(feat_name = paste0(colnames(res$shapley_values[,-1]), " = ", format(res$internal$data$x_explain[i,], 2) ),
-                 shapley_value = as.numeric(res$shapley_values[i,-1])
+dt <- data.table(feat_name = paste0(colnames(res$shapley_values_est[,-1]), " = ", format(res$internal$data$x_explain[i,], 2) ),
+                 shapley_value = as.numeric(res$shapley_values_est[i,-1])
                  )
 dt
-expected <- as.numeric(res$shapley_values[i,])[1]
+expected <- as.numeric(res$shapley_values_est[i,])[1]
 observed <- res$pred_explain[i]
 
 dt[, sign := ifelse(shapley_value > 0, "Increases", "Decreases")]
