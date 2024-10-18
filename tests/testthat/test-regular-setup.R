@@ -1303,7 +1303,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
     prediction_zero = p0
   )
 
-  explain.new_data_feature_order <- explain(
+  ex.new_data_feature_order <- explain(
     testing = TRUE,
     model = model_lm_numeric,
     x_explain = rev(x_explain_numeric),
@@ -1324,11 +1324,11 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
   # Same Shapley values, but different order
   expect_false(identical(
     explain.original$shapley_values_est,
-    explain.new_data_feature_order$shapley_values_est
+    ex.new_data_feature_order$shapley_values_est
   ))
   expect_equal(
     explain.original$shapley_values_est[, mget(sort(names(explain.original$shapley_values_est)))],
-    explain.new_data_feature_order$shapley_values_est[, mget(sort(names(explain.new_data_feature_order$shapley_values_est)))]
+    ex.new_data_feature_order$shapley_values_est[, mget(sort(names(ex.new_data_feature_order$shapley_values_est)))]
   )
 
   # Same Shapley values in same order
