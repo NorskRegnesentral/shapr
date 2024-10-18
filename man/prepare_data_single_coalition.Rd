@@ -10,7 +10,7 @@ prepare_data_single_coalition(internal, index_features)
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
-\code{main_timing_list}, \code{output}, \code{iter_timing_list} and \code{iter_results}.}
+\code{main_timing_list}, \code{output}, and \code{iter_timing_list}.}
 }
 \description{
 The \code{\link[=prepare_data.categorical]{prepare_data.categorical()}} function is slow when evaluated for a single coalition.

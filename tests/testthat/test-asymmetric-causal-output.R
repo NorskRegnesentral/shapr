@@ -37,7 +37,7 @@ test_that("output_asym_cond_reg", {
   )
 })
 
-test_that("output_asym_cond_reg_adaptive", {
+test_that("output_asym_cond_reg_iterative", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -51,9 +51,9 @@ test_that("output_asym_cond_reg_adaptive", {
       causal_ordering = list(1:2, 3, 4:5),
       confounding = NULL,
       paired_shap_sampling = FALSE,
-      adaptive = TRUE
+      iterative = TRUE
     ),
-    "output_asym_cond_reg_adaptive"
+    "output_asym_cond_reg_iterative"
   )
 })
 
@@ -323,7 +323,7 @@ test_that("output_sym_caus_conf_mix_group", {
   )
 })
 
-test_that("output_sym_caus_conf_mix_group_adaptive", {
+test_that("output_sym_caus_conf_mix_group_iterative", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -338,9 +338,9 @@ test_that("output_sym_caus_conf_mix_group_adaptive", {
       group = list("A" = c("Solar.R"), B = c("Wind", "Temp"), C = c("Month", "Day")),
       n_MC_samples = 5, # Just for speed,
       verbose = c("convergence"),
-      adaptive = TRUE
+      iterative = TRUE
     ),
-    "output_sym_caus_conf_mix_group_adaptive"
+    "output_sym_caus_conf_mix_group_iterative"
   )
 })
 
@@ -367,7 +367,7 @@ test_that("output_mixed_sym_caus_conf_TRUE", {
   )
 })
 
-test_that("output_mixed_sym_caus_conf_TRUE_adaptive", {
+test_that("output_mixed_sym_caus_conf_TRUE_iterative", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -380,9 +380,9 @@ test_that("output_mixed_sym_caus_conf_TRUE_adaptive", {
       causal_ordering = list(1:2, 3, 4:5),
       confounding = TRUE,
       n_MC_samples = 5, # Just for speed
-      adaptive = TRUE
+      iterative = TRUE
     ),
-    "output_mixed_sym_caus_conf_TRUE_adaptive"
+    "output_mixed_sym_caus_conf_TRUE_iterative"
   )
 })
 
@@ -439,7 +439,7 @@ test_that("output_mixed_asym_cond_reg", {
       causal_ordering = list(1:2, 3, 4:5),
       paired_shap_sampling = FALSE,
       confounding = NULL,
-      adaptive = TRUE
+      iterative = TRUE
     ),
     "output_mixed_asym_cond_reg"
   )
@@ -461,7 +461,7 @@ test_that("output_categorical_asym_causal_mixed_cat", {
       causal_ordering = list(3:4, 2, 1),
       confounding = c(TRUE, FALSE, FALSE),
       n_MC_samples = 5, # Just for speed
-      keep_samp_for_vS = TRUE
+      output_args = list(keep_samp_for_vS = TRUE)
     ),
     "output_categorical_asym_causal_mixed_cat"
   )
@@ -482,7 +482,7 @@ test_that("output_cat_asym_causal_mixed_cat_ad", {
       causal_ordering = list(3:4, 2, 1),
       confounding = c(TRUE, FALSE, FALSE),
       n_MC_samples = 5, # Just for speed
-      adaptive = TRUE
+      iterative = TRUE
     ),
     "output_cat_asym_causal_mixed_cat_ad"
   )

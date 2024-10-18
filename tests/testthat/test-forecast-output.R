@@ -33,13 +33,13 @@ test_that("forecast_output_arima_numeric", {
       prediction_zero = p0_ar,
       group_lags = FALSE,
       max_n_coalitions = 150,
-      adaptive = FALSE
+      iterative = FALSE
     ),
     "forecast_output_arima_numeric"
   )
 })
 
-test_that("forecast_output_arima_numeric_adaptive", {
+test_that("forecast_output_arima_numeric_iterative", {
   expect_snapshot_rds(
     explain_forecast(
       testing = TRUE,
@@ -55,14 +55,14 @@ test_that("forecast_output_arima_numeric_adaptive", {
       prediction_zero = p0_ar,
       group_lags = FALSE,
       max_n_coalitions = 150,
-      adaptive = TRUE,
-      adaptive_arguments = list(initial_n_coalitions = 10)
+      iterative = TRUE,
+      iterative_args = list(initial_n_coalitions = 10)
     ),
-    "forecast_output_arima_numeric_adaptive"
+    "forecast_output_arima_numeric_iterative"
   )
 })
 
-test_that("forecast_output_arima_numeric_adaptive_groups", {
+test_that("forecast_output_arima_numeric_iterative_groups", {
   expect_snapshot_rds(
     explain_forecast(
       testing = TRUE,
@@ -78,10 +78,10 @@ test_that("forecast_output_arima_numeric_adaptive_groups", {
       prediction_zero = p0_ar,
       group_lags = TRUE,
       max_n_coalitions = 150,
-      adaptive = TRUE,
-      adaptive_arguments = list(initial_n_coalitions = 10, convergence_tolerance = 7e-3)
+      iterative = TRUE,
+      iterative_args = list(initial_n_coalitions = 10, convergence_tol = 7e-3)
     ),
-    "forecast_output_arima_numeric_adaptive_groups"
+    "forecast_output_arima_numeric_iterative_groups"
   )
 })
 
@@ -163,7 +163,7 @@ test_that("ARIMA gives the same output with different horizons", {
     group_lags = FALSE,
     n_batches = 1,
     max_n_coalitions = 200,
-    adaptive = FALSE
+    iterative = FALSE
   )
 
 
@@ -182,7 +182,7 @@ test_that("ARIMA gives the same output with different horizons", {
     group_lags = FALSE,
     n_batches = 1,
     max_n_coalitions = 100,
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   h1 <- explain_forecast(
@@ -200,24 +200,24 @@ test_that("ARIMA gives the same output with different horizons", {
     group_lags = FALSE,
     n_batches = 1,
     max_n_coalitions = 50,
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   cols_horizon1 <- h2$internal$objects$cols_per_horizon[[1]]
   expect_equal(
-    h2$shapley_values[horizon == 1, ..cols_horizon1],
-    h1$shapley_values[horizon == 1, ..cols_horizon1]
+    h2$shapley_values_est[horizon == 1, ..cols_horizon1],
+    h1$shapley_values_est[horizon == 1, ..cols_horizon1]
   )
 
   expect_equal(
-    h3$shapley_values[horizon == 1, ..cols_horizon1],
-    h1$shapley_values[horizon == 1, ..cols_horizon1]
+    h3$shapley_values_est[horizon == 1, ..cols_horizon1],
+    h1$shapley_values_est[horizon == 1, ..cols_horizon1]
   )
 
   cols_horizon2 <- h2$internal$objects$cols_per_horizon[[2]]
   expect_equal(
-    h3$shapley_values[horizon == 2, ..cols_horizon2],
-    h2$shapley_values[horizon == 2, ..cols_horizon2]
+    h3$shapley_values_est[horizon == 2, ..cols_horizon2],
+    h2$shapley_values_est[horizon == 2, ..cols_horizon2]
   )
 })
 
@@ -237,7 +237,7 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     group_lags = TRUE,
     n_batches = 1,
     max_n_coalitions = 50,
-    adaptive = FALSE
+    iterative = FALSE
   )
 
 
@@ -256,7 +256,7 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     group_lags = TRUE,
     n_batches = 1,
     max_n_coalitions = 50,
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   h1 <- explain_forecast(
@@ -274,21 +274,21 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     group_lags = TRUE,
     n_batches = 1,
     max_n_coalitions = 50,
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   expect_equal(
-    h2$shapley_values[horizon == 1],
-    h1$shapley_values[horizon == 1]
+    h2$shapley_values_est[horizon == 1],
+    h1$shapley_values_est[horizon == 1]
   )
 
   expect_equal(
-    h3$shapley_values[horizon == 1],
-    h1$shapley_values[horizon == 1]
+    h3$shapley_values_est[horizon == 1],
+    h1$shapley_values_est[horizon == 1]
   )
 
   expect_equal(
-    h3$shapley_values[horizon == 2],
-    h2$shapley_values[horizon == 2]
+    h3$shapley_values_est[horizon == 2],
+    h2$shapley_values_est[horizon == 2]
   )
 })

@@ -9,7 +9,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -34,7 +34,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -59,7 +59,7 @@
       
       * Model class: <lm>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -80,7 +80,7 @@
     Message
       * Model class: <lm>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -110,7 +110,7 @@
     Message
       * Model class: <lm>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -161,7 +161,7 @@
     Message
       * Model class: <lm>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -182,7 +182,7 @@
     Message
       * Model class: <lm>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -207,7 +207,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -232,7 +232,7 @@
       
       * Model class: <lm>
       * Approach: copula
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -257,7 +257,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -282,7 +282,7 @@
       
       * Model class: <lm>
       * Approach: vaeac
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -307,7 +307,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -332,7 +332,7 @@
       
       * Model class: <lm>
       * Approach: vaeac
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -357,7 +357,7 @@
       
       * Model class: <lm>
       * Approach: categorical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -382,7 +382,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -407,7 +407,7 @@
       
       * Model class: <lm>
       * Approach: timeseries
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of group-wise Shapley values: 4
       * Number of observations to explain: 2
       
@@ -431,7 +431,7 @@
       
       * Model class: <lm>
       * Approach: gaussian, empirical, ctree, and independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -456,7 +456,7 @@
       
       * Model class: <lm>
       * Approach: ctree, copula, independence, and copula
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -481,7 +481,7 @@
       
       * Model class: <lm>
       * Approach: independence, empirical, gaussian, and empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -506,7 +506,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -531,7 +531,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -556,7 +556,7 @@
       
       * Model class: <lm>
       * Approach: vaeac
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -581,7 +581,7 @@
       
       * Model class: <lm>
       * Approach: ctree, independence, ctree, and independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -606,7 +606,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -634,7 +634,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -662,7 +662,7 @@
       
       * Model class: <xgb.Booster>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -687,7 +687,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 3
       
@@ -712,7 +712,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -737,7 +737,7 @@
       
       * Model class: <lm>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -762,7 +762,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       

@@ -892,8 +892,8 @@ future::plan(future::sequential) # To return to non-parallel computation
 
 # Check that we get identical Shapley value explanations
 all.equal(
-  explanation_list$sur_rf_cv$shapley_values,
-  explanation_list$sur_rf_cv_par$shapley_values
+  explanation_list$sur_rf_cv$shapley_values_est,
+  explanation_list$sur_rf_cv_par$shapley_values_est
 )
 ```
 

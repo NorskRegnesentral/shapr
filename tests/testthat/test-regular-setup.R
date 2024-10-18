@@ -782,7 +782,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        keep_samp_for_vS = keep_samp_for_vS_non_logical_1
+        output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_1)
       )
     },
     error = TRUE
@@ -799,7 +799,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        keep_samp_for_vS = keep_samp_for_vS_non_logical_2
+        output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_2)
       )
     },
     error = TRUE
@@ -816,7 +816,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        keep_samp_for_vS = keep_samp_for_vS_too_long
+        output_args = list(keep_samp_for_vS = keep_samp_for_vS_too_long)
       )
     },
     error = TRUE
@@ -837,7 +837,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1
+        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1)
       )
     },
     error = TRUE
@@ -854,7 +854,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2
+        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2)
       )
     },
     error = TRUE
@@ -871,7 +871,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long
+        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long)
       )
     },
     error = TRUE
@@ -1211,7 +1211,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
       max_n_coalitions = NULL,
-      adaptive = FALSE
+      iterative = FALSE
     )
   )
 
@@ -1225,9 +1225,9 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       prediction_zero = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
-      adaptive_arguments = list(compute_sd = FALSE),
+      extra_computation_args = list(compute_sd = FALSE),
       max_n_coalitions = 2^ncol(x_explain_numeric),
-      adaptive = FALSE
+      iterative = FALSE
     )
   )
 
@@ -1243,9 +1243,9 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       prediction_zero = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
-      adaptive_arguments = list(compute_sd = FALSE),
+      extra_computation_args = list(compute_sd = FALSE),
       max_n_coalitions = 2^ncol(x_explain_numeric) + 1,
-      adaptive = FALSE
+      iterative = FALSE
     )
   )
 
@@ -1303,7 +1303,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
     prediction_zero = p0
   )
 
-  explain.new_data_feature_order <- explain(
+  ex.new_data_feature_order <- explain(
     testing = TRUE,
     model = model_lm_numeric,
     x_explain = rev(x_explain_numeric),
@@ -1323,12 +1323,12 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 
   # Same Shapley values, but different order
   expect_false(identical(
-    explain.original$shapley_values,
-    explain.new_data_feature_order$shapley_values
+    explain.original$shapley_values_est,
+    ex.new_data_feature_order$shapley_values_est
   ))
   expect_equal(
-    explain.original$shapley_values[, mget(sort(names(explain.original$shapley_values)))],
-    explain.new_data_feature_order$shapley_values[, mget(sort(names(explain.new_data_feature_order$shapley_values)))]
+    explain.original$shapley_values_est[, mget(sort(names(explain.original$shapley_values_est)))],
+    ex.new_data_feature_order$shapley_values_est[, mget(sort(names(ex.new_data_feature_order$shapley_values_est)))]
   )
 
   # Same Shapley values in same order
@@ -1558,7 +1558,7 @@ test_that("vaeac_set_seed_works", {
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   explanation_vaeac_2 <- explain(
@@ -1575,11 +1575,11 @@ test_that("vaeac_set_seed_works", {
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   # Check for equal Shapley values
-  expect_equal(explanation_vaeac_1$shapley_values, explanation_vaeac_2$shapley_values)
+  expect_equal(explanation_vaeac_1$shapley_values_est, explanation_vaeac_2$shapley_values_est)
 })
 
 test_that("vaeac_pretreained_vaeac_model", {
@@ -1600,7 +1600,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   #### We can do this by reusing the vaeac model OBJECT
@@ -1620,11 +1620,11 @@ test_that("vaeac_pretreained_vaeac_model", {
     vaeac.extra_parameters = list(
       vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_model
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   # Check for equal Shapley values
-  expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac$shapley_values)
+  expect_equal(explanation_vaeac_1$shapley_values_est, explanation_pretrained_vaeac$shapley_values_est)
 
   #### We can also do this by reusing the vaeac model PATH
   # Get the pre-trained vaeac model path
@@ -1643,11 +1643,11 @@ test_that("vaeac_pretreained_vaeac_model", {
     vaeac.extra_parameters = list(
       vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_path
     ),
-    adaptive = FALSE
+    iterative = FALSE
   )
 
   # Check for equal Shapley values
-  expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac$shapley_values)
+  expect_equal(explanation_vaeac_1$shapley_values_est, explanation_pretrained_vaeac$shapley_values_est)
 })
 
 
@@ -1682,5 +1682,5 @@ test_that("feature wise and groupwise computations are identical", {
 
 
   # Checking equality in the list with all final and intermediate results
-  expect_equal(expl_feat$shapley_values, expl_group$shapley_values)
+  expect_equal(expl_feat$shapley_values_est, expl_group$shapley_values_est)
 })

@@ -34,7 +34,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -67,7 +67,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -100,7 +100,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -134,7 +134,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -381,7 +381,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -410,7 +410,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of group-wise Shapley values: 3
       * Number of observations to explain: 3
       
@@ -582,10 +582,15 @@
       keep_samp_for_vS_non_logical_1 <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        keep_samp_for_vS = keep_samp_for_vS_non_logical_1)
+        output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_1))
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
-      Error in `get_parameters()`:
-      ! `keep_samp_for_vS` must be single logical.
+      Error in `check_output_args()`:
+      ! `output_args$keep_samp_for_vS` must be single logical.
 
 ---
 
@@ -593,10 +598,15 @@
       keep_samp_for_vS_non_logical_2 <- NULL
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        keep_samp_for_vS = keep_samp_for_vS_non_logical_2)
+        output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_2))
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
-      Error in `get_parameters()`:
-      ! `keep_samp_for_vS` must be single logical.
+      Error in `check_output_args()`:
+      ! `output_args$keep_samp_for_vS` must be single logical.
 
 ---
 
@@ -604,10 +614,15 @@
       keep_samp_for_vS_too_long <- c(TRUE, FALSE)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        keep_samp_for_vS = keep_samp_for_vS_too_long)
+        output_args = list(keep_samp_for_vS = keep_samp_for_vS_too_long))
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
-      Error in `get_parameters()`:
-      ! `keep_samp_for_vS` must be single logical.
+      Error in `check_output_args()`:
+      ! `output_args$keep_samp_for_vS` must be single logical.
 
 # erroneous input: `MSEv_uniform_comb_weights`
 
@@ -615,10 +630,15 @@
       MSEv_uniform_comb_weights_nl_1 <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1)
+        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1))
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
-      Error in `get_parameters()`:
-      ! `MSEv_uniform_comb_weights` must be single logical.
+      Error in `check_output_args()`:
+      ! `output_args$MSEv_uniform_comb_weights` must be single logical.
 
 ---
 
@@ -626,10 +646,15 @@
       MSEv_uniform_comb_weights_nl_2 <- NULL
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2)
+        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2))
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
-      Error in `get_parameters()`:
-      ! `MSEv_uniform_comb_weights` must be single logical.
+      Error in `check_output_args()`:
+      ! `output_args$MSEv_uniform_comb_weights` must be single logical.
 
 ---
 
@@ -637,10 +662,15 @@
       MSEv_uniform_comb_weights_long <- c(TRUE, FALSE)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long)
+        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long))
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
     Condition
-      Error in `get_parameters()`:
-      ! `MSEv_uniform_comb_weights` must be single logical.
+      Error in `check_output_args()`:
+      ! `output_args$MSEv_uniform_comb_weights` must be single logical.
 
 # erroneous input: `predict_model`
 
@@ -895,7 +925,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -922,7 +952,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of group-wise Shapley values: 3
       * Number of observations to explain: 3
       
@@ -942,7 +972,7 @@
       explanation_exact <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
         prediction_zero = p0, n_MC_samples = 2, seed = 123, max_n_coalitions = NULL,
-        adaptive = FALSE)
+        iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -950,7 +980,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -963,13 +993,13 @@
     Code
       explanation_equal <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
-        prediction_zero = p0, n_MC_samples = 2, seed = 123, adaptive_arguments = list(
+        prediction_zero = p0, n_MC_samples = 2, seed = 123, extra_computation_args = list(
           compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric),
-        adaptive = FALSE)
+        iterative = FALSE)
     Message
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -982,9 +1012,9 @@
     Code
       explanation_larger <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
-        prediction_zero = p0, n_MC_samples = 2, seed = 123, adaptive_arguments = list(
+        prediction_zero = p0, n_MC_samples = 2, seed = 123, extra_computation_args = list(
           compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric) + 1,
-        adaptive = FALSE)
+        iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -992,7 +1022,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       

@@ -274,7 +274,7 @@ explanation_list$MC_empirical <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:09:54 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553378f592d.rds'
@@ -308,7 +308,7 @@ explanation_list$sep_lm <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:00 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5533c20e191.rds'
@@ -384,7 +384,7 @@ explanation_list$sep_pcr <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:01 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55318b105b2.rds'
@@ -420,7 +420,7 @@ explanation_list$sep_splines <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:02 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553a209912.rds'
@@ -489,7 +489,7 @@ explanation_list$sep_reicpe_example <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:03 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55334f61d01.rds'
@@ -567,7 +567,7 @@ explanation_list$sep_tree_stump <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:04 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553108eb1.rds'
@@ -594,7 +594,7 @@ explanation_list$sep_tree_default <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:05 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5534d028986.rds'
@@ -715,7 +715,7 @@ explanation_list$sep_tree_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:06 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553173580dc.rds'
@@ -750,7 +750,7 @@ explanation_list$sep_tree_cv_2 <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:19 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5531b0af982.rds'
@@ -790,7 +790,7 @@ explanation_list$sep_rf <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:45 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5535c02b48f.rds'
@@ -825,7 +825,7 @@ explanation_list$sep_rf_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:10:46 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5534bc71658.rds'
@@ -1046,7 +1046,7 @@ explanation_list$sep_xgboost <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:11:21 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553b9eedb1.rds'
@@ -1076,7 +1076,7 @@ explanation_list$sep_xgboost_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:11:22 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5536c6c263f.rds'
@@ -1107,7 +1107,7 @@ explanation_list$sep_xgboost_cv_par <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:11:37 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55375979516.rds'
@@ -1142,7 +1142,7 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:11:50 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553e0b863c.rds'
@@ -1242,7 +1242,7 @@ explanation_list$sur_lm <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:12:05 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5533f5d53fc.rds'
@@ -1269,7 +1269,7 @@ explanation_list$sur_xgboost <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:12:05 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553657c3c72.rds'
@@ -1303,7 +1303,7 @@ explanation_list$sur_xgboost_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:12:06 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55349e5a38c.rds'
@@ -1330,7 +1330,7 @@ explanation_list$sur_rf <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:12:08 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553eebc9ea.rds'
@@ -1365,7 +1365,7 @@ explanation_list$sur_rf_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:12:09 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5537965b6b3.rds'
@@ -1422,7 +1422,7 @@ explanation_list$sur_rf_cv_par <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:12:37 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5533f7681e8.rds'
@@ -1434,8 +1434,8 @@ future::plan(future::sequential) # To return to non-parallel computation
 
 # Check that we get identical Shapley value explanations
 all.equal(
-  explanation_list$sur_rf_cv$shapley_values,
-  explanation_list$sur_rf_cv_par$shapley_values
+  explanation_list$sur_rf_cv$shapley_values_est,
+  explanation_list$sur_rf_cv_par$shapley_values_est
 )
 #> [1] TRUE
 ```
@@ -1638,7 +1638,7 @@ explanation_list$sep_ppr <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:12:58 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553791592c7.rds'
@@ -1667,7 +1667,7 @@ explanation_list$sep_ppr_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:12:58 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5531ac3859d.rds'
@@ -1694,7 +1694,7 @@ explanation_list$sur_ppr <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:13:09 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55339bdd72a.rds'
@@ -1723,7 +1723,7 @@ explanation_list$sur_ppr_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:13:09 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5532987aff5.rds'
@@ -1807,7 +1807,7 @@ explanation_list_MC$MC_independence <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:13:11 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: independence
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5533cae2265.rds'
@@ -1836,7 +1836,7 @@ explanation_list_MC$MC_gaussian <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:13:12 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5532491f5ab.rds'
@@ -1862,7 +1862,7 @@ explanation_list_MC$MC_copula <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:13:13 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: copula
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553451ae5c5.rds'
@@ -1888,7 +1888,7 @@ explanation_list_MC$MC_ctree <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:13:13 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: ctree
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5533d628d5e.rds'
@@ -1915,7 +1915,7 @@ explanation_list_MC$MC_vaeac <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:13:15 ───────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: vaeac
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5534050514.rds'
@@ -2099,7 +2099,7 @@ explanation_list_mixed$MC_independence <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:15:23 ────────────────────────
 #> • Model class: <lm>
 #> • Approach: independence
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
@@ -2123,7 +2123,7 @@ explanation_list_mixed$MC_ctree <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:15:24 ────────────────────────
 #> • Model class: <lm>
 #> • Approach: ctree
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
@@ -2147,7 +2147,7 @@ explanation_list_mixed$MC_vaeac <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:15:26 ────────────────────────
 #> • Model class: <lm>
 #> • Approach: vaeac
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
@@ -2183,7 +2183,7 @@ explanation_list_mixed$sep_lm <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:18:46 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5533131b08d.rds'
@@ -2211,7 +2211,7 @@ explanation_list_mixed$sep_splines <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:18:47 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55366111c0d.rds'
@@ -2236,7 +2236,7 @@ explanation_list_mixed$sep_tree <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:18:48 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5531ad27dab.rds'
@@ -2269,7 +2269,7 @@ explanation_list_mixed$sep_tree_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:18:49 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55348ac2c82.rds'
@@ -2294,7 +2294,7 @@ explanation_list_mixed$sep_rf <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:19:18 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55369de7bb8.rds'
@@ -2326,7 +2326,7 @@ explanation_list_mixed$sep_rf_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:19:20 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5537f540ca9.rds'
@@ -2354,7 +2354,7 @@ explanation_list_mixed$sep_xgboost <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:13 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5533286e2bf.rds'
@@ -2389,7 +2389,7 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:14 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5531fa7a245.rds'
@@ -2424,7 +2424,7 @@ explanation_list_mixed$sur_lm <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:33 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55365b26da6.rds'
@@ -2453,7 +2453,7 @@ explanation_list_mixed$sur_splines <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:34 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5537f7cd475.rds'
@@ -2478,7 +2478,7 @@ explanation_list_mixed$sur_tree <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:34 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55342bb266a.rds'
@@ -2511,7 +2511,7 @@ explanation_list_mixed$sur_tree_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:35 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553263d5b45.rds'
@@ -2536,7 +2536,7 @@ explanation_list_mixed$sur_rf <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:37 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5536f402f15.rds'
@@ -2565,7 +2565,7 @@ explanation_list_mixed$sur_rf_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:38 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55321ef0397.rds'
@@ -2593,7 +2593,7 @@ explanation_list_mixed$sur_xgboost <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:52 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5535b569440.rds'
@@ -2628,7 +2628,7 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:52 ────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5532e902f01.rds'
@@ -2752,7 +2752,7 @@ explanation_list_str$sep_lm <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:57 ────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5532789a643.rds'
@@ -2781,7 +2781,7 @@ explanation_list_str$sep_pcr <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:58 ────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e553c707510.rds'
@@ -2810,7 +2810,7 @@ explanation_list_str$sep_splines <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:20:59 ────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5535c2a1de9.rds'
@@ -2840,7 +2840,7 @@ explanation_list_str$sep_tree_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:21:00 ────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5531d5a6c89.rds'
@@ -2874,7 +2874,7 @@ explanation_list_str$sep_rf_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:21:12 ────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_separate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e5533d1c027d.rds'
@@ -2909,7 +2909,7 @@ explanation_list_str$sur_rf_cv <- explain(
 #> ── Starting `shapr::explain()` at 2024-10-09 16:21:47 ────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: regression_surrogate
-#> • Adaptive estimation: FALSE
+#> • iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at: '/tmp/RtmpRxPm0I/shapr_obj_10e55364f1a477.rds'

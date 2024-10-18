@@ -84,7 +84,7 @@ Current methodological restrictions:
 Future releases will include:
 
 -   Computational improvement of the AICc optimization approach,
--   Adaptive selection of method to account for the feature dependence.
+-   iterative selection of method to account for the feature dependence.
 -->
 
 
@@ -176,7 +176,7 @@ explanation <- explain(
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 
 # Finally we plot the resulting explanations
 plot(explanation)

@@ -1,5 +1,5 @@
 # This file build on Pull Request https://github.com/NorskRegnesentral/shapr/pull/273
-# This file does not run on the adaptive version.
+# This file does not run on the iterative version.
 # The point of the file was to replicate the plot values that Heskes obtained in their implementation
 # to validate my implementation.
 
@@ -72,7 +72,7 @@ save_plots <- FALSE
 sina_plot <- function(explanation, seed = 123) {
   set.seed(seed)
 
-  shapley_values <- explanation$shapley_values[, -"none", drop = FALSE]
+  shapley_values_est <- explanation$shapley_values_est[, -"none", drop = FALSE]
   X_values <- explanation$internal$data$x_explain
 
   # If we are doing group Shapley, then we compute the mean feature value for each group for each explicand
@@ -85,12 +85,12 @@ sina_plot <- function(explanation, seed = 123) {
   data_long <- X_values %>%
     tidyr::pivot_longer(everything()) %>%
     dplyr::bind_cols(
-      explanation$shapley_values %>%
+      explanation$shapley_values_est %>%
         dplyr::select(-none) %>%
         tidyr::pivot_longer(everything()) %>%
         dplyr::select(-name) %>%
         dplyr::rename(shap = value)) %>%
-    dplyr::mutate(name = factor(name, levels = rev(names(explanation$shapley_values)))) %>%
+    dplyr::mutate(name = factor(name, levels = rev(names(explanation$shapley_values_est)))) %>%
     dplyr::group_by(name) %>%
     dplyr::arrange(name) %>%
     dplyr::mutate(mean_value = mean(value)) %>%
@@ -454,10 +454,10 @@ gridExtra::grid.arrange(save_explanation_asymmetric_causal$plot + ggplot2::ggtit
 message("3. Producing scatter plots comparing marginal and causal Shapley values on the test set")
 sv_correlation_df <- data.frame(
   temp = x_explain[, "temp"],
-  sv_marg_cosyear = explanation_marginal$shapley_values$cosyear,
-  sv_caus_cosyear = explanation_causal$shapley_values$cosyear,
-  sv_marg_temp = explanation_marginal$shapley_values$temp,
-  sv_caus_temp = explanation_causal$shapley_values$temp
+  sv_marg_cosyear = explanation_marginal$shapley_values_est$cosyear,
+  sv_caus_cosyear = explanation_causal$shapley_values_est$cosyear,
+  sv_marg_temp = explanation_marginal$shapley_values_est$temp,
+  sv_caus_temp = explanation_causal$shapley_values_est$temp
 )
 
 
@@ -547,7 +547,7 @@ dates_idx = sapply(dates, function(data) which(as.integer(row.names(x_explain)) 
 
 explanations = list("Marginal" = explanation_marginal, "Causal" = explanation_causal)
 explanations_extracted = data.table::rbindlist(lapply(seq_along(explanations), function(idx) {
-  explanations[[idx]]$shapley_values[dates_idx, ..features][, `:=` (Date = dates, type = names(explanations)[idx])]
+  explanations[[idx]]$shapley_values_est[dates_idx, ..features][, `:=` (Date = dates, type = names(explanations)[idx])]
 }))
 
 dt_all = data.table::melt(explanations_extracted, id.vars = c("Date", "type"), variable.name = "feature")
@@ -756,7 +756,7 @@ explanation_asymmetric_all_gaussian2 <-
     )
   })
 
-explanation_asymmetric_all_gaussian$shapley_values - explanation_asymmetric_all_gaussian2$shapley_values
+explanation_asymmetric_all_gaussian$shapley_values_est - explanation_asymmetric_all_gaussian2$shapley_values_est
 
 
 explanation_asymmetric_all_gaussian$MSEv
@@ -880,7 +880,7 @@ explanation_group_asymmetric_causal_time = system.time({
     })
 })
 
-explanation_group_asymmetric_causal$shapley_values
+explanation_group_asymmetric_causal$shapley_values_est
 sina_plot(explanation_group_asymmetric_causal)
 
 # Now we compute the group Shapley values based on only half of the coalitions

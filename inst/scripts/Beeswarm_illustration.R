@@ -28,8 +28,8 @@ plot_shapr <- function(x,
   is_groupwise <- x$internal$parameters$is_groupwise
 
   # melting Kshap
-  shap_names <- colnames(x$shapley_values)[-1]
-  dt_shap <- round(data.table::copy(x$shapley_values), digits = digits)
+  shap_names <- colnames(x$shapley_values_est)[-1]
+  dt_shap <- round(data.table::copy(x$shapley_values_est), digits = digits)
   dt_shap[, id := .I]
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
@@ -41,7 +41,7 @@ plot_shapr <- function(x,
       desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
     }
   } else {
-    desc_mat <- trimws(format(x$shapley_values[, -1], digits = digits))
+    desc_mat <- trimws(format(x$shapley_values_est[, -1], digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shap_names[i])
     }

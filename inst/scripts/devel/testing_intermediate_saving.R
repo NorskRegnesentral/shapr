@@ -6,15 +6,15 @@ aa = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_arguments = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
-    convergence_tolerance = 0.01,
-    reduction_factor_vec = rep(10^(-5), 10),
+    convergence_tol = 0.01,
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 30
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
-  print_iter_info = TRUE,shapley_reweighting = "on_N"
+  print_iter_info = TRUE,kernelSHAP_reweighting = "on_N"
 )
 
 bb = explain(
@@ -23,15 +23,15 @@ bb = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_arguments = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
-    convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    convergence_tol = 0.001,
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 30
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
-  print_iter_info = TRUE,shapley_reweighting = "on_N",prev_shapr_object = aa
+  print_iter_info = TRUE,kernelSHAP_reweighting = "on_N",prev_shapr_object = aa
 )
 
 
@@ -48,16 +48,16 @@ full = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_arguments = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
-    convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    convergence_tol = 0.001,
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 7
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
-  shapley_reweighting = "on_N",
+  kernelSHAP_reweighting = "on_N",
   seed=NULL
 )
 
@@ -68,16 +68,16 @@ first = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_arguments = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
-    convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    convergence_tol = 0.001,
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 4
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
-  shapley_reweighting = "on_N",
+  kernelSHAP_reweighting = "on_N",
   seed=NULL
 )
 
@@ -88,16 +88,16 @@ second = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_arguments = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
-    convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    convergence_tol = 0.001,
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 7
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
-  shapley_reweighting = "on_N",
+  kernelSHAP_reweighting = "on_N",
   seed=NULL,
   prev_shapr_object = first
 )
@@ -111,22 +111,22 @@ second_path = explain(
   x_train = x_train_numeric,
   approach = "independence",
   prediction_zero = p0,
-  adaptive_arguments = list(
+  iterative_args = list(
     initial_n_coalitions = 10,
-    convergence_tolerance = 0.001,
-    reduction_factor_vec = rep(10^(-5), 10),
+    convergence_tol = 0.001,
+    n_coal_next_iter_factor_vec = rep(10^(-5), 10),
     max_iter = 5
   ),
-  adaptive = TRUE,
+  iterative = TRUE,
   print_shapleyres = TRUE,
   print_iter_info = TRUE,
-  shapley_reweighting = "on_N",
+  kernelSHAP_reweighting = "on_N",
   seed=NULL,
-  prev_shapr_object = first$internal$parameters$adaptive_arguments$saving_path
+  prev_shapr_object = first$internal$parameters$output_args$saving_path
 )
 
 
 # Identical results
-all.equal(full$shapley_values,second$shapley_values) # TRUE
-all.equal(full$shapley_values,second2$shapley_values) # TRUE
-all.equal(full$shapley_values,second_path$shapley_values) # TRUE
+all.equal(full$shapley_values_est,second$shapley_values_est) # TRUE
+all.equal(full$shapley_values_est,second2$shapley_values_est) # TRUE
+all.equal(full$shapley_values_est,second_path$shapley_values_est) # TRUE

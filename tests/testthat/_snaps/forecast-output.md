@@ -12,7 +12,7 @@
       
       * Model class: <ar>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -43,7 +43,7 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 7
       * Number of observations to explain: 2
       
@@ -68,7 +68,7 @@
       5:  0.5630
       6: -0.7615
 
-# forecast_output_arima_numeric_adaptive
+# forecast_output_arima_numeric_iterative
 
     Code
       (out <- code)
@@ -78,11 +78,11 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * Adaptive estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 9
       * Number of observations to explain: 2
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 10 of 512 coalitions, 10 new. 
@@ -110,7 +110,7 @@
       5: -1.5436 -0.5418  2.8952
       6: -0.6202 -0.8545  0.4549
 
-# forecast_output_arima_numeric_adaptive_groups
+# forecast_output_arima_numeric_iterative_groups
 
     Code
       (out <- code)
@@ -120,11 +120,11 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * Adaptive estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of group-wise Shapley values: 10
       * Number of observations to explain: 2
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 10 of 1024 coalitions, 10 new. 
@@ -158,7 +158,7 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -189,7 +189,7 @@
       
       * Model class: <forecast_ARIMA/ARIMA/Arima>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of group-wise Shapley values: 4
       * Number of observations to explain: 2
       
@@ -220,7 +220,7 @@
       
       * Model class: <Arima>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 3
       * Number of observations to explain: 2
       

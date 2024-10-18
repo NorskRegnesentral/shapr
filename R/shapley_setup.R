@@ -11,7 +11,7 @@ shapley_setup <- function(internal) {
   approach <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  shapley_reweighting <- internal$parameters$shapley_reweighting
+  kernelSHAP_reweighting <- internal$parameters$kernelSHAP_reweighting
   coal_feature_list <- internal$objects$coal_feature_list
   causal_sampling <- internal$parameters$causal_sampling
   causal_ordering <- internal$parameters$causal_ordering
@@ -42,7 +42,7 @@ shapley_setup <- function(internal) {
     prev_coal_samples = prev_coal_samples,
     coal_feature_list = coal_feature_list,
     approach0 = approach,
-    shapley_reweighting = shapley_reweighting,
+    kernelSHAP_reweighting = kernelSHAP_reweighting,
     dt_valid_causal_coalitions = dt_valid_causal_coalitions
   )
 
@@ -182,7 +182,7 @@ create_coalition_table <- function(m,
                                    prev_coal_samples = NULL,
                                    coal_feature_list = as.list(seq_len(m)),
                                    approach0 = "gaussian",
-                                   shapley_reweighting = "none",
+                                   kernelSHAP_reweighting = "none",
                                    dt_valid_causal_coalitions = NULL) {
   if (exact) {
     dt <- exact_coalition_table(
@@ -197,7 +197,7 @@ create_coalition_table <- function(m,
       weight_zero_m = weight_zero_m,
       paired_shap_sampling = paired_shap_sampling,
       prev_coal_samples = prev_coal_samples,
-      shapley_reweighting = shapley_reweighting,
+      kernelSHAP_reweighting = kernelSHAP_reweighting,
       dt_valid_causal_coalitions = dt_valid_causal_coalitions
     )
     stopifnot(
@@ -221,7 +221,7 @@ create_coalition_table <- function(m,
 }
 
 #' @keywords internal
-shapley_reweighting <- function(X, reweight = "on_N") {
+kernelSHAP_reweighting <- function(X, reweight = "on_N") {
   # Updates the shapley weights in X based on the reweighting strategy BY REFERENCE
 
 
@@ -293,7 +293,7 @@ sample_coalition_table <- function(m,
                                    weight_zero_m = 10^6,
                                    paired_shap_sampling = TRUE,
                                    prev_coal_samples = NULL,
-                                   shapley_reweighting = "none",
+                                   kernelSHAP_reweighting,
                                    valid_causal_coalitions = NULL,
                                    dt_valid_causal_coalitions = NULL) {
   # Setup
@@ -426,7 +426,7 @@ sample_coalition_table <- function(m,
   nms <- c("id_coalition", "coalitions", "coalition_size", "N", "shapley_weight", "p", "sample_freq")
   data.table::setcolorder(X, nms)
 
-  shapley_reweighting(X, reweight = shapley_reweighting) # Reweights the shapley weights in X by reference
+  kernelSHAP_reweighting(X, reweight = kernelSHAP_reweighting) # Reweights the shapley weights in X by reference
 
   return(X)
 }
@@ -665,7 +665,7 @@ shapley_setup_forecast <- function(internal) {
   approach <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  shapley_reweighting <- internal$parameters$shapley_reweighting
+  kernelSHAP_reweighting <- internal$parameters$kernelSHAP_reweighting
 
   coal_feature_list <- internal$objects$coal_feature_list
   horizon <- internal$parameters$horizon
@@ -707,7 +707,7 @@ shapley_setup_forecast <- function(internal) {
       prev_coal_samples = prev_coal_samples,
       coal_feature_list = this_coal_feature_list,
       approach0 = approach,
-      shapley_reweighting = shapley_reweighting
+      kernelSHAP_reweighting = kernelSHAP_reweighting
     )
 
     W_list[[i]] <- weight_matrix(

@@ -85,14 +85,14 @@ expl <- explain(
   n_coalitions = 100,
   Sigma=Sigma,
   mu=mu,
-  adaptive = TRUE,
+  iterative = TRUE,
   unique_sampling = FALSE,
-  adaptive_arguments = list(initial_n_coalitions = 50,
+  iterative_args = list(initial_n_coalitions = 50,
                             fixed_n_coalitions_per_iter = 50,
                             max_iter = 10,
-                            convergence_tolerance = 10^(-10),
+                            convergence_tol = 10^(-10),
                             compute_sd = TRUE),
-  shapley_reweighting = "none",
+  kernelSHAP_reweighting = "none",
   print_iter_info = TRUE
 )
 

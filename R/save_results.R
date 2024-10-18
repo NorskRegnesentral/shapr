@@ -5,7 +5,7 @@
 #' @export
 #' @keywords internal
 save_results <- function(internal) {
-  saving_path <- internal$parameters$adaptive_arguments$saving_path
+  saving_path <- internal$parameters$output_args$saving_path
 
   # Modify name for the new file
   filename <- basename(saving_path)

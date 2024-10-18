@@ -9,7 +9,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -36,7 +36,7 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -52,7 +52,7 @@
       2:          2 42.44   5.546  -6.262 -4.518 -6.664 -1.982
       3:          3 42.44   9.720 -32.555  7.270 -3.377  1.374
 
-# output_asym_cond_reg_adaptive
+# output_asym_cond_reg_iterative
 
     Code
       (out <- code)
@@ -63,13 +63,13 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 8 coalitions, 5 new. 
@@ -94,7 +94,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -119,7 +119,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind, Temp, Month, Day}
@@ -146,7 +146,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind, Temp, Month, Day}
@@ -173,7 +173,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -201,7 +201,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -229,7 +229,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -253,7 +253,7 @@
     Message
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -281,7 +281,7 @@
       
       * Model class: <lm>
       * Approach: empirical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -309,7 +309,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -337,7 +337,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
@@ -364,7 +364,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
@@ -391,7 +391,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
@@ -418,7 +418,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of group-wise Shapley values: 3
       * Number of observations to explain: 3
       * Causal ordering: {A, B}, {C}
@@ -445,7 +445,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of group-wise Shapley values: 3
       * Number of observations to explain: 3
       * Causal ordering: {A}, {B}, {C}
@@ -461,7 +461,7 @@
       2:          2 42.44   3.126  -6.343 -10.662
       3:          3 42.44   5.310 -17.036  -5.842
 
-# output_sym_caus_conf_mix_group_adaptive
+# output_sym_caus_conf_mix_group_iterative
 
     Code
       (out <- code)
@@ -494,7 +494,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Day, Month_factor}
@@ -510,7 +510,7 @@
       2:          2 42.44   4.729 -11.40 -7.837  1.6971       -2.570
       3:          3 42.44   3.010 -23.62  3.218  4.8728        1.922
 
-# output_mixed_sym_caus_conf_TRUE_adaptive
+# output_mixed_sym_caus_conf_TRUE_iterative
 
     Code
       (out <- code)
@@ -521,13 +521,13 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Day, Month_factor}
       * Components with confounding: {Solar.R, Wind}, {Temp}, {Day, Month_factor}
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 32 coalitions, 5 new. 
@@ -570,7 +570,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -598,7 +598,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -626,13 +626,13 @@
       
       * Model class: <lm>
       * Approach: regression_separate
-      * Adaptive estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Day, Month_factor}
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 8 coalitions, 5 new. 
@@ -657,7 +657,7 @@
       
       * Model class: <lm>
       * Approach: categorical
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 2
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},
@@ -684,14 +684,14 @@
       
       * Model class: <lm>
       * Approach: categorical
-      * Adaptive estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},
       {Month_factor}
       * Components with confounding: {Solar.R_factor, Wind_factor}
       
-      -- Adaptive computation started --
+      -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 5 of 16 coalitions, 5 new. 
@@ -725,7 +725,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Adaptive estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},

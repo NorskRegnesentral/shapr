@@ -151,30 +151,33 @@ test_that("erroneous input: `prediction_zero`", {
 test_that("erroneous input: `max_n_coalitions`", {
   set.seed(123)
 
-  expect_snapshot({
-    # Too low max_n_coalitions (smaller than # features)
-    horizon <- 3
-    explain_y_lags <- 2
-    explain_xreg_lags <- 2
+  expect_snapshot(
+    {
+      # Too low max_n_coalitions (smaller than # features)
+      horizon <- 3
+      explain_y_lags <- 2
+      explain_xreg_lags <- 2
 
-    n_coalitions <- horizon + explain_y_lags + explain_xreg_lags - 1
+      n_coalitions <- horizon + explain_y_lags + explain_xreg_lags - 1
 
-    explain_forecast(
-      testing = TRUE,
-      model = model_arima_temp,
-      y = data_arima[1:150, "Temp"],
-      xreg = data_arima[, "Wind"],
-      train_idx = 2:148,
-      explain_idx = 149:150,
-      explain_y_lags = explain_y_lags,
-      explain_xreg_lags = explain_xreg_lags,
-      horizon = horizon,
-      approach = "independence",
-      prediction_zero = p0_ar,
-      max_n_coalitions = n_coalitions,
-      group_lags = FALSE
-    )
-  })
+      explain_forecast(
+        testing = TRUE,
+        model = model_arima_temp,
+        y = data_arima[1:150, "Temp"],
+        xreg = data_arima[, "Wind"],
+        train_idx = 2:148,
+        explain_idx = 149:150,
+        explain_y_lags = explain_y_lags,
+        explain_xreg_lags = explain_xreg_lags,
+        horizon = horizon,
+        approach = "independence",
+        prediction_zero = p0_ar,
+        max_n_coalitions = n_coalitions,
+        group_lags = FALSE
+      )
+    },
+    error = TRUE
+  )
 
 
   expect_snapshot({

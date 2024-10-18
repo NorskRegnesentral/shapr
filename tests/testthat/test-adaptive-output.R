@@ -9,7 +9,7 @@ test_that("output_lm_numeric_independence_reach_exact", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("basic", "convergence", "shapley"),
       paired_shap_sampling = TRUE
     ),
@@ -26,11 +26,11 @@ test_that("output_lm_numeric_independence_converges_tol", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      adaptive_arguments = list(
+      iterative_args = list(
         initial_n_coalitions = 10,
-        convergence_tolerance = 0.1
+        convergence_tol = 0.1
       ),
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("convergence", "shapley")
     ),
     "output_lm_numeric_independence_converges_tol"
@@ -46,13 +46,13 @@ test_that("output_lm_numeric_independence_converges_maxit", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      adaptive_arguments = list(
+      iterative_args = list(
         initial_n_coalitions = 10,
-        convergence_tolerance = 0.001,
-        reduction_factor_vec = rep(10^(-5), 10),
+        convergence_tol = 0.001,
+        n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
       ),
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("convergence", "shapley")
     ),
     "output_lm_numeric_independence_converges_maxit"
@@ -69,7 +69,7 @@ test_that("output_lm_numeric_indep_conv_max_n_coalitions", {
       approach = "independence",
       prediction_zero = p0,
       max_n_coalitions = 20,
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("convergence", "shapley")
     ),
     "output_lm_numeric_indep_conv_max_n_coalitions"
@@ -93,11 +93,11 @@ test_that("output_lm_numeric_gaussian_group_converges_tol", {
       approach = "gaussian",
       group = groups,
       prediction_zero = p0,
-      adaptive_arguments = list(
+      iterative_args = list(
         initial_n_coalitions = 5,
-        convergence_tolerance = 0.1
+        convergence_tol = 0.1
       ),
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("convergence", "shapley")
     ),
     "output_lm_numeric_gaussian_group_converges_tol"
@@ -113,11 +113,11 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
       x_train = x_train_numeric,
       approach = "independence",
       prediction_zero = p0,
-      adaptive_arguments = list(
+      iterative_args = list(
         initial_n_coalitions = 10,
-        convergence_tolerance = 0.1
+        convergence_tol = 0.1
       ),
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("convergence", "shapley"),
       paired_shap_sampling = TRUE
     ),
@@ -137,13 +137,13 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     approach = "independence",
     prediction_zero = p0,
     paired_shap_sampling = FALSE,
-    adaptive_arguments = list(
+    iterative_args = list(
       initial_n_coalitions = 10,
-      convergence_tolerance = 0.001,
-      reduction_factor_vec = rep(10^(-5), 10),
+      convergence_tol = 0.001,
+      n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 8
     ),
-    adaptive = TRUE,
+    iterative = TRUE,
     seed = NULL,
     verbose = NULL
   )
@@ -159,13 +159,13 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     approach = "independence",
     prediction_zero = p0,
     paired_shap_sampling = FALSE,
-    adaptive_arguments = list(
+    iterative_args = list(
       initial_n_coalitions = 10,
-      convergence_tolerance = 0.001,
-      reduction_factor_vec = rep(10^(-5), 10),
+      convergence_tol = 0.001,
+      n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 5
     ),
-    adaptive = TRUE,
+    iterative = TRUE,
     seed = NULL,
     verbose = NULL
   )
@@ -180,13 +180,13 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       approach = "independence",
       prediction_zero = p0,
       paired_shap_sampling = FALSE,
-      adaptive_arguments = list(
+      iterative_args = list(
         initial_n_coalitions = 10,
-        convergence_tolerance = 0.001,
-        reduction_factor_vec = rep(10^(-5), 10),
+        convergence_tol = 0.001,
+        n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
       ),
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = NULL,
       prev_shapr_object = e_init_object,
       seed = NULL,
@@ -208,13 +208,13 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     approach = "independence",
     prediction_zero = p0,
     paired_shap_sampling = FALSE,
-    adaptive_arguments = list(
+    iterative_args = list(
       initial_n_coalitions = 10,
-      convergence_tolerance = 0.001,
-      reduction_factor_vec = rep(10^(-5), 10),
+      convergence_tol = 0.001,
+      n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 5
     ),
-    adaptive = TRUE,
+    iterative = TRUE,
     seed = NULL,
     verbose = NULL
   )
@@ -229,15 +229,15 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       approach = "independence",
       prediction_zero = p0,
       paired_shap_sampling = FALSE,
-      adaptive_arguments = list(
+      iterative_args = list(
         initial_n_coalitions = 10,
-        convergence_tolerance = 0.001,
-        reduction_factor_vec = rep(10^(-5), 10),
+        convergence_tol = 0.001,
+        n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
       ),
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = NULL,
-      prev_shapr_object = e_init_path$internal$parameters$adaptive_arguments$saving_path,
+      prev_shapr_object = e_init_path$saving_path,
       seed = NULL
     ),
     "output_lm_numeric_independence_cont_est_path"
@@ -256,7 +256,7 @@ test_that("output_verbose_1", {
       x_train = x_train_numeric,
       approach = "gaussian",
       prediction_zero = p0,
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("basic")
     ),
     "output_verbose_1"
@@ -272,7 +272,7 @@ test_that("output_verbose_1_3", {
       x_train = x_train_numeric,
       approach = "gaussian",
       prediction_zero = p0,
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("basic", "convergence")
     ),
     "output_verbose_1_3"
@@ -288,7 +288,7 @@ test_that("output_verbose_1_3_4", {
       x_train = x_train_numeric,
       approach = "gaussian",
       prediction_zero = p0,
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("basic", "convergence", "shapley")
     ),
     "output_verbose_1_3_4"
@@ -304,7 +304,7 @@ test_that("output_verbose_1_3_4_5", {
       x_train = x_train_numeric,
       approach = "gaussian",
       prediction_zero = p0,
-      adaptive = TRUE,
+      iterative = TRUE,
       verbose = c("basic", "convergence", "shapley", "vS_details")
     ),
     "output_verbose_1_3_4_5"

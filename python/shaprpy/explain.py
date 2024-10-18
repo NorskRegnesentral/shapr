@@ -195,7 +195,7 @@ def explain(
         routput = regression_remove_objects(routput)
 
     # Convert R objects to Python objects
-    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values')))
+    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
     pred_explain = r2py(routput.rx2('pred_explain'))
     internal = recurse_r_tree(routput.rx2('internal'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))
@@ -218,7 +218,7 @@ def batch_compute_vS(S, rinternal, model, predict_model):
   if regression:
     dt_vS = shapr.batch_prepare_vS_regression(S=S, internal=rinternal)
   else:
-    # dt_vS is either only dt_vS or a list containing dt_vS and dt if internal$parameters$keep_samp_for_vS = TRUE
+    # dt_vS is either only dt_vS or a list containing dt_vS and dt if internal$parameters$output_args$keep_samp_for_vS = TRUE
     dt_vS = batch_prepare_vS_MC(S=S, rinternal=rinternal, model=model, predict_model=predict_model)
 
   return dt_vS

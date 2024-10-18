@@ -16,14 +16,13 @@ explain_forecast(
   approach,
   prediction_zero,
   max_n_coalitions = NULL,
-  adaptive = NULL,
-  adaptive_arguments = list(),
-  shapley_reweighting = "on_all_cond",
+  iterative = NULL,
+  iterative_args = list(),
+  kernelSHAP_reweighting = "on_all_cond",
   group_lags = TRUE,
   group = NULL,
   n_MC_samples = 1000,
   seed = 1,
-  keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
   verbose = "basic",
@@ -78,16 +77,16 @@ Typically we set this value equal to the mean of the response variable in our tr
 such as the mean of the predictions in the training data are also reasonable.}
 
 \item{max_n_coalitions}{Integer.
-The upper limit on the number of unique feature/group coalitions to use in the adaptive procedure
-(if \code{adaptive = TRUE}).
-If \code{adaptive = FALSE} it represents the number of feature/group coalitions to use directly.
+The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+(if \code{iterative = TRUE}).
+If \code{iterative = FALSE} it represents the number of feature/group coalitions to use directly.
 The quantity refers to the number of unique feature coalitions if \code{group = NULL},
 and group coalitions if \code{group != NULL}.
 \code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
-\item{adaptive}{Logical or NULL
+\item{iterative}{Logical or NULL
 If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
-If eventually \code{TRUE}, the Shapley values are estimated adaptively in an iterative manner.
+If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
@@ -95,13 +94,13 @@ A convergence criterion is used to determine if the variances of the Shapley val
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
-Specifics related to the adaptive process and convergence criterion are set through \code{adaptive_arguments}.}
+Specifics related to the iterative process and convergence criterion are set through \code{iterative_args}.}
 
-\item{adaptive_arguments}{Named list.
-Specifices the arguments for the adaptive procedure.
-See \code{\link[=get_adaptive_arguments_default]{get_adaptive_arguments_default()}} for description of the arguments and their default values.}
+\item{iterative_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
-\item{shapley_reweighting}{String.
+\item{kernelSHAP_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
 the randomness and thereby the variance of the Shapley value estimates.
 One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
@@ -136,10 +135,6 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 Specifies the seed before any randomness based code is being run.
 If \code{NULL} no seed is set in the calling environment.}
 
-\item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in \code{internal$output}).
-Not used for \code{approach="regression_separate"} or \code{approach="regression_surrogate"}.}
-
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
 (Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported models.)
@@ -168,8 +163,8 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed.
 \verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{adaptive = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{adaptive = TRUE})
+(only when \code{iterative = TRUE}) .
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 \itemize{
 \item the final estimates.
 \code{"vS_details"} displays information about the v_S estimates.
@@ -265,13 +260,13 @@ This is useful if the underlying time series are scaled between 0 and 1, for exa
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-\item{shapley_values}{data.table with the estimated Shapley values with explained observation in the rows and
+\item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
 The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{prediction_zero})}
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{adaptive = TRUE} and \code{adaptive_arguments$compute_sd=TRUE}.}
+Only present when \code{extra_computation_args$compute_sd=TRUE}.}
 \item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -281,8 +276,8 @@ Only present when \code{adaptive = TRUE} and \code{adaptive_arguments$compute_sd
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
 \code{main_timing_secs} gives the time in seconds for the main computations.
-\code{iter_timing_secs} gives for each iteration of the adaptive estimation, the time spent on the different parts
-adaptive estimation routine.}
+\code{iter_timing_secs} gives for each iteration of the iterative estimation, the time spent on the different parts
+iterative estimation routine.}
 }
 }
 \description{

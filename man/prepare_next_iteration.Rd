@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_next_iteration.R
 \name{prepare_next_iteration}
 \alias{prepare_next_iteration}
-\title{Prepares the next iteration of the adaptive sampling algorithm}
+\title{Prepares the next iteration of the iterative sampling algorithm}
 \usage{
 prepare_next_iteration(internal)
 }
@@ -11,6 +11,6 @@ prepare_next_iteration(internal)
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
 \description{
-Prepares the next iteration of the adaptive sampling algorithm
+Prepares the next iteration of the iterative sampling algorithm
 }
 \keyword{internal}

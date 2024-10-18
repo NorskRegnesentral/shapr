@@ -1,18 +1,18 @@
 library(data.table)
-shapley_reweighting_strategy = "none"
+kernelSHAP_reweighting_strategy = "none"
 shapley_threshold_val <- 0.2
 
 
 
 sim_results_folder = "/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/simuleringsresultater/sim_lingauss_v2/"
 
-load(paste0(sim_results_folder,"iterative_kernelshap_",shapley_threshold_val,"_",shapley_reweighting_strategy, ".RData"))
+load(paste0(sim_results_folder,"iterative_kernelshap_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".RData"))
 
 
-exact_vals = fread(paste0(sim_results_folder,"exact_shapley_values_", shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
+exact_vals = fread(paste0(sim_results_folder,"exact_shapley_values_", shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
 names(exact_vals) <- c("phi0", paste0("VV",1:12))
-iterative_vals = fread(paste0(sim_results_folder,"iterative_shapley_values_", shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
-approx_vals = fread(paste0(sim_results_folder,"approx_shapley_values_", shapley_threshold_val,"_",shapley_reweighting_strategy, ".csv"))
+iterative_vals = fread(paste0(sim_results_folder,"iterative_shapley_values_", shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
+approx_vals = fread(paste0(sim_results_folder,"approx_shapley_values_", shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
 
 bias_vec <- colMeans(exact_vals - iterative_vals)
 rmse_vec <- sqrt(colMeans((exact_vals - iterative_vals)^2))
