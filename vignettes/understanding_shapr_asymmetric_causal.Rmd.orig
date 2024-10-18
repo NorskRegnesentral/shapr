@@ -845,10 +845,10 @@ sv_framework_2_str <- "Causal SV"
 # Set up the data.frame we are going to plot
 sv_correlation_df <- data.frame(
   color = x_explain[, color],
-  sv_framework_1_feature_1 = sv_framework_1$shapley_values[[feature_1]],
-  sv_framework_2_feature_1 = sv_framework_2$shapley_values[[feature_1]],
-  sv_framework_1_feature_2 = sv_framework_1$shapley_values[[feature_2]],
-  sv_framework_2_feature_2 = sv_framework_2$shapley_values[[feature_2]]
+  sv_framework_1_feature_1 = sv_framework_1$shapley_values_est[[feature_1]],
+  sv_framework_2_feature_1 = sv_framework_2$shapley_values_est[[feature_1]],
+  sv_framework_1_feature_2 = sv_framework_1$shapley_values_est[[feature_2]],
+  sv_framework_2_feature_2 = sv_framework_2$shapley_values_est[[feature_2]]
 )
 
 # Make the plots
@@ -1006,7 +1006,7 @@ explanations <- list(
 
 # Extract the relevant Shapley values
 explanations_extracted <- data.table::rbindlist(lapply(seq_along(explanations), function(idx) {
-  explanations[[idx]]$shapley_values[
+  explanations[[idx]]$shapley_values_est[
     dates_idx, ..features
   ][, `:=`(Date = dates, type = names(explanations)[idx])]
 }))

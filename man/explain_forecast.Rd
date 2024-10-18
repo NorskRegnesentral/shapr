@@ -260,7 +260,7 @@ This is useful if the underlying time series are scaled between 0 and 1, for exa
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-\item{shapley_values}{data.table with the estimated Shapley values with explained observation in the rows and
+\item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
 The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{prediction_zero})}
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.

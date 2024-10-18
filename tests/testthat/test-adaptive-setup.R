@@ -204,8 +204,8 @@ test_that("different n_batches gives same/different shapley values for different
   ))
   # Same Shapley values
   expect_equal(
-    explain.empirical_n_batches_5$shapley_values,
-    explain.empirical_n_batches_10$shapley_values
+    explain.empirical_n_batches_5$shapley_values_est,
+    explain.empirical_n_batches_10$shapley_values_est
   )
 
   # approach "ctree" is seed dependent
@@ -236,7 +236,7 @@ test_that("different n_batches gives same/different shapley values for different
   ))
   # NEITHER same Shapley values
   expect_false(identical(
-    explain.ctree_n_batches_5$shapley_values,
-    explain.ctree_n_batches_10$shapley_values
+    explain.ctree_n_batches_5$shapley_values_est,
+    explain.ctree_n_batches_10$shapley_values_est
   ))
 })

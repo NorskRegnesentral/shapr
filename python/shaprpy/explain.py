@@ -195,7 +195,7 @@ def explain(
         routput = regression_remove_objects(routput)
 
     # Convert R objects to Python objects
-    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values')))
+    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
     pred_explain = r2py(routput.rx2('pred_explain'))
     internal = recurse_r_tree(routput.rx2('internal'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))

@@ -494,7 +494,7 @@ explanation <- explain(
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 #>    explain_id   none  Solar.R    Wind    Temp    Month
 #>         <int>  <num>    <num>   <num>   <num>    <num>
 #> 1:          1 43.086 13.21173  4.7856 -25.572  -5.5992
@@ -1814,7 +1814,7 @@ explanation_tidymodels <- explain(
 #> ℹ Using 16 of 16 coalitions.
 
 # See that the Shapley value explanations are identical too
-all.equal(explanation$shapley_values, explanation_tidymodels$shapley_values)
+all.equal(explanation$shapley_values_est, explanation_tidymodels$shapley_values_est)
 #> [1] TRUE
 ```
 
@@ -2298,7 +2298,7 @@ explanation_forecast <- explain_forecast(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
 
-print(explanation_forecast$shapley_values)
+print(explanation_forecast$shapley_values_est)
 #>    explain_idx horizon  none   Temp.1   Temp.2  Wind.1  Wind.F1  Wind.F2
 #>          <num>   <num> <num>    <num>    <num>   <num>    <num>    <num>
 #> 1:         151       1 77.96 -0.67793 -0.67340 -1.2688 0.493408       NA

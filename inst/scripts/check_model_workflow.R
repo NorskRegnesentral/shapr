@@ -64,7 +64,7 @@ explain_xgboost = explain(
 )
 
 # See that the shapley values are identical
-all.equal(explain_workflow$shapley_values, explain_xgboost$shapley_values)
+all.equal(explain_workflow$shapley_values_est, explain_xgboost$shapley_values_est)
 
 # Other models in workflow ---------------------------------------------------------------------------------------------
 set.seed(1)

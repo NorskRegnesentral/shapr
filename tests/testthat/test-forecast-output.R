@@ -205,19 +205,19 @@ test_that("ARIMA gives the same output with different horizons", {
 
   cols_horizon1 <- h2$internal$objects$cols_per_horizon[[1]]
   expect_equal(
-    h2$shapley_values[horizon == 1, ..cols_horizon1],
-    h1$shapley_values[horizon == 1, ..cols_horizon1]
+    h2$shapley_values_est[horizon == 1, ..cols_horizon1],
+    h1$shapley_values_est[horizon == 1, ..cols_horizon1]
   )
 
   expect_equal(
-    h3$shapley_values[horizon == 1, ..cols_horizon1],
-    h1$shapley_values[horizon == 1, ..cols_horizon1]
+    h3$shapley_values_est[horizon == 1, ..cols_horizon1],
+    h1$shapley_values_est[horizon == 1, ..cols_horizon1]
   )
 
   cols_horizon2 <- h2$internal$objects$cols_per_horizon[[2]]
   expect_equal(
-    h3$shapley_values[horizon == 2, ..cols_horizon2],
-    h2$shapley_values[horizon == 2, ..cols_horizon2]
+    h3$shapley_values_est[horizon == 2, ..cols_horizon2],
+    h2$shapley_values_est[horizon == 2, ..cols_horizon2]
   )
 })
 
@@ -278,17 +278,17 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
   )
 
   expect_equal(
-    h2$shapley_values[horizon == 1],
-    h1$shapley_values[horizon == 1]
+    h2$shapley_values_est[horizon == 1],
+    h1$shapley_values_est[horizon == 1]
   )
 
   expect_equal(
-    h3$shapley_values[horizon == 1],
-    h1$shapley_values[horizon == 1]
+    h3$shapley_values_est[horizon == 1],
+    h1$shapley_values_est[horizon == 1]
   )
 
   expect_equal(
-    h3$shapley_values[horizon == 2],
-    h2$shapley_values[horizon == 2]
+    h3$shapley_values_est[horizon == 2],
+    h2$shapley_values_est[horizon == 2]
   )
 })

@@ -127,6 +127,6 @@ second_path = explain(
 
 
 # Identical results
-all.equal(full$shapley_values,second$shapley_values) # TRUE
-all.equal(full$shapley_values,second2$shapley_values) # TRUE
-all.equal(full$shapley_values,second_path$shapley_values) # TRUE
+all.equal(full$shapley_values_est,second$shapley_values_est) # TRUE
+all.equal(full$shapley_values_est,second2$shapley_values_est) # TRUE
+all.equal(full$shapley_values_est,second_path$shapley_values_est) # TRUE

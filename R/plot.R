@@ -186,7 +186,7 @@ plot.shapr <- function(x,
   }
 
   # Remove the explain_id column
-  x$shapley_values <- x$shapley_values[, -"explain_id"]
+  x$shapley_values_est <- x$shapley_values_est[, -"explain_id"]
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
@@ -229,7 +229,7 @@ plot.shapr <- function(x,
 
   # melting Kshap
   shap_names <- x$internal$parameters$shap_names
-  dt_shap <- round(data.table::copy(x$shapley_values), digits = digits)
+  dt_shap <- round(data.table::copy(x$shapley_values_est), digits = digits)
   dt_shap[, id := .I]
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
@@ -241,7 +241,7 @@ plot.shapr <- function(x,
       desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
     }
   } else {
-    desc_mat <- trimws(format(x$shapley_values[, -c("explain_id", "none")], digits = digits))
+    desc_mat <- trimws(format(x$shapley_values_est[, -c("explain_id", "none")], digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shap_names[i])
     }
@@ -1165,7 +1165,7 @@ MSEv_check_explanation_list <- function(explanation_list) {
   if (any(names(explanation_list) == "")) stop("All the entries in `explanation_list` must be named.")
 
   # Check that all explanation objects use the same column names for the Shapley values
-  if (length(unique(lapply(explanation_list, function(explanation) colnames(explanation$shapley_values)))) != 1) {
+  if (length(unique(lapply(explanation_list, function(explanation) colnames(explanation$shapley_values_est)))) != 1) {
     stop("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
   }
 
@@ -1586,7 +1586,7 @@ plot_SV_several_approaches <- function(explanation_list,
   if (any(names(explanation_list) == "")) stop("All the entries in `explanation_list` must be named.")
 
   # Check that the column names for the Shapley values are the same for all explanations in the `explanation_list`
-  if (length(unique(lapply(explanation_list, function(explanation) colnames(explanation$shapley_values)))) != 1) {
+  if (length(unique(lapply(explanation_list, function(explanation) colnames(explanation$shapley_values_est)))) != 1) {
     stop("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
   }
 
@@ -1708,7 +1708,7 @@ update_only_these_features <- function(explanation_list,
   # Update the `only_these_features` parameter vector based on `plot_phi0` or in case it is NULL
 
   # Get the common feature names for all explanation objects (including `none`) and one without `none`
-  feature_names_with_none <- colnames(explanation_list[[1]]$shapley_values)[-1]
+  feature_names_with_none <- colnames(explanation_list[[1]]$shapley_values_est)[-1]
   feature_names_without_none <- feature_names_with_none[feature_names_with_none != "none"]
 
   # Only keep the desired features/columns
@@ -1759,7 +1759,7 @@ extract_Shapley_values_dt <- function(explanation_list,
     lapply(
       explanation_list,
       function(explanation) {
-        data.table::copy(explanation$shapley_values)[, c(".id", ".pred") := list(.I, explanation$pred_explain)]
+        data.table::copy(explanation$shapley_values_est)[, c(".id", ".pred") := list(.I, explanation$pred_explain)]
       }
     ),
     use.names = TRUE,

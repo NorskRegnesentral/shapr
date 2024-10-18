@@ -109,7 +109,7 @@ expl <- shapr::explain(model = model,
                        approach = "ctree",
                        prediction_zero = p0
 )
-fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_", kernelSHAP_reweighting_strategy, ".csv"))
+fwrite(expl$shapley_values_est,paste0(sim_results_saving_folder,"exact_shapley_values_", kernelSHAP_reweighting_strategy, ".csv"))
 print(Sys.time())
 
 # These are the parameters for for iterative_kshap_func
@@ -170,11 +170,11 @@ for (i in seq_along(testObs_computed_vec)){
                         approach = approach,
                         prediction_zero = p0,
                         n_coalitions = runcomps_list[[i]])
-  expl_approx[i,] = unlist(expl_approx_obj$shapley_values)
+  expl_approx[i,] = unlist(expl_approx_obj$shapley_values_est)
   expl_approx_obj_list[[i]] <- expl_approx_obj
 }
 expl_approx <- as.data.table(expl_approx)
-truth <- expl$shapley_values
+truth <- expl$shapley_values_est
 
 colnames(expl_approx) <- colnames(truth)
 fwrite(expl_approx,paste0(sim_results_saving_folder,"approx_shapley_values_", kernelSHAP_reweighting_strategy, ".csv"))
@@ -212,7 +212,7 @@ print(Sys.time())
 
 
 # run$kshap_final
-# expl$shapley_values
+# expl$shapley_values_est
 
 
 
@@ -223,7 +223,7 @@ print(Sys.time())
 
 # sum(unlist(kshap_final[.N,]))
 
-# sum(unlist(expl$shapley_values[testObs_computed,]))
+# sum(unlist(expl$shapley_values_est[testObs_computed,]))
 
 
 
@@ -239,7 +239,7 @@ print(Sys.time())
 
 # full_pred <- predict(model,x_explain)[5]
 # p0 <- mean(y_train)
-# pred_not_to_decompose <- sum(expl$shapley_values[5,VV7:VV9])
+# pred_not_to_decompose <- sum(expl$shapley_values_est[5,VV7:VV9])
 
 
 # run_minor <- iterative_kshap_func(model,x_explain,x_train,
