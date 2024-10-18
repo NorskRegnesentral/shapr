@@ -1,5 +1,5 @@
 # This file build on Pull Request https://github.com/NorskRegnesentral/shapr/pull/273
-# This file does not run on the adaptive version.
+# This file does not run on the iterative version.
 # The point of the file was to replicate the plot values that Heskes obtained in their implementation
 # to validate my implementation.
 

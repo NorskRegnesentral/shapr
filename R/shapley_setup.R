@@ -707,7 +707,7 @@ shapley_setup_forecast <- function(internal) {
       prev_coal_samples = prev_coal_samples,
       coal_feature_list = this_coal_feature_list,
       approach0 = approach,
-      shapley_reweighting = shapley_reweighting
+      kernelSHAP_reweighting = kernelSHAP_reweighting
     )
 
     W_list[[i]] <- weight_matrix(

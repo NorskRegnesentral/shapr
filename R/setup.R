@@ -1261,7 +1261,7 @@ check_computability <- function(internal) {
     if (isTRUE(causal_sampling) && !is.null(max_n_coalitions_causal) && max_n_coalitions_causal > 1000) {
       warning(
         paste0(
-          "Due to computation time, we strongly recommend enabling adaptive estimation with adaptive = TRUE ",
+          "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE ",
           "when the number of valid causal coalitions are more than 1000 due to the long causal sampling time. \n"
         )
       )

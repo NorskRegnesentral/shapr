@@ -68,7 +68,7 @@
       5:  0.5630
       6: -0.7615
 
-# forecast_output_arima_numeric_adaptive
+# forecast_output_arima_numeric_iterative
 
     Code
       (out <- code)
@@ -110,7 +110,7 @@
       5: -1.5436 -0.5418  2.8952
       6: -0.6202 -0.8545  0.4549
 
-# forecast_output_arima_numeric_adaptive_groups
+# forecast_output_arima_numeric_iterative_groups
 
     Code
       (out <- code)
