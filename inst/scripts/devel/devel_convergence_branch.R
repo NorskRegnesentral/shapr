@@ -83,7 +83,7 @@ explanation_iterative <- explain(
   n_coalitions = 500,
   prediction_zero = p0,
   iterative = TRUE,
-  iterative_args = list(initial_n_coalitions=10,convergence_tolerance=0.0001),
+  iterative_args = list(initial_n_coalitions=10,convergence_tol=0.0001),
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
   kernelSHAP_reweighting = "on_N"

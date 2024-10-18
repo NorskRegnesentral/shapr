@@ -17,11 +17,11 @@ print_iter <- function(internal) {
   n_coal_next_iter_factor <- internal$iter_list[[iter]]$n_coal_next_iter_factor
 
   saving_path <- internal$parameters$output_args$saving_path
-  convergence_tolerance <- internal$parameters$iterative_args$convergence_tolerance
+  convergence_tol <- internal$parameters$iterative_args$convergence_tol
   testing <- internal$parameters$testing
 
   if ("convergence" %in% verbose) {
-    convergence_tolerance <- internal$parameters$iterative_args$convergence_tolerance
+    convergence_tol <- internal$parameters$iterative_args$convergence_tol
 
     current_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
     est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions
@@ -35,9 +35,9 @@ print_iter <- function(internal) {
     if (isFALSE(converged)) {
       msg <- "Not converged after {current_n_coalitions} coalitions:\n"
 
-      if (!is.null(convergence_tolerance)) {
+      if (!is.null(convergence_tol)) {
         conv_nice <- signif(overall_conv_measure, 2)
-        tol_nice <- format(signif(convergence_tolerance, 2), scientific = FALSE)
+        tol_nice <- format(signif(convergence_tol, 2), scientific = FALSE)
         n_coal_next_iter_factor_nice <- format(signif(n_coal_next_iter_factor * 100, 2), scientific = FALSE)
         msg <- paste0(
           msg,

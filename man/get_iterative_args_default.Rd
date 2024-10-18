@@ -10,7 +10,7 @@ get_iterative_args_default(
     (2^internal$parameters$n_features)/10))),
   fixed_n_coalitions_per_iter = NULL,
   max_iter = 20,
-  convergence_tolerance = 0.02,
+  convergence_tol = 0.02,
   n_coal_next_iter_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))
 )
 }
@@ -25,7 +25,7 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
 \item{max_iter}{Integer. Maximum number of estimation iterations}
 
-\item{convergence_tolerance}{Numeric. The t variable in the convergence threshold formula on page 6 in the paper
+\item{convergence_tol}{Numeric. The t variable in the convergence threshold formula on page 6 in the paper
 Covert and Lee (2021), 'Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression'
 https://arxiv.org/pdf/2012.01536. Smaller values requires more coalitions before convergence is reached.}
 

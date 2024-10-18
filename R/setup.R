@@ -1147,7 +1147,7 @@ check_and_set_iterative <- function(internal) {
     if (isTRUE(iterative)) {
       warning(
         paste0(
-          "iterative estimation of Shapley values are not supported for approach = ",
+          "Iterative estimation of Shapley values are not supported for approach = ",
           paste0(unsupported, collapse = ", "), ". Setting iterative = FALSE."
         )
       )
@@ -1530,12 +1530,12 @@ check_iterative_args <- function(iterative_args) {
     stop("`iterative_args$max_iter` must be NULL, Inf or a single positive integer.")
   }
 
-  # convergence_tolerance
-  if (!is.null(convergence_tolerance) &&
-    !(length(convergence_tolerance) == 1 &&
-      !is.na(convergence_tolerance) &&
-      convergence_tolerance >= 0)) {
-    stop("`iterative_args$convergence_tolerance` must be NULL, 0, or a positive numeric.")
+  # convergence_tol
+  if (!is.null(convergence_tol) &&
+    !(length(convergence_tol) == 1 &&
+      !is.na(convergence_tol) &&
+      convergence_tol >= 0)) {
+    stop("`iterative_args$convergence_tol` must be NULL, 0, or a positive numeric.")
   }
 
   # n_coal_next_iter_factor_vec
@@ -1623,7 +1623,7 @@ check_vs_prev_shapr_object <- function(internal) {
 #' @param initial_n_coalitions Integer. Number of coalitions to use in the first estimation iteration.
 #' @param fixed_n_coalitions_per_iter Integer. Number of `n_coalitions` to use in each iteration.
 #' `NULL` (default) means setting it based on estimates based on a set convergence threshold.
-#' @param convergence_tolerance Numeric. The t variable in the convergence threshold formula on page 6 in the paper
+#' @param convergence_tol Numeric. The t variable in the convergence threshold formula on page 6 in the paper
 #' Covert and Lee (2021), 'Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression'
 #' https://arxiv.org/pdf/2012.01536. Smaller values requires more coalitions before convergence is reached.
 #' @param n_coal_next_iter_factor_vec Numeric vector. The number of `n_coalitions` that must be used to reach
@@ -1649,7 +1649,7 @@ get_iterative_args_default <- function(internal,
                                        ),
                                        fixed_n_coalitions_per_iter = NULL,
                                        max_iter = 20,
-                                       convergence_tolerance = 0.02,
+                                       convergence_tol = 0.02,
                                        n_coal_next_iter_factor_vec = c(seq(0.1, 1, by = 0.1), rep(1, max_iter - 10))) {
   iterative <- internal$parameters$iterative
   max_n_coalitions <- internal$parameters$max_n_coalitions
@@ -1661,7 +1661,7 @@ get_iterative_args_default <- function(internal,
         "fixed_n_coalitions_per_iter",
         "max_n_coalitions",
         "max_iter",
-        "convergence_tolerance",
+        "convergence_tol",
         "n_coal_next_iter_factor_vec"
       )
     )
@@ -1671,7 +1671,7 @@ get_iterative_args_default <- function(internal,
       fixed_n_coalitions_per_iter = NULL,
       max_n_coalitions = max_n_coalitions,
       max_iter = 1,
-      convergence_tolerance = NULL,
+      convergence_tol = NULL,
       n_coal_next_iter_factor_vec = NULL
     )
   }

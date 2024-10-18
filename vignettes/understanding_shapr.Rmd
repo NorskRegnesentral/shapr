@@ -111,7 +111,7 @@ The reason for this is that the number of possible coalitions grows exponentiall
 These defaults can be overridden by setting the `iterative` argument to `TRUE` or `FALSE`.
 When using the `iterative` argument, the estimation for an observation is stopped when all Shapley value
 standard deviations are below `t` times the range of the Shapley values.
-The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tolerance` argument, see [iterative estimation](#iterative) for more details.
+The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tol` argument, see [iterative estimation](#iterative) for more details.
 
 Since the iterativeness default changes based on the number of features (or feature groups), the default is also to have
 no upper bound on the number of coalitions considered.
@@ -1215,7 +1215,7 @@ ex <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   iterative = TRUE,
-  iterative_args = list(convergence_tolerance = 0.1)
+  iterative_args = list(convergence_tol = 0.1)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -2011,7 +2011,7 @@ ex_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = 25,
-  iterative_args = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
+  iterative_args = list(convergence_tol = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_init
 )
 #> Note: Feature classes extracted from the model contains NA.

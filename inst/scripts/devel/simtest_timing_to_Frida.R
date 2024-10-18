@@ -90,7 +90,7 @@ expl <- explain(
   iterative_args = list(initial_n_coalitions = 50,
                             fixed_n_coalitions_per_iter = 50,
                             max_iter = 10,
-                            convergence_tolerance = 10^(-10),
+                            convergence_tol = 10^(-10),
                             compute_sd = TRUE),
   kernelSHAP_reweighting = "none",
   print_iter_info = TRUE

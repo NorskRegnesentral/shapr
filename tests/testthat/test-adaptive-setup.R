@@ -9,7 +9,7 @@ test_that("iterative_args are respected", {
     max_n_coalitions = 30,
     iterative_args = list(
       initial_n_coalitions = 6,
-      convergence_tolerance = 0.0005,
+      convergence_tol = 0.0005,
       n_coal_next_iter_factor_vec = rep(10^(-6), 10),
       max_iter = 8
     ),
@@ -43,7 +43,7 @@ test_that("iterative feature wise and groupwise computations identical", {
     prediction_zero = p0,
     iterative_args = list(
       initial_n_coalitions = 5,
-      convergence_tolerance = 0.1
+      convergence_tol = 0.1
     ),
     iterative = TRUE
   )
@@ -59,7 +59,7 @@ test_that("iterative feature wise and groupwise computations identical", {
     prediction_zero = p0,
     iterative_args = list(
       initial_n_coalitions = 5,
-      convergence_tolerance = 0.1
+      convergence_tol = 0.1
     ),
     iterative = TRUE
   )
