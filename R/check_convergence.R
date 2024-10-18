@@ -7,7 +7,11 @@
 check_convergence <- function(internal) {
   iter <- length(internal$iter_list)
 
+<<<<<<< HEAD
+  convergence_tolerance <- internal$parameters$iterative_args$convergence_tolerance
+=======
   convergence_tol <- internal$parameters$iterative_args$convergence_tol
+>>>>>>> origin/shapr-1.0.0
   max_iter <- internal$parameters$iterative_args$max_iter
   max_n_coalitions <- internal$parameters$iterative_args$max_n_coalitions
   paired_shap_sampling <- internal$parameters$paired_shap_sampling

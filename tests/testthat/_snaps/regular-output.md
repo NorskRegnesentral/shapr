@@ -9,7 +9,11 @@
       
       * Model class: <lm>
       * Approach: independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -34,7 +38,11 @@
       
       * Model class: <lm>
       * Approach: independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -59,7 +67,11 @@
       
       * Model class: <lm>
       * Approach: empirical
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -80,7 +92,11 @@
     Message
       * Model class: <lm>
       * Approach: empirical
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -110,7 +126,11 @@
     Message
       * Model class: <lm>
       * Approach: empirical
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -161,7 +181,11 @@
     Message
       * Model class: <lm>
       * Approach: empirical
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -182,7 +206,11 @@
     Message
       * Model class: <lm>
       * Approach: empirical
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -207,7 +235,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -232,7 +264,11 @@
       
       * Model class: <lm>
       * Approach: copula
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -257,7 +293,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -282,7 +322,11 @@
       
       * Model class: <lm>
       * Approach: vaeac
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -307,7 +351,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -332,7 +380,11 @@
       
       * Model class: <lm>
       * Approach: vaeac
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -357,7 +409,11 @@
       
       * Model class: <lm>
       * Approach: categorical
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -382,7 +438,11 @@
       
       * Model class: <lm>
       * Approach: independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -407,7 +467,11 @@
       
       * Model class: <lm>
       * Approach: timeseries
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of group-wise Shapley values: 4
       * Number of observations to explain: 2
       
@@ -431,7 +495,11 @@
       
       * Model class: <lm>
       * Approach: gaussian, empirical, ctree, and independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -456,7 +524,11 @@
       
       * Model class: <lm>
       * Approach: ctree, copula, independence, and copula
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -481,7 +553,11 @@
       
       * Model class: <lm>
       * Approach: independence, empirical, gaussian, and empirical
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -506,7 +582,11 @@
       
       * Model class: <lm>
       * Approach: independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -531,7 +611,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -556,7 +640,11 @@
       
       * Model class: <lm>
       * Approach: vaeac
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -581,7 +669,11 @@
       
       * Model class: <lm>
       * Approach: ctree, independence, ctree, and independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -606,7 +698,11 @@
       
       * Model class: <lm>
       * Approach: independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -634,7 +730,11 @@
       
       * Model class: <whatever>
       * Approach: independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -662,7 +762,11 @@
       
       * Model class: <xgb.Booster>
       * Approach: ctree
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -687,7 +791,11 @@
       
       * Model class: <lm>
       * Approach: independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 3
       
@@ -712,7 +820,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -737,7 +849,11 @@
       
       * Model class: <lm>
       * Approach: empirical
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -762,7 +878,11 @@
       
       * Model class: <lm>
       * Approach: independence
+<<<<<<< HEAD
+      * iterative estimation: FALSE
+=======
       * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       

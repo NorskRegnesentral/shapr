@@ -12,6 +12,9 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
 \item{index_features}{Positive integer vector. Specifies the id_coalition to
 apply to the present method. \code{NULL} means all coalitions. Only used internally.}
+
+\item{iter}{Integer.
+The iteration number. Only used internally.}
 }
 \description{
 Exported documentation helper function.

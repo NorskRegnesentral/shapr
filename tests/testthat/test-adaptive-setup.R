@@ -9,7 +9,11 @@ test_that("iterative_args are respected", {
     max_n_coalitions = 30,
     iterative_args = list(
       initial_n_coalitions = 6,
+<<<<<<< HEAD
+      convergence_tolerance = 0.0005,
+=======
       convergence_tol = 0.0005,
+>>>>>>> origin/shapr-1.0.0
       n_coal_next_iter_factor_vec = rep(10^(-6), 10),
       max_iter = 8
     ),

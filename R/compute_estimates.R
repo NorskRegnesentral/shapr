@@ -304,6 +304,12 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
   n_explain <- internal$parameters$n_explain
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweight <- internal$parameters$kernelSHAP_reweighting
+<<<<<<< HEAD
+  shap_names <- internal$parameters$shap_names
+  n_shapley_values <- internal$parameters$n_shapley_values
+
+=======
+>>>>>>> origin/shapr-1.0.0
 
   X_org <- copy(X)
 

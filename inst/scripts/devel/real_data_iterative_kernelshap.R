@@ -109,7 +109,11 @@ expl <- shapr::explain(model = model,
                        approach = "ctree",
                        prediction_zero = p0
 )
+<<<<<<< HEAD
+fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_", kernelSHAP_reweighting_strategy, ".csv"))
+=======
 fwrite(expl$shapley_values_est,paste0(sim_results_saving_folder,"exact_shapley_values_", kernelSHAP_reweighting_strategy, ".csv"))
+>>>>>>> origin/shapr-1.0.0
 print(Sys.time())
 
 # These are the parameters for for iterative_kshap_func

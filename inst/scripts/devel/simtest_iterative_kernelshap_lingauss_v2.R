@@ -82,7 +82,11 @@ expl <- shapr::explain(model = model,
                        approach = "gaussian",
                        prediction_zero = p0,Sigma=Sigma,mu=mu)
 
+<<<<<<< HEAD
+fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
+=======
 fwrite(expl$shapley_values_est,paste0(sim_results_saving_folder,"exact_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
+>>>>>>> origin/shapr-1.0.0
 
 
 cutoff_feats <- paste0("VV",1:12)

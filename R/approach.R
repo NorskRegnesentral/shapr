@@ -9,13 +9,13 @@
 #'
 #' @export
 setup_approach <- function(internal, ...) {
+
   verbose <- internal$parameters$verbose
 
   approach <- internal$parameters$approach
 
   iter <- length(internal$iter_list)
   X <- internal$iter_list[[iter]]$X
-
 
 
   needs_X <- c("regression_surrogate", "vaeac")
