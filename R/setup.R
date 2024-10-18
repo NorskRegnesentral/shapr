@@ -539,7 +539,6 @@ get_extra_parameters <- function(internal, type) {
       # For normal explain
       internal$parameters$shap_names <- internal$parameters$group_names
     }
-
   } else {
     internal$objects$coal_feature_list <- as.list(seq_len(internal$parameters$n_features))
 
