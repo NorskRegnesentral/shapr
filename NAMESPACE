@@ -65,11 +65,7 @@ export(create_coalition_table)
 export(explain)
 export(explain_forecast)
 export(finalize_explanation)
-<<<<<<< HEAD
 export(finalize_explanation_forecast)
-=======
-export(get_adaptive_arguments_default)
->>>>>>> origin/shapr-1.0.0
 export(get_cov_mat)
 export(get_data_specs)
 export(get_extra_est_args_default)
