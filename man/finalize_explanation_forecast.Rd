@@ -18,7 +18,7 @@ The list contains one or more of the elements \code{parameters}, \code{data}, \c
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-\item{shapley_values}{data.table with the estimated Shapley values with explained observation in the rows and
+\item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
 The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{prediction_zero})}
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
@@ -151,7 +151,7 @@ explain5 <- explain(
 )
 
 # Print the Shapley values
-print(explain1$shapley_values)
+print(explain1$shapley_values_est)
 
 # Plot the results
 if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -171,7 +171,7 @@ explain_groups <- explain(
   prediction_zero = p,
   n_MC_samples = 1e2
 )
-print(explain_groups$shapley_values)
+print(explain_groups$shapley_values_est)
 
 # Separate and surrogate regression approaches with linear regression models.
 # More complex regression models can be used, and we can use CV to

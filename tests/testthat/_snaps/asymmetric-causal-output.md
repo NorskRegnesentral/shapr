@@ -9,7 +9,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -36,7 +40,11 @@
       
       * Model class: <lm>
       * Approach: regression_separate
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -63,7 +71,11 @@
       
       * Model class: <lm>
       * Approach: regression_separate
+<<<<<<< HEAD
       * iterative estimation: TRUE
+=======
+      * Iterative estimation: TRUE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -94,7 +106,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -119,7 +135,11 @@
       
       * Model class: <lm>
       * Approach: independence
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind, Temp, Month, Day}
@@ -146,7 +166,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind, Temp, Month, Day}
@@ -173,7 +197,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -201,7 +229,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -229,7 +261,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -253,7 +289,11 @@
     Message
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -281,7 +321,11 @@
       
       * Model class: <lm>
       * Approach: empirical
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -309,7 +353,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -337,7 +385,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
@@ -364,7 +416,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
@@ -391,7 +447,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
@@ -418,7 +478,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of group-wise Shapley values: 3
       * Number of observations to explain: 3
       * Causal ordering: {A, B}, {C}
@@ -445,7 +509,11 @@
       
       * Model class: <lm>
       * Approach: gaussian
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of group-wise Shapley values: 3
       * Number of observations to explain: 3
       * Causal ordering: {A}, {B}, {C}
@@ -494,7 +562,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Day, Month_factor}
@@ -521,7 +593,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
       * iterative estimation: TRUE
+=======
+      * Iterative estimation: TRUE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Day, Month_factor}
@@ -556,7 +632,7 @@
          explain_id  none  Solar.R    Wind   Temp    Day Month_factor
               <int> <num>    <num>   <num>  <num>  <num>        <num>
       1:          1 42.44 -2.13189   8.867  9.390 -1.137       -4.404
-      2:          2 42.44  0.07793  -7.916 -3.340 -1.378       -2.828
+      2:          2 42.44  0.07794  -7.916 -3.340 -1.378       -2.828
       3:          3 42.44 -2.32289 -13.512  4.116 -1.343        2.462
 
 # output_mixed_asym_caus_conf_mixed
@@ -570,7 +646,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -598,7 +678,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -626,7 +710,11 @@
       
       * Model class: <lm>
       * Approach: regression_separate
+<<<<<<< HEAD
       * iterative estimation: TRUE
+=======
+      * Iterative estimation: TRUE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -657,7 +745,11 @@
       
       * Model class: <lm>
       * Approach: categorical
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 2
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},
@@ -684,7 +776,11 @@
       
       * Model class: <lm>
       * Approach: categorical
+<<<<<<< HEAD
       * iterative estimation: TRUE
+=======
+      * Iterative estimation: TRUE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},
@@ -725,7 +821,11 @@
       
       * Model class: <lm>
       * Approach: ctree
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},

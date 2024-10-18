@@ -120,9 +120,9 @@ for(i0 in seq_along(paired_shap_sampling_vec)){
         )
 
         shap_dt0 <- as.data.table(cbind(seq_len(n_explain),t(this_W%*%as.matrix(exact_dt_vS[,-c("coalitions_str","id_coalition")]))))
-        names(shap_dt0) <- names(this$shapley_values)
+        names(shap_dt0) <- names(this$shapley_values_est)
 
-        this_diff <- unlist(shap_dt0[,-c(1,2)]-expl$shapley_values[,-c(1,2)])
+        this_diff <- unlist(shap_dt0[,-c(1,2)]-expl$shapley_values_est[,-c(1,2)])
         this_bias <- mean(this_diff)
         this_var <- var(this_diff)
         this_MAE <- mean(abs(this_diff))
@@ -217,7 +217,7 @@ fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_",shapley_
 
 
 
-truth <- expl$shapley_values
+truth <- expl$shapley_values_est
 
 expl_approx <- matrix(0, nrow = length(inds), ncol = m+1)
 expl_approx_obj_list <- list()
@@ -229,7 +229,7 @@ for (i in testObs_computed_vec){
                                     prediction_zero = p0,
                                     n_combinations = runcomps_list[[i]],
                                     Sigma=Sigma,mu=mu)
-  expl_approx[i,] = unlist(expl_approx_obj$shapley_values)
+  expl_approx[i,] = unlist(expl_approx_obj$shapley_values_est)
   expl_approx_obj_list[[i]] <- expl_approx_obj
 }
 expl_approx <- as.data.table(expl_approx)

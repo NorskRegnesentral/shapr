@@ -129,7 +129,11 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -271,7 +275,11 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -295,7 +303,11 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -319,7 +331,11 @@
       
       * Model class: <lm>
       * Approach: regression_surrogate
+<<<<<<< HEAD
       * iterative estimation: FALSE
+=======
+      * Iterative estimation: FALSE
+>>>>>>> origin/shapr-1.0.0
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       

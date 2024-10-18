@@ -126,7 +126,11 @@ The reason for this is that the number of possible coalitions grows exponentiall
 These defaults can be overridden by setting the `iterative` argument to `TRUE` or `FALSE`.
 When using the `iterative` argument, the estimation for an observation is stopped when all Shapley value
 standard deviations are below `t` times the range of the Shapley values.
+<<<<<<< HEAD
 The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tolerance` argument, see [iterative estimation](#iterative) for more details.
+=======
+The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tol` argument, see [iterative estimation](#iterative) for more details.
+>>>>>>> origin/shapr-1.0.0
 
 Since the iterativeness default changes based on the number of features (or feature groups), the default is also to have
 no upper bound on the number of coalitions considered.
@@ -491,7 +495,7 @@ explanation <- explain(
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 
 # Plot the resulting explanations for observations 1 and 6
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
@@ -997,7 +1001,11 @@ ex <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   iterative = TRUE,
+<<<<<<< HEAD
   iterative_args = list(convergence_tolerance = 0.1)
+=======
+  iterative_args = list(convergence_tol = 0.1)
+>>>>>>> origin/shapr-1.0.0
 )
 
 ```
@@ -1429,7 +1437,7 @@ explanation_tidymodels <- explain(
   )
 
 # See that the Shapley value explanations are identical too
-all.equal(explanation$shapley_values, explanation_tidymodels$shapley_values)
+all.equal(explanation$shapley_values_est, explanation_tidymodels$shapley_values_est)
 ```
 
 ## The parameters of the `vaeac` approach
@@ -1576,7 +1584,11 @@ ex_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = 25,
+<<<<<<< HEAD
   iterative_args = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
+=======
+  iterative_args = list(convergence_tol = 0.005), # Decrease the convergence threshold
+>>>>>>> origin/shapr-1.0.0
   prev_shapr_object = ex_init
 )
 
@@ -1788,7 +1800,7 @@ explanation_forecast <- explain_forecast(
   group_lags = FALSE
 )
 
-print(explanation_forecast$shapley_values)
+print(explanation_forecast$shapley_values_est)
 ```
 
 

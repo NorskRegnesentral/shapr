@@ -29,7 +29,11 @@ cli_startup <- function(internal, model, verbose) {
 
   line_vec <- "Model class: {.cls {class(model)}}"
   line_vec <- c(line_vec, "Approach: {.emph {approach}}")
+<<<<<<< HEAD
   line_vec <- c(line_vec, "iterative estimation: {.emph {iterative}}")
+=======
+  line_vec <- c(line_vec, "Iterative estimation: {.emph {iterative}}")
+>>>>>>> origin/shapr-1.0.0
   line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {n_shapley_values}")
   line_vec <- c(line_vec, "Number of observations to explain: {n_explain}")
   if (isTRUE(asymmetric)) {

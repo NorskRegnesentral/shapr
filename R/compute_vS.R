@@ -193,8 +193,8 @@ compute_preds <- function(
   if (type == "forecast") {
     dt[, (pred_cols) := predict_model(
       x = model,
-      newdata = .SD[, 1:n_endo],
-      newreg = .SD[, -(1:n_endo)],
+      newdata = .SD[, .SD, .SDcols = seq_len(n_endo)],
+      newreg = .SD[, .SD, .SDcols = seq_len(length(feature_names) - n_endo) + n_endo],
       horizon = horizon,
       explain_idx = explain_idx[id],
       explain_lags = explain_lags,
@@ -220,6 +220,7 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
 
   return(dt_mat)
 }
+<<<<<<< HEAD
 
 
 #' Computes `v(S)` for all features subsets `S`.
@@ -299,3 +300,5 @@ append_vS_list <- function(vS_list, internal) {
   return(vS_list)
 
 }
+=======
+>>>>>>> origin/shapr-1.0.0

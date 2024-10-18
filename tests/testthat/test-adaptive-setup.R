@@ -9,7 +9,11 @@ test_that("iterative_args are respected", {
     max_n_coalitions = 30,
     iterative_args = list(
       initial_n_coalitions = 6,
+<<<<<<< HEAD
       convergence_tolerance = 0.0005,
+=======
+      convergence_tol = 0.0005,
+>>>>>>> origin/shapr-1.0.0
       n_coal_next_iter_factor_vec = rep(10^(-6), 10),
       max_iter = 8
     ),
@@ -43,7 +47,7 @@ test_that("iterative feature wise and groupwise computations identical", {
     prediction_zero = p0,
     iterative_args = list(
       initial_n_coalitions = 5,
-      convergence_tolerance = 0.1
+      convergence_tol = 0.1
     ),
     iterative = TRUE
   )
@@ -59,7 +63,7 @@ test_that("iterative feature wise and groupwise computations identical", {
     prediction_zero = p0,
     iterative_args = list(
       initial_n_coalitions = 5,
-      convergence_tolerance = 0.1
+      convergence_tol = 0.1
     ),
     iterative = TRUE
   )
@@ -204,8 +208,8 @@ test_that("different n_batches gives same/different shapley values for different
   ))
   # Same Shapley values
   expect_equal(
-    explain.empirical_n_batches_5$shapley_values,
-    explain.empirical_n_batches_10$shapley_values
+    explain.empirical_n_batches_5$shapley_values_est,
+    explain.empirical_n_batches_10$shapley_values_est
   )
 
   # approach "ctree" is seed dependent
@@ -236,7 +240,7 @@ test_that("different n_batches gives same/different shapley values for different
   ))
   # NEITHER same Shapley values
   expect_false(identical(
-    explain.ctree_n_batches_5$shapley_values,
-    explain.ctree_n_batches_10$shapley_values
+    explain.ctree_n_batches_5$shapley_values_est,
+    explain.ctree_n_batches_10$shapley_values_est
   ))
 })

@@ -28,7 +28,7 @@ test_that("output_lm_numeric_independence_converges_tol", {
       prediction_zero = p0,
       iterative_args = list(
         initial_n_coalitions = 10,
-        convergence_tolerance = 0.1
+        convergence_tol = 0.1
       ),
       iterative = TRUE,
       verbose = c("convergence", "shapley")
@@ -48,7 +48,11 @@ test_that("output_lm_numeric_independence_converges_maxit", {
       prediction_zero = p0,
       iterative_args = list(
         initial_n_coalitions = 10,
+<<<<<<< HEAD
         convergence_tolerance = 0.001,
+=======
+        convergence_tol = 0.001,
+>>>>>>> origin/shapr-1.0.0
         n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
       ),
@@ -95,7 +99,7 @@ test_that("output_lm_numeric_gaussian_group_converges_tol", {
       prediction_zero = p0,
       iterative_args = list(
         initial_n_coalitions = 5,
-        convergence_tolerance = 0.1
+        convergence_tol = 0.1
       ),
       iterative = TRUE,
       verbose = c("convergence", "shapley")
@@ -115,7 +119,7 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
       prediction_zero = p0,
       iterative_args = list(
         initial_n_coalitions = 10,
-        convergence_tolerance = 0.1
+        convergence_tol = 0.1
       ),
       iterative = TRUE,
       verbose = c("convergence", "shapley"),
@@ -139,7 +143,11 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     paired_shap_sampling = FALSE,
     iterative_args = list(
       initial_n_coalitions = 10,
+<<<<<<< HEAD
       convergence_tolerance = 0.001,
+=======
+      convergence_tol = 0.001,
+>>>>>>> origin/shapr-1.0.0
       n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 8
     ),
@@ -161,7 +169,11 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     paired_shap_sampling = FALSE,
     iterative_args = list(
       initial_n_coalitions = 10,
+<<<<<<< HEAD
       convergence_tolerance = 0.001,
+=======
+      convergence_tol = 0.001,
+>>>>>>> origin/shapr-1.0.0
       n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 5
     ),
@@ -182,7 +194,11 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       paired_shap_sampling = FALSE,
       iterative_args = list(
         initial_n_coalitions = 10,
+<<<<<<< HEAD
         convergence_tolerance = 0.001,
+=======
+        convergence_tol = 0.001,
+>>>>>>> origin/shapr-1.0.0
         n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
       ),
@@ -210,7 +226,11 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     paired_shap_sampling = FALSE,
     iterative_args = list(
       initial_n_coalitions = 10,
+<<<<<<< HEAD
       convergence_tolerance = 0.001,
+=======
+      convergence_tol = 0.001,
+>>>>>>> origin/shapr-1.0.0
       n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 5
     ),
@@ -231,7 +251,11 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       paired_shap_sampling = FALSE,
       iterative_args = list(
         initial_n_coalitions = 10,
+<<<<<<< HEAD
         convergence_tolerance = 0.001,
+=======
+        convergence_tol = 0.001,
+>>>>>>> origin/shapr-1.0.0
         n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
       ),

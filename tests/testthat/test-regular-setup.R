@@ -1303,7 +1303,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
     prediction_zero = p0
   )
 
-  explain.new_data_feature_order <- explain(
+  ex.new_data_feature_order <- explain(
     testing = TRUE,
     model = model_lm_numeric,
     x_explain = rev(x_explain_numeric),
@@ -1323,12 +1323,12 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 
   # Same Shapley values, but different order
   expect_false(identical(
-    explain.original$shapley_values,
-    explain.new_data_feature_order$shapley_values
+    explain.original$shapley_values_est,
+    ex.new_data_feature_order$shapley_values_est
   ))
   expect_equal(
-    explain.original$shapley_values[, mget(sort(names(explain.original$shapley_values)))],
-    explain.new_data_feature_order$shapley_values[, mget(sort(names(explain.new_data_feature_order$shapley_values)))]
+    explain.original$shapley_values_est[, mget(sort(names(explain.original$shapley_values_est)))],
+    ex.new_data_feature_order$shapley_values_est[, mget(sort(names(ex.new_data_feature_order$shapley_values_est)))]
   )
 
   # Same Shapley values in same order
@@ -1579,7 +1579,7 @@ test_that("vaeac_set_seed_works", {
   )
 
   # Check for equal Shapley values
-  expect_equal(explanation_vaeac_1$shapley_values, explanation_vaeac_2$shapley_values)
+  expect_equal(explanation_vaeac_1$shapley_values_est, explanation_vaeac_2$shapley_values_est)
 })
 
 test_that("vaeac_pretreained_vaeac_model", {
@@ -1624,7 +1624,7 @@ test_that("vaeac_pretreained_vaeac_model", {
   )
 
   # Check for equal Shapley values
-  expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac$shapley_values)
+  expect_equal(explanation_vaeac_1$shapley_values_est, explanation_pretrained_vaeac$shapley_values_est)
 
   #### We can also do this by reusing the vaeac model PATH
   # Get the pre-trained vaeac model path
@@ -1647,7 +1647,7 @@ test_that("vaeac_pretreained_vaeac_model", {
   )
 
   # Check for equal Shapley values
-  expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac$shapley_values)
+  expect_equal(explanation_vaeac_1$shapley_values_est, explanation_pretrained_vaeac$shapley_values_est)
 })
 
 
@@ -1682,5 +1682,5 @@ test_that("feature wise and groupwise computations are identical", {
 
 
   # Checking equality in the list with all final and intermediate results
-  expect_equal(expl_feat$shapley_values, expl_group$shapley_values)
+  expect_equal(expl_feat$shapley_values_est, expl_group$shapley_values_est)
 })

@@ -7,7 +7,11 @@
 check_convergence <- function(internal) {
   iter <- length(internal$iter_list)
 
+<<<<<<< HEAD
   convergence_tolerance <- internal$parameters$iterative_args$convergence_tolerance
+=======
+  convergence_tol <- internal$parameters$iterative_args$convergence_tol
+>>>>>>> origin/shapr-1.0.0
   max_iter <- internal$parameters$iterative_args$max_iter
   max_n_coalitions <- internal$parameters$iterative_args$max_n_coalitions
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
@@ -20,7 +24,7 @@ check_convergence <- function(internal) {
 
   n_sampled_coalitions <- internal$iter_list[[iter]]$n_coalitions - 2 # Subtract the zero and full predictions
 
-  max_sd <- dt_shapley_sd[, max(.SD), .SDcols = -1, by = .I]$V1 # Max per prediction
+  max_sd <- dt_shapley_sd[, max(.SD, na.rm = TRUE), .SDcols = -1, by = .I]$V1 # Max per prediction
   max_sd0 <- max_sd * sqrt(n_sampled_coalitions) # Scales UP the sd as it scales at this rate
 
   dt_shapley_est0 <- copy(dt_shapley_est)
@@ -32,11 +36,11 @@ check_convergence <- function(internal) {
     converged_sd <- FALSE
   } else {
     converged_exact <- FALSE
-    if (!is.null(convergence_tolerance)) {
-      dt_shapley_est0[, maxval := max(.SD), .SDcols = -c(1, 2), by = .I]
-      dt_shapley_est0[, minval := min(.SD), .SDcols = -c(1, 2), by = .I]
+    if (!is.null(convergence_tol)) {
+      dt_shapley_est0[, maxval := max(.SD, na.rm = TRUE), .SDcols = -c(1, 2), by = .I]
+      dt_shapley_est0[, minval := min(.SD, na.rm = TRUE), .SDcols = -c(1, 2), by = .I]
       dt_shapley_est0[, max_sd0 := max_sd0]
-      dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tolerance))^2]
+      dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tol))^2]
       dt_shapley_est0[, conv_measure := max_sd0 / ((maxval - minval) * sqrt(n_sampled_coalitions))]
       dt_shapley_est0[, req_samples := min(req_samples, 2^n_shapley_values - 2)]
 
