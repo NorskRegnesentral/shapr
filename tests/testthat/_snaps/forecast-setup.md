@@ -103,33 +103,9 @@
       max_n_coalitions is smaller than max(10, n_features + 1 = 8),which will result in unreliable results.
       It is therefore set to 10.
       
-      * Model class: <Arima>
-      * Approach: independence
-      * Adaptive estimation: TRUE
-      * Number of feature-wise Shapley values: 7
-      * Number of observations to explain: 2
-      
-      -- Adaptive computation started --
-      
-      -- Iteration 1 -----------------------------------------------------------------
-      i Using 8 of 128 coalitions, 8 new. 
-    Output
-         explain_idx horizon  none  Temp.1  Temp.2  Wind.1  Wind.2 Wind.F1 Wind.F2
-               <int>   <int> <num>   <num>   <num>   <num>   <num>   <num>   <num>
-      1:         149       1 77.88 -6.1669 -3.2230  0.5692  0.5692 -2.2557      NA
-      2:         150       1 77.88 -1.8556 -2.2854  0.5822  0.5822 -2.6587      NA
-      3:         149       2 77.88 -3.7482 -0.8043 -0.6402 -0.6402 -1.1390 -3.9124
-      4:         150       2 77.88 -0.3161 -0.7458 -0.1876 -0.1876 -1.1651 -0.8742
-      5:         149       3 77.88 -1.7783 -1.7783 -1.7783 -1.1423 -1.7783  0.0000
-      6:         150       3 77.88 -0.4531 -0.4531 -0.4531 -1.1683 -0.4531  0.0000
-         Wind.F3
-           <num>
-      1:      NA
-      2:      NA
-      3:      NA
-      4:      NA
-      5: -0.4697
-      6: -1.6952
+    Condition
+      Error in `check_iterative_args()`:
+      ! `iterative_args$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.
 
 ---
 
@@ -153,7 +129,7 @@
       
       * Model class: <Arima>
       * Approach: independence
-      * Adaptive estimation: FALSE
+      * iterative estimation: FALSE
       * Number of group-wise Shapley values: 4
       * Number of observations to explain: 2
       

@@ -174,7 +174,9 @@ test_that("erroneous input: `max_n_coalitions`", {
       max_n_coalitions = n_coalitions,
       group_lags = FALSE
     )
-  })
+  },
+  error = TRUE
+  )
 
 
   expect_snapshot({
