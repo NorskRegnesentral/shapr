@@ -556,7 +556,7 @@
          explain_id  none  Solar.R    Wind   Temp    Day Month_factor
               <int> <num>    <num>   <num>  <num>  <num>        <num>
       1:          1 42.44 -2.13189   8.867  9.390 -1.137       -4.404
-      2:          2 42.44  0.07793  -7.916 -3.340 -1.378       -2.828
+      2:          2 42.44  0.07794  -7.916 -3.340 -1.378       -2.828
       3:          3 42.44 -2.32289 -13.512  4.116 -1.343        2.462
 
 # output_mixed_asym_caus_conf_mixed

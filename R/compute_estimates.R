@@ -8,7 +8,7 @@
 #' @keywords internal
 compute_estimates <- function(internal, vS_list) {
   verbose <- internal$parameters$verbose
-  cli_id <- internal$parameter$cli_id
+  type <- internal$parameters$type
 
   internal$timing_list$compute_vS <- Sys.time()
 
@@ -40,7 +40,7 @@ compute_estimates <- function(internal, vS_list) {
       cli::cli_progress_step("Boostrapping Shapley value sds")
     }
 
-    dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
+    dt_shapley_sd <- bootstrap_shapley(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
 
     internal$timing_list$compute_bootstrap <- Sys.time()
   } else {
@@ -50,10 +50,12 @@ compute_estimates <- function(internal, vS_list) {
 
 
   # Adding explain_id to the output dt
-  dt_shapley_est[, explain_id := .I]
-  setcolorder(dt_shapley_est, "explain_id")
-  dt_shapley_sd[, explain_id := .I]
-  setcolorder(dt_shapley_sd, "explain_id")
+  if (type != "forecast") {
+    dt_shapley_est[, explain_id := .I]
+    setcolorder(dt_shapley_est, "explain_id")
+    dt_shapley_sd[, explain_id := .I]
+    setcolorder(dt_shapley_sd, "explain_id")
+  }
 
 
   internal$iter_list[[iter]]$dt_shapley_est <- dt_shapley_est
@@ -137,9 +139,10 @@ compute_shapley_new <- function(internal, dt_vS) {
 
   # If multiple horizons with explain_forecast are used, we only distribute value to those used at each horizon
   if (type == "forecast") {
-    id_coalition_mapper_dt <- internal$objects$id_coalition_mapper_dt
+    id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
     horizon <- internal$parameters$horizon
     cols_per_horizon <- internal$objects$cols_per_horizon
+    shap_names <- internal$parameters$shap_names
     W_list <- internal$objects$W_list
 
     kshap_list <- list()
@@ -260,21 +263,47 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   return(dt_kshap_boot_sd)
 }
 
-bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
+bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   iter <- length(internal$iter_list)
+  type <- internal$parameters$type
+  is_groupwise <- internal$parameters$is_groupwise
+  X_list <- internal$iter_list[[iter]]$X_list
 
-  X <- internal$iter_list[[iter]]$X
+  result <- list()
+  if (type == "forecast") {
+    n_explain <- internal$parameters$n_explain
+    for (i in seq_along(X_list)) {
+      X <- X_list[[i]]
+      if (is_groupwise) {
+        n_shapley_values <- length(internal$data$shap_names)
+        shap_names <- internal$data$shap_names
+      } else {
+        n_shapley_values <- length(internal$parameters$horizon_features[[i]])
+        shap_names <- internal$parameters$horizon_features[[i]]
+      }
+      dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
+      dt_vS_this <- dt_vS[, ..dt_cols]
+      result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps, seed)
+    }
+    result <- rbindlist(result, fill = TRUE)
+  } else {
+    X <- internal$iter_list[[iter]]$X
+    n_shapley_values <- internal$parameters$n_shapley_values
+    shap_names <- internal$parameters$shap_names
+    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps, seed)
+  }
+  return(result)
+}
+
+bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100, seed = 123) {
+  type <- internal$parameters$type
+  iter <- length(internal$iter_list)
 
   set.seed(seed)
 
-  is_groupwise <- internal$parameters$is_groupwise
-
   n_explain <- internal$parameters$n_explain
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  shapley_reweight <- internal$parameters$kernelSHAP_reweighting
-  shap_names <- internal$parameters$shap_names
-  n_shapley_values <- internal$parameters$n_shapley_values
-
+  shapley_reweight <- internal$parameters$shapley_reweighting
 
   X_org <- copy(X)
 
@@ -299,7 +328,6 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
     ]
 
     X_boot00[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot / 2)]
-
 
     X_boot00_paired <- copy(X_boot00[, .(coalitions, boot_id)])
     X_boot00_paired[, coalitions := lapply(coalitions, function(x) seq(n_shapley_values)[-x])]
@@ -338,7 +366,13 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
     X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
-    X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+    if (type == "forecast") {
+      id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
+      full_ids <- id_coalition_mapper_dt$id_coalition[id_coalition_mapper_dt$full]
+      X_boot[coalition_size == 0 | id_coalition %in% full_ids, shapley_weight := X_org[1, shapley_weight]]
+    } else {
+      X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+    }
   }
 
   for (i in seq_len(n_boot_samps)) {

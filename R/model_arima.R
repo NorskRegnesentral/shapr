@@ -5,29 +5,32 @@ predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explai
     stop("The stats package is required for predicting stats models")
   }
 
-  prediction <- matrix(NA, nrow(newdata), horizon)
-  newdata <- as.matrix(newdata)
+  prediction <- matrix(NA, length(explain_idx), horizon)
+  newdata <- as.matrix(newdata, nrow = length(explain_idx))
   newreg <- as.matrix(newreg)
   newdata_y_cols <- seq_len(explain_lags$y)
   newdata_xreg_cols_list <- lapply(paste0("xreg", seq_along(explain_lags$xreg)), function(x) grep(x, colnames(newdata)))
 
 
   exp_idx <- -1
-  for (i in seq_len(nrow(newdata))) {
+  for (i in seq_len(length(explain_idx))) {
     if (explain_idx[i] != exp_idx) {
       exp_idx <- explain_idx[i]
       y_hist <- y[seq_len(exp_idx)]
       xreg_hist <- xreg[seq_len(exp_idx), , drop = FALSE]
     }
 
-    y_new <- as.numeric(newdata[i, newdata_y_cols])
-    y_hist[seq.int(length.out = length(y_new), to = length(y_hist))] <- rev(y_new)
+    if (ncol(newdata) > 0) {
+      y_new <- as.numeric(newdata[i, newdata_y_cols])
+      y_hist[seq.int(length.out = length(y_new), to = length(y_hist))] <- rev(y_new)
+    }
 
     if (ncol(xreg) == 0) {
       x <- forecast::Arima(y = y_hist, model = x)
       prediction[i, ] <- predict(x, h = horizon)$pred
     } else {
       for (j in seq_along(explain_lags$xreg)) {
+        if (length(newdata_xreg_cols_list[[j]]) == 0) next
         xreg_new <- as.numeric(newdata[i, newdata_xreg_cols_list[[j]]])
         xreg_hist[seq.int(length.out = length(xreg_new), to = nrow(xreg_hist)), j] <- rev(xreg_new)
       }

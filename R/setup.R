@@ -111,9 +111,9 @@ setup <- function(x_train,
     colnames(internal$parameters$output_labels) <- c("explain_idx", "horizon")
     internal$parameters$explain_idx <- explain_idx
     internal$parameters$explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
+    internal$parameters$group_lags <- group_lags
 
     # TODO: Consider handling this parameter update somewhere else (like in get_extra_parameters?)
-    if (group_lags) internal$parameters$group <- internal$data$group
   } else {
     internal$data <- get_data(x_train, x_explain)
   }
@@ -122,9 +122,9 @@ setup <- function(x_train,
 
   check_data(internal)
 
-  internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
+  internal <- get_extra_parameters(internal, type) # This includes both extra parameters and other objects
 
-  internal <- check_and_set_parameters(internal)
+  internal <- check_and_set_parameters(internal, type)
 
   internal <- set_iterative_parameters(internal, prev_iter_list)
 
@@ -479,7 +479,17 @@ compare_feature_specs <- function(spec1, spec2, name1 = "model", name2 = "x_trai
 
 #' This includes both extra parameters and other objects
 #' @keywords internal
-get_extra_parameters <- function(internal) {
+get_extra_parameters <- function(internal, type) {
+  if (type == "forecast") {
+    if (internal$parameters$group_lags) {
+      internal$parameters$group <- internal$data$group
+    }
+    internal$parameters$horizon_features <- lapply(
+      internal$data$horizon_group,
+      function(x) as.character(unlist(internal$data$group[x]))
+    )
+  }
+
   # get number of features and observations to explain
   internal$parameters$n_features <- ncol(internal$data$x_explain)
   internal$parameters$n_explain <- nrow(internal$data$x_explain)
@@ -511,14 +521,22 @@ get_extra_parameters <- function(internal) {
       match(x, internal$parameters$feature_names)
     })
 
-
-
-
     internal$parameters$n_groups <- length(group)
     internal$parameters$group_names <- names(group)
     internal$parameters$group <- group
-    internal$parameters$shap_names <- internal$parameters$group_names
     internal$parameters$n_shapley_values <- internal$parameters$n_groups
+
+    if (type == "forecast") {
+      if (internal$parameters$group_lags) {
+        internal$parameters$horizon_group <- internal$data$horizon_group
+        internal$parameters$shap_names <- internal$data$shap_names
+      } else {
+        internal$parameters$shap_names <- internal$parameters$group_names
+      }
+    } else {
+      # For normal explain
+      internal$parameters$shap_names <- internal$parameters$group_names
+    }
   } else {
     internal$objects$coal_feature_list <- as.list(seq_len(internal$parameters$n_features))
 
@@ -581,10 +599,14 @@ get_data_specs <- function(x) {
 
 
 #' @keywords internal
-check_and_set_parameters <- function(internal) {
+check_and_set_parameters <- function(internal, type) {
   # Check groups
   feature_names <- internal$parameters$feature_names
-  group <- internal$parameters$group
+  if (type == "forecast") {
+    group <- internal$parameters$group[internal$parameters$horizon_group[internal$parameters$horizon][[1]]]
+  } else {
+    group <- internal$parameters$group
+  }
 
   # Check group
   if (!is.null(group)) check_groups(feature_names, group)
