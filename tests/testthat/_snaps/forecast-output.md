@@ -12,7 +12,7 @@
       
       * Model class: <ar>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -43,7 +43,7 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 7
       * Number of observations to explain: 2
       
@@ -78,7 +78,7 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * iterative estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 9
       * Number of observations to explain: 2
       
@@ -120,7 +120,7 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * iterative estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of group-wise Shapley values: 10
       * Number of observations to explain: 2
       
@@ -158,7 +158,7 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -189,7 +189,7 @@
       
       * Model class: <forecast_ARIMA/ARIMA/Arima>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of group-wise Shapley values: 4
       * Number of observations to explain: 2
       
@@ -220,7 +220,7 @@
       
       * Model class: <Arima>
       * Approach: independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 3
       * Number of observations to explain: 2
       
