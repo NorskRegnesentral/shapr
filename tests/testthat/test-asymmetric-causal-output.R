@@ -461,7 +461,7 @@ test_that("output_categorical_asym_causal_mixed_cat", {
       causal_ordering = list(3:4, 2, 1),
       confounding = c(TRUE, FALSE, FALSE),
       n_MC_samples = 5, # Just for speed
-      keep_samp_for_vS = TRUE
+      output_args = list(keep_samp_for_vS = TRUE)
     ),
     "output_categorical_asym_causal_mixed_cat"
   )

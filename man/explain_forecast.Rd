@@ -84,6 +84,35 @@ The quantity refers to the number of unique feature coalitions if \code{group = 
 and group coalitions if \code{group != NULL}.
 \code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
 
+\item{iterative}{Logical or NULL
+If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
+If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
+This provides sufficiently accurate Shapley value estimates faster.
+First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+values.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
+coalitions.
+The process is repeated until the variances are below the threshold.
+Specifics related to the iterative process and convergence criterion are set through \code{iterative_args}.}
+
+\item{iterative_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
+
+\item{kernelSHAP_reweighting}{String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+the randomness and thereby the variance of the Shapley value estimates.
+One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
+\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
+\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+\code{'on_all'} means the original sampling probabilities are used for all coalitions.
+\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+This method is preferred as it has performed the best in simulation studies.}
+
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
 If \code{FALSE} all lags of each variable are explained individually.}

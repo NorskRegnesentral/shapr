@@ -566,7 +566,7 @@ test_that("output_lm_numeric_empirical_progress", {
 })
 
 
-# Just checking that internal$output$dt_samp_for_vS  keep_samp_for_vS
+# Just checking that internal$output$dt_samp_for_vS  works
 test_that("output_lm_numeric_independence_keep_samp_for_vS", {
   expect_snapshot_rds(
     (out <- explain(
