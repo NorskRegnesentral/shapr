@@ -110,6 +110,40 @@
       5: -1.5436 -0.5418  2.8952
       6: -0.6202 -0.8545  0.4549
 
+# forecast_output_arima_numeric_adaptive_groups
+
+    Code
+      (out <- code)
+    Message
+      Note: Feature names extracted from the model contains NA.
+      Consistency checks between model and data is therefore disabled.
+      
+      * Model class: <Arima>
+      * Approach: empirical
+      * Adaptive estimation: TRUE
+      * Number of group-wise Shapley values: 10
+      * Number of observations to explain: 2
+      
+      -- Adaptive computation started --
+      
+      -- Iteration 1 -----------------------------------------------------------------
+      i Using 10 of 1024 coalitions, 10 new. 
+      
+      -- Iteration 2 -----------------------------------------------------------------
+      i Using 28 of 1024 coalitions, 2 new. 
+      
+      -- Iteration 3 -----------------------------------------------------------------
+      i Using 56 of 1024 coalitions, 12 new. 
+    Output
+         explain_idx horizon  none   Temp    Wind Solar.R  Ozone
+               <int>   <int> <num>  <num>   <num>   <num>  <num>
+      1:         149       1 77.88 -4.680 -3.6712  0.3230 -1.253
+      2:         150       1 77.88 -2.487 -3.6317  1.8415 -0.891
+      3:         149       2 77.88 -6.032 -4.1973  2.5973 -2.402
+      4:         150       2 77.88 -3.124  0.1986  0.8258 -2.245
+      5:         149       3 77.88 -7.777  1.1382  0.6962 -3.267
+      6:         150       3 77.88 -3.142 -1.6674  2.9047 -2.024
+
 # forecast_output_arima_numeric_no_xreg
 
     Code
