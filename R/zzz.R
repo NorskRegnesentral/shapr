@@ -136,7 +136,7 @@
       "cond",
       "tmp_coalitions",
       "max_iter",
-      "convergence_tolerance",
+      "convergence_tol",
       "conv_measure",
       "verbose",
       "MSEv_uniform_comb_weights",

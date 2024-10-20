@@ -137,9 +137,9 @@ for(i0 in seq_along(paired_shap_sampling_vec)){
         )
 
         shap_dt0 <- as.data.table(cbind(seq_len(n_explain),t(this_W%*%as.matrix(exact_dt_vS[,-c("coalitions_str","id_coalition")]))))
-        names(shap_dt0) <- names(this$shapley_values)
+        names(shap_dt0) <- names(this$shapley_values_est)
 
-        this_diff <- unlist(shap_dt0[,-c(1,2)]-expl$shapley_values[,-c(1,2)])
+        this_diff <- unlist(shap_dt0[,-c(1,2)]-expl$shapley_values_est[,-c(1,2)])
         this_bias <- mean(this_diff)
         this_var <- var(this_diff)
         this_MAE <- mean(abs(this_diff))

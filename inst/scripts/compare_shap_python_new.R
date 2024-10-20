@@ -56,8 +56,8 @@ time_R_largesigma0 <- proc.time()
 (time_R_largesigma <- time_R_largesigma0 - time_R_indep0)
 
 # Printing the Shapley values for the test data
-Kshap_indep <- explanation_independence$shapley_values
-Kshap_largesigma <- explanation_largesigma$shapley_values
+Kshap_indep <- explanation_independence$shapley_values_est
+Kshap_largesigma <- explanation_largesigma$shapley_values_est
 
 Kshap_indep
 Kshap_largesigma

@@ -172,7 +172,7 @@ We can look at the Shapley values.
 ``` r
 # Printing and ploting the Shapley values.
 # See ?shapr::explain for interpretation of the values.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 #>    explain_id   none  Solar.R      Wind     Temp    Month
 #>         <int>  <num>    <num>     <num>    <num>    <num>
 #> 1:          1 43.086  4.35827  -0.49487 -16.7173  0.55352
@@ -219,7 +219,7 @@ expl_pretrained_vaeac <- explain(
 #> and is therefore set to 2^n_features = 16.
 
 # Check that this version provides the same Shapley values
-all.equal(explanation$shapley_values, expl_pretrained_vaeac$shapley_values)
+all.equal(explanation$shapley_values_est, expl_pretrained_vaeac$shapley_values_est)
 #> [1] TRUE
 ```
 
@@ -251,7 +251,7 @@ expl_pretrained_vaeac_path <- explain(
 #> and is therefore set to 2^n_features = 16.
 
 # Check that this version provides the same Shapley values
-all.equal(explanation$shapley_values, expl_pretrained_vaeac_path$shapley_values)
+all.equal(explanation$shapley_values_est, expl_pretrained_vaeac_path$shapley_values_est)
 #> [1] TRUE
 ```
 
@@ -555,7 +555,7 @@ progressr::with_progress({
 #> '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.33.088772_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
 #> '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.33.088772_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
 #> '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.33.088772_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
-all.equal(expl_with_messages$shapley_values, expl_with_progressr$shapley_values)
+all.equal(expl_with_messages$shapley_values_est, expl_with_progressr$shapley_values_est)
 #> [1] TRUE
 ```
 

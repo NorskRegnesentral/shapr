@@ -54,7 +54,7 @@ causal_categorical <- explain(
   n_MC_samples = 50, # Just for speed
   verbose = c("basic", "convergence", "shapley", "vS_details"),
   keep_samp_for_vS = TRUE,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 # Warning CTREE is the slowest approach by far
@@ -70,7 +70,7 @@ causal_ctree <- explain(
   n_MC_samples = 50, # Just for speed
   verbose = c("basic", "convergence", "shapley", "vS_details"),
   keep_samp_for_vS = TRUE,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 causal_vaeac <- explain(
@@ -86,7 +86,7 @@ causal_vaeac <- explain(
   n_MC_samples = 50, # Just for speed
   verbose = c("basic", "convergence", "shapley", "vS_details"),
   keep_samp_for_vS = TRUE,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 shapr::plot_SV_several_approaches(list(
@@ -109,7 +109,7 @@ conditional_independence <- explain(
   n_MC_samples = 50, # Just for speed
   verbose = c("basic", "convergence", "shapley", "vS_details"),
   keep_samp_for_vS = TRUE,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 conditional_categorical <- explain(
@@ -124,7 +124,7 @@ conditional_categorical <- explain(
   n_MC_samples = 50, # Just for speed
   verbose = c("basic", "convergence", "shapley", "vS_details"),
   keep_samp_for_vS = TRUE,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 # Warning CTREE is the slowest approach by far
@@ -140,7 +140,7 @@ conditional_ctree <- explain(
   n_MC_samples = 50, # Just for speed
   verbose = c("basic", "convergence", "shapley", "vS_details"),
   keep_samp_for_vS = TRUE,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 conditional_vaeac <- explain(
@@ -156,7 +156,7 @@ conditional_vaeac <- explain(
   n_MC_samples = 50, # Just for speed
   verbose = c("basic", "convergence", "shapley", "vS_details"),
   keep_samp_for_vS = TRUE,
-  adaptive = FALSE
+  iterative = FALSE
 )
 
 shapr::plot_SV_several_approaches(list(

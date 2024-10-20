@@ -175,14 +175,14 @@ cols_horizon3 <- h3full$internal$objects$cols_per_horizon[[3]]
 
 h1mean1 <- h2mean1 <- h2mean2 <- h3mean1 <- h3mean2 <- h3mean3 <-  list()
 for(i in 1:reps){
-  h1mean1[[i]] <- as.matrix(h1list[[i]]$shapley_values[horizon==1, ..cols_horizon1])
+  h1mean1[[i]] <- as.matrix(h1list[[i]]$shapley_values_est[horizon==1, ..cols_horizon1])
 
-  h2mean1[[i]] <- as.matrix(h2list[[i]]$shapley_values[horizon==1, ..cols_horizon1])
-  h2mean2[[i]] <- as.matrix(h2list[[i]]$shapley_values[horizon==2, ..cols_horizon2])
+  h2mean1[[i]] <- as.matrix(h2list[[i]]$shapley_values_est[horizon==1, ..cols_horizon1])
+  h2mean2[[i]] <- as.matrix(h2list[[i]]$shapley_values_est[horizon==2, ..cols_horizon2])
 
-  h3mean1[[i]] <- as.matrix(h3list[[i]]$shapley_values[horizon==1, ..cols_horizon1])
-  h3mean2[[i]] <- as.matrix(h3list[[i]]$shapley_values[horizon==2, ..cols_horizon2])
-  h3mean3[[i]] <- as.matrix(h3list[[i]]$shapley_values[horizon==3, ..cols_horizon3])
+  h3mean1[[i]] <- as.matrix(h3list[[i]]$shapley_values_est[horizon==1, ..cols_horizon1])
+  h3mean2[[i]] <- as.matrix(h3list[[i]]$shapley_values_est[horizon==2, ..cols_horizon2])
+  h3mean3[[i]] <- as.matrix(h3list[[i]]$shapley_values_est[horizon==3, ..cols_horizon3])
 
 }
 
@@ -190,25 +190,25 @@ for(i in 1:reps){
 Reduce("+", h1mean1) / reps
 Reduce("+", h2mean1) / reps
 Reduce("+", h3mean1) / reps
-h3full$shapley_values[horizon==1,..cols_horizon1]
+h3full$shapley_values_est[horizon==1,..cols_horizon1]
 
 # Horizon 2
 Reduce("+", h2mean2) / reps
 Reduce("+", h3mean2) / reps
-h3full$shapley_values[horizon==2,..cols_horizon2]
+h3full$shapley_values_est[horizon==2,..cols_horizon2]
 
 # Horizon 3
 Reduce("+", h3mean3) / reps
-h3full$shapley_values[horizon==3,..cols_horizon3]
+h3full$shapley_values_est[horizon==3,..cols_horizon3]
 
 
 
-expect_equal(h2$shapley_values[horizon==1, ..cols_horizon1],
-             h1$shapley_values[horizon==1,..cols_horizon1])
+expect_equal(h2$shapley_values_est[horizon==1, ..cols_horizon1],
+             h1$shapley_values_est[horizon==1,..cols_horizon1])
 
-expect_equal(h3$shapley_values[horizon==1, ..cols_horizon1],
-             h1$shapley_values[horizon==1,..cols_horizon1])
+expect_equal(h3$shapley_values_est[horizon==1, ..cols_horizon1],
+             h1$shapley_values_est[horizon==1,..cols_horizon1])
 
 cols_horizon2 <- h2$internal$objects$cols_per_horizon[[2]]
-expect_equal(h3$shapley_values[horizon==2, ..cols_horizon2],
-             h2$shapley_values[horizon==2,..cols_horizon2])
+expect_equal(h3$shapley_values_est[horizon==2, ..cols_horizon2],
+             h2$shapley_values_est[horizon==2,..cols_horizon2])

@@ -82,7 +82,7 @@ expl <- shapr::explain(model = model,
                        approach = "gaussian",
                        prediction_zero = p0,Sigma=Sigma,mu=mu)
 
-fwrite(expl$shapley_values,paste0(sim_results_saving_folder,"exact_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
+fwrite(expl$shapley_values_est,paste0(sim_results_saving_folder,"exact_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
 
 
 cutoff_feats <- paste0("VV",1:12)
@@ -140,7 +140,7 @@ fwrite(est,paste0(sim_results_saving_folder,"iterative_shapley_values_",shapley_
 
 
 
-truth <- expl$shapley_values
+truth <- expl$shapley_values_est
 
 expl_approx <- matrix(0, nrow = length(inds), ncol = m+1)
 expl_approx_obj_list <- list()
@@ -152,7 +152,7 @@ for (i in testObs_computed_vec){
                                     prediction_zero = p0,
                                     n_coalitions = runcomps_list[[i]],
                                     Sigma=Sigma,mu=mu)
-  expl_approx[i,] = unlist(expl_approx_obj$shapley_values)
+  expl_approx[i,] = unlist(expl_approx_obj$shapley_values_est)
   expl_approx_obj_list[[i]] <- expl_approx_obj
 }
 expl_approx <- as.data.table(expl_approx)
@@ -197,7 +197,7 @@ full_pred
 
 
 # run$kshap_final
-# expl$shapley_values
+# expl$shapley_values_est
 
 
 
@@ -208,7 +208,7 @@ full_pred
 
 # sum(unlist(kshap_final[.N,]))
 
-# sum(unlist(expl$shapley_values[testObs_computed,]))
+# sum(unlist(expl$shapley_values_est[testObs_computed,]))
 
 
 
@@ -224,7 +224,7 @@ full_pred
 
 # full_pred <- predict(model,x_explain)[5]
 # p0 <- mean(y_train)
-# pred_not_to_decompose <- sum(expl$shapley_values[5,VV7:VV9])
+# pred_not_to_decompose <- sum(expl$shapley_values_est[5,VV7:VV9])
 
 
 # run_minor <- iterative_kshap_func(model,x_explain,x_train,

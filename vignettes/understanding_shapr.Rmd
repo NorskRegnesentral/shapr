@@ -111,7 +111,7 @@ The reason for this is that the number of possible coalitions grows exponentiall
 These defaults can be overridden by setting the `iterative` argument to `TRUE` or `FALSE`.
 When using the `iterative` argument, the estimation for an observation is stopped when all Shapley value
 standard deviations are below `t` times the range of the Shapley values.
-The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tolerance` argument, see [iterative estimation](#iterative) for more details.
+The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tol` argument, see [iterative estimation](#iterative) for more details.
 
 Since the iterativeness default changes based on the number of features (or feature groups), the default is also to have
 no upper bound on the number of coalitions considered.
@@ -494,7 +494,7 @@ explanation <- explain(
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 #>    explain_id   none  Solar.R    Wind    Temp    Month
 #>         <int>  <num>    <num>   <num>   <num>    <num>
 #> 1:          1 43.086 13.21173  4.7856 -25.572  -5.5992
@@ -1215,7 +1215,7 @@ ex <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   iterative = TRUE,
-  iterative_args = list(convergence_tolerance = 0.1)
+  iterative_args = list(convergence_tol = 0.1)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -1814,7 +1814,7 @@ explanation_tidymodels <- explain(
 #> ℹ Using 16 of 16 coalitions.
 
 # See that the Shapley value explanations are identical too
-all.equal(explanation$shapley_values, explanation_tidymodels$shapley_values)
+all.equal(explanation$shapley_values_est, explanation_tidymodels$shapley_values_est)
 #> [1] TRUE
 ```
 
@@ -2011,7 +2011,7 @@ ex_further <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   max_n_coalitions = 25,
-  iterative_args = list(convergence_tolerance = 0.005), # Decrease the convergence threshold
+  iterative_args = list(convergence_tol = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_init
 )
 #> Note: Feature classes extracted from the model contains NA.
@@ -2298,7 +2298,7 @@ explanation_forecast <- explain_forecast(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
 
-print(explanation_forecast$shapley_values)
+print(explanation_forecast$shapley_values_est)
 #>    explain_idx horizon  none   Temp.1   Temp.2  Wind.1  Wind.F1  Wind.F2
 #>          <num>   <num> <num>    <num>    <num>   <num>    <num>    <num>
 #> 1:         151       1 77.96 -0.67793 -0.67340 -1.2688 0.493408       NA

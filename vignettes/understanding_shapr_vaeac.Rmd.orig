@@ -177,7 +177,7 @@ We can look at the Shapley values.
 ```{r first-vaeac-plots, cache = TRUE}
 # Printing and ploting the Shapley values.
 # See ?shapr::explain for interpretation of the values.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 plot(explanation)
 ```
 
@@ -208,7 +208,7 @@ expl_pretrained_vaeac <- explain(
 )
 
 # Check that this version provides the same Shapley values
-all.equal(explanation$shapley_values, expl_pretrained_vaeac$shapley_values)
+all.equal(explanation$shapley_values_est, expl_pretrained_vaeac$shapley_values_est)
 ```
 
 ## Pre-trained vaeac (path) {#pretrained_vaeac_path}
@@ -233,7 +233,7 @@ expl_pretrained_vaeac_path <- explain(
 )
 
 # Check that this version provides the same Shapley values
-all.equal(explanation$shapley_values, expl_pretrained_vaeac_path$shapley_values)
+all.equal(explanation$shapley_values_est, expl_pretrained_vaeac_path$shapley_values_est)
 ```
 
 
@@ -397,7 +397,7 @@ progressr::with_progress({
     vaeac.n_vaeacs_initialize = 2
   )
 })
-all.equal(expl_with_messages$shapley_values, expl_with_progressr$shapley_values)
+all.equal(expl_with_messages$shapley_values_est, expl_with_progressr$shapley_values_est)
 ```
 
 ## Continue the training of the vaeac approach {#continue_training}

@@ -9,7 +9,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -34,7 +34,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -59,7 +59,7 @@
       
       * Model class: <lm>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -71,7 +71,7 @@
               <int> <num>   <num>   <num>  <num>    <num>  <num>
       1:          1 42.44 -13.252  15.541 12.826 -5.77179  3.259
       2:          2 42.44   2.758  -3.325 -7.992 -7.12800  1.808
-      3:          3 42.44   6.805 -22.126  3.730 -0.09235 -5.885
+      3:          3 42.44   6.805 -22.126  3.730 -0.09234 -5.885
 
 # output_lm_numeric_empirical_n_coalitions
 
@@ -80,7 +80,7 @@
     Message
       * Model class: <lm>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -110,7 +110,7 @@
     Message
       * Model class: <lm>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -161,7 +161,7 @@
     Message
       * Model class: <lm>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -182,7 +182,7 @@
     Message
       * Model class: <lm>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -207,7 +207,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -232,7 +232,7 @@
       
       * Model class: <lm>
       * Approach: copula
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -257,7 +257,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -282,7 +282,7 @@
       
       * Model class: <lm>
       * Approach: vaeac
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -307,7 +307,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -332,7 +332,7 @@
       
       * Model class: <lm>
       * Approach: vaeac
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -357,7 +357,7 @@
       
       * Model class: <lm>
       * Approach: categorical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -382,7 +382,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -407,7 +407,7 @@
       
       * Model class: <lm>
       * Approach: timeseries
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of group-wise Shapley values: 4
       * Number of observations to explain: 2
       
@@ -418,7 +418,7 @@
          explain_id  none      S1     S2       S3      S4
               <int> <num>   <num>  <num>    <num>   <num>
       1:          1 4.895 -0.5261 0.7831 -0.21023 -0.3885
-      2:          2 4.895 -0.6310 1.6288 -0.04498 -2.9298
+      2:          2 4.895 -0.6310 1.6288 -0.04498 -2.9297
 
 # output_lm_numeric_comb1
 
@@ -431,7 +431,7 @@
       
       * Model class: <lm>
       * Approach: gaussian, empirical, ctree, and independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -443,7 +443,7 @@
               <int> <num>   <num>   <num>  <num>   <num>   <num>
       1:          1 42.44  -8.987   9.070 15.511 -2.5647 -0.4281
       2:          2 42.44   2.916  -4.516 -7.845 -4.1649 -0.2686
-      3:          3 42.44   6.968 -22.988 -1.717  0.6776 -0.5086
+      3:          3 42.44   6.968 -22.988 -1.717  0.6776 -0.5085
 
 # output_lm_numeric_comb2
 
@@ -456,7 +456,7 @@
       
       * Model class: <lm>
       * Approach: ctree, copula, independence, and copula
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -481,7 +481,7 @@
       
       * Model class: <lm>
       * Approach: independence, empirical, gaussian, and empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -492,7 +492,7 @@
          explain_id  none Solar.R    Wind   Temp  Month      Day
               <int> <num>   <num>   <num>  <num>  <num>    <num>
       1:          1 42.44  -6.887  10.715 12.199 -3.670  0.24393
-      2:          2 42.44   2.603  -2.648 -8.464 -5.405  0.03414
+      2:          2 42.44   2.603  -2.648 -8.464 -5.405  0.03415
       3:          3 42.44   5.868 -22.184  3.401 -2.955 -1.69888
 
 # output_lm_mixed_independence
@@ -506,7 +506,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -531,7 +531,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -556,7 +556,7 @@
       
       * Model class: <lm>
       * Approach: vaeac
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -581,7 +581,7 @@
       
       * Model class: <lm>
       * Approach: ctree, independence, ctree, and independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -606,7 +606,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -634,7 +634,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -662,7 +662,7 @@
       
       * Model class: <xgb.Booster>
       * Approach: ctree
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -687,7 +687,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 3
       
@@ -712,7 +712,7 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -737,7 +737,7 @@
       
       * Model class: <lm>
       * Approach: empirical
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -749,7 +749,7 @@
               <int> <num>   <num>   <num>  <num>    <num>  <num>
       1:          1 42.44 -13.252  15.541 12.826 -5.77179  3.259
       2:          2 42.44   2.758  -3.325 -7.992 -7.12800  1.808
-      3:          3 42.44   6.805 -22.126  3.730 -0.09235 -5.885
+      3:          3 42.44   6.805 -22.126  3.730 -0.09234 -5.885
 
 # output_lm_numeric_independence_keep_samp_for_vS
 
@@ -762,7 +762,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * iterative estimation: FALSE
+      * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       

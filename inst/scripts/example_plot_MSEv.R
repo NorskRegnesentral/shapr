@@ -381,7 +381,7 @@ explanation_gaussian <- explain(
 )
 
 explanation_gaussian_copy <- copy(explanation_gaussian_all)
-colnames(explanation_gaussian_copy$shapley_values) <- rev(colnames(explanation_gaussian_copy$shapley_values))
+colnames(explanation_gaussian_copy$shapley_values_est) <- rev(colnames(explanation_gaussian_copy$shapley_values_est))
 
 # Will give an error due to different feature names
 plot_MSEv_eval_crit(list(

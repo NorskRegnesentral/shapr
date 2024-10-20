@@ -279,7 +279,7 @@ def explain(
       routput = shapr.testing_cleanup(routput)
 
     # Convert R objects to Python objects
-    shapley_values = r2py(base.as_data_frame(routput.rx2('shapley_values')))
+    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
     shapley_values_sd = r2py(base.as_data_frame(routput.rx2('shapley_values_sd')))
     pred_explain = r2py(routput.rx2('pred_explain'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))

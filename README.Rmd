@@ -176,7 +176,7 @@ explanation <- explain(
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 
 # Finally we plot the resulting explanations
 plot(explanation)

@@ -8,7 +8,7 @@ ex <- explain(
   max_n_coalitions = 30,
   iterative_args = list(
     initial_n_coalitions = 6,
-    convergence_tolerance = 0.0005,
+    convergence_tol = 0.0005,
     n_coal_next_iter_factor_vec = rep(10^(-6), 10),
     max_iter = 8
   ),
@@ -113,7 +113,7 @@ ex <- explain(
   max_n_coalitions = 30,
   iterative_args = list(
     initial_n_coalitions = 6,
-    convergence_tolerance = 0.0005,
+    convergence_tol = 0.0005,
     n_coal_next_iter_factor_vec = rep(10^(-6), 10),
     max_iter = 8
   ),

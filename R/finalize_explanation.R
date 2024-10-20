@@ -48,7 +48,7 @@ finalize_explanation <- function(internal) {
   iterative_results <- get_iter_results(internal$iter_list)
 
   output <- list(
-    shapley_values = dt_shapley_est,
+    shapley_values_est = dt_shapley_est,
     shapley_values_sd = dt_shapley_sd,
     pred_explain = p,
     MSEv = MSEv,
@@ -255,7 +255,7 @@ finalize_explanation_forecast <- function(vS_list, internal) { # Temporary used 
   internal$output <- processed_vS_list
 
   output <- list(
-    shapley_values = dt_shapley,
+    shapley_values_est = dt_shapley,
     internal = internal,
     pred_explain = p
   )

@@ -9,7 +9,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * iterative estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -621,7 +621,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * iterative estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -659,7 +659,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * iterative estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -725,7 +725,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * iterative estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -859,7 +859,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * iterative estimation: TRUE
+      * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
