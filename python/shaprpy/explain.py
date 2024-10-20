@@ -280,8 +280,12 @@ def explain(
       routput = shapr.testing_cleanup(routput)
 
     # Convert R objects to Python objects
+<<<<<<< HEAD
     shapley_values_est = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
     shapley_values_sd = r2py(base.as_data_frame(routput.rx2('shapley_values_sd')))
+=======
+    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
+>>>>>>> shapr-1.0.0
     pred_explain = r2py(routput.rx2('pred_explain'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))
     iterative_results = recurse_r_tree(routput.rx2('iterative_results'))
@@ -615,6 +619,7 @@ def change_first_underscore_to_dot(kwargs):
   for k, v in kwargs.items():
     kwargs_tmp[k.replace('_', '.', 1)] = v
   return kwargs_tmp
+<<<<<<< HEAD
 
 
 
@@ -816,3 +821,5 @@ def devel(
     shapr.cli_startup(rinternal, "bla", verbose) # TODO: Change cli_startup to take model_class as input instead of model
 
     return rinternal
+=======
+>>>>>>> shapr-1.0.0
