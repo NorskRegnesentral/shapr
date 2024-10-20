@@ -279,7 +279,7 @@ def explain(
       routput = shapr.testing_cleanup(routput)
 
     # Convert R objects to Python objects
-    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
+    shapley_values_est = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
     shapley_values_sd = r2py(base.as_data_frame(routput.rx2('shapley_values_sd')))
     pred_explain = r2py(routput.rx2('pred_explain'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))
@@ -287,7 +287,7 @@ def explain(
     saving_path = r2py(routput.rx2('saving_path'))
     #internal = recurse_r_tree(routput.rx2('internal')) # Currently get an error with NULL elements here
 
-    return shapley_values, shapley_values_sd, pred_explain, MSEv, iterative_results, saving_path, rinternal
+    return shapley_values_est, shapley_values_sd, pred_explain, MSEv, iterative_results, saving_path, rinternal
 
 
 def compute_vS(rinternal, model, predict_model):
