@@ -280,17 +280,13 @@ def explain(
       routput = shapr.testing_cleanup(routput)
 
     # Convert R objects to Python objects
-<<<<<<< HEAD
     shapley_values_est = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
     shapley_values_sd = r2py(base.as_data_frame(routput.rx2('shapley_values_sd')))
-=======
-    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
->>>>>>> shapr-1.0.0
     pred_explain = r2py(routput.rx2('pred_explain'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))
     iterative_results = recurse_r_tree(routput.rx2('iterative_results'))
-    saving_path = StrVector(routput.rx2['saving_path']) # NOt sure why this is not working
-    #saving_path = StrVector(rinternal.rx2['parameters'].rx2['output_args'].rx2['saving_path'])[0]
+    #saving_path = StrVector(routput.rx2['saving_path']) # NOt sure why this is not working
+    saving_path = StrVector(rinternal.rx2['parameters'].rx2['output_args'].rx2['saving_path'])[0]
     #internal = recurse_r_tree(routput.rx2('rinternal')) # Currently get an error with NULL elements here
 
     return shapley_values_est, shapley_values_sd, pred_explain, MSEv, iterative_results, saving_path, rinternal
@@ -619,7 +615,6 @@ def change_first_underscore_to_dot(kwargs):
   for k, v in kwargs.items():
     kwargs_tmp[k.replace('_', '.', 1)] = v
   return kwargs_tmp
-<<<<<<< HEAD
 
 
 
@@ -821,5 +816,3 @@ def devel(
     shapr.cli_startup(rinternal, "bla", verbose) # TODO: Change cli_startup to take model_class as input instead of model
 
     return rinternal
-=======
->>>>>>> shapr-1.0.0
