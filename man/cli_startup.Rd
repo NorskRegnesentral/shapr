@@ -4,17 +4,14 @@
 \alias{cli_startup}
 \title{Printing startup messages with cli}
 \usage{
-cli_startup(internal, model, verbose)
+cli_startup(internal, model_class, verbose)
 }
 \arguments{
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
-\item{model}{The model whose predictions we want to explain.
-Run \code{\link[=get_supported_models]{get_supported_models()}}
-for a table of which models \code{explain} supports natively. Unsupported models
-can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
-see details for more information.}
+\item{model_class}{String.
+Class of the model as a string}
 
 \item{verbose}{String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
