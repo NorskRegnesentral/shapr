@@ -39,7 +39,7 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   }
 
   #### Adds v_S output above to any vS_list already computed ####
-  vS_list <- append_vS_list(vS_list,internal)
+  vS_list <- append_vS_list(vS_list, internal)
 
 
   return(vS_list)
