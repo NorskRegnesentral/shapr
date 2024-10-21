@@ -25,17 +25,23 @@ def explain(
     x_train: pd.DataFrame,
     approach: str,
     prediction_zero: float,
-    n_combinations: int | None = None,
+    iterative: bool | None = None,
+    max_n_coalitions: int | None = None,
     group: dict | None = None,
-    n_samples: int = 1e3,
-    n_batches: int | None = None,
+    paired_shap_sampling: bool = True,
+    n_MC_samples: int = 1e3,
+    kernelSHAP_reweighting: str = "on_all_cond",
     seed: int | None = 1,
-    keep_samp_for_vS: bool = False,
+    verbose: str = "basic",
     predict_model: Callable = None,
     get_model_specs: Callable = None,
-    MSEv_uniform_comb_weights: bool = True,
-    timing: bool = True,
-    verbose: int | None = 0,
+    prev_shapr_object: None = None, # Currently not implemented
+    asymmetric: bool = False,
+    causal_ordering: dict | None = None,
+    confounding: bool | None = None,
+    extra_computation_args: dict | None = None,
+    iterative_args: dict | None = None,
+    output_args: dict | None = None,
     **kwargs,
   ):
     '''Explain the output of machine learning models with more accurately estimated Shapley values.
@@ -43,6 +49,7 @@ def explain(
     Computes dependence-aware Shapley values for observations in `x_explain` from the specified
     `model` by using the method specified in `approach` to estimate the conditional expectation.
 
+    TODO: The below needs to be updated in the end
     Parameters
     ----------
     model: The model whose predictions we want to explain.
@@ -115,9 +122,11 @@ def explain(
       only over the explicands, and only over the coalitions.
     '''
 
-    timing_list = {"init_time": datetime.now()}
+    init_time = base.Sys_time() # datetime.now()
 
-    base.set_seed(seed)
+
+    if seed is not None:
+      base.set_seed(seed)
 
     # Gets and check feature specs from the model
     rfeature_specs = get_feature_specs(get_model_specs, model)
@@ -133,82 +142,174 @@ def explain(
       if 'regression.vfold_cv_para' in kwargs:
         kwargs['regression.vfold_cv_para'] = ListVector(kwargs['regression.vfold_cv_para'])
 
+    # Convert from None or dict to a named list in R
+    if iterative_args is None:
+      iterative_args = ro.ListVector({})
+    else:
+      iterative_args = ListVector(iterative_args)
+
+    if output_args is None:
+      output_args = ro.ListVector({})
+    else:
+      output_args = ListVector(output_args)
+
+    if extra_computation_args is None:
+      extra_computation_args = ro.ListVector({})
+    else:
+      extra_computation_args = ListVector(extra_computation_args)
+
     # Sets up and organizes input parameters
     # Checks the input parameters and their compatability
     # Checks data/model compatability
-    rinternal = shapr.setup(
-        x_train = py2r(x_train),
-        x_explain = py2r(x_explain),
-        approach = approach,
-        prediction_zero = prediction_zero,
-        n_combinations = maybe_null(n_combinations),
-        group = r_group,
-        n_samples = n_samples,
-        n_batches = maybe_null(n_batches),
-        seed = seed,
-        keep_samp_for_vS = keep_samp_for_vS,
-        feature_specs = rfeature_specs,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
-        timing = timing,
-        verbose = verbose,
-        is_python=True,
-        **kwargs
-    )
 
-    timing_list["setup"] = datetime.now()
+    if type(approach) == str:
+      approach = [approach]
+
+    if type(verbose) == str:
+      verbose = [verbose]
+
+
+    rinternal = shapr.setup(
+      x_train = py2r(x_train),
+      x_explain = py2r(x_explain),
+      approach = StrVector(approach),
+      paired_shap_sampling = paired_shap_sampling,
+      prediction_zero = prediction_zero,
+      max_n_coalitions = maybe_null(max_n_coalitions),
+      group = r_group,
+      n_MC_samples = n_MC_samples,
+      seed = maybe_null(seed),
+      feature_specs = rfeature_specs,
+      verbose = StrVector(verbose),
+      iterative = maybe_null(iterative),
+      iterative_args = iterative_args, # Might do some conversion here
+      kernelSHAP_reweighting = kernelSHAP_reweighting,
+      prev_shapr_object = maybe_null(prev_shapr_object),
+      asymmetric = asymmetric,
+      causal_ordering = maybe_null(causal_ordering), # Might do some conversion here
+      confounding = maybe_null(confounding), # Might do some conversion here
+      output_args = output_args, # Might do some conversion here
+      extra_computation_args = extra_computation_args, # Might do some conversion here
+      init_time = init_time,
+      is_python=True,
+      **kwargs
+    )
 
     # Gets predict_model (if not passed to explain) and checks that predict_model gives correct format
     predict_model = get_predict_model(x_test=x_train.head(2), predict_model=predict_model, model=model)
 
-    timing_list["test_prediction"] = datetime.now()
+    rinternal.rx2['timing_list'].rx2['test_prediction'] = base.Sys_time()
 
-    # Add the predicted response of the training and explain data to the internal list for regression-based methods
-    using_regression_paradigm = rinternal.rx2("parameters").rx2("regression")[0]
-    if using_regression_paradigm:
-      rinternal = regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain)
+    rinternal = additional_regression_setup(
+      rinternal, 
+      model, 
+      predict_model, 
+      x_train, 
+      x_explain)
 
-    # Sets up the Shapley framework and prepares the conditional expectation computation for the chosen approach
-    rinternal = shapr.setup_computation(rinternal, NULL, NULL)
+    # Not called for approach %in% c("regression_surrogate","vaeac")
+    rinternal = shapr.setup_approach(internal = rinternal) # model and predict_model are not supported in Python
 
-    # Compute the v(S):
-    # MC:
-    # 1. Get the samples for the conditional distributions with the specified approach
-    # 2. Predict with these samples
-    # 3. Perform MC integration on these to estimate the conditional expectation (v(S))
-    # Regression:
-    # 1. Directly estimate the conditional expectation (v(S)) using the fitted regression model(s)
-    rvS_list = compute_vS(rinternal, model, predict_model)
+    rinternal.rx2['main_timing_list'] = rinternal.rx2['timing_list']
 
-    timing_list["compute_vS"] = datetime.now()
+    converged = False
+    iter = len(rinternal.rx2('iter_list'))
 
-    # Compute Shapley values based on conditional expectations (v(S))
-    # Organize function output
-    routput = shapr.finalize_explanation(vS_list=rvS_list, internal=rinternal)
+    if seed is not None:
+      base.set_seed(seed)
 
-    timing_list["shapley_computation"] = datetime.now()
+    model_class = f"{type(model).__module__}.{type(model).__name__}"
+    shapr.cli_startup(rinternal, model_class, verbose)
 
-    # Compute the elapsed time for the different steps
-    timing = compute_time(timing_list) if timing else None
+    rinternal.rx2['iter_timing_list'] = ro.ListVector({})
 
-    # If regression, then delete the regression/tidymodels objects in routput as they cannot be converted to python
-    if using_regression_paradigm:
-        routput = regression_remove_objects(routput)
+    while not converged:
+      shapr.cli_iter(verbose, rinternal, iter)
+
+      rinternal.rx2['timing_list'] = ro.ListVector({'init': base.Sys_time()})
+
+      # Setup the Shapley framework
+      rinternal = shapr.shapley_setup(rinternal)
+
+      # Only actually called for approach in ["regression_surrogate", "vaeac"]
+      rinternal = shapr.setup_approach(rinternal)
+
+      # Compute the vS
+      vS_list = compute_vS(rinternal, model, predict_model)
+
+      # Compute Shapley value estimates and bootstrapped standard deviations
+      rinternal = shapr.compute_estimates(rinternal, vS_list)
+
+      # Check convergence based on estimates and standard deviations (and thresholds)
+      rinternal = shapr.check_convergence(rinternal)
+
+      # Save intermediate results
+      shapr.save_results(rinternal)
+
+      # Preparing parameters for next iteration (does not do anything if already converged)
+      rinternal = shapr.prepare_next_iteration(rinternal)
+
+      # Printing iteration information
+      shapr.print_iter(rinternal)
+
+      # Setting globals to simplify the loop
+      converged = rinternal.rx2('iter_list')[iter-1].rx2('converged')[0]
+
+      rinternal.rx2['timing_list'].rx2['postprocess_res'] = base.Sys_time()
+
+      # Add the current timing_list to the iter_timing_list
+      #iter_timing_list = list(rinternal.rx2['iter_timing_list'])
+      #iter_timing_list.append(rinternal.rx2['timing_list'])
+      #rinternal.rx2['iter_timing_list'] = ro.ListVector(iter_timing_list)
+
+      rinternal.rx2['iter_timing_list'].rx2[iter] = rinternal.rx2['timing_list']
+      iter += 1
+
+    rinternal.rx2['main_timing_list'].rx2['main_computation'] = base.Sys_time()
+
+    # Rerun after convergence to get the same output format as for the non-iterative approach
+    routput = shapr.finalize_explanation(rinternal)
+
+    rinternal.rx2['main_timing_list'].rx2['finalize_explanation'] = base.Sys_time()
+
+    routput.rx2['timing'] = shapr.compute_time(rinternal)
+
+    # Some cleanup when doing testing
+    testing = rinternal.rx2('parameters').rx2('testing')[0]
+    if base.isTRUE(testing):
+      routput = shapr.testing_cleanup(routput)
 
     # Convert R objects to Python objects
-    df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
+    shapley_values_est = r2py(base.as_data_frame(routput.rx2('shapley_values_est')))
+    shapley_values_sd = r2py(base.as_data_frame(routput.rx2('shapley_values_sd')))
     pred_explain = r2py(routput.rx2('pred_explain'))
-    internal = recurse_r_tree(routput.rx2('internal'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))
+    iterative_results = recurse_r_tree(routput.rx2('iterative_results'))
+    saving_path = StrVector(routput.rx2['saving_path']) # NOt sure why this is not working
+    #saving_path = StrVector(rinternal.rx2['parameters'].rx2['output_args'].rx2['saving_path'])[0]
+    #internal = recurse_r_tree(routput.rx2('rinternal')) # Currently get an error with NULL elements here
 
-    return df_shapley, pred_explain, internal, timing, MSEv
+    return shapley_values_est, shapley_values_sd, pred_explain, MSEv, iterative_results, saving_path, rinternal
 
 
 def compute_vS(rinternal, model, predict_model):
-  S_batch = rinternal.rx2('objects').rx2('S_batch')
-  ret = ro.ListVector({})
+  
+  iter = len(rinternal.rx2('iter_list'))
+
+  #  S_batch <- internal$iter_list[[iter]]$S_batch
+  S_batch = rinternal.rx2('iter_list')[iter-1].rx2('S_batch')
+  
+  # verbose
+  shapr.cli_compute_vS(rinternal)
+  
+  vS_list = ro.ListVector({})
   for i, S in enumerate(S_batch):
-    ret.rx2[i+1] = batch_compute_vS(S=S, rinternal=rinternal, model=model, predict_model=predict_model)
-  return ret
+    vS_list.rx2[i+1] = batch_compute_vS(S=S, rinternal=rinternal, model=model, predict_model=predict_model)
+    
+  #### Adds v_S output above to any vS_list already computed ####
+  vS_list = shapr.append_vS_list(vS_list,rinternal)
+    
+  return vS_list
 
 
 def batch_compute_vS(S, rinternal, model, predict_model):
@@ -224,11 +325,14 @@ def batch_compute_vS(S, rinternal, model, predict_model):
   return dt_vS
 
 
-def batch_prepare_vS_MC(S, rinternal, model, predict_model):
+def batch_prepare_vS_MC_old(S, rinternal, model, predict_model):
   keep_samp_for_vS = rinternal.rx2('parameters').rx2('keep_samp_for_vS')[0]
   feature_names = list(rinternal.rx2('parameters').rx2('feature_names'))
+  
   dt = shapr.batch_prepare_vS_MC_auxiliary(S=S, internal=rinternal)
+  
   dt = compute_preds(dt=dt, feature_names=feature_names, predict_model=predict_model, model=model)
+  
   dt_vS = shapr.compute_MCint(dt)
 
   if keep_samp_for_vS:
@@ -236,8 +340,91 @@ def batch_prepare_vS_MC(S, rinternal, model, predict_model):
   else:
     return dt_vS
 
+def batch_prepare_vS_MC(S, rinternal, model, predict_model):
+  feature_names = list(rinternal.rx2('parameters').rx2('feature_names'))
+  keep_samp_for_vS = rinternal.rx2('parameters').rx2('output_args').rx2('keep_samp_for_vS')[0]
+  causal_sampling = rinternal.rx2('parameters').rx2('causal_sampling')[0]
+  output_size = int(rinternal.rx2('parameters').rx2('output_size')[0])
 
-def compute_preds(dt, feature_names, predict_model, model):
+  dt = shapr.batch_prepare_vS_MC_auxiliary(S=S, internal=rinternal, causal_sampling=causal_sampling)
+
+  pred_cols = [f"p_hat{i+1}" for i in range(output_size)]
+  type_ = rinternal.rx2('parameters').rx2('type')[0]
+
+  if type_ == "forecast":
+    horizon = rinternal.rx2('parameters').rx2('horizon')[0]
+    n_endo = rinternal.rx2('data').rx2('n_endo')[0]
+    explain_idx = rinternal.rx2('parameters').rx2('explain_idx')[0]
+    explain_lags = rinternal.rx2('parameters').rx2('explain_lags')[0]
+    y = rinternal.rx2('data').rx2('y')
+    xreg = rinternal.rx2('data').rx2('xreg')
+    dt = compute_preds(
+      dt=dt,
+      feature_names=feature_names,
+      predict_model=predict_model,
+      model=model,
+      type_=type_,
+      horizon=horizon,
+      n_endo=n_endo,
+      explain_idx=explain_idx,
+      explain_lags=explain_lags,
+      y=y,
+      xreg=xreg
+      )
+  else:
+    dt = compute_preds(
+      dt=dt,
+      feature_names=feature_names,
+      predict_model=predict_model,
+      model=model,
+      type_=type_
+      )
+
+  dt_vS = shapr.compute_MCint(dt)
+
+  if keep_samp_for_vS:
+    return ro.ListVector({'dt_vS': dt_vS, 'dt_samp_for_vS': dt})
+  else:
+    return dt_vS
+  
+def compute_preds(
+  dt,
+  feature_names,
+  predict_model,
+  model,
+  type_,
+  horizon=None,
+  n_endo=None,
+  explain_idx=None,
+  explain_lags=None,
+  y=None,
+  xreg=None
+):
+  # Predictions
+  if type_ == "forecast":
+    # TODO: I actually dont't think this works
+    preds = predict_model(
+      model, 
+      r2py(dt).loc[:,:n_endo],
+      r2py(dt).loc[:,n_endo:],
+      horizon,
+      explain_idx,
+      explain_lags,
+      y,
+      xreg
+      )
+
+  else:
+    preds = predict_model(
+      model, 
+      r2py(dt).loc[:,feature_names]
+      )
+
+  return ro.r.cbind(dt, p_hat=ro.FloatVector(preds.tolist()))
+
+
+
+def compute_preds_old(dt, feature_names, predict_model, model):
   preds = predict_model(model, r2py(dt).loc[:,feature_names])
   return ro.r.cbind(dt, p_hat=ro.FloatVector(preds.tolist()))
 
@@ -272,7 +459,7 @@ def get_feature_specs(get_model_specs, model):
     py2r_or_na = lambda v: py2r(v) if v is not None else NA
     def strvec_or_na(v):
       if v is None: return NA
-      strvec = ro.StrVector(list(v.values()))
+      strvec = StrVector(list(v.values()))
       strvec.names = list(v.keys())
       return strvec
     def listvec_or_na(v):
@@ -386,6 +573,15 @@ def compute_time(timing_list):
   return timing_output
 
 
+def additional_regression_setup(rinternal, model, predict_model, x_train, x_explain):
+  # Add the predicted response of the training and explain data to the internal list for regression-based methods
+  regression = rinternal.rx2("parameters").rx2("regression")[0]
+  if regression:
+    rinternal = regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain)
+  
+  return rinternal
+
+
 def regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain):
   x_train_y_hat = predict_model(model, x_train)
   x_explain_y_hat = predict_model(model, x_explain)
@@ -402,7 +598,7 @@ def regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain):
 def regression_remove_objects(routput):
   tmp_internal = routput.rx2("internal")
   tmp_parameters = tmp_internal.rx2("parameters")
-  objects = ro.StrVector(("regression", "regression.model", "regression.tune_values", "regression.vfold_cv_para",
+  objects = StrVector(("regression", "regression.model", "regression.tune_values", "regression.vfold_cv_para",
                            "regression.recipe_func", "regression.tune", "regression.surrogate_n_comb"))
   tmp_parameters.rx[objects] = NULL
   tmp_internal.rx2["parameters"] = tmp_parameters
@@ -419,3 +615,4 @@ def change_first_underscore_to_dot(kwargs):
   for k, v in kwargs.items():
     kwargs_tmp[k.replace('_', '.', 1)] = v
   return kwargs_tmp
+

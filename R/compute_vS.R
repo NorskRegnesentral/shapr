@@ -14,22 +14,8 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
 
   S_batch <- internal$iter_list[[iter]]$S_batch
 
-  verbose <- internal$parameters$verbose
-  approach <- internal$parameters$approach
-
   # verbose
-  if ("progress" %in% verbose) {
-    cli::cli_progress_step("Computing vS")
-  }
-  if ("vS_details" %in% verbose) {
-    if ("regression_separate" %in% approach) {
-      tuning <- internal$parameters$regression.tune
-      if (isTRUE(tuning)) {
-        cli::cli_h2("Extra info about the tuning of the regression model")
-      }
-    }
-  }
-
+  cli_compute_vS(internal)
 
   if (method == "future") {
     vS_list <- future_compute_vS_batch(
@@ -53,36 +39,7 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   }
 
   #### Adds v_S output above to any vS_list already computed ####
-  ### Need to map the old id_coalitions to the new numbers for this merging to work out
-  if (iter > 1) {
-    prev_coalition_map <- internal$iter_list[[iter - 1]]$coalition_map
-    prev_vS_list <- internal$iter_list[[iter - 1]]$vS_list
-
-    current_coalition_map <- internal$iter_list[[iter]]$coalition_map
-
-
-    # Creates a mapper from the last id_coalition to the new id_coalition numbering
-    id_coalitions_mapper <- merge(prev_coalition_map,
-      current_coalition_map,
-      by = "coalitions_str",
-      suffixes = c("", "_new")
-    )
-    prev_vS_list_new <- list()
-
-    # Applies the mapper to update the prev_vS_list ot the new id_coalition numbering
-    for (k in seq_along(prev_vS_list)) {
-      prev_vS_list_new[[k]] <- merge(prev_vS_list[[k]],
-        id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
-        by = "id_coalition"
-      )
-      prev_vS_list_new[[k]][, id_coalition := id_coalition_new]
-      prev_vS_list_new[[k]][, id_coalition_new := NULL]
-    }
-
-    # Merge the new vS_list with the old vS_list
-    vS_list <- c(prev_vS_list_new, vS_list)
-  }
-
+  vS_list <- append_vS_list(vS_list,internal)
 
 
   return(vS_list)
@@ -263,4 +220,48 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
   # dt_mat[, id_coalition := NULL]
 
   return(dt_mat)
+}
+
+#' Appends the new vS_list to the prev vS_list
+#'
+#'
+#' @inheritParams compute_estimates
+#'
+#' @export
+#' @keywords internal
+append_vS_list <- function(vS_list, internal) {
+
+  iter <- length(internal$iter_list)
+
+  # Adds v_S output above to any vS_list already computed
+  if (iter > 1) {
+    prev_coalition_map <- internal$iter_list[[iter - 1]]$coalition_map
+    prev_vS_list <- internal$iter_list[[iter - 1]]$vS_list
+
+    # Need to map the old id_coalitions to the new numbers for this merging to work out
+    current_coalition_map <- internal$iter_list[[iter]]$coalition_map
+
+    # Creates a mapper from the last id_coalition to the new id_coalition numbering
+    id_coalitions_mapper <- merge(prev_coalition_map,
+                                  current_coalition_map,
+                                  by = "coalitions_str",
+                                  suffixes = c("", "_new")
+    )
+    prev_vS_list_new <- list()
+
+    # Applies the mapper to update the prev_vS_list ot the new id_coalition numbering
+    for (k in seq_along(prev_vS_list)) {
+      prev_vS_list_new[[k]] <- merge(prev_vS_list[[k]],
+                                     id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+                                     by = "id_coalition"
+      )
+      prev_vS_list_new[[k]][, id_coalition := id_coalition_new]
+      prev_vS_list_new[[k]][, id_coalition_new := NULL]
+    }
+
+    # Merge the new vS_list with the old vS_list
+    vS_list <- c(prev_vS_list_new, vS_list)
+  }
+  return(vS_list)
+
 }

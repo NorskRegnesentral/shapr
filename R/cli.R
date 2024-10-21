@@ -1,4 +1,13 @@
-cli_startup <- function(internal, model, verbose) {
+#' Printing startup messages with cli
+#'
+#' @param model_class String.
+#' Class of the model as a string
+#' @inheritParams default_doc_explain
+#' @inheritParams explain
+#'
+#' @export
+#' @keywords internal
+cli_startup <- function(internal, model_class, verbose) {
   init_time <- internal$timing_list$init_time
 
   is_groupwise <- internal$parameters$is_groupwise
@@ -20,7 +29,7 @@ cli_startup <- function(internal, model, verbose) {
   confounding <- internal$parameters$confounding
 
 
-  line_vec <- "Model class: {.cls {class(model)}}"
+  line_vec <- "Model class: {.cls {model_class}}"
   line_vec <- c(line_vec, "Approach: {.emph {approach}}")
   line_vec <- c(line_vec, "Iterative estimation: {.emph {iterative}}")
   line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {n_shapley_values}")
@@ -63,7 +72,38 @@ cli_startup <- function(internal, model, verbose) {
   }
 }
 
+#' Printing messages in compute_vS with cli
+#'
+#' @inheritParams default_doc_explain
+#' @inheritParams explain
+#'
+#' @export
+#' @keywords internal
+cli_compute_vS <- function(internal){
 
+  verbose <- internal$parameters$verbose
+  approach <- internal$parameters$approach
+
+  if ("progress" %in% verbose) {
+    cli::cli_progress_step("Computing vS")
+  }
+  if ("vS_details" %in% verbose) {
+    if ("regression_separate" %in% approach) {
+      tuning <- internal$parameters$regression.tune
+      if (isTRUE(tuning)) {
+        cli::cli_h2("Extra info about the tuning of the regression model")
+      }
+    }
+  }
+}
+
+#' Printing messages in iterative procedure with cli
+#'
+#' @inheritParams default_doc_explain
+#' @inheritParams explain
+#'
+#' @export
+#' @keywords internal
 cli_iter <- function(verbose, internal, iter) {
   iterative <- internal$parameters$iterative
   asymmetric <- internal$parameters$asymmetric
