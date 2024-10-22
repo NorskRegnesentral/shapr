@@ -47,6 +47,8 @@ library(shapr)
 
 > [Advanced usage](#advanced)
 
+> [Explaining forecasting models](#forecasting)
+
 <a id="intro"></a>
 
 # Introduction
@@ -106,8 +108,9 @@ More information about this is provided in [iterative estimation](#iterative)
 The above, combined with batch computation of the `v(S)` values, enables fast and accurate estimation of the
 Shapley values in a memory friendly manner.
 
-The package also provides functionality for computing Shapley values for groups of features, multiple output
-time series forecasting models, and custom function explanation, see [Advanced usage](#advanced).
+The package also provides functionality for computing Shapley values for groups of features, and custom function explanation, see [Advanced usage](#advanced).
+Finally, explanation of multiple output time series forecasting models are discussed in
+[Explaining forecasting models](#forecasting).
 
 
 ## Default behavior of `explain`
@@ -1597,7 +1600,12 @@ ex_even_further <- explain(
 
 ```
 
-## Explaining a forecasting model using `explain_forecast`
+<a id="forecasting"></a>
+
+<br>
+
+
+# Explaining a forecasting model using `explain_forecast`
 
 `shapr` provides a specific function, `explain_forecast`, to explain
 forecasts from time series models, at one or more steps into the future.
