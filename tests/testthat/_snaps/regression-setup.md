@@ -2,9 +2,8 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = c(
-          "regression_surrogate", "gaussian", "independence", "empirical"),
-        iterative = FALSE)
+        x_train = x_train_numeric, phi0 = p0, approach = c("regression_surrogate",
+          "gaussian", "independence", "empirical"), iterative = FALSE)
     Condition
       Error in `check_approach()`:
       ! The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.
@@ -13,8 +12,8 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = c(
-          "regression_separate", "gaussian", "independence", "empirical"), iterative = FALSE)
+        x_train = x_train_numeric, phi0 = p0, approach = c("regression_separate",
+          "gaussian", "independence", "empirical"), iterative = FALSE)
     Condition
       Error in `check_approach()`:
       ! The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.

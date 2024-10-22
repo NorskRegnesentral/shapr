@@ -93,8 +93,8 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data_arima[1:150,
       "Temp"], xreg = data_arima[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
-      horizon = horizon, approach = "independence", phi0 = p0_ar,
-      max_n_coalitions = n_coalitions, group_lags = FALSE)
+      horizon = horizon, approach = "independence", phi0 = p0_ar, max_n_coalitions = n_coalitions,
+      group_lags = FALSE)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -117,8 +117,8 @@
       explain_forecast(testing = TRUE, model = model_arima_temp, y = data_arima[1:150,
       "Temp"], xreg = data_arima[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
-      horizon = horizon, approach = "independence", phi0 = p0_ar,
-      max_n_coalitions = n_coalitions, group_lags = TRUE)
+      horizon = horizon, approach = "independence", phi0 = p0_ar, max_n_coalitions = n_coalitions,
+      group_lags = TRUE)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.

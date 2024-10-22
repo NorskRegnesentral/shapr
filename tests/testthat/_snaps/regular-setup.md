@@ -186,8 +186,7 @@
       x_train_no_column_names <- as.data.frame(x_train_numeric)
       names(x_train_no_column_names) <- NULL
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_no_column_names, approach = "independence",
-        phi0 = p0)
+        x_train = x_train_no_column_names, approach = "independence", phi0 = p0)
     Condition
       Error in `get_data()`:
       ! x_train misses column names.
@@ -210,8 +209,7 @@
       x_explain_no_column_names <- as.data.frame(x_explain_numeric)
       names(x_explain_no_column_names) <- NULL
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_no_column_names,
-        x_train = x_train_no_column_names, approach = "independence",
-        phi0 = p0)
+        x_train = x_train_no_column_names, approach = "independence", phi0 = p0)
     Condition
       Error in `get_data()`:
       ! x_explain misses column names.
@@ -230,8 +228,7 @@
     Code
       approach_non_character <- 1
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = approach_non_character,
-        phi0 = p0)
+        x_train = x_train_numeric, approach = approach_non_character, phi0 = p0)
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
@@ -242,8 +239,7 @@
     Code
       approach_incorrect_length <- c("empirical", "gaussian")
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = approach_incorrect_length,
-        phi0 = p0)
+        x_train = x_train_numeric, approach = approach_incorrect_length, phi0 = p0)
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
@@ -254,8 +250,7 @@
     Code
       approach_incorrect_character <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = approach_incorrect_character,
-        phi0 = p0)
+        x_train = x_train_numeric, approach = approach_incorrect_character, phi0 = p0)
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
@@ -401,8 +396,8 @@
       groups <- list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
       max_n_coalitions <- length(groups) - 1
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "gaussian",
-        group = groups, max_n_coalitions = max_n_coalitions)
+        x_train = x_train_numeric, phi0 = p0, approach = "gaussian", group = groups,
+        max_n_coalitions = max_n_coalitions)
     Message
       Success with message:
       n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
@@ -429,8 +424,7 @@
     Code
       group_non_list <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        group = group_non_list)
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, group = group_non_list)
     Condition
       Error in `get_parameters()`:
       ! `group` must be NULL or a list
@@ -440,8 +434,7 @@
     Code
       group_with_non_characters <- list(A = 1, B = 2)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        group = group_with_non_characters)
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, group = group_with_non_characters)
     Condition
       Error in `check_groups()`:
       ! All components of group should be a character.
@@ -452,8 +445,7 @@
       group_with_non_data_features <- list(A = c("Solar.R", "Wind",
         "not_a_data_feature"), B = c("Temp", "Month", "Day"))
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        group = group_with_non_data_features)
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, group = group_with_non_data_features)
     Condition
       Error in `check_groups()`:
       ! The group feature(s) not_a_data_feature are not
@@ -465,8 +457,7 @@
       group_missing_data_features <- list(A = c("Solar.R"), B = c("Temp", "Month",
         "Day"))
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        group = group_missing_data_features)
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, group = group_missing_data_features)
     Condition
       Error in `check_groups()`:
       ! The data feature(s) Wind do not
@@ -478,8 +469,7 @@
       group_dup_data_features <- list(A = c("Solar.R", "Solar.R", "Wind"), B = c(
         "Temp", "Month", "Day"))
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        group = group_dup_data_features)
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, group = group_dup_data_features)
     Condition
       Error in `check_groups()`:
       ! Feature(s) Solar.R are found in more than one group or multiple times per group.
@@ -490,8 +480,7 @@
     Code
       single_group <- list(A = c("Solar.R", "Wind", "Temp", "Month", "Day"))
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        group = single_group)
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, group = single_group)
     Condition
       Error in `check_groups()`:
       ! You have specified only a single group named A, containing the features: Solar.R, Wind, Temp, Month, Day.
@@ -568,8 +557,7 @@
     Code
       seed_not_integer_interpretable <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        seed = seed_not_integer_interpretable)
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = seed_not_integer_interpretable)
     Condition
       Warning in `set.seed()`:
       NAs introduced by coercion
@@ -581,8 +569,8 @@
     Code
       keep_samp_for_vS_non_logical_1 <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_1))
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, output_args = list(
+          keep_samp_for_vS = keep_samp_for_vS_non_logical_1))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -597,8 +585,8 @@
     Code
       keep_samp_for_vS_non_logical_2 <- NULL
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_2))
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, output_args = list(
+          keep_samp_for_vS = keep_samp_for_vS_non_logical_2))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -613,8 +601,8 @@
     Code
       keep_samp_for_vS_too_long <- c(TRUE, FALSE)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        output_args = list(keep_samp_for_vS = keep_samp_for_vS_too_long))
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, output_args = list(
+          keep_samp_for_vS = keep_samp_for_vS_too_long))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -629,8 +617,8 @@
     Code
       MSEv_uniform_comb_weights_nl_1 <- "bla"
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1))
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, output_args = list(
+          MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -645,8 +633,8 @@
     Code
       MSEv_uniform_comb_weights_nl_2 <- NULL
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2))
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, output_args = list(
+          MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -661,8 +649,8 @@
     Code
       MSEv_uniform_comb_weights_long <- c(TRUE, FALSE)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, approach = "independence", phi0 = p0,
-        output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long))
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, output_args = list(
+          MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -943,8 +931,8 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_explain_numeric, phi0 = p0, approach = "gaussian",
-        group = groups, max_n_coalitions = max_n_coalitions)
+        x_train = x_explain_numeric, phi0 = p0, approach = "gaussian", group = groups,
+        max_n_coalitions = max_n_coalitions)
     Message
       Success with message:
       n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
@@ -971,8 +959,7 @@
     Code
       explanation_exact <- explain(testing = TRUE, model = model_lm_numeric,
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
-        phi0 = p0, n_MC_samples = 2, seed = 123, max_n_coalitions = NULL,
-        iterative = FALSE)
+        phi0 = p0, n_MC_samples = 2, seed = 123, max_n_coalitions = NULL, iterative = FALSE)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
