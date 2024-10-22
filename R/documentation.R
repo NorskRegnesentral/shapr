@@ -31,6 +31,9 @@ default_doc <- function(internal, model, predict_model, output_size, extra, ...)
 
 #' Exported documentation helper function.
 #'
+#' @param iter Integer.
+#' The iteration number. Only used internally.
+#'
 #' @param internal List.
 #' Not used directly, but passed through from [explain()].
 #'

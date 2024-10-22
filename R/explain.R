@@ -482,7 +482,7 @@ explain <- function(model,
     set.seed(seed)
   }
 
-  cli_startup(internal, model, verbose)
+  cli_startup(internal, class(model), verbose)
 
 
   while (converged == FALSE) {
