@@ -44,83 +44,90 @@ def explain(
     output_args: dict | None = None,
     **kwargs,
   ):
-    '''Explain the output of machine learning models with more accurately estimated Shapley values.
+    """
+    Explain the output of machine learning models with more accurately estimated Shapley values.
 
     Computes dependence-aware Shapley values for observations in `x_explain` from the specified
     `model` by using the method specified in `approach` to estimate the conditional expectation.
 
-    TODO: The below needs to be updated in the end
     Parameters
     ----------
     model: The model whose predictions we want to explain.
       `shaprpy` natively supports `sklearn`, `xgboost` and `keras` models.
       Unsupported models can still be explained by passing `predict_model` and (optionally) `get_model_specs`.
-    x_explain: Contains the features whose predictions ought to be explained.
-    x_train: Contains the data used to estimate the (conditional) distributions for the features
+    x_explain: pd.DataFrame
+      Contains the features whose predictions ought to be explained.
+    x_train: pd.DataFrame
+      Contains the data used to estimate the (conditional) distributions for the features
       needed to properly estimate the conditional expectations in the Shapley formula.
-    approach: str or list[str] of length `n_features`.
-      `n_features` equals the total number of features in the model. All elements should,
-      either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"`, `"timeseries"`, or `"independence"`.
-    prediction_zero: The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
+    approach: str or list[str]
+      The method(s) to estimate the conditional expectation. All elements should,
+      either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"`, `"timeseries"`, `"independence"`, 
+      `"regression_separate"`, or `"regression_surrogate"`.
+    prediction_zero: float
+      The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
       features. Typically we set this value equal to the mean of the response variable in our training data, but other
       choices such as the mean of the predictions in the training data are also reasonable.
-    n_combinations: If `group = None`, `n_combinations` represents the number of unique feature combinations to sample.
-      If `group != None`, `n_combinations` represents the number of unique group combinations to sample.
-      If `n_combinations = None`, the exact method is used and all combinations are considered.
-      The maximum number of combinations equals `2^m`, where `m` is the number of features.
-    group: If `None` regular feature wise Shapley values are computed.
-      If a dict is provided, group wise Shapley values are computed. `group` then contains lists of unique feature names with the
-      features included in each of the different groups. The length of the dict equals the number of groups.
-    n_samples: Indicating the maximum number of samples to use in the
-      Monte Carlo integration for every conditional expectation.
-    n_batches: Specifies how many batches the total number of feature combinations should be split into when calculating the
-      contribution function for each test observation.
-      The default value is 1.
-      Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
-      This typically comes with a small increase in computation time.
-    seed: Specifies the seed before any randomness based code is being run.
-      If `None` the seed will be inherited from the calling environment.
-    keep_samp_for_vS: Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal['output']`)
-    predict_model: The prediction function used when `model` is not natively supported.
-      The function must have two arguments, `model` and `newdata` which specify, respectively, the model
-      and a pandas.DataFrame to compute predictions for. The function must give the prediction as a numpy.Array.
-      `None` (the default) uses functions specified internally.
-      Can also be used to override the default function for natively supported model classes.
-    get_model_specs: An optional function for checking model/data consistency when `model` is not natively supported.
-      This method has yet to be implemented for keras models.
-      The function takes `model` as argument and provides a `dict with 3 elements:
-      - labels: list[str] with the names of each feature.
-      - classes: list[str] with the classes of each features.
-      - factor_levels: dict[str, list[str]] with the levels for any categorical features.
-      If `None` (the default) internal functions are used for natively supported model classes, and the checking is
-      disabled for unsupported model classes.
-      Can also be used to override the default function for natively supported model classes.
-    MSEv_uniform_comb_weights: Logical. If `True` (default), then the function weights the combinations
-      uniformly when computing the MSEv criterion. If `False`, then the function use the Shapley kernel weights to
-      weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by
-      the sampling frequency when not all combinations are considered.
-    timing: Indicates whether the timing of the different parts of the explain call should be saved and returned.
-    verbose:  An integer specifying the level of verbosity. If `0` (default), `shapr` will stay silent.
-      If `1`, it will print information about performance. If `2`, some additional information will be printed out.
-    kwargs: Further arguments passed to specific approaches. See R-documentation of the function
-      `explain_tripledot_docs` for more information about the approach specific arguments
-      (https://norskregnesentral.github.io/shapr/reference/explain_tripledot_docs.html). Note that the parameters
-      in R are called 'approach.parameter_name', but in Python the equivalent would be 'approach_parameter_name'.
+    iterative: bool or None, optional
+      If `None` (default), the argument is set to `True` if there are more than 5 features/groups, and `False` otherwise.
+      If `True`, the Shapley values are estimated iteratively in an iterative manner.
+    max_n_coalitions: int or None, optional
+      The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+      (if `iterative = True`). If `iterative = False` it represents the number of feature/group coalitions to use directly.
+      `max_n_coalitions = None` corresponds to `max_n_coalitions=2^n_features`.
+    group: dict or None, optional
+      If `None` regular feature wise Shapley values are computed.
+      If provided, group wise Shapley values are computed. `group` then contains lists of unique feature names with the
+      features included in each of the different groups.
+    paired_shap_sampling: bool, optional
+      If `True` (default), paired versions of all sampled coalitions are also included in the computation.
+    n_MC_samples: int, optional
+      Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation.
+    kernelSHAP_reweighting: str, optional
+      How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+      the randomness and thereby the variance of the Shapley value estimates. One of `'none'`, `'on_N'`, `'on_all'`, 
+      `'on_all_cond'` (default).
+    seed: int or None, optional
+      Specifies the seed before any randomness based code is being run. If `None` the seed will be inherited from the calling environment.
+    verbose: str or list[str], optional
+      Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
+      `"convergence"`, `"shapley"`  and `"vS_details"`. `None` means no printout.
+    predict_model: Callable, optional
+      The prediction function used when `model` is not natively supported. The function must have two arguments, `model` and `newdata` 
+      which specify, respectively, the model and a pandas.DataFrame to compute predictions for. The function must give the prediction as a numpy.Array.
+    get_model_specs: Callable, optional
+      An optional function for checking model/data consistency when `model` is not natively supported. The function takes `model` as argument 
+      and provides a `dict` with 3 elements: `labels`, `classes`, and `factor_levels`.
+    prev_shapr_object: None, optional
+      Currently not implemented.
+    asymmetric: bool, optional
+      If `False` (default), `explain` computes regular symmetric Shapley values. If `True`, then `explain` computes asymmetric Shapley values 
+      based on the (partial) causal ordering given by `causal_ordering`.
+    causal_ordering: dict or None, optional
+      An unnamed list of vectors specifying the components of the partial causal ordering that the coalitions must respect.
+    confounding: bool or None, optional
+      A vector of logicals specifying whether confounding is assumed or not for each component in the `causal_ordering`.
+    extra_computation_args: dict or None, optional
+      Specifies extra arguments related to the computation of the Shapley values.
+    iterative_args: dict or None, optional
+      Specifies the arguments for the iterative procedure.
+    output_args: dict or None, optional
+      Specifies certain arguments related to the output of the function.
+    **kwargs: Further arguments passed to specific approaches.
 
     Returns
     -------
-    pandas.DataFrame
-      A pandas.DataFrame with the Shapley values.
-    numpy.Array
-      A numpy.Array with the predictions on `x_explain`.
     dict
-      A dictionary of additional information.
-    dict
-      A dictionary of elapsed time information if `timing` is set to `True`.
-    dict
-      A dictionary of the MSEv evaluation criterion scores: averaged over both the explicands and coalitions,
-      only over the explicands, and only over the coalitions.
-    '''
+      A dictionary containing the following items:
+      - "shapley_values_est": pd.DataFrame with the estimated Shapley values.
+      - "shapley_values_sd": pd.DataFrame with the standard deviation of the Shapley values.
+      - "pred_explain": numpy.Array with the predictions for the explained observations.
+      - "MSEv": dict with the values of the MSEv evaluation criterion.
+      - "iterative_results": dict with the results of the iterative estimation.
+      - "saving_path": str with the path where intermediate results are stored.
+      - "internal": dict with the different parameters, data, functions and other output used internally.
+      - "timing": dict containing timing information for the different parts of the computation.
+    """
 
     init_time = base.Sys_time() # datetime.now()
 

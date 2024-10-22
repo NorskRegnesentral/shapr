@@ -23,7 +23,7 @@ from shaprpy.utils import r2py, py2r, recurse_r_tree
 
 
 ## Shapr
-shapley_values_est, shapley_values_sd, pred_explain, MSEv, iterative_results, saving_path, rinternal = explain(
+output = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
@@ -31,6 +31,8 @@ shapley_values_est, shapley_values_sd, pred_explain, MSEv, iterative_results, sa
     prediction_zero = dfy_train.mean().item(),
     max_n_coalitions=30
 )
+
+output["shapley_values_est"]
 
 saving_path
 
