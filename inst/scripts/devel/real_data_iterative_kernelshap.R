@@ -107,7 +107,7 @@ expl <- shapr::explain(model = model,
                        x_explain= x_explain[inds,],
                        x_train = x_train,
                        approach = "ctree",
-                       prediction_zero = p0
+                       phi0 = p0
 )
 fwrite(expl$shapley_values_est,paste0(sim_results_saving_folder,"exact_shapley_values_", kernelSHAP_reweighting_strategy, ".csv"))
 print(Sys.time())
@@ -168,7 +168,7 @@ for (i in seq_along(testObs_computed_vec)){
                         x_explain= x_explain[testObs_computed_vec[i],],
                         x_train = x_train,
                         approach = approach,
-                        prediction_zero = p0,
+                        phi0 = p0,
                         n_coalitions = runcomps_list[[i]])
   expl_approx[i,] = unlist(expl_approx_obj$shapley_values_est)
   expl_approx_obj_list[[i]] <- expl_approx_obj

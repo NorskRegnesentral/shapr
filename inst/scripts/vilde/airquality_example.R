@@ -15,7 +15,7 @@ x <- explain(
   test,
   model = model,
   approach = "empirical",
-  prediction_zero = p
+  phi0 = p
 )
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {

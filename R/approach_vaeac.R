@@ -2531,7 +2531,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = approach,
-#'   prediction_zero = p0,
+#'   phi0 = p0,
 #'   n_MC_samples = 1, # As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 10, # Should be higher in applications.
 #'   vaeac.n_vaeacs_initialize = 1,
@@ -2545,7 +2545,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = approach,
-#'   prediction_zero = p0,
+#'   phi0 = p0,
 #'   n_MC_samples = 1, # As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 10, # Should be higher in applications.
 #'   vaeac.width = 16,
@@ -2766,7 +2766,7 @@ vaeac_plot_eval_crit <- function(explanation_list,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "vaeac",
-#'   prediction_zero = mean(y_train),
+#'   phi0 = mean(y_train),
 #'   n_MC_samples = 1,
 #'   vaeac.epochs = 10,
 #'   vaeac.n_vaeacs_initialize = 1

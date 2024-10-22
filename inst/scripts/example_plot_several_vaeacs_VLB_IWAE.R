@@ -28,7 +28,7 @@ explanation_paired_sampling_TRUE <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = approach,
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 2,
   n_samples = 1, #' As we are only interested in the training of the vaeac
   vaeac.epochs = 25, #' Should be higher in applications.
@@ -44,7 +44,7 @@ explanation_paired_sampling_FALSE <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = approach,
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 2,
   n_samples = 1, #' As we are only interested in the training of the vaeac
   vaeac.epochs = 25, #' Should be higher in applications.
@@ -61,7 +61,7 @@ explanation_paired_sampling_FALSE_small <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = approach,
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 2,
   n_samples = 1, #' As we are only interested in the training of the vaeac
   vaeac.epochs = 25, #' Should be higher in applications.
@@ -80,7 +80,7 @@ explanation_paired_sampling_TRUE_small <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = approach,
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 2,
   n_samples = 1, #' As we are only interested in the training of the vaeac
   vaeac.epochs = 25, #' Should be higher in applications.

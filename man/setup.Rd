@@ -9,7 +9,7 @@ setup(
   x_explain,
   approach,
   paired_shap_sampling = TRUE,
-  prediction_zero,
+  phi0,
   output_size = 1,
   max_n_coalitions,
   group,
@@ -59,7 +59,7 @@ If \code{TRUE} (default), paired versions of all sampled coalitions are also inc
 That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
 computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
 
-\item{prediction_zero}{Numeric.
+\item{phi0}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
 features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices

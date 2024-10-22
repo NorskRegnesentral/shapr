@@ -2,7 +2,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list(1:6), confounding = NULL, approach = "gaussian",
         iterative = FALSE)
     Condition
@@ -13,7 +13,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list(1:5, 5), confounding = NULL, approach = "gaussian",
         iterative = FALSE)
     Condition
@@ -24,7 +24,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list(2:5, 5), confounding = NULL, approach = "gaussian",
         iterative = FALSE)
     Condition
@@ -35,7 +35,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list(1:2, 4), confounding = NULL, approach = "gaussian",
         iterative = FALSE)
     Condition
@@ -46,7 +46,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind", "Temp", "Month", "Day",
           "Invalid feature name"), confounding = NULL, approach = "gaussian",
         iterative = FALSE)
@@ -58,7 +58,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind", "Temp", "Month", "Day", "Day"),
         confounding = NULL, approach = "gaussian", iterative = FALSE)
     Condition
@@ -69,7 +69,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind", "Temp", "Day", "Day"), confounding = NULL,
         approach = "gaussian", iterative = FALSE)
     Condition
@@ -80,7 +80,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list("Solar.R", "Wind"), confounding = NULL, approach = "gaussian",
         iterative = FALSE)
     Condition
@@ -91,7 +91,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list(c("Solar.R", "Wind", "Temp", "Month"), "Day"),
         confounding = NULL, approach = "gaussian", group = list(A = c("Solar.R",
           "Wind"), B = "Temp", C = c("Month", "Day")), iterative = FALSE)
@@ -103,7 +103,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list(c("A", "C"), "Wrong name"), confounding = NULL,
         approach = "gaussian", group = list(A = c("Solar.R", "Wind"), B = "Temp", C = c(
           "Month", "Day")), iterative = FALSE)
@@ -115,7 +115,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = TRUE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = TRUE,
         causal_ordering = list(c("A"), "B"), confounding = NULL, approach = "gaussian",
         group = list(A = c("Solar.R", "Wind"), B = "Temp", C = c("Month", "Day")),
         iterative = FALSE)
@@ -127,7 +127,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = FALSE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5), confounding = TRUE, approach = c(
           "gaussian", "independence", "empirical", "gaussian"), iterative = FALSE)
     Condition
@@ -138,7 +138,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = c(FALSE, FALSE),
+        x_train = x_train_numeric, phi0 = p0, asymmetric = c(FALSE, FALSE),
         causal_ordering = list(1:2, 3:4, 5), confounding = TRUE, approach = "gaussian",
         iterative = FALSE)
     Condition
@@ -149,7 +149,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = "Must be a single logical",
+        x_train = x_train_numeric, phi0 = p0, asymmetric = "Must be a single logical",
         causal_ordering = list(1:2, 3:4, 5), confounding = TRUE, approach = "gaussian",
         iterative = FALSE)
     Condition
@@ -160,7 +160,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = 1L,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = 1L,
         causal_ordering = list(1:2, 3:4, 5), confounding = TRUE, approach = "gaussian",
         iterative = FALSE)
     Condition
@@ -171,7 +171,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = FALSE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5), confounding = c("A", "B", "C"),
         approach = "gaussian", iterative = FALSE)
     Condition
@@ -182,7 +182,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, prediction_zero = p0, asymmetric = FALSE,
+        x_train = x_train_numeric, phi0 = p0, asymmetric = FALSE,
         causal_ordering = list(1:2, 3:4, 5), confounding = c(TRUE, FALSE), approach = "gaussian",
         iterative = FALSE)
     Condition

@@ -498,7 +498,7 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 10, # Do not need precise Shapley values to illustrate the behaviour of beeswarm plot
   n_MC_samples = 10 # Do not need precise Shapley values to illustrate the behaviour of beeswarm plot
 )

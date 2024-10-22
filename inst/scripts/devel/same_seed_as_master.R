@@ -22,13 +22,13 @@ model <- xgboost(
 # Prepare the data for explanation
 explainer <- shapr(x_train, model,n_coalitions = 100)
 p = mean(y_train)
-gauss = explain(x_test, explainer, "gaussian", prediction_zero = p, n_samples = 10000)
-emp =  explain(x_test, explainer, "empirical", prediction_zero = p, n_samples = 10000)
-copula =  explain(x_test, explainer, "copula", prediction_zero = p, n_samples = 10000)
-indep = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000)
-comb = explain(x_test, explainer, c("gaussian", "gaussian", "empirical", "empirical"), prediction_zero = p, n_samples = 10000)
-ctree = explain(x_test, explainer, "ctree", mincriterion = 0.95, prediction_zero = p, n_samples = 10000)
-ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.95, 0.95, 0.95, 0.95), prediction_zero = p, n_samples = 10000)
+gauss = explain(x_test, explainer, "gaussian", phi0 = p, n_samples = 10000)
+emp =  explain(x_test, explainer, "empirical", phi0 = p, n_samples = 10000)
+copula =  explain(x_test, explainer, "copula", phi0 = p, n_samples = 10000)
+indep = explain(x_test, explainer, "independence", phi0 = p, n_samples = 10000)
+comb = explain(x_test, explainer, c("gaussian", "gaussian", "empirical", "empirical"), phi0 = p, n_samples = 10000)
+ctree = explain(x_test, explainer, "ctree", mincriterion = 0.95, phi0 = p, n_samples = 10000)
+ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.95, 0.95, 0.95, 0.95), phi0 = p, n_samples = 10000)
 
 
 # results from master

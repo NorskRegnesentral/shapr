@@ -37,7 +37,7 @@ explanation_old <- explain(
   approach = "empirical",
   type = "independence",
   explainer = explainer,
-  prediction_zero = p, seed=111,n_samples = 100
+  phi0 = p, seed=111,n_samples = 100
 )
 print(proc.time()-t_old)
 #user  system elapsed
@@ -48,7 +48,7 @@ explanation_new <- explain(
   x_test,
   approach = "independence",
   explainer = explainer,
-  prediction_zero = p,seed = 111,n_samples = 100
+  phi0 = p,seed = 111,n_samples = 100
   )
 print(proc.time()-t_new)
 #user  system elapsed
@@ -69,7 +69,7 @@ explanation_full_old <- explain(
   approach = "empirical",
   type = "independence",
   explainer = explainer,
-  prediction_zero = p, seed=111
+  phi0 = p, seed=111
 )
 print(proc.time()-t_old)
 #user  system elapsed
@@ -80,7 +80,7 @@ explanation_full_new <- explain(
   x_test,
   approach = "independence",
   explainer = explainer,
-  prediction_zero = p,seed = 111
+  phi0 = p,seed = 111
 )
 print(proc.time()-t_new)
 #user  system elapsed

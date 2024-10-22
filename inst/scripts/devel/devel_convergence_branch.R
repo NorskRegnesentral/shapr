@@ -43,7 +43,7 @@ explanation_iterative <- explain(
   x_train = x_train,
   approach = "gaussian",
   max_n_coalitions = 500,
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = TRUE,
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
@@ -56,7 +56,7 @@ explanation_iterative <- explain(
   x_train = x_train,
   approach = "ctree",
   n_coalitions = 500,
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = TRUE,
   print_shapleyres = TRUE, # tmp
   print_iter_info = TRUE, # tmp
@@ -70,7 +70,7 @@ explanation_noniterative <- explain(
   x_train = x_train,
   approach = "gaussian",
   n_coalitions = 400,
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = FALSE
 )
 
@@ -81,7 +81,7 @@ explanation_iterative <- explain(
   x_train = x_train,
   approach = "gaussian",
   n_coalitions = 500,
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = TRUE,
   iterative_args = list(initial_n_coalitions=10,convergence_tol=0.0001),
   print_shapleyres = TRUE, # tmp
@@ -142,7 +142,7 @@ explanation_regular <- explain(
   x_train = x_train,
   approach = "gaussian",
   n_coalitions = NULL,
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = FALSE
 )
 

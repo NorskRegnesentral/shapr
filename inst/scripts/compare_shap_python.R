@@ -47,12 +47,12 @@ time_R_prepare <- proc.time()
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation_independence <- explain(x_test, explainer, approach = "independence", prediction_zero = p0)
+explanation_independence <- explain(x_test, explainer, approach = "independence", phi0 = p0)
 
 time_R_indep0 <- proc.time()
 
 explanation_largesigma <- explain(x_test, explainer, approach = "empirical", type = "fixed_sigma",
-                                  fixed_sigma_vec = 10000, w_threshold = 1, prediction_zero = p0)
+                                  fixed_sigma_vec = 10000, w_threshold = 1, phi0 = p0)
 
 time_R_largesigma0 <- proc.time()
 

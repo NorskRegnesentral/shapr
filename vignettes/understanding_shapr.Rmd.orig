@@ -485,7 +485,7 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = FALSE
 )
 
@@ -524,7 +524,7 @@ explanation_plot <- explain(
   x_explain = x_explain_many,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = FALSE
 )
 plot(explanation_plot, plot_type = "beeswarm")
@@ -565,7 +565,7 @@ explanation_lm_cat <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = FALSE
 )
 
@@ -587,7 +587,7 @@ explanation_ctree <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  prediction_zero = p0,
+  phi0 = p0,
   ctree.mincriterion = 0.80,
   ctree.minsplit = 20,
   ctree.minbucket = 20,
@@ -628,7 +628,7 @@ explanation_cat_method <- explain(
   x_explain = x_explain_all_cat,
   x_train = x_train_all_cat,
   approach = "categorical",
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = FALSE
 )
 ```
@@ -689,7 +689,7 @@ explanation_timeseries <- explain(
   x_explain = x_explain_ts,
   x_train = x_train_ts,
   approach = "timeseries",
-  prediction_zero = p0_ts,
+  phi0 = p0_ts,
   group = group_ts,
   iterative = FALSE
 )
@@ -799,7 +799,7 @@ explanation_independence <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "independence",
-  prediction_zero = p0,
+  phi0 = p0,
   n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -810,7 +810,7 @@ explanation_empirical <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -821,7 +821,7 @@ explanation_gaussian_1e1 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   n_MC_samples = 1e1,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -832,7 +832,7 @@ explanation_gaussian_1e2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -843,7 +843,7 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("gaussian", "empirical", "independence"),
-  prediction_zero = p0,
+  phi0 = p0,
   n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -995,7 +995,7 @@ ex <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = TRUE,
   iterative_args = list(convergence_tol = 0.1)
 )
@@ -1057,7 +1057,7 @@ explanation_par <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0
+  phi0 = p0
 )
 
 future::plan(sequential) # To return to non-parallel computation
@@ -1118,7 +1118,7 @@ ex_progress <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0
+  phi0 = p0
 )
 
 handlers("progress")
@@ -1202,7 +1202,7 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("empirical", "copula", "gaussian"),
-  prediction_zero = p0
+  phi0 = p0
 )
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
@@ -1219,7 +1219,7 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("ctree", "ctree", "empirical"),
-  prediction_zero = p0
+  phi0 = p0
 )
 ```
 
@@ -1244,7 +1244,7 @@ explanation_group <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   group = group_list,
   iterative = FALSE
 )
@@ -1351,7 +1351,7 @@ explanation_custom <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   predict_model = MY_predict_model,
   get_model_specs = MY_get_model_specs
 )
@@ -1375,7 +1375,7 @@ explanation_custom_minimal <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   predict_model = MY_MINIMAL_predict_model
 )
 
@@ -1424,7 +1424,7 @@ explanation_tidymodels <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = FALSE
   )
 
@@ -1455,7 +1455,7 @@ explanation_vaeac <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = p0,
+  phi0 = p0,
   n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
@@ -1491,7 +1491,7 @@ explanation_vaeac_early_stop <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = p0,
+  phi0 = p0,
   n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
@@ -1563,7 +1563,7 @@ ex_init <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 20,
   iterative = TRUE
 )
@@ -1574,7 +1574,7 @@ ex_further <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 25,
   iterative_args = list(convergence_tol = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_init
@@ -1589,7 +1589,7 @@ ex_even_further <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = NULL,
   prev_shapr_object = ex_further$saving_path
 )
@@ -1633,7 +1633,7 @@ must also be 2, because at time $t = 1$ there was only a single
 observation available.
 
 Since the data is stationary, the mean of the data is used as value of
-`prediction_zero` (i.e. $\phi_0$). This can however be chosen
+`phi0` (i.e. $\phi_0$). This can however be chosen
 differently depending on the data and application.
 
 For a multivariate model such as a VAR (Vector AutoRegressive model), it
@@ -1664,7 +1664,7 @@ explanation_forecast <- explain_forecast(
   explain_y_lags = 2,
   horizon = 3,
   approach = "empirical",
-  prediction_zero = p0_ar,
+  phi0 = p0_ar,
   group_lags = FALSE
 )
 explanation_forecast
@@ -1712,8 +1712,8 @@ that we want to explain a forecast made from time point 153 in the data.
 The argument `horizon` is set to 2 in order to explain a forecast of
 length 2.
 
-The argument `prediction_zero` is set to the mean of the time series,
-and is repeated two times. Each value of `prediction_zero` is the
+The argument `phi0` is set to the mean of the time series,
+and is repeated two times. Each value of `phi0` is the
 baseline for each forecast horizon. In our example, we assume that given
 no effect from the two lags, the temperature would just be the average
 during the observed period. Finally, we opt to not group the lags by
@@ -1731,7 +1731,7 @@ explanation_forecast <- explain_forecast(
   explain_y_lags = 2,
   horizon = 2,
   approach = "empirical",
-  prediction_zero = rep(mean(data$Temp), 2),
+  phi0 = rep(mean(data$Temp), 2),
   group_lags = FALSE
 )
 
@@ -1784,7 +1784,7 @@ explanation_forecast <- explain_forecast(
   explain_xreg_lags = 1,
   horizon = 2,
   approach = "empirical",
-  prediction_zero = rep(mean(data_fit$Temp), 2),
+  phi0 = rep(mean(data_fit$Temp), 2),
   group_lags = FALSE
 )
 

@@ -2289,7 +2289,7 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
   predictive_model <- lm(y ~ ., data = data_train_with_response)
 
   # Get the prediction zero, i.e., the phi0 Shapley value.
-  prediction_zero <- mean(response_train)
+  phi0 <- mean(response_train)
 
   model <- predictive_model
   x_explain <- data_test
@@ -2308,7 +2308,7 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
     x_train = x_train,
     x_explain = x_explain,
     approach = approach,
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     n_coalitions = n_coalitions,
     group = group,
     n_samples = n_samples,

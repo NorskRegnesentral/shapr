@@ -39,7 +39,7 @@ explanation_new <- explain_new(
   x_test,
   approach = "gaussian",
   explainer = explainer1,
-  prediction_zero = p,
+  phi0 = p,
   n_samples = 5*10^5,n_batches = 1
 )
 
@@ -56,7 +56,7 @@ explanation_new <- explain_new(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = p,
+  phi0 = p,
   n_samples = 10^5,n_batches = 4
 )
 
@@ -73,7 +73,7 @@ explanation_new <- explain_new(
   x_test,
   approach = "empirical",
   explainer = explainer,
-  prediction_zero = p,
+  phi0 = p,
   n_samples = 10^5,n_batches = 1
 )
 
@@ -90,7 +90,7 @@ explanation_new <- explain_new(
   x_test,
   approach = "empirical",
   explainer = explainer,
-  prediction_zero = p,
+  phi0 = p,
   n_samples = 10^5,n_batches = 4
 )
 
@@ -112,7 +112,7 @@ explanation_new$dt_shapley
 #   x_test,
 #   approach = "gaussian",
 #   explainer = explainer,
-#   prediction_zero = p
+#   phi0 = p
 # )
 #
 # str(explainer,max.level = 1)
@@ -122,7 +122,7 @@ explainer <- explain_setup(
    x_test,
    approach = "empirical",
    explainer = explainer,
-   prediction_zero = p,
+   phi0 = p,
    n_batches = 4
  )
 
@@ -130,7 +130,7 @@ explainer0 <- explain_setup(
   x_test,
   approach = c("empirical","copula","ctree","gaussian"),
   explainer = explainer,
-  prediction_zero = p,
+  phi0 = p,
   n_batches = 7
 )
 
@@ -149,7 +149,7 @@ explainer0$X
 #   x_test,
 #   approach = "gaussian",
 #   explainer = explainer,
-#   prediction_zero = p,
+#   phi0 = p,
 #   n_samples = 10^5
 # )
 

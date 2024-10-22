@@ -134,7 +134,7 @@ x <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p,
+  phi0 = p,
   n_MC_samples = 1e2
 )
 
@@ -184,7 +184,7 @@ x <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  prediction_zero = p,
+  phi0 = p,
   n_MC_samples = 1e2
 )
 

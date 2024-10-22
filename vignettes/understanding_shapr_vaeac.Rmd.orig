@@ -147,7 +147,7 @@ model <- xgboost(
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-prediction_zero <- mean(y_train)
+phi0 <- mean(y_train)
 ```
 
 
@@ -166,7 +166,7 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = n_MC_samples,
   vaeac.epochs = vaeac.epochs,
   vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize
@@ -200,7 +200,7 @@ expl_pretrained_vaeac <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = n_MC_samples,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
@@ -225,7 +225,7 @@ expl_pretrained_vaeac_path <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = n_MC_samples,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac$models$best
@@ -256,7 +256,7 @@ expl_batches_combinations <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_coalitions = 10,
   n_MC_samples = n_MC_samples,
   vaeac.extra_parameters = list(
@@ -282,7 +282,7 @@ expl_batches_combinations_2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_coalitions = 10,
   n_MC_samples = n_MC_samples,
   vaeac.n_vaeacs_initialize = 1,
@@ -312,7 +312,7 @@ expl_paired_sampling_TRUE <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = n_MC_samples,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
@@ -324,7 +324,7 @@ expl_paired_sampling_FALSE <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = n_MC_samples,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
@@ -370,7 +370,7 @@ expl_with_messages <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = n_MC_samples,
   verbose = c("basic","vS_details"),
   vaeac.epochs = 5,
@@ -390,7 +390,7 @@ progressr::with_progress({
     x_explain = x_explain,
     x_train = x_train,
     approach = "vaeac",
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     n_MC_samples = n_MC_samples,
     verbose = "vS_details",
     vaeac.epochs = 5,
@@ -423,7 +423,7 @@ expl_little_training <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 250,
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2
@@ -452,7 +452,7 @@ expl_train_more_vaeac <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 250,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = expl_train_more$internal$parameters$vaeac
@@ -479,7 +479,7 @@ expl_train_even_more_vaeac <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 250,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = expl_train_even_more$internal$parameters$vaeac
@@ -534,7 +534,7 @@ expl_early_stopping <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 250,
   verbose = c("basic","vS_details"),
   vaeac.epochs = 1000, # Set it to a big number
@@ -593,7 +593,7 @@ expl_early_stopping_train_more <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 250,
   vaeac.extra_parameters = list(
     vaeac.pretrained_vaeac_model = expl_early_stopping_train_more$internal$parameters$vaeac
@@ -629,7 +629,7 @@ expl_group <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   group = list(A = c("Temp", "Month"), B = c("Wind", "Solar.R")),
   n_MC_samples = n_MC_samples,
   verbose = "vS_details",
@@ -669,7 +669,7 @@ model <- ranger(as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " +
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-prediction_zero <- mean(data_train_cat[, get(y_var)])
+phi0 <- mean(data_train_cat[, get(y_var)])
 ```
 Then we compute explanations using the `ctree` and `vaeac` approaches. For the `vaeac` approach, we
 consider two setups: the default architecture, and a simpler one without skip connections. We do this
@@ -682,7 +682,7 @@ expl_ctree <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 250
 )
 
@@ -692,7 +692,7 @@ expl_vaeac_with <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 250,
   vaeac.epochs = 50,
   vaeac.n_vaeacs_initialize = 4
@@ -704,7 +704,7 @@ expl_vaeac_without <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "vaeac",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 250,
   vaeac.epochs = 50,
   vaeac.n_vaeacs_initialize = 4,
@@ -786,7 +786,7 @@ x_explain <- dt_explain[, -1]
 model <- lm(y ~ ., dt_train)
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-prediction_zero <- mean(y_train)
+phi0 <- mean(y_train)
 
 # Fit vaeac model using the CPU
 time_cpu <- system.time({
@@ -795,7 +795,7 @@ time_cpu <- system.time({
     x_explain = x_explain,
     x_train = x_train,
     approach = "vaeac",
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     n_MC_samples = 100,
     vaeac.epochs = 50,
     vaeac.n_vaeacs_initialize = 2,
@@ -810,7 +810,7 @@ time_cuda <- system.time({
     x_explain = x_explain,
     x_train = x_train,
     approach = "vaeac",
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     n_MC_samples = 100,
     vaeac.epochs = 50,
     vaeac.n_vaeacs_initialize = 2,

@@ -25,7 +25,7 @@ for (i in seq_along(n)) {
       x_test,
       model = model,
       approach = "empirical",
-      prediction_zero = p_mean,
+      phi0 = p_mean,
       n_coalitions = n_coalitions[i]
     )
   )
@@ -52,7 +52,7 @@ for (i in seq_along(n)) {
       x_test,
       model = model,
       approach = "empirical",
-      prediction_zero = p_mean,
+      phi0 = p_mean,
       n_coalitions = n_coalitions[i]
     )
   )
@@ -79,7 +79,7 @@ system.time({res = explain(
   x_test,
   model = model,
   approach = "empirical",
-  prediction_zero = p_mean,
+  phi0 = p_mean,
   n_coalitions = 1000
 )})
 
@@ -89,7 +89,7 @@ system.time({res2 = explain(
   x_test,
   model = model,
   approach = "empirical",
-  prediction_zero = p_mean,
+  phi0 = p_mean,
   n_coalitions = 800
 )})
 
@@ -100,7 +100,7 @@ system.time({res3 = explain(
   x_test,
   model = model,
   approach = "empirical",
-  prediction_zero = p_mean,
+  phi0 = p_mean,
   n_coalitions = NULL
 )})
 
@@ -117,7 +117,7 @@ res = profvis({res = explain(
   x_test,
   model = model,
   approach = "empirical",
-  prediction_zero = p_mean,
+  phi0 = p_mean,
   n_coalitions = n_coalitions[i]
 )})
 res

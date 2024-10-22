@@ -59,7 +59,7 @@ xy_train <- cbind(x_train,y=y_train)
 
 model <- lm(formula = y~.,data=xy_train)
 
-prediction_zero <- mean(y_train)
+phi0 <- mean(y_train)
 
 n_batches_use <- min(2^p-2,n_batches)
 
@@ -72,7 +72,7 @@ explanation <- explain(
   x_train = x_train,
   approach = approach,
   n_batches = n_batches_use,
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_coalitions = 10^4
 )
 

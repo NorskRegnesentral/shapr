@@ -26,6 +26,9 @@ E.g. \code{verbose = c("basic", "vS_details")} will display basic information + 
 
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
+
+\item{iter}{Integer.
+The iteration number. Only used internally.}
 }
 \description{
 Printing messages in iterative procedure with cli

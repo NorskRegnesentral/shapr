@@ -25,7 +25,7 @@ model <- xgboost(
 p <- mean(y_train)
 
 # Prepare the data for explanation
-res <- explain_final(x_train,x_test,model,approach="independence",prediction_zero=p,n_batches = 4)
+res <- explain_final(x_train,x_test,model,approach="independence",phi0=p,n_batches = 4)
 plot(res)
 
 i<- 1 # index for observation we want to plot

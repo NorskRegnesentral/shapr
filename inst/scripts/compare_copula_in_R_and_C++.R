@@ -906,7 +906,7 @@ arma::cube prepare_data_copula_cpp_and_R(arma::mat MC_samples_mat,
   predictive_model <- lm(y ~ ., data = data_train_with_response)
 
   # Get the prediction zero, i.e., the phi0 Shapley value.
-  prediction_zero <- mean(response_train)
+  phi0 <- mean(response_train)
 
   model <- predictive_model
   x_explain <- data_test
@@ -925,7 +925,7 @@ arma::cube prepare_data_copula_cpp_and_R(arma::mat MC_samples_mat,
     x_train = x_train,
     x_explain = x_explain,
     approach = approach,
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     n_coalitions = n_coalitions,
     group = group,
     n_samples = n_samples,
@@ -1400,7 +1400,7 @@ all.equal(shapr_mat_arma_res, sourceCpp_mat_arma_res)
   predictive_model <- lm(y ~ ., data = data_train_with_response)
 
   # Get the prediction zero, i.e., the phi0 Shapley value.
-  prediction_zero <- mean(response_train)
+  phi0 <- mean(response_train)
 
   model <- predictive_model
   x_explain <- data_test
@@ -1419,7 +1419,7 @@ all.equal(shapr_mat_arma_res, sourceCpp_mat_arma_res)
     x_train = x_train,
     x_explain = x_explain,
     approach = approach,
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     n_coalitions = n_coalitions,
     group = group,
     n_samples = n_samples,
@@ -1511,7 +1511,7 @@ temp_shapley_value_func = function(dt, internal, model, predict_model) {
     xreg = internal$data$xreg
   )
   dt_vS2 <- compute_MCint(dt, paste0("p_hat", seq_len(internal$parameters$output_size)))
-  dt_vS <- rbind(t(as.matrix(c(1, rep(prediction_zero, n_test)))), dt_vS2, t(as.matrix(c(2^M, response_test))),
+  dt_vS <- rbind(t(as.matrix(c(1, rep(phi0, n_test)))), dt_vS2, t(as.matrix(c(2^M, response_test))),
                  use.names = FALSE)
   colnames(dt_vS) = colnames(dt_vS2)
   compute_shapley_new(internal, dt_vS)

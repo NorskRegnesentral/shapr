@@ -5,7 +5,7 @@ test_that("iterative_args are respected", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "independence",
-    prediction_zero = p0,
+    phi0 = p0,
     max_n_coalitions = 30,
     iterative_args = list(
       initial_n_coalitions = 6,
@@ -40,7 +40,7 @@ test_that("iterative feature wise and groupwise computations identical", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "gaussian",
-    prediction_zero = p0,
+    phi0 = p0,
     iterative_args = list(
       initial_n_coalitions = 5,
       convergence_tol = 0.1
@@ -56,7 +56,7 @@ test_that("iterative feature wise and groupwise computations identical", {
     x_train = x_train_numeric,
     approach = "gaussian",
     group = groups,
-    prediction_zero = p0,
+    phi0 = p0,
     iterative_args = list(
       initial_n_coalitions = 5,
       convergence_tol = 0.1
@@ -82,7 +82,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         extra_computation_args = list(min_n_batches = n_batches_non_numeric_1)
       )
     },
@@ -99,7 +99,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         extra_computation_args = list(min_n_batches = n_batches_non_numeric_2)
       )
     },
@@ -116,7 +116,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         extra_computation_args = list(min_n_batches = n_batches_non_integer)
       )
     },
@@ -133,7 +133,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         extra_computation_args = list(min_n_batches = n_batches_too_long)
       )
     },
@@ -150,7 +150,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         extra_computation_args = list(min_n_batches = n_batches_is_NA)
       )
     },
@@ -167,7 +167,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         extra_computation_args = list(min_n_batches = n_batches_non_positive)
       )
     },
@@ -183,7 +183,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "empirical",
-    prediction_zero = p0,
+    phi0 = p0,
     extra_computation_args = list(min_n_batches = 5, max_batch_size = 10)
   )
 
@@ -193,7 +193,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "empirical",
-    prediction_zero = p0,
+    phi0 = p0,
     extra_computation_args = list(min_n_batches = 10, max_batch_size = 10)
   )
 
@@ -215,7 +215,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "ctree",
-    prediction_zero = p0,
+    phi0 = p0,
     extra_computation_args = list(min_n_batches = 5, max_batch_size = 10)
   )
 
@@ -225,7 +225,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "ctree",
-    prediction_zero = p0,
+    phi0 = p0,
     extra_computation_args = list(min_n_batches = 10, max_batch_size = 10)
   )
 

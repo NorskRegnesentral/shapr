@@ -34,7 +34,7 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0
+  phi0 = p0
 )
 
 # Printing the Shapley values for the test data.

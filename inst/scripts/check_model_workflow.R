@@ -50,7 +50,7 @@ explain_workflow = explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 4
 )
 
@@ -59,7 +59,7 @@ explain_xgboost = explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 4
 )
 
@@ -103,7 +103,7 @@ explain_decision_tree_ctree = explain(
   x_explain = x_explain_mixed,
   x_train = x_train_mixed,
   approach = "ctree",
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 4
 )
 
@@ -113,7 +113,7 @@ explain_decision_tree_lm = explain(
   x_train = x_train_mixed,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 4
 )
 
@@ -149,7 +149,7 @@ explain_decision_model_rf_cv_rf = explain(
   x_train = x_train_mixed,
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression"),
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 4
 )
 
@@ -159,7 +159,7 @@ explain_decision_model_rf_cv_ctree = explain(
   x_explain = x_explain_mixed,
   x_train = x_train_mixed,
   approach = "ctree",
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 4
 )
 

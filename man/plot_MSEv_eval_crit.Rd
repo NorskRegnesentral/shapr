@@ -90,7 +90,7 @@ model <- xgboost::xgboost(
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-prediction_zero <- mean(y_train)
+phi0 <- mean(y_train)
 
 # Independence approach
 explanation_independence <- explain(
@@ -98,7 +98,7 @@ explanation_independence <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "independence",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 1e2
 )
 
@@ -108,7 +108,7 @@ explanation_gaussian_1e1 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 1e1
 )
 
@@ -118,7 +118,7 @@ explanation_gaussian_1e2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 1e2
 )
 
@@ -128,7 +128,7 @@ explanation_ctree <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 1e2
 )
 
@@ -138,7 +138,7 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("gaussian", "independence", "ctree"),
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_MC_samples = 1e2
 )
 

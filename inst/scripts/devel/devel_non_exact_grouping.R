@@ -38,14 +38,14 @@ explanation1 <- explain(
   x_test,
   approach = "independence",
   explainer = explainer1,
-  prediction_zero = p
+  phi0 = p
 )
 
 explanation2 <- explain(
   x_test,
   approach = "independence",
   explainer = explainer2,
-  prediction_zero = p
+  phi0 = p
 )
 
 

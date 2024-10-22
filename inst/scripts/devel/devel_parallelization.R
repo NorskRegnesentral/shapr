@@ -35,7 +35,7 @@ explanation0 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = p,n_batches = 32
+  phi0 = p,n_batches = 32
 )
 stop <- proc.time()
 time0 <- stop-start
@@ -48,7 +48,7 @@ explanation1 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = p,n_batches = 32
+  phi0 = p,n_batches = 32
 )
 stop <- proc.time()
 time1 <- stop-start
@@ -60,7 +60,7 @@ explanation2 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = p,n_batches = 32
+  phi0 = p,n_batches = 32
 )
 stop <- proc.time()
 time2 <- stop-start
@@ -72,7 +72,7 @@ explanation3 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = p,n_batches = 32
+  phi0 = p,n_batches = 32
 )
 stop <- proc.time()
 time3 <- stop-start
@@ -84,7 +84,7 @@ explanation4 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = p,n_batches = 32
+  phi0 = p,n_batches = 32
 )
 stop <- proc.time()
 time4 <- stop-start
@@ -96,7 +96,7 @@ explanation5 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = p,n_batches = 32
+  phi0 = p,n_batches = 32
 )
 stop <- proc.time()
 time5 <- stop-start
@@ -108,7 +108,7 @@ explanation6 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = p,n_batches = 32
+  phi0 = p,n_batches = 32
 )
 stop <- proc.time()
 time6 <- stop-start
@@ -123,7 +123,7 @@ explanation7 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = p,n_batches = 32
+  phi0 = p,n_batches = 32
 )
 stop <- proc.time()
 parallel::stopCluster(cl)

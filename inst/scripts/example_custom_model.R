@@ -65,7 +65,7 @@ get_model_specs.gbm <- function(x){
 set.seed(123)
 explainer <- shapr(xy_train, model)
 p0 <- mean(xy_train[,y_var])
-explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
+explanation <- explain(x_test, explainer, approach = "empirical", phi0 = p0)
 # Plot results
 plot(explanation)
 
@@ -89,6 +89,6 @@ predict_model.gbm <- function(x, newdata) {
 set.seed(123)
 explainer <- shapr(x_train, model)
 p0 <- mean(xy_train[,y_var])
-explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
+explanation <- explain(x_test, explainer, approach = "empirical", phi0 = p0)
 # Plot results
 plot(explanation)
