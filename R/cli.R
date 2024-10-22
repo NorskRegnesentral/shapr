@@ -80,7 +80,6 @@ cli_startup <- function(internal, model_class, verbose) {
 #' @export
 #' @keywords internal
 cli_compute_vS <- function(internal) {
-
   verbose <- internal$parameters$verbose
   approach <- internal$parameters$approach
 
