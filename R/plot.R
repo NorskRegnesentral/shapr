@@ -241,7 +241,7 @@ plot.shapr <- function(x,
       desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
     }
   } else {
-    desc_mat <- trimws(format(x$shapley_values_est[, -c("explain_id", "none")], digits = digits))
+    desc_mat <- trimws(format(x$shapley_values_est[, -c("none")], digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shap_names[i])
     }
