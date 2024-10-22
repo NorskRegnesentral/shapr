@@ -5,7 +5,7 @@ explainer <- explain_setup(
   x_test,
   approach = c("empirical","empirical","gaussian","copula"),
   explainer = explainer,
-  prediction_zero = p,
+  phi0 = p,
   n_batches = 4
 )
 

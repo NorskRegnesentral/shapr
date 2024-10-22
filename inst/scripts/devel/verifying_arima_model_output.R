@@ -45,7 +45,7 @@ exp <- explain_forecast(model = model_arima_temp,
                         explain_xreg_lags = c(0,1),
                         horizon = 1,
                         approach = "empirical",
-                        prediction_zero = rep(mean(y),1),
+                        phi0 = rep(mean(y),1),
                         group_lags = FALSE,
                         n_batches = 1)
 

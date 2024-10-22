@@ -20,7 +20,7 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
 \item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
-The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{prediction_zero})}
+The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
@@ -105,7 +105,7 @@ explain1 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p,
+  phi0 = p,
   n_MC_samples = 1e2
 )
 
@@ -115,7 +115,7 @@ explain2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p,
+  phi0 = p,
   n_MC_samples = 1e2
 )
 
@@ -125,7 +125,7 @@ explain3 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "copula",
-  prediction_zero = p,
+  phi0 = p,
   n_MC_samples = 1e2
 )
 
@@ -135,7 +135,7 @@ explain4 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  prediction_zero = p,
+  phi0 = p,
   n_MC_samples = 1e2
 )
 
@@ -146,7 +146,7 @@ explain5 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = approach,
-  prediction_zero = p,
+  phi0 = p,
   n_MC_samples = 1e2
 )
 
@@ -168,7 +168,7 @@ explain_groups <- explain(
   x_train = x_train,
   group = group_list,
   approach = "empirical",
-  prediction_zero = p,
+  phi0 = p,
   n_MC_samples = 1e2
 )
 print(explain_groups$shapley_values_est)
@@ -183,7 +183,7 @@ explain_separate_lm <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  prediction_zero = p,
+  phi0 = p,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg()
 )
@@ -192,7 +192,7 @@ explain_surrogate_lm <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  prediction_zero = p,
+  phi0 = p,
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
@@ -206,7 +206,7 @@ explain_iterative <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p,
+  phi0 = p,
   n_MC_samples = 1e2,
   iterative = TRUE,
   iterative_args = list(initial_n_coalitions = 10)

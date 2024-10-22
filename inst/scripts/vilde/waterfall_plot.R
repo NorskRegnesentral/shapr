@@ -19,7 +19,7 @@ model <- xgboost(
   verbose = FALSE
 )
 p <- mean(y_train)
-x <- explain_final(x_train,x_test,model,approach="independence",prediction_zero=p,n_batches = 4)
+x <- explain_final(x_train,x_test,model,approach="independence",phi0=p,n_batches = 4)
 plot.shapr(x,
            plot_type = "bar",
            digits = 3,

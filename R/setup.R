@@ -27,7 +27,7 @@ setup <- function(x_train,
                   x_explain,
                   approach,
                   paired_shap_sampling = TRUE,
-                  prediction_zero,
+                  phi0,
                   output_size = 1,
                   max_n_coalitions,
                   group,
@@ -76,7 +76,7 @@ setup <- function(x_train,
   internal$parameters <- get_parameters(
     approach = approach,
     paired_shap_sampling = paired_shap_sampling,
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     output_size = output_size,
     max_n_coalitions = max_n_coalitions,
     group = group,
@@ -163,7 +163,7 @@ get_prev_internal <- function(prev_shapr_object,
 #' @keywords internal
 get_parameters <- function(approach,
                            paired_shap_sampling,
-                           prediction_zero,
+                           phi0,
                            output_size = 1,
                            max_n_coalitions,
                            group,
@@ -290,12 +290,12 @@ get_parameters <- function(approach,
   if (!is.null(causal_ordering) && !is.list(causal_ordering)) stop("`causal_ordering` must be a list.\n")
 
   #### Tests combining more than one parameter ####
-  # prediction_zero vs output_size
-  if (!all((is.numeric(prediction_zero)) &&
-    all(length(prediction_zero) == output_size) &&
-    all(!is.na(prediction_zero)))) {
+  # phi0 vs output_size
+  if (!all((is.numeric(phi0)) &&
+    all(length(phi0) == output_size) &&
+    all(!is.na(phi0)))) {
     stop(paste0(
-      "`prediction_zero` (", paste0(prediction_zero, collapse = ", "),
+      "`phi0` (", paste0(phi0, collapse = ", "),
       ") must be numeric and match the output size of the model (",
       paste0(output_size, collapse = ", "), ")."
     ))
@@ -315,7 +315,7 @@ get_parameters <- function(approach,
   parameters <- list(
     approach = approach,
     paired_shap_sampling = paired_shap_sampling,
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     max_n_coalitions = max_n_coalitions,
     group = group,
     n_MC_samples = n_MC_samples,

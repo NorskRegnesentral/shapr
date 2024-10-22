@@ -101,7 +101,7 @@
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "empirical",
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -151,7 +151,7 @@
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "ctree",
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -299,7 +299,7 @@ plot.shapr <- function(x,
     # compute start and end values for waterfall rectangles
     data.table::setorder(dt_plot, rank_waterfall)
     dt_plot[, end := cumsum(phi), by = id]
-    expected <- x$internal$parameters$prediction_zero
+    expected <- x$internal$parameters$phi0
     dt_plot[, start := c(expected, head(end, -1)), by = id]
     dt_plot[, phi_significant := format(phi, digits = digits), by = id]
 
@@ -895,7 +895,7 @@ make_waterfall_plot <- function(dt_plot,
 #' )
 #'
 #' # Specifying the phi_0, i.e. the expected prediction without any features
-#' prediction_zero <- mean(y_train)
+#' phi0 <- mean(y_train)
 #'
 #' # Independence approach
 #' explanation_independence <- explain(
@@ -903,7 +903,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "independence",
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -913,7 +913,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "gaussian",
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e1
 #' )
 #'
@@ -923,7 +923,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "gaussian",
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -933,7 +933,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "ctree",
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -943,7 +943,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = c("gaussian", "independence", "ctree"),
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -1452,7 +1452,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #' )
 #'
 #' # Specifying the phi_0, i.e. the expected prediction without any features
-#' prediction_zero <- mean(y_train)
+#' phi0 <- mean(y_train)
 #'
 #' # Independence approach
 #' explanation_independence <- explain(
@@ -1460,7 +1460,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "independence",
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -1470,7 +1470,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "empirical",
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -1480,7 +1480,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "gaussian",
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e1
 #' )
 #'
@@ -1490,7 +1490,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "gaussian",
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -1500,7 +1500,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = c("gaussian", "ctree", "empirical"),
-#'   prediction_zero = prediction_zero,
+#'   phi0 = phi0,
 #'   n_MC_samples = 1e2
 #' )
 #'

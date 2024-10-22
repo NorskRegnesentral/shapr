@@ -80,7 +80,7 @@ expl <- shapr::explain(model = model,
                        x_explain= x_explain[inds,],
                        x_train = x_train,
                        approach = "gaussian",
-                       prediction_zero = p0,Sigma=Sigma,mu=mu)
+                       phi0 = p0,Sigma=Sigma,mu=mu)
 
 fwrite(expl$shapley_values_est,paste0(sim_results_saving_folder,"exact_shapley_values_",shapley_threshold_val,"_",kernelSHAP_reweighting_strategy, ".csv"))
 
@@ -149,7 +149,7 @@ for (i in testObs_computed_vec){
                                     x_explain= x_explain[inds[i],],
                                     x_train = x_train,
                                     approach = "gaussian",
-                                    prediction_zero = p0,
+                                    phi0 = p0,
                                     n_coalitions = runcomps_list[[i]],
                                     Sigma=Sigma,mu=mu)
   expl_approx[i,] = unlist(expl_approx_obj$shapley_values_est)

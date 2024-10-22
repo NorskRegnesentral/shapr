@@ -79,7 +79,7 @@
 #'   explain_y_lags = 2,
 #'   horizon = 3,
 #'   approach = "empirical",
-#'   prediction_zero = p0_ar,
+#'   phi0 = p0_ar,
 #'   group_lags = FALSE
 #' )
 #'
@@ -93,7 +93,7 @@ explain_forecast <- function(model,
                              explain_xreg_lags = explain_y_lags,
                              horizon,
                              approach,
-                             prediction_zero,
+                             phi0,
                              max_n_coalitions = NULL,
                              iterative = NULL,
                              iterative_args = list(),
@@ -125,7 +125,7 @@ explain_forecast <- function(model,
   # Checks data/model compatability
   internal <- setup(
     approach = approach,
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     output_size = horizon,
     max_n_coalitions = max_n_coalitions,
     n_MC_samples = n_MC_samples,

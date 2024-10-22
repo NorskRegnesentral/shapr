@@ -21,7 +21,7 @@
 #' `"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, or `"regression_surrogate"`.
 #' The two regression approaches can not be combined with any other approach. See details for more information.
 #'
-#' @param prediction_zero Numeric.
+#' @param phi0 Numeric.
 #' The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
 #' features.
 #' Typically we set this value equal to the mean of the response variable in our training data, but other choices
@@ -211,7 +211,7 @@
 #' \describe{
 #'   \item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
 #'   features along the columns.
-#'   The column `none` is the prediction not devoted to any of the features (given by the argument `prediction_zero`)}
+#'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`)}
 #'   \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 #'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 #'   definition 0 when all coalitions is used.
@@ -269,7 +269,7 @@
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "empirical",
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -279,7 +279,7 @@
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "gaussian",
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -289,7 +289,7 @@
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "copula",
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -299,7 +299,7 @@
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "ctree",
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -310,7 +310,7 @@
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = approach,
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   n_MC_samples = 1e2
 #' )
 #'
@@ -332,7 +332,7 @@
 #'   x_train = x_train,
 #'   group = group_list,
 #'   approach = "empirical",
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   n_MC_samples = 1e2
 #' )
 #' print(explain_groups$shapley_values_est)
@@ -347,7 +347,7 @@
 #'   model = model,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   approach = "regression_separate",
 #'   regression.model = parsnip::linear_reg()
 #' )
@@ -356,7 +356,7 @@
 #'   model = model,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   approach = "regression_surrogate",
 #'   regression.model = parsnip::linear_reg()
 #' )
@@ -370,7 +370,7 @@
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "gaussian",
-#'   prediction_zero = p,
+#'   phi0 = p,
 #'   n_MC_samples = 1e2,
 #'   iterative = TRUE,
 #'   iterative_args = list(initial_n_coalitions = 10)
@@ -395,7 +395,7 @@ explain <- function(model,
                     x_explain,
                     x_train,
                     approach,
-                    prediction_zero,
+                    phi0,
                     iterative = NULL,
                     max_n_coalitions = NULL,
                     group = NULL,
@@ -433,7 +433,7 @@ explain <- function(model,
     x_explain = x_explain,
     approach = approach,
     paired_shap_sampling = paired_shap_sampling,
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     max_n_coalitions = max_n_coalitions,
     group = group,
     n_MC_samples = n_MC_samples,

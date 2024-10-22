@@ -81,7 +81,7 @@ expl <- explain(
   x_explain= x_explain[inds,],
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   n_coalitions = 100,
   Sigma=Sigma,
   mu=mu,

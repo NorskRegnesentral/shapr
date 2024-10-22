@@ -78,7 +78,7 @@ expl <- shapr::explain(model = model,
                        x_train = x_train,
                        approach = "gaussian",
                        n_batches=100,n_samples = 10000,
-                       prediction_zero = p0,Sigma=Sigma,mu=mu)
+                       phi0 = p0,Sigma=Sigma,mu=mu)
 
 dt_vS_map <- merge(expl$internal$iter_list[[1]]$coalition_map,expl$internal$output$dt_vS,by="id_coalition")[,-"id_coalition"]
 
@@ -109,7 +109,7 @@ for(ii in seq_along(n_coalitions_vec)){
                              approach = "gaussian",
                              n_samples = 10, # Never used
                              n_batches=10,
-                             prediction_zero = p0,
+                             phi0 = p0,
                              Sigma=Sigma,
                              mu=mu,
                              seed = this_seed,

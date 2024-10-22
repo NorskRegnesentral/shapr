@@ -41,7 +41,7 @@ explanation_exact <- explain(
   n_samples = 2, # Low value for fast computations
   n_batches = 1, # Not related to the bug
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   n_coalitions = NULL
 )
 
@@ -53,7 +53,7 @@ explanation_should_also_be_exact <- explain(
   n_samples = 2, # Low value for fast computations
   n_batches = 1, # Not related to the bug
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   n_coalitions = 2^ncol(x_explain)
 )
 

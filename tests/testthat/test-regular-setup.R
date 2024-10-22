@@ -15,7 +15,7 @@ test_that("error with custom model without providing predict_model", {
         x_train = x_train_mixed,
         x_explain = x_explain_mixed,
         approach = "independence",
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -42,7 +42,7 @@ test_that("messages with missing detail in get_model_specs", {
       x_train = x_train_mixed,
       x_explain = x_explain_mixed,
       approach = "independence",
-      prediction_zero = p0,
+      phi0 = p0,
       predict_model = custom_predict_model,
       get_model_specs = NA
     )
@@ -61,7 +61,7 @@ test_that("messages with missing detail in get_model_specs", {
       x_train = x_train_mixed,
       x_explain = x_explain_mixed,
       approach = "independence",
-      prediction_zero = p0,
+      phi0 = p0,
       predict_model = custom_predict_model,
       get_model_specs = custom_get_model_specs_no_lab
     )
@@ -80,7 +80,7 @@ test_that("messages with missing detail in get_model_specs", {
       x_train = x_train_mixed,
       x_explain = x_explain_mixed,
       approach = "independence",
-      prediction_zero = p0,
+      phi0 = p0,
       predict_model = custom_predict_model,
       get_model_specs = custom_gms_no_classes
     )
@@ -103,7 +103,7 @@ test_that("messages with missing detail in get_model_specs", {
       x_train = x_train_mixed,
       x_explain = x_explain_mixed,
       approach = "independence",
-      prediction_zero = p0,
+      phi0 = p0,
       predict_model = custom_predict_model,
       get_model_specs = custom_gms_no_factor_levels
     )
@@ -124,7 +124,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_explain = x_explain_numeric,
         x_train = x_train_wrong_format,
         approach = "independence",
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -141,7 +141,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_explain = x_explain_wrong_format,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -159,7 +159,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_explain = x_explain_wrong_format,
         x_train = x_train_wrong_format,
         approach = "independence",
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -178,7 +178,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_explain = x_explain_numeric,
         x_train = x_train_no_column_names,
         approach = "independence",
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -196,7 +196,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_explain = x_explain_no_column_names,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -215,7 +215,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         x_explain = x_explain_no_column_names,
         x_train = x_train_no_column_names,
         approach = "independence",
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -233,7 +233,7 @@ test_that("erroneous input: `model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -254,7 +254,7 @@ test_that("erroneous input: `approach`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = approach_non_character,
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -271,7 +271,7 @@ test_that("erroneous input: `approach`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = approach_incorrect_length,
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -288,14 +288,14 @@ test_that("erroneous input: `approach`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = approach_incorrect_character,
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
   )
 })
 
-test_that("erroneous input: `prediction_zero`", {
+test_that("erroneous input: `phi0`", {
   set.seed(123)
 
   expect_snapshot(
@@ -309,7 +309,7 @@ test_that("erroneous input: `prediction_zero`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0_non_numeric_1
+        phi0 = p0_non_numeric_1
       )
     },
     error = TRUE
@@ -326,7 +326,7 @@ test_that("erroneous input: `prediction_zero`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0_non_numeric_2
+        phi0 = p0_non_numeric_2
       )
     },
     error = TRUE
@@ -344,7 +344,7 @@ test_that("erroneous input: `prediction_zero`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0_too_long
+        phi0 = p0_too_long
       )
     },
     error = TRUE
@@ -361,7 +361,7 @@ test_that("erroneous input: `prediction_zero`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0_is_NA
+        phi0 = p0_is_NA
       )
     },
     error = TRUE
@@ -382,7 +382,7 @@ test_that("erroneous input: `max_n_coalitions`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         max_n_coalitions = max_n_comb_non_numeric_1
       )
     },
@@ -400,7 +400,7 @@ test_that("erroneous input: `max_n_coalitions`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         max_n_coalitions = max_n_comb_non_numeric_2
       )
     },
@@ -419,7 +419,7 @@ test_that("erroneous input: `max_n_coalitions`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         max_n_coalitions = max_n_coalitions_non_integer
       )
     },
@@ -439,7 +439,7 @@ test_that("erroneous input: `max_n_coalitions`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         max_n_coalitions = max_n_coalitions_too_long
       )
     },
@@ -457,7 +457,7 @@ test_that("erroneous input: `max_n_coalitions`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         max_n_coalitions = max_n_coalitions_is_NA
       )
     },
@@ -475,7 +475,7 @@ test_that("erroneous input: `max_n_coalitions`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         max_n_coalitions = max_n_comb_non_positive
       )
     },
@@ -491,7 +491,7 @@ test_that("erroneous input: `max_n_coalitions`", {
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
-      prediction_zero = p0,
+      phi0 = p0,
       approach = "gaussian",
       max_n_coalitions = max_n_coalitions
     )
@@ -513,7 +513,7 @@ test_that("erroneous input: `max_n_coalitions`", {
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
-      prediction_zero = p0,
+      phi0 = p0,
       approach = "gaussian",
       group = groups,
       max_n_coalitions = max_n_coalitions
@@ -535,7 +535,7 @@ test_that("erroneous input: `group`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         group = group_non_list
       )
     },
@@ -553,7 +553,7 @@ test_that("erroneous input: `group`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         group = group_with_non_characters
       )
     },
@@ -573,7 +573,7 @@ test_that("erroneous input: `group`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         group = group_with_non_data_features
       )
     },
@@ -593,7 +593,7 @@ test_that("erroneous input: `group`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         group = group_missing_data_features
       )
     },
@@ -613,7 +613,7 @@ test_that("erroneous input: `group`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         group = group_dup_data_features
       )
     },
@@ -630,7 +630,7 @@ test_that("erroneous input: `group`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         group = single_group
       )
     },
@@ -652,7 +652,7 @@ test_that("erroneous input: `n_MC_samples`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         n_MC_samples = n_samples_non_numeric_1
       )
     },
@@ -670,7 +670,7 @@ test_that("erroneous input: `n_MC_samples`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         n_MC_samples = n_samples_non_numeric_2
       )
     },
@@ -687,7 +687,7 @@ test_that("erroneous input: `n_MC_samples`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         n_MC_samples = n_samples_non_integer
       )
     },
@@ -704,7 +704,7 @@ test_that("erroneous input: `n_MC_samples`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         n_MC_samples = n_samples_too_long
       )
     },
@@ -721,7 +721,7 @@ test_that("erroneous input: `n_MC_samples`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         n_MC_samples = n_samples_is_NA
       )
     },
@@ -738,7 +738,7 @@ test_that("erroneous input: `n_MC_samples`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         n_MC_samples = n_samples_non_positive
       )
     },
@@ -760,7 +760,7 @@ test_that("erroneous input: `seed`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         seed = seed_not_integer_interpretable
       )
     },
@@ -781,7 +781,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_1)
       )
     },
@@ -798,7 +798,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_2)
       )
     },
@@ -815,7 +815,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         output_args = list(keep_samp_for_vS = keep_samp_for_vS_too_long)
       )
     },
@@ -836,7 +836,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1)
       )
     },
@@ -853,7 +853,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2)
       )
     },
@@ -870,7 +870,7 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long)
       )
     },
@@ -892,7 +892,7 @@ test_that("erroneous input: `predict_model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         predict_model = predict_model_nonfunction
       )
     },
@@ -912,7 +912,7 @@ test_that("erroneous input: `predict_model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         predict_model = predict_model_non_num_output
       )
     },
@@ -932,7 +932,7 @@ test_that("erroneous input: `predict_model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         predict_model = predict_model_wrong_output_len
       )
     },
@@ -952,7 +952,7 @@ test_that("erroneous input: `predict_model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         predict_model = predict_model_invalid_argument
       )
     },
@@ -972,7 +972,7 @@ test_that("erroneous input: `predict_model`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         predict_model = predict_model_error
       )
     },
@@ -994,7 +994,7 @@ test_that("erroneous input: `get_model_specs`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         get_model_specs = get_model_specs_nonfunction
       )
     },
@@ -1015,7 +1015,7 @@ test_that("erroneous input: `get_model_specs`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         get_model_specs = get_ms_output_not_list
       )
     },
@@ -1035,7 +1035,7 @@ test_that("erroneous input: `get_model_specs`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         get_model_specs = get_ms_output_too_long
       )
     },
@@ -1059,7 +1059,7 @@ test_that("erroneous input: `get_model_specs`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         get_model_specs = get_ms_output_wrong_names
       )
     },
@@ -1079,7 +1079,7 @@ test_that("erroneous input: `get_model_specs`", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
-        prediction_zero = p0,
+        phi0 = p0,
         get_model_specs = get_model_specs_error
       )
     },
@@ -1100,7 +1100,7 @@ test_that("incompatible input: `data/approach`", {
         x_explain = x_explain_mixed,
         x_train = x_explain_mixed,
         approach = non_factor_approach_1,
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -1116,7 +1116,7 @@ test_that("incompatible input: `data/approach`", {
         x_explain = x_explain_mixed,
         x_train = x_explain_mixed,
         approach = non_factor_approach_2,
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -1132,7 +1132,7 @@ test_that("incompatible input: `data/approach`", {
         x_explain = x_explain_mixed,
         x_train = x_explain_mixed,
         approach = non_factor_approach_3,
-        prediction_zero = p0
+        phi0 = p0
       )
     },
     error = TRUE
@@ -1147,7 +1147,7 @@ test_that("Correct dimension of S when sampling combinations", {
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_explain_mixed,
-    prediction_zero = p0,
+    phi0 = p0,
     approach = "ctree",
     max_n_coalitions = max_n_coalitions
   )
@@ -1164,7 +1164,7 @@ test_that("Message with too low `max_n_coalitions`", {
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_explain_numeric,
-      prediction_zero = p0,
+      phi0 = p0,
       approach = "gaussian",
       max_n_coalitions = max_n_coalitions
     )
@@ -1185,7 +1185,7 @@ test_that("Message with too low `max_n_coalitions`", {
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_explain_numeric,
-      prediction_zero = p0,
+      phi0 = p0,
       approach = "gaussian",
       group = groups,
       max_n_coalitions = max_n_coalitions
@@ -1207,7 +1207,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
       approach = "gaussian",
-      prediction_zero = p0,
+      phi0 = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
       max_n_coalitions = NULL,
@@ -1222,7 +1222,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
       approach = "gaussian",
-      prediction_zero = p0,
+      phi0 = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
       extra_computation_args = list(compute_sd = FALSE),
@@ -1240,7 +1240,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
       approach = "gaussian",
-      prediction_zero = p0,
+      phi0 = p0,
       n_MC_samples = 2, # Low value for fast computations
       seed = 123,
       extra_computation_args = list(compute_sd = FALSE),
@@ -1284,7 +1284,7 @@ test_that("Correct dimension of S when sampling combinations with groups", {
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_explain_mixed,
-    prediction_zero = p0,
+    phi0 = p0,
     approach = "ctree",
     group = groups,
     max_n_coalitions = max_n_coalitions
@@ -1300,7 +1300,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "empirical",
-    prediction_zero = p0
+    phi0 = p0
   )
 
   ex.new_data_feature_order <- explain(
@@ -1309,7 +1309,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
     x_explain = rev(x_explain_numeric),
     x_train = rev(x_train_numeric),
     approach = "empirical",
-    prediction_zero = p0
+    phi0 = p0
   )
 
   explain.new_model_feat_order <- explain(
@@ -1318,7 +1318,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "empirical",
-    prediction_zero = p0
+    phi0 = p0
   )
 
   # Same Shapley values, but different order
@@ -1343,7 +1343,7 @@ test_that("parallelization gives same output for any approach", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "empirical",
-    prediction_zero = p0
+    phi0 = p0
   )
 
   future::plan("multisession", workers = 2) # Parallelized with 2 cores
@@ -1353,7 +1353,7 @@ test_that("parallelization gives same output for any approach", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "empirical",
-    prediction_zero = p0
+    phi0 = p0
   )
 
   future::plan("sequential") # Resetting to sequential computation
@@ -1372,7 +1372,7 @@ test_that("parallelization gives same output for any approach", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "ctree",
-    prediction_zero = p0
+    phi0 = p0
   )
 
   future::plan("multisession", workers = 2) # Parallelized with 2 cores
@@ -1382,7 +1382,7 @@ test_that("parallelization gives same output for any approach", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "ctree",
-    prediction_zero = p0
+    phi0 = p0
   )
 
   future::plan("sequential") # Resetting to sequential computation
@@ -1403,7 +1403,7 @@ test_that("gaussian approach use the user provided parameters", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "gaussian",
-    prediction_zero = p0,
+    phi0 = p0,
   )
 
   # Expect that gaussian.mu is the sample mean when no values are provided
@@ -1428,7 +1428,7 @@ test_that("gaussian approach use the user provided parameters", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "gaussian",
-    prediction_zero = p0,
+    phi0 = p0,
     gaussian.mu = gaussian.provided_mu,
     gaussian.cov_mat = gaussian.provided_cov_mat
   )
@@ -1455,7 +1455,7 @@ test_that("setting the seed for combined approaches works", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
-    prediction_zero = p0,
+    phi0 = p0,
     seed = 1
   )
 
@@ -1465,7 +1465,7 @@ test_that("setting the seed for combined approaches works", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
-    prediction_zero = p0,
+    phi0 = p0,
     seed = 1
   )
 
@@ -1484,7 +1484,7 @@ test_that("counting the number of unique approaches", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "gaussian", "copula"),
-    prediction_zero = p0,
+    phi0 = p0,
     seed = 1
   )
   expect_equal(explanation_combined_1$internal$parameters$n_approaches, 4)
@@ -1496,7 +1496,7 @@ test_that("counting the number of unique approaches", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = c("empirical"),
-    prediction_zero = p0,
+    phi0 = p0,
     seed = 1
   )
   expect_equal(explanation_combined_2$internal$parameters$n_approaches, 1)
@@ -1508,7 +1508,7 @@ test_that("counting the number of unique approaches", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = c("gaussian", "gaussian", "gaussian", "gaussian"),
-    prediction_zero = p0,
+    phi0 = p0,
     seed = 1
   )
   expect_equal(explanation_combined_3$internal$parameters$n_approaches, 4)
@@ -1520,7 +1520,7 @@ test_that("counting the number of unique approaches", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "independence", "empirical"),
-    prediction_zero = p0,
+    phi0 = p0,
     seed = 1
   )
   expect_equal(explanation_combined_4$internal$parameters$n_approaches, 4)
@@ -1533,7 +1533,7 @@ test_that("counting the number of unique approaches", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = c("independence", "empirical", "independence", "empirical"),
-    prediction_zero = p0,
+    phi0 = p0,
     seed = 1
   )
   expect_equal(explanation_combined_5$internal$parameters$n_approaches, 4)
@@ -1550,7 +1550,7 @@ test_that("vaeac_set_seed_works", {
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
     approach = "vaeac",
-    prediction_zero = p0,
+    phi0 = p0,
     n_MC_samples = 10,
     seed = 1,
     vaeac.epochs = 4,
@@ -1567,7 +1567,7 @@ test_that("vaeac_set_seed_works", {
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
     approach = "vaeac",
-    prediction_zero = p0,
+    phi0 = p0,
     n_MC_samples = 10,
     seed = 1,
     vaeac.epochs = 4,
@@ -1592,7 +1592,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
     approach = "vaeac",
-    prediction_zero = p0,
+    phi0 = p0,
     n_MC_samples = 10,
     seed = 1,
     vaeac.epochs = 4,
@@ -1614,7 +1614,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
     approach = "vaeac",
-    prediction_zero = p0,
+    phi0 = p0,
     n_MC_samples = 10,
     seed = 1,
     vaeac.extra_parameters = list(
@@ -1637,7 +1637,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
     approach = "vaeac",
-    prediction_zero = p0,
+    phi0 = p0,
     n_MC_samples = 10,
     seed = 1,
     vaeac.extra_parameters = list(
@@ -1666,7 +1666,7 @@ test_that("feature wise and groupwise computations are identical", {
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
     approach = "gaussian",
-    prediction_zero = p0
+    phi0 = p0
   )
 
 
@@ -1677,7 +1677,7 @@ test_that("feature wise and groupwise computations are identical", {
     x_train = x_train_numeric,
     approach = "gaussian",
     group = groups,
-    prediction_zero = p0
+    phi0 = p0
   )
 
 

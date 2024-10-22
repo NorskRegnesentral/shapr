@@ -49,6 +49,6 @@ explanation <- explain(
   x_train = x_train,
   n_samples = 2, # Low value for fast computations
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   n_coalitions = any_number_equal_or_below_10
 )

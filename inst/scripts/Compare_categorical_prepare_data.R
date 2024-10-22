@@ -452,7 +452,7 @@ explanation = explain(
   x_explain = x_explain_categorical,
   x_train = x_train_categorical,
   approach = "categorical",
-  prediction_zero = p0,
+  phi0 = p0,
   n_batches = 1,
   timing = FALSE
 )

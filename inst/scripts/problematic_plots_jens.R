@@ -41,7 +41,7 @@ explanation_cat <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  prediction_zero = p0
+  phi0 = p0
 )
 
 
@@ -62,7 +62,7 @@ explanation_cat <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  prediction_zero = p0
+  phi0 = p0
 )
 
 # Works fine
@@ -85,7 +85,7 @@ explanation_cat <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  prediction_zero = p0
+  phi0 = p0
 )
 
 # Only 4 ticks in the x-axis for the factor
@@ -107,7 +107,7 @@ explanation_cat <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  prediction_zero = p0
+  phi0 = p0
 )
 
 # Duplicated labels on the x-axis

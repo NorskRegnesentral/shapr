@@ -46,7 +46,7 @@ temp = explain(
   x_explain = x_test,
   model = model,
   approach = "categorical",
-  prediction_zero = p,
+  phi0 = p,
   joint_probability_dt = joint_prob_dt
 )
 print(temp)

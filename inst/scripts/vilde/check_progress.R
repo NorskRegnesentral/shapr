@@ -25,34 +25,34 @@ p <- mean(y_train)
 plan(multisession, workers=3)
 
 # when we simply call explain(), no progress bar is shown
-x <- explain(x_train, x_test, model, approach="gaussian", prediction_zero=p, n_batches = 4)
+x <- explain(x_train, x_test, model, approach="gaussian", phi0=p, n_batches = 4)
 
 # the handler specifies what kind of progress bar is shown
 # Wrapping explain() in with_progress() gives a progress bar when calling explain()
 handlers("txtprogressbar")
 x <- with_progress(
-  explain(x_train, x_test, model, approach="empirical", prediction_zero=p, n_batches = 5)
+  explain(x_train, x_test, model, approach="empirical", phi0=p, n_batches = 5)
   )
 
 # with global=TRUE the progress bar is displayed whenever the explain-function is called, and there is no need to use with_progress()
 handlers(global = TRUE)
-x <- explain(x_train, x_test, model, approach="gaussian", prediction_zero=p, n_batches = 4)
+x <- explain(x_train, x_test, model, approach="gaussian", phi0=p, n_batches = 4)
 
 # there are different options for what kind of progress bar should be displayed
 handlers("txtprogressbar") #this is the default
-x <- explain(x_train, x_test, model, approach="independence", prediction_zero=p, n_batches = 4)
+x <- explain(x_train, x_test, model, approach="independence", phi0=p, n_batches = 4)
 
 handlers("progress")
-x <- explain(x_train, x_test, model, approach="independence", prediction_zero=p, n_batches = 4)
+x <- explain(x_train, x_test, model, approach="independence", phi0=p, n_batches = 4)
 
 # you can edit the symbol used to draw completed progress in the progress bar (as well as other features) with handler_progress()
 handlers(handler_progress(complete = "#"))
-x <- explain(x_train, x_test, model, approach="copula", prediction_zero=p, n_batches = 4)
+x <- explain(x_train, x_test, model, approach="copula", phi0=p, n_batches = 4)
 
 plan("sequential")
 
 handlers("progress")
-x <- explain(x_train, x_test, model, approach=c(rep("ctree",4),"independence","independence"), prediction_zero=p, n_batches = 4)
+x <- explain(x_train, x_test, model, approach=c(rep("ctree",4),"independence","independence"), phi0=p, n_batches = 4)
 
 
 

@@ -62,7 +62,7 @@ sys_time_start_shapr <- Sys.time()
 explainer <- shapr(x_train, model)
 sys_time_end_shapr <- Sys.time()
 
-prediction_zero <- mean(y_train)
+phi0 <- mean(y_train)
 
 n_batches_use <- min(nrow(explainer$S),n_batches)
 
@@ -73,7 +73,7 @@ explanation <- explain(
   x_test,
   approach = approach,
   explainer = explainer,
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_batches = n_batches_use
 )
 sys_time_end_explain <- Sys.time()

@@ -76,11 +76,11 @@ compute_estimates <- function(internal, vS_list) {
 #' @keywords internal
 postprocess_vS_list <- function(vS_list, internal) {
   keep_samp_for_vS <- internal$parameters$output_args$keep_samp_for_vS
-  prediction_zero <- internal$parameters$prediction_zero
+  phi0 <- internal$parameters$phi0
   n_explain <- internal$parameters$n_explain
 
   # Appending the zero-prediction to the list
-  dt_vS0 <- as.data.table(rbind(c(1, rep(prediction_zero, n_explain))))
+  dt_vS0 <- as.data.table(rbind(c(1, rep(phi0, n_explain))))
 
   # Extracting/merging the data tables from the batch running
   # TODO: Need a memory and speed optimized way to transform the output form dt_vS_list to two different lists,

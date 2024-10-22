@@ -28,7 +28,7 @@ output = explain(
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'gaussian',
-    prediction_zero = dfy_train.mean().item(),
+    phi0 = dfy_train.mean().item(),
     max_n_coalitions=30
 )
 
@@ -55,7 +55,7 @@ shapley_values, shapley_values_sd, pred_explain, MSEv, iterative_results, saving
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'gaussian',
-    prediction_zero = dfy_train.mean().item(),
+    phi0 = dfy_train.mean().item(),
     max_n_coalitions=100,
     iterative = False
 )
@@ -65,7 +65,7 @@ shapley_values, shapley_values_sd, pred_explain, MSEv, iterative_results, saving
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = ['gaussian', 'empirical',"gaussian","empirical","gaussian","gaussian","empirical"],
-    prediction_zero = dfy_train.mean().item(),
+    phi0 = dfy_train.mean().item(),
     max_n_coalitions=100,
     iterative = True,
     verbose = ["basic", "progress"]
@@ -76,7 +76,7 @@ shapley_values, shapley_values_sd, pred_explain, MSEv, iterative_results, saving
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'vaeac',
-    prediction_zero = dfy_train.mean().item(),
+    phi0 = dfy_train.mean().item(),
     max_n_coalitions=100,
     iterative = False,
     verbose = ["basic", "progress","vS_details","shapley"]
@@ -88,7 +88,7 @@ regtest = explain(
     x_train=dfx_train,
     x_explain=dfx_test,
     approach='regression_separate',
-    prediction_zero=dfy_train.mean().item(),
+    phi0=dfy_train.mean().item(),
     regression_model='parsnip::linear_reg()'
 )
 

@@ -4,7 +4,7 @@ ex <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "independence",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 30,
   iterative_args = list(
     initial_n_coalitions = 6,
@@ -21,7 +21,7 @@ ex <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "regression_separate",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 30,
   iterative = TRUE,verbose=c("vS_details")
 )
@@ -30,7 +30,7 @@ ex <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "regression_separate",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 30,
   iterative = TRUE,verbose=c("basic","progress","vS_details"),
   regression.model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
@@ -43,7 +43,7 @@ ex <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "regression_surrogate",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 30,
   iterative = FALSE,verbose=c("basic","vS_details"),
   regression.model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
@@ -62,7 +62,7 @@ ex <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "vaeac",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 30,
   iterative = FALSE,verbose=c("basic","progress","vS_details"),
   n_MC_samples = 100,
@@ -75,7 +75,7 @@ ex2 <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "vaeac",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 30,
   iterative = FALSE,verbose=c("basic","progress","vS_details"),
   n_MC_samples = 100,
@@ -97,7 +97,7 @@ ex <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "regression_separate",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 30,
   iterative = FALSE,verbose=c("basic")
 )
@@ -109,7 +109,7 @@ ex <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   max_n_coalitions = 30,
   iterative_args = list(
     initial_n_coalitions = 6,
@@ -127,7 +127,7 @@ explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "independence",
-  prediction_zero = p0,
+  phi0 = p0,
   iterative = TRUE,
   iterative_args <- list(n_initial_)
   verbose = c("basic"),

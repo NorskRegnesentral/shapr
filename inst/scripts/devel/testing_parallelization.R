@@ -78,7 +78,7 @@ for(i in seq_len(nrow(res_dt))){
       x_test,
       approach = approach_use,
       explainer = explainer,
-      prediction_zero = p,n_batches = n_batches_use
+      phi0 = p,n_batches = n_batches_use
     )},iterations = reps,time_unit ='s',memory = F,
     min_time = Inf
   )

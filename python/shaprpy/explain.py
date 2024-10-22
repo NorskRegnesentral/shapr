@@ -24,7 +24,7 @@ def explain(
     x_explain: pd.DataFrame,
     x_train: pd.DataFrame,
     approach: str,
-    prediction_zero: float,
+    phi0: float,
     iterative: bool | None = None,
     max_n_coalitions: int | None = None,
     group: dict | None = None,
@@ -64,7 +64,7 @@ def explain(
       The method(s) to estimate the conditional expectation. All elements should,
       either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"`, `"timeseries"`, `"independence"`, 
       `"regression_separate"`, or `"regression_surrogate"`.
-    prediction_zero: float
+    phi0: float
       The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
       features. Typically we set this value equal to the mean of the response variable in our training data, but other
       choices such as the mean of the predictions in the training data are also reasonable.
@@ -181,7 +181,7 @@ def explain(
       x_explain = py2r(x_explain),
       approach = StrVector(approach),
       paired_shap_sampling = paired_shap_sampling,
-      prediction_zero = prediction_zero,
+      phi0 = phi0,
       max_n_coalitions = maybe_null(max_n_coalitions),
       group = r_group,
       n_MC_samples = n_MC_samples,

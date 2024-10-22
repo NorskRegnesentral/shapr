@@ -61,7 +61,7 @@ expl <- shapr::explain(model = model,
                        x_train = x_train,
                        approach = "gaussian",
                        n_batches=100,n_samples = 10000,
-                       prediction_zero = p0,Sigma=Sigma,mu=mu)
+                       phi0 = p0,Sigma=Sigma,mu=mu)
 
 dt_vS_map <- merge(expl$internal$iter_list[[1]]$coalition_map,expl$internal$output$dt_vS,by="id_coalition")[,-"id_coalition"]
 
@@ -92,7 +92,7 @@ for(i0 in seq_along(paired_shap_sampling_vec)){
                              approach = "gaussian",
                              n_samples = 10, # Never used
                              n_batches=10,
-                             prediction_zero = p0,
+                             phi0 = p0,
                              Sigma=Sigma,
                              mu=mu,
                              seed = this_seed,
@@ -226,7 +226,7 @@ for (i in testObs_computed_vec){
                                     x_explain= x_explain[inds[i],],
                                     x_train = x_train,
                                     approach = "gaussian",
-                                    prediction_zero = p0,
+                                    phi0 = p0,
                                     n_combinations = runcomps_list[[i]],
                                     Sigma=Sigma,mu=mu)
   expl_approx[i,] = unlist(expl_approx_obj$shapley_values_est)
