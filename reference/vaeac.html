@@ -5,7 +5,7 @@ For more details, see Olsen et al. (2022)."><!-- mathjax --><script src="https:/
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -19,7 +19,7 @@ For more details, see Olsen et al. (2022)."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -27,7 +27,7 @@ For more details, see Olsen et al. (2022)."><!-- mathjax --><script src="https:/
       <ul class="nav navbar-nav"><li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -49,20 +49,20 @@ For more details, see Olsen et al. (2022)."><!-- mathjax --><script src="https:/
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/NorskRegnesentral/shapr/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Initializing a vaeac model</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_vaeac_torch_modules.R" class="external-link"><code>R/approach_vaeac_torch_modules.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_vaeac_torch_modules.R" class="external-link"><code>R/approach_vaeac_torch_modules.R</code></a></small>
     <div class="hidden name"><code>vaeac.Rd</code></div>
     </div>
 
@@ -95,92 +95,92 @@ For more details, see <a href="https://www.jmlr.org/papers/volume23/21-1413/21-1
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>one_hot_max_sizes</dt>
+
+
+<dl><dt id="arg-one-hot-max-sizes">one_hot_max_sizes<a class="anchor" aria-label="anchor" href="#arg-one-hot-max-sizes"></a></dt>
 <dd><p>A torch tensor of dimension <code>n_features</code> containing the one hot sizes of the <code>n_features</code>
 features. That is, if the <code>i</code>th feature is a categorical feature with 5 levels, then <code>one_hot_max_sizes[i] = 5</code>.
 While the size for continuous features can either be <code>0</code> or <code>1</code>.</p></dd>
 
 
-<dt>width</dt>
+<dt id="arg-width">width<a class="anchor" aria-label="anchor" href="#arg-width"></a></dt>
 <dd><p>Integer. The number of neurons in each hidden layer in the neural networks
 of the masked encoder, full encoder, and decoder.</p></dd>
 
 
-<dt>depth</dt>
+<dt id="arg-depth">depth<a class="anchor" aria-label="anchor" href="#arg-depth"></a></dt>
 <dd><p>Integer. The number of hidden layers in the neural networks of the
 masked encoder, full encoder, and decoder.</p></dd>
 
 
-<dt>latent_dim</dt>
+<dt id="arg-latent-dim">latent_dim<a class="anchor" aria-label="anchor" href="#arg-latent-dim"></a></dt>
 <dd><p>Integer. The number of dimensions in the latent space.</p></dd>
 
 
-<dt>activation_function</dt>
+<dt id="arg-activation-function">activation_function<a class="anchor" aria-label="anchor" href="#arg-activation-function"></a></dt>
 <dd><p>A <code><a href="https://rdrr.io/pkg/torch/man/nn_module.html" class="external-link">torch::nn_module()</a></code> representing an activation function such as, e.g.,
 <code><a href="https://rdrr.io/pkg/torch/man/nn_relu.html" class="external-link">torch::nn_relu()</a></code>, <code><a href="https://rdrr.io/pkg/torch/man/nn_leaky_relu.html" class="external-link">torch::nn_leaky_relu()</a></code>, <code><a href="https://rdrr.io/pkg/torch/man/nn_selu.html" class="external-link">torch::nn_selu()</a></code>,
 <code><a href="https://rdrr.io/pkg/torch/man/nn_sigmoid.html" class="external-link">torch::nn_sigmoid()</a></code>.</p></dd>
 
 
-<dt>skip_conn_layer</dt>
+<dt id="arg-skip-conn-layer">skip_conn_layer<a class="anchor" aria-label="anchor" href="#arg-skip-conn-layer"></a></dt>
 <dd><p>Boolean. If we are to use skip connections in each layer, see <code><a href="skip_connection.html">skip_connection()</a></code>.
 If <code>TRUE</code>, then we add the input to the outcome of each hidden layer, so the output becomes
 \(X + \operatorname{activation}(WX + b)\). I.e., the identity skip connection.</p></dd>
 
 
-<dt>skip_conn_masked_enc_dec</dt>
+<dt id="arg-skip-conn-masked-enc-dec">skip_conn_masked_enc_dec<a class="anchor" aria-label="anchor" href="#arg-skip-conn-masked-enc-dec"></a></dt>
 <dd><p>Boolean. If we are to apply concatenating skip
 connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
 linked to the last layer of the decoder. The second layer of the masked encoder will be
 linked to the second to last layer of the decoder, and so on.</p></dd>
 
 
-<dt>batch_normalization</dt>
+<dt id="arg-batch-normalization">batch_normalization<a class="anchor" aria-label="anchor" href="#arg-batch-normalization"></a></dt>
 <dd><p>Boolean. If we are to use batch normalization after the activation function.
 Note that if <code>skip_conn_layer</code> is TRUE, then the normalization is
 done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).</p></dd>
 
 
-<dt>paired_sampling</dt>
+<dt id="arg-paired-sampling">paired_sampling<a class="anchor" aria-label="anchor" href="#arg-paired-sampling"></a></dt>
 <dd><p>Boolean. If we are doing paired sampling. I.e., if we are to include both coalition S
 and \(\bar{S}\) when we sample coalitions during training for each batch.</p></dd>
 
 
-<dt>mask_generator_name</dt>
+<dt id="arg-mask-generator-name">mask_generator_name<a class="anchor" aria-label="anchor" href="#arg-mask-generator-name"></a></dt>
 <dd><p>String specifying the type of mask generator to use. Need to be one of
 'mcar_mask_generator', 'specified_prob_mask_generator', and 'specified_masks_mask_generator'.</p></dd>
 
 
-<dt>masking_ratio</dt>
+<dt id="arg-masking-ratio">masking_ratio<a class="anchor" aria-label="anchor" href="#arg-masking-ratio"></a></dt>
 <dd><p>Scalar. The probability for an entry in the generated mask to be 1 (masked).
 Not used if <code>mask_gen_coalitions</code> is given.</p></dd>
 
 
-<dt>mask_gen_coalitions</dt>
+<dt id="arg-mask-gen-coalitions">mask_gen_coalitions<a class="anchor" aria-label="anchor" href="#arg-mask-gen-coalitions"></a></dt>
 <dd><p>Matrix containing the different coalitions to learn.
 Must be given if <code>mask_generator_name = 'specified_masks_mask_generator'</code>.</p></dd>
 
 
-<dt>mask_gen_coalitions_prob</dt>
+<dt id="arg-mask-gen-coalitions-prob">mask_gen_coalitions_prob<a class="anchor" aria-label="anchor" href="#arg-mask-gen-coalitions-prob"></a></dt>
 <dd><p>Numerics containing the probabilities
 for sampling each mask in <code>mask_gen_coalitions</code>.
 Array containing the probabilities for sampling the coalitions in <code>mask_gen_coalitions</code>.</p></dd>
 
 
-<dt>sigma_mu</dt>
+<dt id="arg-sigma-mu">sigma_mu<a class="anchor" aria-label="anchor" href="#arg-sigma-mu"></a></dt>
 <dd><p>Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
 see Section 3.3.1 in <a href="https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf" class="external-link">Olsen et al. (2022)</a>.</p></dd>
 
 
-<dt>sigma_sigma</dt>
+<dt id="arg-sigma-sigma">sigma_sigma<a class="anchor" aria-label="anchor" href="#arg-sigma-sigma"></a></dt>
 <dd><p>Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
 see Section 3.3.1 in <a href="https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf" class="external-link">Olsen et al. (2022)</a>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>Returns a list with the neural networks of the masked encoder, full encoder, and decoder together
+    <p>Returns a list with the neural networks of the masked encoder, full encoder, and decoder together
 with reconstruction log probability function, optimizer constructor, sampler from the decoder output,
 mask generator, batch size, and scale factor for the stability of the variational lower bound optimization.</p>
     </div>
@@ -193,7 +193,7 @@ methods for sampling from the decoder output, and then use these to create the v
     </div>
     <div id="make-observed">
     <h2>make_observed</h2>
-    
+
 
 <p>Apply Mask to Batch to Create Observed Batch</p>
 <p>Compute the parameters for the latent normal distributions inferred by the encoders.
@@ -202,7 +202,7 @@ masked encoder. This is used in the deployment phase when we do not have access 
     </div>
     <div id="make-latent-distributions">
     <h2>make_latent_distributions</h2>
-    
+
 
 <p>Compute the Latent Distributions Inferred by the Encoders</p>
 <p>Compute the parameters for the latent normal distributions inferred by the encoders.
@@ -211,7 +211,7 @@ masked encoder. This is used in the deployment phase when we do not have access 
     </div>
     <div id="masked-encoder-regularization">
     <h2>masked_encoder_regularization</h2>
-    
+
 
 <p>Compute the Regularizes for the Latent Distribution Inferred by the Masked Encoder.</p>
 <p>The masked encoder (prior) distribution regularization in the latent space.
@@ -223,7 +223,7 @@ learning process near zero with default regularization parameters which are reco
     </div>
     <div id="batch-vlb">
     <h2>batch_vlb</h2>
-    
+
 
 <p>Compute the Variational Lower Bound for the Observations in the Batch</p>
 <p>Compute differentiable lower bound for the given batch of objects and mask.
@@ -231,7 +231,7 @@ Used as the (negative) loss function for training the vaeac model.</p>
     </div>
     <div id="batch-iwae">
     <h2>batch_iwae</h2>
-    
+
 
 <p>Compute IWAE log likelihood estimate with K samples per object.</p>
 <p>Technically, it is differentiable, but it is recommended to use it for
@@ -255,7 +255,7 @@ where \(z_i \sim q_\phi(z|x,y)\).</p>
     </div>
     <div id="generate-samples-params">
     <h2>generate_samples_params</h2>
-    
+
 
 <p>Generate the parameters of the generative distributions for samples from the batch.</p>
 <p>The function makes K latent representation for each object from the batch, send these
@@ -279,19 +279,19 @@ memory. With <code><a href="https://rdrr.io/pkg/torch/man/with_no_grad.html" cla
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Nikolai Sellereite, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

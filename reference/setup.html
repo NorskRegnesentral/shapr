@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -25,7 +25,7 @@
       <ul class="nav navbar-nav"><li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -47,20 +47,20 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/NorskRegnesentral/shapr/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>check_setup</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/setup.R" class="external-link"><code>R/setup.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/setup.R" class="external-link"><code>R/setup.R</code></a></small>
     <div class="hidden name"><code>setup.Rd</code></div>
     </div>
 
@@ -73,16 +73,14 @@
 <span>  <span class="va">x_train</span>,</span>
 <span>  <span class="va">x_explain</span>,</span>
 <span>  <span class="va">approach</span>,</span>
-<span>  <span class="va">prediction_zero</span>,</span>
+<span>  paired_shap_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">phi0</span>,</span>
 <span>  output_size <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  <span class="va">n_combinations</span>,</span>
+<span>  <span class="va">max_n_coalitions</span>,</span>
 <span>  <span class="va">group</span>,</span>
-<span>  <span class="va">n_samples</span>,</span>
-<span>  <span class="va">n_batches</span>,</span>
+<span>  <span class="va">n_MC_samples</span>,</span>
 <span>  <span class="va">seed</span>,</span>
-<span>  <span class="va">keep_samp_for_vS</span>,</span>
 <span>  <span class="va">feature_specs</span>,</span>
-<span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"normal"</span>,</span>
 <span>  horizon <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -92,34 +90,53 @@
 <span>  explain_y_lags <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  explain_xreg_lags <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_lags <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">timing</span>,</span>
 <span>  <span class="va">verbose</span>,</span>
+<span>  iterative <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  iterative_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  kernelSHAP_reweighting <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  is_python <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  testing <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  init_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  prev_shapr_object <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  asymmetric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  causal_ordering <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  confounding <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  extra_computation_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>x_train</dt>
+
+
+<dl><dt id="arg-x-train">x_train<a class="anchor" aria-label="anchor" href="#arg-x-train"></a></dt>
 <dd><p>Matrix or data.frame/data.table.
 Contains the data used to estimate the (conditional) distributions for the features
 needed to properly estimate the conditional expectations in the Shapley formula.</p></dd>
 
 
-<dt>x_explain</dt>
+<dt id="arg-x-explain">x_explain<a class="anchor" aria-label="anchor" href="#arg-x-explain"></a></dt>
 <dd><p>A matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.</p></dd>
 
 
-<dt>approach</dt>
+<dt id="arg-approach">approach<a class="anchor" aria-label="anchor" href="#arg-approach"></a></dt>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
 All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
 <code>"categorical"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or <code>"regression_surrogate"</code>.
 The two regression approaches can not be combined with any other approach. See details for more information.</p></dd>
 
 
-<dt>prediction_zero</dt>
+<dt id="arg-paired-shap-sampling">paired_shap_sampling<a class="anchor" aria-label="anchor" href="#arg-paired-shap-sampling"></a></dt>
+<dd><p>Logical.
+If <code>TRUE</code> (default), paired versions of all sampled coalitions are also included in the computation.
+That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
+computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.</p></dd>
+
+
+<dt id="arg-phi-">phi0<a class="anchor" aria-label="anchor" href="#arg-phi-"></a></dt>
 <dd><p>Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
 features.
@@ -127,19 +144,21 @@ Typically we set this value equal to the mean of the response variable in our tr
 such as the mean of the predictions in the training data are also reasonable.</p></dd>
 
 
-<dt>output_size</dt>
+<dt id="arg-output-size">output_size<a class="anchor" aria-label="anchor" href="#arg-output-size"></a></dt>
 <dd><p>TODO: Document</p></dd>
 
 
-<dt>n_combinations</dt>
+<dt id="arg-max-n-coalitions">max_n_coalitions<a class="anchor" aria-label="anchor" href="#arg-max-n-coalitions"></a></dt>
 <dd><p>Integer.
-If <code>group = NULL</code>, <code>n_combinations</code> represents the number of unique feature combinations to sample.
-If <code>group != NULL</code>, <code>n_combinations</code> represents the number of unique group combinations to sample.
-If <code>n_combinations = NULL</code>, the exact method is used and all combinations are considered.
-The maximum number of combinations equals <code>2^m</code>, where <code>m</code> is the number of features.</p></dd>
+The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+(if <code>iterative = TRUE</code>).
+If <code>iterative = FALSE</code> it represents the number of feature/group coalitions to use directly.
+The quantity refers to the number of unique feature coalitions if <code>group = NULL</code>,
+and group coalitions if <code>group != NULL</code>.
+<code>max_n_coalitions = NULL</code> corresponds to <code>max_n_coalitions=2^n_features</code>.</p></dd>
 
 
-<dt>group</dt>
+<dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
 <dd><p>List.
 If <code>NULL</code> regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed. <code>group</code> then has length equal to
@@ -147,35 +166,23 @@ the number of groups. The list element contains character vectors with the featu
 in each of the different groups.</p></dd>
 
 
-<dt>n_samples</dt>
+<dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
 <dd><p>Positive integer.
-Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation. See also details.</p></dd>
+Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
+from the leaf node (see an exception related to the <code>ctree.sample</code> argument <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
+For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
+Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+<code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
 
 
-<dt>n_batches</dt>
-<dd><p>Positive integer (or NULL).
-Specifies how many batches the total number of feature combinations should be split into when calculating the
-contribution function for each test observation.
-The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-which depends on <code>approach</code> and <code>n_combinations</code>.
-For models with many features, increasing the number of batches reduces the RAM allocation significantly.
-This typically comes with a small increase in computation time.</p></dd>
-
-
-<dt>seed</dt>
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Positive integer.
 Specifies the seed before any randomness based code is being run.
-If <code>NULL</code> the seed will be inherited from the calling environment.</p></dd>
+If <code>NULL</code> no seed is set in the calling environment.</p></dd>
 
 
-<dt>keep_samp_for_vS</dt>
-<dd><p>Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
-(in <code>internal$output</code>)</p></dd>
-
-
-<dt>feature_specs</dt>
+<dt id="arg-feature-specs">feature_specs<a class="anchor" aria-label="anchor" href="#arg-feature-specs"></a></dt>
 <dd><p>List. The output from <code><a href="get_model_specs.html">get_model_specs()</a></code> or <code><a href="get_data_specs.html">get_data_specs()</a></code>.
 Contains the 3 elements:</p><dl><dt>labels</dt>
 <dd><p>Character vector with the names of each feature.</p></dd>
@@ -190,32 +197,25 @@ Contains the 3 elements:</p><dl><dt>labels</dt>
 </dl></dd>
 
 
-<dt>MSEv_uniform_comb_weights</dt>
-<dd><p>Logical. If <code>TRUE</code> (default), then the function weights the combinations
-uniformly when computing the MSEv criterion. If <code>FALSE</code>, then the function use the Shapley kernel weights to
-weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-sampling frequency when not all combinations are considered.</p></dd>
-
-
-<dt>type</dt>
+<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Character.
 Either "normal" or "forecast" corresponding to function <code>setup()</code> is called from,
 correspondingly the type of explanation that should be generated.</p></dd>
 
 
-<dt>horizon</dt>
+<dt id="arg-horizon">horizon<a class="anchor" aria-label="anchor" href="#arg-horizon"></a></dt>
 <dd><p>Numeric.
 The forecast horizon to explain. Passed to the <code>predict_model</code> function.</p></dd>
 
 
-<dt>y</dt>
+<dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a></dt>
 <dd><p>Matrix, data.frame/data.table or a numeric vector.
 Contains the endogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.</p></dd>
 
 
-<dt>xreg</dt>
+<dt id="arg-xreg">xreg<a class="anchor" aria-label="anchor" href="#arg-xreg"></a></dt>
 <dd><p>Matrix, data.frame/data.table or a numeric vector.
 Contains the exogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
@@ -224,53 +224,167 @@ As exogenous variables are used contemporaneusly when producing a forecast,
 this item should contain nrow(y) + horizon rows.</p></dd>
 
 
-<dt>train_idx</dt>
+<dt id="arg-train-idx">train_idx<a class="anchor" aria-label="anchor" href="#arg-train-idx"></a></dt>
 <dd><p>Numeric vector
 The row indices in data and reg denoting points in time to use when estimating the conditional expectations in
 the Shapley value formula.
 If <code>train_idx = NULL</code> (default) all indices not selected to be explained will be used.</p></dd>
 
 
-<dt>explain_idx</dt>
+<dt id="arg-explain-idx">explain_idx<a class="anchor" aria-label="anchor" href="#arg-explain-idx"></a></dt>
 <dd><p>Numeric vector
 The row indices in data and reg denoting points in time to explain.</p></dd>
 
 
-<dt>explain_y_lags</dt>
+<dt id="arg-explain-y-lags">explain_y_lags<a class="anchor" aria-label="anchor" href="#arg-explain-y-lags"></a></dt>
 <dd><p>Numeric vector.
 Denotes the number of lags that should be used for each variable in <code>y</code> when making a forecast.</p></dd>
 
 
-<dt>explain_xreg_lags</dt>
+<dt id="arg-explain-xreg-lags">explain_xreg_lags<a class="anchor" aria-label="anchor" href="#arg-explain-xreg-lags"></a></dt>
 <dd><p>Numeric vector.
 If <code>xreg != NULL</code>, denotes the number of lags that should be used for each variable in <code>xreg</code> when making a forecast.</p></dd>
 
 
-<dt>group_lags</dt>
+<dt id="arg-group-lags">group_lags<a class="anchor" aria-label="anchor" href="#arg-group-lags"></a></dt>
 <dd><p>Logical.
 If <code>TRUE</code> all lags of each variable are grouped together and explained as a group.
 If <code>FALSE</code> all lags of each variable are explained individually.</p></dd>
 
 
-<dt>timing</dt>
-<dd><p>Logical.
-Whether the timing of the different parts of the <code><a href="explain.html">explain()</a></code> should saved in the model object.</p></dd>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>String vector or NULL.
+Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
+<code>"convergence"</code>, <code>"shapley"</code>  and <code>"vS_details"</code>.
+<code>"basic"</code> (default) displays basic information about the computation which is being performed.
+<code>"progress</code> displays information about where in the calculation process the function currently is.
+#' <code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
+(only when <code>iterative = TRUE</code>) .
+<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)</p><ul><li><p>the final estimates.
+<code>"vS_details"</code> displays information about the v_S estimates.
+This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
+<code>NULL</code> means no printout.
+Note that any combination of four strings can be used.
+E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the vS estimation process.</p></li>
+</ul></dd>
 
 
-<dt>verbose</dt>
-<dd><p>An integer specifying the level of verbosity. If <code>0</code>, <code>shapr</code> will stay silent.
-If <code>1</code>, it will print information about performance. If <code>2</code>, some additional information will be printed out.
-Use <code>0</code> (default) for no verbosity, <code>1</code> for low verbose, and <code>2</code> for high verbose.
-TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.</p></dd>
+<dt id="arg-iterative">iterative<a class="anchor" aria-label="anchor" href="#arg-iterative"></a></dt>
+<dd><p>Logical or NULL
+If <code>NULL</code> (default), the argument is set to <code>TRUE</code> if there are more than 5 features/groups, and <code>FALSE</code> otherwise.
+If eventually <code>TRUE</code>, the Shapley values are estimated iteratively in an iterative manner.
+This provides sufficiently accurate Shapley value estimates faster.
+First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+values.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
+coalitions.
+The process is repeated until the variances are below the threshold.
+Specifics related to the iterative process and convergence criterion are set through <code>iterative_args</code>.</p></dd>
 
 
-<dt>is_python</dt>
+<dt id="arg-iterative-args">iterative_args<a class="anchor" aria-label="anchor" href="#arg-iterative-args"></a></dt>
+<dd><p>Named list.
+Specifices the arguments for the iterative procedure.
+See <code><a href="get_iterative_args_default.html">get_iterative_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+
+
+<dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>
+<dd><p>String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
+the randomness and thereby the variance of the Shapley value estimates.
+One of <code>'none'</code>, <code>'on_N'</code>, <code>'on_all'</code>, <code>'on_all_cond'</code> (default).
+<code>'none'</code> means no reweighting, i.e. the sampling frequency weights are used as is.
+<code>'on_coal_size'</code> means the sampling frequencies are averaged over all coalitions of the same size.
+<code>'on_N'</code> means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+<code>'on_all'</code> means the original sampling probabilities are used for all coalitions.
+<code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+This method is preferred as it has performed the best in simulation studies.</p></dd>
+
+
+<dt id="arg-is-python">is_python<a class="anchor" aria-label="anchor" href="#arg-is-python"></a></dt>
 <dd><p>Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via <code><a href="explain.html">explain()</a></code> in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg-testing">testing<a class="anchor" aria-label="anchor" href="#arg-testing"></a></dt>
+<dd><p>Logical.
+Only use to remove random components like timing from the object output when comparing output with testthat.
+Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-init-time">init_time<a class="anchor" aria-label="anchor" href="#arg-init-time"></a></dt>
+<dd><p>POSIXct object.
+The time when the <code><a href="explain.html">explain()</a></code> function was called, as outputted by <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time()</a></code>.
+Used to calculate the time it took to run the full <code>explain</code> call.</p></dd>
+
+
+<dt id="arg-prev-shapr-object">prev_shapr_object<a class="anchor" aria-label="anchor" href="#arg-prev-shapr-object"></a></dt>
+<dd><p><code>shapr</code> object or string.
+If an object of class <code>shapr</code> is provided or string with a path to where intermediate results are strored,
+then the function will use the previous object to continue the computation.
+This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
+want to continue the iterative estimation. See the vignette for examples.</p></dd>
+
+
+<dt id="arg-asymmetric">asymmetric<a class="anchor" aria-label="anchor" href="#arg-asymmetric"></a></dt>
+<dd><p>Logical.
+Not applicable for (regular) non-causal or asymmetric explanations.
+If <code>FALSE</code> (default), <code>explain</code> computes regular symmetric Shapley values,
+If <code>TRUE</code>, then <code>explain</code> compute asymmetric Shapley values based on the (partial) causal ordering
+given by <code>causal_ordering</code>. That is, <code>explain</code> only uses the feature combinations/coalitions that
+respect the causal ordering when computing the asymmetric Shapley values. If <code>asymmetric</code> is <code>TRUE</code> and
+<code>confounding</code> is <code>NULL</code> (default), then <code>explain</code> computes asymmetric conditional Shapley values as specified in
+Frye et al. (2020). If <code>confounding</code> is provided, i.e., not <code>NULL</code>, then <code>explain</code> computes asymmetric causal
+Shapley values as specified in Heskes et al. (2020).</p></dd>
+
+
+<dt id="arg-causal-ordering">causal_ordering<a class="anchor" aria-label="anchor" href="#arg-causal-ordering"></a></dt>
+<dd><p>List.
+Not applicable for (regular) non-causal or asymmetric explanations.
+<code>causal_ordering</code> is an unnamed list of vectors specifying the components of the
+partial causal ordering that the coalitions must respect. Each vector represents
+a component and contains one or more features/groups identified by their names
+(strings) or indices (integers). If <code>causal_ordering</code> is <code>NULL</code> (default), no causal
+ordering is assumed and all possible coalitions are allowed. No causal ordering is
+equivalent to a causal ordering with a single component that includes all features
+(<code>list(1:n_features)</code>) or groups (<code>list(1:n_groups)</code>) for feature-wise and group-wise
+Shapley values, respectively. For feature-wise Shapley values and
+<code>causal_ordering = list(c(1, 2), c(3, 4))</code>, the interpretation is that features 1 and 2
+are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
+Note: All features/groups must be included in the <code>causal_ordering</code> without any duplicates.</p></dd>
+
+
+<dt id="arg-confounding">confounding<a class="anchor" aria-label="anchor" href="#arg-confounding"></a></dt>
+<dd><p>Logical vector.
+Not applicable for (regular) non-causal or asymmetric explanations.
+<code>confounding</code> is a vector of logicals specifying whether confounding is assumed or not for each component in the
+<code>causal_ordering</code>. If <code>NULL</code> (default), then no assumption about the confounding structure is made and <code>explain</code>
+computes asymmetric/symmetric conditional Shapley values, depending on the value of <code>asymmetric</code>.
+If <code>confounding</code> is a single logical, i.e., <code>FALSE</code> or <code>TRUE</code>, then this assumption is set globally
+for all components in the causal ordering. Otherwise, <code>confounding</code> must be a vector of logicals of the same
+length as <code>causal_ordering</code>, indicating the confounding assumption for each component. When <code>confounding</code> is
+specified, then <code>explain</code> computes asymmetric/symmetric causal Shapley values, depending on the value of
+<code>asymmetric</code>. The <code>approach</code> cannot be <code>regression_separate</code> and <code>regression_surrogate</code> as the
+regression-based approaches are not applicable to the causal Shapley value methodology.</p></dd>
+
+
+<dt id="arg-output-args">output_args<a class="anchor" aria-label="anchor" href="#arg-output-args"></a></dt>
+<dd><p>Named list.
+Specifices certain arguments related to the output of the function.
+See <code><a href="get_output_args_default.html">get_output_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+
+
+<dt id="arg-extra-computation-args">extra_computation_args<a class="anchor" aria-label="anchor" href="#arg-extra-computation-args"></a></dt>
+<dd><p>Named list.
+Specifices extra arguments related to the computation of the Shapley values.
+See <code><a href="get_extra_est_args_default.html">get_extra_est_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed to specific approaches</p></dd>
 
 </dl></div>
@@ -283,19 +397,19 @@ running the AICc-versions of the empirical as that requires data based optimizat
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Nikolai Sellereite, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

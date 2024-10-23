@@ -12,14 +12,14 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Prediction Explanation with Dependence-Aware Shapley Values">
-<meta property="og:description" content="Complex machine learning models are often hard to interpret. However, in many situations it is crucial to understand and explain why a model made a specific prediction. Shapley values is the only method for such prediction explanation framework with a solid theoretical foundation. Previously known methods for estimating the Shapley values do, however, assume feature independence. This package implements the method described in Aas, Jullum and Løland (2019) &lt;arXiv:1903.10464&gt;, which accounts for any feature dependence, and thereby produces more accurate estimates of the true Shapley values. An accompanying Python wrapper (shaprpy) is available on GitHub.">
+<meta property="og:description" content="Complex machine learning models are often hard to interpret. However, in many situations it is crucial to understand and explain why a model made a specific prediction. Shapley values is the only method for such prediction explanation framework with a solid theoretical foundation. Previously known methods for estimating the Shapley values do, however, assume feature independence. This package implements methods which accounts for any feature dependence, and thereby produces more accurate estimates of the true Shapley values. An accompanying Python wrapper (shaprpy) is available on GitHub.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -42,7 +42,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -68,7 +68,7 @@
 <li>
   <a href="https://github.com/NorskRegnesentral/shapr/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -79,7 +79,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="contents col-md-9">
@@ -91,10 +91,11 @@
 <div class="section level2">
 <h2 id="brief-news">Brief NEWS<a class="anchor" aria-label="anchor" href="#brief-news"></a>
 </h2>
+<p>This is <code>shapr</code> version 1.0.0, which provides a full suit of new functionality. See the <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link">NEWS</a> for details</p>
 <div class="section level3">
 <h3 id="breaking-change-june-2023">Breaking change (June 2023)<a class="anchor" aria-label="anchor" href="#breaking-change-june-2023"></a>
 </h3>
-<p>As of version 0.2.3.9000, the development version of shapr (master branch on GitHub from June 2023) has been severely restructured, introducing a new syntax for explaining models, and thereby introducing a range of breaking changes. This essentially amounts to using a single function (<code><a href="reference/explain.html">explain()</a></code>) instead of two functions (<code><a href="reference/shapr-package.html">shapr()</a></code> and <code><a href="reference/explain.html">explain()</a></code>). The CRAN version of <code>shapr</code> (v0.2.2) still uses the old syntax. See the <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link">NEWS</a> for details. The examples below uses the new syntax. <a href="https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md" class="external-link">Here</a> is a version of this README with the syntax of the CRAN version (v0.2.2).</p>
+<p>As of version 0.2.3.9000, the development version of shapr (master branch on GitHub from June 2023) has been severely restructured, introducing a new syntax for explaining models, and thereby introducing a range of breaking changes. This essentially amounts to using a single function (<code><a href="reference/explain.html">explain()</a></code>) instead of two functions (<code><a href="reference/shapr-package.html">shapr()</a></code> and <code><a href="reference/explain.html">explain()</a></code>). The CRAN version of <code>shapr</code> (v0.2.2) still uses the old syntax. The examples below uses the new syntax. <a href="https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md" class="external-link">Here</a> is a version of this README with the syntax of the CRAN version (v0.2.2).</p>
 </div>
 <div class="section level3">
 <h3 id="python-wrapper">Python wrapper<a class="anchor" aria-label="anchor" href="#python-wrapper"></a>
@@ -103,47 +104,11 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="the-package">The package<a class="anchor" aria-label="anchor" href="#the-package"></a>
 </h2>
-<p>The most common machine learning task is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features. When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction. However, explaining predictions from complex, or seemingly simple, machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations.</p>
-<p>Shapley values is the only prediction explanation framework with a solid theoretical foundation (Lundberg and Lee (2017)). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko (2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. Aas, Jullum, and Løland (2021) extends and improves the Kernel SHAP method of Lundberg and Lee (2017) to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. <a href="https://arxiv.org/abs/1903.10464" class="external-link">See the paper for details</a>.</p>
-<p>This package implements the methodology of Aas, Jullum, and Løland (2021).</p>
-<p>The following methodology/features are currently implemented:</p>
-<ul>
-<li>Native support of explanation of predictions from models fitted with the following functions <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">stats::glm</a></code>, <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">stats::lm</a></code>,<code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger</a></code>, <code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgb.train</a></code> and <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code>.</li>
-<li>Accounting for feature dependence
-<ul>
-<li>assuming the features are Gaussian (<code>approach = 'gaussian'</code>, Aas, Jullum, and Løland (2021))</li>
-<li>with a Gaussian copula (<code>approach = 'copula'</code>, Aas, Jullum, and Løland (2021))</li>
-<li>using the Mahalanobis distance based empirical (conditional) distribution approach (<code>approach = 'empirical'</code>, Aas, Jullum, and Løland (2021))</li>
-<li>using conditional inference trees (<code>approach = 'ctree'</code>, Redelmeier, Jullum, and Aas (2020)).</li>
-<li>using the endpoint match method for time series (<code>approach = 'timeseries'</code>, Jullum, Redelmeier, and Aas (2021))</li>
-<li>using the joint distribution approach for models with purely cateogrical data (<code>approach = 'categorical'</code>, Redelmeier, Jullum, and Aas (2020))</li>
-<li>assuming all features are independent (<code>approach = 'independence'</code>, mainly for benchmarking)</li>
-</ul>
-</li>
-<li>Combining any of the above methods.</li>
-<li>Explain <em>forecasts</em> from time series models at different horizons with <code><a href="reference/explain_forecast.html">explain_forecast()</a></code> (R only)</li>
-<li>Batch computation to reduce memory consumption significantly</li>
-<li>Parallelized computation using the <a href="https://future.futureverse.org/" class="external-link">future</a> framework. (R only)</li>
-<li>Progress bar showing computation progress, using the <a href="https://progressr.futureverse.org/" class="external-link"><code>progressr</code></a> package. Must be activated by the user.</li>
-<li>Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai (1998) when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2021).</li>
-<li>Functionality for visualizing the explanations. (R only)</li>
-<li>Support for models not supported natively.</li>
-</ul>
-<!--
-Current methodological restrictions:
-
-- The features must follow a continuous distribution
-- Discrete features typically work just fine in practice although the theory breaks down
-- Ordered/unordered categorical features are not supported
-
-Future releases will include:
-
--   Computational improvement of the AICc optimization approach,
--   Adaptive selection of method to account for the feature dependence.
---><p>Note the prediction outcome must be numeric. All approaches except <code>approach = 'categorical'</code> works for numeric features, but unless the models are very gaussian-like, we recommend <code>approach = 'ctree'</code> or <code>approach = 'empirical'</code>, especially if there are discretely distributed features. When the models contains both numeric and categorical features, we recommend <code>approach = 'ctree'</code>. For models with a smaller number of categorical features (without many levels) and a decent training set, we recommend <code>approach = 'categorical'</code>. For (binary) classification based on time series models, we suggest using <code>approach = 'timeseries'</code>. To explain forecasts of time series models (at different horizons), we recommend using <code><a href="reference/explain_forecast.html">explain_forecast()</a></code> instead of <code><a href="reference/explain.html">explain()</a></code>. The former has a more suitable input syntax for explaining those kinds of forecasts. See the <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">vignette</a> for details and further examples.</p>
-<p>Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations.</p>
+<p>The shapr R package implements an enhanced version of the KernelSHAP method, for approximating Shapley values, with a strong focus on conditional Shapley values. The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, and distributions. The package also includes evaluation metrics to compare various approaches. With features like parallelized computations, convergence detection, progress updates, and extensive plotting options, shapr is as a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values, which are critical for understanding how features truly contribute to predictions.</p>
+<p>A basic example is provided below. Otherwise we refer to the <a href="https://norskregnesentral.github.io/shapr/">pkgdown website</a> and the vignettes there<br>
+for details and further examples.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -210,28 +175,43 @@ Future releases will include:
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
-<span>  prediction_zero <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span></span>
-<span><span class="co">#&gt; Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span></span>
+<span><span class="co">#&gt; Success with message:</span></span>
+<span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
+<span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-10-23 19:31:59 ──────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: empirical</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; '/tmp/Rtmp6d4Iza/shapr_obj_3be21200fd9e8.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># Printing the Shapley values for the test data.</span></span>
 <span><span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        none    Solar.R      Wind      Temp      Month</span></span>
-<span><span class="co">#&gt; 1: 43.08571 13.2117337  4.785645 -25.57222  -5.599230</span></span>
-<span><span class="co">#&gt; 2: 43.08571 -9.9727747  5.830694 -11.03873  -7.829954</span></span>
-<span><span class="co">#&gt; 3: 43.08571 -2.2916185 -7.053393 -10.15035  -4.452481</span></span>
-<span><span class="co">#&gt; 4: 43.08571  3.3254595 -3.240879 -10.22492  -6.663488</span></span>
-<span><span class="co">#&gt; 5: 43.08571  4.3039571 -2.627764 -14.15166 -12.266855</span></span>
-<span><span class="co">#&gt; 6: 43.08571  0.4786417 -5.248686 -12.55344  -6.645738</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values_est</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    explain_id     none    Solar.R      Wind      Temp      Month</span></span>
+<span><span class="co">#&gt;         &lt;int&gt;    &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:          1 43.08571 13.2117337  4.785645 -25.57222  -5.599230</span></span>
+<span><span class="co">#&gt; 2:          2 43.08571 -9.9727747  5.830694 -11.03873  -7.829954</span></span>
+<span><span class="co">#&gt; 3:          3 43.08571 -2.2916185 -7.053393 -10.15035  -4.452481</span></span>
+<span><span class="co">#&gt; 4:          4 43.08571  3.3254595 -3.240879 -10.22492  -6.663488</span></span>
+<span><span class="co">#&gt; 5:          5 43.08571  4.3039571 -2.627764 -14.15166 -12.266855</span></span>
+<span><span class="co">#&gt; 6:          6 43.08571  0.4786417 -5.248686 -12.55344  -6.645738</span></span>
 <span></span>
 <span><span class="co"># Finally we plot the resulting explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-basic_example-1.png" width="100%"></p>
-<p>See the <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">vignette</a> for further examples.</p>
+<p>See the <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">vignette</a> for further basic usage examples.</p>
 </div>
 <div class="section level2">
 <h2 id="contribution">Contribution<a class="anchor" aria-label="anchor" href="#contribution"></a>
@@ -242,29 +222,6 @@ Future releases will include:
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-aas2019explaining" class="csl-entry">
-Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298.
-</div>
-<div id="ref-hurvich1998smoothing" class="csl-entry">
-Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 60 (2): 271–93.
-</div>
-<div id="ref-jullum2021efficient" class="csl-entry">
-Jullum, Martin, Annabelle Redelmeier, and Kjersti Aas. 2021. “Efficient and Simple Prediction Explanations with groupShapley: A Practical Perspective.” In <em>Proceedings of the 2nd Italian Workshop on Explainable Artificial Intelligence</em>, 28–43. CEUR Workshop Proceedings.
-</div>
-<div id="ref-lundberg2018consistent" class="csl-entry">
-Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” <em>arXiv Preprint arXiv:1802.03888</em>.
-</div>
-<div id="ref-lundberg2017unified" class="csl-entry">
-Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.
-</div>
-<div id="ref-redelmeier2020explaining" class="csl-entry">
-Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predictive Models with Mixed Features Using Shapley Values and Conditional Inference Trees.” In <em>International Cross-Domain Conference for Machine Learning and Knowledge Extraction</em>, 117–37. Springer.
-</div>
-<div id="ref-vstrumbelj2014explaining" class="csl-entry">
-Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” <em>Knowledge and Information Systems</em> 41 (3): 647–65.
-</div>
-</div>
 </div>
 </div>
   </div>
@@ -305,11 +262,11 @@ Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predi
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Nikolai Sellereite <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-4671-0337" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Martin Jullum <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0003-3908-5155" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Lars Henry Berge Olsen <br><small class="roles"> Author </small> <a href="https://orcid.org/0009-0006-9360-6993" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Annabelle Redelmeier <br><small class="roles"> Author </small>  </li>
-<li>Jon Lachmann <br><small class="roles"> Author </small>  </li>
+<li>Jon Lachmann <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-8396-5673" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Nikolai Sellereite <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-4671-0337" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Norsk Regnesentral <br><small class="roles"> Copyright holder, funder </small>  </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
@@ -333,21 +290,21 @@ Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predi
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+<p>Developed by Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Nikolai Sellereite, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -25,7 +25,7 @@
       <ul class="nav navbar-nav"><li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -47,20 +47,20 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/NorskRegnesentral/shapr/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Function that checks that the masking ratio argument is valid</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_vaeac.R" class="external-link"><code>R/approach_vaeac.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_vaeac.R" class="external-link"><code>R/approach_vaeac.R</code></a></small>
     <div class="hidden name"><code>vaeac_check_masking_ratio.Rd</code></div>
     </div>
 
@@ -74,22 +74,22 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>masking_ratio</dt>
+
+
+<dl><dt id="arg-masking-ratio">masking_ratio<a class="anchor" aria-label="anchor" href="#arg-masking-ratio"></a></dt>
 <dd><p>Numeric (default is <code>0.5</code>). Probability of masking a feature in the
 <code><a href="mcar_mask_generator.html">mcar_mask_generator()</a></code> (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that <code>vaeac</code>
 model can do arbitrary conditioning as all coalitions will be trained. <code>masking_ratio</code> will be overruled if
 <code>mask_gen_coalitions</code> is specified.</p></dd>
 
 
-<dt>n_features</dt>
+<dt id="arg-n-features">n_features<a class="anchor" aria-label="anchor" href="#arg-n-features"></a></dt>
 <dd><p>The number of features, i.e., the number of columns in the training data.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>The function does not return anything.</p>
+    <p>The function does not return anything.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -104,19 +104,19 @@ model can do arbitrary conditioning as all coalitions will be trained. <code>mas
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Nikolai Sellereite, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

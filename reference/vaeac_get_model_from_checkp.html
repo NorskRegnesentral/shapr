@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9200</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -25,7 +25,7 @@
       <ul class="nav navbar-nav"><li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -47,20 +47,20 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/NorskRegnesentral/shapr/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Function to load a <code>vaeac</code> model and set it in the right state and mode</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_vaeac.R" class="external-link"><code>R/approach_vaeac.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_vaeac.R" class="external-link"><code>R/approach_vaeac.R</code></a></small>
     <div class="hidden name"><code>vaeac_get_model_from_checkp.Rd</code></div>
     </div>
 
@@ -74,27 +74,27 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>checkpoint</dt>
+
+
+<dl><dt id="arg-checkpoint">checkpoint<a class="anchor" aria-label="anchor" href="#arg-checkpoint"></a></dt>
 <dd><p>List. This must be a loaded <code>vaeac</code> save object. That is, <code>torch::torch_load('vaeac_save_path')</code>.</p></dd>
 
 
-<dt>cuda</dt>
+<dt id="arg-cuda">cuda<a class="anchor" aria-label="anchor" href="#arg-cuda"></a></dt>
 <dd><p>Logical (default is <code>FALSE</code>). If <code>TRUE</code>, then the <code>vaeac</code> model will be trained using cuda/GPU.
 If <code><a href="https://rdrr.io/pkg/torch/man/cuda_is_available.html" class="external-link">torch::cuda_is_available()</a></code> is <code>FALSE</code>, the we fall back to use CPU. If <code>FALSE</code>, we use the CPU. Using a GPU
 for smaller tabular dataset often do not improve the efficiency.
 See <code><a href="https://cran.rstudio.com/web/packages/torch/vignettes/installation.html" class="external-link">vignette("installation", package = "torch")</a></code> fo help to enable running on the GPU (only Linux and Windows).</p></dd>
 
 
-<dt>mode_train</dt>
+<dt id="arg-mode-train">mode_train<a class="anchor" aria-label="anchor" href="#arg-mode-train"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, the returned <code>vaeac</code> model is set to be in training mode.
 If <code>FALSE</code>, the returned <code>vaeac</code> model is set to be in evaluation mode.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A <code>vaeac</code> model with the correct state (based on <code>checkpoint</code>), sent to the desired hardware (based on
+    <p>A <code>vaeac</code> model with the correct state (based on <code>checkpoint</code>), sent to the desired hardware (based on
 <code>cuda</code>), and in the right mode (based on <code>mode_train</code>).</p>
     </div>
     <div id="author">
@@ -110,19 +110,19 @@ If <code>FALSE</code>, the returned <code>vaeac</code> model is set to be in eva
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Martin Jullum, Lars Henry Berge Olsen, Annabelle Redelmeier, Jon Lachmann, Nikolai Sellereite, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 
