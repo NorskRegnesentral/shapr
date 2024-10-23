@@ -60,4 +60,6 @@ fwrite(as.data.table(y_explain), file="inst/code_paper/y_explain.csv")
 
 # We save the xgboost model object
 xgb.save(model, "inst/code_paper/xgb.model")
+saveRDS(model, "inst/code_paper/model.rds")
+
 
