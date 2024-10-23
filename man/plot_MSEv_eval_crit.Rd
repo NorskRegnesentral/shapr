@@ -7,7 +7,7 @@
 plot_MSEv_eval_crit(
   explanation_list,
   index_x_explain = NULL,
-  id_combination = NULL,
+  id_coalition = NULL,
   CI_level = if (length(explanation_list[[1]]$pred_explain) < 20) NULL else 0.95,
   geom_col_width = 0.9,
   plot_type = "overall"
@@ -23,29 +23,29 @@ Which of the test observations to plot. E.g. if you have
 explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first 5
 observations by setting \code{index_x_explain = 1:5}.}
 
-\item{id_combination}{Integer vector. Which of the combinations (coalitions) to plot.
-E.g. if you used \code{n_combinations = 16} in \code{\link[=explain]{explain()}}, you can generate a plot for the
-first 5 combinations and the 10th by setting \code{id_combination = c(1:5, 10)}.}
+\item{id_coalition}{Integer vector. Which of the coalitions to plot.
+E.g. if you used \code{n_coalitions = 16} in \code{\link[=explain]{explain()}}, you can generate a plot for the
+first 5 coalitions and the 10th by setting \code{id_coalition = c(1:5, 10)}.}
 
 \item{CI_level}{Positive numeric between zero and one. Default is \code{0.95} if the number of observations to explain is
 larger than 20, otherwise \code{CI_level = NULL}, which removes the confidence intervals. The level of the approximate
-confidence intervals for the overall MSEv and the MSEv_combination. The confidence intervals are based on that
+confidence intervals for the overall MSEv and the MSEv_coalition. The confidence intervals are based on that
 the MSEv scores are means over the observations/explicands, and that means are approximation normal. Since the
 standard deviations are estimated, we use the quantile t from the T distribution with N_explicands - 1 degrees of
 freedom corresponding to the provided level. Here, N_explicands is the number of observations/explicands.
-MSEv ± t\emph{SD(MSEv)/sqrt(N_explicands). Note that the \code{explain()} function already scales the standard deviation by
-sqrt(N_explicands), thus, the CI are MSEv ± t}MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
+MSEv +/- t\emph{SD(MSEv)/sqrt(N_explicands). Note that the \code{explain()} function already scales the standard deviation by
+sqrt(N_explicands), thus, the CI are MSEv \/- t}MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
 MSEv data.tables in the objects in the \code{explanation_list}.}
 
 \item{geom_col_width}{Numeric. Bar width. By default, set to 90\% of the \code{\link[ggplot2:resolution]{ggplot2::resolution()}} of the data.}
 
 \item{plot_type}{Character vector. The possible options are "overall" (default), "comb", and "explicand".
 If \code{plot_type = "overall"}, then the plot (one bar plot) associated with the overall MSEv evaluation criterion
-for each method is created, i.e., when averaging over both the combinations/coalitions and observations/explicands.
+for each method is created, i.e., when averaging over both the coalitions and observations/explicands.
 If \code{plot_type = "comb"}, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
-criterion for each combination/coalition are created, i.e., when we only average over the observations/explicands.
+criterion for each coalition are created, i.e., when we only average over the observations/explicands.
 If \code{plot_type = "explicand"}, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
-criterion for each observations/explicands are created, i.e., when we only average over the combinations/coalitions.
+criterion for each observations/explicands are created, i.e., when we only average over the coalitions.
 If \code{plot_type} is a vector of one or several of "overall", "comb", and "explicand", then the associated plots are
 created.}
 }
@@ -57,8 +57,8 @@ of \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} objects based on the \code{pl
 Make plots to visualize and compare the MSEv evaluation criterion for a list of
 \code{\link[=explain]{explain()}} objects applied to the same data and model. The function creates
 bar plots and line plots with points to illustrate the overall MSEv evaluation
-criterion, but also for each observation/explicand and combination by only averaging over
-the combinations and observations/explicands, respectively.
+criterion, but also for each observation/explicand and coalition by only averaging over
+the coalitions and observations/explicands, respectively.
 }
 \examples{
 # Load necessary librarieslibrary(xgboost)
@@ -90,7 +90,7 @@ model <- xgboost::xgboost(
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-prediction_zero <- mean(y_train)
+phi0 <- mean(y_train)
 
 # Independence approach
 explanation_independence <- explain(
@@ -98,8 +98,8 @@ explanation_independence <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "independence",
-  prediction_zero = prediction_zero,
-  n_samples = 1e2
+  phi0 = phi0,
+  n_MC_samples = 1e2
 )
 
 # Gaussian 1e1 approach
@@ -108,8 +108,8 @@ explanation_gaussian_1e1 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
-  n_samples = 1e1
+  phi0 = phi0,
+  n_MC_samples = 1e1
 )
 
 # Gaussian 1e2 approach
@@ -118,8 +118,8 @@ explanation_gaussian_1e2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
-  n_samples = 1e2
+  phi0 = phi0,
+  n_MC_samples = 1e2
 )
 
 # ctree approach
@@ -128,8 +128,8 @@ explanation_ctree <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  prediction_zero = prediction_zero,
-  n_samples = 1e2
+  phi0 = phi0,
+  n_MC_samples = 1e2
 )
 
 # Combined approach
@@ -138,8 +138,8 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("gaussian", "independence", "ctree"),
-  prediction_zero = prediction_zero,
-  n_samples = 1e2
+  phi0 = phi0,
+  n_MC_samples = 1e2
 )
 
 # Create a list of explanations with names
@@ -152,24 +152,24 @@ explanation_list_named <- list(
 )
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {
-  # Create the default MSEv plot where we average over both the combinations and observations
+  # Create the default MSEv plot where we average over both the coalitions and observations
   # with approximate 95\% confidence intervals
   plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95, plot_type = "overall")
 
-  # Can also create plots of the MSEv criterion averaged only over the combinations or observations.
+  # Can also create plots of the MSEv criterion averaged only over the coalitions or observations.
   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
     CI_level = 0.95,
     plot_type = c("overall", "comb", "explicand")
   )
   MSEv_figures$MSEv_bar
-  MSEv_figures$MSEv_combination_bar
+  MSEv_figures$MSEv_coalition_bar
   MSEv_figures$MSEv_explicand_bar
 
-  # When there are many combinations or observations, then it can be easier to look at line plots
-  MSEv_figures$MSEv_combination_line_point
+  # When there are many coalitions or observations, then it can be easier to look at line plots
+  MSEv_figures$MSEv_coalition_line_point
   MSEv_figures$MSEv_explicand_line_point
 
-  # We can specify which observations or combinations to plot
+  # We can specify which observations or coalitions to plot
   plot_MSEv_eval_crit(explanation_list_named,
     plot_type = "explicand",
     index_x_explain = c(1, 3:4, 6),
@@ -177,9 +177,9 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   )$MSEv_explicand_bar
   plot_MSEv_eval_crit(explanation_list_named,
     plot_type = "comb",
-    id_combination = c(3, 4, 9, 13:15),
+    id_coalition = c(3, 4, 9, 13:15),
     CI_level = 0.95
-  )$MSEv_combination_bar
+  )$MSEv_coalition_bar
 
   # We can alter the figures if other palette schemes or design is wanted
   bar_text_n_decimals <- 1

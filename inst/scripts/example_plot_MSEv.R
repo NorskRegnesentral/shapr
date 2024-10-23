@@ -29,7 +29,7 @@ model <- xgboost::xgboost(
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-prediction_zero <- mean(y_train)
+phi0 <- mean(y_train)
 
 # Independence approach
 explanation_independence <- explain(
@@ -37,7 +37,7 @@ explanation_independence <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "independence",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 1e2
 )
 
@@ -47,7 +47,7 @@ explanation_empirical <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 1e2
 )
 
@@ -57,7 +57,7 @@ explanation_gaussian_1e1 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 1e1
 )
 
@@ -67,7 +67,7 @@ explanation_gaussian_1e2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 1e2
 )
 
@@ -77,7 +77,7 @@ explanation_ctree <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 1e2
 )
 
@@ -87,7 +87,7 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("gaussian", "independence", "ctree"),
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 1e2
 )
 
@@ -228,7 +228,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 )$MSEv_explicand_bar
 plot_MSEv_eval_crit(explanation_list_named,
                     plot_type = "comb",
-  id_combination = c(3, 4, 9, 13:15)
+  id_coalition = c(3, 4, 9, 13:15)
 )$MSEv_combination_bar
 
 
@@ -236,11 +236,11 @@ plot_MSEv_eval_crit(explanation_list_named,
 MSEv_combination <- plot_MSEv_eval_crit(
   explanation_list_named,
   plot_type = "comb",
-  id_combination = c(3, 4, 9, 13:15)
+  id_coalition = c(3, 4, 9, 13:15)
 )$MSEv_combination_bar
 MSEv_combination$data$Method <- factor(MSEv_combination$data$Method, levels = rev(levels(MSEv_combination$data$Method)))
 MSEv_combination +
-  ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination$data$id_combination))) +
+  ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination$data$id_coalition))) +
   ggplot2::scale_fill_discrete(breaks = rev(levels(MSEv_combination$data$Method)), direction = -1) +
   ggplot2::coord_flip()
 
@@ -249,14 +249,14 @@ MSEv_combination +
 MSEv_combination_wo_CI <- plot_MSEv_eval_crit(
   explanation_list_named,
   plot_type = "comb",
-  id_combination = c(3, 4, 9, 13:15),
+  id_coalition = c(3, 4, 9, 13:15),
   CI_level = NULL
 )$MSEv_combination_bar
 MSEv_combination_wo_CI$data$Method <- factor(MSEv_combination_wo_CI$data$Method,
   levels = rev(levels(MSEv_combination_wo_CI$data$Method))
 )
 MSEv_combination_wo_CI +
-  ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination_wo_CI$data$id_combination))) +
+  ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination_wo_CI$data$id_coalition))) +
   ggplot2::scale_fill_brewer(
     breaks = rev(levels(MSEv_combination_wo_CI$data$Method)),
     palette = "Paired",
@@ -290,9 +290,9 @@ explanation_gaussian_seed_1 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 10,
-  n_combinations = 10,
+  n_coalitions = 10,
   seed = 1
 )
 
@@ -301,9 +301,9 @@ explanation_gaussian_seed_1_V2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 10,
-  n_combinations = 10,
+  n_coalitions = 10,
   seed = 1
 )
 
@@ -312,9 +312,9 @@ explanation_gaussian_seed_2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 10,
-  n_combinations = 10,
+  n_coalitions = 10,
   seed = 2
 )
 
@@ -323,9 +323,9 @@ explanation_gaussian_seed_3 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 10,
-  n_combinations = 10,
+  n_coalitions = 10,
   seed = 3
 )
 
@@ -350,7 +350,7 @@ explanation_gaussian_all <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 10
 )
 
@@ -359,7 +359,7 @@ explanation_gaussian_only_5 <- explain(
   x_explain = x_explain[1:5, ],
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 10
 )
 
@@ -376,12 +376,12 @@ explanation_gaussian <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 10
 )
 
 explanation_gaussian_copy <- copy(explanation_gaussian_all)
-colnames(explanation_gaussian_copy$shapley_values) <- rev(colnames(explanation_gaussian_copy$shapley_values))
+colnames(explanation_gaussian_copy$shapley_values_est) <- rev(colnames(explanation_gaussian_copy$shapley_values_est))
 
 # Will give an error due to different feature names
 plot_MSEv_eval_crit(list(
@@ -397,7 +397,7 @@ explanation_gaussian <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
+  phi0 = phi0,
   n_samples = 10
 )
 

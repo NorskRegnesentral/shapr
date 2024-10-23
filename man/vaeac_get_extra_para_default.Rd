@@ -78,9 +78,10 @@ during the training of the vaeac model. Used in \code{\link[torch:dataloader]{to
 
 \item{vaeac.batch_size_sampling}{Positive integer (default is \code{NULL}) The number of samples to include in
 each batch when generating the Monte Carlo samples. If \code{NULL}, then the function generates the Monte Carlo samples
-for the provided coalitions/combinations and all explicands sent to \code{\link[=explain]{explain()}} at the time.
-The number of coalitions are determined by \code{n_batches} in \code{\link[=explain]{explain()}}. We recommend to tweak \code{n_batches}
-rather  than \code{vaeac.batch_size_sampling}. Larger batch sizes are often much faster provided sufficient memory.}
+for the provided coalitions and all explicands sent to \code{\link[=explain]{explain()}} at the time.
+The number of coalitions are determined by the \code{n_batches} used by \code{\link[=explain]{explain()}}. We recommend to tweak
+\code{extra_computation_args$max_batch_size} and \code{extra_computation_args$min_n_batches}
+rather than \code{vaeac.batch_size_sampling}. Larger batch sizes are often much faster provided sufficient memory.}
 
 \item{vaeac.running_avg_n_values}{Positive integer (default is \code{5}). The number of previous IWAE values to include
 when we compute the running means of the IWAE criterion.}
@@ -112,8 +113,8 @@ model can do arbitrary conditioning as all coalitions will be trained. \code{vae
 
 \item{vaeac.mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
 \code{vaeac} model will be trained on, see \code{\link[=specified_masks_mask_generator]{specified_masks_mask_generator()}}. This parameter is used internally
-in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
-\code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+in \code{shapr} when we only consider a subset of coalitions, i.e., when
+\code{n_coalitions} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 when \code{group} is specified in \code{\link[=explain]{explain()}}.}
 
 \item{vaeac.mask_gen_coalitions_prob}{Numeric array (default is \code{NULL}). Array of length equal to the height

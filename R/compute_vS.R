@@ -1,23 +1,35 @@
 #' Computes `v(S)` for all features subsets `S`.
 #'
+#' @inheritParams default_doc_explain
 #' @inheritParams default_doc
-#' @inheritParams explain
 #'
 #' @param method Character
 #' Indicates whether the lappy method (default) or loop method should be used.
+#' This is only used for testing purposes.
 #'
 #' @export
+#' @keywords internal
 compute_vS <- function(internal, model, predict_model, method = "future") {
-  S_batch <- internal$objects$S_batch
+  iter <- length(internal$iter_list)
+
+  S_batch <- internal$iter_list[[iter]]$S_batch
+
+  # verbose
+  cli_compute_vS(internal)
 
   if (method == "future") {
-    ret <- future_compute_vS_batch(S_batch = S_batch, internal = internal, model = model, predict_model = predict_model)
+    vS_list <- future_compute_vS_batch(
+      S_batch = S_batch,
+      internal = internal,
+      model = model,
+      predict_model = predict_model
+    )
   } else {
     # Doing the same as above without future without progressbar or paralellization
-    ret <- list()
+    vS_list <- list()
     for (i in seq_along(S_batch)) {
       S <- S_batch[[i]]
-      ret[[i]] <- batch_compute_vS(
+      vS_list[[i]] <- batch_compute_vS(
         S = S,
         internal = internal,
         model = model,
@@ -26,7 +38,11 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
     }
   }
 
-  return(ret)
+  #### Adds v_S output above to any vS_list already computed ####
+  vS_list <- append_vS_list(vS_list, internal)
+
+
+  return(vS_list)
 }
 
 future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
@@ -56,7 +72,8 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   if (regression) {
     dt_vS <- batch_prepare_vS_regression(S = S, internal = internal)
   } else {
-    # Here dt_vS is either only dt_vS or a list containing dt_vS and dt if internal$parameters$keep_samp_for_vS = TRUE
+    # Here dt_vS is either only dt_vS or a list containing dt_vS and dt if
+    # internal$parameters$output_args$keep_samp_for_vS = TRUE
     dt_vS <- batch_prepare_vS_MC(S = S, internal = internal, model = model, predict_model = predict_model)
   }
 
@@ -70,25 +87,29 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 batch_prepare_vS_regression <- function(S, internal) {
-  max_id_comb <- internal$parameters$n_combinations
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+
+  max_id_coal <- X[, .N]
   x_explain_y_hat <- internal$data$x_explain_y_hat
 
   # Compute the contribution functions different based on if the grand coalition is in S or not
-  if (!(max_id_comb %in% S)) {
+  if (!(max_id_coal %in% S)) {
     dt <- prepare_data(internal, index_features = S)
   } else {
     # Remove the grand coalition. NULL is for the special case for when the batch only includes the grand coalition.
-    dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_comb]) else NULL
+    dt <- if (length(S) > 1) prepare_data(internal, index_features = S[S != max_id_coal]) else NULL
 
     # Add the results for the grand coalition (Need to add names in case the batch only contains the grand coalition)
-    dt <- rbind(dt, data.table(as.integer(max_id_comb), matrix(x_explain_y_hat, nrow = 1)), use.names = FALSE)
+    dt <- rbind(dt, data.table(as.integer(max_id_coal), matrix(x_explain_y_hat, nrow = 1)), use.names = FALSE)
 
     # Need to add column names if batch S only contains the grand coalition
-    if (length(S) == 1) setnames(dt, c("id_combination", paste0("p_hat1_", seq_len(internal$parameters$n_explain))))
+    if (length(S) == 1) setnames(dt, c("id_coalition", paste0("p_hat1_", seq_len(internal$parameters$n_explain))))
   }
 
-  # Set id_combination to be the key
-  setkey(dt, id_combination)
+  # Set id_coalition to be the key
+  setkey(dt, id_coalition)
 
   return(dt)
 }
@@ -105,9 +126,11 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   explain_lags <- internal$parameters$explain_lags
   y <- internal$data$y
   xreg <- internal$data$xreg
-  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+  keep_samp_for_vS <- internal$parameters$output_args$keep_samp_for_vS
+  causal_sampling <- internal$parameters$causal_sampling
 
-  dt <- batch_prepare_vS_MC_auxiliary(S = S, internal = internal) # Make it optional to store and return the dt_list
+  # Make it optional to store and return the dt_list
+  dt <- batch_prepare_vS_MC_auxiliary(S = S, internal = internal, causal_sampling = causal_sampling)
 
   pred_cols <- paste0("p_hat", seq_len(output_size))
 
@@ -132,27 +155,22 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
 }
 
 #' @keywords internal
-batch_prepare_vS_MC_auxiliary <- function(S, internal) {
-  max_id_combination <- internal$parameters$n_combinations
+#' @author Lars Henry Berge Olsen and Martin Jullum
+batch_prepare_vS_MC_auxiliary <- function(S, internal, causal_sampling) {
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
+  prepare_data_function <- if (causal_sampling) prepare_data_causal else prepare_data
 
-  # TODO: Check what is the fastest approach to deal with the last observation.
-  # Not doing this for the largest id combination (should check if this is faster or slower, actually)
-  # An alternative would be to delete rows from the dt which is provided by prepare_data.
-  if (!(max_id_combination %in% S)) {
-    # TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
-    dt <- prepare_data(internal, index_features = S)
+  iter <- length(internal$iter_list)
+  X <- internal$iter_list[[iter]]$X
+  max_id_coalition <- X[, .N]
+
+  if (max_id_coalition %in% S) {
+    dt <- if (length(S) == 1) NULL else prepare_data_function(internal, index_features = S[S != max_id_coalition])
+    dt <- rbind(dt, data.table(id_coalition = max_id_coalition, x_explain, w = 1, id = seq_len(n_explain)))
+    setkey(dt, id, id_coalition)
   } else {
-    if (length(S) > 1) {
-      S <- S[S != max_id_combination]
-      dt <- prepare_data(internal, index_features = S)
-    } else {
-      dt <- NULL # Special case for when the batch only include the largest id
-    }
-    dt_max <- data.table(id_combination = max_id_combination, x_explain, w = 1, id = seq_len(n_explain))
-    dt <- rbind(dt, dt_max)
-    setkey(dt, id, id_combination)
+    dt <- prepare_data_function(internal, index_features = S)
   }
   return(dt)
 }
@@ -176,8 +194,8 @@ compute_preds <- function(
   if (type == "forecast") {
     dt[, (pred_cols) := predict_model(
       x = model,
-      newdata = .SD[, 1:n_endo],
-      newreg = .SD[, -(1:n_endo)],
+      newdata = .SD[, .SD, .SDcols = seq_len(n_endo)],
+      newreg = .SD[, .SD, .SDcols = seq_len(length(feature_names) - n_endo) + n_endo],
       horizon = horizon,
       explain_idx = explain_idx[id],
       explain_lags = explain_lags,
@@ -193,13 +211,55 @@ compute_preds <- function(
 
 compute_MCint <- function(dt, pred_cols = "p_hat") {
   # Calculate contributions
-  dt_res <- dt[, lapply(.SD, function(x) sum(((x) * w) / sum(w))), .(id, id_combination), .SDcols = pred_cols]
-  data.table::setkeyv(dt_res, c("id", "id_combination"))
-  dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = pred_cols)
+  dt_res <- dt[, lapply(.SD, function(x) sum(((x) * w) / sum(w))), .(id, id_coalition), .SDcols = pred_cols]
+  data.table::setkeyv(dt_res, c("id", "id_coalition"))
+  dt_mat <- data.table::dcast(dt_res, id_coalition ~ id, value.var = pred_cols)
   if (length(pred_cols) == 1) {
     names(dt_mat)[-1] <- paste0(pred_cols, "_", names(dt_mat)[-1])
   }
-  # dt_mat[, id_combination := NULL]
+  # dt_mat[, id_coalition := NULL]
 
   return(dt_mat)
+}
+
+#' Appends the new vS_list to the prev vS_list
+#'
+#'
+#' @inheritParams compute_estimates
+#'
+#' @export
+#' @keywords internal
+append_vS_list <- function(vS_list, internal) {
+  iter <- length(internal$iter_list)
+
+  # Adds v_S output above to any vS_list already computed
+  if (iter > 1) {
+    prev_coalition_map <- internal$iter_list[[iter - 1]]$coalition_map
+    prev_vS_list <- internal$iter_list[[iter - 1]]$vS_list
+
+    # Need to map the old id_coalitions to the new numbers for this merging to work out
+    current_coalition_map <- internal$iter_list[[iter]]$coalition_map
+
+    # Creates a mapper from the last id_coalition to the new id_coalition numbering
+    id_coalitions_mapper <- merge(prev_coalition_map,
+      current_coalition_map,
+      by = "coalitions_str",
+      suffixes = c("", "_new")
+    )
+    prev_vS_list_new <- list()
+
+    # Applies the mapper to update the prev_vS_list ot the new id_coalition numbering
+    for (k in seq_along(prev_vS_list)) {
+      prev_vS_list_new[[k]] <- merge(prev_vS_list[[k]],
+        id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+        by = "id_coalition"
+      )
+      prev_vS_list_new[[k]][, id_coalition := id_coalition_new]
+      prev_vS_list_new[[k]][, id_coalition_new := NULL]
+    }
+
+    # Merge the new vS_list with the old vS_list
+    vS_list <- c(prev_vS_list_new, vS_list)
+  }
+  return(vS_list)
 }

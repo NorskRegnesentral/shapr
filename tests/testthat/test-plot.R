@@ -1,53 +1,48 @@
 set.seed(123) #
 
 explain_mixed <- explain(
+  testing = TRUE,
   model = model_lm_mixed,
   x_explain = x_explain_mixed,
   x_train = x_train_mixed,
   approach = "independence",
-  prediction_zero = p0,
-  n_batches = 1,
-  timing = FALSE
+  phi0 = p0
 )
 
 explain_numeric_empirical <- explain(
+  testing = TRUE,
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "empirical",
-  prediction_zero = p0,
-  n_batches = 1,
-  timing = FALSE
+  phi0 = p0
 )
 
 explain_numeric_gaussian <- explain(
+  testing = TRUE,
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "gaussian",
-  prediction_zero = p0,
-  n_batches = 1,
-  timing = FALSE
+  phi0 = p0
 )
 
 explain_numeric_ctree <- explain(
+  testing = TRUE,
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "ctree",
-  prediction_zero = p0,
-  n_batches = 1,
-  timing = FALSE
+  phi0 = p0
 )
 
 explain_numeric_combined <- explain(
+  testing = TRUE,
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = c("empirical", "ctree", "gaussian", "ctree"),
-  prediction_zero = p0,
-  n_batches = 10,
-  timing = FALSE
+  phi0 = p0
 )
 
 # Create a list of explanations with names
@@ -237,18 +232,18 @@ test_that("MSEv evaluation criterion plots", {
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_combination_bar",
-    fig = MSEv_plots$MSEv_combination_bar
+    title = "MSEv_coalition_bar",
+    fig = MSEv_plots$MSEv_coalition_bar
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_combination_bar specified width",
-    fig = MSEv_plots_specified_width$MSEv_combination_bar
+    title = "MSEv_coalition_bar specified width",
+    fig = MSEv_plots_specified_width$MSEv_coalition_bar
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_combination_line_point",
-    fig = MSEv_plots$MSEv_combination_line_point
+    title = "MSEv_coalition_line_point",
+    fig = MSEv_plots$MSEv_coalition_line_point
   )
 
   vdiffr::expect_doppelganger(
@@ -261,13 +256,13 @@ test_that("MSEv evaluation criterion plots", {
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_combinations for specified combinations",
+    title = "MSEv_coalitions for specified coalitions",
     fig = plot_MSEv_eval_crit(
       explanation_list_named,
       plot_type = "comb",
-      id_combination = c(3, 4, 9, 13:15),
+      id_coalition = c(3, 4, 9, 13:15),
       CI_level = 0.95
-    )$MSEv_combination_bar
+    )$MSEv_coalition_bar
   )
 })
 

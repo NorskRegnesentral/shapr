@@ -79,7 +79,7 @@
 #'   explain_y_lags = 2,
 #'   horizon = 3,
 #'   approach = "empirical",
-#'   prediction_zero = p0_ar,
+#'   phi0 = p0_ar,
 #'   group_lags = FALSE
 #' )
 #'
@@ -93,24 +93,24 @@ explain_forecast <- function(model,
                              explain_xreg_lags = explain_y_lags,
                              horizon,
                              approach,
-                             prediction_zero,
-                             n_combinations = NULL,
+                             phi0,
+                             max_n_coalitions = NULL,
+                             iterative = NULL,
+                             iterative_args = list(),
+                             kernelSHAP_reweighting = "on_all_cond",
                              group_lags = TRUE,
                              group = NULL,
-                             n_samples = 1e3,
-                             n_batches = NULL,
+                             n_MC_samples = 1e3,
                              seed = 1,
-                             keep_samp_for_vS = FALSE,
                              predict_model = NULL,
                              get_model_specs = NULL,
-                             timing = TRUE,
-                             verbose = 0,
+                             verbose = "basic",
                              ...) { # ... is further arguments passed to specific approaches
-  timing_list <- list(
-    init_time = Sys.time()
-  )
+  init_time <- Sys.time()
 
-  set.seed(seed)
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
 
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
@@ -120,22 +120,23 @@ explain_forecast <- function(model,
     train_idx <- seq.int(from = max(c(explain_y_lags, explain_xreg_lags)), to = nrow(y))[-explain_idx]
   }
 
-
   # Sets up and organizes input parameters
   # Checks the input parameters and their compatability
   # Checks data/model compatability
   internal <- setup(
     approach = approach,
-    prediction_zero = prediction_zero,
+    phi0 = phi0,
     output_size = horizon,
-    n_combinations = n_combinations,
-    n_samples = n_samples,
-    n_batches = n_batches,
+    max_n_coalitions = max_n_coalitions,
+    n_MC_samples = n_MC_samples,
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
     type = "forecast",
     horizon = horizon,
+    iterative = iterative,
+    iterative_args = iterative_args,
+    kernelSHAP_reweighting = kernelSHAP_reweighting,
+    init_time = init_time,
     y = y,
     xreg = xreg,
     train_idx = train_idx,
@@ -144,19 +145,16 @@ explain_forecast <- function(model,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     group = group,
-    timing = timing,
     verbose = verbose,
     ...
   )
 
-  timing_list$setup <- Sys.time()
 
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(
     predict_model = predict_model,
     model = model
   )
-
 
   # Checks that predict_model gives correct format
   test_predict_model(
@@ -166,59 +164,81 @@ explain_forecast <- function(model,
     internal = internal
   )
 
-  timing_list$test_prediction <- Sys.time()
+  internal$timing_list$test_prediction <- Sys.time()
 
+  # Setup for approach
+  internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
-  # Sets up the Shapley (sampling) framework and prepares the
-  # conditional expectation computation for the chosen approach
-  # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-  internal <- setup_computation(internal, model, predict_model)
+  internal$main_timing_list <- internal$timing_list
 
-  timing_list$setup_computation <- Sys.time()
+  converged <- FALSE
+  iter <- length(internal$iter_list)
 
-
-  # Compute the v(S):
-  # Get the samples for the conditional distributions with the specified approach
-  # Predict with these samples
-  # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model, method = "regular")
-
-  timing_list$compute_vS <- Sys.time()
-
-  # Compute Shapley values based on conditional expectations (v(S))
-  # Organize function output
-  output <- finalize_explanation(
-    vS_list = vS_list,
-    internal = internal
-  )
-
-  if (timing == TRUE) {
-    output$timing <- compute_time(timing_list)
+  if (!is.null(seed)) {
+    set.seed(seed)
   }
 
-  # Temporary to avoid failing tests
-  output <- remove_outputs_pass_tests_fore(output)
+  cli_startup(internal, class(model), verbose)
+
+  while (converged == FALSE) {
+    cli_iter(verbose, internal, iter)
+
+    internal$timing_list <- list(init = Sys.time())
+
+    # setup the Shapley framework
+    internal <- shapley_setup_forecast(internal)
+
+    # May not need to be called here?
+    internal <- setup_approach(internal, model = model, predict_model = predict_model)
+
+    # Compute the vS
+    vS_list <- compute_vS(internal, model, predict_model, method = "regular")
+
+    # Compute Shapley values based on conditional expectations (v(S))
+    internal <- compute_estimates(
+      vS_list = vS_list,
+      internal = internal
+    )
+
+    # Check convergence based on estimates and standard deviations (and thresholds)
+    internal <- check_convergence(internal)
+
+    # Save intermediate results
+    save_results(internal)
+
+    # Preparing parameters for next iteration (does not do anything if already converged)
+    internal <- prepare_next_iteration(internal)
+
+    # Printing iteration information
+    print_iter(internal)
+
+    ### Setting globals for to simplify the loop
+    converged <- internal$iter_list[[iter]]$converged
+
+    internal$timing_list$postprocess_res <- Sys.time()
+
+    internal$iter_timing_list[[iter]] <- internal$timing_list
+
+    iter <- iter + 1
+  }
+
+  internal$main_timing_list$main_computation <- Sys.time()
+
+  output <- finalize_explanation(internal = internal)
+
+  internal$main_timing_list$finalize_explanation <- Sys.time()
+
+  output$timing <- compute_time(internal)
+
+  # Some cleanup when doing testing
+  testing <- internal$parameters$testing
+  if (isTRUE(testing)) {
+    output <- testing_cleanup(output)
+  }
 
   return(output)
 }
 
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-remove_outputs_pass_tests_fore <- function(output) {
-  # Temporary to avoid failing tests related to vaeac approach
-  if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
-    output$internal$parameters[c(
-      "vaeac", "vaeac.sampler", "vaeac.model", "vaeac.activation_function", "vaeac.checkpoint"
-    )] <- NULL
-    output$internal$parameters$vaeac.extra_parameters[c("vaeac.folder_to_save_model", "vaeac.model_description")] <-
-      NULL
-  }
-
-  # Remove the `regression` parameter from the output list when we are not doing regression
-  if (isFALSE(output$internal$parameters$regression)) output$internal$parameters$regression <- NULL
-
-  return(output)
-}
 
 #' Set up data for explain_forecast
 #'
@@ -326,6 +346,8 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
     y = y,
     xreg = xreg,
     group = reg_fcast$group,
+    horizon_group = reg_fcast$horizon_group,
+    shap_names = names(data_lag$group),
     n_endo = ncol(data_lag$lagged),
     x_train = cbind(
       data.table::as.data.table(data_lag$lagged[train_idx, , drop = FALSE]),
@@ -378,6 +400,7 @@ lag_data <- function(x, lags) {
 reg_forecast_setup <- function(x, horizon, group) {
   fcast <- matrix(NA, nrow(x) - horizon + 1, 0)
   names <- character()
+  horizon_group <- lapply(seq_len(horizon), function(i) names(group)[!(names(group) %in% colnames(x))])
   for (i in seq_len(ncol(x))) {
     names_i <- paste0(colnames(x)[i], ".F", seq_len(horizon))
     names <- c(names, names_i)
@@ -386,8 +409,12 @@ reg_forecast_setup <- function(x, horizon, group) {
     fcast <- cbind(fcast, fcast_i)
 
     # Append group names if the exogenous regressor also has lagged values.
-    group[[colnames(x)[i]]] <- c(group[[colnames(x)[i]]], names_i)
+    for (h in seq_len(horizon)) {
+      group[[paste0(colnames(x)[i], ".", h)]] <- c(group[[colnames(x)[i]]], names_i[seq_len(h)])
+      horizon_group[[h]] <- c(horizon_group[[h]], paste0(colnames(x)[i], ".", h))
+    }
+    group[[colnames(x)[i]]] <- NULL
   }
   colnames(fcast) <- names
-  return(list(fcast = fcast, group = group))
+  return(list(fcast = fcast, group = group, horizon_group = horizon_group))
 }

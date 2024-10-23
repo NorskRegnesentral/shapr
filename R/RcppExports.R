@@ -110,7 +110,7 @@ inv_gaussian_transform_cpp <- function(z, x) {
 
 #' Generate (Gaussian) Copula MC samples
 #'
-#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_samples`, `n_features`) containing samples from the
+#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_MC_samples`, `n_features`) containing samples from the
 #' univariate standard normal.
 #' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
 #' to explain on the original scale.
@@ -118,7 +118,7 @@ inv_gaussian_transform_cpp <- function(z, x) {
 #' observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
 #' transformed to a standardized normal distribution.
 #' @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
-#' @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
+#' @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
 #' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
 #' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
 #' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
@@ -127,8 +127,8 @@ inv_gaussian_transform_cpp <- function(z, x) {
 #' between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
 #' transformed to a standardized normal distribution.
 #'
-#' @return An arma::cube/3D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
-#' the columns (_,j,_) are matrices of dimension (`n_samples`, `n_features`) containing the conditional Gaussian
+#' @return An arma::cube/3D array of dimension (`n_MC_samples`, `n_explain` * `n_coalitions`, `n_features`), where
+#' the columns (_,j,_) are matrices of dimension (`n_MC_samples`, `n_features`) containing the conditional Gaussian
 #' copula MC samples for each explicand and coalition on the original scale.
 #'
 #' @export
@@ -138,21 +138,51 @@ prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gau
     .Call(`_shapr_prepare_data_copula_cpp`, MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat)
 }
 
+#' Generate (Gaussian) Copula MC samples for the causal setup with a single MC sample for each explicand
+#'
+#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing samples from the
+#' univariate standard normal. The i'th row will be applied to the i'th row in `x_explain_mat`.
+#' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations to
+#' explain on the original scale. The MC sample for the i'th explicand is based on the i'th row in `MC_samples_mat`.
+#' @param x_explain_gaussian_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the
+#' observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
+#' transformed to a standardized normal distribution.
+#' @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
+#' @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
+#' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+#' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
+#' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
+#' using the Gaussian transform, i.e., the samples have been transformed to a standardized normal distribution.
+#' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
+#' between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
+#' transformed to a standardized normal distribution.
+#'
+#' @return An arma::mat/2D array of dimension (`n_explain` * `n_coalitions`, `n_features`),
+#' where the rows (n_explain * S_ind, n_explain * (S_ind + 1) - 1) contains the single
+#' conditional Gaussian MC samples for each explicand and `S_ind` coalition.
+#'
+#' @export
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+prepare_data_copula_cpp_caus <- function(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_copula_cpp_caus`, MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat)
+}
+
 #' Generate Gaussian MC samples
 #'
-#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_samples`, `n_features`) containing samples from the
+#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_MC_samples`, `n_features`) containing samples from the
 #' univariate standard normal.
 #' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
 #' to explain.
-#' @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
+#' @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
 #' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
 #' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
 #' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature.
 #' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
 #' between all pairs of features.
 #'
-#' @return An arma::cube/3D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
-#' the columns (_,j,_) are matrices of dimension (`n_samples`, `n_features`) containing the conditional Gaussian
+#' @return An arma::cube/3D array of dimension (`n_MC_samples`, `n_explain` * `n_coalitions`, `n_features`), where
+#' the columns (_,j,_) are matrices of dimension (`n_MC_samples`, `n_features`) containing the conditional Gaussian
 #' MC samples for each explicand and coalition.
 #'
 #' @export
@@ -160,6 +190,30 @@ prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gau
 #' @author Lars Henry Berge Olsen
 prepare_data_gaussian_cpp <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
     .Call(`_shapr_prepare_data_gaussian_cpp`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+}
+
+#' Generate Gaussian MC samples for the causal setup with a single MC sample for each explicand
+#'
+#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing samples from the
+#' univariate standard normal. The i'th row will be applied to the i'th row in `x_explain_mat`.
+#' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
+#' to explain. The MC sample for the i'th explicand is based on the i'th row in `MC_samples_mat`
+#' @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
+#' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+#' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
+#' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature.
+#' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
+#' between all pairs of features.
+#'
+#' @return An arma::mat/2D array of dimension (`n_explain` * `n_coalitions`, `n_features`),
+#' where the rows (n_explain * S_ind, n_explain * (S_ind + 1) - 1) contains the single
+#' conditional Gaussian MC samples for each explicand and `S_ind` coalition.
+#'
+#' @export
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+prepare_data_gaussian_cpp_caus <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_gaussian_cpp_caus`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
 }
 
 #' (Generalized) Mahalanobis distance
@@ -199,7 +253,7 @@ sample_features_cpp <- function(m, n_features) {
 #'
 #' @param xtest Numeric matrix. Represents a single test observation.
 #'
-#' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations} equals
+#' @param S Integer matrix of dimension \code{n_coalitions x m}, where \code{n_coalitions} equals
 #' the total number of sampled/non-sampled feature combinations and \code{m} equals
 #' the total number of unique features. Note that \code{m = ncol(xtrain)}. See details
 #' for more information.
@@ -228,34 +282,34 @@ observation_impute_cpp <- function(index_xtrain, index_s, xtrain, xtest, S) {
 
 #' Calculate weight matrix
 #'
-#' @param subsets List. Each of the elements equals an integer
+#' @param coalitions List. Each of the elements equals an integer
 #' vector representing a valid combination of features/feature groups.
 #' @param m Integer. Number of features/feature groups
 #' @param n Integer. Number of combinations
 #' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
 #' the Shapley weight of feature/feature group combination \code{i}, represented by
-#' \code{subsets[[i]]}.
+#' \code{coalitions[[i]]}.
 #'
 #' @export
 #' @keywords internal
 #'
 #' @return Matrix of dimension n x m + 1
-#' @author Nikolai Sellereite
-weight_matrix_cpp <- function(subsets, m, n, w) {
-    .Call(`_shapr_weight_matrix_cpp`, subsets, m, n, w)
+#' @author Nikolai Sellereite, Martin Jullum
+weight_matrix_cpp <- function(coalitions, m, n, w) {
+    .Call(`_shapr_weight_matrix_cpp`, coalitions, m, n, w)
 }
 
-#' Get feature matrix
+#' Get coalition matrix
 #'
-#' @param features List
-#' @param m Positive integer. Total number of features
+#' @param coalitions List
+#' @param m Positive integer. Total number of coalitions
 #'
 #' @export
 #' @keywords internal
 #'
 #' @return Matrix
-#' @author Nikolai Sellereite
-feature_matrix_cpp <- function(features, m) {
-    .Call(`_shapr_feature_matrix_cpp`, features, m)
+#' @author Nikolai Sellereite, Martin Jullum
+coalition_matrix_cpp <- function(coalitions, m) {
+    .Call(`_shapr_coalition_matrix_cpp`, coalitions, m)
 }
 

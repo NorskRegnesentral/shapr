@@ -2,7 +2,8 @@
 #'
 #' @param internal List.
 #' Holds all parameters, data, functions and computed objects used within [explain()]
-#' The list contains one or more of the elements `parameters`, `data`, `objects`, `output`.
+#' The list contains one or more of the elements `parameters`, `data`, `objects`, `iter_list`, `timing_list`,
+#' `main_timing_list`, `output`, and `iter_timing_list`.
 #'
 #' @param model Objects.
 #' The model object that ought to be explained.
@@ -30,13 +31,17 @@ default_doc <- function(internal, model, predict_model, output_size, extra, ...)
 
 #' Exported documentation helper function.
 #'
-#' @param internal Not used.
+#' @param iter Integer.
+#' The iteration number. Only used internally.
 #'
-#' @param index_features Positive integer vector. Specifies the indices of combinations to
-#' apply to the present method. `NULL` means all combinations. Only used internally.
+#' @param internal List.
+#' Not used directly, but passed through from [explain()].
+#'
+#' @param index_features Positive integer vector. Specifies the id_coalition to
+#' apply to the present method. `NULL` means all coalitions. Only used internally.
 #'
 #' @keywords internal
-default_doc_explain <- function(internal, index_features) {
+default_doc_explain <- function(internal, iter, index_features) {
   NULL
 }
 
@@ -46,7 +51,7 @@ default_doc_explain <- function(internal, index_features) {
 #' @description
 #' This helper function displays the specific arguments applicable to the different
 #' approaches. Note that when calling [shapr::explain()] from Python, the parameters
-#' are renamed from the form `approach.parameter_name` to `approach_parameter_name`.
+#' are renamed from the `approach.parameter_name` to `approach_parameter_name`.
 #' That is, an underscore has replaced the dot as the dot is reserved in Python.
 #'
 #' @inheritDotParams setup_approach.independence -internal

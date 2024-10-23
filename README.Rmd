@@ -28,11 +28,13 @@ knitr::opts_chunk$set(
 
 ## Brief NEWS
 
+This is `shapr` version 1.0.0, which provides a full suit of new functionality. 
+See  the [NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md) for details
+
 ### Breaking change (June 2023)
 
 As of version 0.2.3.9000, the development version of shapr (master branch on GitHub from June 2023) has been severely restructured, introducing a new syntax for explaining models, and thereby introducing a range of breaking changes. This essentially amounts to using a single function (`explain()`) instead of two functions (`shapr()` and `explain()`).
 The CRAN version of `shapr` (v0.2.2) still uses the old syntax. 
-See the [NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md) for details. 
 The examples below uses the new syntax. 
 [Here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md) is a version of this README with the syntax of the CRAN version (v0.2.2).
 
@@ -41,63 +43,22 @@ The examples below uses the new syntax.
 As of version 0.2.3.9100 (master branch on GitHub from June 2023), we provide a Python wrapper (`shaprpy`) which allows explaining python models with the methodology implemented in `shapr`, directly from Python. The wrapper is available [here](https://github.com/NorskRegnesentral/shapr/tree/master/python). See also details in the [NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md).
 
 
-## Introduction
+## The package
 
-The most common machine learning task is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features.
-When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction.
-However, explaining predictions from complex, or seemingly simple, machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable  explanations.
+The shapr R package implements an enhanced version of the KernelSHAP method, for approximating Shapley values, 
+with a strong focus on conditional Shapley values. 
+The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution 
+functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, 
+and distributions. 
+The package also includes evaluation metrics to compare various approaches. 
+With features like parallelized computations, convergence detection, progress updates, and extensive plotting options, 
+shapr is as a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values, 
+which are critical for understanding how features truly contribute to predictions.
 
-Shapley values is the only prediction explanation framework with a solid theoretical foundation (@lundberg2017unified). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. 
-Popular methods like Shapley Sampling Values (@vstrumbelj2014explaining), SHAP/Kernel SHAP (@lundberg2017unified), and to some extent TreeSHAP (@lundberg2018consistent), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. @aas2019explaining extends and improves the Kernel SHAP method of @lundberg2017unified to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. 
-[See the paper for details](https://arxiv.org/abs/1903.10464).
+A basic example is provided below. 
+Otherwise we refer to the [pkgdown website](https://norskregnesentral.github.io/shapr/) and the vignettes there  
+for details and further examples.
 
-This package implements the methodology of @aas2019explaining.
-
-The following methodology/features are currently implemented:
-
--   Native support of explanation of predictions from models fitted with the following functions 
-`stats::glm`, `stats::lm`,`ranger::ranger`, `xgboost::xgboost`/`xgboost::xgb.train` and `mgcv::gam`.
--   Accounting for feature dependence 
-    * assuming the features are Gaussian (`approach = 'gaussian'`, @aas2019explaining)
-    * with a Gaussian copula (`approach = 'copula'`, @aas2019explaining)
-    * using the Mahalanobis distance based empirical (conditional) distribution approach (`approach = 'empirical'`, @aas2019explaining)
-    * using conditional inference trees (`approach = 'ctree'`, @redelmeier2020explaining). 
-    * using the endpoint match method for time series (`approach = 'timeseries'`, @jullum2021efficient)
-    * using the joint distribution approach for models with purely cateogrical data (`approach = 'categorical'`, @redelmeier2020explaining)
-    * assuming all features are independent (`approach = 'independence'`, mainly for benchmarking)
--   Combining any of the above methods.
--   Explain *forecasts* from time series models at different horizons with `explain_forecast()` (R only)
--   Batch computation to reduce memory consumption significantly
--   Parallelized computation using the [future](https://future.futureverse.org/) framework. (R only)
--   Progress bar showing computation progress, using the [`progressr`](https://progressr.futureverse.org/) package. Must be activated by the user.
--   Optional use of the AICc criterion of @hurvich1998smoothing when optimizing the bandwidth parameter in the empirical (conditional) approach of @aas2019explaining.
--   Functionality for visualizing the explanations. (R only)
--   Support for models not supported natively.
-
-<!--
-Current methodological restrictions:
-
-- The features must follow a continuous distribution
-- Discrete features typically work just fine in practice although the theory breaks down
-- Ordered/unordered categorical features are not supported
-
-Future releases will include:
-
--   Computational improvement of the AICc optimization approach,
--   Adaptive selection of method to account for the feature dependence.
--->
-
-
-Note the prediction outcome must be numeric. 
-All approaches except `approach = 'categorical'` works for numeric features, but unless the models are very gaussian-like, we recommend `approach = 'ctree'` or `approach = 'empirical'`, especially if there are discretely distributed features.
-When the models contains both numeric and categorical features, we recommend `approach = 'ctree'`.
-For models with a smaller number of categorical features (without many levels) and a decent training set, we recommend `approach = 'categorical'`.
-For (binary) classification based on time series models, we suggest using `approach = 'timeseries'`.
-To explain forecasts of time series models (at different horizons), we recommend using `explain_forecast()` instead of `explain()`. 
-The former has a more suitable input syntax for explaining those kinds of forecasts.
-See the [vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html) for details and further examples.
-
-Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations.
 
 ## Installation
 
@@ -171,18 +132,19 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0
+  phi0 = p0
 )
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 
 # Finally we plot the resulting explanations
 plot(explanation)
 ```
 
-See the [vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html) for further examples.
+See the [vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html) for further basic usage
+examples.
 
 
 ## Contribution

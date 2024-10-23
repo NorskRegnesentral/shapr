@@ -15,6 +15,7 @@
   bar_plot_order = "largest_first",
   scatter_features = NULL,
   scatter_hist = TRUE,
+  include_group_feature_means = FALSE,
   ...
 )
 }
@@ -86,8 +87,13 @@ character vector, indicating the name(s) of the feature(s) to plot.}
 
 \item{scatter_hist}{Logical.
 Only used for \code{plot_type = "scatter"}.
-Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note that the
-bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.}
+Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note
+that the bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.}
+
+\item{include_group_feature_means}{Logical.
+Whether to include the average feature value in a group on the y-axis or not.
+If \code{FALSE} (default), then no value is shown for the groups. If \code{TRUE}, then \code{shapr} includes the mean of the
+features in each group.}
 
 \item{...}{Currently not used.}
 }
@@ -128,8 +134,8 @@ x <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p,
-  n_samples = 1e2
+  phi0 = p,
+  n_MC_samples = 1e2
 )
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -178,8 +184,8 @@ x <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  prediction_zero = p,
-  n_samples = 1e2
+  phi0 = p,
+  n_MC_samples = 1e2
 )
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -189,5 +195,5 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 
 }
 \author{
-Martin Jullum, Vilde Ung
+Martin Jullum, Vilde Ung, Lars Henry Berge Olsen
 }

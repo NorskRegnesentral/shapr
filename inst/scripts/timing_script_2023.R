@@ -59,7 +59,7 @@ xy_train <- cbind(x_train,y=y_train)
 
 model <- lm(formula = y~.,data=xy_train)
 
-prediction_zero <- mean(y_train)
+phi0 <- mean(y_train)
 
 n_batches_use <- min(2^p-2,n_batches)
 
@@ -72,8 +72,8 @@ explanation <- explain(
   x_train = x_train,
   approach = approach,
   n_batches = n_batches_use,
-  prediction_zero = prediction_zero,
-  n_combinations = 10^4
+  phi0 = phi0,
+  n_coalitions = 10^4
 )
 
 sys_time_end_explain <- Sys.time()
@@ -89,7 +89,7 @@ timing <- list(p = p,
                n_batches = n_batches,
                n_cores = n_cores,
                approach = approach,
-               n_combinations = explanation$internal$parameters$used_n_combinations,
+               n_coalitions = explanation$internal$parameters$used_n_coalitions,
                sys_time_initial = as.character(sys_time_initial),
                sys_time_start_explain = as.character(sys_time_start_explain),
                sys_time_end_explain = as.character(sys_time_end_explain),

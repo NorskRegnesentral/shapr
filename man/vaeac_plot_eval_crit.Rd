@@ -79,8 +79,8 @@ explanation_paired <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = approach,
-  prediction_zero = p0,
-  n_samples = 1, # As we are only interested in the training of the vaeac
+  phi0 = p0,
+  n_MC_samples = 1, # As we are only interested in the training of the vaeac
   vaeac.epochs = 10, # Should be higher in applications.
   vaeac.n_vaeacs_initialize = 1,
   vaeac.width = 16,
@@ -93,8 +93,8 @@ explanation_regular <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = approach,
-  prediction_zero = p0,
-  n_samples = 1, # As we are only interested in the training of the vaeac
+  phi0 = p0,
+  n_MC_samples = 1, # As we are only interested in the training of the vaeac
   vaeac.epochs = 10, # Should be higher in applications.
   vaeac.width = 16,
   vaeac.depth = 2,

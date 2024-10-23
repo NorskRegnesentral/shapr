@@ -45,26 +45,26 @@ exp <- explain_forecast(model = model_arima_temp,
                         explain_xreg_lags = c(0,1),
                         horizon = 1,
                         approach = "empirical",
-                        prediction_zero = rep(mean(y),1),
+                        phi0 = rep(mean(y),1),
                         group_lags = FALSE,
                         n_batches = 1)
 
 # These two should be approximately equal
 # For y
-exp$shapley_values$Y1.1
+exp$shapley_values_est$Y1.1
 model_arima_temp$coef[1]*(y[explain_idx]-mean(y))
 #[1] -0.13500  0.20643
 #[1] -0.079164  0.208118
 
 
 # for xreg1
-exp$shapley_values$var1.F1
+exp$shapley_values_est$var1.F1
 model_arima_temp$coef[3]*(xreg[explain_idx+1,1]-mean(xreg[,1]))
 #[1] -0.030901  1.179386
 #[1] -0.12034  1.19589
 
 # for xreg2
-exp$shapley_values$var2.F1
+exp$shapley_values_est$var2.F1
 0
 #[1] 0.011555 0.031911
 #[1] 0

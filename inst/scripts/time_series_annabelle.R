@@ -71,7 +71,7 @@ explanation_group <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "timeseries",
-  prediction_zero = p0,
+  phi0 = p0,
   group = group,
   timeseries.fixed_sigma_vec = 2
   # timeseries.bounds = c(-1, 2)

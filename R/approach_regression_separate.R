@@ -11,8 +11,8 @@
 #' The data.frame must contain the possible hyperparameter value combinations to try.
 #' The column names must match the names of the tuneable parameters specified in `regression.model`.
 #' If `regression.tune_values` is a function, then it should take one argument `x` which is the training data
-#' for the current combination/coalition and returns a data.frame/data.table/tibble with the properties described above.
-#' Using a function allows the hyperparameter values to change based on the size of the combination. See the regression
+#' for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
+#' Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
 #' vignette for several examples.
 #' Note, to make it easier to call `explain()` from Python, the `regression.tune_values` can also be a string
 #' containing an R function. For example,
@@ -42,8 +42,6 @@ setup_approach.regression_separate <- function(internal,
   regression.check_namespaces()
 
   # Small printout to the user
-  if (internal$parameters$verbose == 2) message("Starting 'setup_approach.regression_separate'.")
-  if (internal$parameters$verbose == 2) regression.separate_time_mess() # TODO: maybe remove
 
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <-
@@ -54,7 +52,6 @@ setup_approach.regression_separate <- function(internal,
   internal <- regression.check_parameters(internal = internal)
 
   # Small printout to the user
-  if (internal$parameters$verbose == 2) message("Done with 'setup_approach.regression_separate'.")
 
   return(internal) # Return the updated internal list
 }
@@ -67,38 +64,42 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
   # Load `workflows`, needed when parallelized as we call predict with a workflow object. Checked installed above.
   requireNamespace("workflows", quietly = TRUE)
 
+  iter <- length(internal$iter_list)
+
+  X <- internal$iter_list[[iter]]$X
+  verbose <- internal$parameters$verbose
+
   # Get the features in the batch
-  features <- internal$objects$X$features[index_features]
+  features <- X$features[index_features]
 
-  # Small printout to the user about which batch that are currently worked on
-  if (internal$parameters$verbose == 2) regression.prep_message_batch(internal, index_features)
 
-  # Initialize empty data table with specific column names and id_combination (transformed to integer later). The data
+  # Initialize empty data table with specific column names and id_coalition (transformed to integer later). The data
   # table will contain the contribution function values for the coalitions given by `index_features` and all explicands.
-  dt_res_column_names <- c("id_combination", paste0("p_hat1_", seq_len(internal$parameters$n_explain)))
+  dt_res_column_names <- c("id_coalition", paste0("p_hat1_", seq_len(internal$parameters$n_explain)))
   dt_res <- data.table(matrix(ncol = length(dt_res_column_names), nrow = 0, dimnames = list(NULL, dt_res_column_names)))
 
   # Iterate over the coalitions provided by index_features.
   # Note that index_features will never be NULL and never contain the empty or grand coalitions.
   for (comb_idx in seq_along(features)) {
-    # Get the column indices of the features in current coalition/combination
+    # Get the column indices of the features in current coalition
     current_comb <- features[[comb_idx]]
 
     # Extract the current training (and add y_hat as response) and explain data
     current_x_train <- internal$data$x_train[, ..current_comb][, "y_hat" := internal$data$x_train_y_hat]
     current_x_explain <- internal$data$x_explain[, ..current_comb]
 
+
     # Fit the current separate regression model to the current training data
-    if (internal$parameters$verbose == 2) regression.prep_message_comb(internal, index_features, comb_idx)
     regression.current_fit <- regression.train_model(
       x = current_x_train,
       seed = internal$parameters$seed,
-      verbose = internal$parameters$verbose,
+      verbose = verbose,
       regression.model = internal$parameters$regression.model,
       regression.tune = internal$parameters$regression.tune,
       regression.tune_values = internal$parameters$regression.tune_values,
       regression.vfold_cv_para = internal$parameters$regression.vfold_cv_para,
-      regression.recipe_func = internal$parameters$regression.recipe_func
+      regression.recipe_func = internal$parameters$regression.recipe_func,
+      current_comb = current_comb
     )
 
     # Compute the predicted response for the explicands, i.e., the v(S, x_i) for all explicands x_i.
@@ -108,9 +109,9 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
     dt_res <- rbind(dt_res, data.table(index_features[comb_idx], matrix(pred_explicand, nrow = 1)), use.names = FALSE)
   }
 
-  # Set id_combination to be the key
-  dt_res[, id_combination := as.integer(id_combination)]
-  data.table::setkey(dt_res, id_combination)
+  # Set id_coalition to be the key
+  dt_res[, id_coalition := as.integer(id_coalition)]
+  data.table::setkey(dt_res, id_coalition)
 
   # Return the estimated contribution function values
   return(dt_res)
@@ -139,14 +140,15 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 #' @keywords internal
 regression.train_model <- function(x,
                                    seed = 1,
-                                   verbose = 0,
+                                   verbose = NULL,
                                    regression.model = parsnip::linear_reg(),
                                    regression.tune = FALSE,
                                    regression.tune_values = NULL,
                                    regression.vfold_cv_para = NULL,
                                    regression.recipe_func = NULL,
                                    regression.response_var = "y_hat",
-                                   regression.surrogate_n_comb = NULL) {
+                                   regression.surrogate_n_comb = NULL,
+                                   current_comb = NULL) {
   # Create a recipe to the augmented training data
   regression.recipe <- recipes::recipe(as.formula(paste(regression.response_var, "~ .")), data = x)
 
@@ -203,9 +205,14 @@ regression.train_model <- function(x,
       grid = regression.grid,
       metrics = yardstick::metric_set(yardstick::rmse)
     )
-
     # Small printout to the user
-    if (verbose == 2) regression.cv_message(regression.results = regression.results, regression.grid = regression.grid)
+    if ("vS_details" %in% verbose) {
+      regression.cv_message(
+        regression.results = regression.results,
+        regression.grid = regression.grid,
+        current_comb = current_comb
+      )
+    }
 
     # Set seed for reproducibility. Without this we get different results based on if we run in parallel or sequential
     set.seed(seed)
@@ -320,6 +327,11 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.check_parameters <- function(internal) {
+  iter <- length(internal$iter_list)
+
+  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
+
+
   # Convert the objects to R-objects if they are strings
   if (is.character(internal$parameters$regression.model)) {
     internal$parameters$regression.model <- regression.get_string_to_R(internal$parameters$regression.model)
@@ -343,7 +355,7 @@ regression.check_parameters <- function(internal) {
   # Check that `regression.check_sur_n_comb` is a valid value (only applicable for surrogate regression)
   regression.check_sur_n_comb(
     regression.surrogate_n_comb = internal$parameters$regression.surrogate_n_comb,
-    used_n_combinations = internal$parameters$used_n_combinations
+    n_coalitions = n_coalitions
   )
 
   # Check and get if we are to tune the hyperparameters of the regression model
@@ -432,43 +444,6 @@ regression.check_namespaces <- function() {
 }
 
 # Message functions ====================================================================================================
-#' Produce time message for separate regression
-#' @author Lars Henry Berge Olsen
-#' @keywords internal
-regression.separate_time_mess <- function() {
-  message(paste(
-    "When using `approach = 'regression_separate'` the `explanation$timing$timing_secs` object \n",
-    "can be missleading as `setup_computation` does not contain the training times of the \n",
-    "regression models as they are trained on the fly in `compute_vS`. This is to reduce memory \n",
-    "usage and to improve efficency.\n"
-  )) # TODO: should we add the time somewhere else?
-}
-
-#' Produce message about which batch prepare_data is working on
-#' @inheritParams default_doc
-#' @inheritParams default_doc_explain
-#' @author Lars Henry Berge Olsen
-#' @keywords internal
-regression.prep_message_batch <- function(internal, index_features) {
-  message(paste0(
-    "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
-    internal$parameters$n_batches, " in `prepare_data.", internal$parameters$approach, "()`."
-  ))
-}
-
-#' Produce message about which combination prepare_data is working on
-#' @inheritParams default_doc
-#' @inheritParams default_doc_explain
-#' @param comb_idx Integer. The index of the combination in a specific batch.
-#' @author Lars Henry Berge Olsen
-#' @keywords internal
-regression.prep_message_comb <- function(internal, index_features, comb_idx) {
-  message(paste0(
-    "Working on combination with id ", internal$objects$X$id_combination[index_features[comb_idx]],
-    " of ", internal$parameters$used_n_combinations, "."
-  ))
-}
-
 #' Produce message about which batch prepare_data is working on
 #'
 #' @param regression.results The results of the CV procedures.
@@ -477,7 +452,7 @@ regression.prep_message_comb <- function(internal, index_features, comb_idx) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-regression.cv_message <- function(regression.results, regression.grid, n_cv = 10) {
+regression.cv_message <- function(regression.results, regression.grid, n_cv = 10, current_comb) {
   # Get the feature names and add evaluation metric rmse
   feature_names <- names(regression.grid)
   feature_names_rmse <- c(feature_names, "rmse", "rmse_std_err")
@@ -494,8 +469,16 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
   regression.grid_best$rmse_std <- round(best_results$std_err, 2)
   width <- sapply(regression.grid_best, function(x) max(nchar(as.character(unique(x)))))
 
-  # Message title of the results
-  message(paste0("Results of the ", best_results$n[1], "-fold cross validation (top ", n_cv, " best configurations):"))
+  # Regression_separate adds the v(S), while separate does not add anything, but prints the Extra info thing
+  if (!is.null(current_comb)) {
+    this_vS <- paste0("for  v(", paste0(current_comb, collapse = " "), ") ")
+  } else {
+    cli::cli_h2("Extra info about the tuning of the regression model")
+    this_vS <- ""
+  }
+
+  msg0 <- paste0("Top ", n_cv, " best configs ", this_vS, "(using ", best_results$n[1], "-fold CV)")
+  msg <- NULL
 
   # Iterate over the n_cv best results and print out the hyper parameter values and the rmse and rmse_std_err
   for (row_idx in seq_len(nrow(best_results))) {
@@ -509,8 +492,11 @@ regression.cv_message <- function(regression.results, regression.grid, n_cv = 10
       seq_along(feature_values_rmse),
       function(x) format(as.character(feature_values_rmse[x]), width = width[x], justify = "left")
     )
-    message(paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), ""))
+    msg <-
+      c(msg, paste0("#", row_idx, ": ", paste(paste(feature_names_rmse, "=", values_fixed_len), collapse = "  "), "\n"))
   }
-
-  message("") # Empty message to get a blank line
+  cli::cli({
+    cli::cli_h3(msg0)
+    for (i in seq_along(msg)) cli::cli_text(msg[i])
+  })
 }

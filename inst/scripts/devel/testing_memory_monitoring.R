@@ -44,7 +44,7 @@ xy_train <- cbind(x_train,y=y_train)
 
 model <- lm(formula = y~.,data=xy_train)
 
-explainer <- shapr(x_train, model,n_combinations = 1000)
+explainer <- shapr(x_train, model,n_coalitions = 1000)
 p <- mean(y_train)
 
 
@@ -56,7 +56,7 @@ peakRAM(explain(
     x_test,
     approach = "gaussian",
     explainer = explainer,
-    prediction_zero = p,n_batches = 4)
+    phi0 = p,n_batches = 4)
     )
 
 # ,
@@ -64,28 +64,28 @@ peakRAM(explain(
 #       x_test,
 #       approach = "empirical",
 #       explainer = explainer,
-#       prediction_zero = p,n_batches = 2),
+#       phi0 = p,n_batches = 2),
 #     explain(
 #       x_test,
 #       approach = "empirical",
 #       explainer = explainer,
-#       prediction_zero = p,n_batches = 4))
+#       phi0 = p,n_batches = 4))
 
 #     explain(
 #       x_test,
 #       approach = "empirical",
 #       explainer = explainer,
-#       prediction_zero = p,n_batches = 8),
+#       phi0 = p,n_batches = 8),
 #     explain(
 #       x_test,
 #       approach = "empirical",
 #       explainer = explainer,
-#       prediction_zero = p,n_batches = 16),
+#       phi0 = p,n_batches = 16),
 #     explain(
 #       x_test,
 #       approach = "empirical",
 #       explainer = explainer,
-#       prediction_zero = p,n_batches = 32)
+#       phi0 = p,n_batches = 32)
 # )
 
 # s <- proc.time()
@@ -93,6 +93,6 @@ peakRAM(explain(
 #   x_test,
 #   approach = "empirical",
 #   explainer = explainer,
-#   prediction_zero = p,n_batches = 32)
+#   phi0 = p,n_batches = 32)
 # print(proc.time()-s)
 #

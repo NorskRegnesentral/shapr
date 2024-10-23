@@ -33,7 +33,7 @@ p0 <- mean(y_train)
 # and sample = TRUE
 explanation <- explain(x_test, explainer,
                        approach = "ctree",
-                       prediction_zero = p0)
+                       phi0 = p0)
 
 # Printing the Shapley values for the test data
 explanation$dt
@@ -91,7 +91,7 @@ explanation_cat <- explain(
   dummylist$testdata_new,
   approach = "ctree",
   explainer = explainer_cat,
-  prediction_zero = p0
+  phi0 = p0
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding

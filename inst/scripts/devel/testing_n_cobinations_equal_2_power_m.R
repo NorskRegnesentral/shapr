@@ -1,10 +1,10 @@
 # In this code we demonstrate that (before the bugfix) the `explain()` function
-# does not enter the exact mode when n_combinations is larger than or equal to 2^m.
-# The mode is only changed if n_combinations is strictly larger than 2^m.
-# This means that we end up with using all coalitions when n_combinations is 2^m,
+# does not enter the exact mode when n_coalitions is larger than or equal to 2^m.
+# The mode is only changed if n_coalitions is strictly larger than 2^m.
+# This means that we end up with using all coalitions when n_coalitions is 2^m,
 # but use not the exact Shapley kernel weights.
 # Bugfix replaces `>` with `=>`in the places where the code tests if
-# n_combinations is larger than or equal to 2^m. Then the text/messages printed by
+# n_coalitions is larger than or equal to 2^m. Then the text/messages printed by
 # shapr and the code correspond.
 
 library(xgboost)
@@ -41,8 +41,8 @@ explanation_exact <- explain(
   n_samples = 2, # Low value for fast computations
   n_batches = 1, # Not related to the bug
   approach = "gaussian",
-  prediction_zero = p0,
-  n_combinations = NULL
+  phi0 = p0,
+  n_coalitions = NULL
 )
 
 # Computing the conditional Shapley values using the gaussian approach
@@ -53,13 +53,13 @@ explanation_should_also_be_exact <- explain(
   n_samples = 2, # Low value for fast computations
   n_batches = 1, # Not related to the bug
   approach = "gaussian",
-  prediction_zero = p0,
-  n_combinations = 2^ncol(x_explain)
+  phi0 = p0,
+  n_coalitions = 2^ncol(x_explain)
 )
 
 # see that both `explain()` objects have the same number of combinations
-explanation_exact$internal$parameters$n_combinations
-explanation_should_also_be_exact$internal$parameters$n_combinations
+explanation_exact$internal$parameters$n_coalitions
+explanation_should_also_be_exact$internal$parameters$n_coalitions
 
 # But the first one of them is exact and the other not.
 explanation_exact$internal$parameters$exact

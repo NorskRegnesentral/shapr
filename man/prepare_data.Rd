@@ -41,10 +41,11 @@ prepare_data(internal, index_features = NULL, ...)
 \method{prepare_data}{vaeac}(internal, index_features = NULL, ...)
 }
 \arguments{
-\item{internal}{Not used.}
+\item{internal}{List.
+Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
-\item{index_features}{Positive integer vector. Specifies the indices of combinations to
-apply to the present method. \code{NULL} means all combinations. Only used internally.}
+\item{index_features}{Positive integer vector. Specifies the id_coalition to
+apply to the present method. \code{NULL} means all coalitions. Only used internally.}
 
 \item{...}{Currently not used.}
 }
@@ -56,6 +57,8 @@ the contribution function by Monte Carlo integration.
 Generate data used for predictions and Monte Carlo integration
 }
 \author{
+Annabelle Redelmeier and Lars Henry Berge Olsen
+
 Lars Henry Berge Olsen
 }
 \keyword{internal}

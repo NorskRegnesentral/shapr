@@ -7,6 +7,7 @@
 plot_SV_several_approaches(
   explanation_list,
   index_explicands = NULL,
+  index_explicands_sort = FALSE,
   only_these_features = NULL,
   plot_phi0 = FALSE,
   digits = 4,
@@ -17,7 +18,8 @@ plot_SV_several_approaches(
   facet_scales = "free",
   facet_ncol = 2,
   geom_col_width = 0.85,
-  brewer_palette = NULL
+  brewer_palette = NULL,
+  include_group_feature_means = FALSE
 )
 }
 \arguments{
@@ -27,7 +29,12 @@ the approach names (with integer suffix for duplicates) for the explanation obje
 
 \item{index_explicands}{Integer vector. Which of the explicands (test observations) to plot.
 E.g. if you have explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the
-first 5 observations/explicands and the 10th by setting \code{index_x_explain = c(1:5, 10)}.}
+first 5 observations/explicands and the 10th by setting \code{index_x_explain = c(1:5, 10)}.
+The argument \code{index_explicands_sort} must be \code{FALSE} to plot the explicand
+in the order specified in \code{index_x_explain}.}
+
+\item{index_explicands_sort}{Boolean. If \code{FALSE} (default), then \code{shapr} plots the explicands in the order
+specified in \code{index_explicands}. If \code{TRUE}, then \code{shapr} sort the indices in incressing oreder based on their id.}
 
 \item{only_these_features}{String vector. Containing the names of the features which
 are to be included in the bar plots.}
@@ -65,13 +72,18 @@ The following palettes are available for use with these scales:
 \item{Sequential}{Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges,
 OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd}
 }}
+
+\item{include_group_feature_means}{Logical. Whether to include the average feature value in a group on the
+y-axis or not. If \code{FALSE} (default), then no value is shown for the groups. If \code{TRUE}, then \code{shapr} includes
+the mean of the features in each group.}
 }
 \value{
 A \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object.
 }
 \description{
 Make plots to visualize and compare the estimated Shapley values for a list of
-\code{\link[=explain]{explain()}} objects applied to the same data and model.
+\code{\link[=explain]{explain()}} objects applied to the same data and model. For group-wise Shapley values,
+the features values plotted are the mean feature values for all features in each group.
 }
 \examples{
 # Load necessary libraries
@@ -102,7 +114,7 @@ model <- xgboost::xgboost(
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-prediction_zero <- mean(y_train)
+phi0 <- mean(y_train)
 
 # Independence approach
 explanation_independence <- explain(
@@ -110,8 +122,8 @@ explanation_independence <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "independence",
-  prediction_zero = prediction_zero,
-  n_samples = 1e2
+  phi0 = phi0,
+  n_MC_samples = 1e2
 )
 
 # Empirical approach
@@ -120,8 +132,8 @@ explanation_empirical <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = prediction_zero,
-  n_samples = 1e2
+  phi0 = phi0,
+  n_MC_samples = 1e2
 )
 
 # Gaussian 1e1 approach
@@ -130,8 +142,8 @@ explanation_gaussian_1e1 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
-  n_samples = 1e1
+  phi0 = phi0,
+  n_MC_samples = 1e1
 )
 
 # Gaussian 1e2 approach
@@ -140,8 +152,8 @@ explanation_gaussian_1e2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = prediction_zero,
-  n_samples = 1e2
+  phi0 = phi0,
+  n_MC_samples = 1e2
 )
 
 # Combined approach
@@ -150,8 +162,8 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("gaussian", "ctree", "empirical"),
-  prediction_zero = prediction_zero,
-  n_samples = 1e2
+  phi0 = phi0,
+  n_MC_samples = 1e2
 )
 
 # Create a list of explanations with names

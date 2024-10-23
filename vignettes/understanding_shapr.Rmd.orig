@@ -35,15 +35,19 @@ library(shapr)
 
 > [Overview of Package](#overview)
 
-> [The Kernel SHAP Method](#KSHAP)
+> [KernelSHAP and dependence-aware estimators](#KSHAP)
 
-> [Examples](#ex)
+> [Estimation approaches and plotting functionality](#ex)
+
+> [iterative estimation](#iterative)
+
+> [Parallelization](#para)
+
+> [Verbosity and progress updates](#verbose)
 
 > [Advanced usage](#advanced)
 
-> [Scalability and efficency](#scalability)
-
-> [Comparison to Lundberg & Lee's implementation](#compare)
+> [Explaining forecasting models](#forecasting)
 
 <a id="intro"></a>
 
@@ -58,7 +62,7 @@ on interpreting individual predictions, Shapley values is regarded to be
 the only model-agnostic explanation method with a solid theoretical
 foundation (@lundberg2017unified). Kernel SHAP is a computationally
 efficient approximation to Shapley values in higher dimensions, but it
-assumes independent features. @aas2019explaining extend the Kernel SHAP
+assumes independent features. @aas2019explaining extends the Kernel SHAP
 method to handle dependent features, resulting in more accurate
 approximations to the true Shapley values. See the
 [paper](https://www.sciencedirect.com/sdfe/reader/pii/S0004370221000539/pdf)
@@ -70,7 +74,7 @@ approximations to the true Shapley values. See the
 
 # Overview of Package
 
-## Functions
+## Functionality
 
 Here is an overview of the main functions. You can read their
 documentation and see examples with `?function_name`.
@@ -83,11 +87,62 @@ documentation and see examples with `?function_name`.
 
 : Main functions in the `shapr` package.
 
+The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
+eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
+`"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
+`shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
+See [Estimation approaches and plotting functionality](#ex) below for examples.
+It is also possible to combine the different approaches, see the [combined approach](#combined).
+
+The package allows for parallelized computation through the `future`package, see [Parallelization](#para) for details.
+
+The level of detail in the output can be controlled through the `verbose` argument. In addition, progress updates
+on the process of estimating the `v(S)`'s (and training the `"vaeac"` model) is available through the
+`progressr` package, supporting progress updates also for parallelized computation.
+See [Verbosity and progress updates](#verbose) for details.
+
+Moreover, the default behavior is to estimate the Shapley values iteratively/iteratively, with increasing number of
+feature coalitions being added, and to stop estimation as the estimated Shapley values has achieved a certain level of
+stability.
+More information about this is provided in [iterative estimation](#iterative)
+The above, combined with batch computation of the `v(S)` values, enables fast and accurate estimation of the
+Shapley values in a memory friendly manner.
+
+The package also provides functionality for computing Shapley values for groups of features, and custom function explanation, see [Advanced usage](#advanced).
+Finally, explanation of multiple output time series forecasting models are discussed in
+[Explaining forecasting models](#forecasting).
+
+
+## Default behavior of `explain`
+
+Below we provide brief descriptions of the most important parts of the default behavior of the `explain` function.
+
+By default `explain` always compute feature-wise Shapley values.
+Groups of features can be explained by providing the feature groups through the `group` argument.
+
+When there are five or less features (or feature groups), iterative estimation is by default disabled.
+The reason for this is that it is usually faster to estimate the Shapley values for all possible coalitions (`v(S)`),
+than to estimate the uncertainty of the Shapley values, and potentially stop estimation earlier.
+While iterative estimation is the default starting from six features, it is mainly when there are more than ten features,
+that it is most beneficial, and can save a lot of computation time.
+The reason for this is that the number of possible coalitions grows exponentially.
+These defaults can be overridden by setting the `iterative` argument to `TRUE` or `FALSE`.
+When using the `iterative` argument, the estimation for an observation is stopped when all Shapley value
+standard deviations are below `t` times the range of the Shapley values.
+The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tol` argument, see [iterative estimation](#iterative) for more details.
+
+Since the iterativeness default changes based on the number of features (or feature groups), the default is also to have
+no upper bound on the number of coalitions considered.
+This can be controlled through the `max_n_coalitions` argument.
+
+
 <a id="KSHAP"></a>
 
 <br>
 
-# The Kernel SHAP Method
+# KernelSHAP and dependence-aware estimators
+
+## The Kernel SHAP Method
 
 Assume a predictive model $f(\boldsymbol{x})$ for a response value $y$
 with features $\boldsymbol{x}\in \mathbb{R}^M$, trained on a training
@@ -252,9 +307,7 @@ AIC known as AICc. As calculation of it is computationally intensive, an
 approximate version of the selection criterion is also suggested.
 Details on this is found in @aas2019explaining.
 
-<a id="ex"></a>
-
-<br>
+<a id="ctree"></a>
 
 ## Conditional Inference Tree Approach
 
@@ -334,6 +387,8 @@ the `explain()` function. For example, we can the change the batch size to 32 by
 `vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
 extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
 
+<a id="categorical"></a>
+
 ## Categorical Approach
 
 When the features are all categorical, we can estimate the conditional
@@ -380,17 +435,11 @@ paradigm into the separate and surrogate regression method classes. In the
 separate vignette, we briefly introduce the two method classes. For an in-depth
 explanation, we refer the reader to Sections 3.5 and 3.6 in @olsen2024comparative.
 
-
 <a id="ex"></a>
 
 <br>
 
-# Examples {#examples}
-
-`shapr` supports computation of Shapley values with any predictive model
-which takes a set of numeric features and produces a numeric outcome.
-Note that the ctree method takes both numeric and categorical variables.
-Check under "Advanced usage" for an example of how this can be done.
+# Estimation approaches and plotting functionality {#ex}
 
 The following example shows how a simple `xgboost` model is trained
 using the `airquality` dataset, and how `shapr` can be used to explain
@@ -439,12 +488,13 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0
+  phi0 = p0,
+  iterative = FALSE
 )
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 
 # Plot the resulting explanations for observations 1 and 6
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
@@ -477,7 +527,8 @@ explanation_plot <- explain(
   x_explain = x_explain_many,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0
+  phi0 = p0,
+  iterative = FALSE
 )
 plot(explanation_plot, plot_type = "beeswarm")
 ```
@@ -517,7 +568,8 @@ explanation_lm_cat <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  prediction_zero = p0
+  phi0 = p0,
+  iterative = FALSE
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding
@@ -538,10 +590,11 @@ explanation_ctree <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  prediction_zero = p0,
+  phi0 = p0,
   ctree.mincriterion = 0.80,
   ctree.minsplit = 20,
-  ctree.minbucket = 20
+  ctree.minbucket = 20,
+  iterative = FALSE
 )
 # Default parameters (based on (Hothorn, 2006)) are:
 # mincriterion = 0.95
@@ -578,7 +631,8 @@ explanation_cat_method <- explain(
   x_explain = x_explain_all_cat,
   x_train = x_train_all_cat,
   approach = "categorical",
-  prediction_zero = p0
+  phi0 = p0,
+  iterative = FALSE
 )
 ```
 
@@ -638,8 +692,9 @@ explanation_timeseries <- explain(
   x_explain = x_explain_ts,
   x_train = x_train_ts,
   approach = "timeseries",
-  prediction_zero = p0_ts,
-  group = group_ts
+  phi0 = p0_ts,
+  group = group_ts,
+  iterative = FALSE
 )
 ```
 
@@ -747,9 +802,8 @@ explanation_independence <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "independence",
-  prediction_zero = p0,
-  n_samples = 1e2,
-  n_batches = 5,
+  phi0 = p0,
+  n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
 
@@ -759,9 +813,8 @@ explanation_empirical <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
-  n_samples = 1e2,
-  n_batches = 5,
+  phi0 = p0,
+  n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
 
@@ -771,9 +824,8 @@ explanation_gaussian_1e1 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
-  n_samples = 1e1,
-  n_batches = 5,
+  phi0 = p0,
+  n_MC_samples = 1e1,
   MSEv_uniform_comb_weights = TRUE
 )
 
@@ -783,9 +835,8 @@ explanation_gaussian_1e2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
-  n_samples = 1e2,
-  n_batches = 5,
+  phi0 = p0,
+  n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
 
@@ -795,9 +846,8 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("gaussian", "empirical", "independence"),
-  prediction_zero = p0,
-  n_samples = 1e2,
-  n_batches = 5,
+  phi0 = p0,
+  n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
 
@@ -854,7 +904,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 )$MSEv_explicand_bar
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "comb",
-  id_combination = c(3, 4, 9, 13:15),
+  id_coalition = c(3, 4, 9, 13:15),
   CI_level = 0.95
 )$MSEv_combination_bar
 ```
@@ -886,242 +936,200 @@ plot_MSEv_eval_crit(explanation_list_named) +
   )
 ```
 
+<a id="iterative"></a>
 
-## Main arguments in `explain`
+# iterative estimation
 
-When using `explain`, the default behavior is to use all feature
-combinations in the Shapley formula. Kernel SHAP's sampling based
-approach may be used by specifying `n_combinations`, which is the number
-of unique feature combinations to sample. If not specified, the exact
-method is used. The computation time grows approximately exponentially
-with the number of features. The training data and the model whose
-predictions we wish to explain must be provided through the arguments
-`x_train` and `model`. The data whose predicted values we wish to
-explain must be given by the argument `x_explain`. Note that both
-`x_train` and `x_explain` must be a `data.frame` or a `matrix`, and all
-elements must be finite numerical values. Currently we do not support
-missing values. The default approach when computing the Shapley values
-is the empirical approach (i.e. `approach = "empirical"`). If you'd like
-to use a different approach you'll need to set `approach` equal to
-either `copula` or `gaussian`, or a vector of them, with length equal to
-the number of features. If a vector, a combined approach is used, and
-element `i` indicates the approach to use when conditioning on `i`
-variables. For more details see [Combined approach](#combined) below.
+iterative estimation is the default when computing Shapley values with six or more features (or feature groups), and
+can always be manually overridden by setting `iterative = FALSE` in the `explain()` function.
+The idea behind iterative estimation is to estimate sufficiently accurate Shapley value estimates faster.
+First, an initial number of coalitions is sampled, then, bootsrapping is used to estimate the variance of the Shapley
+values.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
+coalitions.
+The process is repeated until the variances are below the threshold.
+Specifics related to the iterative process and convergence criterion are set through `iterative_args` argument.
 
-When computing the kernel SHAP values by `explain`, the maximum number
-of samples to use in the Monte Carlo integration for every conditional
-expectation is controlled by the argument `n_samples` (default equals
-`1000`). The computation time grows approximately linear with this
-number. You will also need to pass a numeric value for the argument
-`prediction_zero`, which represents the prediction value when not
-conditioning on any features. We recommend setting this equal to the
-mean of the response, but other values, like the mean prediction of a
-large test data set is also a possibility. If the empirical method is
-used, specific settings for that approach, like a vector of fixed
-$\sigma$ values can be specified through the argument
-`empirical.fixed_sigma`. See `?explain` for more information. If
-`approach = "gaussian"`, you may specify the mean vector and covariance
-matrix of the data generating distribution by the arguments
-`gaussian.mu` and `gaussian.cov_mat`. If not specified, they are
-estimated from the training data.
+The convergence criterion we use is adopted from @covert2021improving, and slightly modified to work for multiple
+observations
 
-## Explaining a forecasting model using `explain_forecast`
+\[ \median_i\left(\frac{max_j \hat{\text{sd}}(\hat{\phi}_{ij}){\max_j \hat{\phi}_{ij} - \min_j \hat{\phi}_{ij}}\right), < t  \]
 
-`shapr` provides a specific function, `explain_forecast`, to explain
-forecasts from time series models, at one or more steps into the future.
-The main difference compared to `explain` is that the data is supplied
-as (set of) time series, in addition to index arguments (`train_idx` and
-`explain_idx`) specifying which time points that represents the train
-and explain parts of the data. See `?explain_forecast` for more
-information.
+where $\hat{\phi}_{ij}$ is the Shapley value of feature $j$ for observation $i$, and $\text{sd}(\phi_{ij})$
+is the its (bootstrap) estimated standard deviation. The default value of $t$ is 0.02.
+Below we provide some examples of how to use the iterative estimation procedure
 
-To demonstrate how to use the function, 500 observations are generated
-which follow an AR(1) structure, i.e.
-$y_t = 0.5 y_{t-1} + \varepsilon_t$. To this data an arima model of
-order (2, 0, 0) is fitted, and we therefore would like to explain the
-forecasts in terms of the two previous lags of the time series. This is
-is specified through the argument `explain_y_lags = 2`. Note that some
-models may also put restrictions on the amount of data required to make
-a forecast. The AR(2) model we used there, for instance, requires two
-previous time point to make a forecast.
 
-In the example, two separate forecasts, each three steps ahead, are
-explained. To set the starting points of the two forecasts,
-`explain_idx` is set to `499:500`. This means that one forecast of
-$t = (500, 501, 502)$ and another of $t = (501, 502, 503)$, will be
-explained. In other words, `explain_idx` tells `shapr` at which points
-in time data was available up until, when making the forecast to
-explain.
-
-In the same way, `train_idx` denotes the points in time used to estimate
-the conditional expectations used to explain the different forecasts.
-Note that since we want to explain the forecasts in terms of the two
-previous lags (`explain_y_lags = 2`), the smallest value of `train_idx`
-must also be 2, because at time $t = 1$ there was only a single
-observation available.
-
-Since the data is stationary, the mean of the data is used as value of
-`prediction_zero` (i.e. $\phi_0$). This can however be chosen
-differently depending on the data and application.
-
-For a multivariate model such as a VAR (Vector AutoRegressive model), it
-may be of more interesting to explain the impact of each variable,
-rather than each lag of each variable. This can be done by setting
-`group_lags = TRUE`.
 
 ```{r}
-# Simulate time series data with AR(1)-structure.
-set.seed(1)
-data_ts <- data.frame(Y = arima.sim(list(order = c(1, 0, 0), ar = .5), n = 500))
-data_ts <- data.table::as.data.table(data_ts)
+library(xgboost)
+library(data.table)
 
-# Fit an ARIMA(2, 0, 0) model.
-arima_model <- arima(data_ts, order = c(2, 0, 0))
+data("airquality")
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
 
-# Set prediction zero as the mean of the data for each forecast point.
-p0_ar <- rep(mean(data_ts$Y), 3)
+x_var <- c("Solar.R", "Wind", "Temp", "Month","Day")
+y_var <- "Ozone"
 
-# Explain forecasts from points t = 499 and t = 500.
-explain_idx <- 499:500
+ind_x_explain <- 1:6
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
 
-explanation_forecast <- explain_forecast(
-  model = arima_model,
-  y = data_ts,
-  train_idx = 2:498,
-  explain_idx = 499:500,
-  explain_y_lags = 2,
-  horizon = 3,
-  approach = "empirical",
-  prediction_zero = p0_ar,
-  group_lags = FALSE
-)
-explanation_forecast
-```
+# Set seed for reproducibility
+set.seed(123)
 
-Note that for a multivariate model such as a VAR (Vector AutoRegressive
-model), or for models also including several exogenous variables, it may
-be of more informative to explain the impact of each variable, rather
-than each lag of each variable. This can be done by setting
-`group_lags = TRUE`. This does not make sense for this model, however,
-as that would result in decomposing the forecast into a single group.
-
-We now give a more hands on example of how to use the `explain_forecast`
-function. Say that we have an AR(2) model which describes the change
-over time of the variable `Temp` in the dataset `airquality`. It seems
-reasonable to assume that the temperature today should affect the
-temperature tomorrow. To a lesser extent, we may also suggest that the
-temperature today should also have an impact on that of the day after
-tomorrow.
-
-We start by building our AR(2) model, naming it `model_ar_temp`. This
-model is then used to make a forecast of the temperature of the day that
-comes after the last day in the data, this forecast starts from index
-153.
-
-```{r}
-data_ts2 <- data.table::as.data.table(airquality)
-
-model_ar_temp <- ar(data_ts2$Temp, order = 2)
-
-predict(model_ar_temp, n.ahead = 2)$pred
-```
-
-First, we pass the model and the data as `model` and `y`. Since we have
-an AR(2) model, we want to explain the forecasts in terms of the two
-previous lags, whihc we specify with `explain_y_lags = 2`. Then, we let
-`shapr` know which time indices to use as training data through the
-argument `train_idx`. We use `2:152`, meaning that we skip the first
-index, as we want to explain the two previous lags. Letting the training
-indices go up until 152 means that every point in time except the first
-and last will be used as training data.
-
-The last index, 153 is passed as the argument `explain_idx`, which means
-that we want to explain a forecast made from time point 153 in the data.
-The argument `horizon` is set to 2 in order to explain a forecast of
-length 2.
-
-The argument `prediction_zero` is set to the mean of the time series,
-and is repeated two times. Each value of `prediction_zero` is the
-baseline for each forecast horizon. In our example, we assume that given
-no effect from the two lags, the temperature would just be the average
-during the observed period. Finally, we opt to not group the lags by
-setting `group_lags` to `FALSE`. This means that lag 1 and 2 will be
-explained separately. Grouping lags may be more interesting to do in a
-model with multiple variables, as it is then possible to explain each
-variable separately.
-
-```{r}
-explanation_forecast <- explain_forecast(
-  model = model_ar_temp,
-  y = data_ts2[, "Temp"],
-  train_idx = 2:152,
-  explain_idx = 153,
-  explain_y_lags = 2,
-  horizon = 2,
-  approach = "empirical",
-  prediction_zero = rep(mean(data$Temp), 2),
-  group_lags = FALSE,
-  n_batches = 1,
-  timing = FALSE
+# Fitting a basic xgboost model to the training data
+model <- xgboost::xgboost(
+  data = as.matrix(x_train),
+  label = y_train,
+  nround = 20,
+  verbose = FALSE
 )
 
-print(explanation_forecast)
-```
+# Specifying the phi_0, i.e. the expected prediction without any features
+p0 <- mean(y_train)
 
-The results are presented per value of `explain_idx` and forecast
-horizon. We can see that the mean temperature was around 77.9 degrees.
-At horizon 1, the first lag in the model caused it to be 6.6 degrees
-lower, and the second lag had just a minor effect. At horizon 2, the
-first lag has a slightly smaller negative impact, and the second lag has
-a slightly larger impact.
-
-It is also possible to explain a forecasting model which uses exogenous
-regressors. The previous example is expanded to use an ARIMA(2,0,0)
-model with `Wind` as an exogenous regressor. Since the exogenous
-regressor must be available for the predicted time points, the model is
-just fit on the 151 first observations, leaving two observations of
-`Wind` to be used as exogenous values during the prediction phase.
-
-```{r}
-data_ts3 <- data.table::as.data.table(airquality)
-
-data_fit <- data_ts3[seq_len(151), ]
-
-model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wind)
-
-newxreg <- data_ts3[-seq_len(151), "Wind", drop = FALSE]
-
-predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
-```
-
-The `shapr` package can then explain not only the two autoregressive
-lags, but also the single lag of the exogenous regressor. In order to do
-so, the `Wind` variable is passed as the argument `xreg`, and
-`explain_xreg_lags` is set to 1. Notice how only the first 151
-observations are used for `y` and all 153 are used for `xreg`. This
-makes it possible for `shapr` to not only explain the effect of the
-first lag of the exogenous variable, but also the contemporary effect
-during the forecasting period.
-
-```{r}
-explanation_forecast <- explain_forecast(
-  model = model_ar_temp,
-  y = data_fit[, "Temp"],
-  xreg = data_ts3[, "Wind"],
-  train_idx = 2:150,
-  explain_idx = 151,
-  explain_y_lags = 2,
-  explain_xreg_lags = 1,
-  horizon = 2,
-  approach = "empirical",
-  prediction_zero = rep(mean(data_fit$Temp), 2),
-  group_lags = FALSE,
-  n_batches = 1,
-  timing = FALSE
+# Initial explanation computation
+ex <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  phi0 = p0,
+  iterative = TRUE,
+  iterative_args = list(convergence_tol = 0.1)
 )
 
-print(explanation_forecast$shapley_values)
 ```
+
+<a id="para"></a>
+
+# Parallelization
+
+The `shapr` package supports parallelization of the Shapley value estimation process through the
+`future` package.
+The parallelization is conducted over batches of `v(S)`-values.
+We therefore start by describing this batch computing.
+
+## Batch computation
+
+The computational complexity of Shapley value based explanations grows
+fast in the number of features, as the number of conditional
+expectations one needs to estimate in the Shapley formula grows
+exponentially. As outlined [above](#KSHAP), the estimating of each of
+these conditional expectations is also computationally expensive,
+typically requiring estimation of a conditional probability
+distribution, followed by Monte Carlo integration. These computations
+are not only heavy for the CPU, they also require a lot of memory (RAM),
+which typically is a limited resource. By doing the most resource hungry
+computations (the computation of v(S)) in sequential batches with
+different feature subsets $S$, the memory usage can be significantly
+reduces.
+The user can control the number of batches by setting the two arguments
+`extra_computation_args$max_batch_size` (defaults to 10) and
+`extra_computation_args$min_n_batches` (defaults to 10).
+
+## Parallelized computation
+
+In addition to reducing the memory consumption, the batch computing allows the
+computations within each batch to be performed in parallel.
+The parallelization in `shapr::explain()` is handled by the
+`future_apply` which builds on the `future` environment. The `future`
+package works on all OS, allows the user to decide the parallelization
+backend (mutliple R procesess or forking), works directly with hpc
+clusters, and also supports progress updates for the parallelized task
+(see [Verbosity and progress updates](#verbose)).
+
+Note that, since it takes some time to duplicate data into different
+processes/machines when running in parallel, it is not always
+preferrable to run `shapr::explain()` in parallel, at least not with
+many parallel sessions (hereby called **workers**). Parallelization also
+increases the memory consumption proportionally, so you want to limit
+the number of workers for that reason too.
+Below is a basic example of a parallelization with two workers.
+
+```{r}
+library(future)
+future::plan(multisession, workers = 2)
+
+explanation_par <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  phi0 = p0
+)
+
+future::plan(sequential) # To return to non-parallel computation
+```
+
+<a id="verbose"></a>
+
+# Verbosity and progress updates
+
+The `verbose` argument controls the verbosity of the output while running `explain()`,
+and allows one or more of the strings `"basic"`, `"progress"`, `"convergence"`, `"shapley"`  and `"vS_details"`.
+`"basic"` (default) displays basic information about the computation which is being performed,
+`"progress` displays information about where in the calculation process the function currently is,
+`"convergence"` displays information on how close to convergence the Shapley value estimates are
+(for iterative estimation),
+`"shapley"` displays (intermediate) Shapley value estimates and standard deviations + the final estimates,
+while `"vS_details"` displays information about the `v(S)` estimates for some of the approaches.
+If the user wants no printout, the argument can be set to `NULL`.
+
+In additon, progress updates of the computation of the `v(S)` values, values through the R-package `progressr`.
+This gives the user full control over the visual appearance of these progress updates.
+The main reason for providing this separate progress update feature is that it
+integreats seamlessly with the parallelization framework `future` used by `shapr` (see [Parallelization](#para)),
+and apparently is the only framework allowing progress updates also for parallelized tasks.
+These progress updates can be used in combination with, or independently of, the `verbose` argument.
+
+These progress updates via `progressr` are enabled for the current R-session by running the
+command `progressr::handlers(local=TRUE)`, before calling
+`explain()`. To use progress updates for only a single call to
+`explain()`, one can wrap the call using
+`progressr::with_progress` as follows:
+`progressr::with_progress({ shapr::explain() })` The default appearance
+of the progress updates is a basic ASCII-based horizontal progress bar.
+Other variants can be chosen by passing different strings to
+`progressr::handlers()`, some of which require additional packages. If
+you are using Rstudio, the progress can be displayed directly in the gui
+with `progressr::handlers('rstudio')` (requires the `rstudioapi`
+package). If you are running Windows, you may use the pop-up gui
+progress bar `progressr::handlers('handler_winprogressbar')`.
+A wrapper for progressbar of the flexible `cli` package, is also available
+`progressr::handlers('cli')`..
+
+For a full list of all progression handlers and the customization
+options available with `progressr`, see the `progressr`
+[vignette](https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html).
+A full code example of using `progressr` with `shapr` is shown below:
+
+```{r,eval = FALSE}
+library(progressr)
+progressr::handlers(global = TRUE)
+# If no progression handler is specified, the txtprogressbar is used
+# Other progression handlers:
+# progressr::handlers('rstudio') # requires the 'rstudioapi' package
+# progressr::handlers('handler_winprogressbar') # Window only
+# progressr::handlers('cli') # requires the 'cli' package
+ex_progress <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  phi0 = p0
+)
+
+handlers("progress")
+#| [=================================>----------------------]  60% Estimating v(S)
+```
+
+
+
 
 <a id="advanced"></a>
 
@@ -1161,13 +1169,43 @@ features, using `"empirical", "copula"` and `"gaussian"` when
 conditioning on respectively 1, 2 and 3 features.
 
 ```{r}
+library(xgboost)
+library(data.table)
+
+data("airquality")
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
+
+x_var <- c("Solar.R", "Wind", "Temp", "Month")
+y_var <- "Ozone"
+
+ind_x_explain <- 1:6
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost::xgboost(
+  data = as.matrix(x_train),
+  label = y_train,
+  nround = 20,
+  verbose = FALSE
+)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+p0 <- mean(y_train)
+
+
 # Use the combined approach
 explanation_combined <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = c("empirical", "copula", "gaussian"),
-  prediction_zero = p0
+  phi0 = p0
 )
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
@@ -1184,7 +1222,7 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("ctree", "ctree", "empirical"),
-  prediction_zero = p0
+  phi0 = p0
 )
 ```
 
@@ -1209,8 +1247,9 @@ explanation_group <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
-  group = group_list
+  phi0 = p0,
+  group = group_list,
+  iterative = FALSE
 )
 # Prints the group-wise explanations
 explanation_group
@@ -1315,7 +1354,7 @@ explanation_custom <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   predict_model = MY_predict_model,
   get_model_specs = MY_get_model_specs
 )
@@ -1339,7 +1378,7 @@ explanation_custom_minimal <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
+  phi0 = p0,
   predict_model = MY_MINIMAL_predict_model
 )
 
@@ -1347,7 +1386,7 @@ explanation_custom_minimal <- explain(
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ```
 
-### Tidymodels and workflows {#workflow_example}
+## Tidymodels and workflows {#workflow_example}
 In this section, we demonstrate how to use `shapr` to explain `tidymodels` models fitted using `workflows`.
 In the example [above](#examples), we directly used the `xgboost` package to fit the `xgboost` model.
 However, we can also fit the `xgboost` model using the `tidymodels` package. These fits will be identical
@@ -1388,14 +1427,13 @@ explanation_tidymodels <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0,
-  n_batches = 4
-)
+  phi0 = p0,
+  iterative = FALSE
+  )
 
 # See that the Shapley value explanations are identical too
-all.equal(explanation$shapley_values, explanation_tidymodels$shapley_values)
+all.equal(explanation$shapley_values_est, explanation_tidymodels$shapley_values_est)
 ```
-
 
 ## The parameters of the `vaeac` approach
 
@@ -1420,12 +1458,13 @@ explanation_vaeac <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = p0,
-  n_samples = 100,
+  phi0 = p0,
+  n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
   vaeac.epochs = 3,
-  vaeac.n_vaeacs_initialize = 2
+  vaeac.n_vaeacs_initialize = 2,
+  iterative = FALSE
 )
 ```
 
@@ -1455,13 +1494,14 @@ explanation_vaeac_early_stop <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "vaeac",
-  prediction_zero = p0,
-  n_samples = 100,
+  phi0 = p0,
+  n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
   vaeac.epochs = 1000, # Set it to a large number
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
+  vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2),
+  iterative = FALSE
 )
 ```
 
@@ -1480,178 +1520,287 @@ Can also compare the $MSE_{v}$ evaluation scores.
 plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
 ```
 
+## Continued computation {#cont_computation}
+In this section, we demonstrate how to continue to improve estimation accuracy with additional coalition samples,
+from a previous Shapley value computation based on `shapr::explain()` with the iterative estimation procedure.
+This can be done either by passing an existing object of class `shapr`, or by passing a string with the path to
+the intermediately saved results.
+The latter is found at `SHAPR_OBJ$saving_path`, defaults to a temporary folder,
+and is updated after each iteration.
+This can be particularly handy for long-running computations.
+
+```{r}
+# First we run the computation with the iterative estimation procedure for a limited number of coalition samples
+library(xgboost)
+library(data.table)
+
+data("airquality")
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
+
+x_var <- c("Solar.R", "Wind", "Temp", "Month","Day")
+y_var <- "Ozone"
+
+ind_x_explain <- 1:6
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost::xgboost(
+  data = as.matrix(x_train),
+  label = y_train,
+  nround = 20,
+  verbose = FALSE
+)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+p0 <- mean(y_train)
+
+# Initial explanation computation
+ex_init <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  phi0 = p0,
+  max_n_coalitions = 20,
+  iterative = TRUE
+)
+
+# Using the ex_init object to continue the computation with 5 more coalition samples
+ex_further <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  phi0 = p0,
+  max_n_coalitions = 25,
+  iterative_args = list(convergence_tol = 0.005), # Decrease the convergence threshold
+  prev_shapr_object = ex_init
+)
+
+print(ex_further$saving_path)
+
+# Using the ex_init object to continue the computation for the remaining coalition samples
+# but this time using the path to the saved intermediate estimation object
+ex_even_further <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  phi0 = p0,
+  max_n_coalitions = NULL,
+  prev_shapr_object = ex_further$saving_path
+)
 
 
+```
 
-<a id="scalability"></a>
+<a id="forecasting"></a>
 
 <br>
 
-# Scalability and efficency
 
-## Batch computation
+# Explaining a forecasting model using `explain_forecast`
 
-The computational complexity of Shapley value based explanations grows
-fast in the number of features, as the number of conditional
-expectations one needs to estimate in the Shapley formula grows
-exponentially. As outlined [above](#KSHAP), the estimating of each of
-these conditional expectations is also computationally expensive,
-typically requiring estimation of a conditional probability
-distribution, followed by Monte Carlo integration. These computations
-are not only heavy for the CPU, they also require a lot of memory (RAM),
-which typically is a limited resource. By doing the most resource hungry
-computations (the computation of v(S)) in sequential batches with
-different feature subsets $S$, the memory usage can be significantly
-reduces. Such batching comes at the cost of an increase in computation
-time, which depends on the number of feature subsets (`n_combinations`),
-the number of features, the estimation `approach` and so on. When
-calling `shapr::explain()`, we allow the user to set the number of
-batches with the argument `n_batches`. The default of this argument is
-`NULL`, which uses a (hopefully) reasonable trade-off between
-computation speed and memory consumption which depends on
-`n_combinations` and `approach`. The memory/computation time trade-off
-is most apparent for models with more than say 6-7 features. Below we a
-basic example where `n_batches=10`:
+`shapr` provides a specific function, `explain_forecast`, to explain
+forecasts from time series models, at one or more steps into the future.
+The main difference compared to `explain` is that the data is supplied
+as (set of) time series, in addition to index arguments (`train_idx` and
+`explain_idx`) specifying which time points that represents the train
+and explain parts of the data. See `?explain_forecast` for more
+information.
 
-```{r}
-explanation_batch <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "empirical",
-  prediction_zero = p0,
-  n_batches = 10
-)
-```
+To demonstrate how to use the function, 500 observations are generated
+which follow an AR(1) structure, i.e.
+$y_t = 0.5 y_{t-1} + \varepsilon_t$. To this data an arima model of
+order (2, 0, 0) is fitted, and we therefore would like to explain the
+forecasts in terms of the two previous lags of the time series. This is
+is specified through the argument `explain_y_lags = 2`. Note that some
+models may also put restrictions on the amount of data required to make
+a forecast. The AR(2) model we used there, for instance, requires two
+previous time point to make a forecast.
 
-## Parallelized computation
+In the example, two separate forecasts, each three steps ahead, are
+explained. To set the starting points of the two forecasts,
+`explain_idx` is set to `499:500`. This means that one forecast of
+$t = (500, 501, 502)$ and another of $t = (501, 502, 503)$, will be
+explained. In other words, `explain_idx` tells `shapr` at which points
+in time data was available up until, when making the forecast to
+explain.
 
-In addition to reducing the memory consumption, the introduction of the
-`n_batch` argument allows computation within each batch to be performed in parallel.
-The parallelization in `shapr::explain()` is handled by the
-`future_apply` which builds on the `future` environment. The `future`
-package works on all OS, allows the user to decide the parallelization
-backend (mutliple R procesess or forking), works directly with hpc
-clusters, and also supports progress updates for the parallelized task
-(see below).
+In the same way, `train_idx` denotes the points in time used to estimate
+the conditional expectations used to explain the different forecasts.
+Note that since we want to explain the forecasts in terms of the two
+previous lags (`explain_y_lags = 2`), the smallest value of `train_idx`
+must also be 2, because at time $t = 1$ there was only a single
+observation available.
 
-Note that, since it takes some time to duplicate data into different
-processes/machines when running in parallel, it is not always
-preferrable to run `shapr::explain()` in parallel, at least not with
-many parallel sessions (hereby called **workers**). Parallelization also
-increases the memory consumption proportionally, so you want to limit
-the number of workers for that reason too. In a future version of
-`shapr` we will provide experienced based automatic selection of the
-number of workers. In the meanwhile, this is all let to the user, and we
-advice that `n_batches` equals some positive integer multiplied by the
-number of workers. Below is a basic example of a parallelization with
-two workers.
+Since the data is stationary, the mean of the data is used as value of
+`phi0` (i.e. $\phi_0$). This can however be chosen
+differently depending on the data and application.
+
+For a multivariate model such as a VAR (Vector AutoRegressive model), it
+may be of more interesting to explain the impact of each variable,
+rather than each lag of each variable. This can be done by setting
+`group_lags = TRUE`.
 
 ```{r}
-library(future)
-future::plan(multisession, workers = 2)
+# Simulate time series data with AR(1)-structure.
+set.seed(1)
+data_ts <- data.frame(Y = arima.sim(list(order = c(1, 0, 0), ar = .5), n = 500))
+data_ts <- data.table::as.data.table(data_ts)
 
-explanation_par <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
+# Fit an ARIMA(2, 0, 0) model.
+arima_model <- arima(data_ts, order = c(2, 0, 0))
+
+# Set prediction zero as the mean of the data for each forecast point.
+p0_ar <- rep(mean(data_ts$Y), 3)
+
+# Explain forecasts from points t = 499 and t = 500.
+explain_idx <- 499:500
+
+explanation_forecast <- explain_forecast(
+  model = arima_model,
+  y = data_ts,
+  train_idx = 2:498,
+  explain_idx = 499:500,
+  explain_y_lags = 2,
+  horizon = 3,
   approach = "empirical",
-  prediction_zero = p0,
-  n_batches = 10
+  phi0 = p0_ar,
+  group_lags = FALSE
 )
-
-future::plan(sequential) # To return to non-parallel computation
+explanation_forecast
 ```
 
-## Progress updates
+Note that for a multivariate model such as a VAR (Vector AutoRegressive
+model), or for models also including several exogenous variables, it may
+be of more informative to explain the impact of each variable, rather
+than each lag of each variable. This can be done by setting
+`group_lags = TRUE`. This does not make sense for this model, however,
+as that would result in decomposing the forecast into a single group.
 
-`shapr` provides progress updates of the computation of the Shapley
-values through the R-package `progressr`. This gives the user full
-control over the visual appearance of the progress updates, and also
-integrates seamlessly with the parallelization framework `future` used
-by `shapr` (see above). Note that the progress is updated as the batches
-are completed, meaning that if you have chosen `n_batches=1`, you will
-not get intermediate updates, while if you set `n_batches=10` you will
-get updates on every 10% of the computation.
+We now give a more hands on example of how to use the `explain_forecast`
+function. Say that we have an AR(2) model which describes the change
+over time of the variable `Temp` in the dataset `airquality`. It seems
+reasonable to assume that the temperature today should affect the
+temperature tomorrow. To a lesser extent, we may also suggest that the
+temperature today should also have an impact on that of the day after
+tomorrow.
 
-Progress updates are enabled for the current R-session by running the
-command `progressr::handlers(local=TRUE)`, before calling
-`shapr::explain()`. To use progress updates for only a single call to
-`shapr::explain()`, one can wrap the call using
-`progressr::with_progress` as follows:
-`progressr::with_progress({ shapr::explain() })` The default appearance
-of the progress updates is a basic ASCII-based horizontal progress bar.
-Other variants can be chosen by passing different strings to
-`progressr::handlers()`, some of which require additional packages. If
-you are using Rstudio, the progress can be displayed directly in the gui
-with `progressr::handlers('rstudio')` (requires the `rstudioapi`
-package). If you are running Windows, you may use the pop-up gui
-progress bar `progressr::handlers('handler_winprogressbar')`. A wrapper
-for progressbar of the flexible `cli` package is also available
-`progressr::handlers('cli')` (requires the `cli` package).
+We start by building our AR(2) model, naming it `model_ar_temp`. This
+model is then used to make a forecast of the temperature of the day that
+comes after the last day in the data, this forecast starts from index
+153.
 
-For a full list of all progression handlers and the customization
-options available with `progressr`, see the `progressr`
-[vignette](https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html).
-A full code example of using `progressr` with `shapr` is shown below:
+```{r}
+data_ts2 <- data.table::as.data.table(airquality)
 
-```{r,eval = FALSE}
-library(progressr)
-progressr::handlers(global = TRUE)
-# If no progression handler is specified, the txtprogressbar is used
-# Other progression handlers:
-# progressr::handlers('rstudio') # requires the 'rstudioapi' package
-# progressr::handlers('handler_winprogressbar') # Window only
-# progressr::handlers('cli') # requires the 'cli' package
-explanation <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
+model_ar_temp <- ar(data_ts2$Temp, order = 2)
+
+predict(model_ar_temp, n.ahead = 2)$pred
+```
+
+First, we pass the model and the data as `model` and `y`. Since we have
+an AR(2) model, we want to explain the forecasts in terms of the two
+previous lags, whihc we specify with `explain_y_lags = 2`. Then, we let
+`shapr` know which time indices to use as training data through the
+argument `train_idx`. We use `2:152`, meaning that we skip the first
+index, as we want to explain the two previous lags. Letting the training
+indices go up until 152 means that every point in time except the first
+and last will be used as training data.
+
+The last index, 153 is passed as the argument `explain_idx`, which means
+that we want to explain a forecast made from time point 153 in the data.
+The argument `horizon` is set to 2 in order to explain a forecast of
+length 2.
+
+The argument `phi0` is set to the mean of the time series,
+and is repeated two times. Each value of `phi0` is the
+baseline for each forecast horizon. In our example, we assume that given
+no effect from the two lags, the temperature would just be the average
+during the observed period. Finally, we opt to not group the lags by
+setting `group_lags` to `FALSE`. This means that lag 1 and 2 will be
+explained separately. Grouping lags may be more interesting to do in a
+model with multiple variables, as it is then possible to explain each
+variable separately.
+
+```{r}
+explanation_forecast <- explain_forecast(
+  model = model_ar_temp,
+  y = data_ts2[, "Temp"],
+  train_idx = 2:152,
+  explain_idx = 153,
+  explain_y_lags = 2,
+  horizon = 2,
   approach = "empirical",
-  prediction_zero = p0,
-  n_batches = 10
+  phi0 = rep(mean(data$Temp), 2),
+  group_lags = FALSE
 )
 
-handlers("progress")
-#| [=================================>----------------------]  60% Estimating v(S)
+print(explanation_forecast)
+```
+
+The results are presented per value of `explain_idx` and forecast
+horizon. We can see that the mean temperature was around 77.9 degrees.
+At horizon 1, the first lag in the model caused it to be 6.6 degrees
+lower, and the second lag had just a minor effect. At horizon 2, the
+first lag has a slightly smaller negative impact, and the second lag has
+a slightly larger impact.
+
+It is also possible to explain a forecasting model which uses exogenous
+regressors. The previous example is expanded to use an ARIMA(2,0,0)
+model with `Wind` as an exogenous regressor. Since the exogenous
+regressor must be available for the predicted time points, the model is
+just fit on the 151 first observations, leaving two observations of
+`Wind` to be used as exogenous values during the prediction phase.
+
+```{r}
+data_ts3 <- data.table::as.data.table(airquality)
+
+data_fit <- data_ts3[seq_len(151), ]
+
+model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wind)
+
+newxreg <- data_ts3[-seq_len(151), "Wind", drop = FALSE]
+
+predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
+```
+
+The `shapr` package can then explain not only the two autoregressive
+lags, but also the single lag of the exogenous regressor. In order to do
+so, the `Wind` variable is passed as the argument `xreg`, and
+`explain_xreg_lags` is set to 1. Notice how only the first 151
+observations are used for `y` and all 153 are used for `xreg`. This
+makes it possible for `shapr` to not only explain the effect of the
+first lag of the exogenous variable, but also the contemporary effect
+during the forecasting period.
+
+```{r}
+explanation_forecast <- explain_forecast(
+  model = model_ar_temp,
+  y = data_fit[, "Temp"],
+  xreg = data_ts3[, "Wind"],
+  train_idx = 2:150,
+  explain_idx = 151,
+  explain_y_lags = 2,
+  explain_xreg_lags = 1,
+  horizon = 2,
+  approach = "empirical",
+  phi0 = rep(mean(data_fit$Temp), 2),
+  group_lags = FALSE
+)
+
+print(explanation_forecast$shapley_values_est)
 ```
 
 
 
-
-<a id="compare"></a>
-
-<br>
-
-# Comparison to Lundberg & Lee's implementation
-
-As mentioned above, the original (independence assuming) Kernel SHAP
-implementation can be approximated by setting a large $\sigma$ value
-using our empirical approach. If we specify that the distances to *all*
-training observations should be used (i.e. setting
-`approach = "empirical"` and `empirical.eta = 1` when using `explain`,
-we can approximate the original method arbitrarily well by increasing
-$\sigma$. For completeness of the `shapr` package, we have also
-implemented a version of the original method, which samples training
-observations independently with respect to their distances to test
-observations (i.e. without the large-$\sigma$ approximation). This
-method is available by using `approach = "independence"` in `explain`.
-
-We have compared the results using these two variants with the original
-implementation of @lundberg2017unified, available through the Python
-library [`shap`](https://github.com/slundberg/shap). As above, we used
-the Boston housing data, trained via `xgboost`. We specify that *all*
-training observations should be used when explaining all of the 6 test
-observations. To run the individual explanation method in the `shap`
-Python library we use the `reticulate` `R`-package, allowing Python code
-to run within `R`. As this requires installation of Python package, the
-comparison code and results is not included in this vignette, but can be
-found
-[here](https://github.com/NorskRegnesentral/shapr/blob/master/inst/scripts/compare_shap_python.R).
-As indicated by the (commented out) results in the file above both
-methods in our `R`-package give (up to numerical approximation error)
-identical results to the original implementation in the Python `shap`
-library.
 
 <br>
 

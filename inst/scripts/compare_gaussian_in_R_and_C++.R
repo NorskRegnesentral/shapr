@@ -63,7 +63,7 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_explain) {
 #  //' univariate standard normal.
 # //' @param x_explain_mat matrix. Matrix of dimension `n_explain` times `n_features` containing the observations
 #  //' to explain.
-# //' @param S matrix. Matrix of dimension `n_combinations` times `n_features` containing binary representations of
+# //' @param S matrix. Matrix of dimension `n_coalitions` times `n_features` containing binary representations of
 #  //' the used coalitions.
 # //' @param mu vector. Vector of length `n_features` containing the mean of each feature.
 #  //' @param cov_mat mat. Matrix of dimension `n_features` times `n_features` containing the pariwise covariance between
@@ -72,7 +72,7 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_explain) {
 # //' @export
 #  //' @keywords internal
 # //'
-#  //' @return List of length `n_combinations`*`n_samples`, where each entry is a matrix of dimension `n_samples` times
+#  //' @return List of length `n_coalitions`*`n_samples`, where each entry is a matrix of dimension `n_samples` times
 # //' `n_features` containing the conditional MC samples for each coalition and explicand.
 #  //' @author Lars Henry Berge Olsen
 # // [[Rcpp::export]]
@@ -728,10 +728,10 @@ prepare_data_gaussian_old <- function(internal, index_features = NULL, ...) {
       x_explain = x_explain0[i, , drop = FALSE]
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_coalition")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+    if (!is.null(index_features)) dt_l[[i]][, id_coalition := index_features[id_coalition]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
@@ -756,7 +756,7 @@ prepare_data_gaussian_new_v1 <- function(internal, index_features, ...) {
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -840,18 +840,18 @@ prepare_data_gaussian_new_v1 <- function(internal, index_features, ...) {
         )
       }
     ),
-    idcol = "id_combination"
+    idcol = "id_coalition"
   )
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -875,7 +875,7 @@ prepare_data_gaussian_new_v2 <- function(internal, index_features, ...) {
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -962,18 +962,18 @@ prepare_data_gaussian_new_v2 <- function(internal, index_features, ...) {
         )
       }
     ),
-    idcol = "id_combination"
+    idcol = "id_coalition"
   )
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -997,7 +997,7 @@ prepare_data_gaussian_new_v3 <- function(internal, index_features, ...) {
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1090,18 +1090,18 @@ prepare_data_gaussian_new_v3 <- function(internal, index_features, ...) {
         )
       }
     ),
-    idcol = "id_combination"
+    idcol = "id_coalition"
   )
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1124,7 +1124,7 @@ prepare_data_gaussian_new_v4 <- function(internal, index_features, ...) {
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1213,18 +1213,18 @@ prepare_data_gaussian_new_v4 <- function(internal, index_features, ...) {
         )
       }
     ),
-    idcol = "id_combination"
+    idcol = "id_coalition"
   )
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1248,7 +1248,7 @@ prepare_data_gaussian_new_v5 <- function(internal, index_features, ...) {
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1338,18 +1338,18 @@ prepare_data_gaussian_new_v5 <- function(internal, index_features, ...) {
         )
       }
     ),
-    idcol = "id_combination"
+    idcol = "id_coalition"
   )
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1371,7 +1371,7 @@ prepare_data_gaussian_new_v5_rnorm <- function(internal, index_features, ...) {
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1467,18 +1467,18 @@ prepare_data_gaussian_new_v5_rnorm <- function(internal, index_features, ...) {
         )
       }
     ),
-    idcol = "id_combination"
+    idcol = "id_coalition"
   )
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1500,7 +1500,7 @@ prepare_data_gaussian_new_v5_rnorm_v2 <- function(internal, index_features, ...)
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1593,18 +1593,18 @@ prepare_data_gaussian_new_v5_rnorm_v2 <- function(internal, index_features, ...)
         )
       }
     ),
-    idcol = "id_combination"
+    idcol = "id_coalition"
   )
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1628,7 +1628,7 @@ prepare_data_gaussian_new_v5_rnorm_cpp <- function(internal, index_features, ...
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1647,19 +1647,19 @@ prepare_data_gaussian_new_v5_rnorm_cpp <- function(internal, index_features, ...
 
   dt = as.data.table(do.call(rbind, result_list))
   setnames(dt, feature_names)
-  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id_coalition" := rep(seq(nrow(S)), each = n_samples * n_explain)]
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1681,7 +1681,7 @@ prepare_data_gaussian_new_v5_rnorm_cpp_with_wrap <- function(internal, index_fea
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1700,19 +1700,19 @@ prepare_data_gaussian_new_v5_rnorm_cpp_with_wrap <- function(internal, index_fea
 
   dt = as.data.table(do.call(rbind, result_list))
   setnames(dt, feature_names)
-  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id_coalition" := rep(seq(nrow(S)), each = n_samples * n_explain)]
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1735,7 +1735,7 @@ prepare_data_gaussian_new_v5_rnorm_cpp_v2 <- function(internal, index_features, 
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1754,19 +1754,19 @@ prepare_data_gaussian_new_v5_rnorm_cpp_v2 <- function(internal, index_features, 
 
   dt = as.data.table(do.call(rbind, result_list))
   setnames(dt, feature_names)
-  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id_coalition" := rep(seq(nrow(S)), each = n_samples * n_explain)]
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1788,7 +1788,7 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_large_mat <- function(internal, index
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1807,19 +1807,19 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_large_mat <- function(internal, index
       cov_mat = cov_mat)
   )
   setnames(dt, feature_names)
-  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id_coalition" := rep(seq(nrow(S)), each = n_samples * n_explain)]
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1841,7 +1841,7 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_large_mat_v2 <- function(internal, in
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1860,19 +1860,19 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_large_mat_v2 <- function(internal, in
       cov_mat = cov_mat)
   )
   setnames(dt, feature_names)
-  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id_coalition" := rep(seq(nrow(S)), each = n_samples * n_explain)]
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1894,7 +1894,7 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_list_of_lists_of_matrices <- function
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1914,19 +1914,19 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_list_of_lists_of_matrices <- function
   # Here we first put the inner list together and then the whole thing. Maybe exist another faster way!
   dt = as.data.table(do.call(rbind, lapply(result_list, function(inner_list) do.call(rbind, inner_list))))
   setnames(dt, feature_names)
-  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id_coalition" := rep(seq(nrow(S)), each = n_samples * n_explain)]
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -1948,7 +1948,7 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_cube <- function(internal, index_feat
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -1975,19 +1975,19 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_cube <- function(internal, index_feat
   dim(result_cube) <- c(prod(dims[-2]), dims[2])
   dt = as.data.table(result_cube)
   setnames(dt, feature_names)
-  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id_coalition" := rep(seq(nrow(S)), each = n_samples * n_explain)]
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -2009,8 +2009,8 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_cube_v2 <- function(internal, index_f
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
-  n_combinations_now <- length(index_features)
+  n_coalitions <- internal$parameters$n_coalitions
+  n_coalitions_now <- length(index_features)
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -2028,22 +2028,22 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_cube_v2 <- function(internal, index_f
     cov_mat = cov_mat)
 
   # Reshape and convert to data.table
-  dim(dt) = c(n_combinations_now*n_explain*n_samples, n_features)
+  dim(dt) = c(n_coalitions_now*n_explain*n_samples, n_features)
   print(system.time({dt = as.data.table(dt)}, gcFirst = FALSE))
   setnames(dt, feature_names)
-  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id_coalition" := rep(seq(nrow(S)), each = n_samples * n_explain)]
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -2065,7 +2065,7 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_std_list <- function(internal, index_
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
@@ -2090,19 +2090,19 @@ prepare_data_gaussian_new_v5_rnorm_cpp_fix_std_list <- function(internal, index_
   # Here we first put the inner list together and then the whole thing. Maybe exist another faster way!
   dt = as.data.table(do.call(rbind, result_list))
   setnames(dt, feature_names)
-  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id_coalition" := rep(seq(nrow(S)), each = n_samples * n_explain)]
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
-  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  data.table::setcolorder(dt, c("id_coalition", "id", feature_names))
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -2126,19 +2126,19 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   feature_names <- internal$parameters$feature_names
-  n_combinations <- internal$parameters$n_combinations
+  n_coalitions <- internal$parameters$n_coalitions
 
   # Extract the relevant coalitions specified in `index_features` from `S`.
   # This will always be called as `index_features` is never NULL.
   S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
-  n_combinations_in_this_batch <- nrow(S)
+  n_coalitions_in_this_batch <- nrow(S)
 
   # Allocate an empty matrix used in mvnfast:::rmvnCpp to store the generated MC samples.
-  B <- matrix(nrow = n_samples * n_combinations_in_this_batch, ncol = n_features)
+  B <- matrix(nrow = n_samples * n_coalitions_in_this_batch, ncol = n_features)
   class(B) <- "numeric"
 
   .Call("rmvnCpp",
-        n_ = n_samples * n_combinations_in_this_batch,
+        n_ = n_samples * n_coalitions_in_this_batch,
         mu_ = rep(0, n_features),
         sigma_ = diag(n_features),
         ncores_ = 1,
@@ -2148,7 +2148,7 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
   )
 
   # Indices of the start for the combinations
-  B_indices <- n_samples * (seq(0, n_combinations_in_this_batch)) + 1
+  B_indices <- n_samples * (seq(0, n_coalitions_in_this_batch)) + 1
 
   # Generate a data table containing all Monte Carlo samples for all test observations and coalitions
   dt <- data.table::rbindlist(
@@ -2221,18 +2221,18 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
         )
       }
     ),
-    idcol = "id_combination"
+    idcol = "id_coalition"
   )
 
-  # Update the id_combination. This will always be called as `index_features` is never NULL.
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  # Update the id_coalition. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_coalition := index_features[id_coalition]]
 
   # Add uniform weights
   dt[, w := 1 / n_samples]
 
   # Remove:
   # This is not needed when we assume that the empty and grand coalitions will never be present
-  # dt[id_combination %in% c(1, n_combinations), w := 1]
+  # dt[id_coalition %in% c(1, n_coalitions), w := 1]
 
   # Return the MC samples
   return(dt)
@@ -2289,7 +2289,7 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
   predictive_model <- lm(y ~ ., data = data_train_with_response)
 
   # Get the prediction zero, i.e., the phi0 Shapley value.
-  prediction_zero <- mean(response_train)
+  phi0 <- mean(response_train)
 
   model <- predictive_model
   x_explain <- data_test
@@ -2298,7 +2298,7 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
   predict_model <- NULL
   get_model_specs <- NULL
   timing <- TRUE
-  n_combinations <- NULL
+  n_coalitions <- NULL
   group <- NULL
   feature_specs <- get_feature_specs(get_model_specs, model)
   n_batches <- 1
@@ -2308,8 +2308,8 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
     x_train = x_train,
     x_explain = x_explain,
     approach = approach,
-    prediction_zero = prediction_zero,
-    n_combinations = n_combinations,
+    phi0 = phi0,
+    n_coalitions = n_coalitions,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -2688,25 +2688,25 @@ rbind(one_coalition_time_old,
       one_coalition_time_new_v6)
 
 internal$objects$S[internal$objects$S_batch$`1`[look_at_coalition], , drop = FALSE]
-means_old <- one_coalition_res_old[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_old2 <- one_coalition_res_old2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v1 <- one_coalition_res_new_v1[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v2 <- one_coalition_res_new_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v3 <- one_coalition_res_new_v3[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v4 <- one_coalition_res_new_v4[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5 <- one_coalition_res_new_v5[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm <- one_coalition_res_new_v5_rnorm[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_v2 <- one_coalition_res_new_v5_rnorm_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_cpp <- one_coalition_res_new_v5_rnorm_cpp[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_cpp_with_wrap <- one_coalition_res_new_v5_rnorm_cpp_with_wrap[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_cpp_v2 <- one_coalition_res_new_v5_rnorm_cpp_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_cpp_fix_large_mat <- one_coalition_res_new_v5_rnorm_cpp_fix_large_mat[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_cpp_fix_large_mat_v2 <- one_coalition_res_new_v5_rnorm_cpp_fix_large_mat_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_cpp_fix_cube <- one_coalition_res_new_v5_rnorm_cpp_fix_cube[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_cpp_fix_cube_v2 <- one_coalition_res_new_v5_rnorm_cpp_fix_cube_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_cpp_fix_list_of_lists_of_matrices <- one_coalition_res_new_v5_rnorm_cpp_fix_list_of_lists_of_matrices[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v5_rnorm_cpp_fix_std_list <- one_coalition_res_new_v5_rnorm_cpp_fix_std_list[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
-means_v6 <- one_coalition_res_new_v6[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
+means_old <- one_coalition_res_old[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_old2 <- one_coalition_res_old2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v1 <- one_coalition_res_new_v1[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v2 <- one_coalition_res_new_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v3 <- one_coalition_res_new_v3[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v4 <- one_coalition_res_new_v4[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5 <- one_coalition_res_new_v5[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm <- one_coalition_res_new_v5_rnorm[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_v2 <- one_coalition_res_new_v5_rnorm_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_cpp <- one_coalition_res_new_v5_rnorm_cpp[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_cpp_with_wrap <- one_coalition_res_new_v5_rnorm_cpp_with_wrap[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_cpp_v2 <- one_coalition_res_new_v5_rnorm_cpp_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_cpp_fix_large_mat <- one_coalition_res_new_v5_rnorm_cpp_fix_large_mat[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_cpp_fix_large_mat_v2 <- one_coalition_res_new_v5_rnorm_cpp_fix_large_mat_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_cpp_fix_cube <- one_coalition_res_new_v5_rnorm_cpp_fix_cube[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_cpp_fix_cube_v2 <- one_coalition_res_new_v5_rnorm_cpp_fix_cube_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_cpp_fix_list_of_lists_of_matrices <- one_coalition_res_new_v5_rnorm_cpp_fix_list_of_lists_of_matrices[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v5_rnorm_cpp_fix_std_list <- one_coalition_res_new_v5_rnorm_cpp_fix_std_list[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
+means_v6 <- one_coalition_res_new_v6[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_coalition, id)]
 
 # They are all in the same ballpark, so the differences are due to sampling.
 # This is supported by the fact that mean_old and mean_old2 use the same old code, and the difference there is the

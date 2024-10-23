@@ -23,15 +23,15 @@ model <- xgboost(
 # THIS IS GENERATED FROM MASTER BRANCH
 # Prepare the data for explanation
 library(shapr)
-explainer <- shapr(x_train, model,n_combinations = 100)
+explainer <- shapr(x_train, model,n_coalitions = 100)
 p = mean(y_train)
-gauss = explain(x_test, explainer, "gaussian", prediction_zero = p, n_samples = 10000)
-emp =  explain(x_test, explainer, "empirical", prediction_zero = p, n_samples = 10000)
-copula =  explain(x_test, explainer, "copula", prediction_zero = p, n_samples = 10000)
-indep = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000)
-comb = explain(x_test, explainer, c("gaussian", "gaussian", "empirical", "empirical"), prediction_zero = p, n_samples = 10000)
-ctree = explain(x_test, explainer, "ctree", mincriterion = 0.95, prediction_zero = p, n_samples = 10000)
-ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.95, 0.95, 0.95, 0.95), prediction_zero = p, n_samples = 10000)
+gauss = explain(x_test, explainer, "gaussian", phi0 = p, n_samples = 10000)
+emp =  explain(x_test, explainer, "empirical", phi0 = p, n_samples = 10000)
+copula =  explain(x_test, explainer, "copula", phi0 = p, n_samples = 10000)
+indep = explain(x_test, explainer, "independence", phi0 = p, n_samples = 10000)
+comb = explain(x_test, explainer, c("gaussian", "gaussian", "empirical", "empirical"), phi0 = p, n_samples = 10000)
+ctree = explain(x_test, explainer, "ctree", mincriterion = 0.95, phi0 = p, n_samples = 10000)
+ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.95, 0.95, 0.95, 0.95), phi0 = p, n_samples = 10000)
 #saveRDS(list(gauss = gauss, empirical = emp, copula = copula, indep = indep, comb = comb, ctree = ctree, ctree_comb = ctree2), file = "inst/scripts/devel/master_res2.rds")
 # saveRDS(list(ctree = ctree, ctree_comb = ctree2), file = "inst/scripts/devel/master_res_ctree.rds")
 
@@ -40,15 +40,15 @@ detach("package:shapr", unload = TRUE)
 devtools::load_all()
 nobs = 6
 x_test <- as.matrix(Boston[1:nobs, x_var])
-explainer <- shapr(x_train, model,n_combinations = 100)
+explainer <- shapr(x_train, model,n_coalitions = 100)
 p = mean(y_train)
-gauss = explain(x_test, explainer, "gaussian", prediction_zero = p, n_samples = 10000, n_batches = 1)
-emp =  explain(x_test, explainer, "empirical", prediction_zero = p, n_samples = 10000, n_batches = 1)
-copula =  explain(x_test, explainer, "copula", prediction_zero = p, n_samples = 10000, n_batches = 1)
-indep = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000, n_batches = 1)
-comb = explain(x_test, explainer, c("gaussian", "gaussian", "empirical", "empirical"), prediction_zero = p, n_samples = 10000, n_batches = 1)
-ctree = explain(x_test, explainer, "ctree", mincriterion = 0.95, prediction_zero = p, n_samples = 10000, n_batches = 1)
-ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.95, 0.95, 0.95, 0.95), prediction_zero = p, n_samples = 10000, n_batches = 1)
+gauss = explain(x_test, explainer, "gaussian", phi0 = p, n_samples = 10000, n_batches = 1)
+emp =  explain(x_test, explainer, "empirical", phi0 = p, n_samples = 10000, n_batches = 1)
+copula =  explain(x_test, explainer, "copula", phi0 = p, n_samples = 10000, n_batches = 1)
+indep = explain(x_test, explainer, "independence", phi0 = p, n_samples = 10000, n_batches = 1)
+comb = explain(x_test, explainer, c("gaussian", "gaussian", "empirical", "empirical"), phi0 = p, n_samples = 10000, n_batches = 1)
+ctree = explain(x_test, explainer, "ctree", mincriterion = 0.95, phi0 = p, n_samples = 10000, n_batches = 1)
+ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.95, 0.95, 0.95, 0.95), phi0 = p, n_samples = 10000, n_batches = 1)
 
 res = readRDS("inst/scripts/devel/master_res2.rds")
 
@@ -60,8 +60,8 @@ res$comb$dt
 comb$dt
 
 # With batches
-gauss_b = explain(x_test, explainer, "gaussian", prediction_zero = p, n_samples = 10000, n_batches = 3)
-emp_b =  explain(x_test, explainer, "empirical", prediction_zero = p, n_samples = 10000, n_batches = 3)
+gauss_b = explain(x_test, explainer, "gaussian", phi0 = p, n_samples = 10000, n_batches = 3)
+emp_b =  explain(x_test, explainer, "empirical", phi0 = p, n_samples = 10000, n_batches = 3)
 
 gauss_b$dt
 res$gauss$dt
@@ -71,7 +71,7 @@ res$empirical$dt
 
 #### MJ stuff here:
 
-explain.independence2 <- function(x, explainer, approach, prediction_zero,
+explain.independence2 <- function(x, explainer, approach, phi0,
                                   n_samples = 1e3, n_batches = 1, seed = 1, only_return_contrib_dt = FALSE, ...) {
 
 
@@ -82,12 +82,12 @@ explain.independence2 <- function(x, explainer, approach, prediction_zero,
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
-  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_contrib_dt, ...)
+  r <- prepare_and_predict(explainer, n_batches, phi0, only_return_contrib_dt, ...)
 }
 
 
 prepare_data.independence2 <- function(x, index_features = NULL, ...) {
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+  id <- id_coalition <- w <- NULL # due to NSE notes in R CMD check
 
   if (is.null(index_features)) {
     index_features <- x$X[, .I]
@@ -122,7 +122,7 @@ prepare_data.independence2 <- function(x, index_features = NULL, ...) {
     # Add keys
     dt_l[[i]] <- data.table::as.data.table(dt_p)
     data.table::setnames(dt_l[[i]], colnames(x_train))
-    dt_l[[i]][, id_combination := index_s]
+    dt_l[[i]][, id_coalition := index_s]
     dt_l[[i]][, w := w] # IS THIS NECESSARY?
     dt_l[[i]][, id := i]
   }
@@ -137,36 +137,36 @@ prepare_data.independence2 <- function(x, index_features = NULL, ...) {
 
 # Using independence with n_samples > nrow(x_train) such that no sampling is performed
 
-indep1 =  explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000, n_batches = 1)
-indep2 =  explain(x_test, explainer, "independence2", prediction_zero = p, n_samples = 10000, n_batches = 1)
+indep1 =  explain(x_test, explainer, "independence", phi0 = p, n_samples = 10000, n_batches = 1)
+indep2 =  explain(x_test, explainer, "independence2", phi0 = p, n_samples = 10000, n_batches = 1)
 
 all.equal(indep1,indep2) # TRUE
 
-indep1_batch_2 = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000, n_batches = 2)
+indep1_batch_2 = explain(x_test, explainer, "independence", phi0 = p, n_samples = 10000, n_batches = 2)
 
 all.equal(indep1,indep1_batch_2) # TRUE
 
-indep1_batch_5 = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000, n_batches = 5)
+indep1_batch_5 = explain(x_test, explainer, "independence", phi0 = p, n_samples = 10000, n_batches = 5)
 
 all.equal(indep1,indep1_batch_5) # TRUE
 
-comb_indep_1_batch_1 = explain(x_test, explainer, c("independence", "independence", "independence", "independence"), prediction_zero = p, n_samples = 10000, n_batches = 1)
+comb_indep_1_batch_1 = explain(x_test, explainer, c("independence", "independence", "independence", "independence"), phi0 = p, n_samples = 10000, n_batches = 1)
 
 all.equal(indep1,comb_indep_1_batch_1) # TRUE
 
-comb_indep_1_batch_2 = explain(x_test, explainer, c("independence", "independence", "independence", "independence"), prediction_zero = p, n_samples = 10000, n_batches = 2)
+comb_indep_1_batch_2 = explain(x_test, explainer, c("independence", "independence", "independence", "independence"), phi0 = p, n_samples = 10000, n_batches = 2)
 
 all.equal(indep1,comb_indep_1_batch_2) # TRUE
 
-comb_indep_1_2_batch_1 = explain(x_test, explainer, c("independence", "independence", "independence2", "independence2"), prediction_zero = p, n_samples = 10000, n_batches = 1)
+comb_indep_1_2_batch_1 = explain(x_test, explainer, c("independence", "independence", "independence2", "independence2"), phi0 = p, n_samples = 10000, n_batches = 1)
 
 all.equal(indep1,comb_indep_1_2_batch_1) #TRUE
 
-comb_indep_1_2_batch_2 = explain(x_test, explainer, c("independence", "independence", "independence2", "independence2"), prediction_zero = p, n_samples = 10000, n_batches = 2)
+comb_indep_1_2_batch_2 = explain(x_test, explainer, c("independence", "independence", "independence2", "independence2"), phi0 = p, n_samples = 10000, n_batches = 2)
 
 all.equal(indep1,comb_indep_1_2_batch_2) #TRUE
 
-comb_indep_1_2_batch_5 = explain(x_test, explainer, c("independence", "independence", "independence2", "independence2"), prediction_zero = p, n_samples = 10000, n_batches = 5)
+comb_indep_1_2_batch_5 = explain(x_test, explainer, c("independence", "independence", "independence2", "independence2"), phi0 = p, n_samples = 10000, n_batches = 5)
 
 all.equal(indep1,comb_indep_1_2_batch_5) #TRUE
 

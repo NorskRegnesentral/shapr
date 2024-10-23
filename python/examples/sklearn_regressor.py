@@ -14,7 +14,7 @@ df_shapley, pred_explain, internal, timing, MSEv = explain(
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'empirical',
-    prediction_zero = dfy_train.mean().item()
+    phi0 = dfy_train.mean().item()
 )
 print(df_shapley)
 
@@ -51,7 +51,7 @@ df_shapley_g, pred_explain_g, internal_g, timing_g, MSEv_g = explain(
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'empirical',
-    prediction_zero = dfy_train.mean().item(),
+    phi0 = dfy_train.mean().item(),
     group = group
 )
 print(df_shapley_g)

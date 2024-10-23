@@ -42,7 +42,7 @@ df_shapley, pred_explain, internal, timing, MSEv = explain(
     x_explain = dfx_test,
     approach = 'empirical',
     predict_model = lambda m, x: m(torch.from_numpy(x.values).float()).cpu().detach().numpy(),
-    prediction_zero = dfy_train.mean().item(),
+    phi0 = dfy_train.mean().item(),
 )
 print(df_shapley)
 """

@@ -17,7 +17,8 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
+\code{main_timing_list}, \code{output}, and \code{iter_timing_list}.}
 }
 \description{
 Model testing function

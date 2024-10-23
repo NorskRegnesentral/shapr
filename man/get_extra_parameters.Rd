@@ -4,7 +4,7 @@
 \alias{get_extra_parameters}
 \title{This includes both extra parameters and other objects}
 \usage{
-get_extra_parameters(internal)
+get_extra_parameters(internal, type)
 }
 \description{
 This includes both extra parameters and other objects

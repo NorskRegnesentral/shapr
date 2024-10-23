@@ -28,11 +28,11 @@ exp <- explain_forecast(model = model_arima_temp,
                        explain_xreg_lags = c(0,0),
                        horizon = 2,
                        approach = "empirical",
-                       prediction_zero = c(0,0),
+                       phi0 = c(0,0),
                        group_lags = FALSE,
                        n_batches = 1,
                        timing = FALSE,
-                       n_combinations = 50
+                       n_coalitions = 50
 )
 
 

@@ -1,10 +1,10 @@
 # In this code we demonstrate that (before the bugfix) the `explain()` function
-# does not enter the exact mode when n_combinations is larger than or equal to 2^m.
-# The mode is only changed if n_combinations is strictly larger than 2^m.
-# This means that we end up with using all coalitions when n_combinations is 2^m,
+# does not enter the exact mode when n_coalitions is larger than or equal to 2^m.
+# The mode is only changed if n_coalitions is strictly larger than 2^m.
+# This means that we end up with using all coalitions when n_coalitions is 2^m,
 # but use not the exact Shapley kernel weights.
 # Bugfix replaces `>` with `=>`in the places where the code tests if
-# n_combinations is larger than or equal to 2^m. Then the text/messages printed by
+# n_coalitions is larger than or equal to 2^m. Then the text/messages printed by
 # shapr and the code correspond.
 
 library(xgboost)
@@ -34,13 +34,13 @@ model <- xgboost::xgboost(
 p0 <- mean(y_train)
 
 # Shapr sets the default number of batches to be 10 for this dataset for the
-# "ctree", "gaussian", and "copula" approaches. Thus, setting `n_combinations`
+# "ctree", "gaussian", and "copula" approaches. Thus, setting `n_coalitions`
 # to any value lower of equal to 10 causes the error.
 any_number_equal_or_below_10 = 8
 
 # Before the bugfix, shapr:::check_n_batches() throws the error:
 # Error in check_n_batches(internal) :
-#   `n_batches` (10) must be smaller than the number feature combinations/`n_combinations` (8)
+#   `n_batches` (10) must be smaller than the number feature combinations/`n_coalitions` (8)
 # Bug only occures for "ctree", "gaussian", and "copula" as they are treated different in
 # `get_default_n_batches()`, I am not certain why. Ask Martin about the logic behind that.
 explanation <- explain(
@@ -49,6 +49,6 @@ explanation <- explain(
   x_train = x_train,
   n_samples = 2, # Low value for fast computations
   approach = "gaussian",
-  prediction_zero = p0,
-  n_combinations = any_number_equal_or_below_10
+  phi0 = p0,
+  n_coalitions = any_number_equal_or_below_10
 )

@@ -34,12 +34,12 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  prediction_zero = p0
+  phi0 = p0
 )
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
+print(explanation$shapley_values_est)
 
 # Finally we plot the resulting explanations
 plot(explanation)

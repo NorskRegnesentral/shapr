@@ -41,7 +41,7 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  prediction_zero = p0,
+  phi0 = p0,
   n_samples = 10,
   keep_samp_for_vS = TRUE
 )
