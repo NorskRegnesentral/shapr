@@ -37,6 +37,7 @@ y_var <- "cnt"
 set.seed(123)
 train_index <- sample(x = nrow(bike), size = round(0.8*nrow(bike)))
 
+x_full <- bike[, mget(x_var)]
 
 x_train <- bike[train_index, mget(x_var)]
 y_train <- bike[train_index, get(y_var)]
@@ -53,6 +54,7 @@ model <- xgboost::xgboost(
 )
 
 #### Writing training and explanation data to csv files
+fwrite(x_full, file="inst/code_paper/x_full.csv")
 fwrite(x_train, file="inst/code_paper/x_train.csv")
 fwrite(as.data.table(y_train), file="inst/code_paper/y_train.csv")
 fwrite(x_explain, file="inst/code_paper/x_explain.csv")

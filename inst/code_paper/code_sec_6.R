@@ -1,27 +1,32 @@
-devtools::load_all()
 
-bike <- fread("inst/extdata/day.csv")
+library(xgboost)
+library(data.table)
+library(shapr)
 
-model_ar <- ar(bike$temp, order = 2)
+path <- "inst/code_paper/"
+x_full <- fread(paste0(path, "x_full.csv"))
 
-p0_ar <- rep(mean(bike$temp), 3)
+
+model_ar <- ar(x_full$temp, order = 2)
+
+phi0_ar <- rep(mean(x_full$temp), 3)
 
 explain_forecast(
   model = model_ar,
-  y = bike[, "temp"],
+  y = x_full[, "temp"],
   train_idx = 2:729,
   explain_idx = 730:731,
   explain_y_lags = 2,
   horizon = 3,
   approach = "empirical",
-  prediction_zero = p0_ar,
+  phi0 = phi0_ar,
   group_lags = FALSE
 )
 
 
-data_fit <- bike[seq_len(729), ]
+data_fit <- x_full[seq_len(729), ]
 model_arimax <- arima(data_fit$temp, order = c(2, 0, 0), xreg = data_fit$windspeed)
-p0_arimax <- rep(mean(data_fit$temp), 2)
+phi0_arimax <- rep(mean(data_fit$temp), 2)
 
 explain_forecast(
   model = model_arimax,
@@ -33,6 +38,6 @@ explain_forecast(
   explain_xreg_lags = 1,
   horizon = 2,
   approach = "empirical",
-  prediction_zero = p0_arimax,
+  phi0 = phi0_arimax,
   group_lags = TRUE
 )

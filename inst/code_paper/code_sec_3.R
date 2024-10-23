@@ -18,37 +18,40 @@ progressr::handlers(global = TRUE)
 
 # 20 indep
 exp_20_indep <- explain(model = model,
-                          x_explain = x_explain,
-                          x_train = x_train,
-                          max_n_coalitions = 20,
-                          approach = "independence",
-                          phi0 = mean(y_train),
-                          verbose = NULL)
+                        x_explain = x_explain,
+                        x_train = x_train,
+                        max_n_coalitions = 20,
+                        approach = "independence",
+                        phi0 = mean(y_train),
+                        verbose = NULL)
 
 
 # 20 ctree
 exp_20_ctree <- explain(model = model,
-                          x_explain = x_explain,
-                          x_train = x_train,
-                          max_n_coalitions = 20,
-                          approach = "ctree",
-                          phi0 = mean(y_train),
-                          verbose = NULL)
+                        x_explain = x_explain,
+                        x_train = x_train,
+                        max_n_coalitions = 20,
+                        approach = "ctree",
+                        phi0 = mean(y_train),
+                        verbose = NULL,
+                        ctree.sample = FALSE)
+
+
 
 exp_20_indep$MSEv$MSEv
 exp_20_ctree$MSEv$MSEv
 
 ##### OUTPUT ####
-#> exp_50_indep$MSEv$MSEv
-#MSEv MSEv_sd
-#<num>   <num>
-#  1: 1749963  115581
-#> exp_50_ctree$MSEv$MSEv
-#> MSEv  MSEv_sd
+#> exp_20_indep$MSEv$MSEv
+#MSEv  MSEv_sd
 #<num>    <num>
-#  1: 1334203 96611.09
+#  1: 1805368 123213.6
+#> exp_20_ctree$MSEv$MSEv
+#MSEv  MSEv_sd
+#<num>    <num>
+#  1: 1224818 101680.4
 
-print(exp_20_ctree)
+exp_20_ctree
 
 ### Continued estimation
 
@@ -58,6 +61,7 @@ exp_iter_ctree <- explain(model = model,
                           approach = "ctree",
                           phi0 = mean(y_train),
                           prev_shapr_object = exp_20_ctree,
+                          ctree.sample = FALSE,
                           verbose = c("basic","convergence"))
 
 
