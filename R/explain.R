@@ -389,6 +389,7 @@ explain <- function(model,
   }
 
   while (converged == FALSE) {
+    print(paste("Iteration", iter))
     internal$timing_list <- list(init = Sys.time())
 
     # setup the Shapley framework
@@ -406,6 +407,7 @@ explain <- function(model,
     # Check convergence based on estimates and standard deviations (and thresholds)
     internal <- check_convergence(internal)
 
+    # Check if the number of Shapley values can be reduced, i.e, if there are any non-significant Shapley values
     internal <- check_reduction(internal)
 
     # Save intermediate results

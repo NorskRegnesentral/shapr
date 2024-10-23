@@ -404,6 +404,7 @@ get_extra_parameters <- function(internal) {
 
   # Names of features (already checked to be OK)
   internal$parameters$feature_names <- names(internal$data$x_explain)
+  internal$parameters$feature_names_org <- internal$parameters$feature_names
 
   # Update feature_specss (in case model based spec included NAs)
   internal$objects$feature_specs <- get_data_specs(internal$data$x_explain)
@@ -442,6 +443,7 @@ get_extra_parameters <- function(internal) {
     internal$parameters$n_groups <- NULL
     internal$parameters$group_names <- NULL
     internal$parameters$shap_names <- internal$parameters$feature_names
+    internal$parameters$shap_names_org <- internal$parameters$feature_names
     internal$parameters$n_shapley_values <- internal$parameters$n_features
   }
 
@@ -962,12 +964,20 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
     internal <- prepare_next_iteration(internal)
 
   } else {
+    dropped_features = matrix(NA, nrow = 1, ncol = internal$parameters$n_shapley_values+1)
+    colnames(dropped_features) = c("none", internal$parameters$shap_names)
+    rownames(dropped_features) = c("Iter 1")
+
     internal$iter_list <- list()
     internal$iter_list[[1]] <- list(
       n_coalitions = adaptive_arguments$initial_n_coalitions,
       exact = internal$parameters$exact,
       compute_sd = adaptive_arguments$compute_sd,
-      reduction_factor = adaptive_arguments$reduction_factor_vec[1]
+      reduction_factor = adaptive_arguments$reduction_factor_vec[1],
+      allow_feature_reduction = adaptive_arguments$allow_feature_reduction,
+      shap_reduction = list(reduced_dt_shapley_est = NULL, reduced_dt_shapley_sd = NULL, sum_reduced_shapley_est = NULL,
+                            dropped_features = dropped_features
+                            )
     )
   }
 

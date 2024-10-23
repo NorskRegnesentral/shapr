@@ -6,7 +6,9 @@ shapley_setup <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   shapley_reweighting <- internal$parameters$shapley_reweighting
-  coal_feature_list <- internal$objects$coal_feature_list
+  # coal_feature_list <- internal$objects$coal_feature_list
+  coal_feature_list <- as.list(seq_len(n_features))
+  internal$objects$coal_feature_list <- coal_feature_list
 
   # TODO: Just added temporary, and set to TRUE unless not specified explicitly as a ... argument in explain()
   unique_sampling <- ifelse(is.null(internal$parameters$unique_sampling), TRUE, internal$parameters$unique_sampling)

@@ -17,11 +17,18 @@ finalize_explanation <- function(internal) {
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
   # Setting parameters and objects used in the end from the last iteration
+  # TODO: These objects are not straight forward to deal with when we allow dropping variables.
   internal$objects$X <- internal$iter_list[[iter]]$X
   internal$objects$S <- internal$iter_list[[iter]]$S
   internal$objects$W <- internal$iter_list[[iter]]$W
 
-
+  adaptive <- internal$parameters$adaptive
+  if (adaptive) {
+    adaptive_arguments <- internal$parameters$adaptive_arguments
+    if (adaptive_arguments$allow_feature_reduction){
+      internal$objects$dropped_vars <- internal$iter_list[[iter]]$shap_reduction$dropped_features
+    }
+  }
 
 
   # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)

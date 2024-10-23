@@ -8,7 +8,7 @@ library(xgboost)
 library(ggplot2)
 library(reshape2)
 
-m <- 12
+m <- 8
 n_train <- 5000
 n_explain <- 100
 rho_1 <- 0.5
@@ -37,7 +37,11 @@ g <- function(a,b){
   a*b+a*b^2+a^2*b
 }
 
-beta <- c(0.2, -0.8, 1.0, 0.5, -0.8, rep(0, m - 5))
+if (m == 8){
+  beta <- c(0.2, -0.8, 1.0, 0.5, -0.8, rep(0, m - 5))
+} else if (m == 4){
+  beta <- c(0.2, -0.8, 1.0, 0.5)
+}
 gamma <- c(0.8,-1)
 alpha <- 1
 y_train <- alpha +
@@ -67,27 +71,22 @@ this_order <- order(unlist(x_train[,1]))
 
 # plot(unlist(x_train[this_order,1]),pred_train[this_order],type="l")
 
-p0 <- mean(y_train)
+prediction_zero <- mean(y_train)
 
 
 ### First run proper shapr call on this
 
 
 set.seed(465132)
-inds = 1:10#1:n_explain
-
-x_explain= x_explain[inds,]
-x_train = x_train
 approach = "gaussian"
-prediction_zero = p0
 adaptive = TRUE
-n_boot_samps = 1000
+n_boot_samps = 100
 adaptive_arguments = list(initial_n_coalitions = 60,
-                          fixed_n_coalitions_per_iter = 20,
+                          fixed_n_coalitions_per_iter = 10,
                           convergence_tolerance = 1e-6,
                           n_boot_samps = n_boot_samps,
                           shapley_threshold_val = 0.1,
-                          shapley_threshold_prob = 0.2,
+                          shapley_threshold_prob = 0.05,
                           allow_feature_reduction = TRUE
                           )
 
@@ -106,29 +105,73 @@ print_shapleyres = TRUE # tmp
 print_iter_info = TRUE # tmp
 shapley_reweighting = "none" # tmp # "on_N" # TODO: Make "on_N" the default later on.
 prev_shapr_object = NULL
-#
 
-# devtools::load_all()
-# rm(list = c("predict_model"))
+res_list = list()
+tot_n_list = c()
+for (ii in 1:10){
+  x_explain_ii = x_explain[ii, ]
+  expl <- explain(
+    model = model,
+    x_explain= x_explain_ii,
+    x_train = x_train,
+    approach = approach,
+    prediction_zero = prediction_zero,
+    adaptive = adaptive,
+    adaptive_arguments = adaptive_arguments,
+    shapley_reweighting = shapley_reweighting,
+    max_n_coalitions = max_n_coalitions,
+    paired_shap_sampling = paired_shap_sampling,
+    # seed = 15,
+    # verbose = 2,
+    # print_iter_info = TRUE,
+    # print_shapleyres = TRUE,
+  )
+  res_list[[ii]] = expl
+  iter_list = expl$internal$iter_list
+  tot_n = n_prev = 0
+  for (i in 1:length(iter_list)){
+    n_org = iter_list[[i]]$n_coalitions_org
+    n = iter_list[[i]]$n_coalitions
+    if (is.null(n_org)) {n_org = n}
+    tot_n = tot_n + n_org - n_prev
+    n_prev = n
+  }
+  tot_n_list[ii] = tot_n
+}
+tot_n_list
 
-# debugonce(explain)
-expl <- explain(
+
+pred = predict(model, as.matrix(x_explain))
+pred - prediction_zero
+
+for (i in 1:length(expl$internal$iter_list)){
+  est = expl$internal$iter_list[[i]]$dt_shapley_est[, 3:ncol(expl$internal$iter_list[[i]]$dt_shapley_est)]
+  # print(est)
+  print(sum(est))
+  # print(as.numeric(expl$internal$iter_list[[i]]$shap_reduction$reduced_dt_shapley_est))
+  # print(prediction_zero - expl$internal$iter_list[[i]]$dt_vS[.N, p_hat1_1])
+ # writeLines(" ")
+}
+
+iter_list = expl$internal$iter_list
+for (iter in 1:length(iter_list)){
+  print(iter)
+  print(iter_list[[iter]]$shap_reduction$reduced_dt_shapley_est)
+  print(iter_list[[iter]]$shap_reduction$dropped_features)
+  writeLines(" ")
+}
+
+expl2 <- explain(
   model = model,
   x_explain= x_explain,
   x_train = x_train,
   approach = approach,
   prediction_zero = prediction_zero,
-  adaptive = adaptive,
-  adaptive_arguments = adaptive_arguments,
-  shapley_reweighting = shapley_reweighting,
-  max_n_coalitions = max_n_coalitions,
-  paired_shap_sampling = paired_shap_sampling,
-  # seed = 15,
-  # verbose = 2,
-  # print_iter_info = TRUE,
-  # print_shapleyres = TRUE,
+  adaptive = FALSE,
+  # max_n_coalitions = max_n_coalitions,
+  paired_shap_sampling = paired_shap_sampling,,
+  exact = TRUE
 )
-
 
 # library(profvis)
 
@@ -225,7 +268,7 @@ if (file.exists(filename)){
 
 #   write.csv(df, filename)
 }
-obs_to_plot = 1
+obs_to_plot = 6
 df = data.frame(true = numeric(length(true_sd[, obs_to_plot, ])),
                 frida = numeric(length(true_sd[, obs_to_plot, ])),
                 martin = numeric(length(true_sd[, obs_to_plot, ]))

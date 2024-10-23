@@ -4,21 +4,49 @@ probfunc <- function(est, sd, shapley_threshold_val){
 }
 
 check_reduction <- function(internal){
-
     iter <- length(internal$iter_list)
 
-    if (iter == 1){
-        S_mapper = data.table(
-                             feature_numbers = 1:ncol(internal$data$x_explain),
-                             feature_names = colnames(internal$data$x_explain)
-                             )
-        internal$iter_list[[iter]]$S_mapper = S_mapper
+    adaptive <- internal$parameters$adaptive
+    if (!adaptive){
+      return(internal)
     }
+
+    if (!internal$parameters$adaptive_arguments$allow_feature_reduction){
+      return(internal)
+    }
+    if (internal$iter_list[[iter]]$converged){
+      return(internal)
+    }
+
+
+    if (nrow(internal$data$x_explain) > 1){
+        if (iter == 1){
+            print("Feature reduction is only implemented for one observation at a time.")
+            print("Proceeding without feature reduction.")
+        }
+        return(internal)
+    }
+
+    # TODO: Need to take group into account
+    S_mapper = data.table(
+                        feature_numbers = 1:internal$parameters$n_shapley_values,
+                        feature_names = internal$parameters$shap_names
+                        )
+    internal$iter_list[[iter]]$shap_reduction$S_mapper = S_mapper
 
     shapley_threshold_val <- internal$parameters$adaptive_arguments$shapley_threshold_val
     shapley_threshold_prob <- internal$parameters$adaptive_arguments$shapley_threshold_prob
     dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
     dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
+
+    reduced_dt_shapley_est = internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_est
+
+    if (!is.null(reduced_dt_shapley_est)){
+      reduced_names = colnames(reduced_dt_shapley_est)
+
+      dt_shapley_est = dt_shapley_est[, -..reduced_names]
+      dt_shapley_sd = dt_shapley_sd[, -..reduced_names]
+    }
 
     kshap_est_mat = as.matrix(dt_shapley_est[, -"explain_id"])
     kshap_sd_mat = as.matrix(dt_shapley_sd[, -"explain_id"])
@@ -26,8 +54,7 @@ check_reduction <- function(internal){
     prob_of_red <- probfunc(kshap_est_mat, kshap_sd_mat, shapley_threshold_val)
 
     if (!any(prob_of_red < shapley_threshold_prob)){
-        # TODO: ensure tht keep in this iter is the same as in the prev iter.
-        return(internal)
+      return(internal)
     }
 
     min.ind <- function(row){
@@ -45,38 +72,64 @@ check_reduction <- function(internal){
     # exclude_feature_bin = min.ind(prob_of_red[, -1])
     exclude_feature_names = min.names(prob_of_red[, -1])
 
-    # TODO: create a method for saving these in each iter
     # Keep the Shapley value estimate of the features that are excluded
+    keep = internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_est
+    keep = as.data.table(c(keep, dt_shapley_est[, ..exclude_feature_names]))
+    internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_est = keep
+    internal$iter_list[[iter]]$shap_reduction$sum_reduced_shapley_est = sum(keep)
 
-    internal$iter_list[[iter]]$reduction <- list()
+    # Also keep the standard deviation
+    keep_sd = internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_sd
+    keep_sd = as.data.table(c(keep_sd, dt_shapley_sd[, ..exclude_feature_names]))
+    internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_sd = keep_sd
 
-    keep = internal$iter_list[[iter]]$reduction$keep
-    keep = c(keep, dt_shapley_est[, ..exclude_feature_names])
-    internal$iter_list[[iter]]$reduction$keep = keep
+    dropped_features = internal$iter_list[[iter]]$shap_reduction$dropped_features
+    new_row = matrix(NA, 1, ncol(dropped_features))
+    shap_names = c("none", internal$parameters$shap_names_org)
+    ind = which(shap_names %in% colnames(keep))
+    new_row[, ind] = 1
+    rownames(new_row) = paste0("Iter ", iter)
+    internal$iter_list[[iter]]$shap_reduction$dropped_features = rbind(dropped_features, new_row)
 
-    internal$iter_list[[iter]]$reduction$exclude_feature <- exclude_feature
+    # Since n_shapley_values and n_features are used in 'shapley_setup()', we need to update both.
+    internal$parameters$n_shapley_values <- internal$parameters$n_shapley_values - length(exclude_feature)
+    internal$parameters$n_features <- internal$parameters$n_features - length(exclude_feature)
+    internal$parameters$feature_names <- internal$parameters$feature_names[!internal$parameters$feature_names %in% exclude_feature_names]
+    internal$parameters$shap_names <- internal$parameters$shap_names[!internal$parameters$shap_names %in% exclude_feature_names]
 
-    dt_vS_reduced <- reduce(internal)
-    internal$iter_list[[iter]]$reduction$dt_vS_reduced <- dt_vS_reduced
-    internal$iter_list[[iter]]$reduction$n_features <- internal$parameters$n_features - length(keep)
+    # TODO: don't think it is necessary to keep exclude_feature in the reduction list
+    internal$iter_list[[iter]]$shap_reduction$exclude_feature <- exclude_feature
 
-    internal$iter_list[[iter]]$reduction$prediction_zero <- internal$parameters$prediction_zero + sum(keep)
+    internal <- reduce(internal)
+    # TODO: Update Shapley value names
 
     return(internal)
 }
 
 
 reduce <- function(internal){
-    next_S_mapper <- internal$iter_list[[iter]]$S_mapper[-exclude_feature, ]
-    internal$iter_list[[iter]]$S_mapper <- next_S_mapper
+    iter <- length(internal$iter_list)
 
-    X <- internal$iter_list[[iter]]$X   # Should this be X og X_curr in new code?
-    Xtmp <- X[, .(coalitions, id_coalition, coalition_size)]
+    exclude_feature = internal$iter_list[[iter]]$shap_reduction$exclude_feature
+
+    # TODO: make sure feature_numbers are 1, 2, ..., n_features, whilst feature_names are the original feature names.
+    next_S_mapper <- internal$iter_list[[iter]]$shap_reduction$S_mapper[-exclude_feature, ]
+
+    X_org <- internal$iter_list[[iter]]$X   # Should this be X og X_curr in new code?
+    Xtmp = X_org[, .(coalitions, id_coalition, coalition_size, sample_freq)]
+
+    Xtmp[,coalitions_bar:=lapply(coalitions, function(x) seq(m)[-x])]
+    Xtmp[1, coalitions_bar := list(1:m)]
 
     Xtmp[, coalitions_next := lapply(coalitions, function(x) x[!(x %in% exclude_feature)])]
     Xtmp[, coalitions_next := sapply(coalitions_next, match, next_S_mapper$feature_numbers)]
     Xtmp[, coalitions_next_char := sapply(coalitions_next, paste0, collapse = "_")]
     Xtmp[, coalitions_char := sapply(coalitions, paste0, collapse = "_")]
+
+    Xtmp[, coalitions_bar_next := lapply(coalitions_bar, function(x) x[!(x %in% exclude_feature)])]
+    Xtmp[, coalitions_bar_next := sapply(coalitions_bar_next, match, next_S_mapper$feature_numbers)]
+    Xtmp[, coalitions_bar_next_char := sapply(coalitions_bar_next, paste0, collapse = "_")]
+    Xtmp[, coalitions_bar_char := sapply(coalitions_bar, paste0, collapse = "_")]
 
     # Uses 12|345 as replacement for 12|34, if 5 is removed
     Xtmp[, keep := !duplicated(coalitions_next_char)]
@@ -90,12 +143,85 @@ reduce <- function(internal){
 
     # TODO: should this be dt_vS or dt_vS_curr?
     dt_vS = internal$iter_list[[iter]]$dt_vS
+    cnames_dt_vS = colnames(dt_vS)
 
-    dt_vS = merge(dt_vS,
-                  Xtmp[, .(id_coalition, id_coalition_next)],
-                  by = "id_coalition")
+    X_dt_vS = merge(dt_vS,
+                  # Xtmp[keep == TRUE],
+                  Xtmp,
+                  # by = c("coalitions_char", "coalitions_bar_char")
+                  by = "id_coalition"
+                  )
 
-    dt_vS[, p_hat1_1 := mean(p_hat1_1), by = id_coalition_next]
+    # print(paste(X_org[, sum(sample_freq)], "vs", Xtmp[, sum(sample_freq)], "vs", X_dt_vS[keep == TRUE, sum(sample_freq)]))
+    # print(paste(nrow(X_org), "vs", nrow(Xtmp)))
 
-    dt_vS = unique(dt_vS[, .(id_coalition = id_coalition_next, p_hat1_1)])
+    ################### BALANCING WEIGHTS AFTER REDUCTION ###################
+    # TODO: When reducing the number of features in the paired_shap_sampling approach,
+    # the bootstrap code expects the sum of the sample_freq in X to be an even number
+    # (such that half the samples are used for the 'unpaired' and the other half for the 'paired' samples).
+    # A solution that works code-wise, is to sum the sample_freq over the rows that are reduced to the same rows.
+    # This ensures that the 'unpaired' and 'paired' versions have the same sample_freq. Another solution is to
+    # take the mean of the sample_freq over the rows that are reduced to the same rows, and round to the nearest integer.
+    # This may be less biased, as in the summations case, the sample_freq will increase for the rows that are reduced to the same rows.
+    # This is done in the following lines of code. We omit the full and empty rows since these are required in order
+    # for the Shapley values to sum to the prediction.
+
+    weight_balancing = "mean" # "mean" or "sum"
+    if (weight_balancing == "mean"){
+        X_dt_vS[-c(1, .N), sample_freq := min(round(mean(sample_freq)), 1), by = id_coalition_next]
+    } else if (weight_balancing == "sum"){
+        X_dt_vS[-c(1, .N), sample_freq := sum(sample_freq), by = id_coalition_next]
+    }
+
+    X_dt_vS = X_dt_vS[keep == TRUE] # TODO: Hvorfor regner MArtin ut mean FØR han beholder de sanne radene?
+
+    # TODO: the variable name is hard coded and will only work for obs 1.
+    # X_dt_vS[, p_hat1_1 := mean(p_hat1_1), by = id_coalition_next] # This was used in the old code, but is not used with this reduction strategy
+                                                                    # might needed if other strategies are revisited
+
+    X_dt_vS[, id_coalition := id_coalition_next]
+    X_dt_vS = unique(X_dt_vS, by = c("coalitions_char", "coalitions_bar_char"))
+
+    # Need to update coalition_map to correspond to the new dt_vS
+    # This is necessary for the next iteration
+    coalition_map = X_dt_vS[, .(coalitions_str = sapply(coalitions_next, paste, collapse = " "), id_coalition)]
+    internal$iter_list[[iter]]$coalition_map = coalition_map
+
+    Xtmp = X_dt_vS[, -..cnames_dt_vS]
+    dt_vS = X_dt_vS[, ..cnames_dt_vS]
+
+
+    vS_list = list(dt_vS[-1,])
+    internal$iter_list[[iter]]$vS_list = vS_list
+
+    internal$iter_list[[iter]]$dt_vS_org = internal$iter_list[[iter]]$dt_vS
+    internal$iter_list[[iter]]$dt_vS <- dt_vS
+
+    n_coalitions_org = internal$iter_list[[iter]]$n_coalitions
+    internal$iter_list[[iter]]$n_coalitions = nrow(Xtmp)
+    internal$iter_list[[iter]]$n_coalitions_org = n_coalitions_org
+
+    n_shapley_values = internal$parameters$n_shapley_values
+    Xtmp[.N, coalitions_next := 1:n_shapley_values]
+    repetitions <- Xtmp[-c(1, .N), sample_freq]
+
+    unique_coal_samples <- Xtmp[-c(1, .N), coalitions_next]
+
+    coal_samples <- unlist(
+      lapply(
+        seq_along(unique_coal_samples),
+        function(i) {
+          rep(
+            list(unique_coal_samples[[i]]),
+            repetitions[i]
+          )
+        }
+      ),
+      recursive = FALSE
+    )
+
+    internal$iter_list[[iter]]$coal_samples_org = internal$iter_list[[iter]]$coal_samples
+    internal$iter_list[[iter]]$coal_samples <- coal_samples
+
+    return(internal)
 }

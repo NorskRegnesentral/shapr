@@ -8,6 +8,7 @@
 #'
 #' @export
 compute_vS <- function(internal, model, predict_model, method = "future") {
+  method = ""
   iter <- length(internal$iter_list)
 
   S_batch <- internal$iter_list[[iter]]$S_batch
@@ -143,6 +144,7 @@ batch_prepare_vS_regression <- function(S, internal) {
 batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   output_size <- internal$parameters$output_size
   feature_names <- internal$parameters$feature_names
+  feature_names_org <- internal$parameters$feature_names_org
   type <- internal$parameters$type
   horizon <- internal$parameters$horizon
   n_endo <- internal$data$n_endo
@@ -153,12 +155,14 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
   dt <- batch_prepare_vS_MC_auxiliary(S = S, internal = internal) # Make it optional to store and return the dt_list
-
   pred_cols <- paste0("p_hat", seq_len(output_size))
 
-  compute_preds(
+  iter <- length(internal$iter_list)
+  x_excluded <- internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_est
+
+  dt <- compute_preds(
     dt, # Updating dt by reference
-    feature_names = feature_names,
+    feature_names = feature_names_org,
     predict_model = predict_model,
     model = model,
     pred_cols = pred_cols,
@@ -168,8 +172,13 @@ batch_prepare_vS_MC <- function(S, internal, model, predict_model) {
     explain_idx = explain_idx,
     explain_lags = explain_lags,
     y = y,
-    xreg = xreg
+    xreg = xreg,
+    x_excluded = x_excluded
   )
+
+  max_id_coalition <- internal$iter_list[[iter]]$X[, .N]
+  if (max_id_coalition %in% S) {
+  }
   dt_vS <- compute_MCint(dt, pred_cols)
 
   # Also return the dt object if keep_samp_for_vS is TRUE
@@ -199,7 +208,8 @@ batch_prepare_vS_MC_auxiliary <- function(S, internal) {
     } else {
       dt <- NULL # Special case for when the batch only include the largest id
     }
-    dt_max <- data.table(id_coalition = max_id_coalition, x_explain, w = 1, id = seq_len(n_explain))
+    feature_names <- internal$parameters$feature_names
+    dt_max <- data.table(id_coalition = max_id_coalition, x_explain[, ..feature_names], w = 1, id = seq_len(n_explain))
     dt <- rbind(dt, dt_max)
     setkey(dt, id, id_coalition)
   }
@@ -219,7 +229,8 @@ compute_preds <- function(
     explain_idx = NULL,
     explain_lags = NULL,
     y = NULL,
-    xreg = NULL) {
+    xreg = NULL,
+    x_excluded = NULL) {
   # Predictions
 
   if (type == "forecast") {
@@ -234,6 +245,9 @@ compute_preds <- function(
       xreg = xreg
     ), .SDcols = feature_names]
   } else {
+    dt <- cbind(dt, as.data.table(x_excluded))
+    setcolorder(dt, names(feature_names))
+
     dt[, (pred_cols) := predict_model(model, newdata = .SD), .SDcols = feature_names]
   }
 

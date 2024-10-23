@@ -3,6 +3,18 @@ prepare_next_iteration <- function(internal) {
   converged <- internal$iter_list[[iter]]$converged
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
 
+  # TODO: a bit messy to do this here, should be moved somewhere else
+  if (internal$parameters$adaptive){
+    if (internal$parameters$adaptive_arguments$allow_feature_reduction){
+      dropped_features <- internal$iter_list[[iter]]$shap_reduction$dropped_features
+      if (nrow(dropped_features) < (iter)){
+        dropped_features <- rbind(dropped_features, dropped_features[nrow(dropped_features), 1:ncol(dropped_features)])
+        rownames(dropped_features) = paste("Iter", 1:(iter))
+      }
+    internal$iter_list[[iter]]$shap_reduction$dropped_features <- dropped_features
+    }
+  }
+
 
   if (converged == FALSE) {
     next_iter_list <- list()
@@ -44,7 +56,7 @@ prepare_next_iteration <- function(internal) {
       # Sample more keeping the current samples
       next_iter_list$exact <- FALSE
       next_iter_list$n_coalitions <- proposal_next_n_coalitions
-      next_iter_list$compute_sd <- TRUE # TODO: should this equal internal$parameters$adaptive_arguments$compute_sd?
+      next_iter_list$compute_sd <- TRUE # TODO: should this be internal$parameters$adaptive_arguments$compute_sd?
     }
 
     next_iter_list$reduction_factor <- ifelse(
@@ -54,6 +66,14 @@ prepare_next_iteration <- function(internal) {
     )
 
     next_iter_list$prev_coal_samples <- current_coal_samples
+
+    if (internal$parameters$adaptive_arguments$allow_feature_reduction){
+      next_iter_list$shap_reduction = list()
+      next_iter_list$shap_reduction$reduced_dt_shapley_est <- internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_est
+      next_iter_list$shap_reduction$reduced_dt_shapley_sd <- internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_sd
+      next_iter_list$shap_reduction$sum_reduced_shapley_est <- internal$iter_list[[iter]]$shap_reduction$sum_reduced_shapley_est
+      next_iter_list$shap_reduction$dropped_features <- internal$iter_list[[iter]]$shap_reduction$dropped_features
+    }
   } else {
     next_iter_list <- list()
   }

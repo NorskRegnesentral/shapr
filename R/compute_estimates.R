@@ -15,6 +15,7 @@ compute_estimates <- function(internal, vS_list) {
 
   iter <- length(internal$iter_list)
   compute_sd <- internal$iter_list[[iter]]$compute_sd
+  adaptive <- internal$parameters$adaptive
 
   n_boot_samps <- internal$parameters$adaptive_arguments$n_boot_samps
 
@@ -29,30 +30,52 @@ compute_estimates <- function(internal, vS_list) {
 
   # Compute the Shapley values
   dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
-  internal <- compute_shapley_frida(internal, processed_vS_list$dt_vS)
+  if (adaptive){
+    if (internal$parameters$adaptive_arguments$allow_feature_reduction){
+      keep = internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_est
+      dt_shapley_est = cbind(dt_shapley_est, keep)
+      # First, in compute_shapley_new, we add the sum of the shapley values of the removed features
+      # to prediction_zero. Then, we must revert prediction_zero to the original
+      # to ensure correctness.
+      dt_shapley_est$none = internal$parameters$prediction_zero
+      setcolorder(dt_shapley_est, c("none", internal$parameters$shap_names_org))
+    }
+  }
+  # print(dt_shapley_est)
+  # print(sum(dt_shapley_est))
+  # internal <- compute_shapley_frida(internal, processed_vS_list$dt_vS)
 
-  shapley_frida <- internal$iter_list[[iter]]$frida_shapley_values
+  # shapley_frida <- internal$iter_list[[iter]]$frida_shapley_values
 
-  inds = which(colnames(dt_shapley_est) %in% internal$parameters$feature_names )
-  print(sum(abs(dt_shapley_est[, ..inds] - shapley_frida))/length(shapley_frida))
+  # inds = which(colnames(dt_shapley_est) %in% internal$parameters$feature_names )
+  # print(sum(abs(dt_shapley_est[, ..inds] - shapley_frida))/length(shapley_frida))
   # print(dt_shapley_est[, ..inds] - shapley_frida)
 
   internal$timing_list$compute_shapley <- Sys.time()
 
   if (compute_sd) {
     dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
-    dt_shapley_sd2 <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS, seed = 685153)
-    internal <- bootstrap_shapley_frida(internal, n_boot_samps = n_boot_samps)
-    frida_boot_sd <- internal$iter_list[[iter]]$frida_boot_shapley_values
+    # dt_shapley_sd2 <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS, seed = 685153)
+    # internal <- bootstrap_shapley_frida(internal, n_boot_samps = n_boot_samps)
+    # frida_boot_sd <- internal$iter_list[[iter]]$frida_boot_shapley_values
 
-    inds = which(colnames(dt_shapley_sd) %in% internal$parameters$feature_names )
+    # inds = which(colnames(dt_shapley_sd) %in% internal$parameters$feature_names )
 
-    # print(dt_shapley_sd[, ..inds])
-    # print(frida_boot_shapley_values)
-    print(sum(abs(dt_shapley_sd[, ..inds] - frida_boot_sd))/length(frida_boot_sd))
-    # print(sum(abs(dt_shapley_sd2[, ..inds] - frida_boot_sd))/length(frida_boot_sd))
-    # print(sum(abs(dt_shapley_sd[, ..inds] - dt_shapley_sd2[, ..inds] ))/length(frida_boot_sd))
-    writeLines(" ")
+    # # print(dt_shapley_sd[, ..inds])
+    # # print(frida_boot_shapley_values)
+    # print(sum(abs(dt_shapley_sd[, ..inds] - frida_boot_sd))/length(frida_boot_sd))
+    # # print(sum(abs(dt_shapley_sd2[, ..inds] - frida_boot_sd))/length(frida_boot_sd))
+    # # print(sum(abs(dt_shapley_sd[, ..inds] - dt_shapley_sd2[, ..inds] ))/length(frida_boot_sd))
+    # writeLines(" ")
+
+    # Combine with last SD estimate for dropped variables
+    if (adaptive){
+      if (internal$parameters$adaptive_arguments$allow_feature_reduction){
+        keep = internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_sd
+        dt_shapley_sd = cbind(dt_shapley_sd, keep)
+        setcolorder(dt_shapley_sd, c("none", internal$parameters$shap_names_org))
+      }
+    }
   } else {
     dt_shapley_sd <- dt_shapley_est * 0
   }
@@ -85,6 +108,15 @@ postprocess_vS_list <- function(vS_list, internal) {
   prediction_zero <- internal$parameters$prediction_zero
   n_explain <- internal$parameters$n_explain
 
+  iter <- length(internal$iter_list)
+  sum_reduced_shapley_est <- internal$iter_list[[iter]]$shap_reduction$sum_reduced_shapley_est
+  adaptive <- internal$parameters$adaptive
+
+  if (adaptive){
+    if (internal$parameters$adaptive_arguments$allow_feature_reduction & (!is.null(sum_reduced_shapley_est))){
+      prediction_zero = prediction_zero + sum_reduced_shapley_est
+    }
+  }
   # Appending the zero-prediction to the list
   dt_vS0 <- as.data.table(rbind(c(1, rep(prediction_zero, n_explain))))
 
@@ -288,6 +320,11 @@ compute_shapley_frida <- function(internal, dt_vS){
   }
 
   p0 = internal$parameters$prediction_zero
+  if (adaptive){
+    if (internal$parameters$adaptive_arguments$allow_feature_reduction){
+      p0 = p0 + internal$iter_list[[iter]]$shap_reduction$sum_reduced_shapley_est
+    }
+  }
   preds = dt_vS_curr[.N, -"id_coalition"]
 
   A = compute_A(A, X_curr, S_curr, n_row_all, n_row_this_iter)
@@ -422,6 +459,7 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
       sample.int(
         n = .N,
         size = ceiling(n_coalitions_boot * n_boot_samps / 2),
+        # size = ceiling(n_coalitions_boot / 2)* n_boot_samps,
         replace = TRUE,
         prob = sample_freq
       ),
@@ -429,6 +467,7 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
     ]
 
     X_boot00[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot/2)]
+    # X_boot00[, boot_id := rep(seq(n_boot_samps), times = ceiling(n_coalitions_boot/2))]
 
 
     X_boot00_paired <- copy(X_boot00[,.(coalitions,boot_id)])
@@ -488,10 +527,16 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
       id_coalition
     ], -"id_coalition"]))
 
+    prediction_zero = internal$parameters$prediction_zero
+    kshap_boot[, 1] = prediction_zero
+
     boot_sd_array[, , i] <- copy(kshap_boot)
   }
 
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
+  # m = apply(boot_sd_array, c(1, 2), mean)
+  # print(m)
+  # print(sum(m))
 
   dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
   colnames(dt_kshap_boot_sd) <- c("none", shap_names)
@@ -589,6 +634,11 @@ bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
   n_row_all = internal$iter_list[[iter]]$X[-c(1, .N), sum(shapley_weight)]
 
   p0 = internal$parameters$prediction_zero
+  if (adaptive){
+    if (internal$parameters$adaptive_arguments$allow_feature_reduction){
+      p0 = p0 + internal$iter_list[[iter]]$shap_reduction$sum_reduced_shapley_est
+    }
+  }
   preds = dt_vS_curr[.N, -"id_coalition"]
 
   n_explain = internal$parameters$n_explain
