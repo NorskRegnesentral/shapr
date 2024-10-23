@@ -1,21 +1,23 @@
 # shapr 1.0.0
 
-* (Just some notes so far)
-* iterative estimatio/convergence detection
-* Verbosity
-* Complete restructuring motivated by introducing the Python wrapper. The restructuring splits the explanation tasks into smaller pieces, which was necessary to allow the Python wrapper to move back and forth between R and Python.
-* As part of the restructuring, we also did a number of design changes, resulting in a series of breaking changes described below.
-
 ### Breaking changes
 
 * Moved from explaining predictions using *two* functions (`shapr()` for initial setup + `explain()` for explanation for specific observations), to a *single* function call (also named `explain()`). The data used for training and to be explained have gotten explicit names (`x_train` and `x_explain`). The order of the input arguments has also been slightly changed (`model` is now the first argument).
 * Prediction and checking functions for custom models are now passed directly as arguments to `explain()` instead of being defined as functions of a specific class in the global env.
 * The previously exported function `make_dummies` used to explain `xgboost` models with categorical data, is removed to simplify the code base. This is rather handled with a custom prediction model.
 * The function `explain.ctree_comb_mincrit`, which allowed combining models with `approch=ctree` with different `mincrit` parameters, has been removed to simplify the code base. It may return in a completely general manner in later version of `shapr`.
+* New argument names: prediction_zero -> phi0, n_combinations -> max_n_coalitions, n_samples -> n_MC_samples, 
 
 ### New features
 
-* Adatpive sampling of Shapley value subsets
+* Iterative Shapley value estimation with convergence detection
+* New approaches: vaeac, regression_separate, regression_surrogate, timeseries, categorical
+* verbose argument for explain() to control the amount of output
+* Parallelized computation of v(S) with future, including progress updates
+* Paired_sampling of coalitions
+* prev_shapr_object argument to explain() to continue explanation from a previous object
+* asymmetric and causal Shapley values
+* Improved KernelSHAP estimation with adjusted weights for reduced variance
 * Release a Python wrapper (`shaprpyr`, [#325](https://github.com/NorskRegnesentral/shapr/pull/325)) for explaining predictions from Python models (from Python) utilizing almost all functionality of `shapr`. The wrapper moves back and forth back and forth between Python and R, doing the prediction in Python, and almost everything else in R. This simplifies maintenance of `shaprpy` significantly. The wrapper is available [here](https://github.com/NorskRegnesentral/shapr/tree/master/python).
 * Introduce batch computation of conditional expectations ([#244](https://github.com/NorskRegnesentral/shapr/issues/244)). 
 This essentially compute $v(S)$ for a portion of the $S$-subsets at a time, to reduce the amount of data needed to be held in memory. 
@@ -53,6 +55,7 @@ Previously, this was not possible with the prediction functions defined internal
 ### Documentation improvements
 
 * The [vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html) has been updated to reflect the new framework for explaining predictions, and all the new package features/functionality.
+* New vignettes also for the regression paradigm, vaeac and the asymmetric/causal Shapley values
 
 # shapr 0.2.3 (GitHub only)
 
