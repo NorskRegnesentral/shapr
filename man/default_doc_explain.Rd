@@ -4,17 +4,17 @@
 \alias{default_doc_explain}
 \title{Exported documentation helper function.}
 \usage{
-default_doc_explain(internal, index_features)
+default_doc_explain(internal, iter, index_features)
 }
 \arguments{
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
-\item{index_features}{Positive integer vector. Specifies the id_coalition to
-apply to the present method. \code{NULL} means all coalitions. Only used internally.}
-
 \item{iter}{Integer.
 The iteration number. Only used internally.}
+
+\item{index_features}{Positive integer vector. Specifies the id_coalition to
+apply to the present method. \code{NULL} means all coalitions. Only used internally.}
 }
 \description{
 Exported documentation helper function.

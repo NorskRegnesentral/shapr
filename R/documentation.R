@@ -41,7 +41,7 @@ default_doc <- function(internal, model, predict_model, output_size, extra, ...)
 #' apply to the present method. `NULL` means all coalitions. Only used internally.
 #'
 #' @keywords internal
-default_doc_explain <- function(internal, index_features) {
+default_doc_explain <- function(internal, iter, index_features) {
   NULL
 }
 
