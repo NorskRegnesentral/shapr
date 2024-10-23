@@ -35,7 +35,6 @@ def explain(
     verbose: str = "basic",
     predict_model: Callable = None,
     get_model_specs: Callable = None,
-    prev_shapr_object: None = None, # Currently not implemented
     asymmetric: bool = False,
     causal_ordering: dict | None = None,
     confounding: bool | None = None,
@@ -98,8 +97,6 @@ def explain(
     get_model_specs: Callable, optional
       An optional function for checking model/data consistency when `model` is not natively supported. The function takes `model` as argument 
       and provides a `dict` with 3 elements: `labels`, `classes`, and `factor_levels`.
-    prev_shapr_object: None, optional
-      Currently not implemented.
     asymmetric: bool, optional
       If `False` (default), `explain` computes regular symmetric Shapley values. If `True`, then `explain` computes asymmetric Shapley values 
       based on the (partial) causal ordering given by `causal_ordering`.
@@ -191,7 +188,6 @@ def explain(
       iterative = maybe_null(iterative),
       iterative_args = iterative_args, # Might do some conversion here
       kernelSHAP_reweighting = kernelSHAP_reweighting,
-      prev_shapr_object = maybe_null(prev_shapr_object),
       asymmetric = asymmetric,
       causal_ordering = maybe_null(causal_ordering), # Might do some conversion here
       confounding = maybe_null(confounding), # Might do some conversion here
