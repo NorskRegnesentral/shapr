@@ -2,7 +2,8 @@ import xgboost as xgb
 import pandas as pd
 from shaprpy import explain
 
-path = "inst/code_paper/"
+path0 = "https://raw.githubusercontent.com/NorskRegnesentral/shapr/refs/heads/"
+path = path0 + "master/inst/code_paper/"
 
 # Read data  
 x_train = pd.read_csv(path + "x_train.csv")

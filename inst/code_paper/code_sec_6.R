@@ -3,7 +3,8 @@ library(xgboost)
 library(data.table)
 library(shapr)
 
-path <- "inst/code_paper/"
+path0 <- "https://raw.githubusercontent.com/NorskRegnesentral/shapr/refs/heads/"
+path <- paste0(path0,"master/inst/code_paper/")
 x_full <- fread(paste0(path, "x_full.csv"))
 
 

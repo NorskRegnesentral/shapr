@@ -2,11 +2,12 @@ library(xgboost)
 library(data.table)
 library(shapr)
 
-path <- "inst/code_paper/"
+path0 <- "https://raw.githubusercontent.com/NorskRegnesentral/shapr/refs/heads/"
+path <- paste0(path0,"master/inst/code_paper/")
 x_explain <- fread(paste0(path, "x_explain.csv"))
 x_train <- fread(paste0(path, "x_train.csv"))
 y_train <- unlist(fread(paste0(path, "y_train.csv")))
-model <- readRDS(paste0(path, "model.rds"))
+model <- readRDS(file(paste0(path, "model.rds")))
 
 
 # We compute the SHAP values for the test data.
@@ -51,8 +52,7 @@ exp_20_ctree$MSEv$MSEv
 #<num>    <num>
 #  1: 1224818 101680.4
 
-exp_20_ctree
-
+print(exp_20_ctree)
 ### Continued estimation
 
 exp_iter_ctree <- explain(model = model,
@@ -71,7 +71,7 @@ library(ggplot2)
 
 plot(exp_iter_ctree, plot_type = "scatter",scatter_features = c("atemp","windspeed"))
 
-ggplot2::ggsave("inst/code_paper/scatter_ctree.pdf",width = 7, height = 4)
+ggplot2::ggsave("inst/code_paper/scatter_ctree.pdf",width = 7, height = 3)
 
 ### Grouping
 
@@ -125,7 +125,10 @@ exp_g_reg_tuned$MSEv$MSEv
 
 # Plot the best one
 
-plot(exp_group_reg_sep_xgb_tuned,index_x_explain = 6,plot_type="waterfall")
+exp_g_reg_tuned$shapley_values_est[6,]
+x_explain[6,]
+
+plot(exp_g_reg_tuned,index_x_explain = 6,plot_type="waterfall")
 
 ggplot2::ggsave("inst/code_paper/waterfall_group.pdf",width = 7, height = 4)
 
