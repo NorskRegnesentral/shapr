@@ -7,10 +7,11 @@ path0 <- "https://raw.githubusercontent.com/NorskRegnesentral/shapr/refs/heads/"
 path <- paste0(path0,"master/inst/code_paper/")
 x_full <- fread(paste0(path, "x_full.csv"))
 
+data_fit <- x_full[seq_len(729), ]
 
-model_ar <- ar(x_full$temp, order = 2)
+model_ar <- ar(data_fit$temp, order = 2)
 
-phi0_ar <- rep(mean(x_full$temp), 3)
+phi0_ar <- rep(mean(data_fit$temp), 3)
 
 explain_forecast(
   model = model_ar,
@@ -31,8 +32,8 @@ phi0_arimax <- rep(mean(data_fit$temp), 2)
 
 explain_forecast(
   model = model_arimax,
-  y = data_fit[, "temp"],
-  xreg = bike[, "windspeed"],
+  y = x_full[, "temp"],
+  xreg = x_full[, "windspeed"],
   train_idx = 2:728,
   explain_idx = 729,
   explain_y_lags = 2,
