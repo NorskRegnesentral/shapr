@@ -39,6 +39,7 @@ feature_set_sample <- function(feature_sample_prev = NULL, m, n_combinations_sam
     while (unique_samples_new < n_combinations_sample) {
       remaining_samples <- n_combinations_sample-unique_samples_new
 
+      #print(remaining_samples)
       # Sample number of chosen features ----------
       n_features_sample <- sample(
         x = n_features,
@@ -53,8 +54,8 @@ feature_set_sample <- function(feature_sample_prev = NULL, m, n_combinations_sam
         feature_sample_1 <- feature_sample_0
         feature_sample_2 <- lapply(feature_sample_0, function(x) seq(m)[-x])
       } else {
-        feature_sample_1 <- feature_sample_0[seq_len(n_combinations_sample*0.5)]
-        feature_sample_2 <- feature_sample_0[-seq_len(n_combinations_sample*0.5)]
+        feature_sample_1 <- feature_sample_0[seq_len(ceiling(remaining_samples*0.5))]
+        feature_sample_2 <- feature_sample_0[-seq_len(ceiling(remaining_samples*0.5))]
       }
 
       feature_sample_current_1 <- c(feature_sample_current_1, feature_sample_1)
@@ -287,7 +288,7 @@ boot_cov_estimator <- function(feature_sample_all_1,feature_sample_all_2,dt_vS,t
       these_ids <- c(these_ids0,these_ids0+halfway)
 
     } else {
-      these_ids <- sample(seq_len(halfway*2),replace = TRUE)
+      these_ids <- sample(seq(length(feature_sample_all_1) + length(feature_sample_all_2)),replace = TRUE)
     }
 
     X_tmp0 <- X_from_feature_set_v3(feature_sample_all[these_ids],m=m,sample_ids=these_ids)[] # sample_ids could be removed from the function -- never used
