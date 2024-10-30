@@ -3,7 +3,7 @@ prepare_next_iteration <- function(internal) {
   converged <- internal$iter_list[[iter]]$converged
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
 
-  # TODO: a bit messy to do this here, should be moved somewhere else
+  # TODO: a bit messy to do this here, should be moved somewhere else?
   if (internal$parameters$adaptive){
     if (internal$parameters$adaptive_arguments$allow_feature_reduction){
       dropped_features <- internal$iter_list[[iter]]$shap_reduction$dropped_features

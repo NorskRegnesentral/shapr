@@ -354,7 +354,7 @@ explain <- function(model,
     shapley_reweighting = shapley_reweighting,
     init_time = init_time,
     prev_shapr_object = prev_shapr_object,
-    # ...
+    ...
   )
 
 
@@ -389,7 +389,7 @@ explain <- function(model,
   }
 
   while (converged == FALSE) {
-    print(paste("Iteration", iter))
+
     internal$timing_list <- list(init = Sys.time())
 
     # setup the Shapley framework

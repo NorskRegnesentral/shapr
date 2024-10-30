@@ -259,6 +259,7 @@ compute_shapley_frida <- function(internal, dt_vS){
   S = internal$iter_list[[iter]]$S
 
   if (iter > 1){
+    # Select which rows where samples in this iteration
     X_prev = internal$iter_list[[iter-1]]$X
     X_prev[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
     X[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
@@ -297,18 +298,6 @@ compute_shapley_frida <- function(internal, dt_vS){
 
   # Effective number of rows in this iteration
   n_row_this_iter = X_curr[-c(1, .N), sum(shapley_weight)]
-
-  # Comparing with 'improved_shapley' code
-  # S_to_save = c()
-  # for (ss in 1:nrow(S)){
-  #   row = S[ss, ]
-  #   w = weight_mat[ss]
-  #   vS = dt_vS[ss, -"id_coalition"]
-  #   row = c(row, unlist(vS))
-  #   unweighted = matrix(rep(row, w), nrow = w, byrow = TRUE)
-  #   S_to_save = rbind(S_to_save, unweighted)
-  # }
-  # write.csv(S_to_save, paste0("/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Frida/S_shapr_comp/iter_", iter, ".csv"))
 
   n_features = internal$parameters$n_features
   if (iter == 1) {
@@ -527,16 +516,10 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
       id_coalition
     ], -"id_coalition"]))
 
-    prediction_zero = internal$parameters$prediction_zero
-    kshap_boot[, 1] = prediction_zero
-
     boot_sd_array[, , i] <- copy(kshap_boot)
   }
 
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
-  # m = apply(boot_sd_array, c(1, 2), mean)
-  # print(m)
-  # print(sum(m))
 
   dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
   colnames(dt_kshap_boot_sd) <- c("none", shap_names)
@@ -570,7 +553,6 @@ bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
   X_samp <- X_org[-c(1, .N), .(id_coalition, coalitions, coalition_size, N, shapley_weight, sample_freq)]
   X_samp[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
   n_coalitions_boot <- X_samp[, sum(sample_freq)]
-  # n_coalitions_boot = n_coalitions_boot
 
   if (paired_shap_sampling) {
     # Sample with replacement
@@ -584,7 +566,6 @@ bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
       .(id_coalition, coalitions, coalition_size, N, sample_freq)
     ]
 
-    # TODO: should times = ceiling(n_coalitions_boot/2) instead?
     X_boot00[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot/2)]
 
 
@@ -604,6 +585,9 @@ bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
 
     X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ][,boot_id:=rep(seq(n_boot_samps), times = 2)], X_boot0)
     setkey(X_boot, boot_id, id_coalition)
+    # I Martin sin versjon er det X_boot[, sample_freq := .N/n_coalitions_boot, by = .(id_coalition, boot_id)]
+    # Tror jeg må ha det sånn som under med de nåværende versjonene av compute_A(), compute_b() og compute_shapley_values_frida()
+    # MÅ sjekke nøye før man endrer tilbake til Martin sin versjon
     X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
@@ -624,6 +608,9 @@ bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
     X_boot[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot + 2)]
 
     setkey(X_boot, boot_id, id_coalition)
+    # I Martin sin versjon er det X_boot[, sample_freq := .N/n_coalitions_boot, by = .(id_coalition, boot_id)]
+    # Tror jeg må ha det sånn som under med de nåværende versjonene av compute_A(), compute_b() og compute_shapley_values_frida()
+    # MÅ sjekke nøye før man endrer tilbake til Martin sin versjon
     X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]

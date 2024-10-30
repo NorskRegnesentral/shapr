@@ -971,6 +971,7 @@ set_adaptive_parameters <- function(internal,prev_iter_list = NULL) {
     internal$iter_list <- list()
     internal$iter_list[[1]] <- list(
       n_coalitions = adaptive_arguments$initial_n_coalitions,
+      total_n_coalitions = adaptive_arguments$initial_n_coalitions,
       exact = internal$parameters$exact,
       compute_sd = adaptive_arguments$compute_sd,
       reduction_factor = adaptive_arguments$reduction_factor_vec[1],
