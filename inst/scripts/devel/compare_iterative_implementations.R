@@ -6,7 +6,7 @@ devtools::load_all()
 library(future)
 library(xgboost)
 library(ggplot2)
-library(reshape2)
+# library(reshape2)
 
 m <- 12
 n_train <- 5000
@@ -81,27 +81,26 @@ predict_model_xgb <- function(object,newdata){
 
 
 # These are the parameters for for interative_kshap_func
-n_samples <- 1000
+n_samples <- 10000
 approach = "gaussian"
-kk = 1
+kk = 10
 testObs_computed <- kk
+full_pred = predict(model,as.matrix(x_explain))[testObs_computed]
 shapsum_other_features <- 0
 
 # Reduce if < 11% prob of shapval > 0.2
 shapley_threshold_prob <- 0.2
 shapley_threshold_val <- 0.1
 cutoff_feats <- paste0("VV",1:12)
-full_pred = predict(model,as.matrix(x_explain))[testObs_computed]
 
 # predict_model = predict_model_xgb
-initial_n_combinations = min(20,2^length(cutoff_feats)-2)
-# n_combinations_per_iter = 10
-# max_n_combinations = NULL
-# n_boot_ests = 50
+initial_n_combinations = 50 # min(20,2^length(cutoff_feats)-2)
+n_combinations_per_iter = 10
+max_n_combinations = 200
+n_boot_ests = 100
 # unique_sampling = TRUE
 # paired_sampling = FALSE
-shapley_reweighting_strategy = "on_N"
-# full_pred = predict(model,as.matrix(x_explain))[testObs_computed]
+shapley_reweighting_strategy = "none"
 # gaussian.mu = mu
 # gaussian.cov_mat = Sigma
 # ctree.mincriterion = 0.95
@@ -111,27 +110,29 @@ shapley_reweighting_strategy = "on_N"
 # all_trees = NULL
 
 
-run <- iterative_kshap_func(model,x_explain,x_train,
-                            testObs_computed = testObs_computed,
-                            cutoff_feats = cutoff_feats,
-                            initial_n_combinations = initial_n_combinations,
-                            full_pred = full_pred,
-                            shapsum_other_features = shapsum_other_features,
-                            p0 = p0,
-                            predict_model = predict_model_xgb,
-                            shapley_threshold_val = shapley_threshold_val,
-                            shapley_threshold_prob = shapley_threshold_prob,
-                            approach = approach,
-                            n_samples = n_samples,
-                            gaussian.mu = mu,
-                            gaussian.cov_mat = Sigma,
-                            shapley_reweighting_strategy = shapley_reweighting_strategy,
-                            paired_sampling = TRUE)
-
+# run <- iterative_kshap_func(model,x_explain,x_train,
+#                             testObs_computed = testObs_computed,
+#                             cutoff_feats = cutoff_feats,
+#                             initial_n_combinations = initial_n_combinations,
+#                             n_combinations_per_iter = n_combinations_per_iter,
+#                             full_pred = full_pred,
+#                             shapsum_other_features = shapsum_other_features,
+#                             p0 = p0,
+#                             predict_model = predict_model_xgb,
+#                             shapley_threshold_val = shapley_threshold_val,
+#                             shapley_threshold_prob = shapley_threshold_prob,
+#                             approach = approach,
+#                             n_samples = n_samples,
+#                             gaussian.mu = mu,
+#                             gaussian.cov_mat = Sigma,
+#                             shapley_reweighting_strategy = shapley_reweighting_strategy,
+#                             paired_sampling = TRUE,
+#                             max_n_combinations = max_n_combinations)
 unpaired <- iterative_kshap_func(model,x_explain,x_train,
                             testObs_computed = testObs_computed,
                             cutoff_feats = cutoff_feats,
                             initial_n_combinations = initial_n_combinations,
+                            n_combinations_per_iter = n_combinations_per_iter,
                             full_pred = full_pred,
                             shapsum_other_features = shapsum_other_features,
                             p0 = p0,
@@ -143,4 +144,44 @@ unpaired <- iterative_kshap_func(model,x_explain,x_train,
                             gaussian.mu = mu,
                             gaussian.cov_mat = Sigma,
                             shapley_reweighting_strategy = shapley_reweighting_strategy,
-                            paired_sampling = FALSE)
+                            paired_sampling = FALSE,
+                            max_n_combinations = max_n_combinations,
+                            n_boot_ests = n_boot_ests)
+
+
+unpaired2 <- iterative_kshap_func(model,x_explain,x_train,
+                            testObs_computed = testObs_computed,
+                            cutoff_feats = cutoff_feats,
+                            initial_n_combinations = initial_n_combinations,
+                            n_combinations_per_iter = n_combinations_per_iter,
+                            full_pred = full_pred,
+                            shapsum_other_features = shapsum_other_features,
+                            p0 = p0,
+                            predict_model = predict_model_xgb,
+                            shapley_threshold_val = shapley_threshold_val,
+                            shapley_threshold_prob = shapley_threshold_prob,
+                            approach = approach,
+                            n_samples = n_samples,
+                            gaussian.mu = mu,
+                            gaussian.cov_mat = Sigma,
+                            shapley_reweighting_strategy = shapley_reweighting_strategy,
+                            paired_sampling = FALSE,
+                            max_n_combinations = max_n_combinations,
+                            n_boot_ests = n_boot_ests,
+                            seed = 23)
+d = unpaired$kshap_final[, -c(1, 14)] - unpaired2$kshap_final[, -c(1, 14)]
+c(min(abs(d)), max(abs(d)))
+
+est1 = unpaired$kshap_it_est_dt[, -(1:2)]
+prob1 =  rbindlist(unpaired$kshap_prob_dt_list, fill = T)[, -(1:2)]
+sd1 = rbindlist(unpaired$kshap_sd_dt_list, fill = T)[, -(1:3)]
+
+est2 = unpaired2$kshap_it_est_dt[, -(1:2)]
+prob2 = rbindlist(unpaired2$kshap_prob_dt_list, fill = T)[, -(1:2)]
+sd2 = rbindlist(unpaired2$kshap_sd_dt_list, fill = T)[, -(1:3)]
+
+nrows = min(nrow(unpaired$kshap_it_est_dt),nrow(unpaired2$kshap_it_est_dt))
+
+est1[1:nrows,] - est2[1:nrows,]
+sd1[1:nrows,] - sd2[1:nrows,]
+prob1[1:nrows,] - prob2[1:nrows,]
