@@ -138,6 +138,10 @@ def explain(
     # Fixes the conversion from dict to a named list of vectors in R
     r_group = NULL if group is None else ListVector({key: StrVector(value) for key, value in group.items()})
 
+    # Fixes the conversion from dict to a named list of vectors in R
+    r_causal_ordering = NULL if causal_ordering is None else ListVector({key: StrVector(value) for key, value in causal_ordering.items()})
+
+
     # Fixes method specific argument names by replacing first occurrence of "_" with "."
     if len(kwargs) > 0:
       kwargs = change_first_underscore_to_dot(kwargs)
@@ -189,7 +193,7 @@ def explain(
       iterative_args = iterative_args, # Might do some conversion here
       kernelSHAP_reweighting = kernelSHAP_reweighting,
       asymmetric = asymmetric,
-      causal_ordering = maybe_null(causal_ordering), # Might do some conversion here
+      causal_ordering = r_causal_ordering, # Might do some conversion here
       confounding = maybe_null(confounding), # Might do some conversion here
       output_args = output_args, # Might do some conversion here
       extra_computation_args = extra_computation_args, # Might do some conversion here
@@ -258,22 +262,29 @@ def explain(
       # Setting globals to simplify the loop
       converged = rinternal.rx2('iter_list')[iter-1].rx2('converged')[0]
 
-      rinternal.rx2['timing_list'].rx2['postprocess_res'] = base.Sys_time()
+      # rinternal.rx2['timing_list'].rx2['postprocess_res'] = base.Sys_time()
+      rinternal.rx2['timing_list'] = ro.ListVector({**dict(rinternal.rx2['timing_list'].items()), 'postprocess_res': base.Sys_time()})
 
+      
       # Add the current timing_list to the iter_timing_list
       #iter_timing_list = list(rinternal.rx2['iter_timing_list'])
       #iter_timing_list.append(rinternal.rx2['timing_list'])
       #rinternal.rx2['iter_timing_list'] = ro.ListVector(iter_timing_list)
 
-      rinternal.rx2['iter_timing_list'].rx2[iter] = rinternal.rx2['timing_list']
+#      rinternal.rx2['iter_timing_list'].rx2[iter] = rinternal.rx2['timing_list']
+      rinternal.rx2['iter_timing_list'] = ro.ListVector({**dict(rinternal.rx2['iter_timing_list'].items()), f'element_{iter}': rinternal.rx2['timing_list']})
+
       iter += 1
 
-    rinternal.rx2['main_timing_list'].rx2['main_computation'] = base.Sys_time()
+    #rinternal.rx2['main_timing_list'].rx2['main_computation'] = base.Sys_time()
+    rinternal.rx2['main_timing_list'] = ro.ListVector({**dict(rinternal.rx2['main_timing_list'].items()), 'main_computation': base.Sys_time()})
 
     # Rerun after convergence to get the same output format as for the non-iterative approach
     routput = shapr.finalize_explanation(rinternal)
 
-    rinternal.rx2['main_timing_list'].rx2['finalize_explanation'] = base.Sys_time()
+    #rinternal.rx2['main_timing_list'].rx2['finalize_explanation'] = base.Sys_time()
+    rinternal.rx2['main_timing_list'] = ro.ListVector({**dict(rinternal.rx2['main_timing_list'].items()), 'finalize_explanation': base.Sys_time()})
+
 
     routput.rx2['timing'] = shapr.compute_time(rinternal)
 

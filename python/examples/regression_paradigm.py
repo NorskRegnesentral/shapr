@@ -27,6 +27,7 @@ explanation_list["empirical"] = explain(
     x_train=dfx_train,
     x_explain=dfx_test,
     approach='empirical',
+    iterative = False,
     phi0=dfy_train.mean().item()
 )
 
@@ -143,34 +144,18 @@ explanation_list["sur_rf_cv"] = explain(
 # Print the MSEv evaluation criterion scores
 print("Method", "MSEv", "Elapsed time (seconds)")
 for i, (method, explanation) in enumerate(explanation_list.items()):
-    print(method, round(explanation[4]["MSEv"]["MSEv"].iloc[0], 3), round(explanation["timing"]["total_time_secs"][0], 3))
+    print(method, round(explanation["MSEv"]["MSEv"].iloc[0].iloc[0], 3), round(explanation["timing"]["total_time_secs"][0], 3))
+
+
+
+
+explanation_list["sep_xgboost"]["shapley_values_est"]
 
 """
-Method          MSEv      Time 
-empirical       0.826    1.096
-sep_lm          1.623   12.093
-sep_pca         1.626   16.435
-sep_splines     1.626   15.072
-sep_tree_cv     1.436  275.002
-sep_xgboost     0.769   13.870
-sep_xgboost_cv  0.802  312.758
-sur_lm          1.772    0.548
-sur_rf          0.886   41.250
-"""
-
-explanation_list["sep_xgboost"][0]
-
-"""
-       none    MedInc  HouseAge  AveRooms  AveBedrms  Population  AveOccup  \
-1  2.205937 -0.496421  0.195272 -0.077923   0.010124   -0.219369 -0.316029   
-2  2.205938 -0.163246  0.014565 -0.415945  -0.114073    0.084315  0.144754   
-3  2.205938  0.574157  0.258926  0.090818  -0.665126    0.354005  0.869530   
-4  2.205938  0.311416 -0.105142  0.211300   0.031939   -0.180331 -0.059839   
-5  2.205938  0.077537 -0.150997 -0.117875   0.087118   -0.085118  0.414764   
-   Latitude  Longitude  
-1 -0.434240  -0.361774  
-2 -0.483618  -0.324016  
-3  0.276002   0.957242  
-4  0.028560   0.049815  
-5 -0.242943   0.006815  
+	explain_id	none	MedInc	HouseAge	AveRooms	AveBedrms	Population	AveOccup	Latitude	Longitude
+1	1	2.205937	-0.498764	0.193443	-0.073068	0.005078	-0.216733	-0.313781	-0.433844	-0.362689
+2	2	2.205938	-0.160032	0.014564	-0.417670	-0.117127	0.084102	0.151612	-0.486576	-0.326138
+3	3	2.205938	0.585638	0.239399	0.103826	-0.656533	0.349671	0.859701	0.275356	0.958495
+4	4	2.205938	0.311038	-0.114403	0.206639	0.041748	-0.178090	-0.061004	0.036681	0.045110
+5	5	2.205938	0.079439	-0.156861	-0.118913	0.093746	-0.097861	0.433192	-0.239588	-0.003852
 """
