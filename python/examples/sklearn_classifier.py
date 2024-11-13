@@ -9,14 +9,14 @@ model = RandomForestClassifier(random_state=0)
 model.fit(dfx_train, dfy_train.values.flatten())
 
 ## Shapr
-df_shapley, pred_explain, internal, timing, MSEv = explain(
+explanation = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'empirical',
     phi0 = dfy_train.mean().item(),
 )
-print(df_shapley)
+print(explanation["shapley_values_est"])
 
 """ 
        none  sepal length (cm)  sepal width (cm)  petal length (cm)  \

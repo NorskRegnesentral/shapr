@@ -9,14 +9,14 @@ model = RandomForestRegressor(random_state=0)
 model.fit(dfx_train, dfy_train.values.flatten())
 
 ## Shapr
-df_shapley, pred_explain, internal, timing, MSEv = explain(
+explanation = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'empirical',
     phi0 = dfy_train.mean().item()
 )
-print(df_shapley)
+print(explanation["shapley_values_est"])
 
 """
        none    MedInc  HouseAge  AveRooms  AveBedrms  Population  AveOccup  \
@@ -34,7 +34,7 @@ print(df_shapley)
 5  0.099410   0.315230   
 """
 
-MSEv["MSEv"]
+explanation["MSEv"]["MSEv"]
 """
 MSEv	MSEv_sd
 1	0.534141	0.247984
@@ -46,7 +46,7 @@ group = {'A': ['MedInc','HouseAge','AveRooms'],
          'B': ['AveBedrms','Population','AveOccup'],
          'C': ['Latitude','Longitude']}
 
-df_shapley_g, pred_explain_g, internal_g, timing_g, MSEv_g = explain(
+explanation_g = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
@@ -54,7 +54,7 @@ df_shapley_g, pred_explain_g, internal_g, timing_g, MSEv_g = explain(
     phi0 = dfy_train.mean().item(),
     group = group
 )
-print(df_shapley_g)
+print(explanation_g["shapley_values_est"])
 
 """
        none         A         B         C

@@ -38,8 +38,6 @@ explanation_list["sep_lm"] = explain(
     x_explain=dfx_test,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
-    verbose=2,
-    n_batches=1,
     regression_model='parsnip::linear_reg()'
 )
 
@@ -50,8 +48,6 @@ explanation_list["sep_pca"] = explain(
     x_explain=dfx_test,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
-    verbose=2,
-    n_batches=1,
     regression_model='parsnip::linear_reg()',
     regression_recipe_func='''function(regression_recipe) {
         return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 3))
@@ -65,8 +61,6 @@ explanation_list["sep_splines"] = explain(
     x_explain=dfx_test,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
-    verbose=2,
-    n_batches=1,
     regression_model='parsnip::linear_reg()',
     regression_recipe_func='''function(regression_recipe) {
         return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 3))
@@ -80,8 +74,6 @@ explanation_list["sep_tree_cv"] = explain(
     x_explain=dfx_test,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
-    verbose=2,
-    n_batches=1,
     regression_model="parsnip::decision_tree(tree_depth = hardhat::tune(), engine = 'rpart', mode = 'regression')",
     regression_tune_values='dials::grid_regular(dials::tree_depth(), levels = 4)',
     regression_vfold_cv_para={'v': 5}
@@ -94,8 +86,6 @@ explanation_list["sep_xgboost"] = explain(
     x_explain=dfx_test,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
-    verbose=2,
-    n_batches=1,
     regression_model="parsnip::boost_tree(engine = 'xgboost', mode = 'regression')"
 )
 
@@ -106,8 +96,6 @@ explanation_list["sep_xgboost_cv"] = explain(
     x_explain=dfx_test,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
-    verbose=2,
-    n_batches=1,
     regression_model="parsnip::boost_tree(trees = hardhat::tune(), engine = 'xgboost', mode = 'regression')",
     regression_tune_values='expand.grid(trees = c(10, 15, 25, 50, 100, 500))',
     regression_vfold_cv_para={'v': 5}
@@ -121,8 +109,6 @@ explanation_list["sur_lm"] = explain(
     x_explain=dfx_test,
     approach='regression_surrogate',
     phi0=dfy_train.mean().item(),
-    verbose=2,
-    n_batches=1,
     regression_model='parsnip::linear_reg()'
 )
 
@@ -133,8 +119,6 @@ explanation_list["sur_rf"] = explain(
     x_explain=dfx_test,
     approach='regression_surrogate',
     phi0=dfy_train.mean().item(),
-    verbose=2,
-    n_batches=1,
     regression_model="parsnip::rand_forest(engine = 'ranger', mode = 'regression')"
 )
 
@@ -145,8 +129,6 @@ explanation_list["sur_rf_cv"] = explain(
     x_explain=dfx_test,
     approach='regression_surrogate',
     phi0=dfy_train.mean().item(),
-    verbose=2,
-    n_batches=1,
     regression_model="""parsnip::rand_forest(
         mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'
     )""",
@@ -161,7 +143,7 @@ explanation_list["sur_rf_cv"] = explain(
 # Print the MSEv evaluation criterion scores
 print("Method", "MSEv", "Elapsed time (seconds)")
 for i, (method, explanation) in enumerate(explanation_list.items()):
-    print(method, round(explanation[4]["MSEv"]["MSEv"].iloc[0], 3), round(explanation[3]["total_time_secs"], 3))
+    print(method, round(explanation[4]["MSEv"]["MSEv"].iloc[0], 3), round(explanation["timing"]["total_time_secs"][0], 3))
 
 """
 Method          MSEv      Time 

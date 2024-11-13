@@ -9,14 +9,14 @@ dtrain = xgb.DMatrix(data=dfx_train, label=dfy_train)
 model = xgb.train(params={}, num_boost_round=20, dtrain=dtrain,)
 
 ## Shapr
-df_shapley, pred_explain, internal, timing, MSEv = explain(
+explanation = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'empirical',
     phi0 = dfy_train.mean().item(),
 )
-print(df_shapley)
+print(explanation["shapley_values_est"])
 
 """ 
        none    MedInc  HouseAge  AveRooms  AveBedrms  Population  AveOccup  \
@@ -34,7 +34,7 @@ print(df_shapley)
 5  0.090441   0.314439  
  """
 
-MSEv["MSEv"]
+explanation["MSEv"]["MSEv"]
 
 """
 MSEv	MSEv_sd
