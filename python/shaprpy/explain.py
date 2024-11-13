@@ -291,7 +291,7 @@ def explain(
     #saving_path = StrVector(routput.rx2['saving_path']) # NOt sure why this is not working
     saving_path = StrVector(rinternal.rx2['parameters'].rx2['output_args'].rx2['saving_path'])[0]
     #internal = recurse_r_tree(routput.rx2('rinternal')) # Currently get an error with NULL elements here
-    rtiming = routput.rx2['timing']
+    timing = recurse_r_tree(routput.rx2['timing'])
 
     return {
       "shapley_values_est": shapley_values_est,
@@ -301,7 +301,7 @@ def explain(
       "iterative_results": iterative_results,
       "saving_path": saving_path,
       "internal": rinternal,
-      "timing": rtiming
+      "timing": timing
     }
 
 
