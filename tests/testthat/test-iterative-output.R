@@ -310,3 +310,23 @@ test_that("output_verbose_1_3_4_5", {
     "output_verbose_1_3_4_5"
   )
 })
+
+
+# Just checking that internal$output$dt_samp_for_vS  works for iterative
+test_that("output_lm_numeric_independence_keep_samp_for_vS", {
+  expect_snapshot_rds(
+    (out <- explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "independence",
+      phi0 = p0,
+      output_args = list(keep_samp_for_vS = TRUE),
+      iterative = TRUE
+    )),
+    "output_lm_numeric_independence_keep_samp_for_vS"
+  )
+
+  expect_false(is.null(out$internal$output$dt_samp_for_vS))
+})
