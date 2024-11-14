@@ -982,3 +982,38 @@
       2:          2 42.44   4.919  -4.878 -11.9086 -0.8405 -1.1714
       3:          3 42.44   7.447 -25.748   0.0324 -0.1976  0.8978
 
+# output_lm_numeric_independence_keep_samp_for_vS
+
+    Code
+      (out <- code)
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
+      * Model class: <lm>
+      * Approach: independence
+      * Iterative estimation: TRUE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- iterative computation started --
+      
+      -- Iteration 1 -----------------------------------------------------------------
+      i Using 5 of 32 coalitions, 5 new. 
+      
+      -- Iteration 2 -----------------------------------------------------------------
+      i Using 10 of 32 coalitions, 4 new. 
+      
+      -- Iteration 3 -----------------------------------------------------------------
+      i Using 12 of 32 coalitions, 2 new. 
+      
+      -- Iteration 4 -----------------------------------------------------------------
+      i Using 16 of 32 coalitions, 4 new. 
+    Output
+         explain_id  none Solar.R    Wind   Temp  Month    Day
+              <int> <num>   <num>   <num>  <num>  <num>  <num>
+      1:          1 42.44  -4.541   8.330 17.491 -5.585 -3.093
+      2:          2 42.44   2.246  -3.285 -5.258 -5.585 -1.997
+      3:          3 42.44   3.704 -18.549 -1.467 -2.545  1.289
+
