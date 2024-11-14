@@ -25,34 +25,33 @@ model.fit(dfx_train, dfy_train,
           epochs=10, 
           validation_data=(dfx_test, dfy_test))
 ## Shapr
-df_shapley, pred_explain, internal, timing, MSEv = explain(
+explanation = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'empirical',
-    phi0 = dfy_train.mean().item(),
+    phi0 = dfy_train.mean().item()
 )
-print(df_shapley)
+print(explanation["shapley_values_est"])
 
 """ 
-       none  sepal length (cm)  sepal width (cm)  petal length (cm)  \
-1  0.494737           0.042263          0.037911           0.059232   
-2  0.494737           0.034217          0.029183           0.045027   
-3  0.494737           0.045776          0.031752           0.058278   
-4  0.494737           0.014977          0.032691           0.014280   
-5  0.494737           0.022742          0.025851           0.027427   
+   explain_id      none  sepal length (cm)  sepal width (cm)  \
+1           1  0.494737           0.041518          0.037129   
+2           2  0.494737           0.033541          0.028414   
+3           3  0.494737           0.045033          0.031092   
+4           4  0.494737           0.014281          0.031831   
+5           5  0.494737           0.022155          0.025154   
 
-   petal width (cm)  
-1          0.058412  
-2          0.053639  
-3          0.070650  
-4          0.018697  
-5          0.026814  
-
+   petal length (cm)  petal width (cm)  
+1           0.058252          0.057664  
+2           0.044242          0.052839  
+3           0.057368          0.069891  
+4           0.013667          0.018016  
+5           0.026672          0.026181  
  """
 
 # Look at the (overall) MSEv
-MSEv["MSEv"]
+explanation["MSEv"]["MSEv"]
 
 """
 	MSEv	MSEv_sd

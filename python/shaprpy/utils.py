@@ -6,7 +6,8 @@ from rpy2.robjects.numpy2ri import converter as np_converter
 from rpy2.robjects.pandas2ri import converter as pd_converter
 from rpy2.robjects.pandas2ri import _to_pandas_factor
 from rpy2.rinterface import NULL, NA
-from rpy2.robjects.vectors import DataFrame, FloatVector, IntVector, BoolVector, StrVector, ListVector, FactorVector, FloatMatrix, Matrix
+from rpy2.robjects.vectors import DataFrame, FloatVector, IntVector, BoolVector, StrVector, ListVector, FactorVector, FloatMatrix, Matrix, POSIXct
+import warnings
 
 
 @pd_converter.rpy2py.register(FactorVector)
@@ -46,6 +47,11 @@ def recurse_r_tree(data):
       return np.array(data)
   elif type(data) == FactorVector:
       return _to_pandas_factor(data)
+  elif type(data) == POSIXct:
+      with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        tmp = r2py(data).strftime("%Y-%m-%d %H:%M:%S")[0]
+      return tmp
   elif type(data) == ListVector:
       return dict(zip(data.names, [recurse_r_tree(d) for d in data]))
   elif type(data) == StrVector:

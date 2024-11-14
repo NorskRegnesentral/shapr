@@ -9,35 +9,34 @@ model = xgb.XGBRegressor()
 model.fit(dfx_train, dfy_train.values.flatten())
 
 ## Shapr
-df_shapley, pred_explain, internal, timing, MSEv = explain(
+explanation = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'empirical',
     phi0 = dfy_train.mean().item(),
 )
-print(df_shapley)
+print(explanation["shapley_values_est"])
 
 """ 
-       none    MedInc  HouseAge  AveRooms  AveBedrms  Population  AveOccup  \
-1  2.205937 -0.655245  0.079722 -0.096497   0.126559   -0.056841 -0.287298   
-2  2.205938 -0.512414  0.077358 -0.504863  -0.176676   -0.005584  0.128635   
-3  2.205938  0.510828  0.719958  0.039504  -0.225118    0.044157  1.116464   
-4  2.205938  0.381191 -0.098956 -0.022961   0.145486   -0.139457 -0.241768   
-5  2.205938 -0.427220 -0.059622 -0.135028   0.158339    0.084157 -0.017783   
+   explain_id      none    MedInc  HouseAge  AveRooms  AveBedrms  Population  \
+1           1  2.205937 -0.644869  0.092354 -0.105347   0.122196   -0.054501   
+2           2  2.205938 -0.509659  0.087719 -0.503114  -0.160219    0.008278   
+3           3  2.205938  0.511284  0.744960  0.036120  -0.235612    0.055126   
+4           4  2.205938  0.389474 -0.104019 -0.026614   0.160248   -0.143182   
+5           5  2.205938 -0.425561 -0.049056 -0.151081   0.153844    0.088019   
 
-   Latitude  Longitude  
-1 -0.579708  -0.231051  
-2 -0.212670  -0.051049  
-3  0.103866   0.405895  
-4  0.062271   0.201911  
-5  0.078978   0.307480  
+   AveOccup  Latitude  Longitude  
+1 -0.289824 -0.584639  -0.235730  
+2  0.119529 -0.234297  -0.065501  
+3  1.095101  0.106010   0.402564  
+4 -0.244692  0.053750   0.202752  
+5  0.009034  0.057433   0.306669  
+"""
 
- """
-
-MSEv["MSEv"]
+explanation["MSEv"]["MSEv"]
 
 """
 MSEv	MSEv_sd
-1	0.825758	0.465439
+1	0.838435	0.483059
 """

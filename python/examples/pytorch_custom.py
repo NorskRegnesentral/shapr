@@ -36,7 +36,7 @@ for epoch in range(5):
         optim.zero_grad()
 
 ## Shapr
-df_shapley, pred_explain, internal, timing, MSEv = explain(
+explanation = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
@@ -44,25 +44,43 @@ df_shapley, pred_explain, internal, timing, MSEv = explain(
     predict_model = lambda m, x: m(torch.from_numpy(x.values).float()).cpu().detach().numpy(),
     phi0 = dfy_train.mean().item(),
 )
-print(df_shapley)
+print(explanation["shapley_values_est"])
 """
-       none    MedInc  HouseAge  AveRooms  AveBedrms  Population  AveOccup  \
-1  2.205947  2.313935  5.774470  5.425240   4.194669    1.712164  3.546001   
-2  2.205947  4.477620  5.467266  2.904239   3.046492    1.484807  5.631292   
-3  2.205946  4.028013  1.168401  5.229893   1.719724    2.134012  3.426378   
-4  2.205948  4.230376  8.639265  1.138520   3.776463    3.786978  4.253034   
-5  2.205947  3.923747  1.483737  1.113199   4.963213   -3.645875  4.950775   
+   explain_id      none    MedInc   HouseAge  AveRooms  AveBedrms  Population  \
+1           1  2.205951  3.531437   7.746453  6.985043   5.454877    3.287326   
+2           2  2.205951  6.004403   7.041080  4.254553   4.118677    3.162567   
+3           3  2.205950  5.497648   1.538680  6.750968   2.806428    3.687014   
+4           4  2.205951  5.761901  11.378609  2.112351   5.013451    5.754630   
+5           5  2.205951  5.325281   2.585713  2.224409   6.418153   -2.848570   
 
-   Latitude  Longitude  
-1  1.102239   2.906469  
-2  4.966465   2.178510  
-3  3.503413   2.909760  
-4  3.413727   3.795563  
-5  3.011126   4.016985  
+   AveOccup  Latitude  Longitude  
+1  4.774873  2.273699   4.314784  
+2  7.386783  6.473623   3.318631  
+3  5.193341  4.875864   4.290797  
+4  5.866562  4.564957   5.139962  
+5  6.428984  4.280456   5.509226  
 """
 
-MSEv["MSEv"]
+print(explanation["shapley_values_sd"])
+
 """
-MSEv	MSEv_sd
-1	27.046126	7.253933
+   explain_id          none    MedInc  HouseAge  AveRooms  AveBedrms  \
+1           1  3.523652e-08  0.122568  0.124885  0.163694   0.134910   
+2           2  3.501778e-08  0.125286  0.113064  0.123057   0.129869   
+3           3  1.805247e-08  0.098208  0.095959  0.115399   0.102265   
+4           4  3.227380e-08  0.110442  0.118524  0.124688   0.101476   
+5           5  3.650380e-08  0.125538  0.130427  0.136797   0.131515   
+
+   Population  AveOccup  Latitude  Longitude  
+1    0.133510  0.149141  0.132394   0.121605  
+2    0.113429  0.124539  0.122773   0.100871  
+3    0.092633  0.110790  0.090657   0.090542  
+4    0.114721  0.122266  0.103081   0.105613  
+5    0.113853  0.139291  0.135377   0.132476  
+"""
+
+explanation["MSEv"]["MSEv"]
+"""
+	MSEv	MSEv_sd
+1	33.143896	7.986808
 """
