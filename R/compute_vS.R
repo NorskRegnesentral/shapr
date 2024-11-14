@@ -231,6 +231,7 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
 #' @keywords internal
 append_vS_list <- function(vS_list, internal) {
   iter <- length(internal$iter_list)
+  keep_samp_for_vS <- internal$parameters$output_args$keep_samp_for_vS
 
   # Adds v_S output above to any vS_list already computed
   if (iter > 1) {
@@ -242,24 +243,58 @@ append_vS_list <- function(vS_list, internal) {
 
     # Creates a mapper from the last id_coalition to the new id_coalition numbering
     id_coalitions_mapper <- merge(prev_coalition_map,
-      current_coalition_map,
-      by = "coalitions_str",
-      suffixes = c("", "_new")
+                                  current_coalition_map,
+                                  by = "coalitions_str",
+                                  suffixes = c("", "_new")
     )
     prev_vS_list_new <- list()
 
     # Applies the mapper to update the prev_vS_list ot the new id_coalition numbering
-    for (k in seq_along(prev_vS_list)) {
-      prev_vS_list_new[[k]] <- merge(prev_vS_list[[k]],
-        id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
-        by = "id_coalition"
-      )
-      prev_vS_list_new[[k]][, id_coalition := id_coalition_new]
-      prev_vS_list_new[[k]][, id_coalition_new := NULL]
+    if(isFALSE(keep_samp_for_vS)){
+      for (k in seq_along(prev_vS_list)) {
+
+        this_vS <- prev_vS_list[[k]]
+
+        this_vS_new <- merge(this_vS,
+                             id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+                             by = "id_coalition")
+
+        this_vS_new[, id_coalition := id_coalition_new]
+        this_vS_new[, id_coalition_new := NULL]
+
+
+        prev_vS_list_new[[k]] <- this_vS_new
+      }
+    } else {
+      for (k in seq_along(prev_vS_list)) {
+        this_vS <- prev_vS_list[[k]]$dt_vS
+        this_samp_for_vS <- prev_vS_list[[k]]$dt_samp_for_vS
+
+
+        this_vS_new <- merge(this_vS,
+                             id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+                             by = "id_coalition")
+
+        this_vS_new[, id_coalition := id_coalition_new]
+        this_vS_new[, id_coalition_new := NULL]
+
+        this_samp_for_vS_new <- merge(this_samp_for_vS,
+                                      id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+                                      by = "id_coalition")
+
+        this_samp_for_vS_new[, id_coalition := id_coalition_new]
+        this_samp_for_vS_new[, id_coalition_new := NULL]
+
+
+        prev_vS_list_new[[k]] <- list(dt_vS = this_vS_new, dt_samp_for_vS = this_samp_for_vS_new)
+      }
     }
+    names(prev_vS_list_new) <- names(prev_vS_list)
 
     # Merge the new vS_list with the old vS_list
     vS_list <- c(prev_vS_list_new, vS_list)
   }
+
+
   return(vS_list)
 }
