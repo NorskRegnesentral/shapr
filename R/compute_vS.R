@@ -243,21 +243,21 @@ append_vS_list <- function(vS_list, internal) {
 
     # Creates a mapper from the last id_coalition to the new id_coalition numbering
     id_coalitions_mapper <- merge(prev_coalition_map,
-                                  current_coalition_map,
-                                  by = "coalitions_str",
-                                  suffixes = c("", "_new")
+      current_coalition_map,
+      by = "coalitions_str",
+      suffixes = c("", "_new")
     )
     prev_vS_list_new <- list()
 
     # Applies the mapper to update the prev_vS_list ot the new id_coalition numbering
-    if(isFALSE(keep_samp_for_vS)){
+    if (isFALSE(keep_samp_for_vS)) {
       for (k in seq_along(prev_vS_list)) {
-
         this_vS <- prev_vS_list[[k]]
 
         this_vS_new <- merge(this_vS,
-                             id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
-                             by = "id_coalition")
+          id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+          by = "id_coalition"
+        )
 
         this_vS_new[, id_coalition := id_coalition_new]
         this_vS_new[, id_coalition_new := NULL]
@@ -272,15 +272,17 @@ append_vS_list <- function(vS_list, internal) {
 
 
         this_vS_new <- merge(this_vS,
-                             id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
-                             by = "id_coalition")
+          id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+          by = "id_coalition"
+        )
 
         this_vS_new[, id_coalition := id_coalition_new]
         this_vS_new[, id_coalition_new := NULL]
 
         this_samp_for_vS_new <- merge(this_samp_for_vS,
-                                      id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
-                                      by = "id_coalition")
+          id_coalitions_mapper[, .(id_coalition, id_coalition_new)],
+          by = "id_coalition"
+        )
 
         this_samp_for_vS_new[, id_coalition := id_coalition_new]
         this_samp_for_vS_new[, id_coalition_new := NULL]
