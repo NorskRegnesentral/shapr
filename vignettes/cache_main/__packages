@@ -3,3 +3,4 @@ xgboost
 data.table
 gbm
 future
+progressr

@@ -1,7 +1,10 @@
 ---
 title: "`shapr`: Explaining individual machine learning predictions with Shapley values"
-author: "Camilla Lingjærde, Martin Jullum, Lars Henry Berge Olsen & Nikolai Sellereite"
-output: rmarkdown::html_vignette
+author: "Martin Jullum, Camilla Lingjærde, Lars Henry Berge Olsen & Nikolai Sellereite"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    fig_caption: yes
 bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteEncoding{UTF-8}
@@ -10,38 +13,21 @@ vignette: >
 editor_options:
   markdown:
     wrap: 72
+    toc: true
 ---
 
 
 
 
 
-> [Introduction](#intro)
-
-> [Overview of Package](#overview)
-
-> [KernelSHAP and dependence-aware estimators](#KSHAP)
-
-> [Estimation approaches and plotting functionality](#ex)
-
-> [iterative estimation](#iterative)
-
-> [Parallelization](#para)
-
-> [Verbosity and progress updates](#verbose)
-
-> [Advanced usage](#advanced)
-
-> [Explaining forecasting models](#forecasting)
-
-<a id="intro"></a>
-
-# Introduction
+# Introduction {#intro}
 
 The `shapr` package implements an extended version of the Kernel SHAP
 method for approximating Shapley values (@lundberg2017unified), in which
 dependence between the features is taken into account
-(@aas2019explaining). Estimation of Shapley values is of interest when
+(@aas2019explaining).
+
+Estimation of Shapley values is of interest when
 attempting to explain complex machine learning models. Of existing work
 on interpreting individual predictions, Shapley values is regarded to be
 the only model-agnostic explanation method with a solid theoretical
@@ -53,11 +39,9 @@ approximations to the true Shapley values. See the
 [paper](https://www.sciencedirect.com/sdfe/reader/pii/S0004370221000539/pdf)
 (@aas2019explaining) for further details.
 
-<a id="overview"></a>
 
-<br>
 
-# Overview of Package
+# Overview of Package {#overview}
 
 ## Functionality
 
@@ -72,7 +56,7 @@ documentation and see examples with `?function_name`.
 
 : Main functions in the `shapr` package.
 
-The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
+The `shapr` package implements Kernel SHAP estimation of dependence-aware Shapley values with
 eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
 `"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
 `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
@@ -86,10 +70,10 @@ on the process of estimating the `v(S)`'s (and training the `"vaeac"` model) is 
 `progressr` package, supporting progress updates also for parallelized computation.
 See [Verbosity and progress updates](#verbose) for details.
 
-Moreover, the default behavior is to estimate the Shapley values iteratively/iteratively, with increasing number of
+Moreover, the default behavior is to estimate the Shapley values iteratively, with increasing number of
 feature coalitions being added, and to stop estimation as the estimated Shapley values has achieved a certain level of
 stability.
-More information about this is provided in [iterative estimation](#iterative)
+More information about this is provided in [Iterative estimation](#iterative)
 The above, combined with batch computation of the `v(S)` values, enables fast and accurate estimation of the
 Shapley values in a memory friendly manner.
 
@@ -121,11 +105,7 @@ no upper bound on the number of coalitions considered.
 This can be controlled through the `max_n_coalitions` argument.
 
 
-<a id="KSHAP"></a>
-
-<br>
-
-# KernelSHAP and dependence-aware estimators
+# Kernel SHAP and dependence-aware estimators {#KSHAP}
 
 ## The Kernel SHAP Method
 
@@ -167,7 +147,7 @@ needed to compute the contributions. The Kernel SHAP method of
 $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)=p(\boldsymbol{x}_{\bar{S}})$.
 If samples $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$, from
 $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ are
-available, the conditional expectation in above can be approximated by
+available, the conditional expectation above can be approximated by
 
 ```{=tex}
 \begin{equation}
@@ -189,8 +169,9 @@ change, the contributions and Shapley values may then be approximated as
 in the ordinary Kernel SHAP framework. @aas2019explaining propose three
 different approaches for estimating the conditional probabilities which
 are implemented: `empirical`, `gaussian` and `copula`. The package also
-implements the `ctree` method from @redelmeier2020explaining, and the
-`vaeac` method from @olsen2022using. The original `independence` approach
+implements the `ctree` method from @redelmeier2020explaining, the
+`vaeac` method from @olsen2022using and a `categorical` for cateogorical data.
+The original `independence` approach
 of @lundberg2017unified is also available. The methods may also be combined,
 such that e.g. one method is used when conditioning on a small number of
 features, while another method is used otherwise.
@@ -200,9 +181,8 @@ methods below, but we refer to the separate regression vignette
 (Shapley value explanations using the regression paradigm) and
 @olsen2024comparative for an in-depth explanation of the regression paradigm.
 
-<a id="gaussian"></a>
 
-## Multivariate Gaussian Distribution Approach
+## Multivariate Gaussian Distribution Approach {#gaussian}
 
 The first approach arises from the assumption that the feature vector
 $\boldsymbol{x}$ stems from a multivariate Gaussian distribution with
@@ -223,9 +203,7 @@ the resulting samples
 $\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, the conditional
 expectations be approximated as in the Kernel SHAP.
 
-<a id="copula"></a>
-
-## Gaussian Copula Approach
+## Gaussian Copula Approach {#copula}
 
 If the features are far from multivariate Gaussian, an alternative
 approach is to instead represent the marginals by their empirical
@@ -246,12 +224,11 @@ analytical expressions for the conditionals
 $\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}$ and
 $\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$. Finally, we may
 convert the marginals back to their original distribution, and use the
-resulting samples to approximate the conditional expectations as in the
+resulting samples to approximate the conditional expectations as in
 Kernel SHAP.
 
-<a id="empirical"></a>
 
-## Empirical Conditional Distribution Approach
+## Empirical Conditional Distribution Approach {#empirical}
 
 If both the dependence structure and the marginal distributions of
 $\boldsymbol{x}$ are very far from the Gaussian, neither of the two
@@ -292,9 +269,8 @@ AIC known as AICc. As calculation of it is computationally intensive, an
 approximate version of the selection criterion is also suggested.
 Details on this is found in @aas2019explaining.
 
-<a id="ctree"></a>
 
-## Conditional Inference Tree Approach
+## Conditional Inference Tree Approach {#ctree}
 
 The previous three methods can only handle numerical data. This means
 that if the data contains categorical/discrete/ordinal features, the
@@ -324,14 +300,13 @@ $\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, when approximating
 the conditional expectations as in Kernel SHAP. See
 @redelmeier2020explaining for more details.
 
-The conditional inference trees are fit using the *party* and *partykit*
+The conditional inference trees are fit using the *party* or *partykit*
 packages (@partykit_package).
 
 
 
-<a id="vaeac"></a>
+## Variational AutoEncoder with Arbitrary Conditioning (vaeac) Approach {#vaeac}
 
-## Variational AutoEncoder with Arbitrary Conditioning (vaeac) Approach
 Another approach that supports mixed features is the Variational AutoEncoder
 with Arbitrary Conditioning (@olsen2022using), abbreviated to `vaeac`.
 The `vaeac` is an extension of the regular variational autoencoder
@@ -354,25 +329,24 @@ training phase of the `vaeac` model to guide the training process of the masked 
 as the former relies on the full input sample $\boldsymbol{x}$, which is not accessible
 in the deployment phase (when we generate the Monte Carlo samples), as we only have access
 to $\boldsymbol{x}_{\mathcal{S}}$. The networks are trained by minimizing a variational
-lower bound, and see Section 3 in @olsen2022using for an in-depth introduction to the
+lower bound. See Section 3 in @olsen2022using for an in-depth introduction to the
 `vaeac` methodology. We use the `vaeac` model at the epoch which obtains the lowest
 validation IWAE score to generate the Monte Carlo samples used in the Shapley value computations.
 
-We fit the `vaeac` model using the *torch* package in $\textsf{R}$ (@torch). The main
+We fit the `vaeac` model using the R-package *torch*(@torch). The main
 parameters are the the number of layers in the networks (`vaeac.depth`), the width of the layers
 (`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
 the activation function between the layers in the networks (`vaeac.activation_function`),
 the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
 to remedy poorly initiated model parameter values (`vaeac.n_vaeacs_initialize`), and
-the number of learning epochs (`vaeac.epochs`). Call `?shapr::setup_approach.vaeac` for
+the number of learning epochs (`vaeac.epochs`). See `?shapr::setup_approach.vaeac` for
 a more detailed description of the parameters.
 
 There are additional extra parameters which can be set by including a named list in the call to
 the `explain()` function. For example, we can the change the batch size to 32 by including
-`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
-extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
-
-<a id="categorical"></a>
+`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as an argument in the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
+extra parameters to the `vaeac` approach.
+Note that the main parameters are entered as arguments directly in `explain()` function, while the extra parameters are specified through a named list called `vaeac.extra_parameters`.
 
 ## Categorical Approach
 
@@ -397,13 +371,12 @@ $X_3 = 2$ is
 $$E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1, X_3=2)}.$$.
 
 
-<a id="Regression_approaches"></a>
 
-## Separate and Surrogate Regression Approaches
+## Separate and Surrogate Regression Approaches {#Regression_approaches}
 
 Another paradigm for estimating the contribution function is the regression
 paradigm. In contrast to the methods above, which belong to the Monte Carlo
-paradigm, the regression based-methods use regression models to estimate the
+paradigm, the regression based methods use regression models to estimate the
 contribution function $v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]$ directly.
 The separate regression method class fits a separate regression model for
 each coalition $S$, while the surrogate regression method class fits a single
@@ -420,27 +393,23 @@ paradigm into the separate and surrogate regression method classes. In the
 separate vignette, we briefly introduce the two method classes. For an in-depth
 explanation, we refer the reader to Sections 3.5 and 3.6 in @olsen2024comparative.
 
-<a id="ex"></a>
-
-<br>
 
 # Estimation approaches and plotting functionality {#ex}
 
 The following example shows how a simple `xgboost` model is trained
 using the `airquality` dataset, and how `shapr` can be used to explain
-the individual predictions. Note that the empirical conditional
-distribution approach is the default (i.e. `approach = "empirical"`).
-The Gaussian, Gaussian copula, ctree, vaeac, or independence approaches can be
-used instead by setting the argument `approach` to either `"gaussian"`,
-`"copula"`, `"ctree"`, `"vaeac"`, `"categorical"` or `"independence"` in the code
-below.
+the individual predictions. Since which approach should be used to estimate the
+contribution functions will depend on the type of data one is working with,
+the user must specify the approach to be used through the `approach` argument.
+Allowed values are `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
+`"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, and
+`"regression_surrogate"`.
 
 
 
 ``` r
 library(xgboost)
 library(data.table)
-#> data.table 1.15.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -468,31 +437,28 @@ model <- xgboost::xgboost(
 # Specifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
+# Computing the actual Shapley values with Kernel SHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0,
-  iterative = FALSE
+  phi0 = p0
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
-#> 
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:05 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:49:40 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c207abd4b.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac873d01277.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -547,8 +513,7 @@ explanation_plot <- explain(
   x_explain = x_explain_many,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0,
-  iterative = FALSE
+  phi0 = p0
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -556,13 +521,13 @@ explanation_plot <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:09 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:49:44 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 111
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c3d5f010f.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac87b751c47.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -611,20 +576,19 @@ explanation_lm_cat <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  phi0 = p0,
-  iterative = FALSE
+  phi0 = p0
 )
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:17 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:49:55 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: ctree
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c49d943cf.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac8200410a3.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -638,7 +602,7 @@ plot(explanation_lm_cat, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ![](figure_main/unnamed-chunk-6-1.png)
 
 We can specify parameters used to build the conditional inference trees
-in the following manner. Default values are based on
+in the following manner. The default values are based on
 @hothorn2006unbiased.
 
 
@@ -654,20 +618,19 @@ explanation_ctree <- explain(
   phi0 = p0,
   ctree.mincriterion = 0.80,
   ctree.minsplit = 20,
-  ctree.minbucket = 20,
-  iterative = FALSE
+  ctree.minbucket = 20
 )
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:18 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:49:57 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: ctree
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c4dae3760.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac812612c74.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -708,20 +671,18 @@ explanation_cat_method <- explain(
   x_explain = x_explain_all_cat,
   x_train = x_train_all_cat,
   approach = "categorical",
-  phi0 = p0,
-  iterative = FALSE
-)
+  phi0 = p0)
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:19 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:49:59 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: categorical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c5dd5485a.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac84d867cc3.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -786,20 +747,19 @@ explanation_timeseries <- explain(
   x_train = x_train_ts,
   approach = "timeseries",
   phi0 = p0_ts,
-  group = group_ts,
-  iterative = FALSE
+  group = group_ts
 )
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_groups = 16, 
 #> and is therefore set to 2^n_groups = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:19 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:00 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: timeseries
 #> • Iterative estimation: FALSE
 #> • Number of group-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c2eab32f5.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac85152a89.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -859,7 +819,7 @@ First, we can only use the $\operatorname{MSE}_{v}$ criterion to rank the method
 their closeness to the optimum since the minimum value of the $\operatorname{MSE}_{v}$ criterion
 is unknown. Second, the criterion evaluates the contribution functions and not the Shapley values.
 
-Note that @olsen2024comparative observed a relatively linear relationship between the
+@olsen2024comparative observed a relatively linear relationship between the
 $\operatorname{MSE}_{v}$ criterion and the mean absolute error $(\operatorname{MAE})$ between the
 true and estimated Shapley values in extensive simulation studies where the true Shapley values
 were known. That is, a method that achieves a low $\operatorname{MSE}_{v}$ score also tends to
@@ -921,13 +881,13 @@ explanation_independence <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:22 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:03 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: independence
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c3b3736b2.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac87a751b8c.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -949,13 +909,13 @@ explanation_empirical <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:22 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:04 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c5c83bb13.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac82eb62fdc.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -977,13 +937,13 @@ explanation_gaussian_1e1 <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:26 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:09 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026cb6ddb92.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac862ae34da.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1005,13 +965,13 @@ explanation_gaussian_1e2 <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:26 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:09 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c5ef4677c.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac8161f63e3.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1033,13 +993,13 @@ explanation_combined <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:27 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:10 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian, empirical, and independence
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c59227d80.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac87b0e749d.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1068,8 +1028,7 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 
 # 5 plots are made
 names(MSEv_plots)
-#> [1] "MSEv_explicand_bar"        "MSEv_explicand_line_point" "MSEv_coalition_bar"        "MSEv_coalition_line_point"
-#> [5] "MSEv_bar"
+#> [1] "MSEv_explicand_bar"        "MSEv_explicand_line_point" "MSEv_coalition_bar"        "MSEv_coalition_line_point" "MSEv_bar"
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
 we have only averaged over the observations or the combinations (both as bar and line plots).
@@ -1156,11 +1115,9 @@ plot_MSEv_eval_crit(explanation_list_named) +
 
 ![](figure_main/unnamed-chunk-14-1.png)
 
-<a id="iterative"></a>
+# Iterative estimation {#iterative}
 
-# iterative estimation
-
-iterative estimation is the default when computing Shapley values with six or more features (or feature groups), and
+Iterative estimation is the default when computing Shapley values with six or more features (or feature groups), and
 can always be manually overridden by setting `iterative = FALSE` in the `explain()` function.
 The idea behind iterative estimation is to estimate sufficiently accurate Shapley value estimates faster.
 First, an initial number of coalitions is sampled, then, bootsrapping is used to estimate the variance of the Shapley
@@ -1178,9 +1135,7 @@ observations
 
 where $\hat{\phi}_{ij}$ is the Shapley value of feature $j$ for observation $i$, and $\text{sd}(\phi_{ij})$
 is the its (bootstrap) estimated standard deviation. The default value of $t$ is 0.02.
-Below we provide some examples of how to use the iterative estimation procedure
-
-
+Below we provide some examples of how to use the iterative estimation procedure.
 
 
 ``` r
@@ -1229,29 +1184,27 @@ ex <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:30 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:15 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Iterative estimation: TRUE
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c729d00b9.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac816c46481.rds'
 #> 
 #> ── iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 5 of 32 coalitions, 5 new.
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 10 of 32 coalitions, 4 new.
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 12 of 32 coalitions, 2 new.
 ```
 
-<a id="para"></a>
-
-# Parallelization
+# Parallelization {#para}
 
 The `shapr` package supports parallelization of the Shapley value estimation process through the
 `future` package.
@@ -1281,17 +1234,18 @@ The user can control the number of batches by setting the two arguments
 In addition to reducing the memory consumption, the batch computing allows the
 computations within each batch to be performed in parallel.
 The parallelization in `shapr::explain()` is handled by the
-`future_apply` which builds on the `future` environment. The `future`
-package works on all OS, allows the user to decide the parallelization
+`future_apply` package which builds on the `future` environment. These packages
+work on all OS, allows the user to decide the parallelization
 backend (mutliple R procesess or forking), works directly with hpc
 clusters, and also supports progress updates for the parallelized task
+via the associated `progressr` package
 (see [Verbosity and progress updates](#verbose)).
 
 Note that, since it takes some time to duplicate data into different
 processes/machines when running in parallel, it is not always
 preferrable to run `shapr::explain()` in parallel, at least not with
-many parallel sessions (hereby called **workers**). Parallelization also
-increases the memory consumption proportionally, so you want to limit
+many parallel sessions/workers.
+Parallelization also increases the memory consumption proportionally, so you may want to limit
 the number of workers for that reason too.
 Below is a basic example of a parallelization with two workers.
 
@@ -1313,13 +1267,13 @@ explanation_par <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:33 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:20 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c770548a9.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac833d94935.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1328,9 +1282,7 @@ explanation_par <- explain(
 future::plan(sequential) # To return to non-parallel computation
 ```
 
-<a id="verbose"></a>
-
-# Verbosity and progress updates
+# Verbosity and progress updates {#verbose}
 
 The `verbose` argument controls the verbosity of the output while running `explain()`,
 and allows one or more of the strings `"basic"`, `"progress"`, `"convergence"`, `"shapley"`  and `"vS_details"`.
@@ -1342,14 +1294,15 @@ and allows one or more of the strings `"basic"`, `"progress"`, `"convergence"`, 
 while `"vS_details"` displays information about the `v(S)` estimates for some of the approaches.
 If the user wants no printout, the argument can be set to `NULL`.
 
-In additon, progress updates of the computation of the `v(S)` values, values through the R-package `progressr`.
+In additon, progress updates for the computation of the `v(S)` values are (optionally) provided
+through the R-package `progressr`.
 This gives the user full control over the visual appearance of these progress updates.
 The main reason for providing this separate progress update feature is that it
 integreats seamlessly with the parallelization framework `future` used by `shapr` (see [Parallelization](#para)),
 and apparently is the only framework allowing progress updates also for parallelized tasks.
 These progress updates can be used in combination with, or independently of, the `verbose` argument.
 
-These progress updates via `progressr` are enabled for the current R-session by running the
+These progress updates via `progressr` can be enabled for the current R-session by running the
 command `progressr::handlers(local=TRUE)`, before calling
 `explain()`. To use progress updates for only a single call to
 `explain()`, one can wrap the call using
@@ -1363,7 +1316,7 @@ with `progressr::handlers('rstudio')` (requires the `rstudioapi`
 package). If you are running Windows, you may use the pop-up gui
 progress bar `progressr::handlers('handler_winprogressbar')`.
 A wrapper for progressbar of the flexible `cli` package, is also available
-`progressr::handlers('cli')`..
+`progressr::handlers('cli')`.
 
 For a full list of all progression handlers and the customization
 options available with `progressr`, see the `progressr`
@@ -1374,11 +1327,12 @@ A full code example of using `progressr` with `shapr` is shown below:
 ``` r
 library(progressr)
 progressr::handlers(global = TRUE)
+handlers("cli")
 # If no progression handler is specified, the txtprogressbar is used
 # Other progression handlers:
+# progressr::handlers('progress') # requires the 'progress' package
 # progressr::handlers('rstudio') # requires the 'rstudioapi' package
 # progressr::handlers('handler_winprogressbar') # Window only
-# progressr::handlers('cli') # requires the 'cli' package
 ex_progress <- explain(
   model = model,
   x_explain = x_explain,
@@ -1387,30 +1341,26 @@ ex_progress <- explain(
   phi0 = p0
 )
 
-handlers("progress")
-#| [=================================>----------------------]  60% Estimating v(S)
+#■■■■■■■■■■■                       32% | Estimating v(S) ETA:  2s
 ```
 
 
 
 
-<a id="advanced"></a>
 
-<br>
+# Advanced usage {#advanced}
 
-# Advanced usage
 
-<a id="combined"></a>
-
-## Combined approach
+## Combined approach {#combined}
 
 In addition to letting the user select one of the five aforementioned
 approaches for estimating the conditional distribution of the data (i.e.
 `approach` equals either [`"gaussian"`](#gaussian),
 [`"copula"`](#copula), [`"empirical"`](#empirical),
 [`"ctree"`](#ctree), [`"vaeac"`](#vaeac), [`"categorical"`](#categorical)) or `"timeseries"`, the package
-allows the user to combine the given approaches. To simplify the usage,
-the flexibility is restricted such that the same approach is used when
+allows the user to combine the given approaches.
+The `'regression_surrogate'` and `'regression_separate` approaches are not supported for the combined approach.
+To simplify the usage, the flexibility is restricted such that the same approach is used when
 conditioning on the same number of features. This is also in line
 @aas2019explaining [, Section 3.4].
 
@@ -1477,13 +1427,13 @@ explanation_combined <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:36 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:24 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical, copula, and gaussian
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c67f7e50f.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac84f1735ae.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1514,13 +1464,13 @@ explanation_combined <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:38 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:27 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: ctree, ctree, and empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c68a713f2.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac85e276b68.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1550,8 +1500,7 @@ explanation_group <- explain(
   x_train = x_train,
   approach = "empirical",
   phi0 = p0,
-  group = group_list,
-  iterative = FALSE
+  group = group_list
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -1559,13 +1508,13 @@ explanation_group <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
 #> and is therefore set to 2^n_groups = 4.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:39 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:29 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of group-wise Shapley values: 2
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c4f1e913.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac83b201956.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1606,8 +1555,7 @@ Moreover, essentially any feature dependent
 prediction model can be explained by the package by specifying two (or
 one) simple additional functions for your model.
 
-*Note: The below procedure for specifying custom models was changed in
-shapr v0.3.0* The first function is `predict_model`, taking the model
+The first function is `predict_model`, taking the model
 and data (as a `matrix` or `data.frame/data.table`) as input and
 outputting the corresponding prediction as a numeric vector. The second
 (optional, but highly recommended) function is `get_model_specs`, taking
@@ -1640,8 +1588,6 @@ same airquality data set as used above.
 
 ``` r
 library(gbm)
-#> Loaded gbm 2.2.2
-#> This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3
 
 formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
 # Fitting a gbm model
@@ -1694,13 +1640,13 @@ explanation_custom <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:41 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:31 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <gbm>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c16415c3d.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac86d2065a5.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1739,13 +1685,13 @@ explanation_custom_minimal <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:44 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:35 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <gbm>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c75618775.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac83578a4b.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1800,20 +1746,19 @@ explanation_tidymodels <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0,
-  iterative = FALSE
+  phi0 = p0
   )
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:48 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:41 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <workflow>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c1d933001.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac852d42314.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1838,7 +1783,9 @@ a more detailed description of the parameters.
 There are additional extra parameters which can be set by including a named list in the call to
 the `explain()` function. For example, we can the change the batch size to 32 by including
 `vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
-extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
+extra parameters to the `vaeac` approach.
+The main parameters are directly entered to the `explain()` function, while the extra parameters are included in a
+named list called `vaeac.extra_parameters`.
 
 
 
@@ -1853,8 +1800,7 @@ explanation_vaeac <- explain(
   vaeac.width = 16,
   vaeac.depth = 2,
   vaeac.epochs = 3,
-  vaeac.n_vaeacs_initialize = 2,
-  iterative = FALSE
+  vaeac.n_vaeacs_initialize = 2
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -1862,20 +1808,21 @@ explanation_vaeac <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:45:51 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:50:46 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: vaeac
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c4ef15f9c.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac85641265c.rds'
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions.
 ```
 
-Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 3` is likely to few epochs as it still seems like the `vaeac` model is learning.
+Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 3`
+is likely to few epochs as it still seems like the `vaeac` model is learning.
 
 ``` r
 # Look at the training and validation errors.
@@ -1883,9 +1830,6 @@ vaeac_plot_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "me
 ```
 
 ![](figure_main/vaeac-plot-1-1.png)
-
-
-
 
 ### Early stopping
 If we are uncertain about the choice of `vaeac.epochs`, we can rather use `vaeac` with early stopping.
@@ -1911,8 +1855,7 @@ explanation_vaeac_early_stop <- explain(
   vaeac.depth = 2,
   vaeac.epochs = 1000, # Set it to a large number
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2),
-  iterative = FALSE
+  vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -1920,13 +1863,13 @@ explanation_vaeac_early_stop <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:46:07 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:51:37 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: vaeac
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c1b83b97d.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac837fc6452.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2008,29 +1951,29 @@ ex_init <- explain(
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:46:29 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:52:44 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Iterative estimation: TRUE
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c5251f86b.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac837d37485.rds'
 #> 
 #> ── iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 5 of 32 coalitions, 5 new.
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 10 of 32 coalitions, 4 new.
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 12 of 32 coalitions, 2 new.
 #> 
-#> ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 4 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 16 of 32 coalitions, 4 new.
 #> 
-#> ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 5 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 18 of 32 coalitions, 2 new.
 
 # Using the ex_init object to continue the computation with 5 more coalition samples
@@ -2047,20 +1990,20 @@ ex_further <- explain(
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:46:34 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:52:50 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c45a5f9b2.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac81e9065fb.rds'
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 24 of 32 coalitions.
 
 print(ex_further$saving_path)
-#> [1] "/tmp/RtmpGq2OQE/shapr_obj_3026c45a5f9b2.rds"
+#> [1] "C:\\Users\\jullum\\AppData\\Local\\Temp\\RtmpAJtjjF\\shapr_obj_6ac81e9065fb.rds"
 
 # Using the ex_init object to continue the computation for the remaining coalition samples
 # but this time using the path to the saved intermediate estimation object
@@ -2079,25 +2022,21 @@ ex_even_further <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:46:35 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:52:52 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c7433ff88.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac84d41744d.rds'
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 32 of 32 coalitions.
 ```
 
-<a id="forecasting"></a>
 
-<br>
-
-
-# Explaining a forecasting model using `explain_forecast`
+# Explaining a forecasting model using `explain_forecast` {#forecasting}
 
 `shapr` provides a specific function, `explain_forecast`, to explain
 forecasts from time series models, at one or more steps into the future.
@@ -2137,7 +2076,7 @@ Since the data is stationary, the mean of the data is used as value of
 differently depending on the data and application.
 
 For a multivariate model such as a VAR (Vector AutoRegressive model), it
-may be of more interesting to explain the impact of each variable,
+may be more interesting to explain the impact of each variable,
 rather than each lag of each variable. This can be done by setting
 `group_lags = TRUE`.
 
@@ -2173,17 +2112,14 @@ explanation_forecast <- explain_forecast(
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 4, 
 #> and is therefore set to 2^n_features = 4.
-#> Registered S3 method overwritten by 'quantmod':
-#>   method            from
-#>   as.zoo.data.frame zoo
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:46:36 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:52:53 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <Arima>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 2
 #> • Number of observations to explain: 2
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c6949be4.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac871d03825.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2276,13 +2212,13 @@ explanation_forecast <- explain_forecast(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 4, 
 #> and is therefore set to 2^n_features = 4.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:46:38 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:52:55 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <ar>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 2
 #> • Number of observations to explain: 1
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c3dcf1900.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac8528e51e6.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2357,13 +2293,13 @@ explanation_forecast <- explain_forecast(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 32, 
 #> and is therefore set to 2^n_features = 32.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-22 23:46:39 ───────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 11:52:56 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <ar>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 1
-#> • Computations (temporary) saved at: '/tmp/RtmpGq2OQE/shapr_obj_3026c621a80f2.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpAJtjjF\shapr_obj_6ac86da26eff.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2379,6 +2315,5 @@ print(explanation_forecast$shapley_values_est)
 
 
 
-<br>
 
 # References
