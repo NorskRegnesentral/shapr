@@ -18,19 +18,36 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 
 ## Brief NEWS
 
-This is `shapr` version 1.0.0, which provides a full suit of new
-functionality. See the
+This is `shapr` version 1.0.0 (Released on GitHub Nov 2024), which
+provides a full restructuring of the code based, and provides a full
+suit of new functionality, including:
+
+- A long list of approaches for estimating the contribution/value
+  function $v(S)$, including Variational Autoencoders, and
+  regression-based methods
+- Iterative Shapley value estimation with convergence detection
+- Parallelized computations with progress updates
+- Reweighted Kernel SHAP for faster convergence
+- New function `explain_forecast()` for explaining forecasts
+- Several other methodological, computational and user-experience
+  improvements
+- Python wrapper making the core functionality of `shapr` available in
+  Python
+
+Below we provide a brief overview of the breaking changes. See the
 [NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md)
-for details
+for the full list of details.
 
-### Breaking change (June 2023)
+### Breaking changes
 
-As of version 0.2.3.9000, the development version of shapr (master
-branch on GitHub from June 2023) has been severely restructured,
-introducing a new syntax for explaining models, and thereby introducing
-a range of breaking changes. This essentially amounts to using a single
-function (`explain()`) instead of two functions (`shapr()` and
-`explain()`). The CRAN version of `shapr` (v0.2.2) still uses the old
+The new syntax for explaining models essentially amounts to using a
+single function (`explain()`) instead of two functions (`shapr()` and
+`explain()`). In addition, custom models are now explained by passing
+the prediction function directly to `explain()`, some input arguments
+got new names, and a few functions for edge cases was removed to
+simplify the code base.
+
+Note that the CRAN version of `shapr` (v0.2.2) still uses the old
 syntax. The examples below uses the new syntax.
 [Here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md)
 is a version of this README with the syntax of the CRAN version
@@ -38,17 +55,14 @@ is a version of this README with the syntax of the CRAN version
 
 ### Python wrapper
 
-As of version 0.2.3.9100 (master branch on GitHub from June 2023), we
-provide a Python wrapper (`shaprpy`) which allows explaining python
-models with the methodology implemented in `shapr`, directly from
+We now also provide a Python wrapper (`shaprpy`) which allows explaining
+python models with the methodology implemented in `shapr`, directly from
 Python. The wrapper is available
 [here](https://github.com/NorskRegnesentral/shapr/tree/master/python).
-See also details in the
-[NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md).
 
 ## The package
 
-The shapr R package implements an enhanced version of the KernelSHAP
+The `shapr` R package implements an enhanced version of the Kernel SHAP
 method, for approximating Shapley values, with a strong focus on
 conditional Shapley values. The core idea is to remain completely
 model-agnostic while offering a variety of methods for estimating
@@ -68,36 +82,24 @@ for details and further examples.
 
 ## Installation
 
-To install the current stable release from CRAN (note, using the old
-explanation syntax), use
-
-``` r
-install.packages("shapr")
-```
-
-To install the current development version (with the new explanation
-syntax), use
+We highly recommend to install the development version of shapr (with
+the new explanation syntax and all functionality),
 
 ``` r
 remotes::install_github("NorskRegnesentral/shapr")
 ```
 
-If you would like to install all packages of the models we currently
-support, use
+To also install all dependencies, use
 
 ``` r
 remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ```
 
-If you would also like to build and view the vignette locally, use
+**The CRAN version of `shapr` (NOT RECOMMENDED) can be installed with**
 
 ``` r
-remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
-vignette("understanding_shapr", "shapr")
+install.packages("shapr")
 ```
-
-You can always check out the latest version of the vignette
-[here](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html).
 
 ## Example
 
@@ -107,6 +109,24 @@ which takes a set of numeric features and produces a numeric outcome.
 The following example shows how a simple `xgboost` model is trained
 using the *airquality* dataset, and how `shapr` explains the individual
 predictions.
+
+We first enable parallel computation and progress updates with the
+following code chunk. These are optional, but recommended for improved
+performance and user friendliness, particularly for problems with many
+features.
+
+``` r
+# Enable parallel computation
+# Requires the future and future_lapply packages
+future::plan("multisession", workers = 2) # Increase the number of workers for increased performance with many features
+
+# Enable progress updates of the v(S)-computations
+# Requires the progressr package
+progressr::handlers(global = TRUE)
+handlers("cli") # Using the cli package as backend (recommended for the estimates of the remaining time)
+```
+
+Here comes the actual example
 
 ``` r
 library(xgboost)
@@ -158,14 +178,14 @@ explanation <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-10-23 19:31:59 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-20 12:23:18 ──────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
-#> '/tmp/Rtmp6d4Iza/shapr_obj_3be21200fd9e8.rds'
+#> '/tmp/Rtmp4yBCHY/shapr_obj_17459f7fdc4b8f.rds'
 #> 
 #> ── Main computation started ──
 #> 
