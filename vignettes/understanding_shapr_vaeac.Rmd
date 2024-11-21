@@ -482,9 +482,9 @@ rbind(
   "Paired" = expl_paired_sampling_TRUE$timing$overall_timing_secs,
   "Regular" = expl_paired_sampling_FALSE$timing$overall_timing_secs
 )
-#>              setup test_prediction main_computation finalize_explanation
-#> Paired  0.04922867      0.03620076         12.33302          0.004307032
-#> Regular 0.04737139      0.03476191         10.89546          0.004306316
+#>            setup test_prediction main_computation finalize_explanation
+#> Paired  0.049229        0.036201           12.333            0.0043070
+#> Regular 0.047371        0.034762           10.895            0.0043063
 ```
 
 

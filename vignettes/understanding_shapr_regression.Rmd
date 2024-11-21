@@ -147,15 +147,18 @@ which package the functions originate from in the `tidymodels` framework.
 ``` r
 # Either use `library(tidymodels)` or separately specify the libraries indicated above
 library(tidymodels)
-
-# Other libraries
-library(xgboost)
-library(data.table)
 library(shapr)
 
 # Ensure that shapr's functions are prioritzed, otherwise we need to use the `shapr::`
 # prefix when calling explain(). The `conflicted` package is imported by `tidymodels`.
 conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
+```
+
+
+``` r
+# Other libraries
+library(xgboost)
+library(data.table)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -2395,13 +2398,13 @@ explanation_list_mixed$sur_lm <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-11-21 13:53:57 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-21 23:03:49 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
-#> • Computations (temporary) saved at: '/tmp/RtmpgQii3E/shapr_obj_1aa78641d4b275.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmppO00aE/shapr_obj_1c345f66caf9e9.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2424,13 +2427,13 @@ explanation_list_mixed$sur_splines <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-11-21 13:53:57 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-21 23:03:50 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
-#> • Computations (temporary) saved at: '/tmp/RtmpgQii3E/shapr_obj_1aa78644e10e4.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmppO00aE/shapr_obj_1c345f28c0612c.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2449,13 +2452,13 @@ explanation_list_mixed$sur_tree <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-11-21 13:53:58 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-21 23:03:51 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
-#> • Computations (temporary) saved at: '/tmp/RtmpgQii3E/shapr_obj_1aa78642bac0c3.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmppO00aE/shapr_obj_1c345ff402e18.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2482,13 +2485,13 @@ explanation_list_mixed$sur_tree_cv <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-11-21 13:53:58 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-21 23:03:51 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
-#> • Computations (temporary) saved at: '/tmp/RtmpgQii3E/shapr_obj_1aa786732bd241.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmppO00aE/shapr_obj_1c345f159364cb.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2507,13 +2510,13 @@ explanation_list_mixed$sur_rf <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-11-21 13:54:00 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-21 23:03:53 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
-#> • Computations (temporary) saved at: '/tmp/RtmpgQii3E/shapr_obj_1aa78613cc457e.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmppO00aE/shapr_obj_1c345f15d81edf.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2536,13 +2539,13 @@ explanation_list_mixed$sur_rf_cv <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-11-21 13:54:01 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-21 23:03:54 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
-#> • Computations (temporary) saved at: '/tmp/RtmpgQii3E/shapr_obj_1aa78675157b5e.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmppO00aE/shapr_obj_1c345f5bb38b48.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2564,13 +2567,13 @@ explanation_list_mixed$sur_xgboost <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-11-21 13:54:15 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-21 23:04:09 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
-#> • Computations (temporary) saved at: '/tmp/RtmpgQii3E/shapr_obj_1aa786648b8e3f.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmppO00aE/shapr_obj_1c345f7f5cabf0.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2599,13 +2602,13 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2024-11-21 13:54:15 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2024-11-21 23:04:10 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> • Model class: <lm>
 #> • Approach: regression_surrogate
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
-#> • Computations (temporary) saved at: '/tmp/RtmpgQii3E/shapr_obj_1aa7863657a6c9.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmppO00aE/shapr_obj_1c345f339560be.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2638,21 +2641,20 @@ print_MSEv_scores_and_time(explanation_list_mixed)
 #> sep_rf_cv       619.81  40.17
 #> sep_xgboost     792.17   1.05
 #> sep_xgboost_cv  595.98  18.70
-#> sur_lm          610.61   0.43
-#> sur_splines     596.86   0.45
-#> sur_tree        677.04   0.46
-#> sur_tree_cv     789.37   2.48
-#> sur_rf          407.76   0.75
-#> sur_rf_cv       520.63  13.66
-#> sur_xgboost     606.92   0.50
-#> sur_xgboost_cv  429.06   2.16
+#> sur_lm          610.61   0.45
+#> sur_splines     596.86   0.43
+#> sur_tree        677.04   0.47
+#> sur_tree_cv     789.37   2.40
+#> sur_rf          407.76   0.76
+#> sur_rf_cv       520.63  15.18
+#> sur_xgboost     606.92   0.47
+#> sur_xgboost_cv  429.06   2.08
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list_mixed, method_line = "MC_ctree")
+#> Error in MSEv_check_explanation_list(explanation_list): The object/objects 'sur_lm', 'sur_splines', 'sur_tree', 'sur_tree_cv', 'sur_rf', 'sur_rf_cv', 'sur_xgboost', 'sur_xgboost_cv' in `explanation_list` has/have a different `x_explain` than 'MC_independence'. Cannot compare them.
 ```
-
-![](figure_regression/mixed-plot-1.png)
 
 The best-performing methods are the surrogate random forest
 and xgboost with cross-validation methods. The Monte Carlo-based
@@ -2666,9 +2668,8 @@ of the methods according to the $\operatorname{MSE}_v$ criterion.
 ``` r
 order <- get_k_best_methods(explanation_list_mixed, k = length(explanation_list_mixed))
 plot_MSEv_scores(explanation_list_mixed[order], method_line = "MC_ctree")
+#> Error in MSEv_check_explanation_list(explanation_list): The object/objects 'sep_rf', 'sep_splines', 'sep_lm', 'MC_ctree', 'sep_xgboost_cv', 'sep_rf_cv', 'MC_vaeac', 'MC_independence', 'sep_tree', 'sep_tree_cv', 'sep_xgboost' in `explanation_list` has/have a different `x_explain` than 'sur_rf'. Cannot compare them.
 ```
-
-![](figure_regression/mixed-plot-2-1.png)
 
 We also look at some of the Shapley value explanations and
 see that many methods produce similar explanations.
@@ -2676,9 +2677,8 @@ see that many methods produce similar explanations.
 
 ``` r
 plot_SV_several_approaches(explanation_list_mixed[order], index_explicands = c(1, 2), facet_ncol = 1)
+#> Error in plot_SV_several_approaches(explanation_list_mixed[order], index_explicands = c(1, : The object/objects 'sep_rf', 'sep_splines', 'sep_lm', 'MC_ctree', 'sep_xgboost_cv', 'sep_rf_cv', 'MC_vaeac', 'MC_independence', 'sep_tree', 'sep_tree_cv', 'sep_xgboost' in `explanation_list` has/have a different `x_explain` than 'sur_rf'. Cannot compare them.
 ```
-
-![](figure_regression/mixed-plot-3-1.png)
 
 We can also focus on the Shapley value explanations for the best five
 methods according to the $\operatorname{MSE}_v$ criterion. We also
@@ -2689,9 +2689,8 @@ include the `ctree` method, the best-performing Monte Carlo-based method.
 best_methods <- get_k_best_methods(explanation_list_mixed, k = 5)
 if (!"MC_ctree" %in% best_methods) best_methods <- c(best_methods, "MC_ctree")
 plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicands = 1:4)
+#> Error in plot_SV_several_approaches(explanation_list_mixed[best_methods], : The object/objects 'sep_rf', 'sep_splines', 'MC_ctree' in `explanation_list` has/have a different `x_explain` than 'sur_rf'. Cannot compare them.
 ```
-
-![](figure_regression/mixed-plot-4-1.png)
 
 
 # Regression arguments as strings

@@ -1408,7 +1408,7 @@ Fourth, we compute the Shapley value explanations using surrogate
 regression methods. We use the same regression models as we did
 above for separate regression method class.
 
-```{r mixed-surrogate, cache = FALSE}
+```{r mixed-surrogate, cache = TRUE}
 # Standard linear regression
 explanation_list_mixed$sur_lm <- explain(
   model = model_cat,
@@ -1529,7 +1529,7 @@ of the regression-based methods outperform the Monte Carlo-based
 methods. More specifically, three separate regression methods and
 three surrogate regression methods.
 
-```{r mixed-plot, cache = FALSE}
+```{r mixed-plot, cache = TRUE}
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list_mixed)
 
@@ -1546,7 +1546,7 @@ seventh-place overall ranking.
 We can also order the methods to more easily look at the order
 of the methods according to the $\operatorname{MSE}_v$ criterion.
 
-```{r mixed-plot-2, cache = FALSE}
+```{r mixed-plot-2, cache = TRUE}
 order <- get_k_best_methods(explanation_list_mixed, k = length(explanation_list_mixed))
 plot_MSEv_scores(explanation_list_mixed[order], method_line = "MC_ctree")
 ```
@@ -1554,7 +1554,7 @@ plot_MSEv_scores(explanation_list_mixed[order], method_line = "MC_ctree")
 We also look at some of the Shapley value explanations and
 see that many methods produce similar explanations.
 
-```{r mixed-plot-3, cache = FALSE}
+```{r mixed-plot-3, cache = TRUE}
 plot_SV_several_approaches(explanation_list_mixed[order], index_explicands = c(1, 2), facet_ncol = 1)
 ```
 
@@ -1562,7 +1562,7 @@ We can also focus on the Shapley value explanations for the best five
 methods according to the $\operatorname{MSE}_v$ criterion. We also
 include the `ctree` method, the best-performing Monte Carlo-based method.
 
-```{r mixed-plot-4, cache = FALSE}
+```{r mixed-plot-4, cache = TRUE}
 best_methods <- get_k_best_methods(explanation_list_mixed, k = 5)
 if (!"MC_ctree" %in% best_methods) best_methods <- c(best_methods, "MC_ctree")
 plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicands = 1:4)
