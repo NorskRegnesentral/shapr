@@ -1,4 +1,4 @@
-library(shapr)
+# library(shapr)
 
 actual_feature_translator_func <- function(oldvec,num_feat_vec){
   newvec <- num_feat_vec[oldvec]
@@ -390,7 +390,8 @@ iterative_kshap_func <- function(model,
                                  ctree.minsplit = 20, # The minimum split for the ctree method
                                  ctree.minbucket = 7, # The minimum bucket for the ctree method
                                  ctree.sample = TRUE, # Whether to sample in the ctree method
-                                 all_trees = NULL){ # list of trees to reuse in the ctree method. This feature
+                                 all_trees = NULL,
+                                 seed = 123){ # list of trees to reuse in the ctree method. This feature
 
   if (!is.null(max_n_combinations)){
     max_n_combinations = min(max_n_combinations, 2^nrow(x_train[, ..cutoff_feats]))
@@ -408,7 +409,7 @@ iterative_kshap_func <- function(model,
 
   feature_sample_all <- feature_sample_prev_1 <- feature_sample_prev_2 <- NULL
   keep_list <- list()
-  set.seed(123)
+  set.seed(seed)
   iter <- 1
   converged = FALSE
   shap_it_excluded_features <- 0
@@ -436,7 +437,6 @@ iterative_kshap_func <- function(model,
 
 
   while (converged == FALSE){
-
     ##### UNLESS ESTIMATION IS DONE ####
 
     ## Setup for current iteration
