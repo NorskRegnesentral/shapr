@@ -26,9 +26,6 @@ knitr::opts_chunk$set(
   )
 ```
 
-```{r setup, message = FALSE, cache = TRUE}
-library(shapr)
-```
 
 <a id="intro"></a>
 
@@ -91,6 +88,11 @@ in the calls to the `explain()` function.
 
 ## Basic Example {#basicexample}
 Here we go through how to use the `vaeac` approach on the same data as in the main vignette
+
+First we load the shapr package
+```{r setup, message = FALSE, cache = TRUE}
+library(shapr)
+```
 
 First we set up the model we want to explain.
 
@@ -316,8 +318,8 @@ By looking at the time, we see that the paired version takes (a bit) longer time
 phase, that is, in the training phase.
 ```{r paired-sampling-timing}
 rbind(
-  "Paired" = expl_paired_sampling_TRUE$timing$main_timing_secs,
-  "Regular" = expl_paired_sampling_FALSE$timing$main_timing_secs
+  "Paired" = expl_paired_sampling_TRUE$timing$overall_timing_secs,
+  "Regular" = expl_paired_sampling_FALSE$timing$overall_timing_secs
 )
 ```
 
