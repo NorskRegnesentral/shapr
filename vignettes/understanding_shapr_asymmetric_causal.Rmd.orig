@@ -47,7 +47,7 @@ on an old version of `shapr` and was restricted to the `gaussian` approach (see 
 
 We have extended the causal Shapley value framework to work for all
 Monte Carlo-based approaches (`independence` (not recommended), `empirical`, `gaussian`, `copula`, `ctree`, `vaeac` and `categorical`), while the extension of the asymmetric
-Shapley value framework works for both the Monte Carlo and regression-based approaches.
+Shapley value framework works for all the Monte Carlo and regression-based approaches.
 Our generalization is of uttermost importance, as many real-world data sets
 are far from the Gaussian distribution, and, compared to `CauSHAPley`, our implementation
 can utilize all of `shapr`'s new features, such as batch computation, parallelization and
