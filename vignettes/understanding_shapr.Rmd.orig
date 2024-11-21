@@ -32,10 +32,6 @@ knitr::opts_chunk$set(
 options("digits" = 5)
 ```
 
-```{r setup, message = FALSE, cache = TRUE}
-library(shapr)
-```
-
 # Introduction {#intro}
 
 The `shapr` package implements an extended version of the Kernel SHAP
@@ -421,8 +417,13 @@ Allowed values are `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`
 `"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, and
 `"regression_surrogate"`.
 
+First we load the shapr package
+```{r setup, message = FALSE, cache = TRUE}
+library(shapr)
+```
 
-```{r, warning=FALSE}
+
+```{r setup-2, warning=FALSE, cache = TRUE}
 library(xgboost)
 library(data.table)
 
@@ -477,7 +478,7 @@ due to each features contribution (their Shapley values):
 There are multiple plot options specified by the `plot_type` argument in `plot`.
 The `waterfall` option shows the changes in the prediction score due to each features contribution (their Shapley values):
 
-```{r}
+```{r plot-waterfall, warning=FALSE, cache = TRUE}
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```
 
@@ -490,7 +491,7 @@ values along the x-axis across all features. Each point gives the
 Shapley value of a given instance, where the points are colored by the
 feature value of that instance:
 
-```{r}
+```{r plot-beeswarm, warning=FALSE, cache = TRUE}
 x_explain_many <- data[, ..x_var]
 explanation_plot <- explain(
   model = model,
@@ -506,14 +507,14 @@ The `plot_type = "scatter"` plots the feature values on the x-axis and
 Shapley values on the y-axis, as well as (optionally) a background
 scatter_hist showing the distribution of the feature data:
 
-```{r}
+```{r plot-scatter, warning=FALSE, cache = TRUE}
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
 We can use mixed (i.e continuous, categorical, ordinal) data with `ctree` or `vaeac`.
 Use `ctree` with mixed data in the following manner:
 
-```{r}
+```{r factor, warning=FALSE, cache = TRUE}
 # convert the month variable to a factor
 data[, Month_factor := as.factor(Month)]
 
@@ -549,7 +550,7 @@ We can specify parameters used to build the conditional inference trees
 in the following manner. The default values are based on
 @hothorn2006unbiased.
 
-```{r}
+```{r ctree, warning=FALSE, cache = TRUE}
 # Use the conditional inference tree approach
 # We can specify parameters used to building trees by specifying mincriterion,
 # minsplit, minbucket
@@ -572,7 +573,7 @@ explanation_ctree <- explain(
 If **all** features are categorical, one may use the categorical
 approach as follows:
 
-```{r}
+```{r categorical, warning=FALSE, cache = TRUE}
 # For the sake of illustration, convert ALL features to factors
 data[, Solar.R_factor := as.factor(cut(Solar.R, 10))]
 data[, Wind_factor := as.factor(cut(Wind, 3))]
@@ -612,7 +613,7 @@ achieved through the `group` attribute. Other optional parameters of
 `timeseries.bounds` (a vector indicating upper and lower bounds of the
 time series if necessary).
 
-```{r}
+```{r timeseries, warning=FALSE, cache = TRUE}
 # Simulate time series data with AR(1)-structure
 set.seed(1)
 data_ts <- data.frame(matrix(NA, ncol = 41, nrow = 4))
@@ -742,7 +743,7 @@ each observation, as each combination is a different prediction tasks.
 ### MSEv examples
 
 Start by explaining the predictions by using different methods and combining them into lists.
-```{r}
+```{r setup-MSE, warning=FALSE, cache = TRUE}
 # We use more explicands here for more stable confidence intervals
 ind_x_explain_many <- 1:25
 x_train <- data[-ind_x_explain_many, ..x_var]
@@ -828,7 +829,7 @@ explanation_list_named <- list(
 
 We can then compare the different approaches by creating plots of the $\operatorname{MSE}_{v}$ evaluation criterion.
 
-```{r}
+```{r MSEv-plot, warning=FALSE, cache = TRUE}
 # Create the MSEv plots with approximate 95% confidence intervals
 MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
   plot_type = c("overall", "comb", "explicand"),
@@ -841,7 +842,7 @@ names(MSEv_plots)
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
 we have only averaged over the observations or the combinations (both as bar and line plots).
 
-```{r}
+```{r MSEv-plot-2, warning=FALSE, cache = TRUE}
 # The main plot of the overall MSEv averaged over both the combinations and observations
 MSEv_plots$MSEv_bar
 
@@ -859,7 +860,7 @@ explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination", "feature
 We can specify the `index_x_explain` and `id_combination` parameters in `plot_MSEv_eval_crit()` to only plot
 certain test observations and combinations, respectively.
 
-```{r}
+```{r MSEv-plot-3, warning=FALSE, cache = TRUE}
 # We can specify which test observations or combinations to plot
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "explicand",
@@ -876,7 +877,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 
 We can also alter the plots design-wise as we do in the code below.
 
-```{r}
+```{r MSEv-plot-4, warning=FALSE, cache = TRUE}
 bar_text_n_decimals <- 1
 plot_MSEv_eval_crit(explanation_list_named) +
   ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plots$MSEv_bar$data$Method))) +
@@ -922,7 +923,7 @@ where $\hat{\phi}_{ij}$ is the Shapley value of feature $j$ for observation $i$,
 is the its (bootstrap) estimated standard deviation. The default value of $t$ is 0.02.
 Below we provide some examples of how to use the iterative estimation procedure.
 
-```{r}
+```{r iterative, warning=FALSE, cache = TRUE}
 library(xgboost)
 library(data.table)
 
@@ -1010,7 +1011,7 @@ Parallelization also increases the memory consumption proportionally, so you may
 the number of workers for that reason too.
 Below is a basic example of a parallelization with two workers.
 
-```{r}
+```{r para, warning=FALSE, cache = TRUE}
 library(future)
 future::plan(multisession, workers = 2)
 
@@ -1066,7 +1067,7 @@ options available with `progressr`, see the `progressr`
 [vignette](https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html).
 A full code example of using `progressr` with `shapr` is shown below:
 
-```{r,eval = FALSE}
+```{r progressr,eval = FALSE}
 library(progressr)
 progressr::handlers(global = TRUE)
 handlers("cli")
@@ -1123,7 +1124,7 @@ The code below exemplifies this approach for a case where there are four
 features, using `"empirical", "copula"` and `"gaussian"` when
 conditioning on respectively 1, 2 and 3 features.
 
-```{r}
+```{r combined-1, warning=FALSE, cache = TRUE}
 library(xgboost)
 library(data.table)
 
@@ -1170,7 +1171,7 @@ plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 As a second example using `"ctree"` to condition on 1 and 2 features, and
 `"empirical"` when conditioning on 3 features:
 
-```{r}
+```{r combined-2, warning=FALSE, cache = TRUE}
 # Use the combined approach
 explanation_combined <- explain(
   model = model,
@@ -1189,7 +1190,7 @@ features instead of single features, see (@jullum2021efficient) for
 intuition and real world examples. Explaining prediction in terms of
 groups of features is very easy using `shapr`:
 
-```{r}
+```{r group, warning=FALSE, cache = TRUE}
 # Define the feature groups
 group_list <- list(
   A = c("Temp", "Month"),
@@ -1261,7 +1262,7 @@ and a minimal version which skips the `get_model_specs` function. We do
 this for the `gbm` model class from the `gbm` package, fitted to the
 same airquality data set as used above.
 
-```{r,warning=TRUE, message=TRUE}
+```{r custom,warning=TRUE, message=TRUE, cache = TRUE}
 library(gbm)
 
 formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
@@ -1316,7 +1317,7 @@ explanation_custom <- explain(
 plot(explanation_custom, index_x_explain = c(1, 6))
 
 
-#### Minimal version of the three required model functions ####
+#### Minimal version of the custom model setup ####
 # Note: Working only for this exact version of the model class
 # Avoiding to define get_model_specs skips all feature
 # consistency checking between your data and model
@@ -1346,7 +1347,7 @@ However, we can also fit the `xgboost` model using the `tidymodels` package. The
 as `tidymodels` calls `xgboost` internally. which we demonstrate in the example below. Note that we can replace
 `xgboost` (i.e., `parsnip::boost_tree`) with any other fitted `tidymodels` in the `workflows` procedure outlined below.
 
-```{r}
+```{r workflow, cache = TRUE}
 # Fitting a basic xgboost model to the training data using tidymodels
 set.seed(123) # Set the same seed as above
 all_var <- c(y_var, x_var)
@@ -1479,7 +1480,7 @@ The latter is found at `SHAPR_OBJ$saving_path`, defaults to a temporary folder,
 and is updated after each iteration.
 This can be particularly handy for long-running computations.
 
-```{r}
+```{r cont-comp, cache = TRUE}
 # First we run the computation with the iterative estimation procedure for a limited number of coalition samples
 library(xgboost)
 library(data.table)
@@ -1595,7 +1596,7 @@ may be more interesting to explain the impact of each variable,
 rather than each lag of each variable. This can be done by setting
 `group_lags = TRUE`.
 
-```{r}
+```{r forecast, cache = TRUE}
 # Simulate time series data with AR(1)-structure.
 set.seed(1)
 data_ts <- data.frame(Y = arima.sim(list(order = c(1, 0, 0), ar = .5), n = 500))
@@ -1644,7 +1645,7 @@ model is then used to make a forecast of the temperature of the day that
 comes after the last day in the data, this forecast starts from index
 153.
 
-```{r}
+```{r forecast-2, cache = TRUE}
 data_ts2 <- data.table::as.data.table(airquality)
 
 model_ar_temp <- ar(data_ts2$Temp, order = 2)
@@ -1676,7 +1677,7 @@ explained separately. Grouping lags may be more interesting to do in a
 model with multiple variables, as it is then possible to explain each
 variable separately.
 
-```{r}
+```{r forecast-3, cache = TRUE}
 explanation_forecast <- explain_forecast(
   model = model_ar_temp,
   y = data_ts2[, "Temp"],
@@ -1706,7 +1707,7 @@ regressor must be available for the predicted time points, the model is
 just fit on the 151 first observations, leaving two observations of
 `Wind` to be used as exogenous values during the prediction phase.
 
-```{r}
+```{r forecast-4, cache = TRUE}
 data_ts3 <- data.table::as.data.table(airquality)
 
 data_fit <- data_ts3[seq_len(151), ]
@@ -1727,7 +1728,7 @@ makes it possible for `shapr` to not only explain the effect of the
 first lag of the exogenous variable, but also the contemporary effect
 during the forecasting period.
 
-```{r}
+```{r forecast-5, cache = TRUE}
 explanation_forecast <- explain_forecast(
   model = model_ar_temp,
   y = data_fit[, "Temp"],
