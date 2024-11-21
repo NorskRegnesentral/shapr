@@ -199,7 +199,7 @@ as specified in @aas2019explaining. Symmetric means that we consider all coaliti
 
 
 
-# Code example (#Code)
+# Code example {#Code}
 ## Overview
 We demonstrate the frameworks on the [bike sharing](https://archive.ics.uci.edu/dataset/275/)
 dataset from the UCI Machine Learning Repository. We let the features be the
@@ -1069,7 +1069,7 @@ In the example below, we demonstrate the sampling of coalitions for the
 asymmetric and symmetric causal Shapley value explanation frameworks.
 We half the number of coalitions for both versions
 and see that the elapsed times are approximately halved, too.
-```{r n_coalitions, cache = TRUE, cache = TRUE}
+```{r n_coalitions, cache = TRUE}
 explanation_n_coal <- list()
 
 explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
@@ -1095,7 +1095,8 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
   confounding = c(FALSE, TRUE, FALSE),
   paired_shap_sampling = FALSE,
   verbose = c("basic", "convergence", "shapley"),
-  max_n_coalitions = 10 # Instead of 20
+  max_n_coalitions = 10, # Instead of 20
+  iterative = FALSE # Due to small number of coalitions
 )
 
 # Look at the times
@@ -1167,7 +1168,8 @@ explanation_group_gaussian[["symmetric_marginal"]] <-
     causal_ordering = list(seq(length(group_list))), # or `NULL`
     confounding = TRUE,
     n_MC_samples = 1000,
-    group = group_list
+    group = group_list,
+    iterative = FALSE
   )
 
 explanation_group_gaussian[["symmetric_conditional"]] <-
@@ -1181,7 +1183,8 @@ explanation_group_gaussian[["symmetric_conditional"]] <-
     causal_ordering = list(seq(length(group_list))), # or `NULL`
     confounding = NULL,
     n_MC_samples = 1000,
-    group = group_list
+    group = group_list,
+    iterative = FALSE
   )
 
 explanation_group_gaussian[["asymmetric_conditional"]] <-
@@ -1196,7 +1199,8 @@ explanation_group_gaussian[["asymmetric_conditional"]] <-
     confounding = NULL,
     paired_shap_sampling = FALSE,
     n_MC_samples = 1000,
-    group = group_list
+    group = group_list,
+    iterative = FALSE
   )
 
 explanation_group_gaussian[["symmetric_causal"]] <-
@@ -1210,7 +1214,8 @@ explanation_group_gaussian[["symmetric_causal"]] <-
     causal_ordering = causal_ordering_group,
     confounding = confounding,
     n_MC_samples = 1000,
-    group = group_list
+    group = group_list,
+    iterative = FALSE
   )
 
 explanation_group_gaussian[["asymmetric_causal"]] <-
@@ -1225,7 +1230,8 @@ explanation_group_gaussian[["asymmetric_causal"]] <-
     confounding = confounding,
     paired_shap_sampling = FALSE,
     n_MC_samples = 1000,
-    group = group_list
+    group = group_list,
+    iterative = FALSE
   )
 
 # Look at the elapsed times (symmetric takes the longest time)
