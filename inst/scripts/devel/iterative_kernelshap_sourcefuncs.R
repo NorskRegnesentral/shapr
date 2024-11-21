@@ -709,11 +709,13 @@ iterative_kshap_func <- function(model,
     print(iter)
     print(kshap_est_sd_prob_dt[])
 
+    #browser()
+
     keep_list[[iter]] <- list(kshap_est_dt = copy(kshap_est_dt),
                               kshap_sd_dt = kshap_sd_dt,
                               kshap_prob_dt = kshap_prob_dt,
-                              dt_vS = dt_vS,
-                              X = X,
+                              dt_vS = copy(dt_vS),
+                              X = copy(X),
                               feature_sample_1 = feature_sample_1,
                               feature_sample_2 = feature_sample_2,
                               full_pred = full_pred,

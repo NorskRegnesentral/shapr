@@ -115,6 +115,7 @@ for(jj in seq_len(nrow(shapley_threshold_dt))){
                                 shapley_threshold_val = shapley_threshold_dt$val[jj],
                                 shapley_threshold_prob = shapley_threshold_dt$prob[jj],
                                 approach = approach,
+                                paired_sampling = FALSE,
                                 n_samples = n_samples,
                                 gaussian.mu = mu,
                                 gaussian.cov_mat = Sigma,
@@ -123,7 +124,6 @@ for(jj in seq_len(nrow(shapley_threshold_dt))){
     runcomps_list[[jj]][[kk]] <- sum(sapply(run$keep_list,"[[","no_computed_combinations"))
     print(kk)
   }
-
 }
 
 mean_K <- sapply(runcomps_list,function(x) mean(unlist(x)))
@@ -135,9 +135,9 @@ est[[2]][,K:=unlist(runcomps_list[[2]])]
 est[[3]][,K:=unlist(runcomps_list[[3]])]
 
 
-fwrite(est[[1]],file="inst/scripts/devel/iterative_kshap_est_0.1_0.2.csv")
-fwrite(est[[2]],file="inst/scripts/devel/iterative_kshap_est_0.1_0.1.csv")
-fwrite(est[[3]],file="inst/scripts/devel/iterative_kshap_est_0.1_0.05.csv")
+fwrite(est[[1]],file="inst/scripts/devel/iterative_kshap_est_0.1_0.2_unpaired.csv")
+fwrite(est[[2]],file="inst/scripts/devel/iterative_kshap_est_0.1_0.1_unpaired.csv")
+fwrite(est[[3]],file="inst/scripts/devel/iterative_kshap_est_0.1_0.05_unpaired.csv")
 
 
 #########
