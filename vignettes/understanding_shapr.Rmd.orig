@@ -32,7 +32,7 @@ knitr::opts_chunk$set(
 options("digits" = 5)
 ```
 
-```{r setup, include=FALSE, warning=FALSE}
+```{r setup, message = FALSE, cache = TRUE}
 library(shapr)
 ```
 
