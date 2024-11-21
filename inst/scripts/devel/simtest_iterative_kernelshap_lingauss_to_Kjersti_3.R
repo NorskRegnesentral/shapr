@@ -74,10 +74,9 @@ approach = "gaussian"
 #                                           rep(0.1,3),
 #                                           rep(0.05,3)),
 #                                   prob = rep(c(0.3,0.2,0.1),3))
-shapley_threshold_dt <- data.table(val = rep(0.1,3),
+shapley_threshold_dt <- data.table(val = rep(0.25,3),
                                    prob = c(0.2,0.1,0.05))
-shapley_threshold_dt <- data.table(val = rep(0.5,3),
-                                   prob = c(0.2))
+shapley_threshold_dt <- shapley_threshold_dt[1]
 
 #shapley_threshold_dt <- data.table(val = c(0.2,0.1,0.05),
 #                                   prob = rep(0.1,3))
@@ -127,11 +126,13 @@ mean_K <- sapply(runcomps_list,function(x) mean(unlist(x)))
 est <- lapply(runres_list,rbindlist)
 
 est[[1]][,K:=unlist(runcomps_list[[1]])]
+fwrite(est[[1]],file="inst/scripts/devel/iterative_kshap_est_NEW.csv")
+
+
 est[[2]][,K:=unlist(runcomps_list[[2]])]
 est[[3]][,K:=unlist(runcomps_list[[3]])]
 
 
-fwrite(est[[1]],file="inst/scripts/devel/iterative_kshap_est_0.1_0.2_unpaired.csv")
 fwrite(est[[2]],file="inst/scripts/devel/iterative_kshap_est_0.1_0.1_unpaired.csv")
 fwrite(est[[3]],file="inst/scripts/devel/iterative_kshap_est_0.1_0.05_unpaired.csv")
 
