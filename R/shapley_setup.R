@@ -126,8 +126,8 @@ shapley_setup <- function(internal) {
     S_causal_steps_unique <- unique(S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)]) # Get S
     S_causal_steps_unique <- S_causal_steps_unique[!sapply(S_causal_steps_unique, is.null)] # Remove NULLs
     S_causal_steps_unique <- S_causal_steps_unique[lengths(S_causal_steps_unique) > 0] # Remove extra integer(0)
-    S_causal_steps_unique <- c(list(integer(0)), S_causal_steps_unique, list(seq(n_shapley_values)))
-    S_causal_steps_unique_S <- coalition_matrix_cpp(coalitions = S_causal_steps_unique, m = n_shapley_values)
+    S_causal_steps_unique <- c(list(integer(0)), S_causal_steps_unique, list(seq(n_features)))
+    S_causal_steps_unique_S <- coalition_matrix_cpp(coalitions = S_causal_steps_unique, m = n_features)
 
     # Insert into the internal list
     internal$iter_list[[iter]]$S_causal_steps <- S_causal_steps
