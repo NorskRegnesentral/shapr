@@ -82,7 +82,6 @@ prepare_data.copula <- function(internal, index_features, ...) {
 
     # Update data when not in the first causal sampling step, see prepdare_data_causal for explanations
     if (!causal_first_step) {
-
       # Update the `copula.x_explain_gaussian_mat`
       copula.x_explain_gaussian <- apply(
         X = rbind(x_explain_mat, x_train_mat),
