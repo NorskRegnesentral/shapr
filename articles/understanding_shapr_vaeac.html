@@ -96,45 +96,6 @@ Berge Olsen</h4>
 
     
     
-<blockquote>
-<p><a href="#vaeac">The vaeac method</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#Code">Code</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#basicexample">Basic Example</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#pretrained_vaeac">Pretrained vaeac</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#pretrained_vaeac_path">Pretrained vaeac (path)</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#n_coalitions">Subset of coalitions</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#paired_sampling">Paired sampling</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#progress_bar">Progress bar</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#continue_training">Continue training</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#early_stopping">Early stopping</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#grouping_of_features">Grouping of features</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#mixed_data">Mixed data</a></p>
-</blockquote>
-<blockquote>
-<p><a href="#cpu_vs_gpu">Comparing CPU and GPU</a></p>
-</blockquote>
 <p><a id="intro"></a></p>
 <p>In this vignette, we elaborate and illustrate the <code>vaeac</code>
 approach in more depth than in the main vignette. In the main vignette,
@@ -205,15 +166,10 @@ example, we can the change the batch size to 32 by including
 <code>vaeac.extra_parameters = list(vaeac.batch_size = 32)</code> as a
 parameter in the call the <code><a href="../reference/explain.html">explain()</a></code> function. See
 <code><a href="../reference/vaeac_get_extra_para_default.html">?shapr::vaeac_get_extra_para_default</a></code> for a description of
-the possible extra parameters to the <code>vaeac</code> approach. We
-strongly encourage the user to specify the main and extra parameters to
-the <code>vaeac</code> approach at the correct place in the call to the
-<code><a href="../reference/explain.html">explain()</a></code> function. That is, the main parameters are
-directly entered to the <code><a href="../reference/explain.html">explain()</a></code> function, while the extra
-parameters are included in a named list called
-<code>vaeac.extra_parameters</code>. However, the <code>vaeac</code>
-approach will try to correct for misplaced and duplicated parameters and
-give warnings to the user.</p>
+the possible extra parameters to the <code>vaeac</code> approach. The
+main parameters are directly entered to the <code><a href="../reference/explain.html">explain()</a></code>
+function, while the extra parameters are included in a named list called
+<code>vaeac.extra_parameters</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="code">Code Examples<a class="anchor" aria-label="anchor" href="#code"></a>
@@ -222,17 +178,20 @@ give warnings to the user.</p>
 different use cases. Note that this vignette runs on CPU, but all code
 sections below can be run on GPU too. To enable GPU, we have to include
 <code>vaeac.extra_parameters = list(vaeac.cuda = TRUE)</code> in the
-calls to the <code><a href="../reference/explain.html">explain()</a></code> function. See <a href="#cpu_vs_gpu">CPU vs GPU</a> for more information.</p>
+calls to the <code><a href="../reference/explain.html">explain()</a></code> function.</p>
 <div class="section level3">
 <h3 id="basicexample">Basic Example<a class="anchor" aria-label="anchor" href="#basicexample"></a>
 </h3>
 <p>Here we go through how to use the <code>vaeac</code> approach on the
 same data as in the main vignette</p>
-<p>First we set up the model we want to explain.</p>
+<p>First we load the shapr package</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://norskregnesentral.github.io/shapr/">shapr</a></span><span class="op">)</span></span></code></pre></div>
+<p>First we set up the model we want to explain.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; data.table 1.15.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
+<span><span class="co">#&gt; data.table 1.16.2 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"airquality"</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
@@ -262,7 +221,7 @@ same data as in the main vignette</p>
 </h3>
 <p>We are now going to explain predictions made by the model using the
 <code>vaeac</code> approach.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_MC_samples</span> <span class="op">&lt;-</span> <span class="fl">25</span> <span class="co"># Low number of MC samples to make the vignette build faster</span></span>
 <span><span class="va">vaeac.n_vaeacs_initialize</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="co"># Initialize several vaeacs to counteract bad initialization values</span></span>
 <span><span class="va">vaeac.epochs</span> <span class="op">&lt;-</span> <span class="fl">4</span> <span class="co"># The number of training epochs</span></span>
@@ -281,20 +240,32 @@ same data as in the main vignette</p>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
-<span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span></code></pre></div>
+<span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 19:59:59 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c933afb44f.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
 <p>We can look at the Shapley values.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Printing and ploting the Shapley values.</span></span>
 <span><span class="co"># See ?shapr::explain for interpretation of the values.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values_est</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    explain_id   none  Solar.R      Wind     Temp    Month</span></span>
-<span><span class="co">#&gt;         &lt;int&gt;  &lt;num&gt;    &lt;num&gt;     &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:          1 43.086  4.35827  -0.49487 -16.7173  0.55352</span></span>
-<span><span class="co">#&gt; 2:          2 43.086 -2.06968  -2.76668 -17.3760 -1.84287</span></span>
-<span><span class="co">#&gt; 3:          3 43.086  1.24259  -5.05865 -18.7919 -0.68187</span></span>
-<span><span class="co">#&gt; 4:          4 43.086  5.20834 -10.03741  -8.4807 -1.28136</span></span>
-<span><span class="co">#&gt; 5:          5 43.086  0.22127  -3.05847 -17.9177 -3.62080</span></span>
-<span><span class="co">#&gt; 6:          6 43.086  4.25576  -9.58514 -18.7123  2.62017</span></span>
+<span><span class="co">#&gt;    explain_id     none    Solar.R        Wind       Temp      Month</span></span>
+<span><span class="co">#&gt;         &lt;int&gt;    &lt;num&gt;      &lt;num&gt;       &lt;num&gt;      &lt;num&gt;      &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:          1 43.08572  4.3582680  -0.4948663 -16.717263  0.5535165</span></span>
+<span><span class="co">#&gt; 2:          2 43.08571 -2.0696785  -2.7666843 -17.375969 -1.8428742</span></span>
+<span><span class="co">#&gt; 3:          3 43.08571  1.2425910  -5.0586505 -18.791919 -0.6818670</span></span>
+<span><span class="co">#&gt; 4:          4 43.08571  5.2083437 -10.0374107  -8.480697 -1.2813575</span></span>
+<span><span class="co">#&gt; 5:          5 43.08571  0.2212691  -3.0584692 -17.917710 -3.6207951</span></span>
+<span><span class="co">#&gt; 6:          6 43.08572  4.2557578  -9.5851397 -18.712318  2.6201697</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Ffirst-vaeac-plots-1.png"></p>
 </div>
@@ -316,7 +287,7 @@ have the same features as before.</p>
 <code>vaeac</code> model instead of training it from scratch.</p>
 <p>In this example, we extract the trained <code>vaeac</code> model from
 the previous example and send it to <code><a href="../reference/explain.html">explain()</a></code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Send the pre-trained vaeac model</span></span>
 <span><span class="va">expl_pretrained_vaeac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -334,6 +305,18 @@ the previous example and send it to <code><a href="../reference/explain.html">ex
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:00:10 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93a966a6.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># Check that this version provides the same Shapley values</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values_est</span>, <span class="va">expl_pretrained_vaeac</span><span class="op">$</span><span class="va">shapley_values_est</span><span class="op">)</span></span>
@@ -350,7 +333,7 @@ The possible save paths are stored in
 we let <code>'vS_detail' %in% verbose</code> in <code><a href="../reference/explain.html">explain()</a></code>,
 then <code>shapr</code> will give a message that it loads a pretrained
 <code>vaeac</code> model instead of training it from scratch.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Call `explanation$internal$parameters$vaeac$model` to see possible vaeac models. We use `best` below.</span></span>
 <span><span class="co"># send the pre-trained vaeac path</span></span>
 <span><span class="va">expl_pretrained_vaeac_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -369,25 +352,37 @@ then <code>shapr</code> will give a message that it loads a pretrained
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:00:15 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93259a4780.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># Check that this version provides the same Shapley values</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values_est</span>, <span class="va">expl_pretrained_vaeac_path</span><span class="op">$</span><span class="va">shapley_values_est</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="n_coalitions">Specified n_coalitions<a class="anchor" aria-label="anchor" href="#n_coalitions"></a>
+<h3 id="n_coalitions">Specified max_n_coalitions<a class="anchor" aria-label="anchor" href="#n_coalitions"></a>
 </h3>
 <p>In this section, we discuss a general <code>shapr</code> parameter in
 the <code><a href="../reference/explain.html">explain()</a></code> function that is method independent, namely,
-<code>n_coalitions</code>. The user can limit the Shapley value
+<code>max_n_coalitions</code>. The user can limit the Shapley value
 computations to only a subset of coalitions by setting the
-<code>n_coalitions</code> parameter to a value lower than
+<code>max_n_coalitions</code> parameter to a value lower than
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><msub><mi>n</mi><mtext mathvariant="normal">features</mtext></msub></msup><annotation encoding="application/x-tex">2^{n_\text{features}}</annotation></semantics></math>.</p>
 <p>Note that we do not need to train a new <code>vaeac</code> model as
 we can use the one above trained on all <code>16</code> coalitions as we
 are now only using a subset of them. This is not applicable the other
 way around.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># send the pre-trained vaeac path</span></span>
 <span><span class="va">expl_batches_combinations</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -395,7 +390,7 @@ way around.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
-<span>  n_coalitions <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  max_n_coalitions <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    vaeac.pretrained_vaeac_model <span class="op">=</span> <span class="va">explanation</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">vaeac</span></span>
@@ -403,14 +398,23 @@ way around.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; Success with message:</span></span>
-<span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
-<span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:00:19 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c937a7cee44.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 10 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># Gives different Shapley values as the latter one are only based on a subset of coalitions</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Original"</span> <span class="op">=</span> <span class="va">explanation</span>, <span class="st">"Other combi."</span> <span class="op">=</span> <span class="va">expl_batches_combinations</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fcheck-n_coalitions-1.png"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Can compare that to the situation where we have exact computations (i.e., include all coalitions)</span></span>
 <span><span class="va">explanation</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">objects</span><span class="op">$</span><span class="va">X</span></span>
@@ -437,73 +441,64 @@ the setup above, then the <code>vaeac</code> model will not use a
 missing completely as random (MCAR) mask generator, but rather a mask
 generator that ensures that the <code>vaeac</code> model is only trained
 on the specified set of coalitions. In this case, it will be the set of
-the <code>n_coalitions - 2</code> sampled coalitions. The minus two is
-because the <code>vaeac</code> model will not train on the empty and
-grand coalitions as they are not needed in the Shapley value
-computations.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>expl_batches_combinations_2 <span class="ot">&lt;-</span> <span class="fu">explain</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="at">model =</span> model,</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">x_explain =</span> x_explain,</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">x_train =</span> x_train,</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">approach =</span> <span class="st">"vaeac"</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="at">phi0 =</span> phi0,</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="at">n_coalitions =</span> <span class="dv">10</span>,</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="at">n_MC_samples =</span> n_MC_samples,</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  <span class="at">vaeac.n_vaeacs_initialize =</span> <span class="dv">1</span>,</span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  <span class="at">vaeac.epochs =</span> <span class="dv">3</span>,</span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="st">"vS_details"</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>)</span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; Success with message:</span></span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
-<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.</span></span>
-<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
-<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; Initializing vaeac model number 1 of 1.</span></span>
-<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>                                                                                                                        </span>
-<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>Best vaeac inititalization was number <span class="dv">1</span> (of <span class="dv">1</span>) with a training VLB <span class="ot">=</span> <span class="sc">-</span><span class="fl">6.593</span> after <span class="dv">2</span> epochs. Continue to train this inititalization.</span>
-<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■■■■■■■■■■■■             67% | Training vaeac (init. 1 of 1): Epoch: 2 | VLB: -6.593 | IWAE: -3.321 | ETA:  1s</span></span>
-<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
-<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; Best epoch:             3.   VLB = -4.688    IWAE = -3.124   IWAE_running = -3.465</span></span>
-<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; Best running avg epoch: 3.   VLB = -4.688    IWAE = -3.124   IWAE_running = -3.465</span></span>
-<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt; Last epoch:             3.   VLB = -4.688    IWAE = -3.124   IWAE_running = -3.465</span></span>
-<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpIQRVZ2' at</span></span>
-<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.55.18.126022_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
-<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.55.18.126022_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
-<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.55.18.126022_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span></code></pre></div>
+the sampled coalitions.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">expl_batches_combinations_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
+<span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  max_n_coalitions <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
+<span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  vaeac.epochs <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="st">"vS_details"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
+<span><span class="co">#&gt; Using 'specified_masks_mask_generator' with '10' coalitions.</span></span>
+<span><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
+<span><span class="co">#&gt; Initializing vaeac model number 1 of 1.</span></span>
+<span><span class="co">#&gt; Best vaeac inititalization was number 1 (of 1) with a training VLB = -6.489 after 2 epochs. Continue to</span></span>
+<span><span class="co">#&gt; train this inititalization.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
+<span><span class="co">#&gt; Best epoch:             3.   VLB = -4.736    IWAE = -3.231   IWAE_running = -3.482</span></span>
+<span><span class="co">#&gt; Best running avg epoch: 3.   VLB = -4.736    IWAE = -3.231   IWAE_running = -3.482</span></span>
+<span><span class="co">#&gt; Last epoch:             3.   VLB = -4.736    IWAE = -3.231   IWAE_running = -3.482</span></span>
+<span><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpCcS4cy' at</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.00.24.69317_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.00.24.69317_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.00.24.69317_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="paired_sampling">Paired sampling<a class="anchor" aria-label="anchor" href="#paired_sampling"></a>
 </h3>
 <p>The <code>vaeac</code> approach can use paired sampling to improve
-the stability of the training procedure. When using paired sampling,
-each observation in the training batches will be duplicated, but the
-first version will be masked by
+the stability of the vaeac training procedure. When using paired
+sampling, each observation in the training batches will be duplicated,
+but the first version will be masked by
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
 and the second verion will be masked by the complement
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>S</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{S}</annotation></semantics></math>.
 The mask are taken from the <code>explanation$internal$objects$S</code>
 matrix. Note that <code>vaeac</code> does not check if the complement is
 also in said matrix. This means that if the Shapley value explanations
-are computed based on a subset of coalitions, i.e.,
-<code>n_coalitions</code> is less than
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><msub><mi>n</mi><mtext mathvariant="normal">features</mtext></msub></msup><annotation encoding="application/x-tex">2^{n_\text{features}}</annotation></semantics></math>,
-then the <code>vaeac</code> model might be trained on coalitions which
-are not used when computing the Shapley values. This should not be
-considered as redundant training as it increases the stablility and
-performance of the <code>vaeac</code> model as a whole, hence, we
-reccomend to use paried samping (default). Furthermore, the masks are
-randomly selected for each observation in the batch. The training time
-when using paired sampling is higher in comparison to random sampling
-due to more complex implementation.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+are computed based on a subset of coalitions, then the
+<code>vaeac</code> model might be trained on coalitions which are not
+used when computing the Shapley values. This should not be considered as
+redundant training as it increases the stablility and performance of the
+<code>vaeac</code> model as a whole, hence, we reccomend to use paried
+samping (default). Furthermore, the masks are randomly selected for each
+observation in the batch. The training time when using paired sampling
+is higher in comparison to random sampling due to more complex
+implementation.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">expl_paired_sampling_TRUE</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -520,6 +515,18 @@ due to more complex implementation.</p>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:00:32 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93194f586e.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="va">expl_paired_sampling_FALSE</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -534,10 +541,21 @@ due to more complex implementation.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
-<span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span></code></pre></div>
+<span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:00:44 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c937aee27ae.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
 <p>We can compare the results by looking at the training and validation
 errors and by the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>S</mi><msub><mi>E</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex">MSE_v</annotation></semantics></math>
@@ -545,25 +563,25 @@ evaluation criterion. We do this by using the
 <code><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit()</a></code> and
 <code><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit()</a></code> functions in the <code>shapr</code>
 package, respectively.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Regular samp."</span> <span class="op">=</span> <span class="va">expl_paired_sampling_FALSE</span>,</span>
 <span>                         <span class="st">"Paired samp."</span> <span class="op">=</span> <span class="va">expl_paired_sampling_TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list</span>, plot_type <span class="op">=</span> <span class="st">"criterion"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fpaired-sampling-plotting-1.png"></p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fpaired-sampling-plotting-2.png"></p>
 <p>By looking at the time, we see that the paired version takes (a bit)
 longer time in the <code>setup_computation</code> phase, that is, in the
 training phase.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
-<span>  <span class="st">"Paired"</span> <span class="op">=</span> <span class="va">expl_paired_sampling_TRUE</span><span class="op">$</span><span class="va">timing</span><span class="op">$</span><span class="va">main_timing_secs</span>,</span>
-<span>  <span class="st">"Regular"</span> <span class="op">=</span> <span class="va">expl_paired_sampling_FALSE</span><span class="op">$</span><span class="va">timing</span><span class="op">$</span><span class="va">main_timing_secs</span></span>
+<span>  <span class="st">"Paired"</span> <span class="op">=</span> <span class="va">expl_paired_sampling_TRUE</span><span class="op">$</span><span class="va">timing</span><span class="op">$</span><span class="va">overall_timing_secs</span>,</span>
+<span>  <span class="st">"Regular"</span> <span class="op">=</span> <span class="va">expl_paired_sampling_FALSE</span><span class="op">$</span><span class="va">timing</span><span class="op">$</span><span class="va">overall_timing_secs</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt;            setup test_prediction iterative_estimation finalize_explanation</span></span>
-<span><span class="co">#&gt; Paired  0.048088        0.036740              11.721            0.0049973</span></span>
-<span><span class="co">#&gt; Regular 0.047131        0.036345              11.517            0.0049357</span></span></code></pre></div>
+<span><span class="co">#&gt;            setup test_prediction main_computation finalize_explanation</span></span>
+<span><span class="co">#&gt; Paired  0.049229        0.036201           12.333            0.0043070</span></span>
+<span><span class="co">#&gt; Regular 0.047371        0.034762           10.895            0.0043063</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="progress_bar">Progressr<a class="anchor" aria-label="anchor" href="#progress_bar"></a>
@@ -584,58 +602,54 @@ more detailed information.</p>
 <p>By setting <code>c("basic", vS_details")</code>, we get both basic
 messages about the explanation case, and messages about the estimation
 of the <code>vaeac</code> approach.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>expl_with_messages <span class="ot">&lt;-</span> <span class="fu">explain</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="at">model =</span> model,</span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="at">x_explain =</span> x_explain,</span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="at">x_train =</span> x_train,</span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>  <span class="at">approach =</span> <span class="st">"vaeac"</span>,</span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>  <span class="at">phi0 =</span> phi0,</span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>  <span class="at">n_MC_samples =</span> n_MC_samples,</span>
-<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="fu">c</span>(<span class="st">"basic"</span>,<span class="st">"vS_details"</span>),</span>
-<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>  <span class="at">vaeac.epochs =</span> <span class="dv">5</span>,</span>
-<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>  <span class="at">vaeac.n_vaeacs_initialize =</span> <span class="dv">2</span></span>
-<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>)</span>
-<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
-<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; Success with message:</span></span>
-<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
-<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
-<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-10-04 14:57:22 ─────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
-<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co">#&gt; • Approach: vaeac</span></span>
-<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="co">#&gt; • iterative estimation: FALSE</span></span>
-<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb1be76dcf.rds'</span></span>
-<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="co">#&gt; ── Main computation started ──</span></span>
-<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
-<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
-<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
-<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a><span class="co">#&gt; Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.</span></span>
-<span id="cb13-34"><a href="#cb13-34" tabindex="-1"></a><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
-<span id="cb13-35"><a href="#cb13-35" tabindex="-1"></a><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
-<span id="cb13-36"><a href="#cb13-36" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-37"><a href="#cb13-37" tabindex="-1"></a>                                                                                                                        </span>
-<span id="cb13-38"><a href="#cb13-38" tabindex="-1"></a>Initializing vaeac model number <span class="dv">2</span> of <span class="fl">2.</span></span>
-<span id="cb13-39"><a href="#cb13-39" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: -6.593 | IWAE: -3.321 | ETA:  4s</span></span>
-<span id="cb13-40"><a href="#cb13-40" tabindex="-1"></a></span>
-<span id="cb13-41"><a href="#cb13-41" tabindex="-1"></a>                                                                                                                        </span>
-<span id="cb13-42"><a href="#cb13-42" tabindex="-1"></a>Best vaeac inititalization was number <span class="dv">2</span> (of <span class="dv">2</span>) with a training VLB <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.566</span> after <span class="dv">2</span> epochs. Continue to train this inititalization.</span>
-<span id="cb13-43"><a href="#cb13-43" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of 2): Epoch: 2 | VLB: -4.566 | IWAE: -3.226 | ETA:  2s</span></span>
-<span id="cb13-44"><a href="#cb13-44" tabindex="-1"></a><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
-<span id="cb13-45"><a href="#cb13-45" tabindex="-1"></a><span class="co">#&gt; Best epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
-<span id="cb13-46"><a href="#cb13-46" tabindex="-1"></a><span class="co">#&gt; Best running avg epoch: 5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
-<span id="cb13-47"><a href="#cb13-47" tabindex="-1"></a><span class="co">#&gt; Last epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
-<span id="cb13-48"><a href="#cb13-48" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-49"><a href="#cb13-49" tabindex="-1"></a><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpIQRVZ2' at</span></span>
-<span id="cb13-50"><a href="#cb13-50" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.22.930756_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
-<span id="cb13-51"><a href="#cb13-51" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.22.930756_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
-<span id="cb13-52"><a href="#cb13-52" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.22.930756_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">expl_with_messages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
+<span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"basic"</span>,<span class="st">"vS_details"</span><span class="op">)</span>,</span>
+<span>  vaeac.epochs <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Success with message:</span></span>
+<span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
+<span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:00:58 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c931bbb2f14.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
+<span><span class="co">#&gt; Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.</span></span>
+<span><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
+<span><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
+<span><span class="co">#&gt; Initializing vaeac model number 2 of 2.</span></span>
+<span><span class="co">#&gt; Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.566 after 2 epochs. Continue to</span></span>
+<span><span class="co">#&gt; train this inititalization.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
+<span><span class="co">#&gt; Best epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
+<span><span class="co">#&gt; Best running avg epoch: 5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
+<span><span class="co">#&gt; Last epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
+<span><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpCcS4cy' at</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.00.58.727562_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.00.58.727562_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.00.58.727562_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span></code></pre></div>
 <p>For more visual information we can use the <code>progressr</code>
 package. This can help us see detailed progress of the training step for
 the final <code>vaeac</code> model. Note that by default
@@ -643,52 +657,53 @@ the final <code>vaeac</code> model. Note that by default
 that we do not get any messages from the <code>vaeac</code>, approach
 and only get the progress bars. See the main vignette for examples for
 how to change the progress bar.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">library</span>(progressr)</span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>progressr<span class="sc">::</span><span class="fu">handlers</span>(<span class="st">"cli"</span>) <span class="co"># Use `progressr::handlers("void")` to silence all `progressr` updates</span></span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>progressr<span class="sc">::</span><span class="fu">with_progress</span>({</span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  expl_with_progressr <span class="ot">&lt;-</span> <span class="fu">explain</span>(</span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>    <span class="at">model =</span> model,</span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>    <span class="at">x_explain =</span> x_explain,</span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>    <span class="at">x_train =</span> x_train,</span>
-<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>    <span class="at">approach =</span> <span class="st">"vaeac"</span>,</span>
-<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>    <span class="at">phi0 =</span> phi0,</span>
-<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>    <span class="at">n_MC_samples =</span> n_MC_samples,</span>
-<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="st">"vS_details"</span>,</span>
-<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>    <span class="at">vaeac.epochs =</span> <span class="dv">5</span>,</span>
-<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>    <span class="at">vaeac.n_vaeacs_initialize =</span> <span class="dv">2</span></span>
-<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>  )</span>
-<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>})</span>
-<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
-<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; Success with message:</span></span>
-<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
-<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
-<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
-<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
-<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.</span></span>
-<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
-<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
-<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a>                                                                                                                        </span>
-<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a>Initializing vaeac model number <span class="dv">2</span> of <span class="fl">2.</span></span>
-<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: -6.593 | IWAE: -3.321 | ETA:  4s</span></span>
-<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a></span>
-<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a>                                                                                                                        </span>
-<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a>Best vaeac inititalization was number <span class="dv">2</span> (of <span class="dv">2</span>) with a training VLB <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.566</span> after <span class="dv">2</span> epochs. Continue to train this inititalization.</span>
-<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of 2): Epoch: 2 | VLB: -4.566 | IWAE: -3.226 | ETA:  2s</span></span>
-<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
-<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a><span class="co">#&gt; Best epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
-<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a><span class="co">#&gt; Best running avg epoch: 5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
-<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co">#&gt; Last epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
-<span id="cb14-40"><a href="#cb14-40" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb14-41"><a href="#cb14-41" tabindex="-1"></a><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpIQRVZ2' at</span></span>
-<span id="cb14-42"><a href="#cb14-42" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.33.088772_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
-<span id="cb14-43"><a href="#cb14-43" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.33.088772_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
-<span id="cb14-44"><a href="#cb14-44" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.33.088772_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span>
-<span id="cb14-45"><a href="#cb14-45" tabindex="-1"></a><span class="fu">all.equal</span>(expl_with_messages<span class="sc">$</span>shapley_values_est, expl_with_progressr<span class="sc">$</span>shapley_values_est)</span>
-<span id="cb14-46"><a href="#cb14-46" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">library</span>(progressr)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>progressr<span class="sc">::</span><span class="fu">handlers</span>(<span class="st">"cli"</span>) <span class="co"># Use `progressr::handlers("void")` to silence all `progressr` updates</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>progressr<span class="sc">::</span><span class="fu">with_progress</span>({</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>  expl_with_progressr <span class="ot">&lt;-</span> <span class="fu">explain</span>(</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>    <span class="at">model =</span> model,</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>    <span class="at">x_explain =</span> x_explain,</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>    <span class="at">x_train =</span> x_train,</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>    <span class="at">approach =</span> <span class="st">"vaeac"</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>    <span class="at">phi0 =</span> phi0,</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>    <span class="at">n_MC_samples =</span> n_MC_samples,</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="st">"vS_details"</span>,</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>    <span class="at">vaeac.epochs =</span> <span class="dv">5</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>    <span class="at">vaeac.n_vaeacs_initialize =</span> <span class="dv">2</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>  )</span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a>})</span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co">#&gt; Success with message:</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#&gt; Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.</span></span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a>                                                                                                          </span>
+<span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a>Initializing vaeac model number <span class="dv">2</span> of <span class="fl">2.</span></span>
+<span id="cb15-31"><a href="#cb15-31" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: -6.593 | IWAE: -3…</span></span>
+<span id="cb15-32"><a href="#cb15-32" tabindex="-1"></a></span>
+<span id="cb15-33"><a href="#cb15-33" tabindex="-1"></a>                                                                                                          </span>
+<span id="cb15-34"><a href="#cb15-34" tabindex="-1"></a>Best vaeac inititalization was number <span class="dv">2</span> (of <span class="dv">2</span>) with a training VLB <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.566</span> after <span class="dv">2</span> epochs. Continue to</span>
+<span id="cb15-35"><a href="#cb15-35" tabindex="-1"></a><span class="co">#&gt; train this inititalization.</span></span>
+<span id="cb15-36"><a href="#cb15-36" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of 2): Epoch: 2 | VLB: -4.566 | IWAE: -3…</span></span>
+<span id="cb15-37"><a href="#cb15-37" tabindex="-1"></a><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
+<span id="cb15-38"><a href="#cb15-38" tabindex="-1"></a><span class="co">#&gt; Best epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
+<span id="cb15-39"><a href="#cb15-39" tabindex="-1"></a><span class="co">#&gt; Best running avg epoch: 5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
+<span id="cb15-40"><a href="#cb15-40" tabindex="-1"></a><span class="co">#&gt; Last epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
+<span id="cb15-41"><a href="#cb15-41" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-42"><a href="#cb15-42" tabindex="-1"></a><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpCcS4cy' at</span></span>
+<span id="cb15-43"><a href="#cb15-43" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.01.09.652795_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
+<span id="cb15-44"><a href="#cb15-44" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.01.09.652795_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
+<span id="cb15-45"><a href="#cb15-45" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.01.09.652795_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span>
+<span id="cb15-46"><a href="#cb15-46" tabindex="-1"></a><span class="fu">all.equal</span>(expl_with_messages<span class="sc">$</span>shapley_values_est, expl_with_progressr<span class="sc">$</span>shapley_values_est)</span>
+<span id="cb15-47"><a href="#cb15-47" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="continue_training">Continue the training of the vaeac approach<a class="anchor" aria-label="anchor" href="#continue_training"></a>
@@ -718,9 +733,9 @@ samples from
 this is ment as a sanity check to see that the <code>vaeac</code> model
 is able to follow the general structure/distribution of the data.
 However, recall that the <code>vaeac</code> model is never trained on
-the empty coalition, so the produces sampled should be taken with a
+the empty coalition, so the produced samples should be taken with a
 grain of salt.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">expl_little_training</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -735,7 +750,7 @@ grain of salt.</p>
 <span><span class="co"># Look at the training and validation errors. Not happy and want to train more.</span></span>
 <span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Original"</span> <span class="op">=</span> <span class="va">expl_little_training</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fcontinue-training-1.png"></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Can also see how well vaeac generates data from the full joint distribution. Quite good.</span></span>
 <span><span class="fu"><a href="../reference/vaeac_plot_imputed_ggpairs.html">vaeac_plot_imputed_ggpairs</a></span><span class="op">(</span></span>
 <span>  explanation <span class="op">=</span> <span class="va">expl_little_training</span>,</span>
@@ -743,7 +758,7 @@ grain of salt.</p>
 <span>  x_true <span class="op">=</span> <span class="va">x_train</span></span>
 <span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fcontinue-training-2.png"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Make a copy of the explanation object and continue to train the vaeac model some more epochs</span></span>
 <span><span class="va">expl_train_more</span> <span class="op">&lt;-</span> <span class="va">expl_little_training</span></span>
 <span><span class="va">expl_train_more</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">vaeac</span> <span class="op">&lt;-</span></span>
@@ -772,7 +787,7 @@ grain of salt.</p>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fcontinue-training-3.png"></p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Continue to train the vaeac model some more epochs</span></span>
 <span><span class="va">expl_train_even_more</span> <span class="op">&lt;-</span> <span class="va">expl_train_more</span></span>
 <span><span class="va">expl_train_even_more</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">vaeac</span> <span class="op">&lt;-</span></span>
@@ -805,7 +820,7 @@ grain of salt.</p>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fcontinue-training-4.png"></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Can also see how well vaeac generates data from the full joint distribution</span></span>
 <span><span class="fu"><a href="../reference/vaeac_plot_imputed_ggpairs.html">vaeac_plot_imputed_ggpairs</a></span><span class="op">(</span></span>
 <span>  explanation <span class="op">=</span> <span class="va">expl_train_even_more</span>,</span>
@@ -816,14 +831,14 @@ grain of salt.</p>
 <p>We can see that the extra training has decreased the MSEv score. The
 Shapley value explanations have also changed, but they are often
 comparable.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Few epochs"</span> <span class="op">=</span> <span class="va">expl_little_training</span>,</span>
 <span>  <span class="st">"More epochs"</span> <span class="op">=</span> <span class="va">expl_train_more_vaeac</span>,</span>
 <span>  <span class="st">"Even more epochs"</span> <span class="op">=</span> <span class="va">expl_train_even_more_vaeac</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fcontinue-training-2-1.png"></p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We see that the Shapley values have changed, but they are often comparable</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Few epochs"</span> <span class="op">=</span> <span class="va">expl_little_training</span>,</span>
@@ -843,75 +858,70 @@ to a large number and let <code>vaeac.epochs_early_stopping</code> be
 for example <code>5</code>. This means that the <code>vaeac</code> model
 will stop the training procedure if there has been no improvement in the
 validation score for <code>5</code> epochs.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># Low value for `vaeac.epochs_early_stopping` here to build the vignette faster</span></span>
-<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>expl_early_stopping <span class="ot">&lt;-</span> <span class="fu">explain</span>(</span>
-<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>  <span class="at">model =</span> model,</span>
-<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>  <span class="at">x_explain =</span> x_explain,</span>
-<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>  <span class="at">x_train =</span> x_train,</span>
-<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>  <span class="at">approach =</span> <span class="st">"vaeac"</span>,</span>
-<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>  <span class="at">phi0 =</span> phi0,</span>
-<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a>  <span class="at">n_MC_samples =</span> <span class="dv">250</span>,</span>
-<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="fu">c</span>(<span class="st">"basic"</span>,<span class="st">"vS_details"</span>),</span>
-<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a>  <span class="at">vaeac.epochs =</span> <span class="dv">1000</span>, <span class="co"># Set it to a big number</span></span>
-<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a>  <span class="at">vaeac.n_vaeacs_initialize =</span> <span class="dv">2</span>,</span>
-<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a>  <span class="at">vaeac.extra_parameters =</span> <span class="fu">list</span>(<span class="at">vaeac.epochs_early_stopping =</span> <span class="dv">2</span>)</span>
-<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a>)</span>
-<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
-<span id="cb22-15"><a href="#cb22-15" tabindex="-1"></a><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span id="cb22-16"><a href="#cb22-16" tabindex="-1"></a><span class="co">#&gt; Success with message:</span></span>
-<span id="cb22-17"><a href="#cb22-17" tabindex="-1"></a><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
-<span id="cb22-18"><a href="#cb22-18" tabindex="-1"></a><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
-<span id="cb22-19"><a href="#cb22-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb22-20"><a href="#cb22-20" tabindex="-1"></a><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-10-04 14:57:44 ─────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb22-21"><a href="#cb22-21" tabindex="-1"></a><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
-<span id="cb22-22"><a href="#cb22-22" tabindex="-1"></a><span class="co">#&gt; • Approach: vaeac</span></span>
-<span id="cb22-23"><a href="#cb22-23" tabindex="-1"></a><span class="co">#&gt; • iterative estimation: FALSE</span></span>
-<span id="cb22-24"><a href="#cb22-24" tabindex="-1"></a><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span id="cb22-25"><a href="#cb22-25" tabindex="-1"></a><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span id="cb22-26"><a href="#cb22-26" tabindex="-1"></a><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIQRVZ2/shapr_obj_acefb6c654eee.rds'</span></span>
-<span id="cb22-27"><a href="#cb22-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb22-28"><a href="#cb22-28" tabindex="-1"></a><span class="co">#&gt; ── Main computation started ──</span></span>
-<span id="cb22-29"><a href="#cb22-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb22-30"><a href="#cb22-30" tabindex="-1"></a><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
-<span id="cb22-31"><a href="#cb22-31" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb22-32"><a href="#cb22-32" tabindex="-1"></a><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
-<span id="cb22-33"><a href="#cb22-33" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb22-34"><a href="#cb22-34" tabindex="-1"></a><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
-<span id="cb22-35"><a href="#cb22-35" tabindex="-1"></a><span class="co">#&gt; Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.</span></span>
-<span id="cb22-36"><a href="#cb22-36" tabindex="-1"></a><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
-<span id="cb22-37"><a href="#cb22-37" tabindex="-1"></a><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
-<span id="cb22-38"><a href="#cb22-38" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb22-39"><a href="#cb22-39" tabindex="-1"></a>                                                                                                                        </span>
-<span id="cb22-40"><a href="#cb22-40" tabindex="-1"></a>Initializing vaeac model number <span class="dv">2</span> of <span class="fl">2.</span></span>
-<span id="cb22-41"><a href="#cb22-41" tabindex="-1"></a><span class="co">#&gt; ■                                  0% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: -6.593 | IWAE: -3.321 | ETA: 12m</span></span>
-<span id="cb22-42"><a href="#cb22-42" tabindex="-1"></a></span>
-<span id="cb22-43"><a href="#cb22-43" tabindex="-1"></a>                                                                                                                        </span>
-<span id="cb22-44"><a href="#cb22-44" tabindex="-1"></a>Best vaeac inititalization was number <span class="dv">2</span> (of <span class="dv">2</span>) with a training VLB <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.566</span> after <span class="dv">2</span> epochs. Continue to train this inititalization.</span>
-<span id="cb22-45"><a href="#cb22-45" tabindex="-1"></a><span class="co">#&gt; ■                                  0% | Training vaeac (init. 2 of 2): Epoch: 2 | VLB: -4.566 | IWAE: -3.226 | ETA: 13m</span></span>
-<span id="cb22-46"><a href="#cb22-46" tabindex="-1"></a>No IWAE improvment <span class="cf">in</span> <span class="dv">2</span> epochs. Apply early stopping at epoch <span class="fl">14.</span></span>
-<span id="cb22-47"><a href="#cb22-47" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb22-48"><a href="#cb22-48" tabindex="-1"></a><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
-<span id="cb22-49"><a href="#cb22-49" tabindex="-1"></a><span class="co">#&gt; Best epoch:             12.  VLB = -2.958    IWAE = -2.930   IWAE_running = -2.991</span></span>
-<span id="cb22-50"><a href="#cb22-50" tabindex="-1"></a><span class="co">#&gt; Best running avg epoch: 12.  VLB = -2.958    IWAE = -2.930   IWAE_running = -2.991</span></span>
-<span id="cb22-51"><a href="#cb22-51" tabindex="-1"></a><span class="co">#&gt; Last epoch:             14.  VLB = -2.971    IWAE = -2.955   IWAE_running = -2.996</span></span>
-<span id="cb22-52"><a href="#cb22-52" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb22-53"><a href="#cb22-53" tabindex="-1"></a><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpIQRVZ2' at</span></span>
-<span id="cb22-54"><a href="#cb22-54" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.43.853271_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
-<span id="cb22-55"><a href="#cb22-55" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.43.853271_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
-<span id="cb22-56"><a href="#cb22-56" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.57.43.853271_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span>
-<span id="cb22-57"><a href="#cb22-57" tabindex="-1"></a></span>
-<span id="cb22-58"><a href="#cb22-58" tabindex="-1"></a><span class="co"># Look at the training and validation errors. We are quite happy with it.</span></span>
-<span id="cb22-59"><a href="#cb22-59" tabindex="-1"></a><span class="fu">vaeac_plot_eval_crit</span>(</span>
-<span id="cb22-60"><a href="#cb22-60" tabindex="-1"></a>  <span class="fu">list</span>(<span class="st">"Vaeac early stopping"</span> <span class="ot">=</span> expl_early_stopping),</span>
-<span id="cb22-61"><a href="#cb22-61" tabindex="-1"></a>  <span class="at">plot_type =</span> <span class="st">"method"</span></span>
-<span id="cb22-62"><a href="#cb22-62" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Low value for `vaeac.epochs_early_stopping` here to build the vignette faster</span></span>
+<span><span class="va">expl_early_stopping</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
+<span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  n_MC_samples <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"basic"</span>,<span class="st">"vS_details"</span><span class="op">)</span>,</span>
+<span>  vaeac.epochs <span class="op">=</span> <span class="fl">1000</span>, <span class="co"># Set it to a big number</span></span>
+<span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vaeac.epochs_early_stopping <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Success with message:</span></span>
+<span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
+<span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:03:10 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93198eb87f.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
+<span><span class="co">#&gt; Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.</span></span>
+<span><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
+<span><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
+<span><span class="co">#&gt; Initializing vaeac model number 2 of 2.</span></span>
+<span><span class="co">#&gt; Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.566 after 2 epochs. Continue to</span></span>
+<span><span class="co">#&gt; train this inititalization.</span></span>
+<span><span class="co">#&gt; No IWAE improvment in 2 epochs. Apply early stopping at epoch 14.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
+<span><span class="co">#&gt; Best epoch:             12.  VLB = -2.958    IWAE = -2.930   IWAE_running = -2.991</span></span>
+<span><span class="co">#&gt; Best running avg epoch: 12.  VLB = -2.958    IWAE = -2.930   IWAE_running = -2.991</span></span>
+<span><span class="co">#&gt; Last epoch:             14.  VLB = -2.971    IWAE = -2.955   IWAE_running = -2.996</span></span>
+<span><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpCcS4cy' at</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.03.10.227966_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.03.10.227966_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.03.10.227966_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span>
+<span></span>
+<span><span class="co"># Look at the training and validation errors. We are quite happy with it.</span></span>
+<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">expl_early_stopping</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fearly-stopping-1-1.png"></p>
 <p>However, we can train it further for a fixed amount of epochs if
 desired. This can be in a setting where we are not happy with the IWAE
 curve or we feel that we set <code>vaeac.epochs_early_stopping</code> to
 a too low value or if the max number of epochs
 (<code>vaeac.epochs</code>) were reached.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Make a copy of the explanation object which we are to train further.</span></span>
 <span><span class="va">expl_early_stopping_train_more</span> <span class="op">&lt;-</span> <span class="va">expl_early_stopping</span></span>
 <span></span>
@@ -945,7 +955,7 @@ a too low value or if the max number of epochs
 <p>We can then use the extra trained version to compute the Shapley
 value explanations and compare it with the previous version that used
 early stopping. We see a non-significant difference.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use extra trained vaeac model to compute Shapley values again.</span></span>
 <span><span class="va">expl_early_stopping_train_more</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -963,6 +973,18 @@ early stopping. We see a non-significant difference.</p>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:04:15 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c9341ad4ace.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># We can compare their MSEv scores</span></span>
 <span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -970,7 +992,7 @@ early stopping. We see a non-significant difference.</p>
 <span>  <span class="st">"Vaeac early stopping more epochs"</span> <span class="op">=</span> <span class="va">expl_early_stopping_train_more</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fearly-stopping-3-1.png"></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We see that the Shapley values have changed, but only slightly</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">expl_early_stopping</span>,</span>
@@ -991,50 +1013,46 @@ Note that in this setup, there are only <code>4</code> possible
 coalitions, but <code>vaeac</code> only train on <code>2</code>
 coalitions as the empty and grand coalitions as they are not needed in
 the Shapley value computations.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>expl_group <span class="ot">&lt;-</span> <span class="fu">explain</span>(</span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  <span class="at">model =</span> model,</span>
-<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>  <span class="at">x_explain =</span> x_explain,</span>
-<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>  <span class="at">x_train =</span> x_train,</span>
-<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>  <span class="at">approach =</span> <span class="st">"vaeac"</span>,</span>
-<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>  <span class="at">phi0 =</span> phi0,</span>
-<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">list</span>(<span class="at">A =</span> <span class="fu">c</span>(<span class="st">"Temp"</span>, <span class="st">"Month"</span>), <span class="at">B =</span> <span class="fu">c</span>(<span class="st">"Wind"</span>, <span class="st">"Solar.R"</span>)),</span>
-<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a>  <span class="at">n_MC_samples =</span> n_MC_samples,</span>
-<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="st">"vS_details"</span>,</span>
-<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a>  <span class="at">vaeac.epochs =</span> <span class="dv">4</span>,</span>
-<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a>  <span class="at">vaeac.n_vaeacs_initialize =</span> <span class="dv">2</span></span>
-<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a>)</span>
-<span id="cb26-13"><a href="#cb26-13" tabindex="-1"></a><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
-<span id="cb26-14"><a href="#cb26-14" tabindex="-1"></a><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span id="cb26-15"><a href="#cb26-15" tabindex="-1"></a><span class="co">#&gt; Success with message:</span></span>
-<span id="cb26-16"><a href="#cb26-16" tabindex="-1"></a><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_groups = 4, </span></span>
-<span id="cb26-17"><a href="#cb26-17" tabindex="-1"></a><span class="co">#&gt; and is therefore set to 2^n_groups = 4.</span></span>
-<span id="cb26-18"><a href="#cb26-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb26-19"><a href="#cb26-19" tabindex="-1"></a><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
-<span id="cb26-20"><a href="#cb26-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb26-21"><a href="#cb26-21" tabindex="-1"></a><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
-<span id="cb26-22"><a href="#cb26-22" tabindex="-1"></a><span class="co">#&gt; Using 'specified_masks_mask_generator' with '4' coalitions.</span></span>
-<span id="cb26-23"><a href="#cb26-23" tabindex="-1"></a><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
-<span id="cb26-24"><a href="#cb26-24" tabindex="-1"></a><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
-<span id="cb26-25"><a href="#cb26-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb26-26"><a href="#cb26-26" tabindex="-1"></a>                                                                                                                        </span>
-<span id="cb26-27"><a href="#cb26-27" tabindex="-1"></a>Initializing vaeac model number <span class="dv">2</span> of <span class="fl">2.</span></span>
-<span id="cb26-28"><a href="#cb26-28" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■■                       33% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: -6.489 | IWAE: -3.322 | ETA:  3s</span></span>
-<span id="cb26-29"><a href="#cb26-29" tabindex="-1"></a></span>
-<span id="cb26-30"><a href="#cb26-30" tabindex="-1"></a>                                                                                                                        </span>
-<span id="cb26-31"><a href="#cb26-31" tabindex="-1"></a>Best vaeac inititalization was number <span class="dv">2</span> (of <span class="dv">2</span>) with a training VLB <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.453</span> after <span class="dv">2</span> epochs. Continue to train this inititalization.</span>
-<span id="cb26-32"><a href="#cb26-32" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■■■■■■■■■■■■             67% | Training vaeac (init. 2 of 2): Epoch: 2 | VLB: -4.453 | IWAE: -3.174 | ETA:  2s</span></span>
-<span id="cb26-33"><a href="#cb26-33" tabindex="-1"></a><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
-<span id="cb26-34"><a href="#cb26-34" tabindex="-1"></a><span class="co">#&gt; Best epoch:             4.   VLB = -3.514    IWAE = -3.114   IWAE_running = -3.153</span></span>
-<span id="cb26-35"><a href="#cb26-35" tabindex="-1"></a><span class="co">#&gt; Best running avg epoch: 4.   VLB = -3.514    IWAE = -3.114   IWAE_running = -3.153</span></span>
-<span id="cb26-36"><a href="#cb26-36" tabindex="-1"></a><span class="co">#&gt; Last epoch:             4.   VLB = -3.514    IWAE = -3.114   IWAE_running = -3.153</span></span>
-<span id="cb26-37"><a href="#cb26-37" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb26-38"><a href="#cb26-38" tabindex="-1"></a><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpIQRVZ2' at</span></span>
-<span id="cb26-39"><a href="#cb26-39" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.58.51.032657_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
-<span id="cb26-40"><a href="#cb26-40" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.58.51.032657_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
-<span id="cb26-41"><a href="#cb26-41" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpIQRVZ2/X2024.10.04.14.58.51.032657_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span>
-<span id="cb26-42"><a href="#cb26-42" tabindex="-1"></a></span>
-<span id="cb26-43"><a href="#cb26-43" tabindex="-1"></a><span class="co"># Plot the resulting explanations</span></span>
-<span id="cb26-44"><a href="#cb26-44" tabindex="-1"></a><span class="fu">plot</span>(expl_group)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">expl_group</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
+<span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Temp"</span>, <span class="st">"Month"</span><span class="op">)</span>, B <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Wind"</span>, <span class="st">"Solar.R"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="st">"vS_details"</span>,</span>
+<span>  vaeac.epochs <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; Success with message:</span></span>
+<span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_groups = 4, </span></span>
+<span><span class="co">#&gt; and is therefore set to 2^n_groups = 4.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
+<span><span class="co">#&gt; Using 'specified_masks_mask_generator' with '4' coalitions.</span></span>
+<span><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
+<span><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
+<span><span class="co">#&gt; Initializing vaeac model number 2 of 2.</span></span>
+<span><span class="co">#&gt; Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.453 after 2 epochs. Continue to</span></span>
+<span><span class="co">#&gt; train this inititalization.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
+<span><span class="co">#&gt; Best epoch:             4.   VLB = -3.514    IWAE = -3.114   IWAE_running = -3.153</span></span>
+<span><span class="co">#&gt; Best running avg epoch: 4.   VLB = -3.514    IWAE = -3.114   IWAE_running = -3.153</span></span>
+<span><span class="co">#&gt; Last epoch:             4.   VLB = -3.514    IWAE = -3.114   IWAE_running = -3.153</span></span>
+<span><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpCcS4cy' at</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.04.45.408325_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.04.45.408325_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.04.45.408325_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span>
+<span></span>
+<span><span class="co"># Plot the resulting explanations</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">expl_group</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fvaeac-grouping-of-features-1.png"></p>
 </div>
 <div class="section level3">
@@ -1043,8 +1061,9 @@ the Shapley value computations.</p>
 <p>Here we look at a setup with mixed data, i.e., the data contains both
 categorical and continuous features. First we set up the data and the
 model.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://imbs-hl.github.io/ranger/" class="external-link">ranger</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; ranger 0.17.0 using 2 threads (default). Change with num.threads in ranger() and predict(), options(Ncpus = N), options(ranger.num.threads = N) or environment variable R_RANGER_NUM_THREADS.</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>
@@ -1073,7 +1092,7 @@ consider two setups: the default architecture, and a simpler one without
 skip connections. We do this to illustrate that the skip connections
 improve the <code>vaeac</code> method. We use <code>ctree</code> with
 default parameters.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Here we use the ctree approach</span></span>
 <span><span class="va">expl_ctree</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -1088,6 +1107,18 @@ default parameters.</p>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:04:53 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;ranger&gt;</span></span>
+<span><span class="co">#&gt; • Approach: ctree</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93620526e3.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># Then we use the vaeac approach</span></span>
 <span><span class="va">expl_vaeac_with</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -1102,10 +1133,21 @@ default parameters.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:04:55 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;ranger&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c932b9a671e.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># Then we use the vaeac approach</span></span>
 <span><span class="va">expl_vaeac_without</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -1124,10 +1166,21 @@ default parameters.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:06:15 ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Model class: &lt;ranger&gt;</span></span>
+<span><span class="co">#&gt; • Approach: vaeac</span></span>
+<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c935a5fe38f.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># We see that the `vaeac` model without the skip connections perform worse</span></span>
 <span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
@@ -1138,7 +1191,7 @@ default parameters.</p>
 <span>  plot_type <span class="op">=</span> <span class="st">"criterion"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fvaeac-mixed-data-1.png"></p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The vaeac model with skip connections have the lowest/best MSE_Frye evaluation criterion score</span></span>
 <span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Vaeac w.o. skip-con."</span> <span class="op">=</span> <span class="va">expl_vaeac_without</span>,</span>
@@ -1146,7 +1199,7 @@ default parameters.</p>
 <span>  <span class="st">"Ctree"</span> <span class="op">=</span> <span class="va">expl_ctree</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fvaeac-mixed-data-2.png"></p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Can compare the Shapley values. Ctree and vaeac with skip connections produce similar explanations.</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1157,130 +1210,6 @@ default parameters.</p>
 <span>  index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fvaeac-mixed-data-3.png"></p>
-</div>
-<div class="section level3">
-<h3 id="cpu_vs_gpu">CPU vs GPU<a class="anchor" aria-label="anchor" href="#cpu_vs_gpu"></a>
-</h3>
-<p>In this section, we create a small setup for comparing the efficiency
-of using GPU and CPU. For small tabular data sets, there are often no
-benefit of using a GPU. However, this depends on what kind of CPU and
-GPU the user has access to. As our CPU, we use a 13th Gen Intel(R)
-Core(TM) i7-13700H 2.40 GHz and 32.0 GB 4800 MHz RAM. While for the GPU,
-we use a NVIDIA GeForce RTX 4050 Laptop with 6 GB dedicated memory and
-16 GB shared. Furthermore, the times depends on several factors, e.g.,
-the number of training observations, explicands, features, and
-batches.</p>
-<p>Finally, note that if the user specifies
-<code>vaeac.cuda = TRUE</code>, but there is no available GPU, then
-<code>vaeac</code> provides a warning and falls back to use CPU
-instead.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load necessary library</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://mvtnorm.R-forge.R-project.org" class="external-link">mvtnorm</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Set seed for reproducibility</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Number of observations</span></span>
-<span><span class="va">n_train</span> <span class="op">&lt;-</span> <span class="fl">250</span></span>
-<span><span class="va">n_explain</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>
-<span></span>
-<span><span class="co"># Number of variables</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">8</span></span>
-<span></span>
-<span><span class="co"># Generate random data from a multivariate normal distribution</span></span>
-<span><span class="va">mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p</span><span class="op">)</span> <span class="co"># mean vector</span></span>
-<span><span class="va">rho</span> <span class="op">&lt;-</span> <span class="fl">0.7</span></span>
-<span><span class="va">sigma</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">rho</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">p</span>, ncol <span class="op">=</span> <span class="va">p</span><span class="op">)</span> <span class="co"># covariance matrix</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">sigma</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu">mvtnorm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mvtnorm/man/Mvnorm.html" class="external-link">rmvnorm</a></span><span class="op">(</span><span class="va">n_train</span>, <span class="va">mean</span>, <span class="va">sigma</span><span class="op">)</span></span>
-<span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="fu">mvtnorm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mvtnorm/man/Mvnorm.html" class="external-link">rmvnorm</a></span><span class="op">(</span><span class="va">n_explain</span>, <span class="va">mean</span>, <span class="va">sigma</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create response variable based on linear combinations of variables</span></span>
-<span><span class="va">coefficients</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">p</span><span class="op">)</span></span>
-<span><span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">x_train</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">coefficients</span></span>
-<span><span class="va">y_explain</span> <span class="op">&lt;-</span> <span class="va">x_explain</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">coefficients</span></span>
-<span></span>
-<span><span class="co"># Combine data and response into a data table</span></span>
-<span><span class="va">dt_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">y_train</span>, <span class="va">x_train</span><span class="op">)</span></span>
-<span><span class="va">dt_explain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">y_explain</span>, <span class="va">x_explain</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dt_train</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dt_explain</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"y"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">x_train</span> <span class="op">&lt;-</span> <span class="va">dt_train</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="va">dt_explain</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co"># Create model</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, <span class="va">dt_train</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span>
-<span><span class="va">phi0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Fit vaeac model using the CPU</span></span>
-<span><span class="va">time_cpu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
-<span>  <span class="va">explanation_cpu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
-<span>    model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>    x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
-<span>    x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
-<span>    approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
-<span>    phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
-<span>    n_MC_samples <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>    vaeac.epochs <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>    vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>    vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vaeac.cuda <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Fit vaeac model using the GPU</span></span>
-<span><span class="va">time_cuda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
-<span>  <span class="va">explanation_cuda</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
-<span>    model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>    x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
-<span>    x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
-<span>    approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
-<span>    phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
-<span>    n_MC_samples <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>    vaeac.epochs <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>    vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>    vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vaeac.cuda <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Look at the internal and external timing. See that the times comparable.</span></span>
-<span><span class="co"># Note that these times highly depend on the CPU/GPU version.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="st">"Vaeac CPU"</span> <span class="op">=</span> <span class="va">explanation_cpu</span><span class="op">$</span><span class="va">timing</span><span class="op">$</span><span class="va">timing_secs</span>,</span>
-<span>      <span class="st">"Vaeac GPU"</span> <span class="op">=</span> <span class="va">explanation_cuda</span><span class="op">$</span><span class="va">timing</span><span class="op">$</span><span class="va">timing_secs</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                setup test_prediction setup_computation compute_vS shapley_computation</span></span>
-<span><span class="co">#&gt; Vaeac CPU 0.04163814      0.02751589          54.46604   7.096326         0.005872011</span></span>
-<span><span class="co">#&gt; Vaeac GPU 0.03711700      0.02697015          72.71818   7.599831         0.010197163</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="st">"Vaeac CPU"</span> <span class="op">=</span> <span class="va">time_cpu</span>, <span class="st">"Vaeac GPU"</span> <span class="op">=</span> <span class="va">time_cuda</span><span class="op">)</span></span>
-<span><span class="co">#&gt;           user.self sys.self elapsed user.child sys.child</span></span>
-<span><span class="co">#&gt; Vaeac CPU     57.61     2.69   61.64         NA        NA</span></span>
-<span><span class="co">#&gt; Vaeac GPU     73.79     6.37   80.39         NA        NA</span></span></code></pre></div>
-<p>It is no possible to set same random state on the CPU and GPU, hence,
-the results are not equivalent. The difference is due to different
-initialization values.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac CPU"</span> <span class="op">=</span> <span class="va">explanation_cpu</span>, <span class="st">"Vaeac GPU"</span> <span class="op">=</span> <span class="va">explanation_cuda</span><span class="op">)</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"criterion"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac%2Fvaeac-cpu-gpu-1-1.png"></p>
-<p>We also get almost identical
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">MSE</mtext><mi>v</mi></msub><annotation encoding="application/x-tex">\text{MSE}_v</annotation></semantics></math>
-values.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac CPU"</span> <span class="op">=</span> <span class="va">explanation_cpu</span>,</span>
-<span><span class="st">"Vaeac GPU"</span> <span class="op">=</span> <span class="va">explanation_cuda</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac%2Fvaeac-cpu-gpu-2-1.png"></p>
-<p>We can also compare the Shapley values and see that we get comparable
-explanations.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac CPU"</span> <span class="op">=</span> <span class="va">explanation_cpu</span>, <span class="st">"Vaeac GPU"</span> <span class="op">=</span> <span class="va">explanation_cuda</span><span class="op">)</span>,</span>
-<span>  index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
-<span>  facet_ncol <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  digits <span class="op">=</span> <span class="fl">2</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac%2Fvaeac-cpu-gpu-3-1.png"></p>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-torch" class="csl-entry">
 Falbel, Daniel, and Javier Luraschi. 2023. <em>Torch: Tensors and Neural

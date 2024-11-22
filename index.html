@@ -91,48 +91,65 @@
 <div class="section level2">
 <h2 id="brief-news">Brief NEWS<a class="anchor" aria-label="anchor" href="#brief-news"></a>
 </h2>
-<p>This is <code>shapr</code> version 1.0.0, which provides a full suit of new functionality. See the <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link">NEWS</a> for details</p>
+<p>This is <code>shapr</code> version 1.0.0 (Released on GitHub Nov 2024), which provides a full restructuring of the code based, and provides a full suit of new functionality, including:</p>
+<ul>
+<li>A long list of approaches for estimating the contribution/value function <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>, including Variational Autoencoders, and regression-based methods</li>
+<li>Iterative Shapley value estimation with convergence detection</li>
+<li>Parallelized computations with progress updates</li>
+<li>Reweighted Kernel SHAP for faster convergence</li>
+<li>New function <code><a href="reference/explain_forecast.html">explain_forecast()</a></code> for explaining forecasts</li>
+<li>Several other methodological, computational and user-experience improvements</li>
+<li>Python wrapper making the core functionality of <code>shapr</code> available in Python</li>
+</ul>
+<p>Below we provide a brief overview of the breaking changes. See the <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link">NEWS</a> for the full list of details.</p>
 <div class="section level3">
-<h3 id="breaking-change-june-2023">Breaking change (June 2023)<a class="anchor" aria-label="anchor" href="#breaking-change-june-2023"></a>
+<h3 id="breaking-changes">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes"></a>
 </h3>
-<p>As of version 0.2.3.9000, the development version of shapr (master branch on GitHub from June 2023) has been severely restructured, introducing a new syntax for explaining models, and thereby introducing a range of breaking changes. This essentially amounts to using a single function (<code><a href="reference/explain.html">explain()</a></code>) instead of two functions (<code><a href="reference/shapr-package.html">shapr()</a></code> and <code><a href="reference/explain.html">explain()</a></code>). The CRAN version of <code>shapr</code> (v0.2.2) still uses the old syntax. The examples below uses the new syntax. <a href="https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md" class="external-link">Here</a> is a version of this README with the syntax of the CRAN version (v0.2.2).</p>
+<p>The new syntax for explaining models essentially amounts to using a single function (<code><a href="reference/explain.html">explain()</a></code>) instead of two functions (<code><a href="reference/shapr-package.html">shapr()</a></code> and <code><a href="reference/explain.html">explain()</a></code>). In addition, custom models are now explained by passing the prediction function directly to <code><a href="reference/explain.html">explain()</a></code>, some input arguments got new names, and a few functions for edge cases was removed to simplify the code base.</p>
+<p>Note that the CRAN version of <code>shapr</code> (v0.2.2) still uses the old syntax. The examples below uses the new syntax. <a href="https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md" class="external-link">Here</a> is a version of this README with the syntax of the CRAN version (v0.2.2).</p>
 </div>
 <div class="section level3">
 <h3 id="python-wrapper">Python wrapper<a class="anchor" aria-label="anchor" href="#python-wrapper"></a>
 </h3>
-<p>As of version 0.2.3.9100 (master branch on GitHub from June 2023), we provide a Python wrapper (<code>shaprpy</code>) which allows explaining python models with the methodology implemented in <code>shapr</code>, directly from Python. The wrapper is available <a href="https://github.com/NorskRegnesentral/shapr/tree/master/python" class="external-link">here</a>. See also details in the <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link">NEWS</a>.</p>
+<p>We now also provide a Python wrapper (<code>shaprpy</code>) which allows explaining python models with the methodology implemented in <code>shapr</code>, directly from Python. The wrapper is available <a href="https://github.com/NorskRegnesentral/shapr/tree/master/python" class="external-link">here</a>.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="the-package">The package<a class="anchor" aria-label="anchor" href="#the-package"></a>
 </h2>
-<p>The shapr R package implements an enhanced version of the KernelSHAP method, for approximating Shapley values, with a strong focus on conditional Shapley values. The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, and distributions. The package also includes evaluation metrics to compare various approaches. With features like parallelized computations, convergence detection, progress updates, and extensive plotting options, shapr is as a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values, which are critical for understanding how features truly contribute to predictions.</p>
+<p>The <code>shapr</code> R package implements an enhanced version of the Kernel SHAP method, for approximating Shapley values, with a strong focus on conditional Shapley values. The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, and distributions. The package also includes evaluation metrics to compare various approaches. With features like parallelized computations, convergence detection, progress updates, and extensive plotting options, shapr is as a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values, which are critical for understanding how features truly contribute to predictions.</p>
 <p>A basic example is provided below. Otherwise we refer to the <a href="https://norskregnesentral.github.io/shapr/">pkgdown website</a> and the vignettes there<br>
 for details and further examples.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>To install the current stable release from CRAN (note, using the old explanation syntax), use</p>
+<p>We highly recommend to install the development version of shapr (with the new explanation syntax and all functionality),</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"shapr"</span><span class="op">)</span></span></code></pre></div>
-<p>To install the current development version (with the new explanation syntax), use</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span><span class="op">)</span></span></code></pre></div>
-<p>If you would like to install all packages of the models we currently support, use</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>To also install all dependencies, use</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>If you would also like to build and view the vignette locally, use</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"understanding_shapr"</span>, <span class="st">"shapr"</span><span class="op">)</span></span></code></pre></div>
-<p>You can always check out the latest version of the vignette <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">here</a>.</p>
+<p><strong>The CRAN version of <code>shapr</code> (NOT RECOMMENDED) can be installed with</strong></p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"shapr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
 <p>The following example shows how a simple <code>xgboost</code> model is trained using the <em>airquality</em> dataset, and how <code>shapr</code> explains the individual predictions.</p>
+<p>We first enable parallel computation and progress updates with the following code chunk. These are optional, but recommended for improved performance and user friendliness, particularly for problems with many features.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Enable parallel computation</span></span>
+<span><span class="co"># Requires the future and future_lapply packages</span></span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="st">"multisession"</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># Increase the number of workers for increased performance with many features</span></span>
+<span></span>
+<span><span class="co"># Enable progress updates of the v(S)-computations</span></span>
+<span><span class="co"># Requires the progressr package</span></span>
+<span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span>global <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">handlers</span><span class="op">(</span><span class="st">"cli"</span><span class="op">)</span> <span class="co"># Using the cli package as backend (recommended for the estimates of the remaining time)</span></span></code></pre></div>
+<p>Here comes the actual example</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://norskregnesentral.github.io/shapr/">shapr</a></span><span class="op">)</span></span>
@@ -183,14 +200,14 @@ for details and further examples.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-10-23 19:31:59 ──────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-20 12:23:18 ──────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/Rtmp6d4Iza/shapr_obj_3be21200fd9e8.rds'</span></span>
+<span><span class="co">#&gt; '/tmp/Rtmp4yBCHY/shapr_obj_17459f7fdc4b8f.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
