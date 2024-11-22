@@ -1249,13 +1249,13 @@ check_computability <- function(internal) {
     if (isFALSE(is_groupwise) && n_features > 30) {
       warning(
         "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE",
-        " when n_features > 30.\n",
+        " when n_features > 30.\n"
       )
     }
     if (isTRUE(is_groupwise) && n_groups > 30) {
       warning(
         "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE",
-        " when n_groups > 30.\n",
+        " when n_groups > 30.\n"
       )
     }
     if (isTRUE(causal_sampling) && !is.null(max_n_coalitions_causal) && max_n_coalitions_causal > 1000) {
