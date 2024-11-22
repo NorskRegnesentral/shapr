@@ -4,6 +4,7 @@ author: "Lars Henry Berge Olsen"
 output:
   rmarkdown::html_vignette:
     toc: true
+    fig_caption: yes
 bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteEncoding{UTF-8}
@@ -28,28 +29,6 @@ knitr::opts_chunk$set(
   message = TRUE
 )
 ```
-
-<!-- # Table of Contents -->
-<!-- * [Section 1](#separate) -->
-<!-- * [Section 2](#surrogate) -->
-
-<!-- > [The separate regression method class](#separate) -->
-
-<!-- >> [Data pre-processing](#separate_preproc) -->
-
-<!-- >> [Cross-validation](#separate_cv) -->
-
-<!-- >> [Parallelization](#separate_parallelization) -->
-
-<!-- > [The surrogate regression method class](#surrogate) -->
-
-<!-- > [Add new regression methods](#new) -->
-
-<!-- > [Summary figures](#summary) -->
-
-<!-- > [Mixed data](#mixed) -->
-
-<a id="intro"></a>
 
 
 This vignette elaborates and demonstrates the regression
@@ -85,16 +64,14 @@ see the [setup](#setup) section below for more examples.
 Furthermore, click [here](https://www.tidymodels.org/find/parsnip/)
 to access the complete list of supported regression models
 in the `tidymodels` package. There are currently 80 supported
-models, but we can apply a wide range of pre-processing data
-steps to increase this number or add regression models not
-already implemented in `tidymodels`. In the former setting,
-we can either apply the linear regression model directly to
+models, but the framework also allows adding regression models not
+already implemented in `tidymodels`.
+It is also possible to apply a wide range of pre-processing data
+steps. For instance, we can either apply the linear regression model directly to
 the data or pre-process the data to compute principal components
-(principal component regression), which we do in the
-[pre-process](#separate_preproc) section. For the latter setting,
-we demonstrate how to incorporate the  projection pursuit regression
-model into the `tidymodels` framework in the
-[add new regression methods](#new) section.
+(principal component regression) before fitting the linear regression to
+the first few eigenvectors (proessed features), see the [pre-process](#separate_preproc) section for an example.
+In the [add new regression methods](#new) section, we demonstrate how to incorporate the  projection pursuit regression model into the `tidymodels` framework.
 
 Note that our framework does not currently support model
 formulas with special terms. For example, we do not support
@@ -103,7 +80,7 @@ a non-standard notion in its formulas (in this case, the
 `s(feature, k = 2)` function). See `?parsnip::model_formula()`
 for more information. However, this hurdle is overcome by
 pre-processing data steps containing spline functions, which
-we do in the [pre-process](#separate_preproc) section for the
+we showcase in the [pre-process](#separate_preproc) section for the
 separate regression method class.
 
 In the [mixed data](#mixed) section, we demonstrate that the
@@ -111,7 +88,7 @@ regression-based methods work on mixed data, too. However, we must
 add a pre-processing step for the regression models that do not
 natively support categorical data to encode the categorical features.
 
-Note that we use the same data and predictive models in this
+We use the same data and predictive models in this
 vignette as in the main vignette.
 
 See the end of the [continous data](#summary) and
@@ -181,15 +158,17 @@ which package the functions originate from in the `tidymodels` framework.
 ```{r setup, message = FALSE, cache = TRUE}
 # Either use `library(tidymodels)` or separately specify the libraries indicated above
 library(tidymodels)
-
-# Other libraries
-library(xgboost)
-library(data.table)
 library(shapr)
 
 # Ensure that shapr's functions are prioritzed, otherwise we need to use the `shapr::`
 # prefix when calling explain(). The `conflicted` package is imported by `tidymodels`.
 conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
+```
+
+```{r data-setup, message = FALSE, cache = TRUE}
+# Other libraries
+library(xgboost)
+library(data.table)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -373,7 +352,7 @@ Box-Cox transformation to `Month`. These transformations are only
 applied when the features are present for the different separate models.
 
 Furthermore, we stress that the purpose of this example is to highlight
-the framework's flexibility, NOT that the transformations below are reasonable.
+the framework's flexibility, *not* that the transformations below are reasonable.
 
 ```{r recipe-func, cache=TRUE}
 # Example function of how to apply step functions from the recipes package to specific features
@@ -1596,7 +1575,8 @@ In this section, we demonstrate that the `regression.model`,
 `regression.tune_values`, and `regression.recipe_func`
 parameters can be provided as strings. This is a property
 which is convenient if the `explain()` function is called
-from Python. That is, the user only has to specify strings
+from Python through the associated `shaprpy` Python library.
+That is, the user only has to specify strings
 containing R code instead of having to deal with creating
 the R objects in Python. In the code chunk below, we see
 that we obtain identical $\operatorname{MSE}_v$ scores for
@@ -1691,7 +1671,7 @@ print_MSEv_scores_and_time(explanation_list[names(explanation_list_str)])
 ```
 
 
-# Vignette summary
+# Summary {#summary}
 
 This vignette demonstrates the rich possibilities that the regression
 paradigm and the `tidymodels` framework add to the `shapr` package.

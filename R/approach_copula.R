@@ -63,6 +63,7 @@ prepare_data.copula <- function(internal, index_features, ...) {
 
   S <- internal$iter_list[[iter]]$S[index_features, , drop = FALSE]
 
+
   if (causal_sampling) {
     # Casual Shapley values (either symmetric or asymmetric)
 
@@ -73,10 +74,11 @@ prepare_data.copula <- function(internal, index_features, ...) {
     prepare_copula <- ifelse(causal_first_step, prepare_data_copula_cpp, prepare_data_copula_cpp_caus)
 
     # Set if we have to reshape the output of the prepare_gauss function
-    reshape_prepare_gauss_output <- ifelse(causal_first_step, TRUE, FALSE)
+    reshape_prepare_copula_output <- ifelse(causal_first_step, TRUE, FALSE)
 
     # For not the first step, the number of MC samples for causal Shapley values are n_explain, see prepdare_data_causal
     n_MC_samples_updated <- ifelse(causal_first_step, n_MC_samples, n_explain)
+
 
     # Update data when not in the first causal sampling step, see prepdare_data_causal for explanations
     if (!causal_first_step) {
@@ -93,11 +95,11 @@ prepare_data.copula <- function(internal, index_features, ...) {
   } else {
     # Regular Shapley values (either symmetric or asymmetric)
 
-    # Set which copula data generating function to use
-    prepare_copula <- prepare_data_copula_cpp
-
     # Set if we have to reshape the output of the prepare_copula function
     reshape_prepare_copula_output <- TRUE
+
+    # Set which copula data generating function to use
+    prepare_copula <- prepare_data_copula_cpp
 
     # Set that the number of updated MC samples, only used when sampling from N(0, 1)
     n_MC_samples_updated <- n_MC_samples
