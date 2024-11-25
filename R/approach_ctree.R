@@ -248,13 +248,23 @@ sample_ctree <- function(tree,
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
     if (using_partykit) {
+      # xp here needs to contain the response variables as well, for some reason
+      x_explain_dependent <- x_explain[,
+        dependent_ind,
+        drop = FALSE,
+        with = FALSE
+      ]
+
+      colnames(x_explain_dependent) <- paste0("Y", seq_along(dependent_ind))
+      xp2 <- cbind(xp, x_explain_dependent)
+
       fit.nodes <- predict(
         object = datact,
         type = "node"
       )
       # newdata must be data.frame + have the same colnames as x
       pred.nodes <- predict(
-        object = datact, newdata = xp,
+        object = datact, newdata = xp2,
         type = "node"
       )
     } else {
