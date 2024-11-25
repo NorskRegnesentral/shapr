@@ -240,20 +240,19 @@ sample_ctree <- function(tree,
     dependent_ind <- tree$dependent_ind
 
     x_explain_given <- x_explain[,
-                                 given_ind,
-                                 drop = FALSE,
-                                 with = FALSE
+      given_ind,
+      drop = FALSE,
+      with = FALSE
     ] #
     xp <- x_explain_given
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
     if (using_partykit) {
-
       # xp here needs to contain the response variables as well, for some reason
       x_explain_dependent <- x_explain[,
-                                       dependent_ind,
-                                       drop = FALSE,
-                                       with = FALSE
+        dependent_ind,
+        drop = FALSE,
+        with = FALSE
       ]
 
       colnames(x_explain_dependent) <- paste0("Y", seq_along(dependent_ind))
@@ -282,20 +281,20 @@ sample_ctree <- function(tree,
       newrowno <- rowno[fit.nodes == pred.nodes]
     } else {
       newrowno <- sample(rowno[fit.nodes == pred.nodes], n_MC_samples,
-                         replace = TRUE
+        replace = TRUE
       )
     }
 
     depDT <- data.table::data.table(x_train[newrowno,
-                                            dependent_ind,
-                                            drop = FALSE,
-                                            with = FALSE
+      dependent_ind,
+      drop = FALSE,
+      with = FALSE
     ])
 
     givenDT <- data.table::data.table(x_explain[1,
-                                                given_ind,
-                                                drop = FALSE,
-                                                with = FALSE
+      given_ind,
+      drop = FALSE,
+      with = FALSE
     ])
     ret <- cbind(depDT, givenDT)
     data.table::setcolorder(ret, colnames(x_train))
