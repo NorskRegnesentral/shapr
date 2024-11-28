@@ -1,25 +1,3 @@
-#' Gets the default values for the output arguments
-#'
-#' @param corral
-#' @export
-#' @author Martin Jullum
-get_bs_c_args_default <- function(corral = "wrap",
-                                  method = "swarm",
-                                  priority = "random",
-                                  width = 0.75,
-                                  cex = 0.75){
-  return(mget(methods::formalArgs(get_bs_c_args_default)))
-}
-
-
-corral.corral  = "wrap", # Default. Other options: "none" (default in geom_beeswarm), "gutter", "random", "omit"
-corral.method = "swarm", # Default (and default in geom_beeswarm). Other options: "compactswarm", "hex", "square", "center
-corral.priority = "random", # Default . Other options: "ascending" (default in geom_beeswarm), "descending", "density"
-corral.width = 0.75, # Default. 0.9 is default in geom_beeswarm
-corral.cex = 0.75, # Default. 1 is default in geom_beeswarm
-
-
-
 #' Plot of the Shapley value explanations
 #'
 #' @description Plots the individual prediction explanations.
@@ -88,7 +66,8 @@ corral.cex = 0.75, # Default. 1 is default in geom_beeswarm
 #' Whether to include the average feature value in a group on the y-axis or not.
 #' If `FALSE` (default), then no value is shown for the groups. If `TRUE`, then `shapr` includes the mean of the
 #' features in each group.
-#' @param ... Currently not used.
+#' @param ... Other arguments passed to underlying functions,
+#' like [ggbeeswarm::geom_beeswarm()] for `plot_type = "beeswarm"`.
 #'
 #' @details See the examples below, or `vignette("understanding_shapr", package = "shapr")` for an examples of
 #' how you should use the function.
@@ -194,8 +173,7 @@ plot.shapr <- function(x,
                        scatter_features = NULL,
                        scatter_hist = TRUE,
                        include_group_feature_means = FALSE,
-                       beeswarm_use_corral = FALSE,
-                       beeswarm_corral_args = list(),
+                       beeswarm_cex = 1 / length(index_x_explain)^(1 / 4),
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -214,6 +192,7 @@ plot.shapr <- function(x,
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
+  if (length(beeswarm_cex)==0) beeswarm_cex = 1 / length(index_x_explain)^(1 / 4) # Update with updated index_x_explain
 
   is_groupwise <- x$internal$parameters$is_groupwise
 
@@ -312,8 +291,8 @@ plot.shapr <- function(x,
                              index_x_explain,
                              x,
                              factor_features,
-                             use_corral = beeswarm_use_corral,
-                             corral_args = beeswarm_corral_args)
+                             beeswarm_cex = beeswarm_cex,
+                             ...)
   } else { # if bar or waterfall plot
     # Only plot the desired observations
     dt_plot <- dt_plot[id %in% index_x_explain]
@@ -582,9 +561,12 @@ process_factor_data <- function(dt, factor_cols) {
 }
 
 
-make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols,
-                               use_corral = FALSE,
-                               corral_args = list()){
+make_beeswarm_plot <- function(dt_plot,
+                               col,
+                               index_x_explain,
+                               x,
+                               factor_cols,
+                               beeswarm_cex, ...){
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
   }
@@ -636,25 +618,7 @@ make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols,
 
   gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = variable, y = phi, color = feature_value_scaled)) +
     ggplot2::geom_hline(yintercept = 0, color = "grey70", linewidth = 0.5) +
-    if(use_corral){
-
-
-      ggbeeswarm::geom_beeswarm(method = corral.method,
-                                corral = corral.corral,
-                                priority = corral.priority,
-                                corral.width = corral.width,
-                                cex = corral.cex)
-      corral.corral  = "wrap", # Default. Other options: "none" (default in geom_beeswarm), "gutter", "random", "omit"
-      corral.method = "swarm", # Default (and default in geom_beeswarm). Other options: "compactswarm", "hex", "square", "center
-      corral.priority = "random", # Default . Other options: "ascending" (default in geom_beeswarm), "descending", "density"
-      corral.width = 0.75, # Default. 0.9 is default in geom_beeswarm
-      corral.cex = 0.75, # Default. 1 is default in geom_beeswarm
-
-
-    } else{
-      ggbeeswarm::geom_beeswarm(priority = "random", cex = )
-    }
-  gg <- gg +
+    ggbeeswarm::geom_beeswarm(priority = "random", cex = beeswarm_cex, ...) +
     ggplot2::coord_flip() +
     ggplot2::theme_classic() +
     ggplot2::theme(panel.grid.major.y = ggplot2::element_line(colour = "grey90", linetype = "dashed")) +
