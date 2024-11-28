@@ -83,7 +83,7 @@
 <text x='323.57' y='366.82' text-anchor='middle' style='font-size: 7.11px; fill: #FFFFFF; font-family: sans;' textLength='25.71px' lengthAdjust='spacingAndGlyphs'>  3.8567</text>
 <text x='226.43' y='332.30' text-anchor='middle' style='font-size: 7.11px; fill: #FFFFFF; font-family: sans;' textLength='28.08px' lengthAdjust='spacingAndGlyphs'>-17.4686</text>
 <line x1='253.06' y1='452.40' x2='268.74' y2='452.40' style='stroke-width: 1.07; stroke: #00BA38; stroke-linecap: butt;' />
-<polyline points='263.13,455.64 268.74,452.40 263.13,449.17 ' style='stroke-width: 1.07; stroke: #00BA38; stroke-linecap: butt;' />
+<polyline points='263.14,455.64 268.74,452.40 263.14,449.17 ' style='stroke-width: 1.07; stroke: #00BA38; stroke-linecap: butt;' />
 <line x1='268.74' y1='417.88' x2='247.82' y2='417.88' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
 <polyline points='253.42,414.64 247.82,417.88 253.42,421.12 ' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
 <line x1='247.82' y1='383.36' x2='296.04' y2='383.36' style='stroke-width: 1.07; stroke: #00BA38; stroke-linecap: butt;' />
@@ -93,7 +93,7 @@
 <line x1='351.09' y1='314.31' x2='101.77' y2='314.31' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
 <polyline points='107.37,311.08 101.77,314.31 107.37,317.55 ' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
 <text x='101.77' y='300.71' style='font-size: 7.11px; font-style: italic; fill: #4D4D4D; font-family: sans;' textLength='1.98px' lengthAdjust='spacingAndGlyphs'>f</text>
-<text x='104.51' y='300.71' style='font-size: 8.89px; fill: #4D4D4D; font-family: sans;' textLength='2.96px' lengthAdjust='spacingAndGlyphs'>(</text>
+<text x='104.52' y='300.71' style='font-size: 8.89px; fill: #4D4D4D; font-family: sans;' textLength='2.96px' lengthAdjust='spacingAndGlyphs'>(</text>
 <text x='107.48' y='300.71' style='font-size: 7.11px; font-style: italic; fill: #4D4D4D; font-family: sans;' textLength='3.56px' lengthAdjust='spacingAndGlyphs'>x</text>
 <text x='111.60' y='300.71' style='font-size: 8.89px; fill: #4D4D4D; font-family: sans;' textLength='2.96px' lengthAdjust='spacingAndGlyphs'>)</text>
 <text x='116.20' y='300.71' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='5.52px' lengthAdjust='spacingAndGlyphs'>=</text>
@@ -138,7 +138,7 @@
 <text x='455.48' y='50.00' style='font-size: 8.89px; fill: #4D4D4D; font-family: sans;' textLength='2.96px' lengthAdjust='spacingAndGlyphs'>(</text>
 <text x='458.44' y='50.00' style='font-size: 7.11px; font-style: italic; fill: #4D4D4D; font-family: sans;' textLength='3.56px' lengthAdjust='spacingAndGlyphs'>x</text>
 <text x='462.56' y='50.00' style='font-size: 8.89px; fill: #4D4D4D; font-family: sans;' textLength='2.96px' lengthAdjust='spacingAndGlyphs'>)</text>
-<text x='467.16' y='50.00' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='5.52px' lengthAdjust='spacingAndGlyphs'>=</text>
+<text x='467.17' y='50.00' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='5.52px' lengthAdjust='spacingAndGlyphs'>=</text>
 <text x='474.33' y='50.00' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='21.76px' lengthAdjust='spacingAndGlyphs'>27.061</text>
 <text x='652.47' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='1.78px' lengthAdjust='spacingAndGlyphs'> </text>
 <text x='654.25' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='4.17px' lengthAdjust='spacingAndGlyphs'>φ</text>
