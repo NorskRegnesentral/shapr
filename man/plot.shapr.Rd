@@ -96,6 +96,9 @@ Whether to include the average feature value in a group on the y-axis or not.
 If \code{FALSE} (default), then no value is shown for the groups. If \code{TRUE}, then \code{shapr} includes the mean of the
 features in each group.}
 
+\item{beeswarm_cex}{Numeric.
+The cex argument of \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beeswarm()}}, controlling the spacing in the beeswarm plots.}
+
 \item{...}{Other arguments passed to underlying functions,
 like \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beeswarm()}} for \code{plot_type = "beeswarm"}.}
 }
@@ -160,7 +163,8 @@ if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm"
   plot(x, plot_type = "beeswarm", col = c("red", "black")) # we can change colors
 
   # Additional arguments can be passed to ggbeeswarm::geom_beeswarm() using the '...' argument.
-  # For instance, sometimes the beeswarm plots overlap too much, which can be fixed with the 'corral="wrap" argument.
+  # For instance, sometimes the beeswarm plots overlap too much.
+  # This can be fixed with the 'corral="wrap" argument.
   # See ?ggbeeswarm::geom_beeswarm for more information.
   plot(x, plot_type = "beeswarm", corral = "wrap")
 }
