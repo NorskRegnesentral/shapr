@@ -197,7 +197,7 @@ plot.shapr <- function(x,
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
-  if (length(beeswarm_cex)==0) beeswarm_cex = 1 / length(index_x_explain)^(1 / 4) # Update with updated index_x_explain
+  if (length(beeswarm_cex) == 0) beeswarm_cex <- 1 / length(index_x_explain)^(1 / 4) # Update if index_x_explain is
 
   is_groupwise <- x$internal$parameters$is_groupwise
 
@@ -292,12 +292,13 @@ plot.shapr <- function(x,
     gg <- make_scatter_plot(dt_plot, scatter_features, scatter_hist, col, factor_features)
   } else if (plot_type == "beeswarm") {
     gg <- make_beeswarm_plot(dt_plot,
-                             col,
-                             index_x_explain,
-                             x,
-                             factor_features,
-                             beeswarm_cex = beeswarm_cex,
-                             ...)
+      col,
+      index_x_explain,
+      x,
+      factor_features,
+      beeswarm_cex = beeswarm_cex,
+      ...
+    )
   } else { # if bar or waterfall plot
     # Only plot the desired observations
     dt_plot <- dt_plot[id %in% index_x_explain]
@@ -571,7 +572,8 @@ make_beeswarm_plot <- function(dt_plot,
                                index_x_explain,
                                x,
                                factor_cols,
-                               beeswarm_cex, ...){
+                               beeswarm_cex,
+                               ...) {
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
   }

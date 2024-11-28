@@ -140,7 +140,7 @@ x <- explain(
   n_MC_samples = 1e2
 )
 
-if (requireNamespace("ggplot2", quietly = TRUE)) {
+if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
   # The default plotting option is a bar plot of the Shapley values
   # We draw bar plots for the first 4 observations
   plot(x, index_x_explain = 1:4)
@@ -195,7 +195,7 @@ x <- explain(
   n_MC_samples = 1e2
 )
 
-if (requireNamespace("ggplot2", quietly = TRUE)) {
+if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
   plot(x, plot_type = "scatter")
   plot(x, plot_type = "beeswarm")
 }
