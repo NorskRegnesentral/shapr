@@ -14,14 +14,15 @@ create_marginal_data_categoric(
 }
 \arguments{
 \item{n_MC_samples}{Positive integer.
-Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
+of every conditional expectation.
 For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
 For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
-\item{x_explain}{A matrix or data.frame/data.table.
+\item{x_explain}{Matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
 
 \item{Sbar_features}{Vector of integers containing the features indices to generate marginal observations for.

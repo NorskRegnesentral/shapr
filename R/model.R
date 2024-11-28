@@ -173,5 +173,5 @@ get_supported_models <- function() {
   DT[, (colnames(DT)[-1]) := lapply(.SD, data.table::nafill, fill = 0), .SDcols = colnames(DT)[-1]]
   DT[, (colnames(DT)[2:3]) := lapply(.SD, as.logical), .SDcols = colnames(DT)[2:3]]
   data.table::setnames(DT, "rn", "model_class")
-  return(DT)
+  return(DT[])
 }

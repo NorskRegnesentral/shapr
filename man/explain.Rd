@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain.R
 \name{explain}
 \alias{explain}
-\title{Explain the output of machine learning models with more accurately estimated Shapley values}
+\title{Explain the output of machine learning models with dependence-aware (conditional/observational) Shapley values}
 \usage{
 explain(
   model,
@@ -31,13 +31,14 @@ explain(
 )
 }
 \arguments{
-\item{model}{The model whose predictions we want to explain.
+\item{model}{Model object.
+Specifies the model whose predictions we want to explain.
 Run \code{\link[=get_supported_models]{get_supported_models()}}
 for a table of which models \code{explain} supports natively. Unsupported models
 can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
 see details for more information.}
 
-\item{x_explain}{A matrix or data.frame/data.table.
+\item{x_explain}{Matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
 
 \item{x_train}{Matrix or data.frame/data.table.
@@ -47,7 +48,8 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
 All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
-The two regression approaches can not be combined with any other approach. See details for more information.}
+The two regression approaches can not be combined with any other approach.
+See details for more information.}
 
 \item{phi0}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
@@ -77,9 +79,9 @@ and group coalitions if \code{group != NULL}.
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
-If provided, group wise Shapley values are computed. \code{group} then has length equal to
-the number of groups. The list element contains character vectors with the features included
-in each of the different groups.}
+If provided, group wise Shapley values are computed.
+\code{group} then has length equal to the number of groups.
+The list element contains character vectors with the features included in each of the different groups.}
 
 \item{paired_shap_sampling}{Logical.
 If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
@@ -87,7 +89,8 @@ That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then a
 computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
 
 \item{n_MC_samples}{Positive integer.
-Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
+of every conditional expectation.
 For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
 For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
@@ -95,9 +98,9 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 \code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
-the randomness and thereby the variance of the Shapley value estimates.
-One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
 \code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
 \code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
 \code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
@@ -105,7 +108,7 @@ probabilities.
 \code{'on_all'} means the original sampling probabilities are used for all coalitions.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
-This method is preferred as it has performed the best in simulation studies.}
+\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
@@ -113,7 +116,7 @@ If \code{NULL} no seed is set in the calling environment.}
 
 \item{verbose}{String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
-\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"convergence"}, \code{"shapley"} and \code{"vS_details"}.
 \code{"basic"} (default) displays basic information about the computation which is being performed.
 \verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
@@ -125,7 +128,7 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
 \code{NULL} means no printout.
 Note that any combination of four strings can be used.
-E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.
 }}
 
 \item{predict_model}{Function.
@@ -151,7 +154,7 @@ disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{prev_shapr_object}{\code{shapr} object or string.
-If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
+If an object of class \code{shapr} is provided, or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the vignette for examples.}
@@ -334,7 +337,7 @@ The column \code{none} is the prediction not devoted to any of the features (giv
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{extra_computation_args$compute_sd=TRUE}.}
+Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
 \item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -360,19 +363,20 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 It is also possible to combine the different approaches, see the vignettes for more information.
 
 The package also supports the computation of causal and asymmetric Shapley values as introduced by
-Heskes et al. (2020) and Frye et al. (2020). Asymmetric Shapley values were proposed by Heskes et al. (2020)
-as a way to incorporate causal knowledge in the real world by restricting the possible feature
-combinations/coalitions when computing the Shapley values to those consistent with a (partial) causal ordering.
+Heskes et al. (2020) and Frye et al. (2020).
+Asymmetric Shapley values were proposed by Heskes et al. (2020) as a way to incorporate causal knowledge in
+the real world by restricting the possible feature combinations/coalitions when computing the Shapley values to
+those consistent with a (partial) causal ordering.
 Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
 on the prediction, taking into account their causal relationships, by adapting the sampling procedure in \code{shapr}.
 
 The package allows for parallelized computation with progress updates through the tightly connected
-\link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
+\link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages.
+See the examples below.
 For iterative estimation (\code{iterative=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).
 Moreover, the intermediate results are written to disk.
-This combined with iterative estimation with (optional) intermediate results printed to the console (and temporary
-written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
+This combined batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 in a memory friendly manner.
 }
 \examples{
@@ -535,6 +539,7 @@ Exploiting causal knowledge to explain individual predictions of complex models.
 Advances in neural information processing systems, 33, 4778-4789.
 \item Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
 model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
+\item Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410.
 }
 }
 \author{

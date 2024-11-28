@@ -24,7 +24,7 @@ The column \code{none} is the prediction not devoted to any of the features (giv
 \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{extra_computation_args$compute_sd=TRUE}.}
+Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
 \item{internal}{List with the different parameters, data, functions and other output used internally.}
 \item{pred_explain}{Numeric vector with the predictions for the explained observations}
 \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -50,19 +50,20 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 It is also possible to combine the different approaches, see the vignettes for more information.
 
 The package also supports the computation of causal and asymmetric Shapley values as introduced by
-Heskes et al. (2020) and Frye et al. (2020). Asymmetric Shapley values were proposed by Heskes et al. (2020)
-as a way to incorporate causal knowledge in the real world by restricting the possible feature
-combinations/coalitions when computing the Shapley values to those consistent with a (partial) causal ordering.
+Heskes et al. (2020) and Frye et al. (2020).
+Asymmetric Shapley values were proposed by Heskes et al. (2020) as a way to incorporate causal knowledge in
+the real world by restricting the possible feature combinations/coalitions when computing the Shapley values to
+those consistent with a (partial) causal ordering.
 Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
 on the prediction, taking into account their causal relationships, by adapting the sampling procedure in \code{shapr}.
 
 The package allows for parallelized computation with progress updates through the tightly connected
-\link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
+\link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages.
+See the examples below.
 For iterative estimation (\code{iterative=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).
 Moreover, the intermediate results are written to disk.
-This combined with iterative estimation with (optional) intermediate results printed to the console (and temporary
-written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
+This combined batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 in a memory friendly manner.
 }
 \examples{
@@ -225,6 +226,7 @@ Exploiting causal knowledge to explain individual predictions of complex models.
 Advances in neural information processing systems, 33, 4778-4789.
 \item Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
 model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
+\item Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410.
 }
 }
 \author{
