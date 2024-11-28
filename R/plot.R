@@ -66,6 +66,8 @@
 #' Whether to include the average feature value in a group on the y-axis or not.
 #' If `FALSE` (default), then no value is shown for the groups. If `TRUE`, then `shapr` includes the mean of the
 #' features in each group.
+#' @param beeswarm_cex Numeric.
+#' The cex argument of [ggbeeswarm::geom_beeswarm()], controlling the spacing in the beeswarm plots.
 #' @param ... Other arguments passed to underlying functions,
 #' like [ggbeeswarm::geom_beeswarm()] for `plot_type = "beeswarm"`.
 #'
@@ -126,7 +128,8 @@
 #'   plot(x, plot_type = "beeswarm", col = c("red", "black")) # we can change colors
 #'
 #'   # Additional arguments can be passed to ggbeeswarm::geom_beeswarm() using the '...' argument.
-#'   # For instance, sometimes the beeswarm plots overlap too much, which can be fixed with the 'corral="wrap" argument.
+#'   # For instance, sometimes the beeswarm plots overlap too much.
+#'   # This can be fixed with the 'corral="wrap" argument.
 #'   # See ?ggbeeswarm::geom_beeswarm for more information.
 #'   plot(x, plot_type = "beeswarm", corral = "wrap")
 #' }
