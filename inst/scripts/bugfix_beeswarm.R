@@ -67,9 +67,36 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 }
 
 saveRDS(explanation, "explanation.rds")
+
+
+
 explanation <- readRDS("explanation.rds")
 
-plot(explanation, plot_type = "beeswarm",use_corral = TRUE)
+plot(explanation, plot_type = "beeswarm", corral = "wrap")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 tmp_list <-   plot_shapr(explanation, plot_type = "beeswarm")

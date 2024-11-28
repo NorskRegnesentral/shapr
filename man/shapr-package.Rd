@@ -30,9 +30,9 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Anders Løland \email{Anders.Loland@nr.no} [contributor]
+  \item Anders L<U+00F8>land \email{Anders.Loland@nr.no} [contributor]
   \item Jens Christian Wahl \email{Jens.Christian.Wahl@nr.no} [contributor]
-  \item Camilla Lingjærde [contributor]
+  \item Camilla Lingj<U+00E6>rde [contributor]
   \item Norsk Regnesentral [copyright holder, funder]
 }
 

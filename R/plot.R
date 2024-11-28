@@ -106,7 +106,7 @@
 #'   n_MC_samples = 1e2
 #' )
 #'
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#' if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
 #'   # The default plotting option is a bar plot of the Shapley values
 #'   # We draw bar plots for the first 4 observations
 #'   plot(x, index_x_explain = 1:4)
@@ -124,6 +124,11 @@
 #'   # Or a beeswarm plot summarising the Shapley values and feature values for all features
 #'   plot(x, plot_type = "beeswarm")
 #'   plot(x, plot_type = "beeswarm", col = c("red", "black")) # we can change colors
+#'
+#'   # Additional arguments can be passed to ggbeeswarm::geom_beeswarm() using the '...' argument.
+#'   # For instance, sometimes the beeswarm plots overlap too much, which can be fixed with the 'corral="wrap" argument.
+#'   # See ?ggbeeswarm::geom_beeswarm for more information.
+#'   plot(x, plot_type = "beeswarm", corral = "wrap")
 #' }
 #'
 #' # Example of scatter and beeswarm plot with factor variables
@@ -156,7 +161,7 @@
 #'   n_MC_samples = 1e2
 #' )
 #'
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#' if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
 #'   plot(x, plot_type = "scatter")
 #'   plot(x, plot_type = "beeswarm")
 #' }
