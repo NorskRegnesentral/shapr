@@ -16,6 +16,7 @@
   scatter_features = NULL,
   scatter_hist = TRUE,
   include_group_feature_means = FALSE,
+  beeswarm_cex = 1/length(index_x_explain)^(1/4),
   ...
 )
 }
@@ -95,7 +96,11 @@ Whether to include the average feature value in a group on the y-axis or not.
 If \code{FALSE} (default), then no value is shown for the groups. If \code{TRUE}, then \code{shapr} includes the mean of the
 features in each group.}
 
-\item{...}{Currently not used.}
+\item{beeswarm_cex}{Numeric.
+The cex argument of \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beeswarm()}}, controlling the spacing in the beeswarm plots.}
+
+\item{...}{Other arguments passed to underlying functions,
+like \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beeswarm()}} for \code{plot_type = "beeswarm"}.}
 }
 \value{
 ggplot object with plots of the Shapley value explanations
@@ -138,7 +143,7 @@ x <- explain(
   n_MC_samples = 1e2
 )
 
-if (requireNamespace("ggplot2", quietly = TRUE)) {
+if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
   # The default plotting option is a bar plot of the Shapley values
   # We draw bar plots for the first 4 observations
   plot(x, index_x_explain = 1:4)
@@ -156,6 +161,12 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   # Or a beeswarm plot summarising the Shapley values and feature values for all features
   plot(x, plot_type = "beeswarm")
   plot(x, plot_type = "beeswarm", col = c("red", "black")) # we can change colors
+
+  # Additional arguments can be passed to ggbeeswarm::geom_beeswarm() using the '...' argument.
+  # For instance, sometimes the beeswarm plots overlap too much.
+  # This can be fixed with the 'corral="wrap" argument.
+  # See ?ggbeeswarm::geom_beeswarm for more information.
+  plot(x, plot_type = "beeswarm", corral = "wrap")
 }
 
 # Example of scatter and beeswarm plot with factor variables
@@ -188,7 +199,7 @@ x <- explain(
   n_MC_samples = 1e2
 )
 
-if (requireNamespace("ggplot2", quietly = TRUE)) {
+if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
   plot(x, plot_type = "scatter")
   plot(x, plot_type = "beeswarm")
 }

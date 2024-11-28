@@ -66,7 +66,10 @@
 #' Whether to include the average feature value in a group on the y-axis or not.
 #' If `FALSE` (default), then no value is shown for the groups. If `TRUE`, then `shapr` includes the mean of the
 #' features in each group.
-#' @param ... Currently not used.
+#' @param beeswarm_cex Numeric.
+#' The cex argument of [ggbeeswarm::geom_beeswarm()], controlling the spacing in the beeswarm plots.
+#' @param ... Other arguments passed to underlying functions,
+#' like [ggbeeswarm::geom_beeswarm()] for `plot_type = "beeswarm"`.
 #'
 #' @details See the examples below, or `vignette("understanding_shapr", package = "shapr")` for an examples of
 #' how you should use the function.
@@ -105,7 +108,7 @@
 #'   n_MC_samples = 1e2
 #' )
 #'
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#' if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
 #'   # The default plotting option is a bar plot of the Shapley values
 #'   # We draw bar plots for the first 4 observations
 #'   plot(x, index_x_explain = 1:4)
@@ -123,6 +126,12 @@
 #'   # Or a beeswarm plot summarising the Shapley values and feature values for all features
 #'   plot(x, plot_type = "beeswarm")
 #'   plot(x, plot_type = "beeswarm", col = c("red", "black")) # we can change colors
+#'
+#'   # Additional arguments can be passed to ggbeeswarm::geom_beeswarm() using the '...' argument.
+#'   # For instance, sometimes the beeswarm plots overlap too much.
+#'   # This can be fixed with the 'corral="wrap" argument.
+#'   # See ?ggbeeswarm::geom_beeswarm for more information.
+#'   plot(x, plot_type = "beeswarm", corral = "wrap")
 #' }
 #'
 #' # Example of scatter and beeswarm plot with factor variables
@@ -155,7 +164,7 @@
 #'   n_MC_samples = 1e2
 #' )
 #'
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#' if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
 #'   plot(x, plot_type = "scatter")
 #'   plot(x, plot_type = "beeswarm")
 #' }
@@ -172,6 +181,7 @@ plot.shapr <- function(x,
                        scatter_features = NULL,
                        scatter_hist = TRUE,
                        include_group_feature_means = FALSE,
+                       beeswarm_cex = 1 / length(index_x_explain)^(1 / 4),
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -190,6 +200,7 @@ plot.shapr <- function(x,
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
+  if (length(beeswarm_cex) == 0) beeswarm_cex <- 1 / length(index_x_explain)^(1 / 4) # Update if index_x_explain is
 
   is_groupwise <- x$internal$parameters$is_groupwise
 
@@ -229,7 +240,7 @@ plot.shapr <- function(x,
 
   # melting Kshap
   shap_names <- x$internal$parameters$shap_names
-  dt_shap <- round(data.table::copy(x$shapley_values_est), digits = digits)
+  dt_shap <- signif(data.table::copy(x$shapley_values_est))
   dt_shap[, id := .I]
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
@@ -283,7 +294,14 @@ plot.shapr <- function(x,
     dt_plot <- dt_plot[id %in% index_x_explain]
     gg <- make_scatter_plot(dt_plot, scatter_features, scatter_hist, col, factor_features)
   } else if (plot_type == "beeswarm") {
-    gg <- make_beeswarm_plot(dt_plot, col, index_x_explain, x, factor_features)
+    gg <- make_beeswarm_plot(dt_plot,
+      col,
+      index_x_explain,
+      x,
+      factor_features,
+      beeswarm_cex = beeswarm_cex,
+      ...
+    )
   } else { # if bar or waterfall plot
     # Only plot the desired observations
     dt_plot <- dt_plot[id %in% index_x_explain]
@@ -552,7 +570,13 @@ process_factor_data <- function(dt, factor_cols) {
 }
 
 
-make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols) {
+make_beeswarm_plot <- function(dt_plot,
+                               col,
+                               index_x_explain,
+                               x,
+                               factor_cols,
+                               beeswarm_cex,
+                               ...) {
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
   }
@@ -604,7 +628,7 @@ make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols) {
 
   gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = variable, y = phi, color = feature_value_scaled)) +
     ggplot2::geom_hline(yintercept = 0, color = "grey70", linewidth = 0.5) +
-    ggbeeswarm::geom_beeswarm(priority = "random", cex = 1 / length(index_x_explain)^(1 / 4)) +
+    ggbeeswarm::geom_beeswarm(priority = "random", cex = beeswarm_cex, ...) +
     ggplot2::coord_flip() +
     ggplot2::theme_classic() +
     ggplot2::theme(panel.grid.major.y = ggplot2::element_line(colour = "grey90", linetype = "dashed")) +
