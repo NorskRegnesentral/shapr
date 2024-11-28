@@ -240,7 +240,7 @@ plot.shapr <- function(x,
 
   # melting Kshap
   shap_names <- x$internal$parameters$shap_names
-  dt_shap <- data.table::copy(x$shapley_values_est)
+  dt_shap <- signif(data.table::copy(x$shapley_values_est))
   dt_shap[, id := .I]
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
