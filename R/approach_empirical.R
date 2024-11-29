@@ -2,34 +2,41 @@
 #'
 #' @param empirical.type Character. (default = `"fixed_sigma"`)
 #' Should be equal to either `"independence"`,`"fixed_sigma"`, `"AICc_each_k"` `"AICc_full"`.
-#' TODO: Describe better what the methods do here.
+#' `"independence"` is deprecated. Use `approach = "independence"` instead.
+#' `"fixed_sigma"` uses a fixed bandwidth (set through `empirical.fixed_sigma`) in the kernel density estimation.
+#' `"AICc_each_k"` and `"AICc_full"` optimize the bandwidth using the AICc criterion, with respectively
+#' one bandwidth per coalition size and one bandwidth for all coalition sizes.
 #'
-#' @param empirical.eta Numeric. (default = 0.95)
+#' @param empirical.eta Numeric scalar.
 #' Needs to be `0 < eta <= 1`.
+#' The default value is 0.95.
 #' Represents the minimum proportion of the total empirical weight that data samples should use.
 #' If e.g. `eta = .8` we will choose the `K` samples with the largest weight so that the sum of the weights
 #' accounts for 80\% of the total weight.
 #' `eta` is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
 #'
-#' @param empirical.fixed_sigma Positive numeric scalar. (default = 0.1)
+#' @param empirical.fixed_sigma Positive numeric scalar.
+#' The default value is 0.1.
 #' Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
 #' Only used when `empirical.type = "fixed_sigma"`
 #'
-#' @param empirical.n_samples_aicc Positive integer. (default = 1000)
+#' @param empirical.n_samples_aicc Positive integer.
 #' Number of samples to consider in AICc optimization.
+#' The default value is 1000.
 #' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
-#' @param empirical.eval_max_aicc Positive integer. (default = 20)
+#' @param empirical.eval_max_aicc Positive integer.
 #' Maximum number of iterations when optimizing the AICc.
+#' The default value is 20.
 #' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
-#' @param empirical.start_aicc Numeric. (default = 0.1)
+#' @param empirical.start_aicc Numeric.
 #' Start value of the `sigma` parameter when optimizing the AICc.
+#' The default value is 0.1.
 #' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
-#'
-#' @param empirical.cov_mat Numeric matrix. (Optional, default = NULL)
-#' Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
+#' @param empirical.cov_mat Numeric matrix. (Optional)
+#' The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 #' `NULL` means it is estimated from `x_train`.
 #'
 #' @inheritParams default_doc_explain
@@ -237,15 +244,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 
 #' Generate permutations of training data using test observations
 #'
-#' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
-#' observations for all coalitions. The dimension equals `n_train x m`.
-#' @param S Integer matrix of dimension `n_coalitions x m`, where `n_coalitions`
-#' and `m` equals the total number of sampled/non-sampled coalitions and
-#' the total number of unique features, respectively. Note that `m = ncol(x_train)`.
-#' @param x_train Numeric matrix
-#' @param x_explain Numeric matrix
-#'
-#' @inheritParams explain
+#' @inheritParams default_doc
 #'
 #' @return data.table
 #'

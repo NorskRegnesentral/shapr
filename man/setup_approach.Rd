@@ -6,6 +6,7 @@
 %   R/approach_timeseries.R, R/approach_vaeac.R
 \name{setup_approach}
 \alias{setup_approach}
+\alias{setup_approach.combined}
 \alias{setup_approach.categorical}
 \alias{setup_approach.copula}
 \alias{setup_approach.ctree}
@@ -19,6 +20,8 @@
 \title{Set up the framework chosen approach}
 \usage{
 setup_approach(internal, ...)
+
+\method{setup_approach}{combined}(internal, ...)
 
 \method{setup_approach}{categorical}(
   internal,
@@ -100,7 +103,7 @@ setup_approach(internal, ...)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
-\item{...}{\code{approach}-specific arguments. See below.}
+\item{...}{Arguments passed to specific classes. See below}
 
 \item{categorical.joint_prob_dt}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
@@ -113,19 +116,22 @@ estimated using \code{x_train}. If certain observations occur in \code{x_explain
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
 
-\item{ctree.mincriterion}{Numeric scalar or vector. (default = 0.95)
+\item{ctree.mincriterion}{Numeric scalar or vector.
 Either a scalar or vector of length equal to the number of features in the model.
-Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
-If it is a vector, this indicates which value to use when conditioning on various numbers of features.}
+The value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+If it is a vector, this indicates which value to use when conditioning on various numbers of features.
+The default value is 0.95.}
 
-\item{ctree.minsplit}{Numeric scalar. (default = 20)
-Determines minimum value that the sum of the left and right daughter nodes required for a split.}
+\item{ctree.minsplit}{Numeric scalar.
+Determines minimum value that the sum of the left and right daughter nodes required for a split.
+The default value is 20.}
 
-\item{ctree.minbucket}{Numeric scalar. (default = 7)
-Determines the minimum sum of weights in a terminal node required for a split}
+\item{ctree.minbucket}{Numeric scalar.
+Determines the minimum sum of weights in a terminal node required for a split
+The default value is 7.}
 
-\item{ctree.sample}{Boolean. (default = TRUE)
-If TRUE, then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
+\item{ctree.sample}{Boolean.
+If TRUE (default), then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
 If FALSE and the number of observations in the leaf node is less than \code{n_MC_samples},
 the method will take all observations in the leaf.
 If FALSE and the number of observations in the leaf node is more than \code{n_MC_samples},
@@ -135,33 +141,41 @@ This means that there will always be sampling in the leaf unless
 
 \item{empirical.type}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
-TODO: Describe better what the methods do here.}
+\code{"independence"} is deprecated. Use \code{approach = "independence"} instead.
+\code{"fixed_sigma"} uses a fixed bandwidth (set through \code{empirical.fixed_sigma}) in the kernel density estimation.
+\code{"AICc_each_k"} and \code{"AICc_full"} optimize the bandwidth using the AICc criterion, with respectively
+one bandwidth per coalition size and one bandwidth for all coalition sizes.}
 
-\item{empirical.eta}{Numeric. (default = 0.95)
+\item{empirical.eta}{Numeric scalar.
 Needs to be \verb{0 < eta <= 1}.
+The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
 
-\item{empirical.fixed_sigma}{Positive numeric scalar. (default = 0.1)
+\item{empirical.fixed_sigma}{Positive numeric scalar.
+The default value is 0.1.
 Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
 Only used when \code{empirical.type = "fixed_sigma"}}
 
-\item{empirical.n_samples_aicc}{Positive integer. (default = 1000)
+\item{empirical.n_samples_aicc}{Positive integer.
 Number of samples to consider in AICc optimization.
+The default value is 1000.
 Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
-\item{empirical.eval_max_aicc}{Positive integer. (default = 20)
+\item{empirical.eval_max_aicc}{Positive integer.
 Maximum number of iterations when optimizing the AICc.
+The default value is 20.
 Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
-\item{empirical.start_aicc}{Numeric. (default = 0.1)
+\item{empirical.start_aicc}{Numeric.
 Start value of the \code{sigma} parameter when optimizing the AICc.
+The default value is 0.1.
 Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
-\item{empirical.cov_mat}{Numeric matrix. (Optional, default = NULL)
-Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
+\item{empirical.cov_mat}{Numeric matrix. (Optional)
+The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
 
 \item{model}{Objects.

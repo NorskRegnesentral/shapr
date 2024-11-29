@@ -13,6 +13,21 @@
 #' The prediction function used when `model` is not natively supported.
 #' See the documentation of [explain()] for details.
 #'
+#' @param x_explain Data.table with the features of the observation whose
+#' predictions ought to be explained (test data).
+#'
+#' @param x_train Data.table with training data.
+#'
+#' @param n_features Positive integer.
+#' The number of features.
+#'
+#' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
+#' observations for all coalitions. The dimension equals `n_train x m`.
+#'
+#' @param S Integer matrix of dimension `n_coalitions x m`, where `n_coalitions`
+#' and `m` equals the total number of sampled/non-sampled coalitions and
+#' the total number of unique features, respectively. Note that `m = ncol(x_train)`.
+#'
 #' @param output_size TODO: Document
 #' @param extra TODO: Document
 #'

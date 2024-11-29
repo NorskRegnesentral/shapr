@@ -25,6 +25,21 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 \item{extra}{TODO: Document}
 
 \item{...}{Further arguments passed to \code{approach}-specific functions.}
+
+\item{x_explain}{Data.table with the features of the observation whose
+predictions ought to be explained (test data).}
+
+\item{x_train}{Data.table with training data.}
+
+\item{n_features}{Positive integer.
+The number of features.}
+
+\item{W_kernel}{Numeric matrix. Contains all nonscaled weights between training and test
+observations for all coalitions. The dimension equals \verb{n_train x m}.}
+
+\item{S}{Integer matrix of dimension \verb{n_coalitions x m}, where \code{n_coalitions}
+and \code{m} equals the total number of sampled/non-sampled coalitions and
+the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.}
 }
 \value{
 List \code{internal}

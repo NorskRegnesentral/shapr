@@ -21,18 +21,10 @@ observations for all coalitions. The dimension equals \verb{n_train x m}.}
 and \code{m} equals the total number of sampled/non-sampled coalitions and
 the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.}
 
-\item{x_train}{Numeric matrix}
+\item{x_train}{Data.table with training data.}
 
-\item{x_explain}{Numeric matrix}
-
-\item{n_MC_samples}{Positive integer.
-For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
-of every conditional expectation.
-For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
-from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
-For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-\code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
+\item{x_explain}{Data.table with the features of the observation whose
+predictions ought to be explained (test data).}
 }
 \value{
 data.table

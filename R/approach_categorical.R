@@ -197,7 +197,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 
 #' Compute the conditional probabilities for a single coalition for the categorical approach
 #'
-#' The [shapr::prepare_data.categorical()] function is slow when evaluated for a single coalition.
+#' The [prepare_data.categorical()] function is slow when evaluated for a single coalition.
 #' This is a bottleneck for Causal Shapley values which call said function a lot with single coalitions.
 #'
 #' @inheritParams default_doc

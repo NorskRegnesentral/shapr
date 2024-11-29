@@ -3,11 +3,12 @@
 #' The different choices of `approach` take different (optional) parameters,
 #' which are forwarded from [explain()].
 #'
-#' @param ... `approach`-specific arguments. See below.
+#' @param ... Arguments passed to specific classes. See below
 #'
 #' @inheritParams default_doc_explain
 #'
 #' @export
+#' @author Martin Jullum
 setup_approach <- function(internal, ...) {
   verbose <- internal$parameters$verbose
 
@@ -15,8 +16,6 @@ setup_approach <- function(internal, ...) {
 
   iter <- length(internal$iter_list)
   X <- internal$iter_list[[iter]]$X
-
-
 
   needs_X <- c("regression_surrogate", "vaeac")
 
@@ -55,6 +54,7 @@ setup_approach <- function(internal, ...) {
 }
 
 #' @inheritParams default_doc
+#' @rdname setup_approach
 #' @export
 setup_approach.combined <- function(internal, ...) {
   org_approach <- internal$parameters$approach
@@ -80,6 +80,7 @@ setup_approach.combined <- function(internal, ...) {
 #'
 #' @export
 #' @keywords internal
+#' @author Martin Jullum
 prepare_data <- function(internal, index_features = NULL, ...) {
   iter <- length(internal$iter_list)
 

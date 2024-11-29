@@ -10,24 +10,26 @@ sample_ctree(tree, n_MC_samples, x_explain, x_train, n_features, sample)
 \item{tree}{List. Contains tree which is an object of type ctree built from the party package.
 Also contains given_ind, the features to condition upon.}
 
-\item{n_MC_samples}{Numeric. Indicates how many samples to use for MCMC.}
+\item{n_MC_samples}{Scalar integer.
+Corresponds to the number of samples from the leaf node.
+See an exception when sample = FALSE in \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}.}
 
-\item{x_explain}{Matrix, data.frame or data.table with the features of the observation whose
-predictions ought to be explained (test data). Dimension \verb{1\\timesp} or \verb{p\\times1}.}
+\item{x_explain}{Data.table with the features of the observation whose
+predictions ought to be explained (test data).}
 
-\item{x_train}{Matrix, data.frame or data.table with training data.}
+\item{x_train}{Data.table with training data.}
 
-\item{n_features}{Positive integer. The number of features.}
-
-\item{sample}{Boolean. True indicates that the method samples from the terminal node
-of the tree whereas False indicates that the method takes all the observations if it is
-less than n_MC_samples.}
+\item{n_features}{Positive integer.
+The number of features.}
 }
 \value{
 data.table with \code{n_MC_samples} (conditional) Gaussian samples
 }
 \description{
 Sample ctree variables from a given conditional inference tree
+}
+\details{
+See the documentation of the \code{\link[=setup_approach.ctree]{setup_approach.ctree()}} function for undocumented parameters.
 }
 \author{
 Annabelle Redelmeier

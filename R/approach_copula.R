@@ -63,7 +63,6 @@ prepare_data.copula <- function(internal, index_features, ...) {
 
   S <- internal$iter_list[[iter]]$S[index_features, , drop = FALSE]
 
-
   if (causal_sampling) {
     # Casual Shapley values (either symmetric or asymmetric)
 
