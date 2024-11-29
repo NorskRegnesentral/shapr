@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain_forecast.R
 \name{explain_forecast}
 \alias{explain_forecast}
-\title{Explain a forecast from a time series model using Shapley values.}
+\title{Explain a forecast from time series models with dependence-aware (conditional/observational) Shapley values}
 \usage{
 explain_forecast(
   model,
@@ -46,15 +46,15 @@ including the observations to be explained.}
 Contains the exogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.
-As exogenous variables are used contemporaneusly when producing a forecast,
+As exogenous variables are used contemporaneously when producing a forecast,
 this item should contain nrow(y) + horizon rows.}
 
-\item{train_idx}{Numeric vector
+\item{train_idx}{Numeric vector.
 The row indices in data and reg denoting points in time to use when estimating the conditional expectations in
 the Shapley value formula.
 If \code{train_idx = NULL} (default) all indices not selected to be explained will be used.}
 
-\item{explain_idx}{Numeric vector
+\item{explain_idx}{Numeric vector.
 The row indices in data and reg denoting points in time to explain.}
 
 \item{explain_y_lags}{Numeric vector.
@@ -178,8 +178,35 @@ E.g. \code{verbose = c("basic", "vS_details")} will display basic information + 
 }}
 
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
+  Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
   \describe{
+    \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
+Containing the joint probability distribution for each combination of feature
+values.
+\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
+    \item{\code{categorical.epsilon}}{Numeric value. (Optional)
+If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
+estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
+then epsilon is used as the proportion of times that these observations occurs in the training data.
+In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
+    \item{\code{internal}}{List.
+Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
+    \item{\code{ctree.mincriterion}}{Numeric scalar or vector. (default = 0.95)
+Either a scalar or vector of length equal to the number of features in the model.
+Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+If it is a vector, this indicates which value to use when conditioning on various numbers of features.}
+    \item{\code{ctree.minsplit}}{Numeric scalar. (default = 20)
+Determines minimum value that the sum of the left and right daughter nodes required for a split.}
+    \item{\code{ctree.minbucket}}{Numeric scalar. (default = 7)
+Determines the minimum sum of weights in a terminal node required for a split}
+    \item{\code{ctree.sample}}{Boolean. (default = TRUE)
+If TRUE, then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
+If FALSE and the number of observations in the leaf node is less than \code{n_MC_samples},
+the method will take all observations in the leaf.
+If FALSE and the number of observations in the leaf node is more than \code{n_MC_samples},
+the method will sample \code{n_MC_samples} observations (with replacement).
+This means that there will always be sampling in the leaf unless
+\code{sample} = FALSE AND the number of obs in the node is less than \code{n_MC_samples}.}
     \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
 TODO: Describe better what the methods do here.}
@@ -204,30 +231,18 @@ Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AIC
     \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional, default = NULL)
 Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
-    \item{\code{internal}}{List.
-Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
     \item{\code{gaussian.mu}}{Numeric vector. (Optional)
 Containing the mean of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
     \item{\code{gaussian.cov_mat}}{Numeric matrix. (Optional)
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
-    \item{\code{ctree.mincriterion}}{Numeric scalar or vector. (default = 0.95)
-Either a scalar or vector of length equal to the number of features in the model.
-Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
-If it is a vector, this indicates which value to use when conditioning on various numbers of features.}
-    \item{\code{ctree.minsplit}}{Numeric scalar. (default = 20)
-Determines minimum value that the sum of the left and right daughter nodes required for a split.}
-    \item{\code{ctree.minbucket}}{Numeric scalar. (default = 7)
-Determines the minimum sum of weights in a terminal node required for a split}
-    \item{\code{ctree.sample}}{Boolean. (default = TRUE)
-If TRUE, then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
-If FALSE and the number of observations in the leaf node is less than \code{n_MC_samples},
-the method will take all observations in the leaf.
-If FALSE and the number of observations in the leaf node is more than \code{n_MC_samples},
-the method will sample \code{n_MC_samples} observations (with replacement).
-This means that there will always be sampling in the leaf unless
-\code{sample} = FALSE AND the number of obs in the node is less than \code{n_MC_samples}.}
+    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
+Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
+    \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
+If one or both of these bounds are not NULL, we restrict the sampled time series to be
+between these bounds.
+This is useful if the underlying time series are scaled between 0 and 1, for example.}
     \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
 in the neural networks of the masked encoder, full encoder, and decoder.}
     \item{\code{vaeac.width}}{Positive integer (default is \code{32}). The number of neurons in each
@@ -243,21 +258,6 @@ epochs (default is \code{2}) and continue training that one.}
 This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
     \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
 \code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
-    \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
-Containing the joint probability distribution for each combination of feature
-values.
-\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
-    \item{\code{categorical.epsilon}}{Numeric value. (Optional)
-If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
-estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
-then epsilon is used as the proportion of times that these observations occurs in the training data.
-In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
-    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
-    \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
-If one or both of these bounds are not NULL, we restrict the sampled time series to be
-between these bounds.
-This is useful if the underlying time series are scaled between 0 and 1, for example.}
   }}
 }
 \value{

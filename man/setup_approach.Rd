@@ -255,7 +255,7 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 \code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
 }
 \description{
-The different choices of \code{approach} takes different (optional) parameters,
+The different choices of \code{approach} take different (optional) parameters,
 which are forwarded from \code{\link[=explain]{explain()}}.
 }
 \author{
