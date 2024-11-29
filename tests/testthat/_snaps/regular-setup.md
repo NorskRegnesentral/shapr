@@ -864,7 +864,7 @@
       Error in `setup_approach.gaussian()`:
       ! The following feature(s) are factor(s): Month_factor.
       approach = 'gaussian' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
 
 ---
 
@@ -881,7 +881,7 @@
       Error in `setup_approach.empirical()`:
       ! The following feature(s) are factor(s): Month_factor.
       approach = 'empirical' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
 
 ---
 
@@ -898,7 +898,7 @@
       Error in `setup_approach.copula()`:
       ! The following feature(s) are factor(s): Month_factor.
       approach = 'copula' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
 
 # Message with too low `max_n_coalitions`
 
