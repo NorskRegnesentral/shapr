@@ -28,18 +28,22 @@
 #' and `m` equals the total number of sampled/non-sampled coalitions and
 #' the total number of unique features, respectively. Note that `m = ncol(x_train)`.
 #'
-#' @param output_size TODO: Document
-#' @param extra TODO: Document
+#' @param dt_vS Data.table of dimension `n_coalitions` times `n_explain + 1` containing the contribution function
+#' estimates. The first column is assumed to be named `id_coalition` and containing the ids of the coalitions.
+#' The last row is assumed to be the full coalition, i.e., it contains the predicted responses for the observations
+#' which are to be explained.
+#'
+#' @param output_size Scalar integer.
+#' Specifies the dimension of the output from the prediction model for every observation.
 #'
 #' @param ... Further arguments passed to `approach`-specific functions.
 #'
-#' @return List `internal`
+#' @return The `internal` list.
 #' It holds all parameters, data, and computed objects used within [explain()].
-#' The list contains one or more of the elements `parameters`, `data`, `objects`, `output`.
 #'
 #'
 #' @keywords internal
-default_doc_internal <- function(internal, model, predict_model, output_size, extra, ...) {
+default_doc_internal <- function(...) {
   NULL
 }
 

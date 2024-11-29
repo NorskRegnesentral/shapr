@@ -1,3 +1,8 @@
+
+#' Gets the feature specifications form the model
+#'
+#' @inheritParams explain
+#' @keywords internal
 get_feature_specs <- function(get_model_specs, model) {
   # Checks that get_model_specs is a proper function (R + py)
   # Extracts natively supported functions for get_model_specs if exists and not passed (R only)

@@ -9,7 +9,8 @@ reg_forecast_setup(x, horizon, group)
 \arguments{
 \item{x}{A matrix with the exogenous variables.}
 
-\item{horizon}{The forecast horizon.}
+\item{horizon}{Numeric.
+The forecast horizon to explain. Passed to the \code{predict_model} function.}
 
 \item{group}{The list of endogenous groups, to append exogenous groups to.}
 }

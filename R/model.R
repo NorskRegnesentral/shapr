@@ -9,9 +9,6 @@
 #' [xgboost::xgb.train()] with binary or continuous
 #' response. See details for more information.
 #'
-#' NOTE: You should never need to call this function explicitly.
-#' It is exported just to be easier accessible for users, see details.
-#'
 #' @param x Model object for the model to be explained.
 #' @param newdata A data.frame/data.table with the features to predict from.
 #' @param ... `newreg` and `horizon` parameters used in models passed to `[explain_forecast()]`
@@ -155,8 +152,7 @@ get_model_specs.default <- function(x) {
 
 
 #' Provides a data.table with the supported models
-#'
-#' @keywords internal
+#' @export
 get_supported_models <- function() {
   DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs), "info"), keep.rownames = TRUE)
 

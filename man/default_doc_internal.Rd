@@ -4,9 +4,11 @@
 \alias{default_doc_internal}
 \title{Unexported documentation helper function.}
 \usage{
-default_doc_internal(internal, model, predict_model, output_size, extra, ...)
+default_doc_internal(...)
 }
 \arguments{
+\item{...}{Further arguments passed to \code{approach}-specific functions.}
+
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
@@ -19,12 +21,6 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
-
-\item{output_size}{TODO: Document}
-
-\item{extra}{TODO: Document}
-
-\item{...}{Further arguments passed to \code{approach}-specific functions.}
 
 \item{x_explain}{Data.table with the features of the observation whose
 predictions ought to be explained (test data).}
@@ -40,11 +36,18 @@ observations for all coalitions. The dimension equals \verb{n_train x m}.}
 \item{S}{Integer matrix of dimension \verb{n_coalitions x m}, where \code{n_coalitions}
 and \code{m} equals the total number of sampled/non-sampled coalitions and
 the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.}
+
+\item{dt_vS}{Data.table of dimension \code{n_coalitions} times \code{n_explain + 1} containing the contribution function
+estimates. The first column is assumed to be named \code{id_coalition} and containing the ids of the coalitions.
+The last row is assumed to be the full coalition, i.e., it contains the predicted responses for the observations
+which are to be explained.}
+
+\item{output_size}{Scalar integer.
+Specifies the dimension of the output from the prediction model for every observation.}
 }
 \value{
-List \code{internal}
+The \code{internal} list.
 It holds all parameters, data, and computed objects used within \code{\link[=explain]{explain()}}.
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.
 }
 \description{
 Unexported documentation helper function.

@@ -201,6 +201,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
   return(result)
 }
 
+#' @keywords internal
 bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100, seed = 123) {
   type <- internal$parameters$type
   iter <- length(internal$iter_list)

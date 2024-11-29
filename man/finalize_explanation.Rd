@@ -13,3 +13,4 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 \description{
 Gathers the final output to create the explanation object
 }
+\keyword{internal}

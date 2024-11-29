@@ -1,4 +1,5 @@
 #' @rdname predict_model
+#' @inheritParams explain_forecast
 #' @export
 predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explain_lags, y, xreg, ...) {
   if (!requireNamespace("stats", quietly = TRUE)) {

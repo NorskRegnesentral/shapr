@@ -66,7 +66,8 @@ features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
 
-\item{output_size}{TODO: Document}
+\item{output_size}{Scalar integer.
+Specifies the dimension of the output from the prediction model for every observation.}
 
 \item{max_n_coalitions}{Integer.
 The upper limit on the number of unique feature/group coalitions to use in the iterative procedure

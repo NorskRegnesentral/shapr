@@ -21,9 +21,8 @@ The prediction function used when \code{model} is not natively supported.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
 }
 \value{
-List \code{internal}
+The \code{internal} list.
 It holds all parameters, data, and computed objects used within \code{\link[=explain]{explain()}}.
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.
 }
 \description{
 Sets up everything for the Shapley values computation in \code{\link[=explain]{explain()}}

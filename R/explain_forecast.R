@@ -241,22 +241,13 @@ explain_forecast <- function(model,
 
 #' Set up data for explain_forecast
 #'
-#' @param y A matrix or numeric vector containing the endogenous variables for the model.
-#' One variable per column, one observation per row.
-#' @param xreg A matrix containing exogenous regressors for the model.
-#' One variable per column, one observation per row. Should have nrow(data) + horizon rows.
-#' @param train_idx The observations indices in data to use as training examples.
-#' @param explain_idx The observations indices in data to explain.
-#' @param explain_y_lags Numeric vector
-#' Indicates the number of lags of y to include in the explanation.
-#' @param explain_xreg_lags Numeric vector
-#' Indicates the number of lags of xreg to include in the explanation.
-#' @param horizon The forecast horizon to explain.
+#' @inheritParams explain_forecast
 #'
 #' @return A list containing
 #' - The data.frames x_train and x_explain which holds the lagged data examples.
 #' - A numeric, n_endo denoting how many columns are endogenous in x_train and x_explain.
 #' - A list, group with groupings of each variable to explain per variable and not per variable and lag.
+#' @keywords internal
 get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon) {
   # Check data object type
   stop_message <- ""
@@ -367,6 +358,7 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
 #' @return A list with two items
 #' - A matrix, lagged with the lagged data.
 #' - A list, group, with groupings of the lagged data per variable.
+#' @keywords internal
 lag_data <- function(x, lags) {
   lagged_obs <- nrow(x) - max(lags) + 1
   lagged <- matrix(NA, lagged_obs, 0)
@@ -389,8 +381,8 @@ lag_data <- function(x, lags) {
 
 #' Set up exogenous regressors for explanation in a forecast model.
 #'
+#' @inheritParams explain_forecast
 #' @param x A matrix with the exogenous variables.
-#' @param horizon The forecast horizon.
 #' @param group The list of endogenous groups, to append exogenous groups to.
 #'
 #' @return A list containing
