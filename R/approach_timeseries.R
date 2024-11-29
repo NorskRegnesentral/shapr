@@ -1,21 +1,23 @@
 #' @rdname setup_approach
 #'
-#' @param timeseries.fixed_sigma_vec Numeric. (Default = 2)
-#' Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?
+#' @param timeseries.fixed_sigma Positive numeric scalar.
+#' Represents the kernel bandwidth in the distance computation.
+#' The default value is 2.
 #'
-#' @param timeseries.bounds Numeric vector of length two. (Default = c(NULL, NULL))
-#' If one or both of these bounds are not NULL, we restrict the sampled time series to be
-#' between these bounds.
+#' @param timeseries.bounds Numeric vector of length two.
+#' Specifies the lower and upper bounds of the timeseries.
+#' The default is `c(NULL, NULL)`, i.e. no bounds.
+#' If one or both of these bounds are not `NULL`, we restrict the sampled time series to be between these bounds.
 #' This is useful if the underlying time series are scaled between 0 and 1, for example.
 #'
 #' @inheritParams default_doc_export
 #'
 #' @export
 setup_approach.timeseries <- function(internal,
-                                      timeseries.fixed_sigma_vec = 2,
+                                      timeseries.fixed_sigma = 2,
                                       timeseries.bounds = c(NULL, NULL),
                                       ...) {
-  defaults <- mget(c("timeseries.fixed_sigma_vec", "timeseries.bounds"))
+  defaults <- mget(c("timeseries.fixed_sigma", "timeseries.bounds"))
 
   internal <- insert_defaults(internal, defaults)
 
@@ -33,7 +35,7 @@ setup_approach.timeseries <- function(internal,
 }
 
 
-#' @inheritParams default_doc_internal
+#' @inheritParams default_doc_export
 #'
 #' @rdname prepare_data
 #' @export
@@ -44,7 +46,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  timeseries.fixed_sigma_vec <- internal$parameters$timeseries.fixed_sigma_vec
+  timeseries.fixed_sigma <- internal$parameters$timeseries.fixed_sigma
   timeseries.upper_bound <- internal$parameters$timeseries.bounds[1]
   timeseries.lower_bound <- internal$parameters$timeseries.bounds[2]
 
@@ -95,7 +97,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
         (matrix(rep(x_explain_i[S[j, ] == 0, drop = FALSE], nrow(x_train)), nrow = nrow(x_train), byrow = TRUE) -
           x_train[, S[j, ] == 0, drop = FALSE])^2
       )
-      / timeseries.fixed_sigma_vec^2)
+      / timeseries.fixed_sigma^2)
 
       for (k in seq_len(nrow(Sbar_segments))) {
         impute_these <- seq(Sbar_segments$Sbar_starts[k], Sbar_segments$Sbar_ends[k])

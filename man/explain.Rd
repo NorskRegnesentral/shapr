@@ -215,7 +215,7 @@ Containing the joint probability distribution for each combination of feature
 values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
     \item{\code{categorical.epsilon}}{Numeric value. (Optional)
-If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
+If \code{categorical.joint_probability_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
@@ -305,22 +305,21 @@ Note, to make it easier to call \code{explain()} from Python, the \code{regressi
 containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}
-    \item{\code{regression.surrogate_n_comb}}{Integer.
-(default is \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions}) specifying the
-number of unique coalitions to apply to each training observation. Maximum allowed value is
-"\code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions} - 2".
-By default, we use all coalitions, but this can take a lot of memory in larger dimensions.
-Note that by "all", we mean all coalitions chosen by \code{shapr} to be used.
-This will be all \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in
-the exact mode.
-If the user sets a lower value than \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions},
-then we sample this amount of unique coalitions separately for each training observations.
+    \item{\code{regression.surrogate_n_comb}}{Positive integer.
+Specifies the number of unique coalitions to apply to each training observation.
+The default is the number of sampled coalitions in the present iteration.
+Any integer between 1 and the default is allowed.
+Larger values requires more memory, but may improve the surrogate model.
+If the user sets a value lower than the maximum, we sample this amount of unique coalitions
+separately for each training observations.
 That is, on average, all coalitions should be equally trained.}
-    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
-    \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
-If one or both of these bounds are not NULL, we restrict the sampled time series to be
-between these bounds.
+    \item{\code{timeseries.fixed_sigma}}{Positive numeric scalar.
+Represents the kernel bandwidth in the distance computation.
+The default value is 2.}
+    \item{\code{timeseries.bounds}}{Numeric vector of length two.
+Specifies the lower and upper bounds of the timeseries.
+The default is \code{c(NULL, NULL)}, i.e. no bounds.
+If one or both of these bounds are not \code{NULL}, we restrict the sampled time series to be between these bounds.
 This is useful if the underlying time series are scaled between 0 and 1, for example.}
     \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
 in the neural networks of the masked encoder, full encoder, and decoder.}
@@ -342,19 +341,19 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-\item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
+\item{\code{shapley_values_est}}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
 The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
-\item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
+\item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
 Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
-\item{internal}{List with the different parameters, data, functions and other output used internally.}
-\item{pred_explain}{Numeric vector with the predictions for the explained observations}
-\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
+\item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
+\item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
+\item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
 }{MSEv evaluation section in the vignette for details}.}
-\item{timing}{List containing timing information for the different parts of the computation.
+\item{\code{timing}}{List containing timing information for the different parts of the computation.
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
 \code{main_timing_secs} gives the time in seconds for the main computations.
@@ -499,11 +498,6 @@ explain_groups <- explain(
 print(explain_groups$shapley_values_est)
 
 # Separate and surrogate regression approaches with linear regression models.
-# More complex regression models can be used, and we can use CV to
-# tune the hyperparameters of the regression models and preprocess
-# the data before sending it to the model. See the regression vignette
-# (Shapley value explanations using the regression paradigm) for more
-# details about the `regression_separate` and `regression_surrogate` approaches.
 explain_separate_lm <- explain(
   model = model,
   x_explain = x_explain,
@@ -522,7 +516,7 @@ explain_surrogate_lm <- explain(
   regression.model = parsnip::linear_reg()
 )
 
-## iterative estimation
+# Iterative estimation
 # For illustration purposes only. By default not used for such small dimensions as here
 
 # Gaussian approach

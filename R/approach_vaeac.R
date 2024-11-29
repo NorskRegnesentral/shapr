@@ -21,7 +21,7 @@
 #'
 #' @export
 #' @author Lars Henry Berge Olsen
-setup_approach.vaeac <- function(internal, # add default values for vaeac here.
+setup_approach.vaeac <- function(internal,
                                  vaeac.depth = 3,
                                  vaeac.width = 32,
                                  vaeac.latent_dim = 8,
@@ -200,7 +200,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   return(internal)
 }
 
-#' @inheritParams default_doc_internal
+#' @inheritParams default_doc_export
 #'
 #' @rdname prepare_data
 #' @export

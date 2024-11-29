@@ -3,17 +3,18 @@
 #'
 #' @param dt Data.table containing the generated MC samples (and conditional values) after each sampling step
 #' @inheritParams explain
-#' @inheritParams create_marginal_data_categoric
+#' @inheritParams create_marginal_data_cat
 #' @inheritParams create_marginal_data_training
 #'
+#' @details For undocumented arguments, see [setup_approach.categorical()].
 #' @keywords internal
 #'
 #' @author Lars Henry Berge Olsen
-check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_probability_dt) {
+check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_prob_dt) {
   dt_factor <- dt[, .SD, .SDcols = is.factor] # Get the columns that have been inserted into
   dt_factor_names <- copy(names(dt_factor)) # Get their names. Copy as we are to change dt_factor
   dt_factor[, id := rep(seq(n_explain), each = n_MC_samples)] # Add an id column
-  dt_valid_coals <- joint_probability_dt[, dt_factor_names, with = FALSE] # Get the valid feature coalitions
+  dt_valid_coals <- joint_prob_dt[, dt_factor_names, with = FALSE] # Get the valid feature coalitions
   dt_invalid <- dt_factor[!dt_valid_coals, on = dt_factor_names] # Get non valid coalitions
   explicand_all_invalid <- dt_invalid[, .N, by = id][N == n_MC_samples] # If all samples for an explicand are invalid
   if (nrow(explicand_all_invalid) > 0) {
@@ -62,18 +63,16 @@ convert_feature_name_to_idx <- function(causal_ordering, labels, feat_group_txt)
 #'
 #' @description Sample observations from the empirical distribution P(X) using the training dataset.
 #'
-#' @param n_explain Integer. The number of explicands/observations to explain.
 #' @param Sbar_features Vector of integers containing the features indices to generate marginal observations for.
 #' That is, if `Sbar_features` is `c(1,4)`, then we sample `n_MC_samples` observations from \eqn{P(X_1, X_4)} using the
 #' empirical training observations (with replacements). That is, we sample the first and fourth feature values from
 #' the same training observation, so we do not break the dependence between them.
-#' @param n_explain Integer. The number of explicands/observations to explain.
 #' @param stable_version Logical. If `TRUE` and `n_MC_samples` > `n_train`, then we include each training observation
 #' `n_MC_samples %/% n_train` times and then sample the remaining `n_MC_samples %% n_train samples`. Only the latter is
 #' done when `n_MC_samples < n_train`. This is done separately for each explicand. If `FALSE`, we randomly sample the
 #' from the observations.
 #'
-#' @inheritParams explain
+#' @inheritParams default_doc_internal
 #'
 #' @return Data table of dimension \eqn{`n_MC_samples` \times `length(Sbar_features)`} with the sampled observations.
 #'
@@ -90,7 +89,7 @@ convert_feature_name_to_idx <- function(causal_ordering, labels, feat_group_txt)
 #' ind_x_explain <- 1:6
 #' x_train <- data[-ind_x_explain, ..x_var]
 #' x_train
-#' create_marginal_data__training(x_train = x_train, Sbar_features = c(1, 4), n_MC_samples = 10)
+#' shapr:::create_marginal_data__training(x_train = x_train, Sbar_features = c(1, 4), n_MC_samples = 10)
 #' }
 #'
 #' @keywords internal
@@ -148,8 +147,8 @@ create_marginal_data_training <- function(x_train,
 #' the marginal probability, so we do not break the dependence between them.
 #' @param S_original Vector of integers containing the features indices of the original coalition `S`. I.e., not the
 #' features in the current sampling step, but the features are known to us before starting the chain of sampling steps.
-#' @param joint_prob_dt Data.table containing the joint probability distribution for each coalition of feature values.
 #' @inheritParams explain
+#' @details For undocumented arguments, see [setup_approach.categorical()].
 #'
 #' @return Data table of dimension \eqn{(`n_MC_samples` * `nrow(x_explain)`) \times `length(Sbar_features)`} with the
 #' sampled observations.
@@ -157,11 +156,11 @@ create_marginal_data_training <- function(x_train,
 #' @keywords internal
 #'
 #' @author Lars Henry Berge Olsen
-create_marginal_data_categoric <- function(n_MC_samples,
-                                           x_explain,
-                                           Sbar_features,
-                                           S_original,
-                                           joint_prob_dt) {
+create_marginal_data_cat <- function(n_MC_samples,
+                                     x_explain,
+                                     Sbar_features,
+                                     S_original,
+                                     joint_prob_dt) {
   # Get the number of features and their names
   n_features <- ncol(x_explain)
   feature_names <- colnames(x_explain)
@@ -496,7 +495,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         } else if (approach == "categorical" && length(S_causal_steps_now) > 1) {
           # For categorical approach with several sampling steps, we make sure to only sample feature coalitions
           # that are present in `categorical.joint_prob_dt` when combined with the features in `S_names`.
-          dt_Sbar_now_marginal_values <- create_marginal_data_categoric(
+          dt_Sbar_now_marginal_values <- create_marginal_data_cat(
             n_MC_samples = n_MC_samples,
             x_explain = x_explain,
             Sbar_features = Sbar_now,
@@ -550,7 +549,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
           dt = dt,
           n_explain = n_explain,
           n_MC_samples = n_MC_samples,
-          joint_probability_dt = internal$parameters$categorical.joint_prob_dt
+          joint_prob_dt = internal$parameters$categorical.joint_prob_dt
         )
       }
 

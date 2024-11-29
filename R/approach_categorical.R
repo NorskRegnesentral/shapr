@@ -6,7 +6,7 @@
 #' `NULL` means it is estimated from the `x_train` and `x_explain`.
 #'
 #' @param categorical.epsilon Numeric value. (Optional)
-#' If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
+#' If `categorical.joint_probability_dt` is not supplied, probabilities/frequencies are
 #' estimated using `x_train`. If certain observations occur in `x_explain` and NOT in `x_train`,
 #' then epsilon is used as the proportion of times that these observations occurs in the training data.
 #' In theory, this proportion should be zero, but this causes an error later in the Shapley computation.

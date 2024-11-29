@@ -610,7 +610,7 @@ is often more important for the outcome than the single time points.
 Therefore, it makes sense to derive Shapley value segments of the time
 series instead of for each single time point. In `shapr` this can be
 achieved through the `group` attribute. Other optional parameters of
-`approach='timeseries'` are `timeseries.fixed_sigma_vec` and
+`approach='timeseries'` are `timeseries.fixed_sigma` and
 `timeseries.bounds` (a vector indicating upper and lower bounds of the
 time series if necessary).
 

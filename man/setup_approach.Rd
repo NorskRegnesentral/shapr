@@ -81,7 +81,7 @@ setup_approach(internal, ...)
 
 \method{setup_approach}{timeseries}(
   internal,
-  timeseries.fixed_sigma_vec = 2,
+  timeseries.fixed_sigma = 2,
   timeseries.bounds = c(NULL, NULL),
   ...
 )
@@ -111,7 +111,7 @@ values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
 
 \item{categorical.epsilon}{Numeric value. (Optional)
-If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
+If \code{categorical.joint_probability_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
@@ -225,24 +225,23 @@ containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}
 
-\item{regression.surrogate_n_comb}{Integer.
-(default is \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions}) specifying the
-number of unique coalitions to apply to each training observation. Maximum allowed value is
-"\code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions} - 2".
-By default, we use all coalitions, but this can take a lot of memory in larger dimensions.
-Note that by "all", we mean all coalitions chosen by \code{shapr} to be used.
-This will be all \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in
-the exact mode.
-If the user sets a lower value than \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions},
-then we sample this amount of unique coalitions separately for each training observations.
+\item{regression.surrogate_n_comb}{Positive integer.
+Specifies the number of unique coalitions to apply to each training observation.
+The default is the number of sampled coalitions in the present iteration.
+Any integer between 1 and the default is allowed.
+Larger values requires more memory, but may improve the surrogate model.
+If the user sets a value lower than the maximum, we sample this amount of unique coalitions
+separately for each training observations.
 That is, on average, all coalitions should be equally trained.}
 
-\item{timeseries.fixed_sigma_vec}{Numeric. (Default = 2)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
+\item{timeseries.fixed_sigma}{Positive numeric scalar.
+Represents the kernel bandwidth in the distance computation.
+The default value is 2.}
 
-\item{timeseries.bounds}{Numeric vector of length two. (Default = c(NULL, NULL))
-If one or both of these bounds are not NULL, we restrict the sampled time series to be
-between these bounds.
+\item{timeseries.bounds}{Numeric vector of length two.
+Specifies the lower and upper bounds of the timeseries.
+The default is \code{c(NULL, NULL)}, i.e. no bounds.
+If one or both of these bounds are not \code{NULL}, we restrict the sampled time series to be between these bounds.
 This is useful if the underlying time series are scaled between 0 and 1, for example.}
 
 \item{vaeac.depth}{Positive integer (default is \code{3}). The number of hidden layers

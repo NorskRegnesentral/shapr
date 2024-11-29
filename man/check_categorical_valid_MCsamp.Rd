@@ -4,17 +4,10 @@
 \alias{check_categorical_valid_MCsamp}
 \title{Check that all explicands has at least one valid MC sample in causal Shapley values}
 \usage{
-check_categorical_valid_MCsamp(
-  dt,
-  n_explain,
-  n_MC_samples,
-  joint_probability_dt
-)
+check_categorical_valid_MCsamp(dt, n_explain, n_MC_samples, joint_prob_dt)
 }
 \arguments{
 \item{dt}{Data.table containing the generated MC samples (and conditional values) after each sampling step}
-
-\item{n_explain}{Integer. The number of explicands/observations to explain.}
 
 \item{n_MC_samples}{Positive integer.
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
@@ -27,6 +20,9 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 }
 \description{
 Check that all explicands has at least one valid MC sample in causal Shapley values
+}
+\details{
+For undocumented arguments, see \code{\link[=setup_approach.categorical]{setup_approach.categorical()}}.
 }
 \author{
 Lars Henry Berge Olsen

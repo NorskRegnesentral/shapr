@@ -213,19 +213,19 @@
 #'
 #' @return Object of class `c("shapr", "list")`. Contains the following items:
 #' \describe{
-#'   \item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
+#'   \item{`shapley_values_est`}{data.table with the estimated Shapley values with explained observation in the rows and
 #'   features along the columns.
 #'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`)}
-#'   \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
+#'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 #'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 #'   definition 0 when all coalitions is used.
 #'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`}
-#'   \item{internal}{List with the different parameters, data, functions and other output used internally.}
-#'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
-#'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
+#'   \item{`internal`}{List with the different parameters, data, functions and other output used internally.}
+#'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations}
+#'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
 #'   \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
 #'   }{MSEv evaluation section in the vignette for details}.}
-#'   \item{timing}{List containing timing information for the different parts of the computation.
+#'   \item{`timing`}{List containing timing information for the different parts of the computation.
 #'   `init_time` and `end_time` gives the time stamps for the start and end of the computation.
 #'   `total_time_secs` gives the total time in seconds for the complete execution of `explain()`.
 #'   `main_timing_secs` gives the time in seconds for the main computations.
@@ -342,11 +342,6 @@
 #' print(explain_groups$shapley_values_est)
 #'
 #' # Separate and surrogate regression approaches with linear regression models.
-#' # More complex regression models can be used, and we can use CV to
-#' # tune the hyperparameters of the regression models and preprocess
-#' # the data before sending it to the model. See the regression vignette
-#' # (Shapley value explanations using the regression paradigm) for more
-#' # details about the `regression_separate` and `regression_surrogate` approaches.
 #' explain_separate_lm <- explain(
 #'   model = model,
 #'   x_explain = x_explain,
@@ -365,7 +360,7 @@
 #'   regression.model = parsnip::linear_reg()
 #' )
 #'
-#' ## iterative estimation
+#' # Iterative estimation
 #' # For illustration purposes only. By default not used for such small dimensions as here
 #'
 #' # Gaussian approach

@@ -13,25 +13,12 @@ create_marginal_data_training(
 )
 }
 \arguments{
-\item{x_train}{Matrix or data.frame/data.table.
-Contains the data used to estimate the (conditional) distributions for the features
-needed to properly estimate the conditional expectations in the Shapley formula.}
-
-\item{n_explain}{Integer. The number of explicands/observations to explain.}
+\item{x_train}{Data.table with training data.}
 
 \item{Sbar_features}{Vector of integers containing the features indices to generate marginal observations for.
 That is, if \code{Sbar_features} is \code{c(1,4)}, then we sample \code{n_MC_samples} observations from \eqn{P(X_1, X_4)} using the
 empirical training observations (with replacements). That is, we sample the first and fourth feature values from
 the same training observation, so we do not break the dependence between them.}
-
-\item{n_MC_samples}{Positive integer.
-For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
-of every conditional expectation.
-For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
-from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
-For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-\code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{stable_version}{Logical. If \code{TRUE} and \code{n_MC_samples} > \code{n_train}, then we include each training observation
 \code{n_MC_samples \%/\% n_train} times and then sample the remaining \verb{n_MC_samples \%\% n_train samples}. Only the latter is
@@ -56,7 +43,7 @@ y_var <- "Ozone"
 ind_x_explain <- 1:6
 x_train <- data[-ind_x_explain, ..x_var]
 x_train
-create_marginal_data__training(x_train = x_train, Sbar_features = c(1, 4), n_MC_samples = 10)
+shapr:::create_marginal_data__training(x_train = x_train, Sbar_features = c(1, 4), n_MC_samples = 10)
 }
 
 }

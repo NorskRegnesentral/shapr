@@ -185,7 +185,7 @@ Containing the joint probability distribution for each combination of feature
 values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
     \item{\code{categorical.epsilon}}{Numeric value. (Optional)
-If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
+If \code{categorical.joint_probability_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
@@ -248,11 +248,13 @@ Containing the mean of the data generating distribution.
     \item{\code{gaussian.cov_mat}}{Numeric matrix. (Optional)
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
-    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
-    \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
-If one or both of these bounds are not NULL, we restrict the sampled time series to be
-between these bounds.
+    \item{\code{timeseries.fixed_sigma}}{Positive numeric scalar.
+Represents the kernel bandwidth in the distance computation.
+The default value is 2.}
+    \item{\code{timeseries.bounds}}{Numeric vector of length two.
+Specifies the lower and upper bounds of the timeseries.
+The default is \code{c(NULL, NULL)}, i.e. no bounds.
+If one or both of these bounds are not \code{NULL}, we restrict the sampled time series to be between these bounds.
 This is useful if the underlying time series are scaled between 0 and 1, for example.}
     \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
 in the neural networks of the masked encoder, full encoder, and decoder.}
@@ -274,19 +276,19 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-\item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
+\item{\code{shapley_values_est}}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
 The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
-\item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
+\item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
 Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
-\item{internal}{List with the different parameters, data, functions and other output used internally.}
-\item{pred_explain}{Numeric vector with the predictions for the explained observations}
-\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
+\item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
+\item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
+\item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
 }{MSEv evaluation section in the vignette for details}.}
-\item{timing}{List containing timing information for the different parts of the computation.
+\item{\code{timing}}{List containing timing information for the different parts of the computation.
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
 \code{main_timing_secs} gives the time in seconds for the main computations.
