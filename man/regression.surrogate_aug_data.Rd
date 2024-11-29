@@ -22,8 +22,7 @@ Holds all parameters, data, functions and computed objects used within \code{\li
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
 \code{main_timing_list}, \code{output}, and \code{iter_timing_list}.}
 
-\item{x}{Data.table containing the data. Either the training data or the explicands. If \code{x} is the explicands,
-then \code{index_features} must be provided.}
+\item{x}{Data.table containing the training data.}
 
 \item{y_hat}{Vector of numerics (optional) containing the predicted responses for the observations in \code{x}.}
 

@@ -62,5 +62,7 @@ Martin Jullum
 Annabelle Redelmeier and Lars Henry Berge Olsen
 
 Lars Henry Berge Olsen
+
+Martin Jullum,
 }
 \keyword{internal}

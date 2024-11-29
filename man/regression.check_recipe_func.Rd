@@ -15,8 +15,8 @@ containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}
 
-\item{x_explain}{Matrix or data.frame/data.table.
-Contains the the features, whose predictions ought to be explained.}
+\item{x_explain}{Data.table with the features of the observation whose
+predictions ought to be explained (test data).}
 }
 \description{
 Check that regression.recipe_func is a function that returns the

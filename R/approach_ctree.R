@@ -15,13 +15,13 @@
 #' The default value is 7.
 #'
 #' @param ctree.sample Boolean.
-#' If TRUE (default), then the method always samples `n_MC_samples` observations from the leaf nodes (with replacement).
-#' If FALSE and the number of observations in the leaf node is less than `n_MC_samples`,
+#' If `TRUE` (default), then the method always samples `n_MC_samples` observations from the leaf nodes (with replacement).
+#' If `FALSE` and the number of observations in the leaf node is less than `n_MC_samples`,
 #' the method will take all observations in the leaf.
-#' If FALSE and the number of observations in the leaf node is more than `n_MC_samples`,
+#' If `FALSE` and the number of observations in the leaf node is more than `n_MC_samples`,
 #' the method will sample `n_MC_samples` observations (with replacement).
 #' This means that there will always be sampling in the leaf unless
-#' `sample` = FALSE AND the number of obs in the node is less than `n_MC_samples`.
+#' `sample = FALSE` *and* the number of obs in the node is less than `n_MC_samples`.
 #'
 #' @inheritParams default_doc_export
 #'
@@ -114,12 +114,12 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
 #' @param given_ind Integer vector.
 #' Indicates which features are conditioned on.
 #'
-#' @param use_partykit String. In some semi-rare cases `partykit::ctree` runs into an error related to the LINPACK
-#' used by R. To get around this problem, one may fall back to using the newer (but slower) `partykit::ctree`
+#' @param use_partykit String. In some semi-rare cases [partykit::ctree()] runs into an error related to the LINPACK
+#' used by R. To get around this problem, one may fall back to using the newer (but slower) [partykit::ctree()]
 #' function, which is a reimplementation of the same method. Setting this parameter to `"on_error"` (default)
-#' falls back to  `partykit::ctree`, if `party::ctree` fails. Other options are `"never"`, which always
-#' uses `party::ctree`, and `"always"`, which always uses `partykit::ctree`. A warning message is
-#' created whenever `partykit::ctree` is used.
+#' falls back to  [partykit::ctree()], if [party::ctree()] fails. Other options are `"never"`, which always
+#' uses [party::ctree()], and `"always"`, which always uses [partykit::ctree()]. A warning message is
+#' created whenever [partykit::ctree()] is used.
 #'
 #' @inheritParams default_doc_internal
 #'

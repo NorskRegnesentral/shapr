@@ -48,6 +48,7 @@ setup_approach.gaussian <- function(internal,
 #' @inheritParams default_doc_internal
 #' @rdname prepare_data
 #' @export
+#' @author Martin Jullum,
 #' @author Lars Henry Berge Olsen
 prepare_data.gaussian <- function(internal, index_features, ...) {
   # Extract used variables
@@ -122,7 +123,6 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
 #' @param min_eigen_value Numeric
 #' Specifies the smallest allowed eigen value before the covariance matrix of `x_train` is assumed to not be
 #' positive definite, and [Matrix::nearPD()] is used to find the nearest one.
-#' @export
 get_cov_mat <- function(x_train, min_eigen_value = 1e-06) {
   cov_mat <- stats::cov(x_train)
   eigen_values <- eigen(cov_mat)$values
@@ -135,7 +135,6 @@ get_cov_mat <- function(x_train, min_eigen_value = 1e-06) {
 #' get_mu_vec
 #'
 #' @inheritParams explain
-#' @export
 get_mu_vec <- function(x_train) {
   unname(colMeans(x_train))
 }

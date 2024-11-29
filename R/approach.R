@@ -8,6 +8,7 @@
 #' @inheritParams default_doc_export
 #'
 #' @export
+#' @keywords internal
 #' @author Martin Jullum
 setup_approach <- function(internal, ...) {
   verbose <- internal$parameters$verbose

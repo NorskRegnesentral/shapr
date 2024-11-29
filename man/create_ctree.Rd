@@ -19,12 +19,12 @@ Indicates which features are conditioned on.}
 
 \item{x_train}{Data.table with training data.}
 
-\item{use_partykit}{String. In some semi-rare cases \code{partykit::ctree} runs into an error related to the LINPACK
-used by R. To get around this problem, one may fall back to using the newer (but slower) \code{partykit::ctree}
+\item{use_partykit}{String. In some semi-rare cases \code{\link[partykit:ctree]{partykit::ctree()}} runs into an error related to the LINPACK
+used by R. To get around this problem, one may fall back to using the newer (but slower) \code{\link[partykit:ctree]{partykit::ctree()}}
 function, which is a reimplementation of the same method. Setting this parameter to \code{"on_error"} (default)
-falls back to  \code{partykit::ctree}, if \code{party::ctree} fails. Other options are \code{"never"}, which always
-uses \code{party::ctree}, and \code{"always"}, which always uses \code{partykit::ctree}. A warning message is
-created whenever \code{partykit::ctree} is used.}
+falls back to  \code{\link[partykit:ctree]{partykit::ctree()}}, if \code{\link[party:ctree]{party::ctree()}} fails. Other options are \code{"never"}, which always
+uses \code{\link[party:ctree]{party::ctree()}}, and \code{"always"}, which always uses \code{\link[partykit:ctree]{partykit::ctree()}}. A warning message is
+created whenever \code{\link[partykit:ctree]{partykit::ctree()}} is used.}
 }
 \value{
 List with conditional inference tree and the variables conditioned/not conditioned on.

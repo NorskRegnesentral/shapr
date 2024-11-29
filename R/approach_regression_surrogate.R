@@ -64,14 +64,13 @@ setup_approach.regression_surrogate <- function(internal,
   return(internal) # Return the updated internal list
 }
 
-#' @inheritParams default_doc_internal
+#' @inheritParams default_doc_export
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.regression_surrogate <- function(internal, index_features = NULL, ...) {
   # Load `workflows`, needed when parallelized as we call predict with a workflow object. Checked installed above.
   requireNamespace("workflows", quietly = TRUE)
-
 
   # Augment the explicand data
   x_explain_aug <- regression.surrogate_aug_data(internal, x = internal$data$x_explain, index_features = index_features)

@@ -19,8 +19,7 @@ regression.train_model(
 )
 }
 \arguments{
-\item{x}{Data.table containing the data. Either the training data or the explicands. If \code{x} is the explicands,
-then \code{index_features} must be provided.}
+\item{x}{Data.table containing the training data.}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
@@ -82,6 +81,8 @@ a valid input. It is essential to include the package prefix if the package is n
 
 \item{regression.surrogate_n_comb}{Integer (default is \code{NULL}). The number of times each training observations
 has been augmented. If \code{NULL}, then we assume that we are doing separate regression.}
+
+\item{current_comb}{Integer vector. The current combination of features, passed to verbosity printing function.}
 }
 \value{
 A trained \code{tidymodels} model based on the provided input parameters.
