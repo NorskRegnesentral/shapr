@@ -2069,9 +2069,9 @@ vaeac_get_evaluation_criteria <- function(explanation_list) {
 #'
 #' @inheritParams vaeac_train_model
 #' @param train_indices Numeric array (optional) containing the indices of the training observations.
-#' There are conducted no checks to validdate the indices.
+#' There are conducted no checks to validate the indices.
 #' @param val_indices Numeric array (optional) containing the indices of the validation observations.
-#' #' There are conducted no checks to validdate the indices.
+#' #' There are conducted no checks to validate the indices.
 #'
 #' @return List of objects needed to train the `vaeac` model
 vaeac_get_data_objects <- function(x_train,
