@@ -61,7 +61,9 @@ criterion, but also for each observation/explicand and coalition by only averagi
 the coalitions and observations/explicands, respectively.
 }
 \examples{
-# Load necessary librarieslibrary(xgboost)
+\dontrun{
+# Load necessary libraries
+library(xgboost)
 library(data.table)
 library(shapr)
 library(ggplot2)
@@ -204,6 +206,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
       position = ggplot2::position_dodge(0.9),
       size = 5
     )
+}
 }
 
 }

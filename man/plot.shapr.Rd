@@ -50,7 +50,7 @@ E.g. if you have 15 features in your model you can plot the 5 most important fea
 for each explanation, by setting \code{top_k_features = 1:5}.
 Applicable for \code{plot_type} \code{"bar"} and \code{"waterfall"}}
 
-\item{col}{Character vector (length depends on plot type).
+\item{col}{Character vector (where length depends on plot type).
 The color codes (hex codes or other names understood by \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}) for positive and negative
 Shapley values, respectively.
 The default is \code{col=NULL}, plotting with the default colors respective to the plot type.

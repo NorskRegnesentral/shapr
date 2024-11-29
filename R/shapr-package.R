@@ -25,6 +25,7 @@ NULL
 #' `rebuild-long-running-vignette.R` function.
 #' This is only useful when using devtools to release `shapr` to cran.
 #' See [devtools::release()] for more information.
+#' @keywords internal
 release_questions <- function() {
   c(paste0(
     "Did you re-build the vignettes using `rebuild-long-running-vignette.R`?"

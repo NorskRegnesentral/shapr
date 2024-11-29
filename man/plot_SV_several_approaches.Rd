@@ -24,7 +24,7 @@ plot_SV_several_approaches(
 }
 \arguments{
 \item{explanation_list}{A list of \code{\link[=explain]{explain()}} objects applied to the same data and model.
-If the entries in the list is named, then the function use these names. Otherwise, it defaults to
+If the entries in the list are named, then the function use these names. Otherwise, they default to
 the approach names (with integer suffix for duplicates) for the explanation objects in \code{explanation_list}.}
 
 \item{index_explicands}{Integer vector. Which of the explicands (test observations) to plot.
@@ -41,7 +41,9 @@ are to be included in the bar plots.}
 
 \item{plot_phi0}{Boolean. If we are to include the \eqn{\phi_0} in the bar plots or not.}
 
-\item{digits}{Integer. Number of significant digits to use in the feature description.}
+\item{digits}{Integer.
+Number of significant digits to use in the feature description.
+Applicable for \code{plot_type} \code{"bar"} and \code{"waterfall"}}
 
 \item{add_zero_line}{Boolean. If we are to add a black line for a feature contribution of 0.}
 
@@ -86,6 +88,7 @@ Make plots to visualize and compare the estimated Shapley values for a list of
 the features values plotted are the mean feature values for all features in each group.
 }
 \examples{
+\dontrun{
 # Load necessary libraries
 library(xgboost)
 library(data.table)
@@ -214,6 +217,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
     only_these_features = c("Temp", "Solar.R"),
     plot_phi0 = TRUE
   )
+}
 }
 
 }

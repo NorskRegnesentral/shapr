@@ -12,3 +12,4 @@ Function that question if the main and vaeac vignette has been built using the
 This is only useful when using devtools to release \code{shapr} to cran.
 See \code{\link[devtools:release]{devtools::release()}} for more information.
 }
+\keyword{internal}
