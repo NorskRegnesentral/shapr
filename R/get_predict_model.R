@@ -1,6 +1,6 @@
 #' Get predict_model function
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @keywords internal
 get_predict_model <- function(predict_model, model) {
   # Checks that predict_model is a proper function (R + py)
@@ -36,7 +36,7 @@ get_predict_model <- function(predict_model, model) {
 
 #' Model testing function
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @keywords internal
 test_predict_model <- function(x_test, predict_model, model, internal) {
   # Tests prediction with some data

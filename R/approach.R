@@ -5,7 +5,7 @@
 #'
 #' @param ... Arguments passed to specific classes. See below
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @author Martin Jullum
@@ -53,7 +53,7 @@ setup_approach <- function(internal, ...) {
   }
 }
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @rdname setup_approach
 #' @export
 setup_approach.combined <- function(internal, ...) {
@@ -76,7 +76,7 @@ setup_approach.combined <- function(internal, ...) {
 #' @return A data.table containing simulated data used to estimate
 #' the contribution function by Monte Carlo integration.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal

@@ -11,7 +11,7 @@
 #' then epsilon is used as the proportion of times that these observations occurs in the training data.
 #' In theory, this proportion should be zero, but this causes an error later in the Shapley computation.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 setup_approach.categorical <- function(internal,
@@ -96,7 +96,7 @@ setup_approach.categorical <- function(internal,
 }
 
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @rdname prepare_data
 #' @export
@@ -200,7 +200,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 #' The [prepare_data.categorical()] function is slow when evaluated for a single coalition.
 #' This is a bottleneck for Causal Shapley values which call said function a lot with single coalitions.
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen

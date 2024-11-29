@@ -1,6 +1,6 @@
 #' Saves the itermediate results to disk
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal

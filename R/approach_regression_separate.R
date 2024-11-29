@@ -28,7 +28,7 @@
 #' containing an R function. For example,
 #' `"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"` is also
 #' a valid input. It is essential to include the package prefix if the package is not loaded.
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -56,7 +56,7 @@ setup_approach.regression_separate <- function(internal,
   return(internal) # Return the updated internal list
 }
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -240,7 +240,7 @@ regression.get_string_to_R <- function(string) {
 
 #' Get the predicted responses
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @return The same `internal` list, but added vectors `internal$data$x_train_y_hat` and
 #' `internal$data$x_explain_y_hat` containing the predicted response of the training and explain data.
@@ -319,7 +319,7 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 # Check functions ======================================================================================================
 #' Check regression parameters
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @return The same `internal` list, but added logical indicator `internal$parameters$regression.tune`
 #' if we are to tune the regression model/models.

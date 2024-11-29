@@ -1,6 +1,6 @@
 #' Set up the kernelSHAP framework
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal
@@ -641,9 +641,9 @@ create_S_batch <- function(internal, seed = NULL) {
 
 #' Sets up everything for the Shapley values computation in [shapr::explain()]
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @inheritParams explain
-#' @inherit default_doc
+#' @inherit default_doc_internal
 #' @export
 setup_computation <- function(internal, model, predict_model) { # Can this function be removed? /Jon
   # model and predict_model are only needed for type AICc of approach empirical, otherwise ignored

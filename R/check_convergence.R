@@ -1,6 +1,6 @@
 #' Checks the convergence according to the convergence threshold
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal

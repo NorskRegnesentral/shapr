@@ -8,7 +8,7 @@
 #' Containing the covariance matrix of the data generating distribution.
 #' `NULL` means it is estimated from the `x_train`.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 setup_approach.gaussian <- function(internal,
@@ -45,7 +45,7 @@ setup_approach.gaussian <- function(internal,
   return(internal)
 }
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen

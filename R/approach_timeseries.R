@@ -8,7 +8,7 @@
 #' between these bounds.
 #' This is useful if the underlying time series are scaled between 0 and 1, for example.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 setup_approach.timeseries <- function(internal,
@@ -33,7 +33,7 @@ setup_approach.timeseries <- function(internal,
 }
 
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @rdname prepare_data
 #' @export

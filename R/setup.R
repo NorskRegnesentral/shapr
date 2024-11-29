@@ -1,7 +1,7 @@
 #' check_setup
 #' @inheritParams explain
 #' @inheritParams explain_forecast
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @param type Character.
 #' Either "normal" or "forecast" corresponding to function `setup()` is called from,
 #' correspondingly the type of explanation that should be generated.
@@ -1078,7 +1078,7 @@ set_extra_estimation_params <- function(internal) {
 #' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
 #' Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
 #' than the number of parallel workers.
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @export
 #' @author Martin Jullum
 get_extra_est_args_default <- function(internal, # Only used to get the default value of compute_sd
@@ -1632,7 +1632,7 @@ check_vs_prev_shapr_object <- function(internal) {
 #' `n_coal_next_iter_factor_vec[i]` for iteration `i`.
 #' It is wise to start with smaller numbers to avoid using too many `n_coalitions` due to uncertain estimates in
 #' the first iterations.
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @author Martin Jullum
@@ -1680,7 +1680,7 @@ get_iterative_args_default <- function(internal,
 
 #' Additional setup for regression-based methods
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal

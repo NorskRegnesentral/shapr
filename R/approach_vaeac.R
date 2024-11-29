@@ -17,7 +17,7 @@
 #' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach. See
 #'  [shapr::vaeac_get_extra_para_default()] for description of possible additional parameters and their default values.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -200,7 +200,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   return(internal)
 }
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @rdname prepare_data
 #' @export
@@ -2003,7 +2003,7 @@ vaeac_get_full_state_list <- function(environment) {
 #' Function to extend the explicands and apply all relevant masks/coalitions
 #'
 #' @inheritParams explain
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @param S The `internal$objects$S` matrix containing the possible coalitions.
 #'
 #' @return The extended version of `x_explain` where the masks from `S` with indices `index_features` have been applied.

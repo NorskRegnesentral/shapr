@@ -405,7 +405,7 @@ get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALS
 #' we could extend the code to sample from the marginal (gaussian) copula, too, when `approach` is
 #' `copula`.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @param ... Currently not used.
 #'
 #' @return A data.table containing simulated data that respects the (partial) causal ordering and the

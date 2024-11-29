@@ -39,8 +39,8 @@
 #' The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 #' `NULL` means it is estimated from `x_train`.
 #'
-#' @inheritParams default_doc_explain
-#' @inheritParams default_doc
+#' @inheritParams default_doc_export
+#' @inheritParams default_doc_internal
 #'
 #' @export
 setup_approach.empirical <- function(internal,
@@ -244,7 +244,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 
 #' Generate permutations of training data using test observations
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @return data.table
 #'

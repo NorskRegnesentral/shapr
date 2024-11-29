@@ -23,7 +23,7 @@
 #' This means that there will always be sampling in the leaf unless
 #' `sample` = FALSE AND the number of obs in the node is less than `n_MC_samples`.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 setup_approach.ctree <- function(internal,
@@ -40,7 +40,7 @@ setup_approach.ctree <- function(internal,
 }
 
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @rdname prepare_data
 #' @export
@@ -121,7 +121,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
 #' uses `party::ctree`, and `"always"`, which always uses `partykit::ctree`. A warning message is
 #' created whenever `partykit::ctree` is used.
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @return List with conditional inference tree and the variables conditioned/not conditioned on.
 #'
@@ -204,7 +204,7 @@ create_ctree <- function(given_ind,
 #' Corresponds to the number of samples from the leaf node.
 #' See an exception when sample = FALSE in [setup_approach.ctree()].
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @details See the documentation of the [setup_approach.ctree()] function for undocumented parameters.
 #'

@@ -2,7 +2,7 @@
 #'
 #' @param model_class String.
 #' Class of the model as a string
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @inheritParams explain
 #'
 #' @export
@@ -74,7 +74,7 @@ cli_startup <- function(internal, model_class, verbose) {
 
 #' Printing messages in compute_vS with cli
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @inheritParams explain
 #'
 #' @export
@@ -98,7 +98,7 @@ cli_compute_vS <- function(internal) {
 
 #' Printing messages in iterative procedure with cli
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @inheritParams explain
 #'
 #' @export

@@ -1,7 +1,7 @@
 #' Computes `v(S)` for all features subsets `S`.
 #'
-#' @inheritParams default_doc_explain
-#' @inheritParams default_doc
+#' @inheritParams default_doc_export
+#' @inheritParams default_doc_internal
 #'
 #' @param method Character
 #' Indicates whether the lappy method (default) or loop method should be used.

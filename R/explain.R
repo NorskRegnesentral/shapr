@@ -553,7 +553,7 @@ explain <- function(model,
 
 #' Cleans out certain output arguments to allow perfect reproducability of the output
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal

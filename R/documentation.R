@@ -39,7 +39,7 @@
 #'
 #'
 #' @keywords internal
-default_doc <- function(internal, model, predict_model, output_size, extra, ...) {
+default_doc_internal <- function(internal, model, predict_model, output_size, extra, ...) {
   NULL
 }
 
@@ -56,7 +56,7 @@ default_doc <- function(internal, model, predict_model, output_size, extra, ...)
 #' apply to the present method. `NULL` means all coalitions. Only used internally.
 #'
 #' @keywords internal
-default_doc_explain <- function(internal, iter, index_features) {
+default_doc_export <- function(internal, iter, index_features) {
   NULL
 }
 

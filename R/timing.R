@@ -1,6 +1,6 @@
 #' Gathers and computes the timing of the different parts of the explain function.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal

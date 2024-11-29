@@ -857,7 +857,7 @@ make_waterfall_plot <- function(dt_plot,
 #' the coalitions and observations/explicands, respectively.
 #'
 #' @inheritParams plot.shapr
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @param explanation_list A list of [shapr::explain()] objects applied to the same data and model.
 #' If the entries in the list are named, then the function use these names. Otherwise, they default to

@@ -1,6 +1,6 @@
 #' Prints iterative information
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal

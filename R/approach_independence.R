@@ -1,6 +1,6 @@
 #' @rdname setup_approach
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 setup_approach.independence <- function(internal, ...) {

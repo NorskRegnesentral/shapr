@@ -1,7 +1,7 @@
 # Shapr functions ======================================================================================================
 #' @rdname setup_approach
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @inheritParams setup_approach.regression_separate
 #' @param regression.surrogate_n_comb Integer.
 #' (default is `internal$iter_list[[length(internal$iter_list)]]$n_coalitions`) specifying the
@@ -64,7 +64,7 @@ setup_approach.regression_surrogate <- function(internal,
   return(internal) # Return the updated internal list
 }
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -90,7 +90,7 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 # Augment function =====================================================================================================
 #' Augment the training data and the explicands
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @inheritParams regression.train_model
 #' @param y_hat Vector of numerics (optional) containing the predicted responses for the observations in `x`.
 #' @param index_features Array of integers (optional) containing which coalitions to consider. Must be provided if

@@ -1,6 +1,6 @@
 #' Gathers the final output to create the explanation object
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 finalize_explanation <- function(internal) {
@@ -110,7 +110,7 @@ get_p <- function(dt_vS, internal) {
 #' Mean Squared Error of the Contribution Function `v(S)`
 #'
 #' @inheritParams explain
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @param dt_vS Data.table of dimension `n_coalitions` times `n_explain + 1` containing the contribution function
 #' estimates. The first column is assumed to be named `id_coalition` and containing the ids of the coalitions.
 #' The last row is assumed to be the full coalition, i.e., it contains the predicted responses for the observations
@@ -227,7 +227,7 @@ compute_MSEv_eval_crit <- function(internal,
 #' Computes the Shapley values given `v(S)`
 #'
 #' @inherit explain
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @param vS_list List
 #' Output from [compute_vS()]
 #'
