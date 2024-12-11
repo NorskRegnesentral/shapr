@@ -798,7 +798,7 @@ check_and_set_asymmetric <- function(internal) {
   internal$objects$dt_valid_causal_coalitions[-c(1, .N), shapley_weight_norm := shapley_weight / sum(shapley_weight)]
 
   # Convert the coalitions to strings. Needed when sampling the coalitions in `sample_coalition_table()`.
-  internal$objects$dt_valid_causal_coalitions[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
+  internal$objects$dt_valid_causal_coalitions[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
 
   return(internal)
 }
