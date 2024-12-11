@@ -533,6 +533,9 @@ sample_coalition_table <- function(m,
   w <- shapley_weights(m = m, N = n, coal_samp_vec) * n
   p <- w / sum(w)
 
+  # Check if we are to do asymmetric or symmetric/regular Shapley values
+  asymmetric = !is.null(dt_valid_causal_coalitions)
+
   if (!is.null(prev_coal_samples)) {
     coal_sample_all <- prev_coal_samples # TODO: is this now a list or a character vector? If it is a list, then we need to convert it to a character vector by calling unlist().
     #unique_samples <- length(unique(prev_coal_samples))
@@ -544,58 +547,43 @@ sample_coalition_table <- function(m,
     unique_samples <- 0
   }
 
-  # Split in whether we do asymmetric or symmetric/regular Shapley values
-  if (!is.null(dt_valid_causal_coalitions)) {
-    # Asymmetric Shapley values
-    while (unique_samples < n_coalitions - 2) { # Sample until we have the right number of unique coalitions
+  # Loop until we have drawn enough unique samples
+  while (unique_samples < n_coalitions - 2) {
 
-      # Get the number of causal coalitions to sample
-      n_samps <- n_coalitions - unique_samples - 2 # Sample -2 as we add zero and m samples below
+    # Get the number of samples to draw
+    n_samps <- as.integer(n_coalitions * n_samps_scale / ifelse(paired_shap_sampling, 2, 1))
 
+    # Sample the coalition sizes
+    coal_size_sample <- sample(x = coal_samp_vec, size = n_samps, replace = TRUE, prob = p)
+
+    # Sample the coalitions based on if we are computing regular/symmetric or asymmetric Shapley values
+    if (asymmetric) {
       # Sample the causal coalitions from the valid causal coalitions with the Shapley weight as the probability
       # The weights of each coalition size is split evenly among the members of each coalition size, such that
-      # all.equal(p, dt_valid_causal_coalitions[-c(1,.N), sum(shapley_weight), by = coalition_size][, V1])
-      coal_sample <-
+      # all.equal(p, dt_valid_causal_coalitions[-c(1,.N), sum(shapley_weight_norm), by = coalition_size][, V1])
+      coalitions <-
         dt_valid_causal_coalitions[-c(1, .N)][sample(.N, n_samps, replace = TRUE, prob = shapley_weight),
                                               coalitions_str]
-
-      # TODO: Can do this sampling smarter so that I do not have to call unique(coal_sample_all) each time, but rather just for indices. And then at the end pick out the coalitions of those indices.
-
-      # Add the samples
-      coal_sample_all <- c(coal_sample_all, coal_sample)
-
-      # Find the number of unique samples
-      unique_samples <- length(unique(coal_sample_all))
-    }
-  } else {
-    # Loop until we have enough unique samples
-    while (unique_samples < n_coalitions - 2) {
-
-      # Get the number of samples to draw
-      n_samps <- as.integer(n_coalitions * n_samps_scale / ifelse(paired_shap_sampling, 2, 1))
-
-      # Sample the coalition sizes
-      coal_size_sample <- sample(x = coal_samp_vec, size = n_samps, replace = TRUE, prob = p)
-
+    } else {
       # Sample the (paired) coalitions as strings
       coalitions <- sample_features_cpp_str_paired(m, coal_size_sample, paired_shap_sampling)
-
-      # Add the new coalitions to the previously sampled coalitions
-      coal_sample_all <- c(coal_sample_all, coalitions)
-
-      # Get the cumulative number of unique coalitions for each coalition in coal_sample_all
-      dt_cumsum <- data.table(coalitions = coal_sample_all, N_S = cumsum(!duplicated(coal_sample_all)))[, L := .I]
-
-      # Extract rows where the N_S value increases (i.e., where we sample a new unique coalition)
-      dt_N_S_and_L <- dt_cumsum[N_S != data.table::shift(N_S, type = "lag", fill = 0)]
-
-      # Get the number of unique coalitions
-      unique_samples <- dt_N_S_and_L[.N, N_S]
     }
 
-    # Post processing: keep only the coalitions until n_coalitions - 2
-    coal_sample_all <- coal_sample_all[seq(dt_N_S_and_L[N_S == n_coalitions - 2, L])]
+    # Add the new coalitions to the previously sampled coalitions
+    coal_sample_all <- c(coal_sample_all, coalitions)
+
+    # Get the cumulative number of unique coalitions for each coalition in coal_sample_all
+    dt_cumsum <- data.table(coalitions = coal_sample_all, N_S = cumsum(!duplicated(coal_sample_all)))[, L := .I]
+
+    # Extract rows where the N_S value increases (i.e., where we sample a new unique coalition)
+    dt_N_S_and_L <- dt_cumsum[N_S != data.table::shift(N_S, type = "lag", fill = 0)]
+
+    # Get the number of unique coalitions
+    unique_samples <- dt_N_S_and_L[.N, N_S]
   }
+
+  # Post processing: keep only the coalitions until n_coalitions - 2
+  coal_sample_all <- coal_sample_all[seq(dt_N_S_and_L[N_S == n_coalitions - 2, L])]
 
   ## Create the X data table for the sampled coalitions
   X <- data.table(coalitions_str = coal_sample_all)[, .(sample_freq = .N), by = coalitions_str]
