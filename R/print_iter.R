@@ -102,7 +102,7 @@ print_iter <- function(internal) {
       print_dt <- as.data.table(matrix1)
     } else {
       msg <- paste0(msg, "estimated Shapley values (sd)")
-      print_dt <- as.data.table(matrix(paste0(matrix1, " (", matrix2, ")"), nrow = nrow(matrix1)))
+      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = nrow(matrix1)))
     }
 
     cli::cli_h3(msg)
