@@ -1453,6 +1453,11 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
     iterative_args$initial_n_coalitions <- iterative_args$max_n_coalitions
   }
 
+  # If paired_shap_sampling is TRUE, we need the number of coalitions to be even
+  if (internal$parameters$paired_shap_sampling) {
+    iterative_args$initial_n_coalitions <- ceiling(iterative_args$initial_n_coalitions * 0.5) * 2
+  }
+
   check_iterative_args(iterative_args)
 
   # Translate any null input
