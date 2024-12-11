@@ -241,6 +241,13 @@ sample_features_cpp <- function(m, n_features) {
     .Call(`_shapr_sample_features_cpp`, m, n_features)
 }
 
+#' We here return a list of strings, where each string is a comma-separated list of integers, but the structure
+#' could also have been a CharacterVector. The reason for using a list here is that sample_features_cpp returns a list.
+#' @keywords internal
+sample_features_cpp_str_paired <- function(m, n_features, paired_shap_sampling = TRUE) {
+    .Call(`_shapr_sample_features_cpp_str_paired`, m, n_features, paired_shap_sampling)
+}
+
 #' Get imputed data
 #'
 #' @param index_xtrain Positive integer. Represents a sequence of row indices from \code{xtrain},
