@@ -358,7 +358,7 @@ exact_coalition_table <- function(m, dt_valid_causal_coalitions = NULL, weight_z
 
   dt <- data.table::data.table(id_coalition = seq_along(coalitions0))
   dt[, coalitions := coalitions0]
-  dt[, coalitions_str := sapply(coalitions, paste, collapse = ",")]
+  dt[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
   dt[, coalition_size := length(coalitions[[1]]), id_coalition]
   dt[, N := .N, coalition_size]
   dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m)]
