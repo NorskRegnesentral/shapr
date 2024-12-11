@@ -54,41 +54,23 @@ shapley_setup <- function(internal) {
   #   kernelSHAP_reweighting = kernelSHAP_reweighting,
   #   dt_valid_causal_coalitions = dt_valid_causal_coalitions
   # )
-  old = TRUE
-  if (old) {
-    X <- create_coalition_table_old(
-      m = n_shapley_values,
-      exact = exact,
-      n_coalitions = n_coalitions,
-      weight_zero_m = 10^6,
-      paired_shap_sampling = paired_shap_sampling,
-      prev_coal_samples = prev_coal_samples,
-      coal_feature_list = coal_feature_list,
-      approach0 = approach,
-      kernelSHAP_reweighting = kernelSHAP_reweighting,
-      dt_valid_causal_coalitions = dt_valid_causal_coalitions
-    )
-    X <- X[, .(id_coalition, coalitions_str = sapply(coalitions, paste, collapse = " "))]
 
-    coalition_map <- X[, .(id_coalition, coalitions_str = sapply(coalitions, paste, collapse = " ")
-    )]
-  } else {
-    X <- create_coalition_table(
-      m = n_shapley_values,
-      exact = exact,
-      n_coalitions = n_coalitions,
-      weight_zero_m = 10^6,
-      paired_shap_sampling = paired_shap_sampling,
-      prev_coal_samples = prev_coal_samples,
-      prev_coal_samples_n_unique = prev_coal_samples_n_unique,
-      coal_feature_list = coal_feature_list,
-      approach0 = approach,
-      kernelSHAP_reweighting = kernelSHAP_reweighting,
-      dt_valid_causal_coalitions = dt_valid_causal_coalitions
-    )
+  X <- create_coalition_table(
+    m = n_shapley_values,
+    exact = exact,
+    n_coalitions = n_coalitions,
+    weight_zero_m = 10^6,
+    paired_shap_sampling = paired_shap_sampling,
+    prev_coal_samples = prev_coal_samples,
+    prev_coal_samples_n_unique = prev_coal_samples_n_unique,
+    coal_feature_list = coal_feature_list,
+    approach0 = approach,
+    kernelSHAP_reweighting = kernelSHAP_reweighting,
+    dt_valid_causal_coalitions = dt_valid_causal_coalitions
+  )
 
-    coalition_map <- X[, .(id_coalition, coalitions_str)]
-  }
+  coalition_map <- X[, .(id_coalition, coalitions_str)]
+
 
 
   # Get weighted matrix ----------------
@@ -539,7 +521,7 @@ sample_coalition_table <- function(m,
                                    prev_coal_samples = NULL,
                                    prev_coal_samples_n_unique = NULL,
                                    kernelSHAP_reweighting,
-                                   n_samps_scale = 25, # How many times extra coalitions to sample each time (cheap to sample)
+                                   n_samps_scale = 10, # How many times extra coalitions to sample each time (cheap to sample)
                                    dt_valid_causal_coalitions = NULL) {
 
   # Setup
@@ -583,34 +565,17 @@ sample_coalition_table <- function(m,
       unique_samples <- length(unique(coal_sample_all))
     }
   } else {
-    # NEW faster version with fewer calls to unique.
-    # Variable to keep track of the iteration number
-    iteration <- 1
-
-    # If print
-    verbose_now <- TRUE # TODO: Remove
-
     # Loop until we have enough unique samples
-    while (unique_samples < n_coalitions - 2) { # Sample until we have enough unique coalitions
+    while (unique_samples < n_coalitions - 2) {
 
-      # TODO: In my code I did not do this. There I simply took n_coalitions*n_samps_scale samples.
-      # Which is more reasonable when we are approaching the maximum number of coalitions, as we will then be missing only a few,
-      # and sampling 25 samples will not increase the change of us finding one of the few remaining coalitions that much.
-      # And remember that it is the computation of finding the unique coalitions that is the most expensive part of this function.
-      # if (isTRUE(paired_shap_sampling)) {
-      #   n_samps <- ceiling((n_coalitions - unique_samples - 2) / 2) # Sample -2 as we add zero and m samples below
-      # } else {
-      #   n_samps <- n_coalitions - unique_samples - 2 # Sample -2 as we add zero and m samples below
-      # }
-      # TODO: remove as.integer if we have previously checked that n_coalitions is even when paired_shap_sampling is TRUE
+      # Get the number of samples to draw
       n_samps <- as.integer(n_coalitions * n_samps_scale / ifelse(paired_shap_sampling, 2, 1))
 
       # Sample the coalition sizes
       coal_size_sample <- sample(x = coal_samp_vec, size = n_samps, replace = TRUE, prob = p)
 
       # Sample the (paired) coalitions as strings
-      coalitions <- sample_features_cpp_str_paired(m, coal_size_sample, paired_shap_sampling) # TODO: we convert to list
-      #coalitions <- as.list(coalitions)
+      coalitions <- sample_features_cpp_str_paired(m, coal_size_sample, paired_shap_sampling)
 
       # Add the new coalitions to the previously sampled coalitions
       coal_sample_all <- c(coal_sample_all, coalitions)
@@ -623,12 +588,6 @@ sample_coalition_table <- function(m,
 
       # Get the number of unique coalitions
       unique_samples <- dt_N_S_and_L[.N, N_S]
-
-      # Message to user
-      if (verbose_now) {
-        message(paste0( "Iteration ", iteration, ": N_S = ", unique_samples, ", Sampled = ", n_samps * iteration, "."))
-        iteration <- iteration + 1 # Update the iteration number
-      }
     }
 
     # Post processing: keep only the coalitions until n_coalitions - 2
@@ -639,69 +598,32 @@ sample_coalition_table <- function(m,
   X <- data.table(coalitions_str = coal_sample_all)[, .(sample_freq = .N), by = coalitions_str]
   X[, shapley_weight := as.numeric(sample_freq)]
 
-  # Convert coalition strings to vector of integers as in old setup. Note that stringr is faster than base and stringi
-  # X[, coalitions := lapply(stringr::str_split(coalitions_str, " "), as.integer)]
+  # Convert coalition strings to vector of integers as in old setup.
   X[, coalitions := lapply(strsplit(coalitions_str, " "), as.integer)]
-
-  # rbenchmark::benchmark(
-  #   base = X[, coalitions_base := lapply(strsplit(coalitions_str, " "), as.integer)],
-  #   stringr = X[, coalitions_stringr := lapply(stringr::str_split(coalitions_str, " "), as.integer)],
-  #   replications = 5
-  # )
-  # system.time({X[, coalitions := lapply(stringr::str_split(coalitions_str, " "), as.integer)]})
-  # system.time({X[, coalitions := lapply(strsplit(coalitions_str, " "), as.integer)]}) # TODO pick one of these
-
-  # 1000 coalitions
-  # test replications elapsed relative user.self sys.self user.child sys.child
-  # 1    base            5    0.03        3      0.03        0         NA        NA
-  # 2 stringr            5    0.01        1      0.04        0         NA        NA
-
-  # 10000 coalitions
-  # test replications elapsed relative user.self sys.self user.child sys.child
-  # 1    base            5    0.26    1.444      0.25        0         NA        NA
-  # 2 stringr            5    0.18    1.000      0.17        0         NA        NA
-
-  # 50000 coalitions
-  # test replications elapsed relative user.self sys.self user.child sys.child
-  # 1    base            5    1.42     1.42      1.31     0.04         NA        NA
-  # 2 stringr            5    1.00     1.00      0.95     0.02         NA        NA
-
-  # 100000 coalitions
-  # test replications elapsed relative user.self sys.self user.child sys.child
-  # 1    base            5    2.89    1.452      2.86        0         NA        NA
-  # 2 stringr            5    1.99    1.000      1.97        0         NA        NA
-
-
   X[, coalition_size := as.integer(sapply(coalitions, length))] # as.integer to match old format
   X[, N := as.integer(n[coalition_size])] # use as.integer to match the format in the old code
   X[, p := p[coalition_size]]
 
-
-  # Add the empty and grand coalitions
-  X <- rbindlist(
-    list(
-      data.table(
-        coalitions_str = NA_character_, # list(character(0)) makes column into a list instead of character vector
-        sample_freq = 1L,
-        shapley_weight = weight_zero_m,
-        coalitions = list(integer(0)),  # empty coalition. Need to be list for this to be a data.table of one row
-        coalition_size = 0L,
-        N = 1L,
-        p = NA
-      ),
-      X,
-      data.table(
-        coalitions_str = paste(seq(m), collapse = " "),
-        sample_freq = 1L,
-        shapley_weight = weight_zero_m,
-        coalitions = list(seq(m)),
-        coalition_size = as.integer(m),
-        N = 1L,
-        p = NA
-      )
-    ),
-    use.names = TRUE
+  # Add the empty and grand coalitions to X
+  X_empty_coalition = data.table(
+    coalitions_str = NA_character_, # list(character(0)) makes column into a list instead of character vector
+    sample_freq = 1L,
+    shapley_weight = weight_zero_m,
+    coalitions = list(integer(0)),  # empty coalition. Need to be list for this to be a data.table of one row
+    coalition_size = 0L,
+    N = 1L,
+    p = NA
   )
+  X_full_coalition = data.table(
+    coalitions_str = paste(seq(m), collapse = " "),
+    sample_freq = 1L,
+    shapley_weight = weight_zero_m,
+    coalitions = list(seq(m)),
+    coalition_size = as.integer(m),
+    N = 1L,
+    p = NA
+  )
+  X <- rbindlist(list(X_empty_coalition, X, X_full_coalition), use.names = TRUE)
 
   # Add id column and order the data table
   setkeyv(X, "coalition_size")
@@ -961,6 +883,7 @@ shapley_setup_forecast <- function(internal) {
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   exact <- internal$iter_list[[iter]]$exact
   prev_coal_samples <- internal$iter_list[[iter]]$prev_coal_samples
+  prev_coal_samples_n_unique <- internal$iter_list[[iter]]$prev_coal_samples_n_unique
 
   X_list <- W_list <- list()
 
@@ -989,6 +912,7 @@ shapley_setup_forecast <- function(internal) {
       weight_zero_m = 10^6,
       paired_shap_sampling = paired_shap_sampling,
       prev_coal_samples = prev_coal_samples,
+      prev_coal_samples_n_unique = prev_coal_samples_n_unique,
       coal_feature_list = this_coal_feature_list,
       approach0 = approach,
       kernelSHAP_reweighting = kernelSHAP_reweighting
@@ -1022,8 +946,9 @@ shapley_setup_forecast <- function(internal) {
   W <- NULL # Included for consistency. Necessary weights are in W_list instead
 
   # TODO: DENNE MÅ FIKSES
+  coalition_map <- X[, .(id_coalition, coalitions_str)]
   coalition_map <- X[, .(id_coalition,
-    coalitions_str = sapply(features, paste, collapse = " ")
+    coalitions_str = sapply(features, paste, collapse = " ") # Mener han features eller coalitions
   )]
 
   ## Get feature matrix ---------
