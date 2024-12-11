@@ -83,8 +83,8 @@ print_iter <- function(internal) {
       dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, -c("explain_idx", "horizon")]
       dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, -c("explain_idx", "horizon")]
     } else {
-      dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, -"explain_idx"]
-      dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, -"explain_idx"]
+      dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, -"explain_id"]
+      dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, -"explain_id"]
     }
 
     # Printing the current Shapley values
