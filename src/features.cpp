@@ -50,14 +50,14 @@ CharacterVector sample_features_cpp_str_paired(int m, IntegerVector n_features, 
     for (int j = 1; j <= m; j++) {
       if (present[j]) {
         if (!first_ss) {
-          ss << ",";
+          ss << " ";
         } else {
           first_ss = false;
         }
         ss << j;
       } else if (paired_shap_sampling) {
         if (!first_paired_ss) {
-          paired_ss << ",";
+          paired_ss << " ";
         } else {
           first_paired_ss = false;
         }
