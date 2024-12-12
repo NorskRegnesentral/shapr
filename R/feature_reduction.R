@@ -134,6 +134,8 @@ reduce <- function(internal){
     X_org <- internal$iter_list[[iter]]$X   # Should this be X og X_curr in new code?
     Xtmp = X_org[, .(coalitions, id_coalition, coalition_size, sample_freq)]
 
+    m <- internal$iter_list[[iter]]$X[.N,coalition_size]
+
     Xtmp[,coalitions_bar:=lapply(coalitions, function(x) seq(m)[-x])]
     Xtmp[1, coalitions_bar := list(1:m)]
 

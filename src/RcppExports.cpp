@@ -163,6 +163,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// solve_cpp
+arma::mat solve_cpp(arma::mat A, arma::mat b);
+RcppExport SEXP _shapr_solve_cpp(SEXP ASEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type A(ASEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(solve_cpp(A, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// create_A_new_cpp
+arma::mat create_A_new_cpp(const arma::mat& S, const arma::mat& W);
+RcppExport SEXP _shapr_create_A_new_cpp(SEXP SSEXP, SEXP WSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
+    rcpp_result_gen = Rcpp::wrap(create_A_new_cpp(S, W));
+    return rcpp_result_gen;
+END_RCPP
+}
 // observation_impute_cpp
 NumericMatrix observation_impute_cpp(IntegerVector index_xtrain, IntegerVector index_s, NumericMatrix xtrain, NumericMatrix xtest, IntegerMatrix S);
 RcppExport SEXP _shapr_observation_impute_cpp(SEXP index_xtrainSEXP, SEXP index_sSEXP, SEXP xtrainSEXP, SEXP xtestSEXP, SEXP SSEXP) {
@@ -217,6 +241,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_prepare_data_gaussian_cpp", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp, 5},
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
     {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
+    {"_shapr_solve_cpp", (DL_FUNC) &_shapr_solve_cpp, 2},
+    {"_shapr_create_A_new_cpp", (DL_FUNC) &_shapr_create_A_new_cpp, 2},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
     {"_shapr_weight_matrix_cpp", (DL_FUNC) &_shapr_weight_matrix_cpp, 4},
     {"_shapr_coalition_matrix_cpp", (DL_FUNC) &_shapr_coalition_matrix_cpp, 2},

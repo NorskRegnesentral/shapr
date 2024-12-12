@@ -26,6 +26,7 @@ explain(
   print_shapleyres = FALSE,
   print_iter_info = FALSE,
   shapley_reweighting = "none",
+  prev_shapr_object = NULL,
   ...
 )
 }

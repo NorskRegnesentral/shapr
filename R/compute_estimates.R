@@ -1,5 +1,3 @@
-library(Rcpp)
-Rcpp::sourceCpp("R/frida_utils.cpp")
 
 #'
 #' @inherit explain

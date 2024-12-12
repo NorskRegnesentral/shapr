@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_estimates.R
 \name{compute_estimates}
 \alias{compute_estimates}
-\title{Computes the Shapley values given \code{v(S)}}
+\title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 compute_estimates(internal, vS_list)
 }

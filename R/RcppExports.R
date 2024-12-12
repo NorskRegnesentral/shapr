@@ -187,6 +187,14 @@ sample_features_cpp <- function(m, n_features) {
     .Call(`_shapr_sample_features_cpp`, m, n_features)
 }
 
+solve_cpp <- function(A, b) {
+    .Call(`_shapr_solve_cpp`, A, b)
+}
+
+create_A_new_cpp <- function(S, W) {
+    .Call(`_shapr_create_A_new_cpp`, S, W)
+}
+
 #' Get imputed data
 #'
 #' @param index_xtrain Positive integer. Represents a sequence of row indices from \code{xtrain},
