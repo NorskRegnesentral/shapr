@@ -1649,7 +1649,8 @@ get_iterative_args_default <- function(internal,
                                              5,
                                              internal$parameters$n_features,
                                              (2^internal$parameters$n_features) / 10
-                                           )
+                                           ),
+                                           internal$parameters$max_n_coalitions
                                          )
                                        ),
                                        fixed_n_coalitions_per_iter = NULL,
