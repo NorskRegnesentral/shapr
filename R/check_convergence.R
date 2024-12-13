@@ -21,7 +21,7 @@ check_convergence <- function(internal) {
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
-  if (!all.equal(names(dt_shapley_est), names(dt_shapley_sd))){
+  if (!all.equal(names(dt_shapley_est), names(dt_shapley_sd))) {
     stop("The column names of the dt_shapley_est and dt_shapley_df are not equal.")
   }
 
