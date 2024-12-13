@@ -243,7 +243,7 @@ create_coalition_table <- function(m,
   if (length(approach0) > 1) {
     dt[!(coalition_size %in% c(0, m)), approach := approach0[coalition_size]]
   } else {
-    dt[!(coalition_size %in% c(0, m)), approach := approach0]
+    dt[, approach := approach0] # TODO: add that we only add approach to these rows: !(coalition_size %in% c(0, m))
   }
 
   return(dt)
@@ -611,13 +611,14 @@ sample_coalition_table <- function(m,
     N = 1L,
     p = NA
   )
-  X <- rbindlist(list(X_empty_coalition, X, X_full_coalition), use.names = TRUE)
+  X <- data.table::rbindlist(list(X_empty_coalition, X, X_full_coalition), use.names = TRUE)
 
   # Add id column and order the data table
-  setkeyv(X, "coalition_size")
-  setorder(X, "coalition_size")
+  data.table::setkeyv(X, "coalition_size")
+  data.table::setorder(X, "coalition_size")
   X[, id_coalition := .I]
-  setcolorder(X, c("id_coalition", "coalitions", "coalitions_str", "coalition_size", "N", "shapley_weight", "p"))
+  colorder <- c("id_coalition", "coalitions", "coalitions_str", "coalition_size", "N", "shapley_weight", "p")
+  data.table::setcolorder(X, colorder)
 
   # Reweight the Shapley weights in X by reference
   kernelSHAP_reweighting(X, reweight = kernelSHAP_reweighting)
