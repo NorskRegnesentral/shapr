@@ -104,26 +104,6 @@ shapley_setup <- function(internal) {
 
 
   if (isFALSE(exact)) {
-    # # Storing the feature samples
-    # repetitions <- X[-c(1, .N), sample_freq]
-    #
-    # unique_coal_samples <- X[-c(1, .N), coalitions] # DENNE MÅ OPPDATERES TIL STRINGS
-    #
-    #
-    # coal_samples <- unlist(
-    #   lapply(
-    #     seq_along(unique_coal_samples),
-    #     function(i) {
-    #       rep(
-    #         list(unique_coal_samples[[i]]),
-    #         repetitions[i]
-    #       )
-    #     }
-    #   ),
-    #   recursive = FALSE
-    # )
-
-
     coal_samples <- rep(X[-c(1, .N), coalitions_str], X[-c(1, .N), sample_freq])
   } else {
     coal_samples <- NA
@@ -250,15 +230,15 @@ create_coalition_table <- function(m,
 }
 
 create_coalition_table_old <- function(m,
-                                   exact = TRUE,
-                                   n_coalitions = 200,
-                                   weight_zero_m = 10^6,
-                                   paired_shap_sampling = TRUE,
-                                   prev_coal_samples = NULL,
-                                   coal_feature_list = as.list(seq_len(m)),
-                                   approach0 = "gaussian",
-                                   kernelSHAP_reweighting = "none",
-                                   dt_valid_causal_coalitions = NULL) {
+                                       exact = TRUE,
+                                       n_coalitions = 200,
+                                       weight_zero_m = 10^6,
+                                       paired_shap_sampling = TRUE,
+                                       prev_coal_samples = NULL,
+                                       coal_feature_list = as.list(seq_len(m)),
+                                       approach0 = "gaussian",
+                                       kernelSHAP_reweighting = "none",
+                                       dt_valid_causal_coalitions = NULL) {
   if (exact) {
     dt <- exact_coalition_table(
       m = m,
@@ -363,155 +343,6 @@ exact_coalition_table <- function(m, dt_valid_causal_coalitions = NULL, weight_z
   return(dt)
 }
 
-#' @keywords internal
-sample_coalition_table_old <- function(m,
-                                   n_coalitions = 200,
-                                   weight_zero_m = 10^6,
-                                   paired_shap_sampling = TRUE,
-                                   prev_coal_samples = NULL,
-                                   kernelSHAP_reweighting,
-                                   valid_causal_coalitions = NULL,
-                                   dt_valid_causal_coalitions = NULL) {
-  # Setup
-  coal_samp_vec <- seq(m - 1)
-  n <- choose(m, coal_samp_vec)
-  w <- shapley_weights(m = m, N = n, coal_samp_vec) * n
-  p <- w / sum(w)
-
-  if (!is.null(prev_coal_samples)) {
-    coal_sample_all <- prev_coal_samples
-    unique_samples <- length(unique(prev_coal_samples)) # TODO: talk with Martin about having this saved. As this because expensive to call for large number of samples and called often if we have many iterations.
-    n_coalitions <- min(2^m, n_coalitions)
-    # Adjusts for the the unique samples, zero and m samples
-  } else {
-    coal_sample_all <- list()
-    unique_samples <- 0
-  }
-
-  # Split in whether we do asymmetric or symmetric/regular Shapley values
-  if (!is.null(dt_valid_causal_coalitions)) {
-    # Asymmetric Shapley values
-    while (unique_samples < n_coalitions - 2) { # Sample until we have the right number of unique coalitions
-
-      # Get the number of causal coalitions to sample
-      n_samps <- n_coalitions - unique_samples - 2 # Sample -2 as we add zero and m samples below
-
-      # Sample the causal coalitions from the valid causal coalitions with the Shapley weight as the probability
-      # The weights of each coalition size is split evenly among the members of each coalition size, such that
-      # all.equal(p, dt_valid_causal_coalitions[-c(1,.N), sum(shapley_weight), by = coalition_size][, V1])
-      coal_sample <-
-        dt_valid_causal_coalitions[-c(1, .N)][sample(.N, n_samps, replace = TRUE, prob = shapley_weight), coalitions]
-
-      # Add the samples
-      coal_sample_all <- c(coal_sample_all, coal_sample)
-
-      # Find the number of unique samples
-      unique_samples <- length(unique(coal_sample_all))
-    }
-  } else {
-    # Symmetric/regular Shapley values
-    while (unique_samples < n_coalitions - 2) { # Sample until we have the right number of unique coalitions
-      if (paired_shap_sampling == TRUE) {
-        n_samps <- ceiling((n_coalitions - unique_samples - 2) / 2) # Sample -2 as we add zero and m samples below
-      } else {
-        n_samps <- n_coalitions - unique_samples - 2 # Sample -2 as we add zero and m samples below
-      }
-
-      # Sample the coalition size ----------
-      coal_size_sample <- sample(
-        x = coal_samp_vec,
-        size = n_samps,
-        replace = TRUE,
-        prob = p
-      )
-
-      # Sample specific coalitions -------
-      coal_sample <- sample_features_cpp(m, coal_size_sample)
-      if (paired_shap_sampling == TRUE) {
-        coal_sample_paired <- lapply(coal_sample, function(x) seq(m)[-x])
-        coal_sample_all <- c(coal_sample_all, coal_sample, coal_sample_paired)
-      } else {
-        coal_sample_all <- c(coal_sample_all, coal_sample)
-      }
-      unique_samples <- length(unique(coal_sample_all))
-    }
-  }
-
-  # Add zero and full prediction
-  coal_sample_all <- c(list(integer(0)), coal_sample_all, list(c(1:m)))
-  X <- data.table(coalition_size = sapply(coal_sample_all, length))
-  X[, coalition_size := as.integer(coalition_size)]
-
-  # Get number of occurences and duplicated rows-------
-  is_duplicate <- NULL # due to NSE notes in R CMD check
-  r <- helper_feature(m, coal_sample_all)
-  X[, is_duplicate := r[["is_duplicate"]]]
-
-  # When we sample coalitions the Shapley weight is equal
-  # to the frequency of the given coalition
-  X[, sample_freq := r[["sample_frequence"]]] # We keep an unscaled version of the sampling frequency for bootstrapping
-  X[, shapley_weight := as.numeric(sample_freq)] # Convert to double for later calculations
-
-  # Populate table and remove duplicated rows -------
-  X[, coalitions := coal_sample_all]
-  if (any(X[["is_duplicate"]])) {
-    X <- X[is_duplicate == FALSE]
-  }
-  X[, is_duplicate := NULL]
-  data.table::setkeyv(X, "coalition_size")
-
-
-  #### TODO: Check if this could be removed: ####
-  ### Start of possible removal ###
-  # Make feature list into character
-  X[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
-
-  # Aggregate weights by how many samples of a coalition we observe
-  X <- X[, .(
-    coalition_size = data.table::first(coalition_size),
-    shapley_weight = sum(shapley_weight),
-    sample_freq = sum(sample_freq),
-    coalitions = coalitions[1]
-  ), coalitions_tmp]
-
-  #### End of possible removal ####
-
-  data.table::setorder(X, coalition_size)
-
-  # Add shapley weight and number of coalitions
-  X[c(1, .N), shapley_weight := weight_zero_m]
-  X[, N := 1]
-  ind <- X[, .I[data.table::between(coalition_size, 1, m - 1)]]
-  X[ind, p := p[coalition_size]]
-
-  if (!is.null(dt_valid_causal_coalitions)) {
-    # Asymmetric Shapley values
-    # Get the number of coalitions of each coalition size from the `dt_valid_causal_coalitions` data table
-    X[dt_valid_causal_coalitions, on = "coalitions_tmp", N := i.N]
-  } else {
-    # Symmetric/regular Shapley values
-    X[ind, N := n[coalition_size]]
-  }
-
-  X[, coalitions_tmp := NULL]
-
-  # Set column order and key table
-  data.table::setkeyv(X, "coalition_size")
-  X[, id_coalition := .I]
-  X[, N := as.integer(N)]
-  nms <- c("id_coalition", "coalitions", "coalition_size", "N", "shapley_weight", "p", "sample_freq")
-  data.table::setcolorder(X, nms)
-
-  kernelSHAP_reweighting(X, reweight = kernelSHAP_reweighting) # Reweights the shapley weights in X by reference
-
-  return(X)
-}
-
-# dt_tmp = sample_coalition_table_new(15, 200, 10^6, TRUE, NULL, "none", 25, NULL, NULL)
-# dt_tmp
-#
-# dt_tmp_old = sample_coalition_table_old(15, 200, 10^6, TRUE, NULL, "none", NULL, NULL)
-# dt_tmp_old
 
 #' @keywords internal
 sample_coalition_table <- function(m,
@@ -523,7 +354,6 @@ sample_coalition_table <- function(m,
                                    kernelSHAP_reweighting,
                                    n_samps_scale = 10, # How many times extra coalitions to sample each time (cheap to sample)
                                    dt_valid_causal_coalitions = NULL) {
-
   # Setup
   coal_samp_vec <- seq(m - 1)
   n <- choose(m, coal_samp_vec)
@@ -531,11 +361,10 @@ sample_coalition_table <- function(m,
   p <- w / sum(w)
 
   # Check if we are to do asymmetric or symmetric/regular Shapley values
-  asymmetric = !is.null(dt_valid_causal_coalitions)
+  asymmetric <- !is.null(dt_valid_causal_coalitions)
 
   if (!is.null(prev_coal_samples)) {
-    coal_sample_all <- prev_coal_samples # TODO: is this now a list or a character vector? If it is a list, then we need to convert it to a character vector by calling unlist().
-    #unique_samples <- length(unique(prev_coal_samples))
+    coal_sample_all <- prev_coal_samples
     unique_samples <- prev_coal_samples_n_unique
     n_coalitions <- min(2^m, n_coalitions)
     # Adjusts for the the unique samples, zero and m samples
@@ -546,7 +375,6 @@ sample_coalition_table <- function(m,
 
   # Loop until we have drawn enough unique samples
   while (unique_samples < n_coalitions - 2) {
-
     # Get the number of samples to draw
     n_samps <- as.integer(n_coalitions * n_samps_scale / ifelse(paired_shap_sampling, 2, 1))
 
@@ -559,8 +387,9 @@ sample_coalition_table <- function(m,
       # The weights of each coalition size is split evenly among the members of each coalition size, such that
       # all.equal(p, dt_valid_causal_coalitions[-c(1,.N), sum(shapley_weight_norm), by = coalition_size][, V1])
       coalitions <-
-        dt_valid_causal_coalitions[-c(1, .N)][sample(.N, n_samps, replace = TRUE, prob = shapley_weight),
-                                              coalitions_str]
+        dt_valid_causal_coalitions[-c(1, .N)][
+          sample(.N, n_samps, replace = TRUE, prob = shapley_weight), coalitions_str
+        ]
     } else {
       # Sample the (paired) coalitions as strings
       coalitions <- sample_features_cpp_str_paired(m, coal_size_sample, paired_shap_sampling)
@@ -593,16 +422,16 @@ sample_coalition_table <- function(m,
   X[, p := p[coalition_size]]
 
   # Add the empty and grand coalitions to X
-  X_empty_coalition = data.table(
+  X_empty_coalition <- data.table(
     coalitions_str = NA_character_, # list(character(0)) makes column into a list instead of character vector
     sample_freq = 1L,
     shapley_weight = weight_zero_m,
-    coalitions = list(integer(0)),  # empty coalition. Need to be list for this to be a data.table of one row
+    coalitions = list(integer(0)), # empty coalition. Need to be list for this to be a data.table of one row
     coalition_size = 0L,
     N = 1L,
     p = NA
   )
-  X_full_coalition = data.table(
+  X_full_coalition <- data.table(
     coalitions_str = paste(seq(m), collapse = " "),
     sample_freq = 1L,
     shapley_weight = weight_zero_m,
@@ -934,10 +763,10 @@ shapley_setup_forecast <- function(internal) {
 
   W <- NULL # Included for consistency. Necessary weights are in W_list instead
 
-  # TODO: DENNE MÅ FIKSES
-  coalition_map <- X[, .(id_coalition, coalitions_str)]
+  # Note: it is correct to use features here and not coalitions as we do for normal shapley_setup().
+  # This is because, here, for forecast, the features are a function of both coalitions and horizon.
   coalition_map <- X[, .(id_coalition,
-    coalitions_str = sapply(features, paste, collapse = " ") # Mener han features eller coalitions
+    coalitions_str = sapply(features, paste, collapse = " ")
   )]
 
   ## Get feature matrix ---------
