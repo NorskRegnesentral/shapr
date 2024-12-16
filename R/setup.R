@@ -898,36 +898,36 @@ adjust_max_n_coalitions <- function(internal) {
       }
     } else { # group wise
       # Set max_n_coalitions to upper bound
-      if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_groups) {
-        max_n_coalitions <- 2^n_groups
+      if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_shapley_values) {
+        max_n_coalitions <- 2^n_shapley_values
         message(
           paste0(
             "Success with message:\n",
-            "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_groups, ", \n",
-            "and is therefore set to 2^n_groups = ", 2^n_groups, ".\n"
+            "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_shapley_values, ", \n",
+            "and is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
           )
         )
       }
       # Set max_n_coalitions to lower bound
-      if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_groups + 1)) {
-        if (n_groups <= 3) {
-          max_n_coalitions <- 2^n_groups
+      if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_shapley_values + 1)) {
+        if (n_shapley_values <= 3) {
+          max_n_coalitions <- 2^n_shapley_values
           message(
             paste0(
               "Success with message:\n",
-              "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (", 2^n_groups, ") ",
+              "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (", 2^n_shapley_values, ") ",
               "that we should use all to get reliable results.\n",
-              "max_n_coalitions is therefore set to 2^n_groups = ", 2^n_groups, ".\n"
+              "max_n_coalitions is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
             )
           )
         } else {
-          max_n_coalitions <- min(10, n_groups + 1)
+          max_n_coalitions <- min(10, n_shapley_values + 1)
           message(
             paste0(
               "Success with message:\n",
-              "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_groups + 1, "),",
+              "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_shapley_values + 1, "),",
               "which will result in unreliable results.\n",
-              "It is therefore set to ", max(10, n_groups + 1), ".\n"
+              "It is therefore set to ", max(10, n_shapley_values + 1), ".\n"
             )
           )
         }
@@ -943,6 +943,7 @@ check_max_n_coalitions_fc <- function(internal) {
   max_n_coalitions <- internal$parameters$max_n_coalitions
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
+  n_shapley_values <- internal$parameters$n_shapley_values
 
   type <- internal$parameters$type
 
@@ -953,7 +954,7 @@ check_max_n_coalitions_fc <- function(internal) {
     xreg <- internal$data$xreg
 
     if (!is_groupwise) {
-      if (max_n_coalitions <= n_features) {
+      if (max_n_coalitions <= n_shapley_values) {
         stop(paste0(
           "`max_n_coalitions` (", max_n_coalitions, ") has to be greater than the number of ",
           "components to decompose the forecast onto:\n",
@@ -962,7 +963,7 @@ check_max_n_coalitions_fc <- function(internal) {
         ))
       }
     } else {
-      if (max_n_coalitions <= n_groups) {
+      if (max_n_coalitions <= n_shapley_values) {
         stop(paste0(
           "`max_n_coalitions` (", max_n_coalitions, ") has to be greater than the number of ",
           "components to decompose the forecast onto:\n",
@@ -1168,9 +1169,7 @@ check_and_set_iterative <- function(internal) {
 
 set_exact <- function(internal) {
   max_n_coalitions <- internal$parameters$max_n_coalitions
-  n_features <- internal$parameters$n_features
-  n_groups <- internal$parameters$n_groups
-  is_groupwise <- internal$parameters$is_groupwise
+  n_shapley_values <- internal$parameters$n_shapley_values
   iterative <- internal$parameters$iterative
   asymmetric <- internal$parameters$asymmetric
   max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal
@@ -1178,8 +1177,7 @@ set_exact <- function(internal) {
   if (isFALSE(iterative) &&
     (
       (isTRUE(asymmetric) && max_n_coalitions == max_n_coalitions_causal) ||
-        (isFALSE(is_groupwise) && max_n_coalitions == 2^n_features) ||
-        (isTRUE(is_groupwise) && max_n_coalitions == 2^n_groups)
+        (max_n_coalitions == 2^n_shapley_values)
     )
   ) {
     exact <- TRUE
