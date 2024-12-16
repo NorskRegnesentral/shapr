@@ -915,8 +915,8 @@ adjust_max_n_coalitions <- function(internal) {
           message(
             paste0(
               "Success with message:\n",
-              "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (", 2^n_shapley_values, ") ",
-              "that we should use all to get reliable results.\n",
+              "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (",
+              2^n_shapley_values, ") that we should use all to get reliable results.\n",
               "max_n_coalitions is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
             )
           )

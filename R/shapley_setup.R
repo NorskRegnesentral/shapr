@@ -78,7 +78,7 @@ shapley_setup <- function(internal) {
   # Updating n_coalitions in the end based on what is actually used.
   internal$iter_list[[iter]]$n_coalitions <- nrow(S)
   # The number of sampled coalitions to be used for convergence detection only (exclude the zero and full prediction)
-  internal$iter_list[[iter]]$n_sampled_coalitions <- internal$iter_list[[iter]]$n_coalitions-2
+  internal$iter_list[[iter]]$n_sampled_coalitions <- internal$iter_list[[iter]]$n_coalitions - 2
 
 
   # This will be obsolete later
@@ -763,7 +763,7 @@ shapley_setup_forecast <- function(internal) {
 
   # The number of sampled coalitions *per horizon* to be used for convergence detection only
   # Exclude the zero and full prediction
-  internal$iter_list[[iter]]$n_sampled_coalitions <- length(unique(id_coalition_mapper_dt$horizon_id_coalition))-2
+  internal$iter_list[[iter]]$n_sampled_coalitions <- length(unique(id_coalition_mapper_dt$horizon_id_coalition)) - 2
 
   # This will be obsolete later
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
