@@ -24,7 +24,7 @@ check_reduction <- function(internal){
         internal$iter_list[[iter]]$total_n_coalitions = tot_n
       }
 
-      internal$iter_list[[iter]]$prob_of_red = internal$iter_list[[iter-1]]$prob_of_red*NA
+      internal$iter_list[[iter]]$prob_of_red = internal$iter_list[[iter]]$prob_of_red*NA
       return(internal)
     }
 

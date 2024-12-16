@@ -67,24 +67,9 @@ set.seed(123)
 n_MC_samples <- 1000 #10000 May be increased to reduce variablity
 approach = "gaussian"
 
-expl_standard <- shapr::explain(model = model,
-                                x_explain= x_explain,
-                                x_train = x_train,
-                                approach = approach,
-                                n_MC_samples = n_MC_samples, # Maybe
-                                prediction_zero = p0,
-                                gaussian.mu=mu,
-                                gaussian.cov_mat=Sigma,
-                                adaptive = TRUE,
-                                adaptive_arguments = list(allow_feature_reduction = FALSE,
-                                                          shapley_threshold_val = 0.3,
-                                                          shapley_threshold_prob = 0.3))
-
-no_coal_standard <- expl_standard$internal$objects$X[,.N]-2
-
 ret_list <- list()
 
-for(i in seq_len(nrow(x_explain))){
+for(i in 80:100){
 
   expl_red <- shapr::explain(model = model,
                              x_explain= x_explain[i,],
@@ -97,67 +82,144 @@ for(i in seq_len(nrow(x_explain))){
                              adaptive = TRUE,
                              print_iter_info = FALSE,
                              adaptive_arguments = list(allow_feature_reduction = TRUE,
+                                                       fixed_n_coalitions_per_iter = 10,
+                                                       max_iter = 100,
+                                                       initial_n_coalitions = 50,
                                                        shapley_threshold_val = 0.3,
-                                                       shapley_threshold_prob = 0.3))
+                                                       shapley_threshold_prob = 0.2))
 
 
   n_iter <- length(expl_red$internal$iter_list)
-  used_coal <- length(unique(expl_red$internal$iter_list[[1]]$coal_samples_org))
-  for(j in seq_len(n_iter-2)){
-    this <- length(unique(expl_red$internal$iter_list[[j+1]]$coal_samples_org))-length(unique(expl_red$internal$iter_list[[j]]$coal_samples))
-    used_coal <- c(used_coal,this)
-  }
-  last <- expl_red$internal$objects$X[,.N]-length(unique(expl_red$internal$iter_list[[n_iter-1]]$coal_samples))
-  used_coal <- c(used_coal,last)
-  total_used_coal <- cumsum(used_coal)
+  total_used_coal <- sapply(expl_red$internal$iter_list, function(sublist) sublist$total_n_coalitions)
+  it_prob_of_val_above_threshold_val <- rbindlist(lapply(expl_red$internal$iter_list, function(sublist) sublist$prob_of_red)[-n_iter],fill=TRUE)
 
   ll <- list(total_used_coal = total_used_coal,
              it_shap_res = expl_red$internal$iter_results$dt_iter_shapley_est,
+             it_shap_sd = expl_red$internal$iter_results$dt_iter_shapley_sd,
+             it_prob_of_val_above_threshold_val = it_prob_of_val_above_threshold_val,
              dropped_features = expl_red$internal$iter_list[[n_iter]]$shap_reduction$dropped_features
   )
   ret_list[[i]] <- ll
   print(i)
 }
 
+expl_standard <- shapr::explain(model = model,
+                                x_explain= x_explain,
+                                x_train = x_train,
+                                approach = approach,
+                                n_MC_samples = n_MC_samples, # Maybe
+                                prediction_zero = p0,
+                                gaussian.mu=mu,
+                                gaussian.cov_mat=Sigma,
+                                adaptive = TRUE,
+                                adaptive_arguments = list(allow_feature_reduction = FALSE))
 
-expl_red$internal$iter_results
+no_coal_standard <- expl_standard$internal$objects$X[,.N]-2
 
-internal$iter_list[[1]]$n_coalitions_org
-internal$iter_list[[2]]$n_coalitions_org-internal$iter_list[[1]]$n_coalitions
-internal$iter_list[[3]]$n_coalitions_org-internal$iter_list[[2]]$n_coalitions
-internal$iter_list[[4]]$n_coalitions_org-internal$iter_list[[3]]$n_coalitions
-internal$iter_list[[5]]$n_coalitions_org-internal$iter_list[[4]]$n_coalitions
-internal$iter_list[[6]]$n_coalitions_org-internal$iter_list[[5]]$n_coalitions
+future::plan("multisession", workers = 8) # Increase the number of workers for increased performance with many features
 
+# Enable progress updates of the v(S)-computations
+# Requires the progressr package
+progressr::handlers(global = TRUE)
+progressr::handlers("cli") # Using the cli package as backend (recommended for the estimates of the remaining time)
 
-length(unique(internal$iter_list[[1]]$coal_samples_org))
-length(unique(internal$iter_list[[2]]$coal_samples_org))-length(unique(internal$iter_list[[1]]$coal_samples))
-length(unique(internal$iter_list[[3]]$coal_samples_org))-length(unique(internal$iter_list[[2]]$coal_samples))
-length(unique(internal$iter_list[[4]]$coal_samples_org))-length(unique(internal$iter_list[[3]]$coal_samples))
-length(unique(internal$iter_list[[5]]$coal_samples_org))-length(unique(internal$iter_list[[4]]$coal_samples))
-length(unique(internal$iter_list[[6]]$coal_samples_org))-length(unique(internal$iter_list[[5]]$coal_samples))
-length(unique(internal$iter_list[[7]]$coal_samples_org))-length(unique(internal$iter_list[[6]]$coal_samples))
+expl_full <- shapr::explain(model = model,
+                                x_explain= x_explain,
+                                x_train = x_train,
+                                approach = approach,
+                                n_MC_samples = n_MC_samples, # Maybe
+                                prediction_zero = p0,
+                                gaussian.mu=mu,
+                                gaussian.cov_mat=Sigma,
+                                adaptive = FALSE,
+                                adaptive_arguments = list(allow_feature_reduction = FALSE))
 
-
-
-expl_red$internal$iter_results$dt_iter_shapley_est
-no_iter <- nrow(expl_red$internal$iter_results$dt_iter_shapley_est)
-expl_red$internal$iter_list[[no_iter]]$shap_reduction$dropped_features
-
-
-explain(
-  testing = TRUE,
-  model = model_lm_numeric,
-  x_explain = x_explain_numeric,
-  x_train = x_train_numeric,
-  approach = approach,
-  prediction_zero = p0,
-  adaptive = TRUE,
-  print_shapleyres = TRUE,
-  print_iter_info = TRUE
-),
+save.image("MJ_testing_new_feature_reduction_code.RData")
 
 
+MAE_std <- colMeans(abs(expl_full$shapley_values[,-1]-expl_standard$shapley_values[,-1]))
 
+length(ret_list)
+
+red_shap_vals <- rbindlist(lapply(ret_list, function(x) x$it_shap_res[.N]))
+
+MAE_red <- colMeans(abs(expl_full$shapley_values[,-1]-red_shap_vals[,-c(1,2)]))
+
+tot_used_coal <- sapply(ret_list, function(x) x$total_used_coal[length(x$total_used_coal)])
+
+
+plot(MAE_std)
+lines(MAE_red,col=2)
+
+meanMAE_obs_std <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-expl_standard$shapley_values[,-c(1,2)]))
+meanMAE_obs_red<- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-red_shap_vals[,-c(1,2,3)]))
+
+par(mfrow=c(2,2))
+plot(meanMAE_obs_std,meanMAE_obs_red,xlim=c(0,0.4),ylim=c(0,0.4))
+abline(a=0,b=1,col=2)
+plot(meanMAE_obs_std[tot_used_coal<no_coal_standard],meanMAE_obs_red[tot_used_coal<no_coal_standard],col="green",xlim=c(0,0.4),ylim=c(0,0.4))
+points(meanMAE_obs_std[tot_used_coal>no_coal_standard],meanMAE_obs_red[tot_used_coal>no_coal_standard],col="red")
+abline(a=0,b=1,col=2)
+
+
+expl_standard_median_redno <- shapr::explain(model = model,
+                                             x_explain= x_explain,
+                                             x_train = x_train,
+                                             approach = approach,
+                                             n_MC_samples = n_MC_samples, # Maybe
+                                             prediction_zero = p0,
+                                             gaussian.mu=mu,
+                                             gaussian.cov_mat=Sigma,
+                                             adaptive = FALSE,
+                                             max_n_coalitions  = round(median(tot_used_coal)),
+                                             adaptive_arguments = list(allow_feature_reduction = FALSE))
+
+meanMAE_obs_std_redno <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-expl_standard_median_redno$shapley_values[,-c(1,2)]))
+no_coal_standard_redno <- expl_standard_median_redno$internal$objects$X[,.N]-2
+
+plot(meanMAE_obs_std_redno,meanMAE_obs_red,xlim=c(0,0.4),ylim=c(0,0.4))
+abline(a=0,b=1,col=2)
+plot(meanMAE_obs_std_redno[tot_used_coal<no_coal_standard_redno],meanMAE_obs_red[tot_used_coal<no_coal_standard_redno],col="green",xlim=c(0,0.4),ylim=c(0,0.4))
+points(meanMAE_obs_std_redno[tot_used_coal>no_coal_standard_redno],meanMAE_obs_red[tot_used_coal>no_coal_standard_redno],col="red")
+abline(a=0,b=1,col=2)
+
+
+
+
+expl_standard_redno_list <- list()
+for(i in seq_len(nrow(x_explain))){
+  expl_standard_redno_list[[i]] <- shapr::explain(model = model,
+                                               x_explain= x_explain[i,],
+                                               x_train = x_train,
+                                               approach = approach,
+                                               n_MC_samples = n_MC_samples, # Maybe
+                                               prediction_zero = p0,
+                                               gaussian.mu=mu,
+                                               gaussian.cov_mat=Sigma,
+                                               adaptive = FALSE,
+                                               max_n_coalitions = tot_used_coal[i],
+                                               adaptive_arguments = list(allow_feature_reduction = FALSE))
+  print(i)
+
+}
+
+shap_vals_redno_exact_list <- list()
+for (i in 1:100){
+  shap_vals_redno_exact_list[[i]] <- expl_standard_redno_list[[i]]$shapley_values[i,]
+}
+
+shap_vals_redno_exact <- rbindlist(shap_vals_redno_exact_list)
+
+meanMAE_obs_std_redno_exact <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-shap_vals_redno_exact[,-c(1,2)]))
+
+plot(meanMAE_obs_std_redno_exact,meanMAE_obs_red,xlim=c(0,0.4),ylim=c(0,0.4))
+abline(a=0,b=1,col=2)
+
+MAE_std_redno_exact <- colMeans(abs(expl_full$shapley_values[,-c(1)]-shap_vals_redno_exact[,-c(1)]))
+
+plot(MAE_std_redno_exact)
+points(MAE_red,col=2)
+
+#save.image("MJ_testing_new_feature_reduction_code.RData")
 
 
