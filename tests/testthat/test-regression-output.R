@@ -200,7 +200,7 @@ test_that("output_lm_numeric_lm_surrogate_n_comb", {
       x_train = x_train_numeric,
       approach = "regression_surrogate",
       phi0 = p0,
-      max_n_coalitions = 10,
+      max_n_coalitions = 12,
       regression.model = parsnip::linear_reg(),
       iterative = FALSE
     ),
@@ -217,7 +217,7 @@ test_that("output_lm_numeric_lm_surrogate_reg_surr_n_comb", {
       x_train = x_train_numeric,
       approach = "regression_surrogate",
       phi0 = p0,
-      max_n_coalitions = 10,
+      max_n_coalitions = 12,
       regression.model = parsnip::linear_reg(),
       regression.surrogate_n_comb = 8,
       iterative = FALSE
