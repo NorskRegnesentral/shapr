@@ -352,7 +352,7 @@ sample_coalition_table <- function(m,
                                    prev_coal_samples = NULL,
                                    prev_coal_samples_n_unique = NULL,
                                    kernelSHAP_reweighting,
-                                   n_samps_scale = 10, # How many times extra coalitions to sample each time (cheap to sample)
+                                   n_samps_scale = 10, # How many times extra coalitions to sample each time
                                    dt_valid_causal_coalitions = NULL) {
   # Setup
   coal_samp_vec <- seq(m - 1)

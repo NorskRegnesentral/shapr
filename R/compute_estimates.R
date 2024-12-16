@@ -310,7 +310,10 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
   boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
 
   X_keep <- X_org[c(1, .N), .(id_coalition, coalitions, coalition_size, N)]
-  X_samp <- X_org[-c(1, .N), .(id_coalition, coalitions, coalitions_str, coalition_size, N, shapley_weight, sample_freq)]
+  X_samp <- X_org[
+    -c(1, .N),
+    .(id_coalition, coalitions, coalitions_str, coalition_size, N, shapley_weight, sample_freq)
+  ]
 
   n_coalitions_boot <- X_samp[, sum(sample_freq)]
 
