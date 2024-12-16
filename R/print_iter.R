@@ -80,8 +80,8 @@ print_iter <- function(internal) {
 
   if ("shapley" %in% verbose) {
     shap_names_with_none <- c("none", internal$parameters$shap_names)
-    dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, ..shap_names_with_none]
-    dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, ..shap_names_with_none]
+    dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, shap_names_with_none, with = FALSE]
+    dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, shap_names_with_none, with = FALSE]
 
     # Printing the current Shapley values
     matrix1 <- format(round(dt_shapley_est, 3), nsmall = 2, justify = "right")
