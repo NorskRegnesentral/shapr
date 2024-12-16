@@ -21,7 +21,8 @@ prepare_next_iteration <- function(internal) {
 
     est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions
     n_coal_next_iter_factor <- internal$iter_list[[iter]]$n_coal_next_iter_factor
-    current_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
+    current_n_coalitions <- internal$iter_list[[iter]]$n_sampled_coalitions + 2 # Used instead of n_coalitions to
+                                                                                # deal with forecast special case
     current_coal_samples <- internal$iter_list[[iter]]$coal_samples
 
     if (is.null(fixed_n_coalitions_per_iter)) {

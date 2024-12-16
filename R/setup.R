@@ -524,7 +524,6 @@ get_extra_parameters <- function(internal, type) {
     internal$parameters$n_groups <- length(group)
     internal$parameters$group_names <- names(group)
     internal$parameters$group <- group
-    internal$parameters$n_shapley_values <- internal$parameters$n_groups
 
     if (type == "forecast") {
       if (internal$parameters$group_lags) {
@@ -543,8 +542,9 @@ get_extra_parameters <- function(internal, type) {
     internal$parameters$n_groups <- NULL
     internal$parameters$group_names <- NULL
     internal$parameters$shap_names <- internal$parameters$feature_names
-    internal$parameters$n_shapley_values <- internal$parameters$n_features
   }
+  internal$parameters$n_shapley_values <- length(internal$parameters$shap_names)
+
 
   # Get the number of unique approaches
   internal$parameters$n_approaches <- length(internal$parameters$approach)

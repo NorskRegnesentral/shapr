@@ -13,6 +13,7 @@ check_convergence <- function(internal) {
   paired_shap_sampling <- internal$parameters$paired_shap_sampling
   n_shapley_values <- internal$parameters$n_shapley_values
 
+  n_sampled_coalitions <- internal$iter_list[[iter]]$n_sampled_coalitions
   exact <- internal$iter_list[[iter]]$exact
 
   shap_names <- internal$parameters$shap_names
@@ -24,8 +25,6 @@ check_convergence <- function(internal) {
   if (!all.equal(names(dt_shapley_est), names(dt_shapley_sd))) {
     stop("The column names of the dt_shapley_est and dt_shapley_df are not equal.")
   }
-
-  n_sampled_coalitions <- internal$iter_list[[iter]]$n_coalitions - 2 # Subtract the zero and full predictions
 
   max_sd <- dt_shapley_sd[, max(.SD, na.rm = TRUE), .SDcols = shap_names_with_none, by = .I]$V1 # Max per prediction
   max_sd0 <- max_sd * sqrt(n_sampled_coalitions) # Scales UP the sd as it scales at this rate
