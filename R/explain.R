@@ -118,7 +118,7 @@
 #' See [get_output_args_default()] for description of the arguments and their default values.
 #' @param extra_computation_args Named list.
 #' Specifices extra arguments related to the computation of the Shapley values.
-#' See [get_extra_est_args_default()] for description of the arguments and their default values.
+#' See [get_extra_comp_args_default()] for description of the arguments and their default values.
 #' @param kernelSHAP_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
 #' The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.

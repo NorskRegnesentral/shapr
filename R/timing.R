@@ -45,7 +45,5 @@ compute_time <- function(internal) {
   )
   internal$main_timing_list <- internal$iter_timing_list <- NULL
 
-
-
   return(timing_output)
 }

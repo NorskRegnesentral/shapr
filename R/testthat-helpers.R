@@ -1,3 +1,5 @@
+
+#' @keywords internal
 helper_rds <- function(code, name = "tmp.rds") {
   path <- file.path(tempdir(), name)
   testthat::expect_snapshot_output({
@@ -9,6 +11,7 @@ helper_rds <- function(code, name = "tmp.rds") {
   path
 }
 
+#' @keywords internal
 compare_rds <- function(old, new) {
   old <- readRDS(old)
   new <- readRDS(new)
@@ -17,6 +20,7 @@ compare_rds <- function(old, new) {
   ifelse(is.character(check), FALSE, check)
 }
 
+#' @keywords internal
 expect_snapshot_rds <- function(code, name = "tmp") {
   name_full <- paste0(name, ".rds")
   path <- file.path(tempdir(), name_full)
@@ -24,7 +28,6 @@ expect_snapshot_rds <- function(code, name = "tmp") {
   testthat::announce_snapshot_file(path = path)
 
 
-  # testthat::expect_snapshot_output(out) # Test the printed output
   testthat::expect_snapshot((out <- code)) # Test output + warnings/messages
 
   saveRDS(out, file = path)

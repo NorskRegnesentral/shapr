@@ -74,7 +74,7 @@ convert_feature_name_to_idx <- function(causal_ordering, labels, feat_group_txt)
 #'
 #' @inheritParams default_doc_internal
 #'
-#' @return Data table of dimension \eqn{`n_MC_samples` \times `length(Sbar_features)`} with the sampled observations.
+#' @return Data table of dimension `n_MC_samples` \eqn{\times} `length(Sbar_features)` with the sampled observations.
 #'
 #'
 #' @examples
