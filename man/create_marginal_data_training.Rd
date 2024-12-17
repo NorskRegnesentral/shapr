@@ -26,7 +26,7 @@ done when \code{n_MC_samples < n_train}. This is done separately for each explic
 from the observations.}
 }
 \value{
-Data table of dimension \eqn{`n_MC_samples` \times `length(Sbar_features)`} with the sampled observations.
+Data table of dimension \code{n_MC_samples} \eqn{\times} \code{length(Sbar_features)} with the sampled observations.
 }
 \description{
 Sample observations from the empirical distribution P(X) using the training dataset.

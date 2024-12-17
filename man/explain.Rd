@@ -197,7 +197,7 @@ regression-based approaches are not applicable to the causal Shapley value metho
 
 \item{extra_computation_args}{Named list.
 Specifices extra arguments related to the computation of the Shapley values.
-See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
+See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{iterative_args}{Named list.
 Specifices the arguments for the iterative procedure.

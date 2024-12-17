@@ -7,7 +7,8 @@
 shapley_weights(m, N, n_components, weight_zero_m = 10^6)
 }
 \arguments{
-\item{m}{Positive integer. Total number of features/feature groups.}
+\item{m}{Positive integer.
+Total number of features/groups.}
 
 \item{N}{Positive integer. The number of unique coalitions when sampling \code{n_components} features/feature
 groups, without replacement, from a sample space consisting of \code{m} different features/feature groups.}
@@ -15,8 +16,8 @@ groups, without replacement, from a sample space consisting of \code{m} differen
 \item{n_components}{Positive integer. Represents the number of features/feature groups you want to sample from
 a feature space consisting of \code{m} unique features/feature groups. Note that \verb{ 0 < = n_components <= m}.}
 
-\item{weight_zero_m}{Positive integer. Represents the Shapley weight for two special
-cases, i.e. the case where you have either \code{0} or \code{m} features/feature groups.}
+\item{weight_zero_m}{Numeric.
+The value to use as a replacement for infinite coalition weights when doing numerical operations.}
 }
 \value{
 Numeric

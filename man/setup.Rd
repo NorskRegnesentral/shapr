@@ -16,7 +16,7 @@ setup(
   n_MC_samples,
   seed,
   feature_specs,
-  type = "normal",
+  type = "regular",
   horizon = NULL,
   y = NULL,
   xreg = NULL,
@@ -105,7 +105,7 @@ Contains the 3 elements:
 }}
 
 \item{type}{Character.
-Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
+Either "regular" or "forecast" corresponding to function \code{setup()} is called from,
 correspondingly the type of explanation that should be generated.}
 
 \item{horizon}{Numeric.
@@ -187,9 +187,11 @@ probabilities.
 probability that they are sampled at least once.
 \code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
 
-\item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
-never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
-running the AICc-versions of the empirical as that requires data based optimization.}
+\item{is_python}{Logical.
+Indicates whether the function is called from the Python wrapper.
+Default is FALSE which is never changed when calling the function via \code{explain()} in R.
+The parameter is later used to disallow running the AICc-versions of the empirical method
+as that requires data based optimization, which is not supported in \code{shaprpy}.}
 
 \item{testing}{Logical.
 Only use to remove random components like timing from the object output when comparing output with testthat.
@@ -247,10 +249,11 @@ See \code{\link[=get_output_args_default]{get_output_args_default()}} for descri
 
 \item{extra_computation_args}{Named list.
 Specifices extra arguments related to the computation of the Shapley values.
-See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
+See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{Further arguments passed to specific approaches, see below.}
 }
 \description{
 check_setup
 }
+\keyword{internal}

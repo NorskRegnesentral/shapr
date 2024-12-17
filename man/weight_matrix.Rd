@@ -7,7 +7,8 @@
 weight_matrix(X, normalize_W_weights = TRUE)
 }
 \arguments{
-\item{X}{data.table}
+\item{X}{data.table.
+Output from \code{\link[=create_coalition_table]{create_coalition_table()}}.}
 
 \item{normalize_W_weights}{Logical. Whether to normalize the weights for the coalitions to sum to 1 for
 increased numerical stability before solving the WLS (weighted least squares). Applies to all coalitions
