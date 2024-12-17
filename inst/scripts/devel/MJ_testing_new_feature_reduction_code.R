@@ -69,7 +69,7 @@ approach = "gaussian"
 
 ret_list <- list()
 
-for(i in 80:100){
+for(i in 1:100){
 
   expl_red <- shapr::explain(model = model,
                              x_explain= x_explain[i,],
@@ -80,12 +80,12 @@ for(i in 80:100){
                              gaussian.mu=mu,
                              gaussian.cov_mat=Sigma,
                              adaptive = TRUE,
-                             print_iter_info = FALSE,
+                             print_iter_info = TRUE,
                              adaptive_arguments = list(allow_feature_reduction = TRUE,
                                                        fixed_n_coalitions_per_iter = 10,
                                                        max_iter = 100,
                                                        initial_n_coalitions = 50,
-                                                       shapley_threshold_val = 0.3,
+                                                       shapley_threshold_val = 0.2,
                                                        shapley_threshold_prob = 0.2))
 
 
@@ -134,7 +134,7 @@ expl_full <- shapr::explain(model = model,
                                 adaptive = FALSE,
                                 adaptive_arguments = list(allow_feature_reduction = FALSE))
 
-save.image("MJ_testing_new_feature_reduction_code.RData")
+save.image("MJ_testing_new_feature_reduction_code_val_02.RData")
 
 
 MAE_std <- colMeans(abs(expl_full$shapley_values[,-1]-expl_standard$shapley_values[,-1]))
@@ -205,7 +205,7 @@ for(i in seq_len(nrow(x_explain))){
 
 shap_vals_redno_exact_list <- list()
 for (i in 1:100){
-  shap_vals_redno_exact_list[[i]] <- expl_standard_redno_list[[i]]$shapley_values[i,]
+  shap_vals_redno_exact_list[[i]] <- expl_standard_redno_list[[i]]$shapley_values[1,]
 }
 
 shap_vals_redno_exact <- rbindlist(shap_vals_redno_exact_list)
@@ -215,11 +215,23 @@ meanMAE_obs_std_redno_exact <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-s
 plot(meanMAE_obs_std_redno_exact,meanMAE_obs_red,xlim=c(0,0.4),ylim=c(0,0.4))
 abline(a=0,b=1,col=2)
 
+meanMAE_obs_std_redno_exact_signif <- rowMeans(abs(expl_full$shapley_values[,3:8]-shap_vals_redno_exact[,3:8]))
+meanMAE_obs_red_signif <- rowMeans(abs(expl_full$shapley_values[,3:8]-red_shap_vals[,4:9]))
+
+plot(meanMAE_obs_std_redno_exact_signif,meanMAE_obs_red_signif,xlim=c(0,0.4),ylim=c(0,0.4))
+abline(a=0,b=1,col=2)
+
+
 MAE_std_redno_exact <- colMeans(abs(expl_full$shapley_values[,-c(1)]-shap_vals_redno_exact[,-c(1)]))
 
 plot(MAE_std_redno_exact)
 points(MAE_red,col=2)
 
 #save.image("MJ_testing_new_feature_reduction_code.RData")
+save.image("MJ_testing_new_feature_reduction_code_val_02.RData")
+
+### Dobbeltsjekk om man kan stoppe ved ordinær convergence detection om man bruker reduction, eller om det ikke er mulig.
+
+
 
 
