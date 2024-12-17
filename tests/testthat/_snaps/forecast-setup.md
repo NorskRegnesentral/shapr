@@ -12,8 +12,8 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_groups = 16, 
-      and is therefore set to 2^n_groups = 16.
+      max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
+      and is therefore set to 2^n_groups = 4.
       
     Condition
       Error in `get_predict_model()`:
@@ -124,18 +124,18 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_coalitions is smaller than max(10, n_groups + 1 = 5),which will result in unreliable results.
-      It is therefore set to 10.
+      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (4) that we should use all to get reliable results.
+      max_n_coalitions is therefore set to 2^n_groups = 4.
       
       * Model class: <Arima>
       * Approach: independence
       * Iterative estimation: FALSE
-      * Number of group-wise Shapley values: 4
+      * Number of group-wise Shapley values: 2
       * Number of observations to explain: 2
       
       -- Main computation started --
       
-      i Using 5 of 16 coalitions. 
+      i Using 4 of 4 coalitions. 
     Output
          explain_idx horizon  none   Temp    Wind
                <int>   <int> <num>  <num>   <num>
