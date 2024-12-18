@@ -4,7 +4,7 @@
 \alias{print.shapr}
 \title{Print method for shapr objects}
 \usage{
-\method{print}{shapr}(x, digits = 4, ...)
+\method{print}{shapr}(x, digits = 4)
 }
 \arguments{
 \item{x}{A shapr object}

@@ -4,11 +4,21 @@
 \alias{default_doc_internal}
 \title{Unexported documentation helper function.}
 \usage{
-default_doc_internal(...)
+default_doc_internal(
+  internal,
+  model,
+  predict_model,
+  x_explain,
+  x_train,
+  n_features,
+  W_kernel,
+  S,
+  dt_vS,
+  output_size,
+  ...
+)
 }
 \arguments{
-\item{...}{Further arguments passed to \code{approach}-specific functions.}
-
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
@@ -44,6 +54,8 @@ which are to be explained.}
 
 \item{output_size}{Scalar integer.
 Specifies the dimension of the output from the prediction model for every observation.}
+
+\item{...}{Further arguments passed to \code{approach}-specific functions.}
 }
 \value{
 The \code{internal} list.

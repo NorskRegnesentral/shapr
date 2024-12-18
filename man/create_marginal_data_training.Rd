@@ -43,7 +43,11 @@ y_var <- "Ozone"
 ind_x_explain <- 1:6
 x_train <- data[-ind_x_explain, ..x_var]
 x_train
-shapr:::create_marginal_data__training(x_train = x_train, Sbar_features = c(1, 4), n_MC_samples = 10)
+shapr:::create_marginal_data_training(
+x_train = x_train,
+ Sbar_features = c(1, 4),
+ n_MC_samples = 10
+ )
 }
 
 }

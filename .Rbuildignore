@@ -22,7 +22,7 @@ inst/compare_lundberg\.xgb\.obj
 ^CRAN-SUBMISSION$
 ^.Rprofile
 ^python$
-^rebuild-long-running-vignette\.R$
+^rebuild_long_running_vignette\.R$
 ^vignettes/understanding_shapr_vaeac\.Rmd\.orig$
 ^vignettes/understanding_shapr\.Rmd\.orig$
 ^vignettes/understanding_shapr_regression\.Rmd\.orig$

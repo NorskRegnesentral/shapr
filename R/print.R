@@ -4,7 +4,7 @@
 #' @param digits Scalar Integer.
 #' Number of digits to display to the console
 #' @export
-print.shapr <- function(x, digits = 4, ...) {
+print.shapr <- function(x, digits = 4) {
   shap <- copy(x$shapley_values_est)
   shap_names <- x$internal$parameters$shap_names
   cols <- c("none", shap_names)

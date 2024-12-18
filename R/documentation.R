@@ -43,7 +43,17 @@
 #'
 #'
 #' @keywords internal
-default_doc_internal <- function(...) {
+default_doc_internal <- function(internal,
+                                 model,
+                                 predict_model,
+                                 x_explain,
+                                 x_train,
+                                 n_features,
+                                 W_kernel,
+                                 S,
+                                 dt_vS,
+                                 output_size,
+                                 ...) {
   NULL
 }
 
