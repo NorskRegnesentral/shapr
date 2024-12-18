@@ -32,29 +32,6 @@ shapley_setup <- function(internal) {
     cli::cli_progress_step("Sampling coalitions")
   }
 
-
-  # dt_valid_causal_coalitions is only relevant for asymmetric Shapley values
-  # X_old <- sample_coalition_table_old(
-  #   m = n_shapley_values,
-  #   n_coalitions = n_coalitions,
-  #   weight_zero_m = 10^6,
-  #   paired_shap_sampling = paired_shap_sampling,
-  #   prev_coal_samples = prev_coal_samples,
-  #   kernelSHAP_reweighting = kernelSHAP_reweighting,
-  #   dt_valid_causal_coalitions = dt_valid_causal_coalitions
-  # )
-  #
-  # X_new <- sample_coalition_table(
-  #   m = n_shapley_values,
-  #   n_coalitions = n_coalitions,
-  #   weight_zero_m = 10^6,
-  #   paired_shap_sampling = paired_shap_sampling,
-  #   prev_coal_samples = prev_coal_samples,
-  #   prev_coal_samples_n_unique = prev_coal_samples_n_unique,
-  #   kernelSHAP_reweighting = kernelSHAP_reweighting,
-  #   dt_valid_causal_coalitions = dt_valid_causal_coalitions
-  # )
-
   X <- create_coalition_table(
     m = n_shapley_values,
     exact = exact,
@@ -227,52 +204,6 @@ create_coalition_table <- function(m,
     dt[!(coalition_size %in% c(0, m)), approach := approach0[coalition_size]]
   } else {
     dt[, approach := approach0] # TODO: add that we only add approach to these rows: !(coalition_size %in% c(0, m))
-  }
-
-  return(dt)
-}
-
-create_coalition_table_old <- function(m,
-                                       exact = TRUE,
-                                       n_coalitions = 200,
-                                       weight_zero_m = 10^6,
-                                       paired_shap_sampling = TRUE,
-                                       prev_coal_samples = NULL,
-                                       coal_feature_list = as.list(seq_len(m)),
-                                       approach0 = "gaussian",
-                                       kernelSHAP_reweighting = "none",
-                                       dt_valid_causal_coalitions = NULL) {
-  if (exact) {
-    dt <- exact_coalition_table(
-      m = m,
-      weight_zero_m = weight_zero_m,
-      dt_valid_causal_coalitions = dt_valid_causal_coalitions
-    )
-  } else {
-    dt <- sample_coalition_table_old(
-      m = m,
-      n_coalitions = n_coalitions,
-      weight_zero_m = weight_zero_m,
-      paired_shap_sampling = paired_shap_sampling,
-      prev_coal_samples = prev_coal_samples,
-      kernelSHAP_reweighting = kernelSHAP_reweighting,
-      dt_valid_causal_coalitions = dt_valid_causal_coalitions
-    )
-    stopifnot(
-      data.table::is.data.table(dt),
-      !is.null(dt[["p"]])
-    )
-    p <- NULL # due to NSE notes in R CMD check
-    dt[, p := NULL]
-  }
-
-  dt[, features := lapply(coalitions, FUN = coal_feature_mapper, coal_feature_list = coal_feature_list)]
-
-  # Adding approach to X (needed for the combined approaches)
-  if (length(approach0) > 1) {
-    dt[!(coalition_size %in% c(0, m)), approach := approach0[coalition_size]]
-  } else {
-    dt[!(coalition_size %in% c(0, m)), approach := approach0]
   }
 
   return(dt)
