@@ -206,7 +206,7 @@ create_coalition_table <- function(m,
   if (length(approach0) > 1) {
     dt[!(coalition_size %in% c(0, m)), approach := approach0[coalition_size]]
   } else {
-    dt[, approach := approach0]
+    dt[!(coalition_size %in% c(0, m)), approach := approach0]
   }
 
   return(dt)

@@ -1222,7 +1222,7 @@ check_computability <- function(internal) {
 
   if (asymmetric) {
     if (isTRUE(exact)) {
-      if (max_n_coalitions_causal > 5000 && max_n_coalitions > 5000) { # TODO check
+      if (max_n_coalitions_causal > 5000 && max_n_coalitions > 5000) {
         warning(
           paste0(
             "Due to computation time, we recommend not computing asymmetric Shapley values exactly \n",
