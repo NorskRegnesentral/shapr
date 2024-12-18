@@ -7,9 +7,11 @@
 inv_gaussian_transform_cpp(z, x)
 }
 \arguments{
-\item{z}{arma::mat. The data are the Gaussian Monte Carlos samples to transform.}
+\item{z}{arma::mat.
+The data are the Gaussian Monte Carlos samples to transform.}
 
-\item{x}{arma::mat. The data with the original transformation. Used to conduct the transformation of \code{z}.}
+\item{x}{arma::mat.
+The data with the original transformation. Used to conduct the transformation of \code{z}.}
 }
 \value{
 arma::mat of the same dimension as \code{z}

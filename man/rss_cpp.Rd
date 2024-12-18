@@ -2,20 +2,22 @@
 % Please edit documentation in R/RcppExports.R
 \name{rss_cpp}
 \alias{rss_cpp}
-\title{sigma_hat_sq-function}
+\title{Function for computing sigma_hat_sq}
 \usage{
 rss_cpp(H, y)
 }
 \arguments{
-\item{H}{Matrix. Output from \code{\link{hat_matrix_cpp}}}
+\item{H}{Matrix.
+Output from \code{\link[=hat_matrix_cpp]{hat_matrix_cpp()}}}
 
-\item{y}{Vector, i.e. representing the response variable}
+\item{y}{Vector
+Representing the (temporary) response variable}
 }
 \value{
 Scalar
 }
 \description{
-sigma_hat_sq-function
+Function for computing sigma_hat_sq
 }
 \author{
 Martin Jullum

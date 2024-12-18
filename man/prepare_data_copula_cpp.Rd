@@ -15,28 +15,32 @@ prepare_data_copula_cpp(
 )
 }
 \arguments{
-\item{MC_samples_mat}{arma::mat. Matrix of dimension (\code{n_MC_samples}, \code{n_features}) containing samples from the
-univariate standard normal.}
+\item{MC_samples_mat}{arma::mat.
+Matrix of dimension (\code{n_MC_samples}, \code{n_features}) containing samples from the univariate standard normal.}
 
-\item{x_explain_mat}{arma::mat. Matrix of dimension (\code{n_explain}, \code{n_features}) containing the observations
-to explain on the original scale.}
+\item{x_explain_mat}{arma::mat.
+Matrix of dimension (\code{n_explain}, \code{n_features}) containing the observations to explain.}
 
-\item{x_explain_gaussian_mat}{arma::mat. Matrix of dimension (\code{n_explain}, \code{n_features}) containing the
-observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
-transformed to a standardized normal distribution.}
-
-\item{x_train_mat}{arma::mat. Matrix of dimension (\code{n_train}, \code{n_features}) containing the training observations.}
-
-\item{S}{arma::mat. Matrix of dimension (\code{n_coalitions}, \code{n_features}) containing binary representations of
-the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
-This is not a problem internally in shapr as the empty and grand coalitions treated differently.}
-
-\item{mu}{arma::vec. Vector of length \code{n_features} containing the mean of each feature after being transformed
+\item{x_explain_gaussian_mat}{arma::mat.
+Matrix of dimension (\code{n_explain}, \code{n_features}) containing the observations to explain after being transformed
 using the Gaussian transform, i.e., the samples have been transformed to a standardized normal distribution.}
 
-\item{cov_mat}{arma::mat. Matrix of dimension (\code{n_features}, \code{n_features}) containing the pairwise covariance
-between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
-transformed to a standardized normal distribution.}
+\item{x_train_mat}{arma::mat.
+Matrix of dimension (\code{n_train}, \code{n_features}) containing the training observations.}
+
+\item{S}{arma::mat.
+Matrix of dimension (\code{n_coalitions}, \code{n_features}) containing binary representations of the used coalitions.
+S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+This is not a problem internally in shapr as the empty and grand coalitions are treated differently.}
+
+\item{mu}{arma::vec.
+Vector of length \code{n_features} containing the mean of each feature after being transformed using the Gaussian
+transform, i.e., the samples have been transformed to a standardized normal distribution.}
+
+\item{cov_mat}{arma::mat.
+Matrix of dimension (\code{n_features}, \code{n_features}) containing the pairwise covariance between all pairs of features
+after being transformed using the Gaussian transform, i.e., the samples have been transformed to a standardized
+normal distribution.}
 }
 \value{
 An arma::cube/3D array of dimension (\code{n_MC_samples}, \code{n_explain} * \code{n_coalitions}, \code{n_features}), where

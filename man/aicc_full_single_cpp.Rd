@@ -7,18 +7,21 @@
 aicc_full_single_cpp(X, mcov, S_scale_dist, h, y)
 }
 \arguments{
-\item{X}{matrix with "covariates"}
+\item{X}{matrix.}
 
-\item{mcov}{covariance matrix}
+\item{mcov}{matrix
+The covariance matrix of X.}
 
-\item{S_scale_dist}{logical indicating whether the Mahalanobis distance should be scaled with the number of variables}
+\item{S_scale_dist}{logical.
+Indicating whether the Mahalanobis distance should be scaled with the number of variables}
 
 \item{h}{numeric specifying the scaling (sigma)}
 
-\item{y}{vector with the "response variable"}
+\item{y}{Vector
+Representing the (temporary) response variable}
 }
 \value{
-Scalar with the numeric value of the AICc formula
+Scalar with the numeric value of the AICc formula.
 }
 \description{
 Temp-function for computing the full AICc with several X's etc

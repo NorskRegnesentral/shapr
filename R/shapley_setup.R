@@ -333,7 +333,7 @@ sample_coalition_table <- function(m,
       )
 
       # Sample specific coalitions -------
-      coal_sample <- sample_features_cpp(m, coal_size_sample)
+      coal_sample <- sample_coalitions_cpp(m, coal_size_sample)
       if (paired_shap_sampling == TRUE) {
         coal_sample_paired <- lapply(coal_sample, function(x) seq(m)[-x])
         coal_sample_all <- c(coal_sample_all, coal_sample, coal_sample_paired)

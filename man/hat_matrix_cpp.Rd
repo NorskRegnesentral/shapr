@@ -7,11 +7,13 @@
 hat_matrix_cpp(X, mcov, S_scale_dist, h)
 }
 \arguments{
-\item{X}{matrix with "covariates"}
+\item{X}{matrix.}
 
-\item{mcov}{covariance matrix}
+\item{mcov}{matrix
+The covariance matrix of X.}
 
-\item{S_scale_dist}{logical indicating whether the Mahalanobis distance should be scaled with the number of variables}
+\item{S_scale_dist}{logical.
+Indicating whether the Mahalanobis distance should be scaled with the number of variables}
 
 \item{h}{numeric specifying the scaling (sigma)}
 }

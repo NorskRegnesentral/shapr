@@ -169,44 +169,44 @@ BEGIN_RCPP
 END_RCPP
 }
 // mahalanobis_distance_cpp
-arma::cube mahalanobis_distance_cpp(Rcpp::List featureList, arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist);
-RcppExport SEXP _shapr_mahalanobis_distance_cpp(SEXP featureListSEXP, SEXP Xtrain_matSEXP, SEXP Xtest_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
+arma::cube mahalanobis_distance_cpp(Rcpp::List featureList, arma::mat Xtrain_mat, arma::mat Xexplain_mat, arma::mat mcov, bool S_scale_dist);
+RcppExport SEXP _shapr_mahalanobis_distance_cpp(SEXP featureListSEXP, SEXP Xtrain_matSEXP, SEXP Xexplain_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type featureList(featureListSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type Xtrain_mat(Xtrain_matSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Xtest_mat(Xtest_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Xexplain_mat(Xexplain_matSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
-    rcpp_result_gen = Rcpp::wrap(mahalanobis_distance_cpp(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist));
+    rcpp_result_gen = Rcpp::wrap(mahalanobis_distance_cpp(featureList, Xtrain_mat, Xexplain_mat, mcov, S_scale_dist));
     return rcpp_result_gen;
 END_RCPP
 }
-// sample_features_cpp
-List sample_features_cpp(int m, IntegerVector n_features);
-RcppExport SEXP _shapr_sample_features_cpp(SEXP mSEXP, SEXP n_featuresSEXP) {
+// sample_coalitions_cpp
+List sample_coalitions_cpp(int m, IntegerVector n_coalitions);
+RcppExport SEXP _shapr_sample_coalitions_cpp(SEXP mSEXP, SEXP n_coalitionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type n_features(n_featuresSEXP);
-    rcpp_result_gen = Rcpp::wrap(sample_features_cpp(m, n_features));
+    Rcpp::traits::input_parameter< IntegerVector >::type n_coalitions(n_coalitionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_coalitions_cpp(m, n_coalitions));
     return rcpp_result_gen;
 END_RCPP
 }
 // observation_impute_cpp
-NumericMatrix observation_impute_cpp(IntegerVector index_xtrain, IntegerVector index_s, NumericMatrix xtrain, NumericMatrix xtest, IntegerMatrix S);
-RcppExport SEXP _shapr_observation_impute_cpp(SEXP index_xtrainSEXP, SEXP index_sSEXP, SEXP xtrainSEXP, SEXP xtestSEXP, SEXP SSEXP) {
+NumericMatrix observation_impute_cpp(IntegerVector index_xtrain, IntegerVector index_s, NumericMatrix x_train, NumericMatrix x_explain, IntegerMatrix S);
+RcppExport SEXP _shapr_observation_impute_cpp(SEXP index_xtrainSEXP, SEXP index_sSEXP, SEXP x_trainSEXP, SEXP x_explainSEXP, SEXP SSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerVector >::type index_xtrain(index_xtrainSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type index_s(index_sSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type xtrain(xtrainSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type xtest(xtestSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type x_train(x_trainSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type x_explain(x_explainSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type S(SSEXP);
-    rcpp_result_gen = Rcpp::wrap(observation_impute_cpp(index_xtrain, index_s, xtrain, xtest, S));
+    rcpp_result_gen = Rcpp::wrap(observation_impute_cpp(index_xtrain, index_s, x_train, x_explain, S));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -250,7 +250,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_prepare_data_gaussian_cpp", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp, 5},
     {"_shapr_prepare_data_gaussian_cpp_caus", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp_caus, 5},
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
-    {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
+    {"_shapr_sample_coalitions_cpp", (DL_FUNC) &_shapr_sample_coalitions_cpp, 2},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
     {"_shapr_weight_matrix_cpp", (DL_FUNC) &_shapr_weight_matrix_cpp, 4},
     {"_shapr_coalition_matrix_cpp", (DL_FUNC) &_shapr_coalition_matrix_cpp, 2},

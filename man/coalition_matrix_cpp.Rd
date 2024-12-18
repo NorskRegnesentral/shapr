@@ -7,9 +7,11 @@
 coalition_matrix_cpp(coalitions, m)
 }
 \arguments{
-\item{coalitions}{List}
+\item{coalitions}{List.
+Each of the elements equals an integer vector representing a valid combination of features/feature groups.}
 
-\item{m}{Positive integer. Total number of coalitions}
+\item{m}{Integer.
+Number of features/feature groups.}
 }
 \value{
 Matrix

@@ -89,8 +89,8 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
     dt_p <- observation_impute_cpp(
       index_xtrain = index_xtrain,
       index_s = index_s,
-      xtrain = x_train0_mat,
-      xtest = x_explain00_mat,
+      x_train = x_train0_mat,
+      x_explain = x_explain00_mat,
       S = S0
     )
 

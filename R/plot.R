@@ -245,7 +245,7 @@ plot.shapr <- function(x,
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
-  # Converting and melting Xtest
+  # Converting and melting Xexplain
   if (!is_groupwise || include_group_feature_means) {
     desc_mat <- trimws(format(x$internal$data$x_explain, digits = digits))
     for (i in seq_len(ncol(desc_mat))) {

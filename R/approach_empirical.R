@@ -287,8 +287,8 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
   dt_p <- observation_impute_cpp(
     index_xtrain = dt_melt[["index_x_train"]],
     index_s = dt_melt[["index_s"]],
-    xtrain = x_train,
-    xtest = x_explain, # TODO: change this to xexplain
+    x_train = x_train,
+    x_explain = x_explain, # TODO: change this to xexplain
     S = S
   )
 
@@ -437,8 +437,8 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
         mcov_list[[j]] <- stats::cov(X_list[[j]])
 
         Xtrain.Sbar <- subset(x_train, select = Sbar.cols)[these_train, ]
-        Xtest.S <- subset(x_explain, select = S.cols)[these_test, ]
-        X.pred.list[[j]] <- cbind(Xtrain.Sbar, Xtest.S)
+        Xexplain.S <- subset(x_explain, select = S.cols)[these_test, ]
+        X.pred.list[[j]] <- cbind(Xtrain.Sbar, Xexplain.S)
 
         # Ensure colnames are correct:
         varname <- labels[-which(labels %in% colnames(Xtrain.Sbar))]
@@ -535,8 +535,8 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
       mcov_list <- list(stats::cov(X_list[[1]]))
 
       Xtrain.Sbar <- subset(x_train, select = Sbar.cols)[these_train, ]
-      Xtest.S <- subset(x_explain, select = S.cols)[these_test, ]
-      X.pred <- cbind(Xtrain.Sbar, Xtest.S)
+      Xexplain.S <- subset(x_explain, select = S.cols)[these_test, ]
+      X.pred <- cbind(Xtrain.Sbar, Xexplain.S)
 
       # Ensure colnames are correct:
       varname <- labels[-which(labels %in% colnames(Xtrain.Sbar))]
@@ -584,7 +584,7 @@ distance_matrix <- function(x_train, x_explain = NULL, list_features, mcov) {
   D <- mahalanobis_distance_cpp(
     featureList = list_features,
     Xtrain_mat = as.matrix(x_train),
-    Xtest_mat = as.matrix(x_explain),
+    Xexplain_mat = as.matrix(x_explain),
     mcov = mcov,
     S_scale_dist = TRUE
   )

@@ -2,19 +2,18 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
-
-
 //' Calculate weight matrix
 //'
-//' @param coalitions List. Each of the elements equals an integer
-//' vector representing a valid combination of features/feature groups.
-//' @param m Integer. Number of features/feature groups
-//' @param n Integer. Number of combinations
-//' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
-//' the Shapley weight of feature/feature group combination \code{i}, represented by
-//' \code{coalitions[[i]]}.
+//' @param coalitions List.
+//' Each of the elements equals an integer vector representing a valid combination of features/feature groups.
+//' @param m Integer.
+//' Number of features/feature groups.
+//' @param n Integer.
+//' Number of combinations.
+//' @param w Numeric vector
+//' Should have length \code{n}. \code{w[i]} equals the Shapley weight of feature/feature group combination \code{i},
+//' represented by \code{coalitions[[i]]}.
 //'
-//' @export
 //' @keywords internal
 //'
 //' @return Matrix of dimension n x m + 1
@@ -79,11 +78,11 @@ arma::mat weight_matrix_cpp(List coalitions, int m, int n, NumericVector w){
 
 //' Get coalition matrix
 //'
-//' @param coalitions List
-//' @param m Positive integer. Total number of coalitions
+//' @inheritParams weight_matrix_cpp
 //'
 //' @export
 //' @keywords internal
+//'
 //'
 //' @return Matrix
 //' @author Nikolai Sellereite, Martin Jullum
