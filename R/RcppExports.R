@@ -241,8 +241,11 @@ sample_features_cpp <- function(m, n_features) {
     .Call(`_shapr_sample_features_cpp`, m, n_features)
 }
 
-#' We here return a list of strings, where each string is a comma-separated list of integers, but the structure
-#' could also have been a CharacterVector. The reason for using a list here is that sample_features_cpp returns a list.
+#' We here return a vector of strings/characters, i.e., a CharacterVector,
+#' where each string is a space-separated list of integers.
+#' @param m Integer The number of elements to sample from, i.e., the number of features.
+#' @param n_features IntegerVector The number of features to sample for each feature combination.
+#' @param paired_shap_sampling Logical Should we return both the sampled coalition S and its complement Sbar.
 #' @keywords internal
 sample_features_cpp_str_paired <- function(m, n_features, paired_shap_sampling = TRUE) {
     .Call(`_shapr_sample_features_cpp_str_paired`, m, n_features, paired_shap_sampling)

@@ -20,8 +20,11 @@ List sample_features_cpp(int m, IntegerVector n_features) {
     return l;
 }
 
-//' We here return a list of strings, where each string is a comma-separated list of integers, but the structure
-//' could also have been a CharacterVector. The reason for using a list here is that sample_features_cpp returns a list.
+//' We here return a vector of strings/characters, i.e., a CharacterVector,
+//' where each string is a space-separated list of integers.
+//' @param m Integer The number of elements to sample from, i.e., the number of features.
+//' @param n_features IntegerVector The number of features to sample for each feature combination.
+//' @param paired_shap_sampling Logical Should we return both the sampled coalition S and its complement Sbar.
 //' @keywords internal
 // [[Rcpp::export]]
 CharacterVector sample_features_cpp_str_paired(int m, IntegerVector n_features, bool paired_shap_sampling = true) {

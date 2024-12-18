@@ -7,7 +7,7 @@
 get_iterative_args_default(
   internal,
   initial_n_coalitions = ceiling(min(200, max(5, internal$parameters$n_features,
-    (2^internal$parameters$n_features)/10))),
+    (2^internal$parameters$n_features)/10), internal$parameters$max_n_coalitions)),
   fixed_n_coalitions_per_iter = NULL,
   max_iter = 20,
   convergence_tol = 0.02,
