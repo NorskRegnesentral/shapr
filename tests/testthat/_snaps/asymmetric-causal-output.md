@@ -79,9 +79,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44 -11.352  15.017 14.540 -2.658 -2.945
-      2:          2 42.44   5.552  -6.256 -4.526 -6.666 -1.984
-      3:          3 42.44   9.720 -32.556  7.270 -3.377  1.374
+      1:          1 42.44 -11.446  14.923 14.754 -2.671 -2.958
+      2:          2 42.44   5.593  -6.215 -4.578 -6.680 -1.999
+      3:          3 42.44   9.719 -32.557  7.272 -3.376  1.375
 
 # output_symmetric_conditional
 
@@ -264,11 +264,11 @@
       
       i Using 6 of 6 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp   Month    Day
-              <int> <num>   <num>   <num>  <num>   <num>  <num>
-      1:          1 42.44 -17.410  26.305 13.958  -7.146 -3.105
-      2:          2 42.44  -2.592   5.563 -3.561 -11.136 -2.154
-      3:          3 42.44  21.260 -43.085 10.992  -8.054  1.319
+         explain_id  none Solar.R     Wind     Temp  Month     Day
+              <int> <num>   <num>    <num>    <num>  <num>   <num>
+      1:          1 42.44  -25.73  21.4308  21.4308 -1.140 -3.3927
+      2:          2 42.44   -7.98   0.8414   0.8414 -5.149 -2.4328
+      3:          3 42.44    8.03 -12.3436 -12.3436 -1.848  0.9372
 
 # output_asym_caus_conf_mix_empirical
 
@@ -477,11 +477,11 @@
       v Converged after 6 coalitions:
       Convergence tolerance reached!
     Output
-         explain_id  none       A      B      C
-              <int> <num>   <num>  <num>  <num>
-      1:          1 42.44 -17.921  39.86 -9.334
-      2:          2 42.44  -2.802  -5.92 -5.157
-      3:          3 42.44  -2.233 -20.16  4.828
+         explain_id  none      A      B       C
+              <int> <num>  <num>  <num>   <num>
+      1:          1 42.44 -5.082  32.51 -14.823
+      2:          2 42.44 10.059 -29.61   5.675
+      3:          3 42.44 11.355 -23.68  -5.247
 
 # output_mixed_sym_caus_conf_TRUE
 
@@ -530,7 +530,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 32 coalitions, 5 new. 
+      i Using 6 of 32 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 10 of 32 coalitions, 4 new. 
@@ -553,11 +553,11 @@
       -- Iteration 8 -----------------------------------------------------------------
       i Using 30 of 32 coalitions, 2 new. 
     Output
-         explain_id  none  Solar.R    Wind   Temp    Day Month_factor
-              <int> <num>    <num>   <num>  <num>  <num>        <num>
-      1:          1 42.44 -2.13189   8.867  9.390 -1.137       -4.404
-      2:          2 42.44  0.07794  -7.916 -3.340 -1.378       -2.828
-      3:          3 42.44 -2.32289 -13.512  4.116 -1.343        2.462
+         explain_id  none Solar.R   Wind    Temp     Day Month_factor
+              <int> <num>   <num>  <num>   <num>   <num>        <num>
+      1:          1 42.44  -2.421  11.79  8.6450 -4.5647       -2.870
+      2:          2 42.44   3.042  -6.71 -4.2354 -4.0375       -3.442
+      3:          3 42.44   2.905 -18.44 -0.2186  0.2627        4.892
 
 # output_mixed_asym_caus_conf_mixed
 
@@ -642,9 +642,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp     Day Month_factor
               <int> <num>   <num>   <num>  <num>   <num>        <num>
-      1:          1 42.44 -11.300  15.085 14.281 -2.2816       -5.201
-      2:          2 42.44   5.495  -6.312 -4.640 -1.6405       -8.286
-      3:          3 42.44   9.635 -32.764  7.451  0.8945        4.184
+      1:          1 42.44 -11.397  14.988 14.418 -2.2531       -5.172
+      2:          2 42.44   5.535  -6.273 -4.731 -1.6342       -8.280
+      3:          3 42.44   9.633 -32.766  7.516  0.8637        4.153
 
 # output_categorical_asym_causal_mixed_cat
 
@@ -694,7 +694,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 16 coalitions, 5 new. 
+      i Using 6 of 16 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 16 coalitions, 2 new. 
@@ -710,9 +710,9 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1 42.44       -3.774              8.585       -10.6692        5.35
-      2:          2 42.44       -1.083            -14.855        19.0929      -17.99
-      3:          3 42.44       15.582            -17.251        -0.1388      -16.56
+      1:          1 42.44      -0.8228              14.26         -10.99      -2.961
+      2:          2 42.44       3.2689             -13.45          14.43     -19.089
+      3:          3 42.44       8.4092             -19.04          11.81     -19.535
 
 # output_categorical_asym_causal_mixed_ctree
 
