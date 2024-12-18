@@ -277,7 +277,16 @@ exact_coalition_table <- function(m, dt_valid_causal_coalitions = NULL, weight_z
   return(dt)
 }
 
-
+#' @param prev_coal_samples Vector of previously sampled coalitions as characters/strings, where
+#' each string contains a coalition and the feature indices in the coalition is separated by a space.
+#' For example, "1 5 8" is a coalition with features 1, 5, and 8.
+#' @param prev_coal_samples_n_unique Positive integer. The number of unique coalitions in
+#' `prev_coal_samples`. This is a separate argument to avoid recomputing the number unnecessarily.
+#' @param n_samps_scale Positive integer. Integer that scales the number of coalitions to sample
+#' as sampling is cheap, while checking for `n_coalitions` unique coalitions is expensive, thus
+#' we over sample the number of coalitions by a factor of `n_samps_scale` and determine when
+#' we have enough unique coalitions and only use the coalitions up to this point and throw away
+#' the remaining over sampled coalitions.
 #' @keywords internal
 sample_coalition_table <- function(m,
                                    n_coalitions = 200,
