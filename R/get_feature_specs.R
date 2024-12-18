@@ -1,4 +1,3 @@
-
 #' Gets the feature specifications form the model
 #'
 #' @inheritParams explain

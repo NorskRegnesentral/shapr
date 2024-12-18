@@ -131,7 +131,8 @@ Determines the minimum sum of weights in a terminal node required for a split
 The default value is 7.}
 
 \item{ctree.sample}{Boolean.
-If \code{TRUE} (default), then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
+If \code{TRUE} (default), then the method always samples \code{n_MC_samples} observations from the leaf nodes
+(with replacement).
 If \code{FALSE} and the number of observations in the leaf node is less than \code{n_MC_samples},
 the method will take all observations in the leaf.
 If \code{FALSE} and the number of observations in the leaf node is more than \code{n_MC_samples},

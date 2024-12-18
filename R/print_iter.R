@@ -27,7 +27,7 @@ print_iter <- function(internal) {
     est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions
     est_required_coalitions <- internal$iter_list[[iter]]$est_required_coalitions
 
-    next_n_coalitions <- internal$iter_list[[iter + 1]]$n_sampled_coalitions +2
+    next_n_coalitions <- internal$iter_list[[iter + 1]]$n_sampled_coalitions + 2
     next_new_n_coalitions <- internal$iter_list[[iter + 1]]$new_n_coalitions
 
     cli::cli_h3("Convergence info")

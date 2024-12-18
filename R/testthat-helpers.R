@@ -1,4 +1,3 @@
-
 #' @keywords internal
 helper_rds <- function(code, name = "tmp.rds") {
   path <- file.path(tempdir(), name)

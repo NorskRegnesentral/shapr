@@ -15,7 +15,8 @@
 #' The default value is 7.
 #'
 #' @param ctree.sample Boolean.
-#' If `TRUE` (default), then the method always samples `n_MC_samples` observations from the leaf nodes (with replacement).
+#' If `TRUE` (default), then the method always samples `n_MC_samples` observations from the leaf nodes
+#' (with replacement).
 #' If `FALSE` and the number of observations in the leaf node is less than `n_MC_samples`,
 #' the method will take all observations in the leaf.
 #' If `FALSE` and the number of observations in the leaf node is more than `n_MC_samples`,

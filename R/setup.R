@@ -331,13 +331,12 @@ get_parameters <- function(approach,
   )
 
   # Additional forecast-specific arguments, only added for type="forecast"
-  if(type == "forecast"){
-
+  if (type == "forecast") {
     output_labels <-
       cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
     colnames(output_labels) <- c("explain_idx", "horizon")
 
-    explain_lags = list(y = explain_y_lags, xreg = explain_xreg_lags)
+    explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
 
     parameters$horizon <- horizon
     parameters$train_idx <- train_idx
@@ -345,7 +344,6 @@ get_parameters <- function(approach,
     parameters$group_lags <- group_lags
     parameters$output_labels <- output_labels
     parameters$explain_lags <- explain_lags
-
   }
 
   # Getting additional parameters from ...
@@ -1098,10 +1096,10 @@ set_extra_comp_params <- function(internal) {
 #' @export
 #' @author Martin Jullum
 get_extra_comp_args_default <- function(internal, # Only used to get the default value of compute_sd
-                                       compute_sd = isFALSE(internal$parameters$exact),
-                                       n_boot_samps = 100,
-                                       max_batch_size = 10,
-                                       min_n_batches = 10) {
+                                        compute_sd = isFALSE(internal$parameters$exact),
+                                        n_boot_samps = 100,
+                                        max_batch_size = 10,
+                                        min_n_batches = 10) {
   return(mget(methods::formalArgs(get_extra_comp_args_default)[-1])) # [-1] to exclude internal
 }
 
@@ -1392,7 +1390,6 @@ get_supported_approaches <- function() {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 check_regression <- function(internal) {
-
   output_size <- internal$parameters$output_size
   type <- internal$parameters$type
   keep_samp_for_vS <- internal$parameters$output_args$keep_samp_for_vS

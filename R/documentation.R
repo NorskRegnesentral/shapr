@@ -73,5 +73,3 @@ default_doc_internal <- function(internal,
 default_doc_export <- function(internal, iter, index_features) {
   NULL
 }
-
-
