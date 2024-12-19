@@ -24,7 +24,6 @@ test_that("output_asymmetric_conditional", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = NULL,
-      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asymmetric_conditional"
@@ -44,7 +43,6 @@ test_that("output_asym_cond_reg", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = NULL,
-      paired_shap_sampling = FALSE
     ),
     "output_asym_cond_reg"
   )
@@ -63,7 +61,6 @@ test_that("output_asym_cond_reg_iterative", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = NULL,
-      paired_shap_sampling = FALSE,
       iterative = TRUE
     ),
     "output_asym_cond_reg_iterative"
@@ -136,7 +133,6 @@ test_that("output_asym_caus_conf_TRUE", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = TRUE,
-      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asym_caus_conf_TRUE"
@@ -157,7 +153,6 @@ test_that("output_asym_caus_conf_FALSE", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = FALSE,
-      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asym_caus_conf_FALSE"
@@ -176,7 +171,6 @@ test_that("output_asym_caus_conf_mix", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asym_caus_conf_mix"
@@ -196,7 +190,6 @@ test_that("output_asym_caus_conf_mix_n_coal", {
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
       n_MC_samples = 5, # Just for speed
-      paired_shap_sampling = FALSE,
       max_n_coalitions = 6
     ),
     "output_asym_caus_conf_mix_n_coal"
@@ -215,7 +208,6 @@ test_that("output_asym_caus_conf_mix_empirical", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asym_caus_conf_mix_empirical"
@@ -234,7 +226,6 @@ test_that("output_asym_caus_conf_mix_ctree", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_asym_caus_conf_mix_ctree"
@@ -411,7 +402,6 @@ test_that("output_mixed_asym_caus_conf_mixed", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(TRUE, FALSE, FALSE),
-      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_mixed_sym_caus_conf_mixed"
@@ -430,7 +420,6 @@ test_that("output_mixed_asym_caus_conf_mixed_2", {
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
       confounding = c(FALSE, TRUE, TRUE),
-      paired_shap_sampling = FALSE,
       n_MC_samples = 5 # Just for speed
     ),
     "output_mixed_sym_caus_conf_mixed_2"
@@ -450,7 +439,6 @@ test_that("output_mixed_asym_cond_reg", {
       phi0 = p0,
       asymmetric = TRUE,
       causal_ordering = list(1:2, 3, 4:5),
-      paired_shap_sampling = FALSE,
       confounding = NULL,
       iterative = TRUE
     ),
