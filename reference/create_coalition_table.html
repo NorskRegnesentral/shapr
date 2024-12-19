@@ -76,6 +76,8 @@
 <span>  weight_zero_m <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">6</span>,</span>
 <span>  paired_shap_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  prev_coal_samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  prev_coal_samples_n_unique <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  n_samps_scale <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  coal_feature_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  approach0 <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  kernelSHAP_reweighting <span class="op">=</span> <span class="st">"none"</span>,</span>
@@ -113,8 +115,24 @@ Whether to do paired sampling of coalitions.</p></dd>
 
 
 <dt id="arg-prev-coal-samples">prev_coal_samples<a class="anchor" aria-label="anchor" href="#arg-prev-coal-samples"></a></dt>
-<dd><p>List.
-A list of previously sampled coalitions.</p></dd>
+<dd><p>Character vector.
+A vector of previously sampled coalitions as characters.
+Each string contains a coalition and the feature indices in the coalition is separated by a space.
+For example, "1 5 8" is a coalition with features 1, 5, and 8.</p></dd>
+
+
+<dt id="arg-prev-coal-samples-n-unique">prev_coal_samples_n_unique<a class="anchor" aria-label="anchor" href="#arg-prev-coal-samples-n-unique"></a></dt>
+<dd><p>Positive integer.
+The number of unique coalitions in <code>prev_coal_samples</code>.
+This is a separate argument to avoid recomputing the number unnecessarily.</p></dd>
+
+
+<dt id="arg-n-samps-scale">n_samps_scale<a class="anchor" aria-label="anchor" href="#arg-n-samps-scale"></a></dt>
+<dd><p>Positive integer.
+Integer that scales the number of coalitions <code>n_coalitions</code> to sample as sampling is cheap,
+while checking for <code>n_coalitions</code> unique coalitions is expensive, thus we over sample the
+number of coalitions by a factor of <code>n_samps_scale</code> and determine when we have <code>n_coalitions</code> unique
+coalitions and only use the coalitions up to this point and throw away the remaining coalitions.</p></dd>
 
 
 <dt id="arg-coal-feature-list">coal_feature_list<a class="anchor" aria-label="anchor" href="#arg-coal-feature-list"></a></dt>
@@ -124,7 +142,7 @@ A list mapping each coalition to the features it contains.</p></dd>
 
 <dt id="arg-approach-">approach0<a class="anchor" aria-label="anchor" href="#arg-approach-"></a></dt>
 <dd><p>Character vector.
-Contains the approach to be used for eastimation of each coalition size. Same as <code>approach</code> in <code><a href="explain.html">explain()</a></code>.</p></dd>
+Contains the approach to be used for estimation of each coalition size. Same as <code>approach</code> in <code><a href="explain.html">explain()</a></code>.</p></dd>
 
 
 <dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>
@@ -154,7 +172,7 @@ The data.table contains information about the coalitions that respects the causa
     </div>
     <div id="author">
     <h2>Author</h2>
-    <p>Nikolai Sellereite, Martin Jullum</p>
+    <p>Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen</p>
     </div>
 
     <div id="ref-examples">
