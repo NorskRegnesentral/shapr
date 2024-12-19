@@ -1,26 +1,30 @@
 #' @rdname setup_approach
 #'
-#' @param ctree.mincriterion Numeric scalar or vector. (default = 0.95)
+#' @param ctree.mincriterion Numeric scalar or vector.
 #' Either a scalar or vector of length equal to the number of features in the model.
-#' Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+#' The value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
 #' If it is a vector, this indicates which value to use when conditioning on various numbers of features.
+#' The default value is 0.95.
 #'
-#' @param ctree.minsplit Numeric scalar. (default = 20)
+#' @param ctree.minsplit Numeric scalar.
 #' Determines minimum value that the sum of the left and right daughter nodes required for a split.
+#' The default value is 20.
 #'
-#' @param ctree.minbucket Numeric scalar. (default = 7)
+#' @param ctree.minbucket Numeric scalar.
 #' Determines the minimum sum of weights in a terminal node required for a split
+#' The default value is 7.
 #'
-#' @param ctree.sample Boolean. (default = TRUE)
-#' If TRUE, then the method always samples `n_MC_samples` observations from the leaf nodes (with replacement).
-#' If FALSE and the number of observations in the leaf node is less than `n_MC_samples`,
+#' @param ctree.sample Boolean.
+#' If `TRUE` (default), then the method always samples `n_MC_samples` observations from the leaf nodes
+#' (with replacement).
+#' If `FALSE` and the number of observations in the leaf node is less than `n_MC_samples`,
 #' the method will take all observations in the leaf.
-#' If FALSE and the number of observations in the leaf node is more than `n_MC_samples`,
+#' If `FALSE` and the number of observations in the leaf node is more than `n_MC_samples`,
 #' the method will sample `n_MC_samples` observations (with replacement).
 #' This means that there will always be sampling in the leaf unless
-#' `sample` = FALSE AND the number of obs in the node is less than `n_MC_samples`.
+#' `sample = FALSE` *and* the number of obs in the node is less than `n_MC_samples`.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 setup_approach.ctree <- function(internal,
@@ -37,7 +41,7 @@ setup_approach.ctree <- function(internal,
 }
 
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @rdname prepare_data
 #' @export
@@ -106,31 +110,23 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   return(dt2)
 }
 
-#' Make all conditional inference trees
+#' Build all the conditional inference trees
 #'
-#' @param given_ind Numeric value. Indicates which features are conditioned on.
+#' @param given_ind Integer vector.
+#' Indicates which features are conditioned on.
 #'
-#' @inheritParams default_doc
-#'
-#' @param mincriterion Numeric scalar or vector. (default = 0.95)
-#' Either a scalar or vector of length equal to the number of features in the model.
-#' Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
-#' If it is a vector, this indicates which value to use when conditioning on various numbers of features.
-#'
-#' @param minsplit Numeric scalar. (default = 20)
-#' Determines minimum value that the sum of the left and right daughter nodes required for a split.
-#'
-#' @param minbucket Numeric scalar. (default = 7)
-#' Determines the minimum sum of weights in a terminal node required for a split
-#'
-#' @param use_partykit String. In some semi-rare cases `partykit::ctree` runs into an error related to the LINPACK
-#' used by R. To get around this problem, one may fall back to using the newer (but slower) `partykit::ctree`
+#' @param use_partykit String. In some semi-rare cases [partykit::ctree()] runs into an error related to the LINPACK
+#' used by R. To get around this problem, one may fall back to using the newer (but slower) [partykit::ctree()]
 #' function, which is a reimplementation of the same method. Setting this parameter to `"on_error"` (default)
-#' falls back to  `partykit::ctree`, if `party::ctree` fails. Other options are `"never"`, which always
-#' uses `party::ctree`, and `"always"`, which always uses `partykit::ctree`. A warning message is
-#' created whenever `partykit::ctree` is used.
+#' falls back to  [partykit::ctree()], if [party::ctree()] fails. Other options are `"never"`, which always
+#' uses [party::ctree()], and `"always"`, which always uses [partykit::ctree()]. A warning message is
+#' created whenever [partykit::ctree()] is used.
+#'
+#' @inheritParams default_doc_internal
 #'
 #' @return List with conditional inference tree and the variables conditioned/not conditioned on.
+#'
+#' @details See the documentation of the [setup_approach.ctree()] function for undocumented parameters.
 #'
 #' @keywords internal
 #' @author Annabelle Redelmeier, Martin Jullum
@@ -201,21 +197,17 @@ create_ctree <- function(given_ind,
 
 #' Sample ctree variables from a given conditional inference tree
 #'
+#'
 #' @param tree List. Contains tree which is an object of type ctree built from the party package.
 #' Also contains given_ind, the features to condition upon.
 #'
-#' @param n_MC_samples Numeric. Indicates how many samples to use for MCMC.
+#' @param n_MC_samples Scalar integer.
+#' Corresponds to the number of samples from the leaf node.
+#' See an exception when sample = FALSE in [setup_approach.ctree()].
 #'
-#' @param x_explain Matrix, data.frame or data.table with the features of the observation whose
-#' predictions ought to be explained (test data). Dimension `1\timesp` or `p\times1`.
+#' @inheritParams default_doc_internal
 #'
-#' @param x_train Matrix, data.frame or data.table with training data.
-#'
-#' @param n_features Positive integer. The number of features.
-#'
-#' @param sample Boolean. True indicates that the method samples from the terminal node
-#' of the tree whereas False indicates that the method takes all the observations if it is
-#' less than n_MC_samples.
+#' @details See the documentation of the [setup_approach.ctree()] function for undocumented parameters.
 #'
 #' @return data.table with `n_MC_samples` (conditional) Gaussian samples
 #'

@@ -6,7 +6,7 @@ devtools::load_all(".")
 
 # Old R code ------------------------------------------------------------------------------------------------------
 ## R Old version ---------------------------------------------------------------------------------------------------
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @rdname prepare_data
 #' @export
 prepare_data.copula_old <- function(internal, index_features = NULL, ...) {
@@ -160,7 +160,7 @@ gaussian_transform_separate_old <- function(yx, n_y) {
 
 
 ## C++ arma version -------------------------------------------------------------------------------------------------
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -218,7 +218,7 @@ prepare_data.copula_cpp_arma <- function(internal, index_features, ...) {
 
 
 ## C++ and R version  ----------------------------------------------------------------------------------------------
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -316,7 +316,7 @@ quantile.type7 <- function(x, probs) {
 
 
 # C++ with sourceRcpp ---------------------------------------------------------------------------------------------
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -1514,7 +1514,7 @@ temp_shapley_value_func = function(dt, internal, model, predict_model) {
   dt_vS <- rbind(t(as.matrix(c(1, rep(phi0, n_test)))), dt_vS2, t(as.matrix(c(2^M, response_test))),
                  use.names = FALSE)
   colnames(dt_vS) = colnames(dt_vS2)
-  compute_shapley_new(internal, dt_vS)
+  compute_shapley(internal, dt_vS)
 }
 
 # Compute the Shapley values

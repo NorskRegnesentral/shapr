@@ -7,7 +7,8 @@
 get_data_specs(x)
 }
 \arguments{
-\item{x}{matrix, data.frame or data.table The data to extract feature information from.}
+\item{x}{data.frame or data.table.
+The data to extract feature information from.}
 }
 \value{
 A list with the following elements:
@@ -23,10 +24,12 @@ Fetches feature information from a given data set
 }
 \details{
 This function is used to extract the feature information to be checked against the corresponding
-information extracted from the model and other data sets. The function is called from internally
+information extracted from the model and other data sets.
+The function is only called internally
 }
 \examples{
 # Load example data
+\dontrun{
 data("airquality")
 airquality <- airquality[complete.cases(airquality), ]
 # Split data into test- and training data
@@ -35,7 +38,8 @@ x_explain <- tail(airquality, 3)
 # Split data into test- and training data
 x_train <- data.table::as.data.table(head(airquality))
 x_train[, Temp := as.factor(Temp)]
-get_data_specs(x_train)
+shapr:::get_data_specs(x_train)
+}
 }
 \author{
 Martin Jullum

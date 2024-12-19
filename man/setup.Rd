@@ -16,7 +16,7 @@ setup(
   n_MC_samples,
   seed,
   feature_specs,
-  type = "normal",
+  type = "regular",
   horizon = NULL,
   y = NULL,
   xreg = NULL,
@@ -46,13 +46,14 @@ setup(
 Contains the data used to estimate the (conditional) distributions for the features
 needed to properly estimate the conditional expectations in the Shapley formula.}
 
-\item{x_explain}{A matrix or data.frame/data.table.
+\item{x_explain}{Matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
 All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
-The two regression approaches can not be combined with any other approach. See details for more information.}
+The two regression approaches can not be combined with any other approach.
+See details for more information.}
 
 \item{paired_shap_sampling}{Logical.
 If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
@@ -65,7 +66,8 @@ features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
 
-\item{output_size}{TODO: Document}
+\item{output_size}{Scalar integer.
+Specifies the dimension of the output from the prediction model for every observation.}
 
 \item{max_n_coalitions}{Integer.
 The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
@@ -77,12 +79,13 @@ and group coalitions if \code{group != NULL}.
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
-If provided, group wise Shapley values are computed. \code{group} then has length equal to
-the number of groups. The list element contains character vectors with the features included
-in each of the different groups.}
+If provided, group wise Shapley values are computed.
+\code{group} then has length equal to the number of groups.
+The list element contains character vectors with the features included in each of the different groups.}
 
 \item{n_MC_samples}{Positive integer.
-Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
+of every conditional expectation.
 For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
 For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
@@ -102,7 +105,7 @@ Contains the 3 elements:
 }}
 
 \item{type}{Character.
-Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
+Either "regular" or "forecast" corresponding to function \code{setup()} is called from,
 correspondingly the type of explanation that should be generated.}
 
 \item{horizon}{Numeric.
@@ -117,15 +120,15 @@ including the observations to be explained.}
 Contains the exogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.
-As exogenous variables are used contemporaneusly when producing a forecast,
+As exogenous variables are used contemporaneously when producing a forecast,
 this item should contain nrow(y) + horizon rows.}
 
-\item{train_idx}{Numeric vector
+\item{train_idx}{Numeric vector.
 The row indices in data and reg denoting points in time to use when estimating the conditional expectations in
 the Shapley value formula.
 If \code{train_idx = NULL} (default) all indices not selected to be explained will be used.}
 
-\item{explain_idx}{Numeric vector
+\item{explain_idx}{Numeric vector.
 The row indices in data and reg denoting points in time to explain.}
 
 \item{explain_y_lags}{Numeric vector.
@@ -140,7 +143,7 @@ If \code{FALSE} all lags of each variable are explained individually.}
 
 \item{verbose}{String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
-\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"convergence"}, \code{"shapley"} and \code{"vS_details"}.
 \code{"basic"} (default) displays basic information about the computation which is being performed.
 \verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
@@ -152,7 +155,7 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
 \code{NULL} means no printout.
 Note that any combination of four strings can be used.
-E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.
 }}
 
 \item{iterative}{Logical or NULL
@@ -172,9 +175,9 @@ Specifices the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
-the randomness and thereby the variance of the Shapley value estimates.
-One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
 \code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
 \code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
 \code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
@@ -182,11 +185,13 @@ probabilities.
 \code{'on_all'} means the original sampling probabilities are used for all coalitions.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
-This method is preferred as it has performed the best in simulation studies.}
+\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
 
-\item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
-never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
-running the AICc-versions of the empirical as that requires data based optimization.}
+\item{is_python}{Logical.
+Indicates whether the function is called from the Python wrapper.
+Default is FALSE which is never changed when calling the function via \code{explain()} in R.
+The parameter is later used to disallow running the AICc-versions of the empirical method
+as that requires data based optimization, which is not supported in \code{shaprpy}.}
 
 \item{testing}{Logical.
 Only use to remove random components like timing from the object output when comparing output with testthat.
@@ -197,7 +202,7 @@ The time when the \code{explain()} function was called, as outputted by \code{Sy
 Used to calculate the time it took to run the full \code{explain} call.}
 
 \item{prev_shapr_object}{\code{shapr} object or string.
-If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
+If an object of class \code{shapr} is provided, or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the vignette for examples.}
@@ -244,10 +249,11 @@ See \code{\link[=get_output_args_default]{get_output_args_default()}} for descri
 
 \item{extra_computation_args}{Named list.
 Specifices extra arguments related to the computation of the Shapley values.
-See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
+See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
-\item{...}{Further arguments passed to specific approaches}
+\item{...}{Further arguments passed to specific approaches, see below.}
 }
 \description{
 check_setup
 }
+\keyword{internal}

@@ -1,6 +1,6 @@
 #' Gathers and computes the timing of the different parts of the explain function.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal
@@ -44,8 +44,6 @@ compute_time <- function(internal) {
     main_computation_timing_secs = iter_timing_secs_dt[]
   )
   internal$main_timing_list <- internal$iter_timing_list <- NULL
-
-
 
   return(timing_output)
 }

@@ -2,38 +2,45 @@
 #'
 #' @param empirical.type Character. (default = `"fixed_sigma"`)
 #' Should be equal to either `"independence"`,`"fixed_sigma"`, `"AICc_each_k"` `"AICc_full"`.
-#' TODO: Describe better what the methods do here.
+#' `"independence"` is deprecated. Use `approach = "independence"` instead.
+#' `"fixed_sigma"` uses a fixed bandwidth (set through `empirical.fixed_sigma`) in the kernel density estimation.
+#' `"AICc_each_k"` and `"AICc_full"` optimize the bandwidth using the AICc criterion, with respectively
+#' one bandwidth per coalition size and one bandwidth for all coalition sizes.
 #'
-#' @param empirical.eta Numeric. (default = 0.95)
+#' @param empirical.eta Numeric scalar.
 #' Needs to be `0 < eta <= 1`.
+#' The default value is 0.95.
 #' Represents the minimum proportion of the total empirical weight that data samples should use.
 #' If e.g. `eta = .8` we will choose the `K` samples with the largest weight so that the sum of the weights
 #' accounts for 80\% of the total weight.
 #' `eta` is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
 #'
-#' @param empirical.fixed_sigma Positive numeric scalar. (default = 0.1)
+#' @param empirical.fixed_sigma Positive numeric scalar.
+#' The default value is 0.1.
 #' Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
 #' Only used when `empirical.type = "fixed_sigma"`
 #'
-#' @param empirical.n_samples_aicc Positive integer. (default = 1000)
+#' @param empirical.n_samples_aicc Positive integer.
 #' Number of samples to consider in AICc optimization.
+#' The default value is 1000.
 #' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
-#' @param empirical.eval_max_aicc Positive integer. (default = 20)
+#' @param empirical.eval_max_aicc Positive integer.
 #' Maximum number of iterations when optimizing the AICc.
+#' The default value is 20.
 #' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
-#' @param empirical.start_aicc Numeric. (default = 0.1)
+#' @param empirical.start_aicc Numeric.
 #' Start value of the `sigma` parameter when optimizing the AICc.
+#' The default value is 0.1.
 #' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
-#'
-#' @param empirical.cov_mat Numeric matrix. (Optional, default = NULL)
-#' Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
+#' @param empirical.cov_mat Numeric matrix. (Optional)
+#' The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 #' `NULL` means it is estimated from `x_train`.
 #'
-#' @inheritParams default_doc_explain
-#' @inheritParams default_doc
+#' @inheritParams default_doc_export
+#' @inheritParams default_doc_internal
 #'
 #' @export
 setup_approach.empirical <- function(internal,
@@ -46,7 +53,6 @@ setup_approach.empirical <- function(internal,
                                      empirical.cov_mat = NULL,
                                      model = NULL,
                                      predict_model = NULL, ...) {
-  # TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
 
   defaults <- mget(c(
     "empirical.eta", "empirical.type", "empirical.fixed_sigma",
@@ -237,15 +243,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 
 #' Generate permutations of training data using test observations
 #'
-#' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
-#' observations for all coalitions. The dimension equals `n_train x m`.
-#' @param S Integer matrix of dimension `n_coalitions x m`, where `n_coalitions`
-#' and `m` equals the total number of sampled/non-sampled coalitions and
-#' the total number of unique features, respectively. Note that `m = ncol(x_train)`.
-#' @param x_train Numeric matrix
-#' @param x_explain Numeric matrix
-#'
-#' @inheritParams explain
+#' @inheritParams default_doc_internal
 #'
 #' @return data.table
 #'
@@ -288,8 +286,8 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
   dt_p <- observation_impute_cpp(
     index_xtrain = dt_melt[["index_x_train"]],
     index_s = dt_melt[["index_s"]],
-    xtrain = x_train,
-    xtest = x_explain, # TODO: change this to xexplain
+    x_train = x_train,
+    x_explain = x_explain,
     S = S
   )
 
@@ -438,8 +436,8 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
         mcov_list[[j]] <- stats::cov(X_list[[j]])
 
         Xtrain.Sbar <- subset(x_train, select = Sbar.cols)[these_train, ]
-        Xtest.S <- subset(x_explain, select = S.cols)[these_test, ]
-        X.pred.list[[j]] <- cbind(Xtrain.Sbar, Xtest.S)
+        Xexplain.S <- subset(x_explain, select = S.cols)[these_test, ]
+        X.pred.list[[j]] <- cbind(Xtrain.Sbar, Xexplain.S)
 
         # Ensure colnames are correct:
         varname <- labels[-which(labels %in% colnames(Xtrain.Sbar))]
@@ -536,8 +534,8 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
       mcov_list <- list(stats::cov(X_list[[1]]))
 
       Xtrain.Sbar <- subset(x_train, select = Sbar.cols)[these_train, ]
-      Xtest.S <- subset(x_explain, select = S.cols)[these_test, ]
-      X.pred <- cbind(Xtrain.Sbar, Xtest.S)
+      Xexplain.S <- subset(x_explain, select = S.cols)[these_test, ]
+      X.pred <- cbind(Xtrain.Sbar, Xexplain.S)
 
       # Ensure colnames are correct:
       varname <- labels[-which(labels %in% colnames(Xtrain.Sbar))]
@@ -585,7 +583,7 @@ distance_matrix <- function(x_train, x_explain = NULL, list_features, mcov) {
   D <- mahalanobis_distance_cpp(
     featureList = list_features,
     Xtrain_mat = as.matrix(x_train),
-    Xtest_mat = as.matrix(x_explain),
+    Xexplain_mat = as.matrix(x_explain),
     mcov = mcov,
     S_scale_dist = TRUE
   )

@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_ctree.R
 \name{create_ctree}
 \alias{create_ctree}
-\title{Make all conditional inference trees}
+\title{Build all the conditional inference trees}
 \usage{
 create_ctree(
   given_ind,
@@ -14,31 +14,26 @@ create_ctree(
 )
 }
 \arguments{
-\item{given_ind}{Numeric value. Indicates which features are conditioned on.}
+\item{given_ind}{Integer vector.
+Indicates which features are conditioned on.}
 
-\item{mincriterion}{Numeric scalar or vector. (default = 0.95)
-Either a scalar or vector of length equal to the number of features in the model.
-Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
-If it is a vector, this indicates which value to use when conditioning on various numbers of features.}
+\item{x_train}{Data.table with training data.}
 
-\item{minsplit}{Numeric scalar. (default = 20)
-Determines minimum value that the sum of the left and right daughter nodes required for a split.}
-
-\item{minbucket}{Numeric scalar. (default = 7)
-Determines the minimum sum of weights in a terminal node required for a split}
-
-\item{use_partykit}{String. In some semi-rare cases \code{partykit::ctree} runs into an error related to the LINPACK
-used by R. To get around this problem, one may fall back to using the newer (but slower) \code{partykit::ctree}
+\item{use_partykit}{String. In some semi-rare cases \code{\link[partykit:ctree]{partykit::ctree()}} runs into an error related to the LINPACK
+used by R. To get around this problem, one may fall back to using the newer (but slower) \code{\link[partykit:ctree]{partykit::ctree()}}
 function, which is a reimplementation of the same method. Setting this parameter to \code{"on_error"} (default)
-falls back to  \code{partykit::ctree}, if \code{party::ctree} fails. Other options are \code{"never"}, which always
-uses \code{party::ctree}, and \code{"always"}, which always uses \code{partykit::ctree}. A warning message is
-created whenever \code{partykit::ctree} is used.}
+falls back to  \code{\link[partykit:ctree]{partykit::ctree()}}, if \code{\link[party:ctree]{party::ctree()}} fails. Other options are \code{"never"}, which always
+uses \code{\link[party:ctree]{party::ctree()}}, and \code{"always"}, which always uses \code{\link[partykit:ctree]{partykit::ctree()}}. A warning message is
+created whenever \code{\link[partykit:ctree]{partykit::ctree()}} is used.}
 }
 \value{
 List with conditional inference tree and the variables conditioned/not conditioned on.
 }
 \description{
-Make all conditional inference trees
+Build all the conditional inference trees
+}
+\details{
+See the documentation of the \code{\link[=setup_approach.ctree]{setup_approach.ctree()}} function for undocumented parameters.
 }
 \author{
 Annabelle Redelmeier, Martin Jullum

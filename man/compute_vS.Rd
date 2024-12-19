@@ -10,17 +10,9 @@ compute_vS(internal, model, predict_model, method = "future")
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
-\item{model}{Objects.
-The model object that ought to be explained.
-See the documentation of \code{\link[=explain]{explain()}} for details.}
-
-\item{predict_model}{Function.
-The prediction function used when \code{model} is not natively supported.
-See the documentation of \code{\link[=explain]{explain()}} for details.}
-
 \item{method}{Character
 Indicates whether the lappy method (default) or loop method should be used.
-This is only used for testing purposes.}
+Options other than "future" is only used for testing/debugging.}
 }
 \description{
 Computes \code{v(S)} for all features subsets \code{S}.

@@ -54,6 +54,24 @@ predict_model(x, newdata, ...)
 \item{newdata}{A data.frame/data.table with the features to predict from.}
 
 \item{...}{\code{newreg} and \code{horizon} parameters used in models passed to \verb{[explain_forecast()]}}
+
+\item{horizon}{Numeric.
+The forecast horizon to explain. Passed to the \code{predict_model} function.}
+
+\item{explain_idx}{Numeric vector.
+The row indices in data and reg denoting points in time to explain.}
+
+\item{y}{Matrix, data.frame/data.table or a numeric vector.
+Contains the endogenous variables used to estimate the (conditional) distributions
+needed to properly estimate the conditional expectations in the Shapley formula
+including the observations to be explained.}
+
+\item{xreg}{Matrix, data.frame/data.table or a numeric vector.
+Contains the exogenous variables used to estimate the (conditional) distributions
+needed to properly estimate the conditional expectations in the Shapley formula
+including the observations to be explained.
+As exogenous variables are used contemporaneously when producing a forecast,
+this item should contain nrow(y) + horizon rows.}
 }
 \value{
 Numeric. Vector of size equal to the number of rows in \code{newdata}.
@@ -67,9 +85,6 @@ Performs prediction of response
 \code{\link[workflows:workflow]{workflows::workflow()}} (i.e., \code{tidymodels} models), and
 \code{\link[xgboost:xgb.train]{xgboost::xgb.train()}} with binary or continuous
 response. See details for more information.
-
-NOTE: You should never need to call this function explicitly.
-It is exported just to be easier accessible for users, see details.
 }
 \details{
 The following models are currently supported:

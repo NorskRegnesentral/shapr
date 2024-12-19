@@ -1,11 +1,12 @@
 #' Gathers the final output to create the explanation object
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
+#' @keywords internal
 finalize_explanation <- function(internal) {
   MSEv_uniform_comb_weights <- internal$parameters$output_args$MSEv_uniform_comb_weights
-  output_size <- internal$parameters$output_size
+  type <- internal$parameters$type
   dt_vS <- internal$output$dt_vS
 
   # Extracting iter (and deleting the last temporary empty list of iter_list)
@@ -20,28 +21,21 @@ finalize_explanation <- function(internal) {
   internal$objects$S <- internal$iter_list[[iter]]$S
   internal$objects$W <- internal$iter_list[[iter]]$W
 
-
-
-
   # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
   internal$tmp <- NULL
-
-
 
   # Extract the predictions we are explaining
   p <- get_p(dt_vS, internal)
 
-
-  # Compute the MSEv evaluation criterion if the output of the predictive model is a scalar.
-  # TODO: check if it makes sense for output_size > 1.
-  if (output_size == 1) {
+  # Compute the MSEv evaluation criterion unless type is forecast
+  if (type == "forecast") {
+    MSEv <- NULL
+  } else {
     MSEv <- compute_MSEv_eval_crit(
       internal = internal,
       dt_vS = dt_vS,
       MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
     )
-  } else {
-    MSEv <- NULL
   }
 
   # Extract iterative results in a simplified format
@@ -61,6 +55,7 @@ finalize_explanation <- function(internal) {
   return(output)
 }
 
+#' @keywords internal
 get_iter_results <- function(iter_list) {
   ret <- list()
   ret$dt_iter_shapley_est <- rbindlist(lapply(iter_list, `[[`, "dt_shapley_est"), idcol = "iter")
@@ -69,6 +64,7 @@ get_iter_results <- function(iter_list) {
   return(ret)
 }
 
+#' @keywords internal
 iter_list_to_dt <- function(iter_list, what = c(
                               "exact", "compute_sd", "n_coal_next_iter_factor", "n_coalitions", "n_batches",
                               "converged", "converged_exact", "converged_sd", "converged_max_iter",
@@ -109,12 +105,8 @@ get_p <- function(dt_vS, internal) {
 
 #' Mean Squared Error of the Contribution Function `v(S)`
 #'
-#' @inheritParams explain
-#' @inheritParams default_doc
-#' @param dt_vS Data.table of dimension `n_coalitions` times `n_explain + 1` containing the contribution function
-#' estimates. The first column is assumed to be named `id_coalition` and containing the ids of the coalitions.
-#' The last row is assumed to be the full coalition, i.e., it contains the predicted responses for the observations
-#' which are to be explained.
+#' @inheritParams default_doc_internal
+#' @inheritParams get_output_args_default
 #' @param MSEv_skip_empty_full_comb Logical. If `TRUE` (default), we exclude the empty and grand
 #' coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
 #' for all methods, i.e., their contribution function is independent of the used method as they are special cases not
@@ -221,55 +213,4 @@ compute_MSEv_eval_crit <- function(internal,
     MSEv_explicand = MSEv_explicand,
     MSEv_coalition = MSEv_coalition
   ))
-}
-
-
-#' Computes the Shapley values given `v(S)`
-#'
-#' @inherit explain
-#' @inheritParams default_doc
-#' @param vS_list List
-#' Output from [compute_vS()]
-#'
-#' @export
-finalize_explanation_forecast <- function(vS_list, internal) { # Temporary used for forecast only (the old function)
-  MSEv_uniform_comb_weights <- internal$parameters$output_args$MSEv_uniform_comb_weights
-
-  processed_vS_list <- postprocess_vS_list(
-    vS_list = vS_list,
-    internal = internal
-  )
-
-  # Extract the predictions we are explaining
-  p <- get_p(processed_vS_list$dt_vS, internal)
-
-  # Compute the Shapley values
-  dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
-
-  # Clearing out the timing lists as they are added to the output separately
-  internal$main_timing_list <- internal$iter_timing_list <- internal$timing_list <- NULL
-
-  # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
-  internal$tmp <- NULL
-
-  internal$output <- processed_vS_list
-
-  output <- list(
-    shapley_values_est = dt_shapley,
-    internal = internal,
-    pred_explain = p
-  )
-  attr(output, "class") <- c("shapr", "list")
-
-  # Compute the MSEv evaluation criterion if the output of the predictive model is a scalar.
-  # TODO: check if it makes sense for output_size > 1.
-  if (internal$parameters$output_size == 1) {
-    output$MSEv <- compute_MSEv_eval_crit(
-      internal = internal,
-      dt_vS = processed_vS_list$dt_vS,
-      MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
-    )
-  }
-
-  return(output)
 }

@@ -5,26 +5,31 @@ using namespace Rcpp;
 //'
 //' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
 //'
-//' @param featureList List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
-//' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
-//' \code{diag(m)} gives the Euclidean distance.
-//' @param S_scale_dist Logical indicating
+//' @param featureList List.
+//' Contains the vectors indicating all factor combinations that should be included in the computations.
+//' Assumes that the first one is empty.
 //' @param Xtrain_mat Matrix
-//' @param Xtest_mat Matrix
+//' Training data in matrix form
+//' @param Xexplain_mat Matrix
+//' Explanation data in matrix form.
 //'
-//' @export
+//' @inheritParams hat_matrix_cpp
 //' @keywords internal
 //'
 //' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 //' @author Martin Jullum
 // [[Rcpp::export]]
-arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist) {
+arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,
+                                    arma::mat Xtrain_mat,
+                                    arma::mat Xexplain_mat,
+                                    arma::mat mcov,
+                                    bool S_scale_dist) {
 
     using namespace arma;
 
     // Define variables
     int ntrain = Xtrain_mat.n_rows;
-    int ntest = Xtest_mat.n_rows;
+    int ntest = Xexplain_mat.n_rows;
     int p = featureList.size();
 
 
@@ -53,7 +58,7 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
 
         mcov0 = mcov.submat(theseFeatures,theseFeatures);
         X = Xtrain_mat.cols(theseFeatures);
-        mu0 = Xtest_mat.cols(theseFeatures);
+        mu0 = Xexplain_mat.cols(theseFeatures);
 
         uint32_t d = X.n_cols;
         vec tmp(d);

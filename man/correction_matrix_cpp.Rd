@@ -2,20 +2,22 @@
 % Please edit documentation in R/RcppExports.R
 \name{correction_matrix_cpp}
 \alias{correction_matrix_cpp}
-\title{correction term with trace_input in AICc formula}
+\title{Correction term with trace_input in AICc formula}
 \usage{
 correction_matrix_cpp(tr_H, n)
 }
 \arguments{
-\item{tr_H}{numeric giving the trace of H}
+\item{tr_H}{numeric
+The trace of H}
 
-\item{n}{numeric given the number of rows in H}
+\item{n}{numeric
+The number of rows in H}
 }
 \value{
 Scalar
 }
 \description{
-correction term with trace_input in AICc formula
+Correction term with trace_input in AICc formula
 }
 \author{
 Martin Jullum

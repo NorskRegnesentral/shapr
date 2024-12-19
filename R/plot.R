@@ -28,7 +28,7 @@
 #' E.g. if you have 15 features in your model you can plot the 5 most important features,
 #' for each explanation, by setting `top_k_features = 1:5`.
 #' Applicable for `plot_type` `"bar"` and `"waterfall"`
-#' @param col Character vector (length depends on plot type).
+#' @param col Character vector (where length depends on plot type).
 #' The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
 #' Shapley values, respectively.
 #' The default is `col=NULL`, plotting with the default colors respective to the plot type.
@@ -175,7 +175,7 @@ plot.shapr <- function(x,
                        digits = 3,
                        index_x_explain = NULL,
                        top_k_features = NULL,
-                       col = NULL, # first increasing color, then decreasing color
+                       col = NULL,
                        bar_plot_phi0 = TRUE,
                        bar_plot_order = "largest_first",
                        scatter_features = NULL,
@@ -245,7 +245,7 @@ plot.shapr <- function(x,
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
-  # Converting and melting Xtest
+  # Converting and melting x_explain
   if (!is_groupwise || include_group_feature_means) {
     desc_mat <- trimws(format(x$internal$data$x_explain, digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
@@ -851,15 +851,14 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #' @description
 #' Make plots to visualize and compare the MSEv evaluation criterion for a list of
-#' [shapr::explain()] objects applied to the same data and model. The function creates
+#' [explain()] objects applied to the same data and model. The function creates
 #' bar plots and line plots with points to illustrate the overall MSEv evaluation
 #' criterion, but also for each observation/explicand and coalition by only averaging over
 #' the coalitions and observations/explicands, respectively.
 #'
 #' @inheritParams plot.shapr
-#' @inheritParams default_doc
 #'
-#' @param explanation_list A list of [shapr::explain()] objects applied to the same data and model.
+#' @param explanation_list A list of [explain()] objects applied to the same data and model.
 #' If the entries in the list are named, then the function use these names. Otherwise, they default to
 #' the approach names (with integer suffix for duplicates) for the explanation objects in `explanation_list`.
 #' @param id_coalition Integer vector. Which of the coalitions to plot.
@@ -890,7 +889,9 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #' @export
 #' @examples
-#' # Load necessary librarieslibrary(xgboost)
+#' \dontrun{
+#' # Load necessary libraries
+#' library(xgboost)
 #' library(data.table)
 #' library(shapr)
 #' library(ggplot2)
@@ -1033,6 +1034,7 @@ make_waterfall_plot <- function(dt_plot,
 #'       position = ggplot2::position_dodge(0.9),
 #'       size = 5
 #'     )
+#' }
 #' }
 #'
 #' @author Lars Henry Berge Olsen
@@ -1404,9 +1406,8 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #' [shapr::explain()] objects applied to the same data and model. For group-wise Shapley values,
 #' the features values plotted are the mean feature values for all features in each group.
 #'
-#' @param explanation_list A list of [shapr::explain()] objects applied to the same data and model.
-#' If the entries in the list is named, then the function use these names. Otherwise, it defaults to
-#' the approach names (with integer suffix for duplicates) for the explanation objects in `explanation_list`.
+#' @inheritParams plot_MSEv_eval_crit
+#' @inheritParams plot.shapr
 #' @param index_explicands Integer vector. Which of the explicands (test observations) to plot.
 #' E.g. if you have explained 10 observations using [shapr::explain()], you can generate a plot for the
 #' first 5 observations/explicands and the 10th by setting `index_x_explain = c(1:5, 10)`.
@@ -1415,7 +1416,6 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #' @param only_these_features String vector. Containing the names of the features which
 #' are to be included in the bar plots.
 #' @param plot_phi0 Boolean. If we are to include the \eqn{\phi_0} in the bar plots or not.
-#' @param digits Integer. Number of significant digits to use in the feature description.
 #' @param add_zero_line Boolean. If we are to add a black line for a feature contribution of 0.
 #' @param brewer_palette String. Name of one of the color palettes from [RColorBrewer::RColorBrewer()].
 #'  If `NULL`, then the function uses the default [ggplot2::ggplot()] color scheme.
@@ -1448,6 +1448,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Load necessary libraries
 #' library(xgboost)
 #' library(data.table)
@@ -1576,6 +1577,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'     only_these_features = c("Temp", "Solar.R"),
 #'     plot_phi0 = TRUE
 #'   )
+#' }
 #' }
 #'
 #' @author Lars Henry Berge Olsen

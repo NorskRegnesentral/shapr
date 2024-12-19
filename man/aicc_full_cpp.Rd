@@ -7,18 +7,22 @@
 aicc_full_cpp(h, X_list, mcov_list, S_scale_dist, y_list, negative)
 }
 \arguments{
-\item{h}{Numeric. Specifies the scaling (sigma)}
+\item{h}{numeric specifying the scaling (sigma)}
 
-\item{X_list}{List}
+\item{X_list}{List.
+Contains matrices with the appropriate features of the training data}
 
-\item{mcov_list}{List}
+\item{mcov_list}{List.
+Contains the covariance matrices of the matrices in X_list}
 
-\item{S_scale_dist}{Logical. Indicates whether Mahalanobis distance should be scaled with the
-number of variables}
+\item{S_scale_dist}{Logical.
+Indicates whether Mahalanobis distance should be scaled with the number of variables.}
 
-\item{y_list}{List.}
+\item{y_list}{List.
+Contains the appropriate (temporary) response variables.}
 
-\item{negative}{Logical.}
+\item{negative}{Logical.
+Whether to return the negative of the AICc value.}
 }
 \value{
 Scalar with the numeric value of the AICc formula

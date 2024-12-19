@@ -7,9 +7,11 @@
 quantile_type7_cpp(x, probs)
 }
 \arguments{
-\item{x}{arma::vec. Numeric vector whose sample quantiles are wanted.}
+\item{x}{arma::vec.
+Numeric vector whose sample quantiles are wanted.}
 
-\item{probs}{arma::vec. Numeric vector of probabilities with values between zero and one.}
+\item{probs}{arma::vec.
+Numeric vector of probabilities with values between zero and one.}
 }
 \value{
 A vector of length \code{length(probs)} with the quantiles is returned.

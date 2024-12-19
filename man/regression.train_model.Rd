@@ -19,8 +19,7 @@ regression.train_model(
 )
 }
 \arguments{
-\item{x}{Data.table containing the data. Either the training data or the explicands. If \code{x} is the explicands,
-then \code{index_features} must be provided.}
+\item{x}{Data.table containing the training data.}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
@@ -28,7 +27,7 @@ If \code{NULL} no seed is set in the calling environment.}
 
 \item{verbose}{String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
-\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"convergence"}, \code{"shapley"} and \code{"vS_details"}.
 \code{"basic"} (default) displays basic information about the computation which is being performed.
 \verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
@@ -40,7 +39,7 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
 \code{NULL} means no printout.
 Note that any combination of four strings can be used.
-E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.
 }}
 
 \item{regression.model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
@@ -82,6 +81,8 @@ a valid input. It is essential to include the package prefix if the package is n
 
 \item{regression.surrogate_n_comb}{Integer (default is \code{NULL}). The number of times each training observations
 has been augmented. If \code{NULL}, then we assume that we are doing separate regression.}
+
+\item{current_comb}{Integer vector. The current combination of features, passed to verbosity printing function.}
 }
 \value{
 A trained \code{tidymodels} model based on the provided input parameters.

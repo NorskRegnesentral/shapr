@@ -1,6 +1,6 @@
 #' Set up the kernelSHAP framework
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal
@@ -56,7 +56,6 @@ shapley_setup <- function(internal) {
     normalize_W_weights = TRUE
   )
 
-
   ## Get feature matrix ---------
   S <- coalition_matrix_cpp(
     coalitions = X[["features"]],
@@ -65,22 +64,16 @@ shapley_setup <- function(internal) {
 
   #### Updating parameters ####
 
-  # Updating parameters$exact as done in create_coalition_table. I don't think this is necessary now. TODO: Check.
-  # Moreover, it does not apply to grouping, so must be adjusted anyway.
+  # Updating parameters$exact as done in create_coalition_table, if all coalitions have been sampled
   if (!exact && n_coalitions >= min(2^n_shapley_values, max_n_coalitions_causal)) {
     internal$iter_list[[iter]]$exact <- TRUE
-    internal$parameters$exact <- TRUE # Since this means that all coalitions have been sampled
+    internal$parameters$exact <- TRUE
   }
 
   # Updating n_coalitions in the end based on what is actually used.
   internal$iter_list[[iter]]$n_coalitions <- nrow(S)
   # The number of sampled coalitions to be used for convergence detection only (exclude the zero and full prediction)
   internal$iter_list[[iter]]$n_sampled_coalitions <- internal$iter_list[[iter]]$n_coalitions - 2
-
-
-  # This will be obsolete later
-  internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
-  # instead of storing it
 
 
   if (isFALSE(exact)) {
@@ -149,26 +142,28 @@ shapley_setup <- function(internal) {
 #' number of coalitions by a factor of `n_samps_scale` and determine when we have `n_coalitions` unique
 #' coalitions and only use the coalitions up to this point and throw away the remaining coalitions.
 #' @param approach0 Character vector.
-#' Contains the approach to be used for estimation of each coalition size. Same as `approach` in `explain()`.
+#' Contains the approach to be used for eastimation of each coalition size. Same as `approach` in [explain()].
 #' @param coal_feature_list List.
 #' A list mapping each coalition to the features it contains.
 #' @param dt_valid_causal_coalitions data.table. Only applicable for asymmetric Shapley
 #' values explanations, and is `NULL` for symmetric Shapley values.
 #' The data.table contains information about the coalitions that respects the causal ordering.
 #' @inheritParams explain
-#' @return A data.table with columns about the that contains the following columns:
+#' @return A data.table with info about the coaltions to use
 #'
-#' @export
+#' @keywords internal
 #'
 #' @author Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen
 #'
 #' @examples
+#' \dontrun{
 #' # All coalitions
 #' x <- create_coalition_table(m = 3)
 #' nrow(x) # Equals 2^3 = 8
 #'
 #' # Subsample of coalitions
-#' x <- create_coalition_table(exact = FALSE, m = 10, n_coalitions = 1e2)
+#' x <- shapr:::create_coalition_table(m = 10, exact = FALSE, n_coalitions = 1e2)
+#' }
 create_coalition_table <- function(m,
                                    exact = TRUE,
                                    n_coalitions = 200,
@@ -213,7 +208,7 @@ create_coalition_table <- function(m,
   if (length(approach0) > 1) {
     dt[!(coalition_size %in% c(0, m)), approach := approach0[coalition_size]]
   } else {
-    dt[, approach := approach0] # TODO: add that we only add approach to these rows: !(coalition_size %in% c(0, m))
+    dt[!(coalition_size %in% c(0, m)), approach := approach0]
   }
 
   return(dt)
@@ -223,11 +218,8 @@ create_coalition_table <- function(m,
 kernelSHAP_reweighting <- function(X, reweight = "on_N") {
   # Updates the shapley weights in X based on the reweighting strategy BY REFERENCE
 
-
   if (reweight == "on_N") {
     X[-c(1, .N), shapley_weight := mean(shapley_weight), by = N]
-  } else if (reweight == "on_coal_size") {
-    X[-c(1, .N), shapley_weight := mean(shapley_weight), by = coalition_size]
   } else if (reweight == "on_all") {
     m <- X[.N, coalition_size]
     X[-c(1, .N), shapley_weight := shapley_weights(
@@ -236,8 +228,6 @@ kernelSHAP_reweighting <- function(X, reweight = "on_N") {
       n_components = coalition_size,
       weight_zero_m = 10^6
     ) / sum_shapley_weights(m)]
-  } else if (reweight == "on_N_sum") {
-    X[-c(1, .N), shapley_weight := sum(shapley_weight), by = N]
   } else if (reweight == "on_all_cond") {
     m <- X[.N, coalition_size]
     K <- X[, sum(sample_freq)]
@@ -249,25 +239,18 @@ kernelSHAP_reweighting <- function(X, reweight = "on_N") {
     ) / sum_shapley_weights(m)]
     X[-c(1, .N), cond := 1 - (1 - shapley_weight)^K]
     X[-c(1, .N), shapley_weight := shapley_weight / cond]
-  } else if (reweight == "on_all_cond_paired") {
-    m <- X[.N, coalition_size]
-    K <- X[, sum(sample_freq)]
-    X[-c(1, .N), shapley_weight := shapley_weights(
-      m = m,
-      N = N,
-      n_components = coalition_size,
-      weight_zero_m = 10^6
-    ) / sum_shapley_weights(m)]
-    X[-c(1, .N), cond := 1 - (1 - 2 * shapley_weight)^(K / 2)]
-    X[-c(1, .N), shapley_weight := 2 * shapley_weight / cond]
   }
   # strategy= "none" or something else do nothing
   return(NULL)
 }
 
-
+#' Get table with all (exact) coalitions
+#'
+#' @inheritParams create_coalition_table
 #' @keywords internal
-exact_coalition_table <- function(m, dt_valid_causal_coalitions = NULL, weight_zero_m = 10^6) {
+exact_coalition_table <- function(m,
+                                  dt_valid_causal_coalitions = NULL,
+                                  weight_zero_m = 10^6) {
   # Create all valid coalitions for regular/symmetric or asymmetric Shapley values
   if (is.null(dt_valid_causal_coalitions)) {
     # Regular/symmetric Shapley values: use all 2^m coalitions
@@ -287,7 +270,9 @@ exact_coalition_table <- function(m, dt_valid_causal_coalitions = NULL, weight_z
   return(dt)
 }
 
-
+#' Get table with sampled coalitions
+#'
+#' @inheritParams create_coalition_table
 #' @keywords internal
 sample_coalition_table <- function(m,
                                    n_coalitions = 200,
@@ -308,8 +293,6 @@ sample_coalition_table <- function(m,
   asymmetric <- !is.null(dt_valid_causal_coalitions)
 
   if (!is.null(prev_coal_samples)) {
-    # Compute prev_coal_samples_n_unique if not provided
-    if (is.null(prev_coal_samples_n_unique)) prev_coal_samples_n_unique <- length(unique(prev_coal_samples))
     coal_sample_all <- prev_coal_samples
     unique_samples <- prev_coal_samples_n_unique
     n_coalitions <- min(2^m, n_coalitions)
@@ -338,7 +321,7 @@ sample_coalition_table <- function(m,
         ]
     } else {
       # Sample the (paired) coalitions as strings
-      coalitions <- sample_features_cpp_str_paired(m, coal_size_sample, paired_shap_sampling)
+      coalitions <- sample_coalitions_cpp_str_paired(m, coal_size_sample, paired_shap_sampling)
     }
 
     # Add the new coalitions to the previously sampled coalitions
@@ -404,13 +387,11 @@ sample_coalition_table <- function(m,
 
 #' Calculate Shapley weight
 #'
-#' @param m Positive integer. Total number of features/feature groups.
 #' @param n_components Positive integer. Represents the number of features/feature groups you want to sample from
 #' a feature space consisting of `m` unique features/feature groups. Note that ` 0 < = n_components <= m`.
 #' @param N Positive integer. The number of unique coalitions when sampling `n_components` features/feature
 #' groups, without replacement, from a sample space consisting of `m` different features/feature groups.
-#' @param weight_zero_m Positive integer. Represents the Shapley weight for two special
-#' cases, i.e. the case where you have either `0` or `m` features/feature groups.
+#' @inheritParams create_coalition_table
 #'
 #' @return Numeric
 #' @keywords internal
@@ -430,9 +411,8 @@ sum_shapley_weights <- function(m) {
   return(sum(w))
 }
 
-
 #' @keywords internal
-helper_feature <- function(m, coal_sample) {
+helper_coalition <- function(m, coal_sample) {
   x <- coalition_matrix_cpp(coal_sample, m)
   dt <- data.table::data.table(x)
   cnms <- paste0("V", seq(m))
@@ -443,9 +423,6 @@ helper_feature <- function(m, coal_sample) {
 
   return(dt)
 }
-
-
-
 
 #' @keywords internal
 coal_feature_mapper <- function(x, coal_feature_list) {
@@ -458,7 +435,8 @@ coal_feature_mapper <- function(x, coal_feature_list) {
 
 #' Calculate weighted matrix
 #'
-#' @param X data.table
+#' @param X data.table.
+#' Output from [create_coalition_table()].
 #' @param normalize_W_weights Logical. Whether to normalize the weights for the coalitions to sum to 1 for
 #' increased numerical stability before solving the WLS (weighted least squares). Applies to all coalitions
 #' except coalition `1` and `2^m`.
@@ -608,26 +586,6 @@ create_S_batch <- function(internal, seed = NULL) {
   return(S_groups)
 }
 
-
-#' Sets up everything for the Shapley values computation in [shapr::explain()]
-#'
-#' @inheritParams default_doc
-#' @inheritParams explain
-#' @inherit default_doc
-#' @export
-setup_computation <- function(internal, model, predict_model) { # Can this function be removed? /Jon
-  # model and predict_model are only needed for type AICc of approach empirical, otherwise ignored
-  type <- internal$parameters$type
-
-  # setup the Shapley framework
-  internal <- if (type == "forecast") shapley_setup_forecast(internal) else shapley_setup(internal)
-
-  # Setup for approach
-  internal <- setup_approach(internal, model = model, predict_model = predict_model)
-
-  return(internal)
-}
-
 #' @keywords internal
 shapley_setup_forecast <- function(internal) {
   n_shapley_values <- internal$parameters$n_shapley_values
@@ -750,10 +708,6 @@ shapley_setup_forecast <- function(internal) {
   # The number of sampled coalitions *per horizon* to be used for convergence detection only
   # Exclude the zero and full prediction
   internal$iter_list[[iter]]$n_sampled_coalitions <- length(unique(id_coalition_mapper_dt$horizon_id_coalition)) - 2
-
-  # This will be obsolete later
-  internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
-  # instead of storing it
 
   internal$iter_list[[iter]]$X <- X
   internal$iter_list[[iter]]$W <- W

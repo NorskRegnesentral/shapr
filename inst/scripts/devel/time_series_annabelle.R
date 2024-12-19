@@ -73,7 +73,7 @@ explanation_group <- explain(
   approach = "timeseries",
   phi0 = p0,
   group = group,
-  timeseries.fixed_sigma_vec = 2
+  timeseries.fixed_sigma = 2
   # timeseries.bounds = c(-1, 2)
 )
 

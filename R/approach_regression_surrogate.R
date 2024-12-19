@@ -1,18 +1,15 @@
 # Shapr functions ======================================================================================================
 #' @rdname setup_approach
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @inheritParams setup_approach.regression_separate
-#' @param regression.surrogate_n_comb Integer.
-#' (default is `internal$iter_list[[length(internal$iter_list)]]$n_coalitions`) specifying the
-#' number of unique coalitions to apply to each training observation. Maximum allowed value is
-#' "`internal$iter_list[[length(internal$iter_list)]]$n_coalitions` - 2".
-#' By default, we use all coalitions, but this can take a lot of memory in larger dimensions.
-#' Note that by "all", we mean all coalitions chosen by `shapr` to be used.
-#' This will be all \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if `shapr` is in
-#' the exact mode.
-#' If the user sets a lower value than `internal$iter_list[[length(internal$iter_list)]]$n_coalitions`,
-#' then we sample this amount of unique coalitions separately for each training observations.
+#' @param regression.surrogate_n_comb Positive integer.
+#' Specifies the number of unique coalitions to apply to each training observation.
+#' The default is the number of sampled coalitions in the present iteration.
+#' Any integer between 1 and the default is allowed.
+#' Larger values requires more memory, but may improve the surrogate model.
+#' If the user sets a value lower than the maximum, we sample this amount of unique coalitions
+#' separately for each training observations.
 #' That is, on average, all coalitions should be equally trained.
 #'
 #' @export
@@ -64,14 +61,13 @@ setup_approach.regression_surrogate <- function(internal,
   return(internal) # Return the updated internal list
 }
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_export
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
 prepare_data.regression_surrogate <- function(internal, index_features = NULL, ...) {
   # Load `workflows`, needed when parallelized as we call predict with a workflow object. Checked installed above.
   requireNamespace("workflows", quietly = TRUE)
-
 
   # Augment the explicand data
   x_explain_aug <- regression.surrogate_aug_data(internal, x = internal$data$x_explain, index_features = index_features)
@@ -90,7 +86,7 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 # Augment function =====================================================================================================
 #' Augment the training data and the explicands
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @inheritParams regression.train_model
 #' @param y_hat Vector of numerics (optional) containing the predicted responses for the observations in `x`.
 #' @param index_features Array of integers (optional) containing which coalitions to consider. Must be provided if

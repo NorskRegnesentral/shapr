@@ -7,16 +7,18 @@
 weight_matrix_cpp(coalitions, m, n, w)
 }
 \arguments{
-\item{coalitions}{List. Each of the elements equals an integer
-vector representing a valid combination of features/feature groups.}
+\item{coalitions}{List.
+Each of the elements equals an integer vector representing a valid combination of features/feature groups.}
 
-\item{m}{Integer. Number of features/feature groups}
+\item{m}{Integer.
+Number of features/feature groups.}
 
-\item{n}{Integer. Number of combinations}
+\item{n}{Integer.
+Number of combinations.}
 
-\item{w}{Numeric vector of length \code{n}, i.e. \code{w[i]} equals
-the Shapley weight of feature/feature group combination \code{i}, represented by
-\code{coalitions[[i]]}.}
+\item{w}{Numeric vector
+Should have length \code{n}. \code{w[i]} equals the Shapley weight of feature/feature group combination \code{i},
+represented by \code{coalitions[[i]]}.}
 }
 \value{
 Matrix of dimension n x m + 1

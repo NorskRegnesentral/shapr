@@ -7,25 +7,27 @@
 prepare_data_gaussian_cpp_caus(MC_samples_mat, x_explain_mat, S, mu, cov_mat)
 }
 \arguments{
-\item{MC_samples_mat}{arma::mat. Matrix of dimension (\code{n_explain}, \code{n_features}) containing samples from the
-univariate standard normal. The i'th row will be applied to the i'th row in \code{x_explain_mat}.}
+\item{MC_samples_mat}{arma::mat.
+Matrix of dimension (\code{n_MC_samples}, \code{n_features}) containing samples from the univariate standard normal.}
 
-\item{x_explain_mat}{arma::mat. Matrix of dimension (\code{n_explain}, \code{n_features}) containing the observations
-to explain. The MC sample for the i'th explicand is based on the i'th row in \code{MC_samples_mat}}
+\item{x_explain_mat}{arma::mat.
+Matrix of dimension (\code{n_explain}, \code{n_features}) containing the observations to explain.}
 
-\item{S}{arma::mat. Matrix of dimension (\code{n_combinations}, \code{n_features}) containing binary representations of
-the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
-This is not a problem internally in shapr as the empty and grand coalitions treated differently.}
+\item{S}{arma::mat.
+Matrix of dimension (\code{n_coalitions}, \code{n_features}) containing binary representations of the used coalitions.
+S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+This is not a problem internally in shapr as the empty and grand coalitions are treated differently.}
 
-\item{mu}{arma::vec. Vector of length \code{n_features} containing the mean of each feature.}
+\item{mu}{arma::vec.
+Vector of length \code{n_features} containing the mean of each feature.}
 
-\item{cov_mat}{arma::mat. Matrix of dimension (\code{n_features}, \code{n_features}) containing the pairwise covariance
-between all pairs of features.}
+\item{cov_mat}{arma::mat.
+Matrix of dimension (\code{n_features}, \code{n_features}) containing the covariance matrix of the features.}
 }
 \value{
-An arma::mat/2D array of dimension (\code{n_explain} * \code{n_coalitions}, \code{n_features}),
-where the rows (n_explain * S_ind, n_explain * (S_ind + 1) - 1) contains the single
-conditional Gaussian MC samples for each explicand and \code{S_ind} coalition.
+An arma::cube/3D array of dimension (\code{n_MC_samples}, \code{n_explain} * \code{n_coalitions}, \code{n_features}), where
+the columns (\emph{,j,}) are matrices of dimension (\code{n_MC_samples}, \code{n_features}) containing the conditional Gaussian
+MC samples for each explicand and coalition.
 }
 \description{
 Generate Gaussian MC samples for the causal setup with a single MC sample for each explicand

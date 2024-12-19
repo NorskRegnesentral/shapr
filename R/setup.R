@@ -1,9 +1,9 @@
 #' check_setup
 #' @inheritParams explain
 #' @inheritParams explain_forecast
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @param type Character.
-#' Either "normal" or "forecast" corresponding to function `setup()` is called from,
+#' Either "regular" or "forecast" corresponding to function `setup()` is called from,
 #' correspondingly the type of explanation that should be generated.
 #'
 #' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].
@@ -13,9 +13,11 @@
 #'   \item{classes}{Character vector with the classes of each features.}
 #'   \item{factor_levels}{Character vector with the levels for any categorical features.}
 #'   }
-#' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
-#' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
-#' running the AICc-versions of the empirical as that requires data based optimization.
+#' @param is_python Logical.
+#' Indicates whether the function is called from the Python wrapper.
+#' Default is FALSE which is never changed when calling the function via `explain()` in R.
+#' The parameter is later used to disallow running the AICc-versions of the empirical method
+#' as that requires data based optimization, which is not supported in `shaprpy`.
 #' @param testing Logical.
 #' Only use to remove random components like timing from the object output when comparing output with testthat.
 #' Defaults to `FALSE`.
@@ -23,6 +25,7 @@
 #' The time when the `explain()` function was called, as outputted by `Sys.time()`.
 #' Used to calculate the time it took to run the full `explain` call.
 #' @export
+#' @keywords internal
 setup <- function(x_train,
                   x_explain,
                   approach,
@@ -34,7 +37,7 @@ setup <- function(x_train,
                   n_MC_samples,
                   seed,
                   feature_specs,
-                  type = "normal",
+                  type = "regular",
                   horizon = NULL,
                   y = NULL,
                   xreg = NULL,
@@ -63,12 +66,12 @@ setup <- function(x_train,
   if (is.null(prev_shapr_object)) {
     prev_iter_list <- NULL
   } else {
+    # Overwrite the input arguments set in explain() with those from in prev_shapr_object
+    # except model, x_explain, x_train, max_n_coalitions, iterative_args, seed
     prev_internal <- get_prev_internal(prev_shapr_object)
 
     prev_iter_list <- prev_internal$iter_list
 
-    # Overwrite the input arguments set in explain() with those from in prev_shapr_object
-    # except model, x_explain, x_train, max_n_coalitions, iterative_args, seed
     list2env(prev_internal$parameters)
   }
 
@@ -106,14 +109,6 @@ setup <- function(x_train,
   # Sets up and organizes data
   if (type == "forecast") {
     internal$data <- get_data_forecast(y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon)
-    internal$parameters$output_labels <-
-      cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
-    colnames(internal$parameters$output_labels) <- c("explain_idx", "horizon")
-    internal$parameters$explain_idx <- explain_idx
-    internal$parameters$explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
-    internal$parameters$group_lags <- group_lags
-
-    # TODO: Consider handling this parameter update somewhere else (like in get_extra_parameters?)
   } else {
     internal$data <- get_data(x_train, x_explain)
   }
@@ -136,6 +131,7 @@ setup <- function(x_train,
   return(internal)
 }
 
+#' @keywords internal
 get_prev_internal <- function(prev_shapr_object,
                               exclude_parameters = c("max_n_coalitions", "iterative_args", "seed")) {
   cl <- class(prev_shapr_object)[1]
@@ -153,8 +149,7 @@ get_prev_internal <- function(prev_shapr_object,
   }
 
   iter <- length(internal$iter_list)
-  internal$iter_list[[iter]]$converged <- FALSE # hard setting the convergence parameter
-
+  internal$iter_list[[iter]]$converged <- FALSE # Hard resetting of the convergence parameter
 
   return(internal)
 }
@@ -235,8 +230,8 @@ get_parameters <- function(approach,
 
 
   # type
-  if (!(type %in% c("normal", "forecast"))) {
-    stop("`type` must be either `normal` or `forecast`.\n")
+  if (!(type %in% c("regular", "forecast"))) {
+    stop("`type` must be either `regular` or `forecast`.\n")
   }
 
   # verbose
@@ -283,7 +278,6 @@ get_parameters <- function(approach,
     }
   }
 
-
   # Parameter used in asymmetric and causal Shapley values (more in-depth checks later)
   if (!is.logical(asymmetric) || length(asymmetric) != 1) stop("`asymmetric` must be a single logical.\n")
   if (!is.null(confounding) && !is.logical(confounding)) stop("`confounding` must be a logical (vector).\n")
@@ -311,6 +305,7 @@ get_parameters <- function(approach,
   }
 
 
+
   # Getting basic input parameters
   parameters <- list(
     approach = approach,
@@ -323,8 +318,6 @@ get_parameters <- function(approach,
     is_python = is_python,
     output_size = output_size,
     type = type,
-    horizon = horizon,
-    group_lags = group_lags,
     verbose = verbose,
     kernelSHAP_reweighting = kernelSHAP_reweighting,
     iterative = iterative,
@@ -336,6 +329,22 @@ get_parameters <- function(approach,
     confounding = confounding,
     testing = testing
   )
+
+  # Additional forecast-specific arguments, only added for type="forecast"
+  if (type == "forecast") {
+    output_labels <-
+      cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
+    colnames(output_labels) <- c("explain_idx", "horizon")
+
+    explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
+
+    parameters$horizon <- horizon
+    parameters$train_idx <- train_idx
+    parameters$explain_idx <- explain_idx
+    parameters$group_lags <- group_lags
+    parameters$output_labels <- output_labels
+    parameters$explain_lags <- explain_lags
+  }
 
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
@@ -456,6 +465,7 @@ check_data <- function(internal) {
   compare_feature_specs(x_train_feature_specs, x_explain_feature_specs, "x_train", "x_explain")
 }
 
+#' @keywords internal
 compare_feature_specs <- function(spec1, spec2, name1 = "model", name2 = "x_train", sort_labels = FALSE) {
   if (sort_labels) {
     compare_vecs(sort(spec1$labels), sort(spec2$labels), "names", name1, name2)
@@ -533,7 +543,7 @@ get_extra_parameters <- function(internal, type) {
         internal$parameters$shap_names <- internal$parameters$group_names
       }
     } else {
-      # For normal explain
+      # For regular explain
       internal$parameters$shap_names <- internal$parameters$group_names
     }
   } else {
@@ -555,10 +565,12 @@ get_extra_parameters <- function(internal, type) {
 
 #' Fetches feature information from a given data set
 #'
-#' @param x matrix, data.frame or data.table The data to extract feature information from.
+#' @param x data.frame or data.table.
+#' The data to extract feature information from.
 #'
 #' @details This function is used to extract the feature information to be checked against the corresponding
-#' information extracted from the model and other data sets. The function is called from internally
+#' information extracted from the model and other data sets.
+#' The function is only called internally
 #'
 #' @return A list with the following elements:
 #' \describe{
@@ -568,12 +580,11 @@ get_extra_parameters <- function(internal, type) {
 #'   (NULL if the feature is not a factor)}
 #' }
 #' @author Martin Jullum
-#'
 #' @keywords internal
-#' @export
 #'
 #' @examples
 #' # Load example data
+#' \dontrun{
 #' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
 #' # Split data into test- and training data
@@ -582,7 +593,8 @@ get_extra_parameters <- function(internal, type) {
 #' # Split data into test- and training data
 #' x_train <- data.table::as.data.table(head(airquality))
 #' x_train[, Temp := as.factor(Temp)]
-#' get_data_specs(x_train)
+#' shapr:::get_data_specs(x_train)
+#' }
 get_data_specs <- function(x) {
   feature_specs <- list()
   feature_specs$labels <- names(x)
@@ -595,15 +607,17 @@ get_data_specs <- function(x) {
   return(feature_specs)
 }
 
-
-
-
 #' @keywords internal
 check_and_set_parameters <- function(internal, type) {
-  # Check groups
   feature_names <- internal$parameters$feature_names
+  confounding <- internal$parameters$confounding
+  asymmetric <- internal$parameters$asymmetric
+  regression <- internal$parameters$regression
+
   if (type == "forecast") {
-    group <- internal$parameters$group[internal$parameters$horizon_group[internal$parameters$horizon][[1]]]
+    horizon <- internal$parameters$horizon
+    horizon_group <- internal$parameters$horizon_group
+    group <- internal$parameters$group[horizon_group[horizon][[1]]]
   } else {
     group <- internal$parameters$group
   }
@@ -616,12 +630,12 @@ check_and_set_parameters <- function(internal, type) {
 
   # Check the arguments related to asymmetric and causal Shapley
   # Check the causal_ordering, which must happen before checking the causal sampling
-  if (type == "normal") internal <- check_and_set_causal_ordering(internal)
-  if (!is.null(internal$parameters$confounding)) internal <- check_and_set_confounding(internal)
+  if (type == "regular") internal <- check_and_set_causal_ordering(internal)
+  if (!is.null(confounding)) internal <- check_and_set_confounding(internal)
 
   # Check the causal sampling
   internal <- check_and_set_causal_sampling(internal)
-  if (internal$parameters$asymmetric) internal <- check_and_set_asymmetric(internal)
+  if (asymmetric) internal <- check_and_set_asymmetric(internal)
 
   # Adjust max_n_coalitions
   internal$parameters$max_n_coalitions <- adjust_max_n_coalitions(internal)
@@ -635,13 +649,13 @@ check_and_set_parameters <- function(internal, type) {
   # Set if we are to do exact Shapley value computations or not
   internal <- set_exact(internal)
 
-  internal <- set_extra_estimation_params(internal)
+  internal <- set_extra_comp_params(internal)
 
   # Give warnings to the user about long computation times
   check_computability(internal)
 
   # Check regression if we are doing regression
-  if (internal$parameters$regression) internal <- check_regression(internal)
+  if (regression) internal <- check_regression(internal)
 
   return(internal)
 }
@@ -783,14 +797,13 @@ check_and_set_asymmetric <- function(internal) {
 
 
   # Get the number of coalitions that respects the (partial) causal ordering
-  max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
-  internal$parameters$max_n_coalitions_causal <- max_n_coalitions_causal
+  internal$parameters$max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
 
   # Get the coalitions that respects the (partial) causal ordering
   internal$objects$dt_valid_causal_coalitions <- exact_coalition_table(
     m = internal$parameters$n_shapley_values,
     dt_valid_causal_coalitions = data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering))
-  ) # [, c("coalitions", "shapley_weight")] TODO: TA MED ELLER IKKE?
+  )
 
   # Normalize the weights. Note that weight of a coalition size is even spread out among the valid coalitions
   # of each size. I.e., if there is only one valid coalition of size |S|, then it gets the weight of the
@@ -1013,6 +1026,7 @@ get_output_args_default <- function(keep_samp_for_vS = FALSE,
   return(mget(methods::formalArgs(get_output_args_default)))
 }
 
+#' @keywords internal
 check_output_args <- function(output_args) {
   list2env(output_args, envir = environment()) # Make accessible in the environment
 
@@ -1049,11 +1063,11 @@ check_output_args <- function(output_args) {
 
 #' @author Martin Jullum
 #' @keywords internal
-set_extra_estimation_params <- function(internal) {
+set_extra_comp_params <- function(internal) {
   extra_computation_args <- internal$parameters$extra_computation_args
 
   # Get defaults
-  extra_computation_args <- utils::modifyList(get_extra_est_args_default(internal),
+  extra_computation_args <- utils::modifyList(get_extra_comp_args_default(internal),
     extra_computation_args,
     keep.null = TRUE
   )
@@ -1079,17 +1093,18 @@ set_extra_estimation_params <- function(internal) {
 #' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
 #' Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
 #' than the number of parallel workers.
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @export
 #' @author Martin Jullum
-get_extra_est_args_default <- function(internal, # Only used to get the default value of compute_sd
-                                       compute_sd = isFALSE(internal$parameters$exact),
-                                       n_boot_samps = 100,
-                                       max_batch_size = 10,
-                                       min_n_batches = 10) {
-  return(mget(methods::formalArgs(get_extra_est_args_default)[-1])) # [-1] to exclude internal
+get_extra_comp_args_default <- function(internal, # Only used to get the default value of compute_sd
+                                        compute_sd = isFALSE(internal$parameters$exact),
+                                        n_boot_samps = 100,
+                                        max_batch_size = 10,
+                                        min_n_batches = 10) {
+  return(mget(methods::formalArgs(get_extra_comp_args_default)[-1])) # [-1] to exclude internal
 }
 
+#' @keywords internal
 check_extra_computation_args <- function(extra_computation_args) {
   list2env(extra_computation_args, envir = environment()) # Make accessible in the environment
 
@@ -1126,6 +1141,7 @@ check_extra_computation_args <- function(extra_computation_args) {
   }
 }
 
+#' @keywords internal
 trans_null_extra_est_args <- function(extra_computation_args) {
   list2env(extra_computation_args, envir = environment())
 
@@ -1136,7 +1152,7 @@ trans_null_extra_est_args <- function(extra_computation_args) {
   return(extra_computation_args)
 }
 
-
+#' @keywords internal
 check_and_set_iterative <- function(internal) {
   iterative <- internal$parameters$iterative
   approach <- internal$parameters$approach
@@ -1166,7 +1182,7 @@ check_and_set_iterative <- function(internal) {
   return(internal)
 }
 
-
+#' @keywords internal
 set_exact <- function(internal) {
   max_n_coalitions <- internal$parameters$max_n_coalitions
   n_shapley_values <- internal$parameters$n_shapley_values
@@ -1204,7 +1220,7 @@ check_computability <- function(internal) {
 
   if (asymmetric) {
     if (isTRUE(exact)) {
-      if (max_n_coalitions_causal > 5000 && max_n_coalitions > 5000) { # TODO check
+      if (max_n_coalitions_causal > 5000 && max_n_coalitions > 5000) {
         warning(
           paste0(
             "Due to computation time, we recommend not computing asymmetric Shapley values exactly \n",
@@ -1268,112 +1284,7 @@ check_computability <- function(internal) {
 }
 
 
-
-
-#' @keywords internal
-check_approach <- function(internal) {
-  # Check length of approach
-
-  approach <- internal$parameters$approach
-  n_features <- internal$parameters$n_features
-  supported_approaches <- get_supported_approaches()
-
-  if (!(is.character(approach) &&
-    (length(approach) == 1 || length(approach) == n_features - 1) &&
-    all(is.element(approach, supported_approaches)))
-  ) {
-    stop(
-      paste0(
-        "`approach` must be one of the following: '", paste0(supported_approaches, collapse = "', '"), "'.\n",
-        "These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector ",
-        "of length one less than the number of features (", n_features - 1, ")."
-      )
-    )
-  }
-
-  if (length(approach) > 1 && any(grepl("regression", approach))) {
-    stop("The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.")
-  }
-}
-
-#' Gets the implemented approaches
-#'
-#' @return Character vector.
-#' The names of the implemented approaches that can be passed to argument `approach` in [explain()].
-#'
-#' @export
-get_supported_approaches <- function() {
-  substring(rownames(attr(methods(prepare_data), "info")), first = 14)
-}
-
-
-
-
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-check_regression <- function(internal) {
-  # Check that the model outputs one-dimensional predictions
-  if (internal$parameters$output_size != 1) {
-    stop("`regression_separate` and `regression_surrogate` only support models with one-dimensional output")
-  }
-
-  # Check that we are NOT explaining a forecast model
-  if (internal$parameters$type == "forecast") {
-    stop("`regression_separate` and `regression_surrogate` does not support `forecast`.")
-  }
-
-  # Check that we are not to keep the Monte Carlo samples
-  if (internal$parameters$output_args$keep_samp_for_vS) {
-    stop(paste(
-      "`keep_samp_for_vS` must be `FALSE` for the `regression_separate` and `regression_surrogate`",
-      "approaches as there are no Monte Carlo samples to keep for these approaches."
-    ))
-  }
-
-  # Remove n_MC_samples if we are doing regression, as we are not doing MC sampling
-  internal$parameters$n_MC_samples <- NULL
-
-  return(internal)
-}
-
-
-
-
-
-
-
-
-
-
-compare_vecs <- function(vec1, vec2, vec_type, name1, name2) {
-  if (!identical(vec1, vec2)) {
-    if (is.null(names(vec1))) {
-      text_vec1 <- paste(vec1, collapse = ", ")
-    } else {
-      text_vec1 <- paste(names(vec1), vec1, sep = ": ", collapse = ", ")
-    }
-    if (is.null(names(vec2))) {
-      text_vec2 <- paste(vec2, collapse = ", ")
-    } else {
-      text_vec2 <- paste(names(vec2), vec1, sep = ": ", collapse = ", ")
-    }
-
-    stop(paste0(
-      "Feature ", vec_type, " are not identical for ", name1, " and ", name2, ".\n",
-      name1, " provided: ", text_vec1, ",\n",
-      name2, " provided: ", text_vec2, ".\n"
-    ))
-  }
-}
-
-
-
 #' Check that the group parameter has the right form and content
-#'
-#'
-#' @param feature_names Vector of characters. Contains the feature labels used by the model
-#'
-#' @return Error or NULL
 #'
 #' @keywords internal
 check_groups <- function(feature_names, group) {
@@ -1435,6 +1346,97 @@ check_groups <- function(feature_names, group) {
 }
 
 
+#' @keywords internal
+check_approach <- function(internal) {
+  # Check length of approach
+
+  approach <- internal$parameters$approach
+  n_features <- internal$parameters$n_features
+  supported_approaches <- get_supported_approaches()
+
+  if (!(is.character(approach) &&
+    (length(approach) == 1 || length(approach) == n_features - 1) &&
+    all(is.element(approach, supported_approaches)))
+  ) {
+    stop(
+      paste0(
+        "`approach` must be one of the following: '", paste0(supported_approaches, collapse = "', '"), "'.\n",
+        "These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector ",
+        "of length one less than the number of features (", n_features - 1, ")."
+      )
+    )
+  }
+
+  if (length(approach) > 1 && any(grepl("regression", approach))) {
+    stop("The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.")
+  }
+}
+
+#' Gets the implemented approaches
+#'
+#' @return Character vector.
+#' The names of the implemented approaches that can be passed to argument `approach` in [explain()].
+#'
+#' @export
+get_supported_approaches <- function() {
+  substring(rownames(attr(methods(prepare_data), "info")), first = 14)
+}
+
+
+
+
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+check_regression <- function(internal) {
+  output_size <- internal$parameters$output_size
+  type <- internal$parameters$type
+  keep_samp_for_vS <- internal$parameters$output_args$keep_samp_for_vS
+
+  # Check that the model outputs one-dimensional predictions
+  if (output_size != 1) {
+    stop("`regression_separate` and `regression_surrogate` only support models with one-dimensional output")
+  }
+
+  # Check that we are NOT explaining a forecast model
+  if (type == "forecast") {
+    stop("`regression_separate` and `regression_surrogate` does not support `forecast`.")
+  }
+
+  # Check that we are not to keep the Monte Carlo samples
+  if (keep_samp_for_vS) {
+    stop(paste(
+      "`keep_samp_for_vS` must be `FALSE` for the `regression_separate` and `regression_surrogate`",
+      "approaches as there are no Monte Carlo samples to keep for these approaches."
+    ))
+  }
+
+  # Remove n_MC_samples if we are doing regression, as we are not doing MC sampling
+  internal$parameters$n_MC_samples <- NULL
+
+  return(internal)
+}
+
+#' @keywords internal
+compare_vecs <- function(vec1, vec2, vec_type, name1, name2) {
+  if (!identical(vec1, vec2)) {
+    if (is.null(names(vec1))) {
+      text_vec1 <- paste(vec1, collapse = ", ")
+    } else {
+      text_vec1 <- paste(names(vec1), vec1, sep = ": ", collapse = ", ")
+    }
+    if (is.null(names(vec2))) {
+      text_vec2 <- paste(vec2, collapse = ", ")
+    } else {
+      text_vec2 <- paste(names(vec2), vec1, sep = ": ", collapse = ", ")
+    }
+
+    stop(paste0(
+      "Feature ", vec_type, " are not identical for ", name1, " and ", name2, ".\n",
+      name1, " provided: ", text_vec1, ",\n",
+      name2, " provided: ", text_vec2, ".\n"
+    ))
+  }
+}
 
 #' @keywords internal
 set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
@@ -1498,9 +1500,9 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
   return(internal)
 }
 
+#' @keywords internal
 check_iterative_args <- function(iterative_args) {
   list2env(iterative_args, envir = environment())
-
 
   # initial_n_coalitions
   if (!(is.wholenumber(initial_n_coalitions) &&
@@ -1550,6 +1552,7 @@ check_iterative_args <- function(iterative_args) {
   }
 }
 
+#' @keywords internal
 trans_null_iterative_args <- function(iterative_args) {
   list2env(iterative_args, envir = environment())
 
@@ -1560,6 +1563,7 @@ trans_null_iterative_args <- function(iterative_args) {
 }
 
 
+#' @keywords internal
 set_n_batches <- function(n_coalitions, internal) {
   min_n_batches <- internal$parameters$extra_computation_args$min_n_batches
   max_batch_size <- internal$parameters$extra_computation_args$max_batch_size
@@ -1575,6 +1579,7 @@ set_n_batches <- function(n_coalitions, internal) {
   return(n_batches)
 }
 
+#' @keywords internal
 check_vs_prev_shapr_object <- function(internal) {
   iter <- length(internal$iter_list)
 
@@ -1619,7 +1624,7 @@ check_vs_prev_shapr_object <- function(internal) {
 #'
 #' @details The functions sets default values for the iterative estimation procedure, according to the function
 #' defaults.
-#' If the argument `iterative` of [shapr::explain()] is FALSE, it sets parameters corresponding to the use of a
+#' If the argument `iterative` of [explain()] is FALSE, it sets parameters corresponding to the use of a
 #' non-iterative estimation procedure
 #'
 #' @param max_iter Integer. Maximum number of estimation iterations
@@ -1635,7 +1640,7 @@ check_vs_prev_shapr_object <- function(internal) {
 #' `n_coal_next_iter_factor_vec[i]` for iteration `i`.
 #' It is wise to start with smaller numbers to avoid using too many `n_coalitions` due to uncertain estimates in
 #' the first iterations.
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @author Martin Jullum
@@ -1684,7 +1689,7 @@ get_iterative_args_default <- function(internal,
 
 #' Additional setup for regression-based methods
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal

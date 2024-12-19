@@ -4,23 +4,25 @@
 \alias{observation_impute_cpp}
 \title{Get imputed data}
 \usage{
-observation_impute_cpp(index_xtrain, index_s, xtrain, xtest, S)
+observation_impute_cpp(index_xtrain, index_s, x_train, x_explain, S)
 }
 \arguments{
-\item{index_xtrain}{Positive integer. Represents a sequence of row indices from \code{xtrain},
-i.e. \code{min(index_xtrain) >= 1} and \code{max(index_xtrain) <= nrow(xtrain)}.}
+\item{index_xtrain}{Positive integer. Represents a sequence of row indices from \code{x_train},
+i.e. \code{min(index_xtrain) >= 1} and \code{max(index_xtrain) <= nrow(x_train)}.}
 
 \item{index_s}{Positive integer. Represents a sequence of row indices from \code{S},
 i.e. \code{min(index_s) >= 1} and \code{max(index_s) <= nrow(S)}.}
 
-\item{xtrain}{Numeric matrix.}
+\item{x_train}{Matrix.
+Contains the training data.}
 
-\item{xtest}{Numeric matrix. Represents a single test observation.}
+\item{x_explain}{Matrix with 1 row.
+Contains the features of the observation for a single prediction.}
 
-\item{S}{Integer matrix of dimension \code{n_coalitions x m}, where \code{n_coalitions} equals
-the total number of sampled/non-sampled feature combinations and \code{m} equals
-the total number of unique features. Note that \code{m = ncol(xtrain)}. See details
-for more information.}
+\item{S}{arma::mat.
+Matrix of dimension (\code{n_coalitions}, \code{n_features}) containing binary representations of the used coalitions.
+S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+This is not a problem internally in shapr as the empty and grand coalitions are treated differently.}
 }
 \value{
 Numeric matrix
@@ -37,9 +39,9 @@ represented by \code{s = c(x1, x2)}. If this combination is represented by the s
 the following is true: \code{S[2, 1:3] = c(1, 1, 0)}.
 
 The returned object, \code{X}, is a numeric matrix where
-\code{dim(X) = c(length(index_xtrain), ncol(xtrain))}. If feature \code{j} is present in
-the k-th observation, that is \code{S[index_[k], j] == 1}, \code{X[k, j] = xtest[1, j]}.
-Otherwise \code{X[k, j] = xtrain[index_xtrain[k], j]}.
+\code{dim(X) = c(length(index_xtrain), ncol(x_train))}. If feature \code{j} is present in
+the k-th observation, that is \code{S[index_[k], j] == 1}, \code{X[k, j] = x_explain[1, j]}.
+Otherwise \code{X[k, j] = x_train[index_xtrain[k], j]}.
 }
 \author{
 Nikolai Sellereite

@@ -1,4 +1,4 @@
-#' Explain the output of machine learning models with more accurately estimated Shapley values
+#' Explain the output of machine learning models with dependence-aware (conditional/observational) Shapley values
 #'
 #' @description Computes dependence-aware Shapley values for observations in `x_explain` from the specified
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
@@ -7,10 +7,11 @@
 #' Contains the data used to estimate the (conditional) distributions for the features
 #' needed to properly estimate the conditional expectations in the Shapley formula.
 #'
-#' @param x_explain A matrix or data.frame/data.table.
+#' @param x_explain Matrix or data.frame/data.table.
 #' Contains the the features, whose predictions ought to be explained.
 #'
-#' @param model The model whose predictions we want to explain.
+#' @param model Model object.
+#' Specifies the model whose predictions we want to explain.
 #' Run [get_supported_models()]
 #' for a table of which models `explain` supports natively. Unsupported models
 #' can still be explained by passing `predict_model` and (optionally) `get_model_specs`,
@@ -19,7 +20,8 @@
 #' @param approach Character vector of length `1` or one less than the number of features.
 #' All elements should, either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
 #' `"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, or `"regression_surrogate"`.
-#' The two regression approaches can not be combined with any other approach. See details for more information.
+#' The two regression approaches can not be combined with any other approach.
+#' See details for more information.
 #'
 #' @param phi0 Numeric.
 #' The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
@@ -37,17 +39,18 @@
 #'
 #' @param group List.
 #' If `NULL` regular feature wise Shapley values are computed.
-#' If provided, group wise Shapley values are computed. `group` then has length equal to
-#' the number of groups. The list element contains character vectors with the features included
-#' in each of the different groups.
+#' If provided, group wise Shapley values are computed.
+#' `group` then has length equal to the number of groups.
+#' The list element contains character vectors with the features included in each of the different groups.
 #'
 #' @param n_MC_samples Positive integer.
-#' Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+#' For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
+#' of every conditional expectation.
 #' For `approach="ctree"`, `n_MC_samples` corresponds to the number of samples
-#' from the leaf node (see an exception related to the `ctree.sample` argument [shapr::setup_approach.ctree()]).
+#' from the leaf node (see an exception related to the `ctree.sample` argument [setup_approach.ctree()]).
 #' For `approach="empirical"`, `n_MC_samples` is  the \eqn{K} parameter in equations (14-15) of
 #' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-#' `empirical.eta` argument [shapr::setup_approach.empirical()].
+#' `empirical.eta` argument [setup_approach.empirical()].
 #'
 #' @param seed Positive integer.
 #' Specifies the seed before any randomness based code is being run.
@@ -75,10 +78,9 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
-#'
 #' @param verbose String vector or NULL.
 #' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
-#'  `"convergence"`, `"shapley"`  and `"vS_details"`.
+#'  `"convergence"`, `"shapley"` and `"vS_details"`.
 #' `"basic"` (default) displays basic information about the computation which is being performed.
 #' `"progress` displays information about where in the calculation process the function currently is.
 #' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
@@ -89,7 +91,7 @@
 #' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`).
 #' `NULL` means no printout.
 #' Note that any combination of four strings can be used.
-#' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the vS estimation process.
+#' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the v(S)-estimation process.
 #'
 #' @param paired_shap_sampling Logical.
 #' If `TRUE` (default), paired versions of all sampled coalitions are also included in the computation.
@@ -110,17 +112,17 @@
 #'
 #' @param iterative_args Named list.
 #' Specifices the arguments for the iterative procedure.
-#' See [shapr::get_iterative_args_default()] for description of the arguments and their default values.
+#' See [get_iterative_args_default()] for description of the arguments and their default values.
 #' @param output_args Named list.
 #' Specifices certain arguments related to the output of the function.
-#' See [shapr::get_output_args_default()] for description of the arguments and their default values.
+#' See [get_output_args_default()] for description of the arguments and their default values.
 #' @param extra_computation_args Named list.
 #' Specifices extra arguments related to the computation of the Shapley values.
-#' See [shapr::get_extra_est_args_default()] for description of the arguments and their default values.
+#' See [get_extra_comp_args_default()] for description of the arguments and their default values.
 #' @param kernelSHAP_reweighting String.
-#' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
-#' the randomness and thereby the variance of the Shapley value estimates.
-#' One of `'none'`, `'on_N'`, `'on_all'`, `'on_all_cond'` (default).
+#' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+#' The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+#' The options are one of `'none'`, `'on_N'`, `'on_all'`, `'on_all_cond'` (default).
 #' `'none'` means no reweighting, i.e. the sampling frequency weights are used as is.
 #' `'on_coal_size'` means the sampling frequencies are averaged over all coalitions of the same size.
 #' `'on_N'` means the sampling frequencies are averaged over all coalitions with the same original sampling
@@ -128,10 +130,10 @@
 #' `'on_all'` means the original sampling probabilities are used for all coalitions.
 #' `'on_all_cond'` means the original sampling probabilities are used for all coalitions, while adjusting for the
 #' probability that they are sampled at least once.
-#' This method is preferred as it has performed the best in simulation studies.
+#' `'on_all_cond'` is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).
 #'
 #' @param prev_shapr_object `shapr` object or string.
-#' If an object of class `shapr` is provided or string with a path to where intermediate results are strored,
+#' If an object of class `shapr` is provided, or string with a path to where intermediate results are strored,
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 #' want to continue the iterative estimation. See the vignette for examples.
@@ -172,18 +174,19 @@
 #' `asymmetric`. The `approach` cannot be `regression_separate` and `regression_surrogate` as the
 #' regression-based approaches are not applicable to the causal Shapley value methodology.
 #'
-#' @param ... Further arguments passed to specific approaches
+#' @param ... Further arguments passed to specific approaches, see below.
 #'
-#' @inheritDotParams setup_approach.empirical
-#' @inheritDotParams setup_approach.independence
-#' @inheritDotParams setup_approach.gaussian
+#'
+#' @inheritDotParams setup_approach.categorical
 #' @inheritDotParams setup_approach.copula
 #' @inheritDotParams setup_approach.ctree
-#' @inheritDotParams setup_approach.vaeac
-#' @inheritDotParams setup_approach.categorical
+#' @inheritDotParams setup_approach.empirical
+#' @inheritDotParams setup_approach.gaussian
+#' @inheritDotParams setup_approach.independence
 #' @inheritDotParams setup_approach.regression_separate
 #' @inheritDotParams setup_approach.regression_surrogate
 #' @inheritDotParams setup_approach.timeseries
+#' @inheritDotParams setup_approach.vaeac
 #'
 #' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
 #' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
@@ -192,36 +195,37 @@
 #' It is also possible to combine the different approaches, see the vignettes for more information.
 #'
 #' The package also supports the computation of causal and asymmetric Shapley values as introduced by
-#' Heskes et al. (2020) and Frye et al. (2020). Asymmetric Shapley values were proposed by Heskes et al. (2020)
-#' as a way to incorporate causal knowledge in the real world by restricting the possible feature
-#' combinations/coalitions when computing the Shapley values to those consistent with a (partial) causal ordering.
+#' Heskes et al. (2020) and Frye et al. (2020).
+#' Asymmetric Shapley values were proposed by Heskes et al. (2020) as a way to incorporate causal knowledge in
+#' the real world by restricting the possible feature combinations/coalitions when computing the Shapley values to
+#' those consistent with a (partial) causal ordering.
 #' Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
 #' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
 #' The package allows for parallelized computation with progress updates through the tightly connected
-#' [future::future] and [progressr::progressr] packages. See the examples below.
+#' [future::future] and [progressr::progressr] packages.
+#' See the examples below.
 #' For iterative estimation (`iterative=TRUE`), intermediate results may also be printed to the console
 #' (according to the `verbose` argument).
 #' Moreover, the intermediate results are written to disk.
-#' This combined with iterative estimation with (optional) intermediate results printed to the console (and temporary
-#' written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
+#' This combined batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 #' in a memory friendly manner.
 #'
 #' @return Object of class `c("shapr", "list")`. Contains the following items:
 #' \describe{
-#'   \item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
+#'   \item{`shapley_values_est`}{data.table with the estimated Shapley values with explained observation in the rows and
 #'   features along the columns.
 #'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`)}
-#'   \item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
+#'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 #'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 #'   definition 0 when all coalitions is used.
-#'   Only present when `extra_computation_args$compute_sd=TRUE`.}
-#'   \item{internal}{List with the different parameters, data, functions and other output used internally.}
-#'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
-#'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
+#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`}
+#'   \item{`internal`}{List with the different parameters, data, functions and other output used internally.}
+#'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations}
+#'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
 #'   \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
 #'   }{MSEv evaluation section in the vignette for details}.}
-#'   \item{timing}{List containing timing information for the different parts of the computation.
+#'   \item{`timing`}{List containing timing information for the different parts of the computation.
 #'   `init_time` and `end_time` gives the time stamps for the start and end of the computation.
 #'   `total_time_secs` gives the total time in seconds for the complete execution of `explain()`.
 #'   `main_timing_secs` gives the time in seconds for the main computations.
@@ -338,11 +342,6 @@
 #' print(explain_groups$shapley_values_est)
 #'
 #' # Separate and surrogate regression approaches with linear regression models.
-#' # More complex regression models can be used, and we can use CV to
-#' # tune the hyperparameters of the regression models and preprocess
-#' # the data before sending it to the model. See the regression vignette
-#' # (Shapley value explanations using the regression paradigm) for more
-#' # details about the `regression_separate` and `regression_surrogate` approaches.
 #' explain_separate_lm <- explain(
 #'   model = model,
 #'   x_explain = x_explain,
@@ -361,7 +360,7 @@
 #'   regression.model = parsnip::linear_reg()
 #' )
 #'
-#' ## iterative estimation
+#' # Iterative estimation
 #' # For illustration purposes only. By default not used for such small dimensions as here
 #'
 #' # Gaussian approach
@@ -391,6 +390,7 @@
 #'     Advances in neural information processing systems, 33, 4778-4789.
 #'   - Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
 #'     model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
+#'  -  Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410.
 explain <- function(model,
                     x_explain,
                     x_train,
@@ -548,7 +548,7 @@ explain <- function(model,
 
 #' Cleans out certain output arguments to allow perfect reproducability of the output
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal

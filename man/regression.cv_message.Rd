@@ -17,6 +17,8 @@ regression.cv_message(
 \item{regression.grid}{Object containing the hyperparameter values.}
 
 \item{n_cv}{Integer (default is 10) specifying the number of CV hyperparameter configurations to print.}
+
+\item{current_comb}{Integer vector. The current combination of features, passed to verbosity printing function.}
 }
 \description{
 Produce message about which batch prepare_data is working on

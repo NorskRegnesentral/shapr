@@ -1444,9 +1444,6 @@ vaeac_normal_parse_params <- function(params, min_sigma = 1e-4) {
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 vaeac_categorical_parse_params <- function(params, min_prob = 0, max_prob = 1) {
-  # TODO: One option here is to directly use that 'dist_categorical' supports logits. I.e., we could have used
-  # `distr = torch::distr_categorical(logits = params)` and then been done. However, we would then not be able
-  # to clamp the probabilities. In test, this is 30% faster and min prob is seldom reached, and we get the same values.
   params <- torch::nnf_softmax(params, dim = -1) # Use the softmax to convert from logits to probabilities
   params <- torch::torch_clamp(params, min = min_prob, max = max_prob) # Clamp probs between min and max allowed values
   params <- params / torch::torch_sum(params, dim = -1, keepdim = TRUE) # Ensure that probs sum to one

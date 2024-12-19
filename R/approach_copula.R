@@ -1,5 +1,5 @@
 #' @rdname setup_approach
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @export
 #' @author Martin Jullum
 setup_approach.copula <- function(internal, ...) {
@@ -41,7 +41,7 @@ setup_approach.copula <- function(internal, ...) {
   return(internal)
 }
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -62,7 +62,6 @@ prepare_data.copula <- function(internal, index_features, ...) {
   iter <- length(internal$iter_list)
 
   S <- internal$iter_list[[iter]]$S[index_features, , drop = FALSE]
-
 
   if (causal_sampling) {
     # Casual Shapley values (either symmetric or asymmetric)

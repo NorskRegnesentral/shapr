@@ -1,6 +1,6 @@
 #' Computes the the Shapley values and their standard deviation given the `v(S)`
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @param vS_list List
 #' Output from [compute_vS()]
 #'
@@ -31,7 +31,7 @@ compute_estimates <- function(internal, vS_list) {
   }
 
   # Compute the Shapley values
-  dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+  dt_shapley_est <- compute_shapley(internal, processed_vS_list$dt_vS)
 
   internal$timing_list$compute_shapley <- Sys.time()
 
@@ -83,11 +83,6 @@ postprocess_vS_list <- function(vS_list, internal) {
   dt_vS0 <- as.data.table(rbind(c(1, rep(phi0, n_explain))))
 
   # Extracting/merging the data tables from the batch running
-  # TODO: Need a memory and speed optimized way to transform the output form dt_vS_list to two different lists,
-  # I.e. without copying the data more than once. For now I have modified run_batch such that it
-  # if keep_samp_for_vS=FALSE
-  # then there is only one copy, but there are two if keep_samp_for_vS=TRUE. This might be OK since the
-  # latter is used rarely
   if (keep_samp_for_vS) {
     names(dt_vS0) <- names(vS_list[[1]][[1]])
 
@@ -122,12 +117,12 @@ postprocess_vS_list <- function(vS_list, internal) {
 #' Compute shapley values
 #' @param dt_vS The contribution matrix.
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @return A `data.table` with Shapley values for each test observation.
 #' @export
 #' @keywords internal
-compute_shapley_new <- function(internal, dt_vS) {
+compute_shapley <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
   type <- internal$parameters$type
 
@@ -173,97 +168,8 @@ compute_shapley_new <- function(internal, dt_vS) {
   return(dt_kshap)
 }
 
-bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
-  iter <- length(internal$iter_list)
-
-  X <- internal$iter_list[[iter]]$X
-
-  set.seed(seed)
-
-  X_org <- copy(X)
-  n_explain <- internal$parameters$n_explain
-  n_features <- internal$parameters$n_features
-  shap_names <- internal$parameters$shap_names
-  paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  shapley_reweight <- internal$parameters$kernelSHAP_reweighting
-
-  boot_sd_array <- array(NA, dim = c(n_explain, n_features + 1, n_boot_samps))
-
-  X_keep <- X_org[c(1, .N), .(id_coalition, features, n_features, N, shapley_weight)]
-  X_samp <- X_org[-c(1, .N), .(id_coalition, features, n_features, N, shapley_weight, sample_freq)]
-  X_samp[, features_tmp := sapply(features, paste, collapse = " ")]
-
-  n_coalitions_boot <- X_samp[, sum(sample_freq)]
-
-  for (i in seq_len(n_boot_samps)) {
-    if (paired_shap_sampling) {
-      # Sample with replacement
-      X_boot00 <- X_samp[
-        sample.int(
-          n = .N,
-          size = ceiling(n_coalitions_boot / 2),
-          replace = TRUE,
-          prob = sample_freq
-        ),
-        .(id_coalition, features, n_features, N)
-      ]
-
-      X_boot00[, features_tmp := sapply(features, paste, collapse = " ")]
-      # Not sure why I have to two the next two lines in two steps, but I don't get it to work otherwise
-      boot_features_dup <- lapply(X_boot00$features, function(x) seq(n_features)[-x])
-      X_boot00[, features_dup := boot_features_dup]
-      X_boot00[, features_dup_tmp := sapply(features_dup, paste, collapse = " ")]
-
-      # Extract the paired coalitions from X_samp
-      X_boot00_paired <- merge(X_boot00[, .(features_dup_tmp)],
-        X_samp[, .(id_coalition, features, n_features, N, features_tmp)],
-        by.x = "features_dup_tmp", by.y = "features_tmp"
-      )
-      X_boot0 <- rbind(
-        X_boot00[, .(id_coalition, features, n_features, N)],
-        X_boot00_paired[, .(id_coalition, features, n_features, N)]
-      )
-    } else {
-      X_boot0 <- X_samp[
-        sample.int(
-          n = .N,
-          size = n_coalitions_boot,
-          replace = TRUE,
-          prob = sample_freq
-        ),
-        .(id_coalition, features, n_features, N)
-      ]
-    }
-
-
-    X_boot0[, shapley_weight := .N / n_coalitions_boot, by = "id_coalition"]
-    X_boot0 <- unique(X_boot0, by = "id_coalition")
-
-    X_boot <- rbind(X_keep, X_boot0)
-    data.table::setorder(X_boot, id_coalition)
-
-    kernelSHAP_reweighting(X_boot, reweight = shapley_reweight) # reweights the shapley weights by reference
-
-    W_boot <- shapr::weight_matrix(
-      X = X_boot,
-      normalize_W_weights = TRUE,
-      is_groupwise = FALSE
-    )
-
-    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_coalition %in% X_boot[, id_coalition], -"id_coalition"]))
-
-    boot_sd_array[, , i] <- copy(kshap_boot)
-  }
-
-  std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
-
-  dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
-  colnames(dt_kshap_boot_sd) <- c("none", shap_names)
-
-  return(dt_kshap_boot_sd)
-}
-
-bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
+#' @keywords internal
+bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
   iter <- length(internal$iter_list)
   type <- internal$parameters$type
   is_groupwise <- internal$parameters$is_groupwise
@@ -283,23 +189,22 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
       }
       dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
       dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
-      result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps, seed)
+      result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps)
     }
     result <- cbind(internal$parameters$output_labels, rbindlist(result, fill = TRUE))
   } else {
     X <- internal$iter_list[[iter]]$X
     n_shapley_values <- internal$parameters$n_shapley_values
     shap_names <- internal$parameters$shap_names
-    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps, seed)
+    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps)
   }
   return(result)
 }
 
-bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100, seed = 123) {
+#' @keywords internal
+bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100) {
   type <- internal$parameters$type
   iter <- length(internal$iter_list)
-
-  set.seed(seed)
 
   n_explain <- internal$parameters$n_explain
   paired_shap_sampling <- internal$parameters$paired_shap_sampling

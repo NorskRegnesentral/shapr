@@ -25,7 +25,6 @@ get_model_specs.ar <- function(x) {
   return(feature_specs)
 }
 
-
 #' @rdname model_checker
 #' @export
 model_checker.ar <- function(x) {

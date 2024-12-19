@@ -116,7 +116,7 @@ future::plan("multisession", workers = 2) # Increase the number of workers for i
 # Enable progress updates of the v(S)-computations
 # Requires the progressr package
 progressr::handlers(global = TRUE)
-handlers("cli") # Using the cli package as backend (recommended for the estimates of the remaining time)
+progressr::handlers("cli") # Using the cli package as backend (recommended for the estimates of the remaining time)
 ```
 
 Here comes the actual example

@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain.R
 \name{explain}
 \alias{explain}
-\title{Explain the output of machine learning models with more accurately estimated Shapley values}
+\title{Explain the output of machine learning models with dependence-aware (conditional/observational) Shapley values}
 \usage{
 explain(
   model,
@@ -31,13 +31,14 @@ explain(
 )
 }
 \arguments{
-\item{model}{The model whose predictions we want to explain.
+\item{model}{Model object.
+Specifies the model whose predictions we want to explain.
 Run \code{\link[=get_supported_models]{get_supported_models()}}
 for a table of which models \code{explain} supports natively. Unsupported models
 can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
 see details for more information.}
 
-\item{x_explain}{A matrix or data.frame/data.table.
+\item{x_explain}{Matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
 
 \item{x_train}{Matrix or data.frame/data.table.
@@ -47,7 +48,8 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
 All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
-The two regression approaches can not be combined with any other approach. See details for more information.}
+The two regression approaches can not be combined with any other approach.
+See details for more information.}
 
 \item{phi0}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
@@ -77,9 +79,9 @@ and group coalitions if \code{group != NULL}.
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
-If provided, group wise Shapley values are computed. \code{group} then has length equal to
-the number of groups. The list element contains character vectors with the features included
-in each of the different groups.}
+If provided, group wise Shapley values are computed.
+\code{group} then has length equal to the number of groups.
+The list element contains character vectors with the features included in each of the different groups.}
 
 \item{paired_shap_sampling}{Logical.
 If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
@@ -87,7 +89,8 @@ That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then a
 computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
 
 \item{n_MC_samples}{Positive integer.
-Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
+of every conditional expectation.
 For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
 For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
@@ -95,9 +98,9 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 \code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
-the randomness and thereby the variance of the Shapley value estimates.
-One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
 \code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
 \code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
 \code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
@@ -105,7 +108,7 @@ probabilities.
 \code{'on_all'} means the original sampling probabilities are used for all coalitions.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
-This method is preferred as it has performed the best in simulation studies.}
+\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
@@ -113,7 +116,7 @@ If \code{NULL} no seed is set in the calling environment.}
 
 \item{verbose}{String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
-\code{"convergence"}, \code{"shapley"}  and \code{"vS_details"}.
+\code{"convergence"}, \code{"shapley"} and \code{"vS_details"}.
 \code{"basic"} (default) displays basic information about the computation which is being performed.
 \verb{"progress} displays information about where in the calculation process the function currently is.
 #' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
@@ -125,7 +128,7 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
 \code{NULL} means no printout.
 Note that any combination of four strings can be used.
-E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the vS estimation process.
+E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.
 }}
 
 \item{predict_model}{Function.
@@ -151,7 +154,7 @@ disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{prev_shapr_object}{\code{shapr} object or string.
-If an object of class \code{shapr} is provided or string with a path to where intermediate results are strored,
+If an object of class \code{shapr} is provided, or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the vignette for examples.}
@@ -194,7 +197,7 @@ regression-based approaches are not applicable to the causal Shapley value metho
 
 \item{extra_computation_args}{Named list.
 Specifices extra arguments related to the computation of the Shapley values.
-See \code{\link[=get_extra_est_args_default]{get_extra_est_args_default()}} for description of the arguments and their default values.}
+See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{iterative_args}{Named list.
 Specifices the arguments for the iterative procedure.
@@ -205,80 +208,77 @@ Specifices certain arguments related to the output of the function.
 See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
+  Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
   \describe{
+    \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
+Containing the joint probability distribution for each combination of feature
+values.
+\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
+    \item{\code{categorical.epsilon}}{Numeric value. (Optional)
+If \code{categorical.joint_probability_dt} is not supplied, probabilities/frequencies are
+estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
+then epsilon is used as the proportion of times that these observations occurs in the training data.
+In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
+    \item{\code{internal}}{List.
+Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
+    \item{\code{ctree.mincriterion}}{Numeric scalar or vector.
+Either a scalar or vector of length equal to the number of features in the model.
+The value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+If it is a vector, this indicates which value to use when conditioning on various numbers of features.
+The default value is 0.95.}
+    \item{\code{ctree.minsplit}}{Numeric scalar.
+Determines minimum value that the sum of the left and right daughter nodes required for a split.
+The default value is 20.}
+    \item{\code{ctree.minbucket}}{Numeric scalar.
+Determines the minimum sum of weights in a terminal node required for a split
+The default value is 7.}
+    \item{\code{ctree.sample}}{Boolean.
+If \code{TRUE} (default), then the method always samples \code{n_MC_samples} observations from the leaf nodes
+(with replacement).
+If \code{FALSE} and the number of observations in the leaf node is less than \code{n_MC_samples},
+the method will take all observations in the leaf.
+If \code{FALSE} and the number of observations in the leaf node is more than \code{n_MC_samples},
+the method will sample \code{n_MC_samples} observations (with replacement).
+This means that there will always be sampling in the leaf unless
+\code{sample = FALSE} \emph{and} the number of obs in the node is less than \code{n_MC_samples}.}
     \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
-TODO: Describe better what the methods do here.}
-    \item{\code{empirical.eta}}{Numeric. (default = 0.95)
+\code{"independence"} is deprecated. Use \code{approach = "independence"} instead.
+\code{"fixed_sigma"} uses a fixed bandwidth (set through \code{empirical.fixed_sigma}) in the kernel density estimation.
+\code{"AICc_each_k"} and \code{"AICc_full"} optimize the bandwidth using the AICc criterion, with respectively
+one bandwidth per coalition size and one bandwidth for all coalition sizes.}
+    \item{\code{empirical.eta}}{Numeric scalar.
 Needs to be \verb{0 < eta <= 1}.
+The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
-    \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
+    \item{\code{empirical.fixed_sigma}}{Positive numeric scalar.
+The default value is 0.1.
 Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
 Only used when \code{empirical.type = "fixed_sigma"}}
-    \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
+    \item{\code{empirical.n_samples_aicc}}{Positive integer.
 Number of samples to consider in AICc optimization.
+The default value is 1000.
 Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.eval_max_aicc}}{Positive integer. (default = 20)
+    \item{\code{empirical.eval_max_aicc}}{Positive integer.
 Maximum number of iterations when optimizing the AICc.
+The default value is 20.
 Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.start_aicc}}{Numeric. (default = 0.1)
+    \item{\code{empirical.start_aicc}}{Numeric.
 Start value of the \code{sigma} parameter when optimizing the AICc.
+The default value is 0.1.
 Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional, default = NULL)
-Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
+    \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional)
+The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
-    \item{\code{internal}}{List.
-Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
     \item{\code{gaussian.mu}}{Numeric vector. (Optional)
 Containing the mean of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
     \item{\code{gaussian.cov_mat}}{Numeric matrix. (Optional)
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
-    \item{\code{ctree.mincriterion}}{Numeric scalar or vector. (default = 0.95)
-Either a scalar or vector of length equal to the number of features in the model.
-Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
-If it is a vector, this indicates which value to use when conditioning on various numbers of features.}
-    \item{\code{ctree.minsplit}}{Numeric scalar. (default = 20)
-Determines minimum value that the sum of the left and right daughter nodes required for a split.}
-    \item{\code{ctree.minbucket}}{Numeric scalar. (default = 7)
-Determines the minimum sum of weights in a terminal node required for a split}
-    \item{\code{ctree.sample}}{Boolean. (default = TRUE)
-If TRUE, then the method always samples \code{n_MC_samples} observations from the leaf nodes (with replacement).
-If FALSE and the number of observations in the leaf node is less than \code{n_MC_samples},
-the method will take all observations in the leaf.
-If FALSE and the number of observations in the leaf node is more than \code{n_MC_samples},
-the method will sample \code{n_MC_samples} observations (with replacement).
-This means that there will always be sampling in the leaf unless
-\code{sample} = FALSE AND the number of obs in the node is less than \code{n_MC_samples}.}
-    \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
-in the neural networks of the masked encoder, full encoder, and decoder.}
-    \item{\code{vaeac.width}}{Positive integer (default is \code{32}). The number of neurons in each
-hidden layer in the neural networks of the masked encoder, full encoder, and decoder.}
-    \item{\code{vaeac.latent_dim}}{Positive integer (default is \code{8}). The number of dimensions in the latent space.}
-    \item{\code{vaeac.lr}}{Positive numeric (default is \code{0.001}). The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
-    \item{\code{vaeac.activation_function}}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
-\code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
-    \item{\code{vaeac.n_vaeacs_initialize}}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
-in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
-epochs (default is \code{2}) and continue training that one.}
-    \item{\code{vaeac.epochs}}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
-This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
-    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
-\code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
-    \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
-Containing the joint probability distribution for each combination of feature
-values.
-\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
-    \item{\code{categorical.epsilon}}{Numeric value. (Optional)
-If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
-estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
-then epsilon is used as the proportion of times that these observations occurs in the training data.
-In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
     \item{\code{regression.model}}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
 \code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
 and see the vignette for how to add new/own models. Note, to make it easier to call \code{explain()} from Python, the
@@ -306,41 +306,55 @@ Note, to make it easier to call \code{explain()} from Python, the \code{regressi
 containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}
-    \item{\code{regression.surrogate_n_comb}}{Integer.
-(default is \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions}) specifying the
-number of unique coalitions to apply to each training observation. Maximum allowed value is
-"\code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions} - 2".
-By default, we use all coalitions, but this can take a lot of memory in larger dimensions.
-Note that by "all", we mean all coalitions chosen by \code{shapr} to be used.
-This will be all \eqn{2^{n_{\text{features}}}} coalitions (minus empty and grand coalition) if \code{shapr} is in
-the exact mode.
-If the user sets a lower value than \code{internal$iter_list[[length(internal$iter_list)]]$n_coalitions},
-then we sample this amount of unique coalitions separately for each training observations.
+    \item{\code{regression.surrogate_n_comb}}{Positive integer.
+Specifies the number of unique coalitions to apply to each training observation.
+The default is the number of sampled coalitions in the present iteration.
+Any integer between 1 and the default is allowed.
+Larger values requires more memory, but may improve the surrogate model.
+If the user sets a value lower than the maximum, we sample this amount of unique coalitions
+separately for each training observations.
 That is, on average, all coalitions should be equally trained.}
-    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
-    \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
-If one or both of these bounds are not NULL, we restrict the sampled time series to be
-between these bounds.
+    \item{\code{timeseries.fixed_sigma}}{Positive numeric scalar.
+Represents the kernel bandwidth in the distance computation.
+The default value is 2.}
+    \item{\code{timeseries.bounds}}{Numeric vector of length two.
+Specifies the lower and upper bounds of the timeseries.
+The default is \code{c(NULL, NULL)}, i.e. no bounds.
+If one or both of these bounds are not \code{NULL}, we restrict the sampled time series to be between these bounds.
 This is useful if the underlying time series are scaled between 0 and 1, for example.}
+    \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
+in the neural networks of the masked encoder, full encoder, and decoder.}
+    \item{\code{vaeac.width}}{Positive integer (default is \code{32}). The number of neurons in each
+hidden layer in the neural networks of the masked encoder, full encoder, and decoder.}
+    \item{\code{vaeac.latent_dim}}{Positive integer (default is \code{8}). The number of dimensions in the latent space.}
+    \item{\code{vaeac.lr}}{Positive numeric (default is \code{0.001}). The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
+    \item{\code{vaeac.activation_function}}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
+\code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
+    \item{\code{vaeac.n_vaeacs_initialize}}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
+in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
+epochs (default is \code{2}) and continue training that one.}
+    \item{\code{vaeac.epochs}}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
+This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
+    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
+\code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
   }}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-\item{shapley_values_est}{data.table with the estimated Shapley values with explained observation in the rows and
+\item{\code{shapley_values_est}}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
 The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
-\item{shapley_values_sd}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
+\item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{extra_computation_args$compute_sd=TRUE}.}
-\item{internal}{List with the different parameters, data, functions and other output used internally.}
-\item{pred_explain}{Numeric vector with the predictions for the explained observations}
-\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach. See the
+Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
+\item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
+\item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
+\item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
 }{MSEv evaluation section in the vignette for details}.}
-\item{timing}{List containing timing information for the different parts of the computation.
+\item{\code{timing}}{List containing timing information for the different parts of the computation.
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
 \code{main_timing_secs} gives the time in seconds for the main computations.
@@ -360,19 +374,20 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 It is also possible to combine the different approaches, see the vignettes for more information.
 
 The package also supports the computation of causal and asymmetric Shapley values as introduced by
-Heskes et al. (2020) and Frye et al. (2020). Asymmetric Shapley values were proposed by Heskes et al. (2020)
-as a way to incorporate causal knowledge in the real world by restricting the possible feature
-combinations/coalitions when computing the Shapley values to those consistent with a (partial) causal ordering.
+Heskes et al. (2020) and Frye et al. (2020).
+Asymmetric Shapley values were proposed by Heskes et al. (2020) as a way to incorporate causal knowledge in
+the real world by restricting the possible feature combinations/coalitions when computing the Shapley values to
+those consistent with a (partial) causal ordering.
 Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
 on the prediction, taking into account their causal relationships, by adapting the sampling procedure in \code{shapr}.
 
 The package allows for parallelized computation with progress updates through the tightly connected
-\link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages. See the examples below.
+\link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages.
+See the examples below.
 For iterative estimation (\code{iterative=TRUE}), intermediate results may also be printed to the console
 (according to the \code{verbose} argument).
 Moreover, the intermediate results are written to disk.
-This combined with iterative estimation with (optional) intermediate results printed to the console (and temporary
-written to disk, and batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
+This combined batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 in a memory friendly manner.
 }
 \examples{
@@ -484,11 +499,6 @@ explain_groups <- explain(
 print(explain_groups$shapley_values_est)
 
 # Separate and surrogate regression approaches with linear regression models.
-# More complex regression models can be used, and we can use CV to
-# tune the hyperparameters of the regression models and preprocess
-# the data before sending it to the model. See the regression vignette
-# (Shapley value explanations using the regression paradigm) for more
-# details about the `regression_separate` and `regression_surrogate` approaches.
 explain_separate_lm <- explain(
   model = model,
   x_explain = x_explain,
@@ -507,7 +517,7 @@ explain_surrogate_lm <- explain(
   regression.model = parsnip::linear_reg()
 )
 
-## iterative estimation
+# Iterative estimation
 # For illustration purposes only. By default not used for such small dimensions as here
 
 # Gaussian approach
@@ -535,6 +545,7 @@ Exploiting causal knowledge to explain individual predictions of complex models.
 Advances in neural information processing systems, 33, 4778-4789.
 \item Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
 model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
+\item Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410.
 }
 }
 \author{

@@ -1,6 +1,6 @@
 #' Checks the convergence according to the convergence threshold
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal
@@ -46,13 +46,13 @@ check_convergence <- function(internal) {
       dt_shapley_est0[, conv_measure := max_sd0 / ((maxval - minval) * sqrt(n_sampled_coalitions))]
       dt_shapley_est0[, req_samples := min(req_samples, 2^n_shapley_values - 2)]
 
-      est_required_coalitions <- ceiling(dt_shapley_est0[, median(req_samples)]) # TODO:Consider other ways to do this
+      est_required_coalitions <- ceiling(dt_shapley_est0[, median(req_samples)])
       if (isTRUE(paired_shap_sampling)) {
         est_required_coalitions <- ceiling(est_required_coalitions * 0.5) * 2
       }
       est_remaining_coalitions <- max(0, est_required_coalitions - (n_sampled_coalitions + 2))
 
-      overall_conv_measure <- dt_shapley_est0[, median(conv_measure)] # TODO:Consider other ways to do this
+      overall_conv_measure <- dt_shapley_est0[, median(conv_measure)]
 
       converged_sd <- (est_remaining_coalitions == 0)
 

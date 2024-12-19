@@ -7,22 +7,27 @@
 mahalanobis_distance_cpp(
   featureList,
   Xtrain_mat,
-  Xtest_mat,
+  Xexplain_mat,
   mcov,
   S_scale_dist
 )
 }
 \arguments{
-\item{featureList}{List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.}
+\item{featureList}{List.
+Contains the vectors indicating all factor combinations that should be included in the computations.
+Assumes that the first one is empty.}
 
-\item{Xtrain_mat}{Matrix}
+\item{Xtrain_mat}{Matrix
+Training data in matrix form}
 
-\item{Xtest_mat}{Matrix}
+\item{Xexplain_mat}{Matrix
+Explanation data in matrix form.}
 
-\item{mcov}{Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
-\code{diag(m)} gives the Euclidean distance.}
+\item{mcov}{matrix
+The covariance matrix of X.}
 
-\item{S_scale_dist}{Logical indicating}
+\item{S_scale_dist}{logical.
+Indicating whether the Mahalanobis distance should be scaled with the number of variables}
 }
 \value{
 Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.

@@ -1,6 +1,6 @@
 #' Prints iterative information
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @keywords internal
@@ -23,11 +23,11 @@ print_iter <- function(internal) {
   if ("convergence" %in% verbose) {
     convergence_tol <- internal$parameters$iterative_args$convergence_tol
 
-    current_n_coalitions <- internal$iter_list[[iter]]$n_coalitions
+    current_n_coalitions <- internal$iter_list[[iter]]$n_sampled_coalitions + 2
     est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions
     est_required_coalitions <- internal$iter_list[[iter]]$est_required_coalitions
 
-    next_n_coalitions <- internal$iter_list[[iter + 1]]$n_coalitions
+    next_n_coalitions <- internal$iter_list[[iter + 1]]$n_sampled_coalitions + 2
     next_new_n_coalitions <- internal$iter_list[[iter + 1]]$new_n_coalitions
 
     cli::cli_h3("Convergence info")
@@ -98,7 +98,7 @@ print_iter <- function(internal) {
       print_dt <- as.data.table(matrix1)
     } else {
       msg <- paste0(msg, "estimated Shapley values (sd)")
-      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = nrow(matrix1)))
+      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ")", sep = ""), nrow = nrow(matrix1)))
     }
 
     cli::cli_h3(msg)

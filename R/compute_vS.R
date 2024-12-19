@@ -1,11 +1,10 @@
 #' Computes `v(S)` for all features subsets `S`.
 #'
-#' @inheritParams default_doc_explain
-#' @inheritParams default_doc
+#' @inheritParams default_doc_export
 #'
 #' @param method Character
 #' Indicates whether the lappy method (default) or loop method should be used.
-#' This is only used for testing purposes.
+#' Options other than "future" is only used for testing/debugging.
 #'
 #' @export
 #' @keywords internal
@@ -45,6 +44,7 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   return(vS_list)
 }
 
+#' @keywords internal
 future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
   if (requireNamespace("progressr", quietly = TRUE)) {
     p <- progressr::progressor(sum(lengths(S_batch)))
@@ -64,7 +64,6 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
 }
 
 #' @keywords internal
-#' @author Martin Jullum, Lars Henry Berge Olsen
 batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   regression <- internal$parameters$regression
 
@@ -78,7 +77,6 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   }
 
   # Update the progress bar if provided
-  # TODO: Add a message to state what batch has been computed
   if (!is.null(p)) p(amount = length(S), message = "Estimating v(S)")
 
   return(dt_vS)
@@ -223,7 +221,6 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
 }
 
 #' Appends the new vS_list to the prev vS_list
-#'
 #'
 #' @inheritParams compute_estimates
 #'

@@ -17,11 +17,11 @@
 #' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach. See
 #'  [shapr::vaeac_get_extra_para_default()] for description of possible additional parameters and their default values.
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @author Lars Henry Berge Olsen
-setup_approach.vaeac <- function(internal, # add default values for vaeac here.
+setup_approach.vaeac <- function(internal,
                                  vaeac.depth = 3,
                                  vaeac.width = 32,
                                  vaeac.latent_dim = 8,
@@ -200,7 +200,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   return(internal)
 }
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_export
 #'
 #' @rdname prepare_data
 #' @export
@@ -2003,7 +2003,7 @@ vaeac_get_full_state_list <- function(environment) {
 #' Function to extend the explicands and apply all relevant masks/coalitions
 #'
 #' @inheritParams explain
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #' @param S The `internal$objects$S` matrix containing the possible coalitions.
 #'
 #' @return The extended version of `x_explain` where the masks from `S` with indices `index_features` have been applied.
@@ -2069,9 +2069,9 @@ vaeac_get_evaluation_criteria <- function(explanation_list) {
 #'
 #' @inheritParams vaeac_train_model
 #' @param train_indices Numeric array (optional) containing the indices of the training observations.
-#' There are conducted no checks to validdate the indices.
+#' There are conducted no checks to validate the indices.
 #' @param val_indices Numeric array (optional) containing the indices of the validation observations.
-#' #' There are conducted no checks to validdate the indices.
+#' #' There are conducted no checks to validate the indices.
 #'
 #' @return List of objects needed to train the `vaeac` model
 vaeac_get_data_objects <- function(x_train,

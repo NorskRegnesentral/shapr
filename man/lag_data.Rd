@@ -21,3 +21,4 @@ A list with two items
 \description{
 Lag a matrix of variables a specific number of lags for each variables.
 }
+\keyword{internal}

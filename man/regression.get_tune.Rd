@@ -26,9 +26,7 @@ containing an R function. For example,
 \code{"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"} is also a valid input.
 It is essential to include the package prefix if the package is not loaded.}
 
-\item{x_train}{Matrix or data.frame/data.table.
-Contains the data used to estimate the (conditional) distributions for the features
-needed to properly estimate the conditional expectations in the Shapley formula.}
+\item{x_train}{Data.table with training data.}
 }
 \value{
 A boolean variable indicating if the regression model is to be tuned.

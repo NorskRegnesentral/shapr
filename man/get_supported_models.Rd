@@ -9,4 +9,3 @@ get_supported_models()
 \description{
 Provides a data.table with the supported models
 }
-\keyword{internal}

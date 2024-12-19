@@ -28,7 +28,7 @@
 #' containing an R function. For example,
 #' `"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"` is also
 #' a valid input. It is essential to include the package prefix if the package is not loaded.
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -56,7 +56,7 @@ setup_approach.regression_separate <- function(internal,
   return(internal) # Return the updated internal list
 }
 
-#' @inheritParams default_doc
+#' @inheritParams default_doc_export
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -125,14 +125,14 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 #'
 #' @inheritParams setup_approach.regression_separate
 #' @inheritParams explain
-#' @param x Data.table containing the data. Either the training data or the explicands. If `x` is the explicands,
-#' then `index_features` must be provided.
+#' @param x Data.table containing the training data.
 #' @param regression.tune Logical (default is `FALSE`). If `TRUE`, then we are to tune the hyperparemeters based on
 #' the values provided in `regression.tune_values`. Note that no checks are conducted as this is checked earlier in
 #' `setup_approach.regression_separate` and `setup_approach.regression_surrogate`.
 #' @param regression.response_var String (default is `y_hat`) containing the name of the response variable.
 #' @param regression.surrogate_n_comb Integer (default is `NULL`). The number of times each training observations
 #' has been augmented. If `NULL`, then we assume that we are doing separate regression.
+#' @param current_comb Integer vector. The current combination of features, passed to verbosity printing function.
 #'
 #' @return A trained `tidymodels` model based on the provided input parameters.
 #' @export
@@ -240,7 +240,7 @@ regression.get_string_to_R <- function(string) {
 
 #' Get the predicted responses
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @return The same `internal` list, but added vectors `internal$data$x_train_y_hat` and
 #' `internal$data$x_explain_y_hat` containing the predicted response of the training and explain data.
@@ -260,7 +260,7 @@ regression.get_y_hat <- function(internal, model, predict_model) {
 #' See \href{https://www.tidymodels.org/find/parsnip/#model-args}{tidymodels} for default model hyperparameters.
 #'
 #' @inheritParams setup_approach.regression_separate
-#' @inheritParams explain
+#' @inheritParams default_doc_internal
 #'
 #' @return A boolean variable indicating if the regression model is to be tuned.
 #'
@@ -319,7 +319,7 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 # Check functions ======================================================================================================
 #' Check regression parameters
 #'
-#' @inheritParams default_doc
+#' @inheritParams default_doc_internal
 #'
 #' @return The same `internal` list, but added logical indicator `internal$parameters$regression.tune`
 #' if we are to tune the regression model/models.
@@ -373,7 +373,7 @@ regression.check_parameters <- function(internal) {
 #' Check that regression.recipe_func is a function that returns the
 #' RHS of the formula for arbitrary feature name inputs.
 #'
-#' @inheritParams explain
+#' @inheritParams default_doc_internal
 #' @inheritParams setup_approach.regression_separate
 #'
 #' @author Lars Henry Berge Olsen
@@ -449,6 +449,7 @@ regression.check_namespaces <- function() {
 #' @param regression.results The results of the CV procedures.
 #' @param regression.grid Object containing the hyperparameter values.
 #' @param n_cv Integer (default is 10) specifying the number of CV hyperparameter configurations to print.
+#' @inheritParams regression.train_model
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal

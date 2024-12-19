@@ -3,12 +3,13 @@
 
 #' Computing single H matrix in AICc-function using the Mahalanobis distance
 #'
-#' @param X matrix with "covariates"
-#' @param mcov covariance matrix
-#' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
+#' @param X matrix.
+#' @param mcov matrix
+#' The covariance matrix of X.
+#' @param S_scale_dist logical.
+#' Indicating whether the Mahalanobis distance should be scaled with the number of variables
 #' @param h numeric specifying the scaling (sigma)
 #'
-#' @export
 #' @keywords internal
 #'
 #' @return Matrix of dimension \code{ncol(X)*ncol(X)}
@@ -17,12 +18,13 @@ hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
     .Call(`_shapr_hat_matrix_cpp`, X, mcov, S_scale_dist, h)
 }
 
-#' sigma_hat_sq-function
+#' Function for computing sigma_hat_sq
 #'
-#' @param H Matrix. Output from \code{\link{hat_matrix_cpp}}
-#' @param y Vector, i.e. representing the response variable
+#' @param H Matrix.
+#' Output from [hat_matrix_cpp()]
+#' @param y Vector
+#' Representing the (temporary) response variable
 #'
-#' @export
 #' @keywords internal
 #'
 #' @return Scalar
@@ -32,11 +34,13 @@ rss_cpp <- function(H, y) {
     .Call(`_shapr_rss_cpp`, H, y)
 }
 
-#' correction term with trace_input in AICc formula
+#' Correction term with trace_input in AICc formula
 #'
-#' @param tr_H numeric giving the trace of H
-#' @param n numeric given the number of rows in H
-#' @export
+#' @param tr_H numeric
+#' The trace of H
+#' @param n numeric
+#' The number of rows in H
+#'
 #' @keywords internal
 #'
 #' @return Scalar
@@ -47,16 +51,13 @@ correction_matrix_cpp <- function(tr_H, n) {
 
 #'  Temp-function for computing the full AICc with several X's etc
 #'
-#' @param X matrix with "covariates"
-#' @param mcov covariance matrix
-#' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
-#' @param h numeric specifying the scaling (sigma)
-#' @param y vector with the "response variable"
 #'
-#' @export
+#' @inheritParams hat_matrix_cpp
+#' @inheritParams rss_cpp
+#'
 #' @keywords internal
 #'
-#' @return Scalar with the numeric value of the AICc formula
+#' @return Scalar with the numeric value of the AICc formula.
 #' @author Martin Jullum
 aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
     .Call(`_shapr_aicc_full_single_cpp`, X, mcov, S_scale_dist, h, y)
@@ -64,14 +65,20 @@ aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
 
 #'  AICc formula for several sets, alternative definition
 #'
-#' @param h Numeric. Specifies the scaling (sigma)
-#' @param X_list List
-#' @param mcov_list List
-#' @param S_scale_dist Logical. Indicates whether Mahalanobis distance should be scaled with the
-#' number of variables
+#' @param X_list List.
+#' Contains matrices with the appropriate features of the training data
+#' @param mcov_list List.
+#' Contains the covariance matrices of the matrices in X_list
+#' @param S_scale_dist Logical.
+#' Indicates whether Mahalanobis distance should be scaled with the number of variables.
 #' @param y_list List.
+#' Contains the appropriate (temporary) response variables.
 #' @param negative Logical.
+#' Whether to return the negative of the AICc value.
+#'
 #' @keywords internal
+#'
+#' @inheritParams hat_matrix_cpp
 #'
 #' @return Scalar with the numeric value of the AICc formula
 #'
@@ -82,10 +89,12 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 
 #' Compute the quantiles using quantile type seven
 #'
-#' @details Using quantile type number seven from stats::quantile in R.
+#' @param x arma::vec.
+#' Numeric vector whose sample quantiles are wanted.
+#' @param probs arma::vec.
+#' Numeric vector of probabilities with values between zero and one.
 #'
-#' @param x arma::vec. Numeric vector whose sample quantiles are wanted.
-#' @param probs arma::vec. Numeric vector of probabilities with values between zero and one.
+#' @details Using quantile type number seven from stats::quantile in R.
 #'
 #' @return A vector of length `length(probs)` with the quantiles is returned.
 #'
@@ -97,8 +106,10 @@ quantile_type7_cpp <- function(x, probs) {
 
 #' Transforms new data to a standardized normal distribution
 #'
-#' @param z arma::mat. The data are the Gaussian Monte Carlos samples to transform.
-#' @param x arma::mat. The data with the original transformation. Used to conduct the transformation of `z`.
+#' @param z arma::mat.
+#' The data are the Gaussian Monte Carlos samples to transform.
+#' @param x arma::mat.
+#' The data with the original transformation. Used to conduct the transformation of `z`.
 #'
 #' @return arma::mat of the same dimension as `z`
 #'
@@ -110,28 +121,24 @@ inv_gaussian_transform_cpp <- function(z, x) {
 
 #' Generate (Gaussian) Copula MC samples
 #'
-#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_MC_samples`, `n_features`) containing samples from the
-#' univariate standard normal.
-#' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
-#' to explain on the original scale.
-#' @param x_explain_gaussian_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the
-#' observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
-#' transformed to a standardized normal distribution.
-#' @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
-#' @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
-#' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
-#' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
-#' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
+#' @param x_explain_gaussian_mat arma::mat.
+#' Matrix of dimension (`n_explain`, `n_features`) containing the observations to explain after being transformed
 #' using the Gaussian transform, i.e., the samples have been transformed to a standardized normal distribution.
-#' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
-#' between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
-#' transformed to a standardized normal distribution.
+#' @param x_train_mat arma::mat.
+#' Matrix of dimension (`n_train`, `n_features`) containing the training observations.
+#' @param mu arma::vec.
+#' Vector of length `n_features` containing the mean of each feature after being transformed using the Gaussian
+#' transform, i.e., the samples have been transformed to a standardized normal distribution.
+#' @param cov_mat arma::mat.
+#' Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance between all pairs of features
+#' after being transformed using the Gaussian transform, i.e., the samples have been transformed to a standardized
+#' normal distribution.
 #'
 #' @return An arma::cube/3D array of dimension (`n_MC_samples`, `n_explain` * `n_coalitions`, `n_features`), where
 #' the columns (_,j,_) are matrices of dimension (`n_MC_samples`, `n_features`) containing the conditional Gaussian
 #' copula MC samples for each explicand and coalition on the original scale.
 #'
-#' @export
+#' @inheritParams prepare_data_gaussian_cpp
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat) {
@@ -140,28 +147,8 @@ prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gau
 
 #' Generate (Gaussian) Copula MC samples for the causal setup with a single MC sample for each explicand
 #'
-#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing samples from the
-#' univariate standard normal. The i'th row will be applied to the i'th row in `x_explain_mat`.
-#' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations to
-#' explain on the original scale. The MC sample for the i'th explicand is based on the i'th row in `MC_samples_mat`.
-#' @param x_explain_gaussian_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the
-#' observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
-#' transformed to a standardized normal distribution.
-#' @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
-#' @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
-#' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
-#' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
-#' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
-#' using the Gaussian transform, i.e., the samples have been transformed to a standardized normal distribution.
-#' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
-#' between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
-#' transformed to a standardized normal distribution.
+#' @inherit prepare_data_copula_cpp
 #'
-#' @return An arma::mat/2D array of dimension (`n_explain` * `n_coalitions`, `n_features`),
-#' where the rows (n_explain * S_ind, n_explain * (S_ind + 1) - 1) contains the single
-#' conditional Gaussian MC samples for each explicand and `S_ind` coalition.
-#'
-#' @export
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_copula_cpp_caus <- function(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat) {
@@ -170,22 +157,23 @@ prepare_data_copula_cpp_caus <- function(MC_samples_mat, x_explain_mat, x_explai
 
 #' Generate Gaussian MC samples
 #'
-#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_MC_samples`, `n_features`) containing samples from the
-#' univariate standard normal.
-#' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
-#' to explain.
-#' @param S arma::mat. Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of
-#' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
-#' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
-#' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature.
-#' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
-#' between all pairs of features.
+#' @param MC_samples_mat arma::mat.
+#' Matrix of dimension (`n_MC_samples`, `n_features`) containing samples from the univariate standard normal.
+#' @param x_explain_mat arma::mat.
+#' Matrix of dimension (`n_explain`, `n_features`) containing the observations to explain.
+#' @param S arma::mat.
+#' Matrix of dimension (`n_coalitions`, `n_features`) containing binary representations of the used coalitions.
+#' S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+#' This is not a problem internally in shapr as the empty and grand coalitions are treated differently.
+#' @param mu arma::vec.
+#' Vector of length `n_features` containing the mean of each feature.
+#' @param cov_mat arma::mat.
+#' Matrix of dimension (`n_features`, `n_features`) containing the covariance matrix of the features.
 #'
 #' @return An arma::cube/3D array of dimension (`n_MC_samples`, `n_explain` * `n_coalitions`, `n_features`), where
 #' the columns (_,j,_) are matrices of dimension (`n_MC_samples`, `n_features`) containing the conditional Gaussian
 #' MC samples for each explicand and coalition.
 #'
-#' @export
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_gaussian_cpp <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
@@ -194,22 +182,8 @@ prepare_data_gaussian_cpp <- function(MC_samples_mat, x_explain_mat, S, mu, cov_
 
 #' Generate Gaussian MC samples for the causal setup with a single MC sample for each explicand
 #'
-#' @param MC_samples_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing samples from the
-#' univariate standard normal. The i'th row will be applied to the i'th row in `x_explain_mat`.
-#' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
-#' to explain. The MC sample for the i'th explicand is based on the i'th row in `MC_samples_mat`
-#' @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
-#' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
-#' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
-#' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature.
-#' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
-#' between all pairs of features.
 #'
-#' @return An arma::mat/2D array of dimension (`n_explain` * `n_coalitions`, `n_features`),
-#' where the rows (n_explain * S_ind, n_explain * (S_ind + 1) - 1) contains the single
-#' conditional Gaussian MC samples for each explicand and `S_ind` coalition.
-#'
-#' @export
+#' @inherit prepare_data_gaussian_cpp
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_gaussian_cpp_caus <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
@@ -220,53 +194,47 @@ prepare_data_gaussian_cpp_caus <- function(MC_samples_mat, x_explain_mat, S, mu,
 #'
 #' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
 #'
-#' @param featureList List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
-#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
-#' \code{diag(m)} gives the Euclidean distance.
-#' @param S_scale_dist Logical indicating
+#' @param featureList List.
+#' Contains the vectors indicating all factor combinations that should be included in the computations.
+#' Assumes that the first one is empty.
 #' @param Xtrain_mat Matrix
-#' @param Xtest_mat Matrix
+#' Training data in matrix form
+#' @param Xexplain_mat Matrix
+#' Explanation data in matrix form.
 #'
-#' @export
+#' @inheritParams hat_matrix_cpp
 #' @keywords internal
 #'
 #' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 #' @author Martin Jullum
-mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist) {
-    .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
-}
-
-#' @keywords internal
-sample_features_cpp <- function(m, n_features) {
-    .Call(`_shapr_sample_features_cpp`, m, n_features)
+mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xexplain_mat, mcov, S_scale_dist) {
+    .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xexplain_mat, mcov, S_scale_dist)
 }
 
 #' We here return a vector of strings/characters, i.e., a CharacterVector,
 #' where each string is a space-separated list of integers.
-#' @param m Integer The number of elements to sample from, i.e., the number of features.
-#' @param n_features IntegerVector The number of features to sample for each feature combination.
-#' @param paired_shap_sampling Logical Should we return both the sampled coalition S and its complement Sbar.
+#'
+#' @param n_coalitions IntegerVector.
+#' The number of features to sample for each feature combination.
+#' @inheritParams create_coalition_table
 #' @keywords internal
-sample_features_cpp_str_paired <- function(m, n_features, paired_shap_sampling = TRUE) {
-    .Call(`_shapr_sample_features_cpp_str_paired`, m, n_features, paired_shap_sampling)
+sample_coalitions_cpp_str_paired <- function(m, n_coalitions, paired_shap_sampling = TRUE) {
+    .Call(`_shapr_sample_coalitions_cpp_str_paired`, m, n_coalitions, paired_shap_sampling)
 }
 
 #' Get imputed data
 #'
-#' @param index_xtrain Positive integer. Represents a sequence of row indices from \code{xtrain},
-#' i.e. \code{min(index_xtrain) >= 1} and \code{max(index_xtrain) <= nrow(xtrain)}.
+#' @param index_xtrain Positive integer. Represents a sequence of row indices from \code{x_train},
+#' i.e. \code{min(index_xtrain) >= 1} and \code{max(index_xtrain) <= nrow(x_train)}.
 #'
 #' @param index_s Positive integer. Represents a sequence of row indices from \code{S},
 #' i.e. \code{min(index_s) >= 1} and \code{max(index_s) <= nrow(S)}.
 #'
-#' @param xtrain Numeric matrix.
+#' @param x_explain Matrix with 1 row.
+#' Contains the features of the observation for a single prediction.
 #'
-#' @param xtest Numeric matrix. Represents a single test observation.
-#'
-#' @param S Integer matrix of dimension \code{n_coalitions x m}, where \code{n_coalitions} equals
-#' the total number of sampled/non-sampled feature combinations and \code{m} equals
-#' the total number of unique features. Note that \code{m = ncol(xtrain)}. See details
-#' for more information.
+#' @param x_train Matrix.
+#' Contains the training data.
 #'
 #' @details \code{S(i, j) = 1} if and only if feature \code{j} is present in feature
 #' combination \code{i}, otherwise \code{S(i, j) = 0}. I.e. if \code{m = 3}, there
@@ -276,31 +244,33 @@ sample_features_cpp_str_paired <- function(m, n_features, paired_shap_sampling =
 #' the following is true: \code{S[2, 1:3] = c(1, 1, 0)}.
 #'
 #' The returned object, \code{X}, is a numeric matrix where
-#' \code{dim(X) = c(length(index_xtrain), ncol(xtrain))}. If feature \code{j} is present in
-#' the k-th observation, that is \code{S[index_[k], j] == 1}, \code{X[k, j] = xtest[1, j]}.
-#' Otherwise \code{X[k, j] = xtrain[index_xtrain[k], j]}.
+#' \code{dim(X) = c(length(index_xtrain), ncol(x_train))}. If feature \code{j} is present in
+#' the k-th observation, that is \code{S[index_[k], j] == 1}, \code{X[k, j] = x_explain[1, j]}.
+#' Otherwise \code{X[k, j] = x_train[index_xtrain[k], j]}.
 #'
-#' @export
+#'
+#' @inheritParams prepare_data_gaussian_cpp
 #' @keywords internal
 #'
 #' @return Numeric matrix
 #'
 #' @author Nikolai Sellereite
-observation_impute_cpp <- function(index_xtrain, index_s, xtrain, xtest, S) {
-    .Call(`_shapr_observation_impute_cpp`, index_xtrain, index_s, xtrain, xtest, S)
+observation_impute_cpp <- function(index_xtrain, index_s, x_train, x_explain, S) {
+    .Call(`_shapr_observation_impute_cpp`, index_xtrain, index_s, x_train, x_explain, S)
 }
 
 #' Calculate weight matrix
 #'
-#' @param coalitions List. Each of the elements equals an integer
-#' vector representing a valid combination of features/feature groups.
-#' @param m Integer. Number of features/feature groups
-#' @param n Integer. Number of combinations
-#' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
-#' the Shapley weight of feature/feature group combination \code{i}, represented by
-#' \code{coalitions[[i]]}.
+#' @param coalitions List.
+#' Each of the elements equals an integer vector representing a valid combination of features/feature groups.
+#' @param m Integer.
+#' Number of features/feature groups.
+#' @param n Integer.
+#' Number of combinations.
+#' @param w Numeric vector
+#' Should have length \code{n}. \code{w[i]} equals the Shapley weight of feature/feature group combination \code{i},
+#' represented by \code{coalitions[[i]]}.
 #'
-#' @export
 #' @keywords internal
 #'
 #' @return Matrix of dimension n x m + 1
@@ -311,11 +281,11 @@ weight_matrix_cpp <- function(coalitions, m, n, w) {
 
 #' Get coalition matrix
 #'
-#' @param coalitions List
-#' @param m Positive integer. Total number of coalitions
+#' @inheritParams weight_matrix_cpp
 #'
 #' @export
 #' @keywords internal
+#'
 #'
 #' @return Matrix
 #' @author Nikolai Sellereite, Martin Jullum

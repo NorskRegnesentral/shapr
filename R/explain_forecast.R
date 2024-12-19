@@ -1,4 +1,4 @@
-#' Explain a forecast from a time series model using Shapley values.
+#' Explain a forecast from time series models with dependence-aware (conditional/observational) Shapley values
 #'
 #' @description Computes dependence-aware Shapley values for observations in `explain_idx` from the specified
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
@@ -13,15 +13,15 @@
 #' Contains the exogenous variables used to estimate the (conditional) distributions
 #' needed to properly estimate the conditional expectations in the Shapley formula
 #' including the observations to be explained.
-#' As exogenous variables are used contemporaneusly when producing a forecast,
+#' As exogenous variables are used contemporaneously when producing a forecast,
 #' this item should contain nrow(y) + horizon rows.
 #'
-#' @param train_idx Numeric vector
+#' @param train_idx Numeric vector.
 #' The row indices in data and reg denoting points in time to use when estimating the conditional expectations in
 #' the Shapley value formula.
 #' If `train_idx = NULL` (default) all indices not selected to be explained will be used.
 #'
-#' @param explain_idx Numeric vector
+#' @param explain_idx Numeric vector.
 #' The row indices in data and reg denoting points in time to explain.
 #'
 #' @param explain_y_lags Numeric vector.
@@ -37,16 +37,15 @@
 #' If `TRUE` all lags of each variable are grouped together and explained as a group.
 #' If `FALSE` all lags of each variable are explained individually.
 #'
-#' @inheritParams explain
 #' @inherit explain return author references
-#' @inheritDotParams setup_approach.empirical
-#' @inheritDotParams setup_approach.independence
-#' @inheritDotParams setup_approach.gaussian
+#' @inheritDotParams setup_approach.categorical
 #' @inheritDotParams setup_approach.copula
 #' @inheritDotParams setup_approach.ctree
-#' @inheritDotParams setup_approach.vaeac
-#' @inheritDotParams setup_approach.categorical
+#' @inheritDotParams setup_approach.empirical
+#' @inheritDotParams setup_approach.gaussian
+#' @inheritDotParams setup_approach.independence
 #' @inheritDotParams setup_approach.timeseries
+#' @inheritDotParams setup_approach.vaeac
 #'
 #' @details This function explains a forecast of length `horizon`. The argument `train_idx`
 #' is analogous to x_train in `explain()`, however, it just contains the time indices of where
@@ -105,7 +104,7 @@ explain_forecast <- function(model,
                              predict_model = NULL,
                              get_model_specs = NULL,
                              verbose = "basic",
-                             ...) { # ... is further arguments passed to specific approaches
+                             ...) {
   init_time <- Sys.time()
 
   if (!is.null(seed)) {
@@ -242,22 +241,13 @@ explain_forecast <- function(model,
 
 #' Set up data for explain_forecast
 #'
-#' @param y A matrix or numeric vector containing the endogenous variables for the model.
-#' One variable per column, one observation per row.
-#' @param xreg A matrix containing exogenous regressors for the model.
-#' One variable per column, one observation per row. Should have nrow(data) + horizon rows.
-#' @param train_idx The observations indices in data to use as training examples.
-#' @param explain_idx The observations indices in data to explain.
-#' @param explain_y_lags Numeric vector
-#' Indicates the number of lags of y to include in the explanation.
-#' @param explain_xreg_lags Numeric vector
-#' Indicates the number of lags of xreg to include in the explanation.
-#' @param horizon The forecast horizon to explain.
+#' @inheritParams explain_forecast
 #'
 #' @return A list containing
 #' - The data.frames x_train and x_explain which holds the lagged data examples.
 #' - A numeric, n_endo denoting how many columns are endogenous in x_train and x_explain.
 #' - A list, group with groupings of each variable to explain per variable and not per variable and lag.
+#' @keywords internal
 get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon) {
   # Check data object type
   stop_message <- ""
@@ -368,6 +358,7 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
 #' @return A list with two items
 #' - A matrix, lagged with the lagged data.
 #' - A list, group, with groupings of the lagged data per variable.
+#' @keywords internal
 lag_data <- function(x, lags) {
   lagged_obs <- nrow(x) - max(lags) + 1
   lagged <- matrix(NA, lagged_obs, 0)
@@ -390,8 +381,8 @@ lag_data <- function(x, lags) {
 
 #' Set up exogenous regressors for explanation in a forecast model.
 #'
+#' @inheritParams explain_forecast
 #' @param x A matrix with the exogenous variables.
-#' @param horizon The forecast horizon.
 #' @param group The list of endogenous groups, to append exogenous groups to.
 #'
 #' @return A list containing

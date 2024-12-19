@@ -65,7 +65,8 @@ documentation and see examples with `?function_name`.
 | `explain`          | Computes kernel SHAP values for test data.                                                |
 | `explain_forecast` | Analogous to `explain`, but for explaining forecasts from time series models.             |
 | `plot.shapr`       | Plots the individual prediction explanations. Uses the `ggplot` and `ggbeeswarm` package. |
-
+| `plot_SV_several_approaches` | Compare the individual prediction explanations obtained from different approaches. |
+| `plot_MSEv_eval_crit` | Plots the $\operatorname{MSE}_{v}$ criterion to evaluate the performance of the approach. |
 : Main functions in the `shapr` package.
 
 The `shapr` package implements Kernel SHAP estimation of dependence-aware Shapley values with
@@ -609,7 +610,7 @@ is often more important for the outcome than the single time points.
 Therefore, it makes sense to derive Shapley value segments of the time
 series instead of for each single time point. In `shapr` this can be
 achieved through the `group` attribute. Other optional parameters of
-`approach='timeseries'` are `timeseries.fixed_sigma_vec` and
+`approach='timeseries'` are `timeseries.fixed_sigma` and
 `timeseries.bounds` (a vector indicating upper and lower bounds of the
 time series if necessary).
 

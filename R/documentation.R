@@ -13,18 +13,47 @@
 #' The prediction function used when `model` is not natively supported.
 #' See the documentation of [explain()] for details.
 #'
-#' @param output_size TODO: Document
-#' @param extra TODO: Document
+#' @param x_explain Data.table with the features of the observation whose
+#' predictions ought to be explained (test data).
+#'
+#' @param x_train Data.table with training data.
+#'
+#' @param n_features Positive integer.
+#' The number of features.
+#'
+#' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
+#' observations for all coalitions. The dimension equals `n_train x m`.
+#'
+#' @param S Integer matrix of dimension `n_coalitions x m`, where `n_coalitions`
+#' and `m` equals the total number of sampled/non-sampled coalitions and
+#' the total number of unique features, respectively. Note that `m = ncol(x_train)`.
+#'
+#' @param dt_vS Data.table of dimension `n_coalitions` times `n_explain + 1` containing the contribution function
+#' estimates. The first column is assumed to be named `id_coalition` and containing the ids of the coalitions.
+#' The last row is assumed to be the full coalition, i.e., it contains the predicted responses for the observations
+#' which are to be explained.
+#'
+#' @param output_size Scalar integer.
+#' Specifies the dimension of the output from the prediction model for every observation.
 #'
 #' @param ... Further arguments passed to `approach`-specific functions.
 #'
-#' @return List `internal`
+#' @return The `internal` list.
 #' It holds all parameters, data, and computed objects used within [explain()].
-#' The list contains one or more of the elements `parameters`, `data`, `objects`, `output`.
 #'
 #'
 #' @keywords internal
-default_doc <- function(internal, model, predict_model, output_size, extra, ...) {
+default_doc_internal <- function(internal,
+                                 model,
+                                 predict_model,
+                                 x_explain,
+                                 x_train,
+                                 n_features,
+                                 W_kernel,
+                                 S,
+                                 dt_vS,
+                                 output_size,
+                                 ...) {
   NULL
 }
 
@@ -41,31 +70,6 @@ default_doc <- function(internal, model, predict_model, output_size, extra, ...)
 #' apply to the present method. `NULL` means all coalitions. Only used internally.
 #'
 #' @keywords internal
-default_doc_explain <- function(internal, iter, index_features) {
-  NULL
-}
-
-
-#' Documentation of the approach-specific parameters in [shapr::explain()]
-#'
-#' @description
-#' This helper function displays the specific arguments applicable to the different
-#' approaches. Note that when calling [shapr::explain()] from Python, the parameters
-#' are renamed from the `approach.parameter_name` to `approach_parameter_name`.
-#' That is, an underscore has replaced the dot as the dot is reserved in Python.
-#'
-#' @inheritDotParams setup_approach.independence -internal
-#' @inheritDotParams setup_approach.empirical -internal -predict_model -model
-#' @inheritDotParams setup_approach.categorical -internal
-#' @inheritDotParams setup_approach.copula -internal
-#' @inheritDotParams setup_approach.ctree -internal
-#' @inheritDotParams setup_approach.gaussian -internal
-#' @inheritDotParams setup_approach.regression_separate -internal
-#' @inheritDotParams setup_approach.regression_surrogate -internal
-#' @inheritDotParams setup_approach.timeseries -internal
-#' @inheritDotParams setup_approach.vaeac -internal
-#'
-#' @author Lars Henry Berge Olsen and Martin Jullum
-explain_tripledot_docs <- function(...) {
+default_doc_export <- function(internal, iter, index_features) {
   NULL
 }

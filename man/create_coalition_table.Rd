@@ -54,12 +54,12 @@ coalitions and only use the coalitions up to this point and throw away the remai
 A list mapping each coalition to the features it contains.}
 
 \item{approach0}{Character vector.
-Contains the approach to be used for estimation of each coalition size. Same as \code{approach} in \code{explain()}.}
+Contains the approach to be used for eastimation of each coalition size. Same as \code{approach} in \code{\link[=explain]{explain()}}.}
 
 \item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
-the randomness and thereby the variance of the Shapley value estimates.
-One of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
 \code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
 \code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
 \code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
@@ -67,26 +67,29 @@ probabilities.
 \code{'on_all'} means the original sampling probabilities are used for all coalitions.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
-This method is preferred as it has performed the best in simulation studies.}
+\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
 
 \item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
 values explanations, and is \code{NULL} for symmetric Shapley values.
 The data.table contains information about the coalitions that respects the causal ordering.}
 }
 \value{
-A data.table with columns about the that contains the following columns:
+A data.table with info about the coaltions to use
 }
 \description{
 Define coalitions, and fetch additional information about each unique coalition
 }
 \examples{
+\dontrun{
 # All coalitions
 x <- create_coalition_table(m = 3)
 nrow(x) # Equals 2^3 = 8
 
 # Subsample of coalitions
-x <- create_coalition_table(exact = FALSE, m = 10, n_coalitions = 1e2)
+x <- shapr:::create_coalition_table(m = 10, exact = FALSE, n_coalitions = 1e2)
+}
 }
 \author{
 Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen
 }
+\keyword{internal}
