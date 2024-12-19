@@ -31,7 +31,7 @@ compute_estimates <- function(internal, vS_list) {
   }
 
   # Compute the Shapley values
-  dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+  dt_shapley_est <- compute_shapley(internal, processed_vS_list$dt_vS)
 
   internal$timing_list$compute_shapley <- Sys.time()
 
@@ -122,7 +122,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 #' @return A `data.table` with Shapley values for each test observation.
 #' @export
 #' @keywords internal
-compute_shapley_new <- function(internal, dt_vS) {
+compute_shapley <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
   type <- internal$parameters$type
 
@@ -169,7 +169,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 }
 
 #' @keywords internal
-bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
+bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
   iter <- length(internal$iter_list)
   type <- internal$parameters$type
   is_groupwise <- internal$parameters$is_groupwise
@@ -189,24 +189,22 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
       }
       dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
       dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
-      result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps, seed)
+      result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps)
     }
     result <- cbind(internal$parameters$output_labels, rbindlist(result, fill = TRUE))
   } else {
     X <- internal$iter_list[[iter]]$X
     n_shapley_values <- internal$parameters$n_shapley_values
     shap_names <- internal$parameters$shap_names
-    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps, seed)
+    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps)
   }
   return(result)
 }
 
 #' @keywords internal
-bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100, seed = 123) {
+bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100) {
   type <- internal$parameters$type
   iter <- length(internal$iter_list)
-
-  set.seed(seed)
 
   n_explain <- internal$parameters$n_explain
   paired_shap_sampling <- internal$parameters$paired_shap_sampling

@@ -4,13 +4,15 @@
 \alias{print.shapr}
 \title{Print method for shapr objects}
 \usage{
-\method{print}{shapr}(x, digits = 4)
+\method{print}{shapr}(x, digits = 4, ...)
 }
 \arguments{
 \item{x}{A shapr object}
 
 \item{digits}{Scalar Integer.
 Number of digits to display to the console}
+
+\item{...}{Unused}
 }
 \description{
 Print method for shapr objects

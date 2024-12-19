@@ -1514,7 +1514,7 @@ temp_shapley_value_func = function(dt, internal, model, predict_model) {
   dt_vS <- rbind(t(as.matrix(c(1, rep(phi0, n_test)))), dt_vS2, t(as.matrix(c(2^M, response_test))),
                  use.names = FALSE)
   colnames(dt_vS) = colnames(dt_vS2)
-  compute_shapley_new(internal, dt_vS)
+  compute_shapley(internal, dt_vS)
 }
 
 # Compute the Shapley values
