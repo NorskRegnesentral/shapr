@@ -19,6 +19,7 @@
 
 # shapr 1.0.0 (GitHub only)
 
+
 ### Breaking changes
 
 * Moved from explaining predictions using *two* functions (`shapr()` for initial setup + `explain()` for explanation for specific observations), to a *single* function call (also named `explain()`). The data used for training and to be explained have gotten explicit names (`x_train` and `x_explain`). The order of the input arguments has also been slightly changed (`model` is now the first argument).
