@@ -153,7 +153,8 @@
       "prob",
       "shapley_weight_norm",
       "L",
-      "N_S"
+      "N_S",
+      "paired_shap_sampling"
     )
   )
 
