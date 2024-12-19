@@ -305,12 +305,12 @@ expl_paired_sampling_FALSE <- explain(
 ```
 
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
-We do this by using the `vaeac_plot_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
+We do this by using the `plot_vaeac_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
 respectively.
 ```{r paired-sampling-plotting, cache = TRUE}
 explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE,
                          "Paired samp." = expl_paired_sampling_TRUE)
-vaeac_plot_eval_crit(explanation_list, plot_type = "criterion")
+plot_vaeac_eval_crit(explanation_list, plot_type = "criterion")
 plot_MSEv_eval_crit(explanation_list)
 ```
 
@@ -384,7 +384,7 @@ as illustrated above. Note that we have set the number of `vaeac.epochs` to be v
 recommend to use many more epochs.
 
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
-We do this by using the `vaeac_plot_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
+We do this by using the `plot_vaeac_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
 respectively. We also use the `vaeac_plot_imputed_ggpairs()` function which generates samples from $p(x)$, this
 is ment as a sanity check to see that the `vaeac` model is able to follow the general structure/distribution of the
 data. However, recall that the `vaeac` model is never trained on the empty coalition, so the produced samples should be taken with a grain of salt.
@@ -402,7 +402,7 @@ expl_little_training <- explain(
 )
 
 # Look at the training and validation errors. Not happy and want to train more.
-vaeac_plot_eval_crit(list("Original" = expl_little_training), plot_type = "method")
+plot_vaeac_eval_crit(list("Original" = expl_little_training), plot_type = "method")
 # Can also see how well vaeac generates data from the full joint distribution. Quite good.
 vaeac_plot_imputed_ggpairs(
   explanation = expl_little_training,
@@ -432,7 +432,7 @@ expl_train_more_vaeac <- explain(
 )
 
 # Look at the training and validation errors and conclude that we want to train some more
-vaeac_plot_eval_crit(
+plot_vaeac_eval_crit(
   list("Original" = expl_little_training, "More epochs" = expl_train_more),
   plot_type = "method"
 )
@@ -459,7 +459,7 @@ expl_train_even_more_vaeac <- explain(
 )
 
 # Look at the training and validation errors.
-vaeac_plot_eval_crit(
+plot_vaeac_eval_crit(
   list(
     "Original" = expl_little_training,
     "More epochs" = expl_train_more,
@@ -515,7 +515,7 @@ expl_early_stopping <- explain(
 )
 
 # Look at the training and validation errors. We are quite happy with it.
-vaeac_plot_eval_crit(
+plot_vaeac_eval_crit(
   list("Vaeac early stopping" = expl_early_stopping),
   plot_type = "method"
 )
@@ -547,7 +547,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
   )
 
 # Look at the training and validation errors. We see some improvement
-vaeac_plot_eval_crit(
+plot_vaeac_eval_crit(
   list(
     "Vaeac early stopping" = expl_early_stopping,
     "Vaeac early stopping more epochs" = expl_early_stopping_train_more
@@ -687,7 +687,7 @@ expl_vaeac_without <- explain(
 )
 
 # We see that the `vaeac` model without the skip connections perform worse
-vaeac_plot_eval_crit(
+plot_vaeac_eval_crit(
   list(
     "Vaeac w.o. skip-con." = expl_vaeac_without,
     "Vaeac w. skip-con." = expl_vaeac_with
