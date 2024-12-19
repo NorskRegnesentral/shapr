@@ -88,27 +88,30 @@
       i Using 10 of 512 coalitions, 10 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
-      i Using 30 of 512 coalitions, 4 new. 
+      i Using 60 of 512 coalitions, 50 new. 
       
       -- Iteration 3 -----------------------------------------------------------------
-      i Using 78 of 512 coalitions, 6 new. 
+      i Using 106 of 512 coalitions, 46 new. 
+      
+      -- Iteration 4 -----------------------------------------------------------------
+      i Using 150 of 512 coalitions, 44 new. 
     Output
-         explain_idx horizon  none Temp.1  Temp.2 Temp.3 Wind.1  Wind.2  Wind.3
-               <int>   <int> <num>  <num>   <num>  <num>  <num>   <num>   <num>
-      1:         149       1 77.88 -2.795 -4.5597 -1.114  1.564 -1.8995  0.2087
-      2:         150       1 77.88  4.024 -0.5774 -4.589 -2.234  0.1985 -2.2827
-      3:         149       2 77.88 -3.701 -4.2427 -1.326  1.465 -1.9227  0.7060
-      4:         150       2 77.88  3.460 -0.9158 -5.264 -2.452  0.7709 -1.7864
-      5:         149       3 77.88 -4.721 -3.4208 -1.503  1.172 -0.4564 -0.6058
-      6:         150       3 77.88  2.811  0.4206 -5.361 -1.388  0.0752 -0.2130
+         explain_idx horizon  none Temp.1  Temp.2 Temp.3  Wind.1  Wind.2  Wind.3
+               <int>   <int> <num>  <num>   <num>  <num>   <num>   <num>   <num>
+      1:         149       1 77.88 -3.335 -4.2630 -1.527  1.7674 -1.6361  0.3304
+      2:         150       1 77.88  3.767 -0.4812 -4.734 -2.0593  0.8002 -2.4860
+      3:         149       2 77.88 -2.925 -4.0802 -1.061  0.7282 -2.1425  1.3892
+      4:         150       2 77.88  3.304 -0.8942 -5.255 -2.3629  1.1470 -2.1038
+      5:         149       3 77.88 -4.167 -4.7628 -1.615  1.2049 -0.8727  1.4791
+      6:         150       3 77.88  2.777 -0.7697 -5.938 -0.9178  0.5417 -0.9851
          Wind.F1 Wind.F2 Wind.F3
            <num>   <num>   <num>
-      1: -1.9118      NA      NA
-      2: -0.1747      NA      NA
-      3: -1.1883 -0.6744      NA
-      4:  0.7128  1.9982      NA
-      5: -1.5436 -0.5418  2.8952
-      6: -0.6202 -0.8545  0.4549
+      1: -1.8441      NA      NA
+      2: -0.4417      NA      NA
+      3: -2.1499 -0.6431      NA
+      4:  1.0132  1.6761      NA
+      5: -0.7669 -0.2837 1.05906
+      6:  0.3650  0.2094 0.04183
 
 # forecast_output_arima_numeric_iterative_groups
 
@@ -118,31 +121,35 @@
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_groups = 16, 
+      and is therefore set to 2^n_groups = 16.
+      
       * Model class: <Arima>
       * Approach: empirical
       * Iterative estimation: TRUE
-      * Number of group-wise Shapley values: 10
+      * Number of group-wise Shapley values: 4
       * Number of observations to explain: 2
       
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 10 of 1024 coalitions, 10 new. 
+      i Using 10 of 16 coalitions, 10 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
-      i Using 28 of 1024 coalitions, 2 new. 
+      i Using 12 of 16 coalitions, 2 new. 
       
       -- Iteration 3 -----------------------------------------------------------------
-      i Using 56 of 1024 coalitions, 12 new. 
+      i Using 14 of 16 coalitions, 2 new. 
     Output
-         explain_idx horizon  none   Temp    Wind Solar.R  Ozone
-               <int>   <int> <num>  <num>   <num>   <num>  <num>
-      1:         149       1 77.88 -4.680 -3.6712  0.3230 -1.253
-      2:         150       1 77.88 -2.487 -3.6317  1.8415 -0.891
-      3:         149       2 77.88 -6.032 -4.1973  2.5973 -2.402
-      4:         150       2 77.88 -3.124  0.1986  0.8258 -2.245
-      5:         149       3 77.88 -7.777  1.1382  0.6962 -3.267
-      6:         150       3 77.88 -3.142 -1.6674  2.9047 -2.024
+         explain_idx horizon  none   Temp    Wind Solar.R   Ozone
+               <int>   <int> <num>  <num>   <num>   <num>   <num>
+      1:         149       1 77.88 -3.896 -4.2285 -0.3807 -0.7759
+      2:         150       1 77.88 -2.011 -3.9476  1.4200 -0.6295
+      3:         149       2 77.88 -6.503 -4.5272  2.9701 -1.9733
+      4:         150       2 77.88 -3.574 -0.2358  1.2984 -1.8324
+      5:         149       3 77.88 -7.544  0.9077  0.9121 -3.4847
+      6:         150       3 77.88 -2.887 -1.9034  3.1385 -2.2767
 
 # forecast_output_arima_numeric_no_xreg
 
@@ -184,18 +191,18 @@
       Consistency checks between model and data is therefore disabled.
       
       Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_groups = 16, 
-      and is therefore set to 2^n_groups = 16.
+      max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
+      and is therefore set to 2^n_groups = 4.
       
       * Model class: <forecast_ARIMA/ARIMA/Arima>
       * Approach: empirical
       * Iterative estimation: FALSE
-      * Number of group-wise Shapley values: 4
+      * Number of group-wise Shapley values: 2
       * Number of observations to explain: 2
       
       -- Main computation started --
       
-      i Using 16 of 16 coalitions. 
+      i Using 4 of 4 coalitions. 
     Output
          explain_idx horizon  none    Temp   Wind
                <int>   <int> <num>   <num>  <num>

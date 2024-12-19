@@ -191,7 +191,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
       dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
       result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps, seed)
     }
-    result <- rbindlist(result, fill = TRUE)
+    result <- cbind(internal$parameters$output_labels, rbindlist(result, fill = TRUE))
   } else {
     X <- internal$iter_list[[iter]]$X
     n_shapley_values <- internal$parameters$n_shapley_values
