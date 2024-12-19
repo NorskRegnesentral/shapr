@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -143,21 +143,6 @@ A list mapping each coalition to the features it contains.</p></dd>
 <dt id="arg-approach-">approach0<a class="anchor" aria-label="anchor" href="#arg-approach-"></a></dt>
 <dd><p>Character vector.
 Contains the approach to be used for eastimation of each coalition size. Same as <code>approach</code> in <code><a href="explain.html">explain()</a></code>.</p></dd>
-
-
-<dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>
-<dd><p>String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
-The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
-The options are one of <code>'none'</code>, <code>'on_N'</code>, <code>'on_all'</code>, <code>'on_all_cond'</code> (default).
-<code>'none'</code> means no reweighting, i.e. the sampling frequency weights are used as is.
-<code>'on_coal_size'</code> means the sampling frequencies are averaged over all coalitions of the same size.
-<code>'on_N'</code> means the sampling frequencies are averaged over all coalitions with the same original sampling
-probabilities.
-<code>'on_all'</code> means the original sampling probabilities are used for all coalitions.
-<code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once.
-<code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see Olsen &amp; Jullum (2024).</p></dd>
 
 
 <dt id="arg-dt-valid-causal-coalitions">dt_valid_causal_coalitions<a class="anchor" aria-label="anchor" href="#arg-dt-valid-causal-coalitions"></a></dt>

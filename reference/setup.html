@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -73,7 +73,6 @@
 <span>  <span class="va">x_train</span>,</span>
 <span>  <span class="va">x_explain</span>,</span>
 <span>  <span class="va">approach</span>,</span>
-<span>  paired_shap_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">phi0</span>,</span>
 <span>  output_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  <span class="va">max_n_coalitions</span>,</span>
@@ -93,7 +92,6 @@
 <span>  <span class="va">verbose</span>,</span>
 <span>  iterative <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  iterative_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  kernelSHAP_reweighting <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  is_python <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  testing <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  init_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -128,13 +126,6 @@ All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <
 <code>"categorical"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or <code>"regression_surrogate"</code>.
 The two regression approaches can not be combined with any other approach.
 See details for more information.</p></dd>
-
-
-<dt id="arg-paired-shap-sampling">paired_shap_sampling<a class="anchor" aria-label="anchor" href="#arg-paired-shap-sampling"></a></dt>
-<dd><p>Logical.
-If <code>TRUE</code> (default), paired versions of all sampled coalitions are also included in the computation.
-That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
-computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.</p></dd>
 
 
 <dt id="arg-phi-">phi0<a class="anchor" aria-label="anchor" href="#arg-phi-"></a></dt>
@@ -290,21 +281,6 @@ Specifics related to the iterative process and convergence criterion are set thr
 <dd><p>Named list.
 Specifices the arguments for the iterative procedure.
 See <code><a href="get_iterative_args_default.html">get_iterative_args_default()</a></code> for description of the arguments and their default values.</p></dd>
-
-
-<dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>
-<dd><p>String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
-The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
-The options are one of <code>'none'</code>, <code>'on_N'</code>, <code>'on_all'</code>, <code>'on_all_cond'</code> (default).
-<code>'none'</code> means no reweighting, i.e. the sampling frequency weights are used as is.
-<code>'on_coal_size'</code> means the sampling frequencies are averaged over all coalitions of the same size.
-<code>'on_N'</code> means the sampling frequencies are averaged over all coalitions with the same original sampling
-probabilities.
-<code>'on_all'</code> means the original sampling probabilities are used for all coalitions.
-<code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once.
-<code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see Olsen &amp; Jullum (2024).</p></dd>
 
 
 <dt id="arg-is-python">is_python<a class="anchor" aria-label="anchor" href="#arg-is-python"></a></dt>

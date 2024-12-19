@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -64,7 +64,26 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="1.0.0" id="shapr-100">shapr 1.0.0<a class="anchor" aria-label="anchor" href="#shapr-100"></a></h2>
+<h2 class="page-header" data-toc-text="1.0.1" id="shapr-101">shapr 1.0.1<a class="anchor" aria-label="anchor" href="#shapr-101"></a></h2>
+<ul><li>Rename vaeac plotting functions <a href="https://github.com/NorskRegnesentral/shapr/pull/427" class="external-link">#427</a>)</li>
+<li>Move explain() arguments <code>paired_shap_sampling</code> and <code>kernelSHAP_reweighting</code> into <code>extra_computation_args</code> <a href="https://github.com/NorskRegnesentral/shapr/pull/427" class="external-link">#427</a>)</li>
+<li>Improved and unified the documentation <a href="https://github.com/NorskRegnesentral/shapr/pull/427" class="external-link">#427</a>)</li>
+<li>Remove seed argument from the boostrap function as its better handled by the mother function <a href="https://github.com/NorskRegnesentral/shapr/pull/427" class="external-link">#427</a>)</li>
+<li>Renamed various internal functions to be consistent with names in the rest of the package <a href="https://github.com/NorskRegnesentral/shapr/pull/427" class="external-link">#427</a>)</li>
+<li>Remove MSEv from explain_forecast (as it was only supported for horizon=1). Should return in a more general manner in the future <a href="https://github.com/NorskRegnesentral/shapr/pull/427" class="external-link">#427</a>)</li>
+<li>Improve efficiency of coalition sampling code and move to string sampling <a href="https://github.com/NorskRegnesentral/shapr/pull/426" class="external-link">#426</a>)</li>
+<li>Bugfix <code>iterative = TRUE</code> for <code><a href="../reference/explain_forecast.html">explain_forecast()</a></code> which was not using coaltions from previous iterations <a href="https://github.com/NorskRegnesentral/shapr/pull/426" class="external-link">#426</a>)</li>
+<li>Bugfix the handling and output with the <code>verbose</code> argument for <code><a href="../reference/explain_forecast.html">explain_forecast()</a></code> <a href="https://github.com/NorskRegnesentral/shapr/pull/425" class="external-link">#425</a>)</li>
+<li>Improved flexibility of the beeswarm plot functionality <a href="https://github.com/NorskRegnesentral/shapr/pull/424" class="external-link">#424</a>)</li>
+<li>Bugfix edge case where the <code>party</code> package returns a <code>constparty</code> object <a href="https://github.com/NorskRegnesentral/shapr/pull/423" class="external-link">#423</a>)</li>
+<li>Bugfix error due to extra comma in rarely used warning <a href="https://github.com/NorskRegnesentral/shapr/pull/422" class="external-link">#422</a>)</li>
+<li>Shined up the vignettes a bit <a href="https://github.com/NorskRegnesentral/shapr/pull/421" class="external-link">#421</a>)</li>
+<li>Bugfix <code>keep_samp_for_vS</code> with iterative approach <a href="https://github.com/NorskRegnesentral/shapr/pull/417" class="external-link">#417</a>)</li>
+<li>[Python] Brought the python code base up to speed with essentially all functionality in <code><a href="../reference/explain.html">explain()</a></code> in R <a href="https://github.com/NorskRegnesentral/shapr/pull/416" class="external-link">#416</a>)</li>
+<li>
+</li></ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.0.0" id="shapr-100-github-only">shapr 1.0.0 (GitHub only)<a class="anchor" aria-label="anchor" href="#shapr-100-github-only"></a></h2>
 <div class="section level4">
 <h4 id="breaking-changes-1-0-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-0-0"></a></h4>
 <ul><li>Moved from explaining predictions using <em>two</em> functions (<code><a href="../reference/shapr-package.html">shapr()</a></code> for initial setup + <code><a href="../reference/explain.html">explain()</a></code> for explanation for specific observations), to a <em>single</em> function call (also named <code><a href="../reference/explain.html">explain()</a></code>). The data used for training and to be explained have gotten explicit names (<code>x_train</code> and <code>x_explain</code>). The order of the input arguments has also been slightly changed (<code>model</code> is now the first argument).</li>

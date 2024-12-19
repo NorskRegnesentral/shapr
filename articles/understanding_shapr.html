@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -2060,7 +2060,7 @@ likely to few epochs as it still seems like the <code>vaeac</code> model
 is learning.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Look at the training and validation errors.</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_main%2Fvaeac-plot-1-1.png"></p>
 <div class="section level4">
 <h4 id="early-stopping">Early stopping<a class="anchor" aria-label="anchor" href="#early-stopping"></a>
@@ -2115,7 +2115,7 @@ set it so low here to make the vignette faster to build.</p>
 more stable now.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Look at the training and validation errors.</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span>, <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">explanation_vaeac_early_stop</span><span class="op">)</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>

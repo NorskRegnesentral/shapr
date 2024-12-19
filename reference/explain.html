@@ -18,7 +18,7 @@ model by using the method specified in approach to estimate the conditional expe
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -80,9 +80,7 @@ model by using the method specified in approach to estimate the conditional expe
 <span>  iterative <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_n_coalitions <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  paired_shap_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  kernelSHAP_reweighting <span class="op">=</span> <span class="st">"on_all_cond"</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="st">"basic"</span>,</span>
 <span>  predict_model <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -170,13 +168,6 @@ If provided, group wise Shapley values are computed.
 The list element contains character vectors with the features included in each of the different groups.</p></dd>
 
 
-<dt id="arg-paired-shap-sampling">paired_shap_sampling<a class="anchor" aria-label="anchor" href="#arg-paired-shap-sampling"></a></dt>
-<dd><p>Logical.
-If <code>TRUE</code> (default), paired versions of all sampled coalitions are also included in the computation.
-That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
-computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.</p></dd>
-
-
 <dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
 <dd><p>Positive integer.
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
@@ -186,21 +177,6 @@ from the leaf node (see an exception related to the <code>ctree.sample</code> ar
 For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 <code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
-
-
-<dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>
-<dd><p>String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
-The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
-The options are one of <code>'none'</code>, <code>'on_N'</code>, <code>'on_all'</code>, <code>'on_all_cond'</code> (default).
-<code>'none'</code> means no reweighting, i.e. the sampling frequency weights are used as is.
-<code>'on_coal_size'</code> means the sampling frequencies are averaged over all coalitions of the same size.
-<code>'on_N'</code> means the sampling frequencies are averaged over all coalitions with the same original sampling
-probabilities.
-<code>'on_all'</code> means the original sampling probabilities are used for all coalitions.
-<code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once.
-<code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see Olsen &amp; Jullum (2024).</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -643,13 +619,13 @@ model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 14:05:09</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 22:50:17</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp74AYdl/shapr_obj_29213a097c8.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpu2KU5s/shapr_obj_322d6efc2743.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -668,13 +644,13 @@ model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 14:05:13</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 22:50:20</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">gaussian</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp74AYdl/shapr_obj_2921b0634fc.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpu2KU5s/shapr_obj_322d529801fb.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -693,13 +669,13 @@ model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 14:05:13</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 22:50:20</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">copula</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp74AYdl/shapr_obj_29214cfe459e.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpu2KU5s/shapr_obj_322d41b60184.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -718,13 +694,13 @@ model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 14:05:13</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 22:50:20</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">ctree</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp74AYdl/shapr_obj_2921341558ab.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpu2KU5s/shapr_obj_322da7421b6.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -744,13 +720,13 @@ model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 14:05:13</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 22:50:21</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">gaussian</span>, <span style="font-style: italic;">gaussian</span>, and <span style="font-style: italic;">empirical</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp74AYdl/shapr_obj_2921410e1adc.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpu2KU5s/shapr_obj_322d2bb75a89.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -787,13 +763,13 @@ model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_groups = 4, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_groups = 4.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 14:05:15</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 22:50:22</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">group-wise</span> Shapley values: 2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp74AYdl/shapr_obj_29216fd6227f.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpu2KU5s/shapr_obj_322d486f5d9f.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -818,13 +794,13 @@ model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 14:05:16</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 22:50:23</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">regression_separate</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp74AYdl/shapr_obj_2921190a439d.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpu2KU5s/shapr_obj_322d5f012b9.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -842,13 +818,13 @@ model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 14:05:17</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 22:50:24</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">regression_surrogate</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp74AYdl/shapr_obj_29216c22fe60.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpu2KU5s/shapr_obj_322d687debfb.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -872,13 +848,13 @@ model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 14:05:17</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 22:50:24</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">gaussian</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp74AYdl/shapr_obj_2921655f49e.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpu2KU5s/shapr_obj_322d472d6a05.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">iterative computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>

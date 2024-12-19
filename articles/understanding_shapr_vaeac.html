@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -560,13 +560,13 @@ implementation.</p>
 errors and by the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>S</mi><msub><mi>E</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex">MSE_v</annotation></semantics></math>
 evaluation criterion. We do this by using the
-<code><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit()</a></code> and
+<code><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit()</a></code> and
 <code><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit()</a></code> functions in the <code>shapr</code>
 package, respectively.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Regular samp."</span> <span class="op">=</span> <span class="va">expl_paired_sampling_FALSE</span>,</span>
 <span>                         <span class="st">"Paired samp."</span> <span class="op">=</span> <span class="va">expl_paired_sampling_TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list</span>, plot_type <span class="op">=</span> <span class="st">"criterion"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list</span>, plot_type <span class="op">=</span> <span class="st">"criterion"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fpaired-sampling-plotting-1.png"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span></code></pre></div>
@@ -724,10 +724,10 @@ recommend to use many more epochs.</p>
 errors and by the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>S</mi><msub><mi>E</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex">MSE_v</annotation></semantics></math>
 evaluation criterion. We do this by using the
-<code><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit()</a></code> and
+<code><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit()</a></code> and
 <code><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit()</a></code> functions in the <code>shapr</code>
 package, respectively. We also use the
-<code><a href="../reference/vaeac_plot_imputed_ggpairs.html">vaeac_plot_imputed_ggpairs()</a></code> function which generates
+<code><a href="../reference/plot_vaeac_imputed_ggpairs.html">plot_vaeac_imputed_ggpairs()</a></code> function which generates
 samples from
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
 this is ment as a sanity check to see that the <code>vaeac</code> model
@@ -748,11 +748,11 @@ grain of salt.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Look at the training and validation errors. Not happy and want to train more.</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Original"</span> <span class="op">=</span> <span class="va">expl_little_training</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Original"</span> <span class="op">=</span> <span class="va">expl_little_training</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac%2Fcontinue-training-1.png"></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Can also see how well vaeac generates data from the full joint distribution. Quite good.</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_imputed_ggpairs.html">vaeac_plot_imputed_ggpairs</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/plot_vaeac_imputed_ggpairs.html">plot_vaeac_imputed_ggpairs</a></span><span class="op">(</span></span>
 <span>  explanation <span class="op">=</span> <span class="va">expl_little_training</span>,</span>
 <span>  which_vaeac_model <span class="op">=</span> <span class="st">"best"</span>,</span>
 <span>  x_true <span class="op">=</span> <span class="va">x_train</span></span>
@@ -782,7 +782,7 @@ grain of salt.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Look at the training and validation errors and conclude that we want to train some more</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Original"</span> <span class="op">=</span> <span class="va">expl_little_training</span>, <span class="st">"More epochs"</span> <span class="op">=</span> <span class="va">expl_train_more</span><span class="op">)</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -811,7 +811,7 @@ grain of salt.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Look at the training and validation errors.</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Original"</span> <span class="op">=</span> <span class="va">expl_little_training</span>,</span>
 <span>    <span class="st">"More epochs"</span> <span class="op">=</span> <span class="va">expl_train_more</span>,</span>
@@ -822,7 +822,7 @@ grain of salt.</p>
 <p><img src="figure_vaeac%2Fcontinue-training-4.png"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Can also see how well vaeac generates data from the full joint distribution</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_imputed_ggpairs.html">vaeac_plot_imputed_ggpairs</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/plot_vaeac_imputed_ggpairs.html">plot_vaeac_imputed_ggpairs</a></span><span class="op">(</span></span>
 <span>  explanation <span class="op">=</span> <span class="va">expl_train_even_more</span>,</span>
 <span>  which_vaeac_model <span class="op">=</span> <span class="st">"best"</span>,</span>
 <span>  x_true <span class="op">=</span> <span class="va">x_train</span></span>
@@ -911,7 +911,7 @@ validation score for <code>5</code> epochs.</p>
 <span><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.03.10.227966_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span>
 <span></span>
 <span><span class="co"># Look at the training and validation errors. We are quite happy with it.</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">expl_early_stopping</span><span class="op">)</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -944,7 +944,7 @@ a too low value or if the max number of epochs
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Look at the training and validation errors. We see some improvement</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">expl_early_stopping</span>,</span>
 <span>    <span class="st">"Vaeac early stopping more epochs"</span> <span class="op">=</span> <span class="va">expl_early_stopping_train_more</span></span>
@@ -1183,7 +1183,7 @@ default parameters.</p>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># We see that the `vaeac` model without the skip connections perform worse</span></span>
-<span><span class="fu"><a href="../reference/vaeac_plot_eval_crit.html">vaeac_plot_eval_crit</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Vaeac w.o. skip-con."</span> <span class="op">=</span> <span class="va">expl_vaeac_without</span>,</span>
 <span>    <span class="st">"Vaeac w. skip-con."</span> <span class="op">=</span> <span class="va">expl_vaeac_with</span></span>
