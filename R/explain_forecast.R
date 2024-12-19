@@ -95,8 +95,6 @@ explain_forecast <- function(model,
                              phi0,
                              max_n_coalitions = NULL,
                              iterative = NULL,
-                             iterative_args = list(),
-                             kernelSHAP_reweighting = "on_all_cond",
                              group_lags = TRUE,
                              group = NULL,
                              n_MC_samples = 1e3,
@@ -104,6 +102,9 @@ explain_forecast <- function(model,
                              predict_model = NULL,
                              get_model_specs = NULL,
                              verbose = "basic",
+                             extra_computation_args = list(),
+                             iterative_args = list(),
+                             output_args = list(),
                              ...) {
   init_time <- Sys.time()
 
@@ -145,6 +146,9 @@ explain_forecast <- function(model,
     group_lags = group_lags,
     group = group,
     verbose = verbose,
+    extra_computation_args = extra_computation_args,
+    iterative_args = iterative_args,
+    output_args = output_args,
     ...
   )
 
