@@ -151,7 +151,9 @@
       "relevant_features",
       "i.N",
       "prob",
-      "shapley_weight_norm"
+      "shapley_weight_norm",
+      "L",
+      "N_S"
     )
   )
 
