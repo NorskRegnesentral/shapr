@@ -67,39 +67,19 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="create_coalition_table.html">create_coalition_table()</a></code> </p>
-        </td>
-        <td><p>Define coalitions, and fetch additional information about each unique coalition</p></td>
-      </tr><tr><td>
           <p><code><a href="explain.html">explain()</a></code> </p>
         </td>
-        <td><p>Explain the output of machine learning models with more accurately estimated Shapley values</p></td>
+        <td><p>Explain the output of machine learning models with dependence-aware (conditional/observational) Shapley values</p></td>
       </tr><tr><td>
           <p><code><a href="explain_forecast.html">explain_forecast()</a></code> </p>
         </td>
-        <td><p>Explain a forecast from a time series model using Shapley values.</p></td>
-      </tr><tr><td>
-          <p><code><a href="explain_tripledot_docs.html">explain_tripledot_docs()</a></code> </p>
-        </td>
-        <td><p>Documentation of the approach-specific parameters in <code><a href="../reference/explain.html">explain()</a></code></p></td>
-      </tr><tr><td>
-          <p><code><a href="finalize_explanation.html">finalize_explanation()</a></code> </p>
-        </td>
-        <td><p>Gathers the final output to create the explanation object</p></td>
-      </tr><tr><td>
-          <p><code><a href="finalize_explanation_forecast.html">finalize_explanation_forecast()</a></code> </p>
-        </td>
-        <td><p>Computes the Shapley values given <code>v(S)</code></p></td>
+        <td><p>Explain a forecast from time series models with dependence-aware (conditional/observational) Shapley values</p></td>
       </tr><tr><td>
           <p><code><a href="get_cov_mat.html">get_cov_mat()</a></code> </p>
         </td>
         <td><p>get_cov_mat</p></td>
       </tr><tr><td>
-          <p><code><a href="get_data_forecast.html">get_data_forecast()</a></code> </p>
-        </td>
-        <td><p>Set up data for explain_forecast</p></td>
-      </tr><tr><td>
-          <p><code><a href="get_extra_est_args_default.html">get_extra_est_args_default()</a></code> </p>
+          <p><code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> </p>
         </td>
         <td><p>Gets the default values for the extra estimation arguments</p></td>
       </tr><tr><td>
@@ -119,9 +99,9 @@
         </td>
         <td><p>Gets the implemented approaches</p></td>
       </tr><tr><td>
-          <p><code><a href="lag_data.html">lag_data()</a></code> </p>
+          <p><code><a href="get_supported_models.html">get_supported_models()</a></code> </p>
         </td>
-        <td><p>Lag a matrix of variables a specific number of lags for each variables.</p></td>
+        <td><p>Provides a data.table with the supported models</p></td>
       </tr><tr><td>
           <p><code><a href="plot.shapr.html">plot(<i>&lt;shapr&gt;</i>)</a></code> </p>
         </td>
@@ -135,6 +115,10 @@
         </td>
         <td><p>Shapley value bar plots for several explanation objects</p></td>
       </tr><tr><td>
+          <p><code><a href="print.shapr.html">print(<i>&lt;shapr&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Print method for shapr objects</p></td>
+      </tr><tr><td>
           <p><code><a href="process_factor_data.html">process_factor_data()</a></code> </p>
         </td>
         <td><p>Treat factors as numeric values</p></td>
@@ -142,22 +126,6 @@
           <p><code><a href="reg_forecast_setup.html">reg_forecast_setup()</a></code> </p>
         </td>
         <td><p>Set up exogenous regressors for explanation in a forecast model.</p></td>
-      </tr><tr><td>
-          <p><code><a href="release_questions.html">release_questions()</a></code> </p>
-        </td>
-        <td><p>Auxiliary function for the vaeac vignette</p></td>
-      </tr><tr><td>
-          <p><code><a href="setup.html">setup()</a></code> </p>
-        </td>
-        <td><p>check_setup</p></td>
-      </tr><tr><td>
-          <p><code><a href="setup_approach.html">setup_approach()</a></code> </p>
-        </td>
-        <td><p>Set up the framework chosen approach</p></td>
-      </tr><tr><td>
-          <p><code><a href="setup_computation.html">setup_computation()</a></code> </p>
-        </td>
-        <td><p>Sets up everything for the Shapley values computation in <code><a href="../reference/explain.html">explain()</a></code></p></td>
       </tr><tr><td>
           <p><code><a href="vaeac_get_data_objects.html">vaeac_get_data_objects()</a></code> </p>
         </td>

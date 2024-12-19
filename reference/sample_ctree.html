@@ -82,31 +82,32 @@ Also contains given_ind, the features to condition upon.</p></dd>
 
 
 <dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
-<dd><p>Numeric. Indicates how many samples to use for MCMC.</p></dd>
+<dd><p>Scalar integer.
+Corresponds to the number of samples from the leaf node.
+See an exception when sample = FALSE in <code><a href="setup_approach.html">setup_approach.ctree()</a></code>.</p></dd>
 
 
 <dt id="arg-x-explain">x_explain<a class="anchor" aria-label="anchor" href="#arg-x-explain"></a></dt>
-<dd><p>Matrix, data.frame or data.table with the features of the observation whose
-predictions ought to be explained (test data). Dimension <code>1\timesp</code> or <code>p\times1</code>.</p></dd>
+<dd><p>Data.table with the features of the observation whose
+predictions ought to be explained (test data).</p></dd>
 
 
 <dt id="arg-x-train">x_train<a class="anchor" aria-label="anchor" href="#arg-x-train"></a></dt>
-<dd><p>Matrix, data.frame or data.table with training data.</p></dd>
+<dd><p>Data.table with training data.</p></dd>
 
 
 <dt id="arg-n-features">n_features<a class="anchor" aria-label="anchor" href="#arg-n-features"></a></dt>
-<dd><p>Positive integer. The number of features.</p></dd>
-
-
-<dt id="arg-sample">sample<a class="anchor" aria-label="anchor" href="#arg-sample"></a></dt>
-<dd><p>Boolean. True indicates that the method samples from the terminal node
-of the tree whereas False indicates that the method takes all the observations if it is
-less than n_MC_samples.</p></dd>
+<dd><p>Positive integer.
+The number of features.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     <p>data.table with <code>n_MC_samples</code> (conditional) Gaussian samples</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>See the documentation of the <code><a href="setup_approach.html">setup_approach.ctree()</a></code> function for undocumented parameters.</p>
     </div>
     <div id="author">
     <h2>Author</h2>

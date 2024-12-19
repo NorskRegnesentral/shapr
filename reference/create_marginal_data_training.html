@@ -83,13 +83,7 @@
 
 
 <dl><dt id="arg-x-train">x_train<a class="anchor" aria-label="anchor" href="#arg-x-train"></a></dt>
-<dd><p>Matrix or data.frame/data.table.
-Contains the data used to estimate the (conditional) distributions for the features
-needed to properly estimate the conditional expectations in the Shapley formula.</p></dd>
-
-
-<dt id="arg-n-explain">n_explain<a class="anchor" aria-label="anchor" href="#arg-n-explain"></a></dt>
-<dd><p>Integer. The number of explicands/observations to explain.</p></dd>
+<dd><p>Data.table with training data.</p></dd>
 
 
 <dt id="arg-sbar-features">Sbar_features<a class="anchor" aria-label="anchor" href="#arg-sbar-features"></a></dt>
@@ -97,16 +91,6 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 That is, if <code>Sbar_features</code> is <code>c(1,4)</code>, then we sample <code>n_MC_samples</code> observations from \(P(X_1, X_4)\) using the
 empirical training observations (with replacements). That is, we sample the first and fourth feature values from
 the same training observation, so we do not break the dependence between them.</p></dd>
-
-
-<dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
-<dd><p>Positive integer.
-Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
-For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
-from the leaf node (see an exception related to the <code>ctree.sample</code> argument <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
-For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-<code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
 
 
 <dt id="arg-stable-version">stable_version<a class="anchor" aria-label="anchor" href="#arg-stable-version"></a></dt>
@@ -118,7 +102,7 @@ from the observations.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Data table of dimension \(`n_MC_samples` \times `length(Sbar_features)`\) with the sampled observations.</p>
+    <p>Data table of dimension <code>n_MC_samples</code> \(\times\) <code>length(Sbar_features)</code> with the sampled observations.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -138,7 +122,11 @@ from the observations.</p></dd>
 <span class="r-in"><span><span class="va">ind_x_explain</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span></span></span>
 <span class="r-in"><span><span class="va">x_train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain</span>, <span class="va">..x_var</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">x_train</span></span></span>
-<span class="r-in"><span><span class="fu">create_marginal_data__training</span><span class="op">(</span>x_train <span class="op">=</span> <span class="va">x_train</span>, Sbar_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, n_MC_samples <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">shapr</span><span class="fu">:::</span><span class="fu">create_marginal_data_training</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
+<span class="r-in"><span>  Sbar_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">10</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

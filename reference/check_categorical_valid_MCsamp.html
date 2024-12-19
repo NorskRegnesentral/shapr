@@ -69,12 +69,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_categorical_valid_MCsamp</span><span class="op">(</span></span>
-<span>  <span class="va">dt</span>,</span>
-<span>  <span class="va">n_explain</span>,</span>
-<span>  <span class="va">n_MC_samples</span>,</span>
-<span>  <span class="va">joint_probability_dt</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_categorical_valid_MCsamp</span><span class="op">(</span><span class="va">dt</span>, <span class="va">n_explain</span>, <span class="va">n_MC_samples</span>, <span class="va">joint_prob_dt</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -85,13 +80,10 @@
 <dd><p>Data.table containing the generated MC samples (and conditional values) after each sampling step</p></dd>
 
 
-<dt id="arg-n-explain">n_explain<a class="anchor" aria-label="anchor" href="#arg-n-explain"></a></dt>
-<dd><p>Integer. The number of explicands/observations to explain.</p></dd>
-
-
 <dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
 <dd><p>Positive integer.
-Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
+of every conditional expectation.
 For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
 from the leaf node (see an exception related to the <code>ctree.sample</code> argument <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
 For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
@@ -99,6 +91,10 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 <code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
 
 </dl></div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>For undocumented arguments, see <code><a href="setup_approach.html">setup_approach.categorical()</a></code>.</p>
+    </div>
     <div id="author">
     <h2>Author</h2>
     <p>Lars Henry Berge Olsen</p>

@@ -85,47 +85,51 @@
 
 
 <dl><dt id="arg-mc-samples-mat">MC_samples_mat<a class="anchor" aria-label="anchor" href="#arg-mc-samples-mat"></a></dt>
-<dd><p>arma::mat. Matrix of dimension (<code>n_explain</code>, <code>n_features</code>) containing samples from the
-univariate standard normal. The i'th row will be applied to the i'th row in <code>x_explain_mat</code>.</p></dd>
+<dd><p>arma::mat.
+Matrix of dimension (<code>n_MC_samples</code>, <code>n_features</code>) containing samples from the univariate standard normal.</p></dd>
 
 
 <dt id="arg-x-explain-mat">x_explain_mat<a class="anchor" aria-label="anchor" href="#arg-x-explain-mat"></a></dt>
-<dd><p>arma::mat. Matrix of dimension (<code>n_explain</code>, <code>n_features</code>) containing the observations to
-explain on the original scale. The MC sample for the i'th explicand is based on the i'th row in <code>MC_samples_mat</code>.</p></dd>
+<dd><p>arma::mat.
+Matrix of dimension (<code>n_explain</code>, <code>n_features</code>) containing the observations to explain.</p></dd>
 
 
 <dt id="arg-x-explain-gaussian-mat">x_explain_gaussian_mat<a class="anchor" aria-label="anchor" href="#arg-x-explain-gaussian-mat"></a></dt>
-<dd><p>arma::mat. Matrix of dimension (<code>n_explain</code>, <code>n_features</code>) containing the
-observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
-transformed to a standardized normal distribution.</p></dd>
-
-
-<dt id="arg-x-train-mat">x_train_mat<a class="anchor" aria-label="anchor" href="#arg-x-train-mat"></a></dt>
-<dd><p>arma::mat. Matrix of dimension (<code>n_train</code>, <code>n_features</code>) containing the training observations.</p></dd>
-
-
-<dt id="arg-s">S<a class="anchor" aria-label="anchor" href="#arg-s"></a></dt>
-<dd><p>arma::mat. Matrix of dimension (<code>n_coalitions</code>, <code>n_features</code>) containing binary representations of
-the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
-This is not a problem internally in shapr as the empty and grand coalitions treated differently.</p></dd>
-
-
-<dt id="arg-mu">mu<a class="anchor" aria-label="anchor" href="#arg-mu"></a></dt>
-<dd><p>arma::vec. Vector of length <code>n_features</code> containing the mean of each feature after being transformed
+<dd><p>arma::mat.
+Matrix of dimension (<code>n_explain</code>, <code>n_features</code>) containing the observations to explain after being transformed
 using the Gaussian transform, i.e., the samples have been transformed to a standardized normal distribution.</p></dd>
 
 
+<dt id="arg-x-train-mat">x_train_mat<a class="anchor" aria-label="anchor" href="#arg-x-train-mat"></a></dt>
+<dd><p>arma::mat.
+Matrix of dimension (<code>n_train</code>, <code>n_features</code>) containing the training observations.</p></dd>
+
+
+<dt id="arg-s">S<a class="anchor" aria-label="anchor" href="#arg-s"></a></dt>
+<dd><p>arma::mat.
+Matrix of dimension (<code>n_coalitions</code>, <code>n_features</code>) containing binary representations of the used coalitions.
+S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+This is not a problem internally in shapr as the empty and grand coalitions are treated differently.</p></dd>
+
+
+<dt id="arg-mu">mu<a class="anchor" aria-label="anchor" href="#arg-mu"></a></dt>
+<dd><p>arma::vec.
+Vector of length <code>n_features</code> containing the mean of each feature after being transformed using the Gaussian
+transform, i.e., the samples have been transformed to a standardized normal distribution.</p></dd>
+
+
 <dt id="arg-cov-mat">cov_mat<a class="anchor" aria-label="anchor" href="#arg-cov-mat"></a></dt>
-<dd><p>arma::mat. Matrix of dimension (<code>n_features</code>, <code>n_features</code>) containing the pairwise covariance
-between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
-transformed to a standardized normal distribution.</p></dd>
+<dd><p>arma::mat.
+Matrix of dimension (<code>n_features</code>, <code>n_features</code>) containing the pairwise covariance between all pairs of features
+after being transformed using the Gaussian transform, i.e., the samples have been transformed to a standardized
+normal distribution.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An arma::mat/2D array of dimension (<code>n_explain</code> * <code>n_coalitions</code>, <code>n_features</code>),
-where the rows (n_explain * S_ind, n_explain * (S_ind + 1) - 1) contains the single
-conditional Gaussian MC samples for each explicand and <code>S_ind</code> coalition.</p>
+    <p>An arma::cube/3D array of dimension (<code>n_MC_samples</code>, <code>n_explain</code> * <code>n_coalitions</code>, <code>n_features</code>), where
+the columns (<em>,j,</em>) are matrices of dimension (<code>n_MC_samples</code>, <code>n_features</code>) containing the conditional Gaussian
+copula MC samples for each explicand and coalition on the original scale.</p>
     </div>
     <div id="author">
     <h2>Author</h2>

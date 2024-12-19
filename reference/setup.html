@@ -81,7 +81,7 @@
 <span>  <span class="va">n_MC_samples</span>,</span>
 <span>  <span class="va">seed</span>,</span>
 <span>  <span class="va">feature_specs</span>,</span>
-<span>  type <span class="op">=</span> <span class="st">"normal"</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"regular"</span>,</span>
 <span>  horizon <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  xreg <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -118,7 +118,7 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 
 
 <dt id="arg-x-explain">x_explain<a class="anchor" aria-label="anchor" href="#arg-x-explain"></a></dt>
-<dd><p>A matrix or data.frame/data.table.
+<dd><p>Matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.</p></dd>
 
 
@@ -126,7 +126,8 @@ Contains the the features, whose predictions ought to be explained.</p></dd>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
 All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
 <code>"categorical"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or <code>"regression_surrogate"</code>.
-The two regression approaches can not be combined with any other approach. See details for more information.</p></dd>
+The two regression approaches can not be combined with any other approach.
+See details for more information.</p></dd>
 
 
 <dt id="arg-paired-shap-sampling">paired_shap_sampling<a class="anchor" aria-label="anchor" href="#arg-paired-shap-sampling"></a></dt>
@@ -145,7 +146,8 @@ such as the mean of the predictions in the training data are also reasonable.</p
 
 
 <dt id="arg-output-size">output_size<a class="anchor" aria-label="anchor" href="#arg-output-size"></a></dt>
-<dd><p>TODO: Document</p></dd>
+<dd><p>Scalar integer.
+Specifies the dimension of the output from the prediction model for every observation.</p></dd>
 
 
 <dt id="arg-max-n-coalitions">max_n_coalitions<a class="anchor" aria-label="anchor" href="#arg-max-n-coalitions"></a></dt>
@@ -161,14 +163,15 @@ and group coalitions if <code>group != NULL</code>.
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
 <dd><p>List.
 If <code>NULL</code> regular feature wise Shapley values are computed.
-If provided, group wise Shapley values are computed. <code>group</code> then has length equal to
-the number of groups. The list element contains character vectors with the features included
-in each of the different groups.</p></dd>
+If provided, group wise Shapley values are computed.
+<code>group</code> then has length equal to the number of groups.
+The list element contains character vectors with the features included in each of the different groups.</p></dd>
 
 
 <dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
 <dd><p>Positive integer.
-Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
+For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
+of every conditional expectation.
 For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
 from the leaf node (see an exception related to the <code>ctree.sample</code> argument <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
 For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
@@ -199,7 +202,7 @@ Contains the 3 elements:</p><dl><dt>labels</dt>
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Character.
-Either "normal" or "forecast" corresponding to function <code>setup()</code> is called from,
+Either "regular" or "forecast" corresponding to function <code>setup()</code> is called from,
 correspondingly the type of explanation that should be generated.</p></dd>
 
 
@@ -220,19 +223,19 @@ including the observations to be explained.</p></dd>
 Contains the exogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.
-As exogenous variables are used contemporaneusly when producing a forecast,
+As exogenous variables are used contemporaneously when producing a forecast,
 this item should contain nrow(y) + horizon rows.</p></dd>
 
 
 <dt id="arg-train-idx">train_idx<a class="anchor" aria-label="anchor" href="#arg-train-idx"></a></dt>
-<dd><p>Numeric vector
+<dd><p>Numeric vector.
 The row indices in data and reg denoting points in time to use when estimating the conditional expectations in
 the Shapley value formula.
 If <code>train_idx = NULL</code> (default) all indices not selected to be explained will be used.</p></dd>
 
 
 <dt id="arg-explain-idx">explain_idx<a class="anchor" aria-label="anchor" href="#arg-explain-idx"></a></dt>
-<dd><p>Numeric vector
+<dd><p>Numeric vector.
 The row indices in data and reg denoting points in time to explain.</p></dd>
 
 
@@ -255,7 +258,7 @@ If <code>FALSE</code> all lags of each variable are explained individually.</p><
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
-<code>"convergence"</code>, <code>"shapley"</code>  and <code>"vS_details"</code>.
+<code>"convergence"</code>, <code>"shapley"</code> and <code>"vS_details"</code>.
 <code>"basic"</code> (default) displays basic information about the computation which is being performed.
 <code>"progress</code> displays information about where in the calculation process the function currently is.
 #' <code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
@@ -265,7 +268,7 @@ Specifies the verbosity (printout detail level) through one or more of strings <
 This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
 <code>NULL</code> means no printout.
 Note that any combination of four strings can be used.
-E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the vS estimation process.</p></li>
+E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></li>
 </ul></dd>
 
 
@@ -291,9 +294,9 @@ See <code><a href="get_iterative_args_default.html">get_iterative_args_default()
 
 <dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>
 <dd><p>String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
-the randomness and thereby the variance of the Shapley value estimates.
-One of <code>'none'</code>, <code>'on_N'</code>, <code>'on_all'</code>, <code>'on_all_cond'</code> (default).
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of <code>'none'</code>, <code>'on_N'</code>, <code>'on_all'</code>, <code>'on_all_cond'</code> (default).
 <code>'none'</code> means no reweighting, i.e. the sampling frequency weights are used as is.
 <code>'on_coal_size'</code> means the sampling frequencies are averaged over all coalitions of the same size.
 <code>'on_N'</code> means the sampling frequencies are averaged over all coalitions with the same original sampling
@@ -301,13 +304,15 @@ probabilities.
 <code>'on_all'</code> means the original sampling probabilities are used for all coalitions.
 <code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
-This method is preferred as it has performed the best in simulation studies.</p></dd>
+<code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see Olsen &amp; Jullum (2024).</p></dd>
 
 
 <dt id="arg-is-python">is_python<a class="anchor" aria-label="anchor" href="#arg-is-python"></a></dt>
-<dd><p>Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
-never changed when calling the function via <code><a href="explain.html">explain()</a></code> in R. The parameter is later used to disallow
-running the AICc-versions of the empirical as that requires data based optimization.</p></dd>
+<dd><p>Logical.
+Indicates whether the function is called from the Python wrapper.
+Default is FALSE which is never changed when calling the function via <code><a href="explain.html">explain()</a></code> in R.
+The parameter is later used to disallow running the AICc-versions of the empirical method
+as that requires data based optimization, which is not supported in <code>shaprpy</code>.</p></dd>
 
 
 <dt id="arg-testing">testing<a class="anchor" aria-label="anchor" href="#arg-testing"></a></dt>
@@ -324,7 +329,7 @@ Used to calculate the time it took to run the full <code>explain</code> call.</p
 
 <dt id="arg-prev-shapr-object">prev_shapr_object<a class="anchor" aria-label="anchor" href="#arg-prev-shapr-object"></a></dt>
 <dd><p><code>shapr</code> object or string.
-If an object of class <code>shapr</code> is provided or string with a path to where intermediate results are strored,
+If an object of class <code>shapr</code> is provided, or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the vignette for examples.</p></dd>
@@ -381,11 +386,11 @@ See <code><a href="get_output_args_default.html">get_output_args_default()</a></
 <dt id="arg-extra-computation-args">extra_computation_args<a class="anchor" aria-label="anchor" href="#arg-extra-computation-args"></a></dt>
 <dd><p>Named list.
 Specifices extra arguments related to the computation of the Shapley values.
-See <code><a href="get_extra_est_args_default.html">get_extra_est_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+See <code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Further arguments passed to specific approaches</p></dd>
+<dd><p>Further arguments passed to specific approaches, see below.</p></dd>
 
 </dl></div>
 

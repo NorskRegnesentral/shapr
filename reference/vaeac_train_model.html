@@ -301,7 +301,7 @@ Note that additional choices are available if <code>vaeac.save_every_nth_epoch</
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
-<code>"convergence"</code>, <code>"shapley"</code>  and <code>"vS_details"</code>.
+<code>"convergence"</code>, <code>"shapley"</code> and <code>"vS_details"</code>.
 <code>"basic"</code> (default) displays basic information about the computation which is being performed.
 <code>"progress</code> displays information about where in the calculation process the function currently is.
 #' <code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
@@ -311,7 +311,7 @@ Specifies the verbosity (printout detail level) through one or more of strings <
 This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
 <code>NULL</code> means no printout.
 Note that any combination of four strings can be used.
-E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the vS estimation process.</p></li>
+E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></li>
 </ul></dd>
 
 

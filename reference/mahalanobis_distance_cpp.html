@@ -72,7 +72,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mahalanobis_distance_cpp</span><span class="op">(</span></span>
 <span>  <span class="va">featureList</span>,</span>
 <span>  <span class="va">Xtrain_mat</span>,</span>
-<span>  <span class="va">Xtest_mat</span>,</span>
+<span>  <span class="va">Xexplain_mat</span>,</span>
 <span>  <span class="va">mcov</span>,</span>
 <span>  <span class="va">S_scale_dist</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -83,24 +83,29 @@
 
 
 <dl><dt id="arg-featurelist">featureList<a class="anchor" aria-label="anchor" href="#arg-featurelist"></a></dt>
-<dd><p>List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.</p></dd>
+<dd><p>List.
+Contains the vectors indicating all factor combinations that should be included in the computations.
+Assumes that the first one is empty.</p></dd>
 
 
 <dt id="arg-xtrain-mat">Xtrain_mat<a class="anchor" aria-label="anchor" href="#arg-xtrain-mat"></a></dt>
-<dd><p>Matrix</p></dd>
+<dd><p>Matrix
+Training data in matrix form</p></dd>
 
 
-<dt id="arg-xtest-mat">Xtest_mat<a class="anchor" aria-label="anchor" href="#arg-xtest-mat"></a></dt>
-<dd><p>Matrix</p></dd>
+<dt id="arg-xexplain-mat">Xexplain_mat<a class="anchor" aria-label="anchor" href="#arg-xexplain-mat"></a></dt>
+<dd><p>Matrix
+Explanation data in matrix form.</p></dd>
 
 
 <dt id="arg-mcov">mcov<a class="anchor" aria-label="anchor" href="#arg-mcov"></a></dt>
-<dd><p>Matrix. The Sigma-matrix in the Mahalanobis distance formula (<code>stats::cov(Xtrain_mat)</code>) gives Mahalanobis distance,
-<code>diag(m)</code> gives the Euclidean distance.</p></dd>
+<dd><p>matrix
+The covariance matrix of X.</p></dd>
 
 
 <dt id="arg-s-scale-dist">S_scale_dist<a class="anchor" aria-label="anchor" href="#arg-s-scale-dist"></a></dt>
-<dd><p>Logical indicating</p></dd>
+<dd><p>logical.
+Indicating whether the Mahalanobis distance should be scaled with the number of variables</p></dd>
 
 </dl></div>
     <div id="value">

@@ -91,8 +91,7 @@ This function allows for cross validating the hyperparameters of the model.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Data.table containing the data. Either the training data or the explicands. If <code>x</code> is the explicands,
-then <code>index_features</code> must be provided.</p></dd>
+<dd><p>Data.table containing the training data.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -104,7 +103,7 @@ If <code>NULL</code> no seed is set in the calling environment.</p></dd>
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
-<code>"convergence"</code>, <code>"shapley"</code>  and <code>"vS_details"</code>.
+<code>"convergence"</code>, <code>"shapley"</code> and <code>"vS_details"</code>.
 <code>"basic"</code> (default) displays basic information about the computation which is being performed.
 <code>"progress</code> displays information about where in the calculation process the function currently is.
 #' <code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
@@ -114,7 +113,7 @@ Specifies the verbosity (printout detail level) through one or more of strings <
 This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
 <code>NULL</code> means no printout.
 Note that any combination of four strings can be used.
-E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the vS estimation process.</p></li>
+E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></li>
 </ul></dd>
 
 
@@ -170,6 +169,10 @@ a valid input. It is essential to include the package prefix if the package is n
 <dt id="arg-regression-surrogate-n-comb">regression.surrogate_n_comb<a class="anchor" aria-label="anchor" href="#arg-regression-surrogate-n-comb"></a></dt>
 <dd><p>Integer (default is <code>NULL</code>). The number of times each training observations
 has been augmented. If <code>NULL</code>, then we assume that we are doing separate regression.</p></dd>
+
+
+<dt id="arg-current-comb">current_comb<a class="anchor" aria-label="anchor" href="#arg-current-comb"></a></dt>
+<dd><p>Integer vector. The current combination of features, passed to verbosity printing function.</p></dd>
 
 </dl></div>
     <div id="value">

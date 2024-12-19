@@ -98,7 +98,7 @@ the features values plotted are the mean feature values for all features in each
 
 <dl><dt id="arg-explanation-list">explanation_list<a class="anchor" aria-label="anchor" href="#arg-explanation-list"></a></dt>
 <dd><p>A list of <code><a href="explain.html">explain()</a></code> objects applied to the same data and model.
-If the entries in the list is named, then the function use these names. Otherwise, it defaults to
+If the entries in the list are named, then the function use these names. Otherwise, they default to
 the approach names (with integer suffix for duplicates) for the explanation objects in <code>explanation_list</code>.</p></dd>
 
 
@@ -125,7 +125,9 @@ are to be included in the bar plots.</p></dd>
 
 
 <dt id="arg-digits">digits<a class="anchor" aria-label="anchor" href="#arg-digits"></a></dt>
-<dd><p>Integer. Number of significant digits to use in the feature description.</p></dd>
+<dd><p>Integer.
+Number of significant digits to use in the feature description.
+Applicable for <code>plot_type</code> <code>"bar"</code> and <code>"waterfall"</code></p></dd>
 
 
 <dt id="arg-add-zero-line">add_zero_line<a class="anchor" aria-label="anchor" href="#arg-add-zero-line"></a></dt>
@@ -196,7 +198,8 @@ the mean of the features in each group.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Load necessary libraries</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Load necessary libraries</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -235,23 +238,6 @@ the mean of the features in each group.</p></dd>
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Feature classes extracted from the model contains NA.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Assuming feature classes from the data are correct.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 12:11:48</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">independence</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 12</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpyp2Dru/shapr_obj_330e25180d6f.rds</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Empirical approach</span></span></span>
 <span class="r-in"><span><span class="va">explanation_empirical</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span></span></span>
@@ -262,23 +248,6 @@ the mean of the features in each group.</p></dd>
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Feature classes extracted from the model contains NA.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Assuming feature classes from the data are correct.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 12:11:49</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 12</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpyp2Dru/shapr_obj_330e1b9b2fa6.rds</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Gaussian 1e1 approach</span></span></span>
 <span class="r-in"><span><span class="va">explanation_gaussian_1e1</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span></span></span>
@@ -289,23 +258,6 @@ the mean of the features in each group.</p></dd>
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Feature classes extracted from the model contains NA.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Assuming feature classes from the data are correct.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 12:11:53</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">gaussian</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 12</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpyp2Dru/shapr_obj_330e3060133d.rds</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Gaussian 1e2 approach</span></span></span>
 <span class="r-in"><span><span class="va">explanation_gaussian_1e2</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span></span></span>
@@ -316,23 +268,6 @@ the mean of the features in each group.</p></dd>
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Feature classes extracted from the model contains NA.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Assuming feature classes from the data are correct.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 12:11:53</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">gaussian</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 12</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpyp2Dru/shapr_obj_330e1d83ae49.rds</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Combined approach</span></span></span>
 <span class="r-in"><span><span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span></span></span>
@@ -343,23 +278,6 @@ the mean of the features in each group.</p></dd>
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Feature classes extracted from the model contains NA.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Assuming feature classes from the data are correct.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-19 12:11:54</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">gaussian</span>, <span style="font-style: italic;">ctree</span>, and <span style="font-style: italic;">empirical</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 12</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpyp2Dru/shapr_obj_330e3d7d22b.rds</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Create a list of explanations with names</span></span></span>
 <span class="r-in"><span><span class="va">explanation_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
@@ -410,7 +328,7 @@ the mean of the features in each group.</p></dd>
 <span class="r-in"><span>    plot_phi0 <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-plt img"><img src="plot_SV_several_approaches-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

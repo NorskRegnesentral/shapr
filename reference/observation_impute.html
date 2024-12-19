@@ -95,21 +95,12 @@ the total number of unique features, respectively. Note that <code>m = ncol(x_tr
 
 
 <dt id="arg-x-train">x_train<a class="anchor" aria-label="anchor" href="#arg-x-train"></a></dt>
-<dd><p>Numeric matrix</p></dd>
+<dd><p>Data.table with training data.</p></dd>
 
 
 <dt id="arg-x-explain">x_explain<a class="anchor" aria-label="anchor" href="#arg-x-explain"></a></dt>
-<dd><p>Numeric matrix</p></dd>
-
-
-<dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
-<dd><p>Positive integer.
-Indicating the maximum number of samples to use in the  Monte Carlo integration for every conditional expectation.
-For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
-from the leaf node (see an exception related to the <code>ctree.sample</code> argument <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
-For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-<code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
+<dd><p>Data.table with the features of the observation whose
+predictions ought to be explained (test data).</p></dd>
 
 </dl></div>
     <div id="value">

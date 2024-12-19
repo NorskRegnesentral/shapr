@@ -142,14 +142,14 @@ A list mapping each coalition to the features it contains.</p></dd>
 
 <dt id="arg-approach-">approach0<a class="anchor" aria-label="anchor" href="#arg-approach-"></a></dt>
 <dd><p>Character vector.
-Contains the approach to be used for estimation of each coalition size. Same as <code>approach</code> in <code><a href="explain.html">explain()</a></code>.</p></dd>
+Contains the approach to be used for eastimation of each coalition size. Same as <code>approach</code> in <code><a href="explain.html">explain()</a></code>.</p></dd>
 
 
 <dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>
 <dd><p>String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
-the randomness and thereby the variance of the Shapley value estimates.
-One of <code>'none'</code>, <code>'on_N'</code>, <code>'on_all'</code>, <code>'on_all_cond'</code> (default).
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of <code>'none'</code>, <code>'on_N'</code>, <code>'on_all'</code>, <code>'on_all_cond'</code> (default).
 <code>'none'</code> means no reweighting, i.e. the sampling frequency weights are used as is.
 <code>'on_coal_size'</code> means the sampling frequencies are averaged over all coalitions of the same size.
 <code>'on_N'</code> means the sampling frequencies are averaged over all coalitions with the same original sampling
@@ -157,7 +157,7 @@ probabilities.
 <code>'on_all'</code> means the original sampling probabilities are used for all coalitions.
 <code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
-This method is preferred as it has performed the best in simulation studies.</p></dd>
+<code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see Olsen &amp; Jullum (2024).</p></dd>
 
 
 <dt id="arg-dt-valid-causal-coalitions">dt_valid_causal_coalitions<a class="anchor" aria-label="anchor" href="#arg-dt-valid-causal-coalitions"></a></dt>
@@ -168,7 +168,7 @@ The data.table contains information about the coalitions that respects the causa
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data.table with columns about the that contains the following columns:</p>
+    <p>A data.table with info about the coaltions to use</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -177,13 +177,14 @@ The data.table contains information about the coalitions that respects the causa
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># All coalitions</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># All coalitions</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">create_coalition_table</span><span class="op">(</span>m <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="co"># Equals 2^3 = 8</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 8</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Subsample of coalitions</span></span></span>
-<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">create_coalition_table</span><span class="op">(</span>exact <span class="op">=</span> <span class="cn">FALSE</span>, m <span class="op">=</span> <span class="fl">10</span>, n_coalitions <span class="op">=</span> <span class="fl">1e2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="fu">:::</span><span class="fu">create_coalition_table</span><span class="op">(</span>m <span class="op">=</span> <span class="fl">10</span>, exact <span class="op">=</span> <span class="cn">FALSE</span>, n_coalitions <span class="op">=</span> <span class="fl">1e2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
