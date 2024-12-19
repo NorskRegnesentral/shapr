@@ -306,6 +306,8 @@ sample_coalition_table <- function(m,
   asymmetric <- !is.null(dt_valid_causal_coalitions)
 
   if (!is.null(prev_coal_samples)) {
+    # Compute prev_coal_samples_n_unique if not provided
+    if (is.null(prev_coal_samples_n_unique)) prev_coal_samples_n_unique <- length(unique(prev_coal_samples))
     coal_sample_all <- prev_coal_samples
     unique_samples <- prev_coal_samples_n_unique
     n_coalitions <- min(2^m, n_coalitions)
@@ -642,8 +644,12 @@ shapley_setup_forecast <- function(internal) {
 
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   exact <- internal$iter_list[[iter]]$exact
-  prev_coal_samples <- internal$iter_list[[iter]]$prev_coal_samples
-  prev_coal_samples_n_unique <- internal$iter_list[[iter]]$prev_coal_samples_n_unique
+
+  prev_coal_samples <- internal$iter_list[[iter]]$prev_coal_samples # A list of length length(horizon_features)
+  prev_coal_samples_n_unique <- internal$iter_list[[iter]]$prev_coal_samples_n_unique # Same as in the previous line
+
+  # Lists to store the sampled coalitions for each horizon and the number of unique coalitions
+  coal_samples <- coal_samples_n_unique <- list()
 
   X_list <- W_list <- list()
 
@@ -671,8 +677,8 @@ shapley_setup_forecast <- function(internal) {
       n_coalitions = n_coalitions_here,
       weight_zero_m = 10^6,
       paired_shap_sampling = paired_shap_sampling,
-      prev_coal_samples = prev_coal_samples,
-      prev_coal_samples_n_unique = prev_coal_samples_n_unique,
+      prev_coal_samples = prev_coal_samples[[i]],
+      prev_coal_samples_n_unique = prev_coal_samples_n_unique[[i]],
       coal_feature_list = this_coal_feature_list,
       approach0 = approach,
       kernelSHAP_reweighting = kernelSHAP_reweighting
@@ -682,6 +688,17 @@ shapley_setup_forecast <- function(internal) {
       X = X_list[[i]],
       normalize_W_weights = TRUE
     )
+
+    ### Store the coalitions for this horizon for the next iteration
+    # Getting the sampled coalitions for each horizon. We do not store this if exact, as then all is used.
+    if (isFALSE(exact)) {
+      coal_samples[[i]] <- rep(X_list[[i]][-c(1, .N), coalitions_str], X_list[[i]][-c(1, .N), sample_freq])
+    } else {
+      coal_samples[[i]] <- NA
+    }
+
+    # Extract the number of unique coalitions from the previous iteration
+    coal_samples_n_unique[[i]] <- nrow(X_list[[i]]) - 2 # Subtract empty and grand coalition
   }
 
   # Merge the coalition data.table to single one to use for computing conditional expectations later on
@@ -743,6 +760,8 @@ shapley_setup_forecast <- function(internal) {
   internal$iter_list[[iter]]$X_list <- X_list
   internal$iter_list[[iter]]$coalition_map <- coalition_map
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
+  internal$iter_list[[iter]]$coal_samples <- coal_samples
+  internal$iter_list[[iter]]$coal_samples_n_unique <- coal_samples_n_unique
 
   internal$objects$cols_per_horizon <- cols_per_horizon
   internal$objects$W_list <- W_list
