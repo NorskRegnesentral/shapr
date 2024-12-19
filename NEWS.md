@@ -1,4 +1,20 @@
-# shapr 1.0.0
+# shapr 1.0.1 
+
+* Improved and unified the documentation [#427](https://github.com/NorskRegnesentral/shapr/pull/427))
+* Remove seed argument from the boostrap function as its better handled by the mother function [#427](https://github.com/NorskRegnesentral/shapr/pull/427))
+* Renamed various internal functions to be consistent with names in the rest of the package [#427](https://github.com/NorskRegnesentral/shapr/pull/427))
+* Remove MSEv from explain_forecast (as it was only supported for horizon=1). Should return in a more general manner in the future [#427](https://github.com/NorskRegnesentral/shapr/pull/427))
+* Improve efficiency of coalition sampling code and move to string sampling [#426](https://github.com/NorskRegnesentral/shapr/pull/426))
+* Bugfix `iterative = TRUE` for `explain_forecast()` which was not using coaltions from previous iterations [#426](https://github.com/NorskRegnesentral/shapr/pull/426))
+* Bugfix the handling and output with the `verbose` argument for `explain_forecast()` [#425](https://github.com/NorskRegnesentral/shapr/pull/425))
+* Improved flexibility of the beeswarm plot functionality [#424](https://github.com/NorskRegnesentral/shapr/pull/424))
+* Bugfix edge case where the `party` package returns a `constparty` object [#423](https://github.com/NorskRegnesentral/shapr/pull/423))
+* Bugfix error due to extra comma in rarely used warning [#422](https://github.com/NorskRegnesentral/shapr/pull/422))
+* Shined up the vignettes a bit [#421](https://github.com/NorskRegnesentral/shapr/pull/421))
+* Bugfix `keep_samp_for_vS` with iterative approach [#417](https://github.com/NorskRegnesentral/shapr/pull/417))
+* [Python] Brought the python code base up to speed with essentially all functionality in `explain()` in R [#416](https://github.com/NorskRegnesentral/shapr/pull/416))
+
+# shapr 1.0.0 (GitHub only)
 
 ### Breaking changes
 
