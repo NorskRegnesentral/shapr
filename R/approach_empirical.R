@@ -53,7 +53,6 @@ setup_approach.empirical <- function(internal,
                                      empirical.cov_mat = NULL,
                                      model = NULL,
                                      predict_model = NULL, ...) {
-  # TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
 
   defaults <- mget(c(
     "empirical.eta", "empirical.type", "empirical.fixed_sigma",
@@ -288,7 +287,7 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
     index_xtrain = dt_melt[["index_x_train"]],
     index_s = dt_melt[["index_s"]],
     x_train = x_train,
-    x_explain = x_explain, # TODO: change this to xexplain
+    x_explain = x_explain,
     S = S
   )
 

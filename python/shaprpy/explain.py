@@ -426,7 +426,6 @@ def compute_preds(
 ):
   # Predictions
   if type_ == "forecast":
-    # TODO: I actually dont't think this works
     preds = predict_model(
       model, 
       r2py(dt).loc[:,:n_endo],

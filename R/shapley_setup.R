@@ -64,11 +64,10 @@ shapley_setup <- function(internal) {
 
   #### Updating parameters ####
 
-  # Updating parameters$exact as done in create_coalition_table. I don't think this is necessary now. TODO: Check.
-  # Moreover, it does not apply to grouping, so must be adjusted anyway.
+  # Updating parameters$exact as done in create_coalition_table, if all coalitions have been sampled
   if (!exact && n_coalitions >= min(2^n_shapley_values, max_n_coalitions_causal)) {
     internal$iter_list[[iter]]$exact <- TRUE
-    internal$parameters$exact <- TRUE # Since this means that all coalitions have been sampled
+    internal$parameters$exact <- TRUE
   }
 
   # Updating n_coalitions in the end based on what is actually used.
@@ -709,10 +708,6 @@ shapley_setup_forecast <- function(internal) {
   # The number of sampled coalitions *per horizon* to be used for convergence detection only
   # Exclude the zero and full prediction
   internal$iter_list[[iter]]$n_sampled_coalitions <- length(unique(id_coalition_mapper_dt$horizon_id_coalition)) - 2
-
-  # This will be obsolete later
-  internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
-  # instead of storing it
 
   internal$iter_list[[iter]]$X <- X
   internal$iter_list[[iter]]$W <- W

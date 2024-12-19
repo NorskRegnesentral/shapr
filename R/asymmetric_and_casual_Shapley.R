@@ -487,7 +487,6 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         # Marginal distribution as there are no variables to condition on
 
         # Generate the marginal data either form the Gaussian or categorical distribution or the training data
-        # TODO: Can extend to also sample from the marginals of the gaussian copula and vaeac
         if (approach == "gaussian") {
           # Sample marginal data from the marginal gaussian distribution
           dt_Sbar_now_marginal_values <- create_marginal_data_gaussian(
