@@ -35,10 +35,13 @@ The value to use as a replacement for infinite coalition weights when doing nume
 Whether to do paired sampling of coalitions.}
 
 \item{prev_coal_samples}{Character vector.
-A vector of previously sampled coalitions as characters. # TODO: verify the end choice of this.}
+A vector of previously sampled coalitions as characters.
+Each string contains a coalition and the feature indices in the coalition is separated by a space.
+For example, "1 5 8" is a coalition with features 1, 5, and 8.}
 
 \item{prev_coal_samples_n_unique}{Positive integer.
-The number of unique coalitions in \code{prev_coal_samples}.}
+The number of unique coalitions in \code{prev_coal_samples}.
+This is a separate argument to avoid recomputing the number unnecessarily.}
 
 \item{coal_feature_list}{List.
 A list mapping each coalition to the features it contains.}
@@ -62,6 +65,12 @@ This method is preferred as it has performed the best in simulation studies.}
 \item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
 values explanations, and is \code{NULL} for symmetric Shapley values.
 The data.table contains information about the coalitions that respects the causal ordering.}
+
+\item{n_samps_scale}{Positive integer.
+Integer that scales the number of coalitions \code{n_coalitions} to sample as sampling is cheap,
+while checking for \code{n_coalitions} unique coalitions is expensive, thus we over sample the
+number of coalitions by a factor of \code{n_samps_scale} and determine when we have \code{n_coalitions} unique
+coalitions and only use the coalitions up to this point and throw away the remaining coalitions.}
 }
 \value{
 A data.table with columns about the that contains the following columns:
@@ -78,5 +87,5 @@ nrow(x) # Equals 2^3 = 8
 x <- create_coalition_table(exact = FALSE, m = 10, n_coalitions = 1e2)
 }
 \author{
-Nikolai Sellereite, Martin Jullum
+Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen
 }
