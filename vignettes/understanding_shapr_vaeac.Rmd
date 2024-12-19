@@ -613,7 +613,7 @@ recommend to use many more epochs.
 
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
 We do this by using the `plot_vaeac_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
-respectively. We also use the `vaeac_plot_imputed_ggpairs()` function which generates samples from $p(x)$, this
+respectively. We also use the `plot_vaeac_imputed_ggpairs()` function which generates samples from $p(x)$, this
 is ment as a sanity check to see that the `vaeac` model is able to follow the general structure/distribution of the
 data. However, recall that the `vaeac` model is never trained on the empty coalition, so the produced samples should be taken with a grain of salt.
 
@@ -638,7 +638,7 @@ plot_vaeac_eval_crit(list("Original" = expl_little_training), plot_type = "metho
 
 ``` r
 # Can also see how well vaeac generates data from the full joint distribution. Quite good.
-vaeac_plot_imputed_ggpairs(
+plot_vaeac_imputed_ggpairs(
   explanation = expl_little_training,
   which_vaeac_model = "best",
   x_true = x_train
@@ -717,7 +717,7 @@ plot_vaeac_eval_crit(
 
 ``` r
 # Can also see how well vaeac generates data from the full joint distribution
-vaeac_plot_imputed_ggpairs(
+plot_vaeac_imputed_ggpairs(
   explanation = expl_train_even_more,
   which_vaeac_model = "best",
   x_true = x_train

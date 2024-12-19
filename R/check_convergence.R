@@ -10,7 +10,7 @@ check_convergence <- function(internal) {
   convergence_tol <- internal$parameters$iterative_args$convergence_tol
   max_iter <- internal$parameters$iterative_args$max_iter
   max_n_coalitions <- internal$parameters$iterative_args$max_n_coalitions
-  paired_shap_sampling <- internal$parameters$paired_shap_sampling
+  paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
   n_shapley_values <- internal$parameters$n_shapley_values
 
   n_sampled_coalitions <- internal$iter_list[[iter]]$n_sampled_coalitions

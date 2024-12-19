@@ -102,19 +102,6 @@ Specifics related to the iterative process and convergence criterion are set thr
 Specifices the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
-\item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
-The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
-The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
-\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
-\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
-\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
-probabilities.
-\code{'on_all'} means the original sampling probabilities are used for all coalitions.
-\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once.
-\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
-
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
 If \code{FALSE} all lags of each variable are explained individually.}

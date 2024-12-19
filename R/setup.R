@@ -29,7 +29,6 @@
 setup <- function(x_train,
                   x_explain,
                   approach,
-                  paired_shap_sampling = TRUE,
                   phi0,
                   output_size = 1,
                   max_n_coalitions,
@@ -49,7 +48,6 @@ setup <- function(x_train,
                   verbose,
                   iterative = NULL,
                   iterative_args = list(),
-                  kernelSHAP_reweighting = "none",
                   is_python = FALSE,
                   testing = FALSE,
                   init_time = NULL,
@@ -78,7 +76,6 @@ setup <- function(x_train,
 
   internal$parameters <- get_parameters(
     approach = approach,
-    paired_shap_sampling = paired_shap_sampling,
     phi0 = phi0,
     output_size = output_size,
     max_n_coalitions = max_n_coalitions,
@@ -95,7 +92,6 @@ setup <- function(x_train,
     verbose = verbose,
     iterative = iterative,
     iterative_args = iterative_args,
-    kernelSHAP_reweighting = kernelSHAP_reweighting,
     is_python = is_python,
     testing = testing,
     asymmetric = asymmetric,
@@ -157,7 +153,6 @@ get_prev_internal <- function(prev_shapr_object,
 
 #' @keywords internal
 get_parameters <- function(approach,
-                           paired_shap_sampling,
                            phi0,
                            output_size = 1,
                            max_n_coalitions,
@@ -174,7 +169,6 @@ get_parameters <- function(approach,
                            verbose = "basic",
                            iterative = FALSE,
                            iterative_args = list(),
-                           kernelSHAP_reweighting = "none",
                            asymmetric,
                            causal_ordering,
                            confounding,
@@ -186,10 +180,6 @@ get_parameters <- function(approach,
   # Check input type for approach
 
   # approach is checked more comprehensively later
-  if (!is.logical(paired_shap_sampling) && length(paired_shap_sampling) == 1) {
-    stop("`paired_shap_sampling` must be a single logical.")
-  }
-
   if (!is.logical(iterative) && length(iterative) == 1) {
     stop("`iterative` must be a single logical.")
   }
@@ -295,21 +285,12 @@ get_parameters <- function(approach,
     ))
   }
 
-  # type
-  if (!(length(kernelSHAP_reweighting) == 1 && kernelSHAP_reweighting %in%
-    c("none", "on_N", "on_coal_size", "on_all", "on_N_sum", "on_all_cond", "on_all_cond_paired", "comb"))) {
-    stop(
-      "`kernelSHAP_reweighting` must be one of `none`, `on_N`, `on_coal_size`, `on_N_sum`, ",
-      "`on_all`, `on_all_cond`, `on_all_cond_paired` or `comb`.\n"
-    )
-  }
 
 
 
   # Getting basic input parameters
   parameters <- list(
     approach = approach,
-    paired_shap_sampling = paired_shap_sampling,
     phi0 = phi0,
     max_n_coalitions = max_n_coalitions,
     group = group,
@@ -319,7 +300,6 @@ get_parameters <- function(approach,
     output_size = output_size,
     type = type,
     verbose = verbose,
-    kernelSHAP_reweighting = kernelSHAP_reweighting,
     iterative = iterative,
     iterative_args = iterative_args,
     output_args = output_args,
@@ -784,17 +764,6 @@ check_and_set_asymmetric <- function(internal) {
   # exact <- internal$parameters$exact
   causal_ordering <- internal$parameters$causal_ordering
   max_n_coalitions <- internal$parameters$max_n_coalitions
-  paired_shap_sampling <- internal$parameters$paired_shap_sampling
-
-  # Check that we are not doing paired sampling
-  if (paired_shap_sampling) {
-    stop(paste0(
-      "Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.\n",
-      "Asymmetric Shapley values do not support paired sampling as the paired ",
-      "coalitions will not necessarily respect the causal ordering."
-    ))
-  }
-
 
   # Get the number of coalitions that respects the (partial) causal ordering
   internal$parameters$max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
@@ -1077,6 +1046,15 @@ set_extra_comp_params <- function(internal) {
 
   extra_computation_args <- trans_null_extra_est_args(extra_computation_args)
 
+  # Check that we are not doing paired sampling when computing asymmetric Shapley values
+  if (internal$parameters$asymmetric && extra_computation_args$paired_shap_sampling) {
+    stop(paste0(
+      "Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.\n",
+      "Asymmetric Shapley values do not support paired sampling as the paired ",
+      "coalitions will not necessarily respect the causal ordering."
+    ))
+  }
+
   internal$parameters$extra_computation_args <- extra_computation_args
 
   return(internal)
@@ -1084,6 +1062,23 @@ set_extra_comp_params <- function(internal) {
 
 #' Gets the default values for the extra estimation arguments
 #'
+#' @param paired_shap_sampling Logical.
+#' If `TRUE` paired versions of all sampled coalitions are also included in the computation.
+#' That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
+#' computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.
+#' `TRUE` is the default and is recommended for highest accuracy.
+#' For asymmetric, `FALSE` is the default and the only legal value.
+#' @param kernelSHAP_reweighting String.
+#' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+#' The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+#' The options are one of `'none'`, `'on_N'`, `'on_all'`, `'on_all_cond'` (default).
+#' `'none'` means no reweighting, i.e. the sampling frequency weights are used as is.
+#' `'on_N'` means the sampling frequencies are averaged over all coalitions with the same original sampling
+#' probabilities.
+#' `'on_all'` means the original sampling probabilities are used for all coalitions.
+#' `'on_all_cond'` means the original sampling probabilities are used for all coalitions, while adjusting for the
+#' probability that they are sampled at least once.
+#' `'on_all_cond'` is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).
 #' @param compute_sd Logical. Whether to estimate the standard deviations of the Shapley value estimates. This is TRUE
 #' whenever sampling based kernelSHAP is applied (either iteratively or with a fixed number of coalitions).
 #' @param n_boot_samps Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
@@ -1097,6 +1092,8 @@ set_extra_comp_params <- function(internal) {
 #' @export
 #' @author Martin Jullum
 get_extra_comp_args_default <- function(internal, # Only used to get the default value of compute_sd
+                                        paired_shap_sampling = isFALSE(internal$parameters$asymmetric),
+                                        kernelSHAP_reweighting = "on_all_cond",
                                         compute_sd = isFALSE(internal$parameters$exact),
                                         n_boot_samps = 100,
                                         max_batch_size = 10,
@@ -1107,6 +1104,17 @@ get_extra_comp_args_default <- function(internal, # Only used to get the default
 #' @keywords internal
 check_extra_computation_args <- function(extra_computation_args) {
   list2env(extra_computation_args, envir = environment()) # Make accessible in the environment
+
+  # paired_shap_sampling
+  if (!is.logical(paired_shap_sampling) && length(paired_shap_sampling) == 1) {
+    stop("`paired_shap_sampling` must be a single logical.")
+  }
+
+  # kernelSHAP_reweighting
+  if (!(length(kernelSHAP_reweighting) == 1 && kernelSHAP_reweighting %in%
+        c("none", "on_N", "on_all", "on_all_cond"))) {
+    stop("`kernelSHAP_reweighting` must be one of `none`, `on_N`, `on_all`, `on_all_cond`.\n")
+  }
 
   # compute_sd
   if (!(is.logical(compute_sd) &&
@@ -1442,6 +1450,8 @@ compare_vecs <- function(vec1, vec2, vec_type, name1, name2) {
 set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
   iterative <- internal$parameters$iterative
 
+  paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
+
   iterative_args <- internal$parameters$iterative_args
 
   iterative_args <- utils::modifyList(get_iterative_args_default(internal),
@@ -1456,7 +1466,7 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
   }
 
   # If paired_shap_sampling is TRUE, we need the number of coalitions to be even
-  if (internal$parameters$paired_shap_sampling) {
+  if (paired_shap_sampling) {
     iterative_args$initial_n_coalitions <- ceiling(iterative_args$initial_n_coalitions * 0.5) * 2
   }
 
@@ -1472,7 +1482,7 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
     internal$iter_list <- prev_iter_list
 
     # Conveniently allow running non-iterative estimation one step further
-    if (isFALSE(internal$parameters$iterative)) {
+    if (isFALSE(iterative)) {
       internal$parameters$iterative_args$max_iter <- length(internal$iter_list) + 1
       internal$parameters$iterative_args$n_coal_next_iter_factor_vec <- NULL
     }

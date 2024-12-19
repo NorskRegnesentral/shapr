@@ -2773,7 +2773,7 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #' )
 #'
 #' # Plot the results
-#' figure <- vaeac_plot_imputed_ggpairs(
+#' figure <- plot_vaeac_imputed_ggpairs(
 #'   explanation = explanation,
 #'   which_vaeac_model = "best",
 #'   x_true = x_train,
@@ -2786,7 +2786,7 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #'   ggplot2::scale_color_manual(values = c("#E69F00", "#999999")) +
 #'   ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
 #' }
-vaeac_plot_imputed_ggpairs <- function(
+plot_vaeac_imputed_ggpairs <- function(
     explanation,
     which_vaeac_model = "best",
     x_true = NULL,

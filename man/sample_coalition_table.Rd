@@ -38,19 +38,6 @@ For example, "1 5 8" is a coalition with features 1, 5, and 8.}
 The number of unique coalitions in \code{prev_coal_samples}.
 This is a separate argument to avoid recomputing the number unnecessarily.}
 
-\item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
-The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
-The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
-\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
-\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
-\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
-probabilities.
-\code{'on_all'} means the original sampling probabilities are used for all coalitions.
-\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once.
-\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
-
 \item{n_samps_scale}{Positive integer.
 Integer that scales the number of coalitions \code{n_coalitions} to sample as sampling is cheap,
 while checking for \code{n_coalitions} unique coalitions is expensive, thus we over sample the

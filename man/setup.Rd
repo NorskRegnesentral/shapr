@@ -8,7 +8,6 @@ setup(
   x_train,
   x_explain,
   approach,
-  paired_shap_sampling = TRUE,
   phi0,
   output_size = 1,
   max_n_coalitions,
@@ -28,7 +27,6 @@ setup(
   verbose,
   iterative = NULL,
   iterative_args = list(),
-  kernelSHAP_reweighting = "none",
   is_python = FALSE,
   testing = FALSE,
   init_time = NULL,
@@ -54,11 +52,6 @@ All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empiri
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
 The two regression approaches can not be combined with any other approach.
 See details for more information.}
-
-\item{paired_shap_sampling}{Logical.
-If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
-That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
-computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
 
 \item{phi0}{Numeric.
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
@@ -173,19 +166,6 @@ Specifics related to the iterative process and convergence criterion are set thr
 \item{iterative_args}{Named list.
 Specifices the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
-
-\item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
-The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
-The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
-\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
-\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
-\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
-probabilities.
-\code{'on_all'} means the original sampling probabilities are used for all coalitions.
-\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once.
-\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
 
 \item{is_python}{Logical.
 Indicates whether the function is called from the Python wrapper.
