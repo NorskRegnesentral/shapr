@@ -90,9 +90,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp   Month    Day
               <int> <num>   <num>   <num>  <num>   <num>  <num>
-      1:          1 42.44 -14.030  18.711  9.718 -6.1533  4.356
-      2:          2 42.44   3.015  -3.442 -7.095 -7.8174  1.459
-      3:          3 42.44   8.566 -24.310  3.208  0.6956 -5.728
+      1:          1 42.44 -13.150  16.592 13.644 -6.3603  1.876
+      2:          2 42.44   3.059  -4.523 -8.921 -6.1190  2.624
+      3:          3 42.44   5.627 -23.400  4.227 -0.8489 -3.174
 
 # output_lm_numeric_empirical_independence
 
@@ -169,11 +169,11 @@
       
       i Using 8 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind    Temp   Month      Day
-              <int> <num>   <num>   <num>   <num>   <num>    <num>
-      1:          1 42.44  -9.778   9.084  5.4596  5.4596  2.37679
-      2:          2 42.44   6.833  -4.912 -7.9095 -7.9095  0.01837
-      3:          3 42.44   6.895 -21.308  0.6281  0.6281 -4.41122
+         explain_id  none Solar.R    Wind   Temp   Month      Day
+              <int> <num>   <num>   <num>  <num>   <num>    <num>
+      1:          1 42.44  -9.778   1.983 16.038   1.983  2.37679
+      2:          2 42.44   6.833  -5.547 -9.636  -5.547  0.01837
+      3:          3 42.44   6.895 -11.847  3.643 -11.847 -4.41122
 
 # output_lm_numeric_empirical_AICc_full
 
@@ -190,11 +190,11 @@
       
       i Using 8 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind    Temp   Month      Day
-              <int> <num>   <num>   <num>   <num>   <num>    <num>
-      1:          1 42.44  -9.778   9.084  5.4596  5.4596  2.37679
-      2:          2 42.44   6.833  -4.912 -7.9095 -7.9095  0.01837
-      3:          3 42.44   6.895 -21.308  0.6281  0.6281 -4.41122
+         explain_id  none Solar.R    Wind   Temp   Month      Day
+              <int> <num>   <num>   <num>  <num>   <num>    <num>
+      1:          1 42.44  -9.778   1.983 16.038   1.983  2.37679
+      2:          2 42.44   6.833  -5.547 -9.636  -5.547  0.01837
+      3:          3 42.44   6.895 -11.847  3.643 -11.847 -4.41122
 
 # output_lm_numeric_gaussian
 

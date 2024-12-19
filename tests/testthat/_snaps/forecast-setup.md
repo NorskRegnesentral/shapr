@@ -94,7 +94,7 @@
       "Temp"], xreg = data_arima[, "Wind"], train_idx = 2:148, explain_idx = 149:150,
       explain_y_lags = explain_y_lags, explain_xreg_lags = explain_xreg_lags,
       horizon = horizon, approach = "independence", phi0 = p0_ar, max_n_coalitions = n_coalitions,
-      group_lags = FALSE)
+      group_lags = FALSE, iterative_args = list(initial_n_coalitions = 20))
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.

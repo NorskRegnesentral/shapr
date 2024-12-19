@@ -16,7 +16,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 32 coalitions, 5 new. 
+      i Using 6 of 32 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 10 of 32 coalitions, 4 new. 
@@ -32,9 +32,9 @@
     Output
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
-      1:          1 42.44  -8.727   8.110  14.4650  0.7756 -2.0211
-      2:          2 42.44   4.725  -4.636 -11.7582 -0.9153 -1.2956
-      3:          3 42.44   7.253 -25.505   0.1828 -0.2723  0.7736
+      1:          1 42.44  -8.171   8.192  14.7097 -0.2248 -1.9036
+      2:          2 42.44   5.149  -4.575 -11.6827 -1.5079 -1.2630
+      3:          3 42.44   7.378 -25.598   0.2482 -0.3932  0.7966
 
 # output_lm_numeric_lm_separate
 
@@ -76,11 +76,11 @@
       
       i Using 10 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind     Temp   Month    Day
-              <int> <num>   <num>   <num>    <num>   <num>  <num>
-      1:          1 42.44  -8.593   8.491  15.3573 -0.9151 -1.739
-      2:          2 42.44   4.948  -3.745 -10.6547 -2.8369 -1.591
-      3:          3 42.44   7.129 -25.351   0.3282 -1.3110  1.637
+         explain_id  none Solar.R    Wind     Temp   Month     Day
+              <int> <num>   <num>   <num>    <num>   <num>   <num>
+      1:          1 42.44 -0.4556 -0.4556  14.4174  0.6856 -1.5898
+      2:          2 42.44 -0.2281 -0.2281 -11.2859 -1.0148 -1.1226
+      3:          3 42.44 -8.9589 -8.9589   0.2329 -0.4732  0.5898
 
 # output_lm_categorical_lm_separate
 
@@ -299,13 +299,13 @@
       
       -- Main computation started --
       
-      i Using 10 of 32 coalitions. 
+      i Using 12 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind    Temp  Month     Day
-              <int> <num>   <num>   <num>   <num>  <num>   <num>
-      1:          1 42.44  -9.946   9.182 16.2078 -2.630 -0.2120
-      2:          2 42.44   2.239  -6.194 -7.0743 -2.630 -0.2199
-      3:          3 42.44   8.127 -24.230  0.4572 -1.188 -0.7344
+         explain_id  none Solar.R    Wind    Temp   Month    Day
+              <int> <num>   <num>   <num>   <num>   <num>  <num>
+      1:          1 42.44  -4.908  10.750 15.7404 -3.9824 -4.998
+      2:          2 42.44   4.111  -4.283 -7.0067 -3.2881 -3.412
+      3:          3 42.44   4.649 -24.040 -0.4918  0.2164  2.098
 
 # output_lm_numeric_lm_surrogate_reg_surr_n_comb
 
@@ -320,13 +320,13 @@
       
       -- Main computation started --
       
-      i Using 10 of 32 coalitions. 
+      i Using 12 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind    Temp  Month     Day
-              <int> <num>   <num>   <num>   <num>  <num>   <num>
-      1:          1 42.44  -9.946   9.182 16.2078 -2.630 -0.2120
-      2:          2 42.44   2.239  -6.194 -7.0743 -2.630 -0.2199
-      3:          3 42.44   8.127 -24.230  0.4572 -1.188 -0.7344
+         explain_id  none Solar.R    Wind    Temp   Month    Day
+              <int> <num>   <num>   <num>   <num>   <num>  <num>
+      1:          1 42.44  -4.460  10.394 16.1653 -4.1613 -5.337
+      2:          2 42.44   4.921  -4.735 -6.6623 -3.5602 -3.843
+      3:          3 42.44   5.508 -24.619 -0.1181 -0.1746  1.835
 
 # output_lm_categorical_lm_surrogate
 

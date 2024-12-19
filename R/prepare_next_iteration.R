@@ -24,6 +24,7 @@ prepare_next_iteration <- function(internal) {
     current_n_coalitions <- internal$iter_list[[iter]]$n_sampled_coalitions + 2 # Used instead of n_coalitions to
     # deal with forecast special case
     current_coal_samples <- internal$iter_list[[iter]]$coal_samples
+    current_coal_samples_n_unique <- internal$iter_list[[iter]]$coal_samples_n_unique
 
     if (is.null(fixed_n_coalitions_per_iter)) {
       proposal_next_n_coalitions <- current_n_coalitions + ceiling(est_remaining_coalitions * n_coal_next_iter_factor)
@@ -70,6 +71,7 @@ prepare_next_iteration <- function(internal) {
 
 
     next_iter_list$prev_coal_samples <- current_coal_samples
+    next_iter_list$prev_coal_samples_n_unique <- current_coal_samples_n_unique
   } else {
     next_iter_list <- list()
   }

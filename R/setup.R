@@ -616,7 +616,7 @@ check_and_set_parameters <- function(internal, type) {
 
   # Check the arguments related to asymmetric and causal Shapley
   # Check the causal_ordering, which must happen before checking the causal sampling
-  internal <- check_and_set_causal_ordering(internal)
+  if (type == "normal") internal <- check_and_set_causal_ordering(internal)
   if (!is.null(internal$parameters$confounding)) internal <- check_and_set_confounding(internal)
 
   # Check the causal sampling
@@ -798,7 +798,7 @@ check_and_set_asymmetric <- function(internal) {
   internal$objects$dt_valid_causal_coalitions[-c(1, .N), shapley_weight_norm := shapley_weight / sum(shapley_weight)]
 
   # Convert the coalitions to strings. Needed when sampling the coalitions in `sample_coalition_table()`.
-  internal$objects$dt_valid_causal_coalitions[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
+  internal$objects$dt_valid_causal_coalitions[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
 
   return(internal)
 }
@@ -1453,6 +1453,11 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
     iterative_args$initial_n_coalitions <- iterative_args$max_n_coalitions
   }
 
+  # If paired_shap_sampling is TRUE, we need the number of coalitions to be even
+  if (internal$parameters$paired_shap_sampling) {
+    iterative_args$initial_n_coalitions <- ceiling(iterative_args$initial_n_coalitions * 0.5) * 2
+  }
+
   check_iterative_args(iterative_args)
 
   # Translate any null input
@@ -1642,7 +1647,8 @@ get_iterative_args_default <- function(internal,
                                              5,
                                              internal$parameters$n_features,
                                              (2^internal$parameters$n_features) / 10
-                                           )
+                                           ),
+                                           internal$parameters$max_n_coalitions
                                          )
                                        ),
                                        fixed_n_coalitions_per_iter = NULL,

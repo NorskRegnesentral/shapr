@@ -310,8 +310,10 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
   boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
 
   X_keep <- X_org[c(1, .N), .(id_coalition, coalitions, coalition_size, N)]
-  X_samp <- X_org[-c(1, .N), .(id_coalition, coalitions, coalition_size, N, shapley_weight, sample_freq)]
-  X_samp[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
+  X_samp <- X_org[
+    -c(1, .N),
+    .(id_coalition, coalitions, coalitions_str, coalition_size, N, shapley_weight, sample_freq)
+  ]
 
   n_coalitions_boot <- X_samp[, sum(sample_freq)]
 
@@ -331,12 +333,12 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
 
     X_boot00_paired <- copy(X_boot00[, .(coalitions, boot_id)])
     X_boot00_paired[, coalitions := lapply(coalitions, function(x) seq(n_shapley_values)[-x])]
-    X_boot00_paired[, coalitions_tmp := sapply(coalitions, paste, collapse = " ")]
+    X_boot00_paired[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
 
     # Extract the paired coalitions from X_samp
     X_boot00_paired <- merge(X_boot00_paired,
-      X_samp[, .(id_coalition, coalition_size, N, shapley_weight, coalitions_tmp)],
-      by = "coalitions_tmp"
+      X_samp[, .(id_coalition, coalition_size, N, shapley_weight, coalitions_str)],
+      by = "coalitions_str"
     )
     X_boot0 <- rbind(
       X_boot00[, .(boot_id, id_coalition, coalitions, coalition_size, N)],

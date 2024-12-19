@@ -1,3 +1,16 @@
+# Comment ---------------------------------------------------------------------------------------------------------
+# Note that throughout this test file, the number of
+# Monte Carlo samples is set to 5 for speed. However,
+# this also means that the outputted Shapley values
+# are not stable and vary greatly with the seed.
+# I.e., if changes are made to e.g. the sampling
+# procedure of the coalitions, then we will see a great
+# difference in the output due to this effect the very
+# limited number of MC samples. For a better comparison
+# when changing, e.g., the sampling procedure, one should
+# increase the number of MC samples. This also applied to
+# modifications to the MC approaches.
+
 # Continuous data -------------------------------------------------------------------------------------------------
 test_that("output_asymmetric_conditional", {
   expect_snapshot_rds(

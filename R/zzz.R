@@ -122,7 +122,6 @@
       "total",
       "coalitions",
       "coalition_size",
-      "coalitions_tmp",
       "initial_n_coalitions",
       "max_n_coalitions",
       "fixed_n_coalitions_per_iter",
@@ -152,7 +151,9 @@
       "relevant_features",
       "i.N",
       "prob",
-      "shapley_weight_norm"
+      "shapley_weight_norm",
+      "L",
+      "N_S"
     )
   )
 

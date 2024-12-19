@@ -27,8 +27,8 @@ compute_time <- function(internal) {
       units = "secs"
     ))
   }
-  iter_timing_secs_dt <- data.table::rbindlist(iter_timing_secs_list)
-  iter_timing_secs_dt[, total := rowSums(.SD)]
+  iter_timing_secs_dt <- data.table::rbindlist(iter_timing_secs_list, fill = TRUE)
+  iter_timing_secs_dt[, total := rowSums(.SD, na.rm = TRUE)]
   iter_timing_secs_dt[, iter := .I]
   data.table::setcolorder(iter_timing_secs_dt, "iter")
 

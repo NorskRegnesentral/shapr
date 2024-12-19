@@ -11,6 +11,8 @@ create_coalition_table(
   weight_zero_m = 10^6,
   paired_shap_sampling = TRUE,
   prev_coal_samples = NULL,
+  prev_coal_samples_n_unique = NULL,
+  n_samps_scale = 10,
   coal_feature_list = as.list(seq_len(m)),
   approach0 = "gaussian",
   kernelSHAP_reweighting = "none",
@@ -33,14 +35,26 @@ The value to use as a replacement for infinite coalition weights when doing nume
 \item{paired_shap_sampling}{Logical.
 Whether to do paired sampling of coalitions.}
 
-\item{prev_coal_samples}{List.
-A list of previously sampled coalitions.}
+\item{prev_coal_samples}{Character vector.
+A vector of previously sampled coalitions as characters.
+Each string contains a coalition and the feature indices in the coalition is separated by a space.
+For example, "1 5 8" is a coalition with features 1, 5, and 8.}
+
+\item{prev_coal_samples_n_unique}{Positive integer.
+The number of unique coalitions in \code{prev_coal_samples}.
+This is a separate argument to avoid recomputing the number unnecessarily.}
+
+\item{n_samps_scale}{Positive integer.
+Integer that scales the number of coalitions \code{n_coalitions} to sample as sampling is cheap,
+while checking for \code{n_coalitions} unique coalitions is expensive, thus we over sample the
+number of coalitions by a factor of \code{n_samps_scale} and determine when we have \code{n_coalitions} unique
+coalitions and only use the coalitions up to this point and throw away the remaining coalitions.}
 
 \item{coal_feature_list}{List.
 A list mapping each coalition to the features it contains.}
 
 \item{approach0}{Character vector.
-Contains the approach to be used for eastimation of each coalition size. Same as \code{approach} in \code{explain()}.}
+Contains the approach to be used for estimation of each coalition size. Same as \code{approach} in \code{explain()}.}
 
 \item{kernelSHAP_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
@@ -74,5 +88,5 @@ nrow(x) # Equals 2^3 = 8
 x <- create_coalition_table(exact = FALSE, m = 10, n_coalitions = 1e2)
 }
 \author{
-Nikolai Sellereite, Martin Jullum
+Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen
 }
