@@ -12,6 +12,7 @@ create_coalition_table(
   paired_shap_sampling = TRUE,
   prev_coal_samples = NULL,
   prev_coal_samples_n_unique = NULL,
+  n_samps_scale = 10,
   coal_feature_list = as.list(seq_len(m)),
   approach0 = "gaussian",
   kernelSHAP_reweighting = "none",
@@ -43,6 +44,12 @@ For example, "1 5 8" is a coalition with features 1, 5, and 8.}
 The number of unique coalitions in \code{prev_coal_samples}.
 This is a separate argument to avoid recomputing the number unnecessarily.}
 
+\item{n_samps_scale}{Positive integer.
+Integer that scales the number of coalitions \code{n_coalitions} to sample as sampling is cheap,
+while checking for \code{n_coalitions} unique coalitions is expensive, thus we over sample the
+number of coalitions by a factor of \code{n_samps_scale} and determine when we have \code{n_coalitions} unique
+coalitions and only use the coalitions up to this point and throw away the remaining coalitions.}
+
 \item{coal_feature_list}{List.
 A list mapping each coalition to the features it contains.}
 
@@ -65,12 +72,6 @@ This method is preferred as it has performed the best in simulation studies.}
 \item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
 values explanations, and is \code{NULL} for symmetric Shapley values.
 The data.table contains information about the coalitions that respects the causal ordering.}
-
-\item{n_samps_scale}{Positive integer.
-Integer that scales the number of coalitions \code{n_coalitions} to sample as sampling is cheap,
-while checking for \code{n_coalitions} unique coalitions is expensive, thus we over sample the
-number of coalitions by a factor of \code{n_samps_scale} and determine when we have \code{n_coalitions} unique
-coalitions and only use the coalitions up to this point and throw away the remaining coalitions.}
 }
 \value{
 A data.table with columns about the that contains the following columns:
