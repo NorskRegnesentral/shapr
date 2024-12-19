@@ -118,7 +118,7 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
       ),
       iterative = TRUE,
       verbose = c("convergence", "shapley")
-      ),
+    ),
     "output_lm_numeric_independence_converges_tol_paired"
   )
 })

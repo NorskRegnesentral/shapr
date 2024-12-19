@@ -1112,7 +1112,7 @@ check_extra_computation_args <- function(extra_computation_args) {
 
   # kernelSHAP_reweighting
   if (!(length(kernelSHAP_reweighting) == 1 && kernelSHAP_reweighting %in%
-        c("none", "on_N", "on_all", "on_all_cond"))) {
+    c("none", "on_N", "on_all", "on_all_cond"))) {
     stop("`kernelSHAP_reweighting` must be one of `none`, `on_N`, `on_all`, `on_all_cond`.\n")
   }
 

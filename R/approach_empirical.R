@@ -53,7 +53,6 @@ setup_approach.empirical <- function(internal,
                                      empirical.cov_mat = NULL,
                                      model = NULL,
                                      predict_model = NULL, ...) {
-
   defaults <- mget(c(
     "empirical.eta", "empirical.type", "empirical.fixed_sigma",
     "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"
