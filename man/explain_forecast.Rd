@@ -17,8 +17,6 @@ explain_forecast(
   phi0,
   max_n_coalitions = NULL,
   iterative = NULL,
-  iterative_args = list(),
-  kernelSHAP_reweighting = "on_all_cond",
   group_lags = TRUE,
   group = NULL,
   n_MC_samples = 1000,
@@ -26,6 +24,9 @@ explain_forecast(
   predict_model = NULL,
   get_model_specs = NULL,
   verbose = "basic",
+  extra_computation_args = list(),
+  iterative_args = list(),
+  output_args = list(),
   ...
 )
 }
@@ -98,23 +99,6 @@ coalitions.
 The process is repeated until the variances are below the threshold.
 Specifics related to the iterative process and convergence criterion are set through \code{iterative_args}.}
 
-\item{iterative_args}{Named list.
-Specifices the arguments for the iterative procedure.
-See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
-
-\item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
-The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
-The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
-\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
-\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
-\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
-probabilities.
-\code{'on_all'} means the original sampling probabilities are used for all coalitions.
-\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once.
-\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
-
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
 If \code{FALSE} all lags of each variable are explained individually.}
@@ -176,6 +160,18 @@ This is most relevant for \verb{approach \%in\% c("regression_separate", "regres
 Note that any combination of four strings can be used.
 E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.
 }}
+
+\item{extra_computation_args}{Named list.
+Specifices extra arguments related to the computation of the Shapley values.
+See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
+
+\item{iterative_args}{Named list.
+Specifices the arguments for the iterative procedure.
+See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
+
+\item{output_args}{Named list.
+Specifices certain arguments related to the output of the function.
+See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}

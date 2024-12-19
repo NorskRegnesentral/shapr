@@ -93,11 +93,6 @@
 #' Note that any combination of four strings can be used.
 #' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the v(S)-estimation process.
 #'
-#' @param paired_shap_sampling Logical.
-#' If `TRUE` (default), paired versions of all sampled coalitions are also included in the computation.
-#' That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
-#' computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.
-#'
 #' @param iterative Logical or NULL
 #' If `NULL` (default), the argument is set to `TRUE` if there are more than 5 features/groups, and `FALSE` otherwise.
 #' If eventually `TRUE`, the Shapley values are estimated iteratively in an iterative manner.
@@ -119,18 +114,6 @@
 #' @param extra_computation_args Named list.
 #' Specifices extra arguments related to the computation of the Shapley values.
 #' See [get_extra_comp_args_default()] for description of the arguments and their default values.
-#' @param kernelSHAP_reweighting String.
-#' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
-#' The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
-#' The options are one of `'none'`, `'on_N'`, `'on_all'`, `'on_all_cond'` (default).
-#' `'none'` means no reweighting, i.e. the sampling frequency weights are used as is.
-#' `'on_coal_size'` means the sampling frequencies are averaged over all coalitions of the same size.
-#' `'on_N'` means the sampling frequencies are averaged over all coalitions with the same original sampling
-#' probabilities.
-#' `'on_all'` means the original sampling probabilities are used for all coalitions.
-#' `'on_all_cond'` means the original sampling probabilities are used for all coalitions, while adjusting for the
-#' probability that they are sampled at least once.
-#' `'on_all_cond'` is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).
 #'
 #' @param prev_shapr_object `shapr` object or string.
 #' If an object of class `shapr` is provided, or string with a path to where intermediate results are strored,
@@ -399,9 +382,7 @@ explain <- function(model,
                     iterative = NULL,
                     max_n_coalitions = NULL,
                     group = NULL,
-                    paired_shap_sampling = TRUE,
                     n_MC_samples = 1e3,
-                    kernelSHAP_reweighting = "on_all_cond",
                     seed = 1,
                     verbose = "basic",
                     predict_model = NULL,
@@ -432,7 +413,6 @@ explain <- function(model,
     x_train = x_train,
     x_explain = x_explain,
     approach = approach,
-    paired_shap_sampling = paired_shap_sampling,
     phi0 = phi0,
     max_n_coalitions = max_n_coalitions,
     group = group,
@@ -442,7 +422,6 @@ explain <- function(model,
     verbose = verbose,
     iterative = iterative,
     iterative_args = iterative_args,
-    kernelSHAP_reweighting = kernelSHAP_reweighting,
     init_time = init_time,
     prev_shapr_object = prev_shapr_object,
     asymmetric = asymmetric,

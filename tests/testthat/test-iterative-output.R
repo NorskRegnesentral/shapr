@@ -10,8 +10,7 @@ test_that("output_lm_numeric_independence_reach_exact", {
       approach = "independence",
       phi0 = p0,
       iterative = TRUE,
-      verbose = c("basic", "convergence", "shapley"),
-      paired_shap_sampling = TRUE
+      verbose = c("basic", "convergence", "shapley")
     ),
     "output_lm_numeric_independence_reach_exact"
   )
@@ -118,8 +117,7 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
         convergence_tol = 0.1
       ),
       iterative = TRUE,
-      verbose = c("convergence", "shapley"),
-      paired_shap_sampling = TRUE
+      verbose = c("convergence", "shapley")
     ),
     "output_lm_numeric_independence_converges_tol_paired"
   )
@@ -136,12 +134,14 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     x_train = x_train_numeric,
     approach = "independence",
     phi0 = p0,
-    paired_shap_sampling = FALSE,
     iterative_args = list(
       initial_n_coalitions = 10,
       convergence_tol = 0.001,
       n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 8
+    ),
+    extra_computation_args = list(
+      paired_shap_sampling = FALSE
     ),
     iterative = TRUE,
     seed = NULL,
@@ -158,12 +158,14 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     x_train = x_train_numeric,
     approach = "independence",
     phi0 = p0,
-    paired_shap_sampling = FALSE,
     iterative_args = list(
       initial_n_coalitions = 10,
       convergence_tol = 0.001,
       n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 5
+    ),
+    extra_computation_args = list(
+      paired_shap_sampling = FALSE
     ),
     iterative = TRUE,
     seed = NULL,
@@ -179,12 +181,14 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       x_train = x_train_numeric,
       approach = "independence",
       phi0 = p0,
-      paired_shap_sampling = FALSE,
       iterative_args = list(
         initial_n_coalitions = 10,
         convergence_tol = 0.001,
         n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
+      ),
+      extra_computation_args = list(
+        paired_shap_sampling = FALSE
       ),
       iterative = TRUE,
       verbose = NULL,
@@ -207,12 +211,14 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
     x_train = x_train_numeric,
     approach = "independence",
     phi0 = p0,
-    paired_shap_sampling = FALSE,
     iterative_args = list(
       initial_n_coalitions = 10,
       convergence_tol = 0.001,
       n_coal_next_iter_factor_vec = rep(10^(-5), 10),
       max_iter = 5
+    ),
+    extra_computation_args = list(
+      paired_shap_sampling = FALSE
     ),
     iterative = TRUE,
     seed = NULL,
@@ -228,12 +234,14 @@ test_that("output_lm_numeric_independence_saving_and_cont_est", {
       x_train = x_train_numeric,
       approach = "independence",
       phi0 = p0,
-      paired_shap_sampling = FALSE,
       iterative_args = list(
         initial_n_coalitions = 10,
         convergence_tol = 0.001,
         n_coal_next_iter_factor_vec = rep(10^(-5), 10),
         max_iter = 8
+      ),
+      extra_computation_args = list(
+        paired_shap_sampling = FALSE
       ),
       iterative = TRUE,
       verbose = NULL,

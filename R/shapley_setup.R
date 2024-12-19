@@ -10,8 +10,8 @@ shapley_setup <- function(internal) {
   n_features <- internal$parameters$n_features
   approach <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
-  paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  kernelSHAP_reweighting <- internal$parameters$kernelSHAP_reweighting
+  paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
+  kernelSHAP_reweighting <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
   coal_feature_list <- internal$objects$coal_feature_list
   causal_sampling <- internal$parameters$causal_sampling
   causal_ordering <- internal$parameters$causal_ordering
@@ -592,8 +592,8 @@ shapley_setup_forecast <- function(internal) {
   n_features <- internal$parameters$n_features
   approach <- internal$parameters$approach
   is_groupwise <- internal$parameters$is_groupwise
-  paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  kernelSHAP_reweighting <- internal$parameters$kernelSHAP_reweighting
+  paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
+  kernelSHAP_reweighting <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
   coal_feature_list <- internal$objects$coal_feature_list
   horizon <- internal$parameters$horizon

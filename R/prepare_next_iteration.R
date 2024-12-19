@@ -7,7 +7,7 @@
 prepare_next_iteration <- function(internal) {
   iter <- length(internal$iter_list)
   converged <- internal$iter_list[[iter]]$converged
-  paired_shap_sampling <- internal$parameters$paired_shap_sampling
+  paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
 
 
   if (converged == FALSE) {

@@ -2561,17 +2561,17 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' )
 #'
 #' # Call the function with the named list, will use the provided names
-#' vaeac_plot_eval_crit(explanation_list = explanation_list)
+#' plot_vaeac_eval_crit(explanation_list = explanation_list)
 #'
 #' # The function also works if we have only one method,
 #' # but then one should only look at the method plot.
-#' vaeac_plot_eval_crit(
+#' plot_vaeac_eval_crit(
 #'   explanation_list = explanation_list[2],
 #'   plot_type = "method"
 #' )
 #'
 #' # Can alter the plot
-#' vaeac_plot_eval_crit(
+#' plot_vaeac_eval_crit(
 #'   explanation_list = explanation_list,
 #'   plot_from_nth_epoch = 2,
 #'   plot_every_nth_epoch = 2,
@@ -2579,7 +2579,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' )
 #'
 #' # If we only want the VLB
-#' vaeac_plot_eval_crit(
+#' plot_vaeac_eval_crit(
 #'   explanation_list = explanation_list,
 #'   criteria = "VLB",
 #'   plot_type = "criterion"
@@ -2587,7 +2587,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'
 #' # If we want only want the criterion version
 #' tmp_fig_criterion <-
-#'   vaeac_plot_eval_crit(explanation_list = explanation_list, plot_type = "criterion")
+#'   plot_vaeac_eval_crit(explanation_list = explanation_list, plot_type = "criterion")
 #'
 #' # Since tmp_fig_criterion is a ggplot2 object, we can alter it
 #' # by, e.g,. adding points or smooths with se bands
@@ -2600,7 +2600,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'
 #' @author Lars Henry Berge Olsen
 #' @export
-vaeac_plot_eval_crit <- function(explanation_list,
+plot_vaeac_eval_crit <- function(explanation_list,
                                  plot_from_nth_epoch = 1,
                                  plot_every_nth_epoch = 1,
                                  criteria = c("VLB", "IWAE"),
@@ -2773,7 +2773,7 @@ vaeac_plot_eval_crit <- function(explanation_list,
 #' )
 #'
 #' # Plot the results
-#' figure <- vaeac_plot_imputed_ggpairs(
+#' figure <- plot_vaeac_imputed_ggpairs(
 #'   explanation = explanation,
 #'   which_vaeac_model = "best",
 #'   x_true = x_train,
@@ -2786,7 +2786,7 @@ vaeac_plot_eval_crit <- function(explanation_list,
 #'   ggplot2::scale_color_manual(values = c("#E69F00", "#999999")) +
 #'   ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
 #' }
-vaeac_plot_imputed_ggpairs <- function(
+plot_vaeac_imputed_ggpairs <- function(
     explanation,
     which_vaeac_model = "best",
     x_true = NULL,

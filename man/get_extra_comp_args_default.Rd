@@ -6,6 +6,8 @@
 \usage{
 get_extra_comp_args_default(
   internal,
+  paired_shap_sampling = isFALSE(internal$parameters$asymmetric),
+  kernelSHAP_reweighting = "on_all_cond",
   compute_sd = isFALSE(internal$parameters$exact),
   n_boot_samps = 100,
   max_batch_size = 10,
@@ -15,6 +17,25 @@ get_extra_comp_args_default(
 \arguments{
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
+
+\item{paired_shap_sampling}{Logical.
+If \code{TRUE} paired versions of all sampled coalitions are also included in the computation.
+That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
+computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.
+\code{TRUE} is the default and is recommended for highest accuracy.
+For asymmetric, \code{FALSE} is the default and the only legal value.}
+
+\item{kernelSHAP_reweighting}{String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
+\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+\code{'on_all'} means the original sampling probabilities are used for all coalitions.
+\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
 
 \item{compute_sd}{Logical. Whether to estimate the standard deviations of the Shapley value estimates. This is TRUE
 whenever sampling based kernelSHAP is applied (either iteratively or with a fixed number of coalitions).}

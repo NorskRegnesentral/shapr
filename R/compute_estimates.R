@@ -207,8 +207,8 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
   iter <- length(internal$iter_list)
 
   n_explain <- internal$parameters$n_explain
-  paired_shap_sampling <- internal$parameters$paired_shap_sampling
-  shapley_reweight <- internal$parameters$kernelSHAP_reweighting
+  paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
+  shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
   X_org <- copy(X)
 

@@ -13,9 +13,7 @@ explain(
   iterative = NULL,
   max_n_coalitions = NULL,
   group = NULL,
-  paired_shap_sampling = TRUE,
   n_MC_samples = 1000,
-  kernelSHAP_reweighting = "on_all_cond",
   seed = 1,
   verbose = "basic",
   predict_model = NULL,
@@ -83,11 +81,6 @@ If provided, group wise Shapley values are computed.
 \code{group} then has length equal to the number of groups.
 The list element contains character vectors with the features included in each of the different groups.}
 
-\item{paired_shap_sampling}{Logical.
-If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
-That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
-computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
-
 \item{n_MC_samples}{Positive integer.
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
 of every conditional expectation.
@@ -96,19 +89,6 @@ from the leaf node (see an exception related to the \code{ctree.sample} argument
 For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
-
-\item{kernelSHAP_reweighting}{String.
-How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
-The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
-The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
-\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
-\code{'on_coal_size'} means the sampling frequencies are averaged over all coalitions of the same size.
-\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
-probabilities.
-\code{'on_all'} means the original sampling probabilities are used for all coalitions.
-\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
-probability that they are sampled at least once.
-\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
