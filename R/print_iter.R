@@ -79,8 +79,6 @@ print_iter <- function(internal) {
   }
 
   if ("shapley" %in% verbose) {
-    n_explain <- internal$parameters$n_explain
-
     dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, -1]
     dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, -1]
 
@@ -99,7 +97,7 @@ print_iter <- function(internal) {
       print_dt <- as.data.table(matrix1)
     } else {
       msg <- paste0(msg, "estimated Shapley values (sd)")
-      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = n_explain))
+      print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ") ", sep = ""), nrow = nrow(matrix1)))
     }
 
     cli::cli_h3(msg)

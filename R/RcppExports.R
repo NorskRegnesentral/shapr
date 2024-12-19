@@ -211,6 +211,8 @@ mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xexplain_mat, mcov
     .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xexplain_mat, mcov, S_scale_dist)
 }
 
+#' Sampling of coaltions
+#'
 #' @keywords internal
 sample_coalitions_cpp <- function(m, n_coalitions) {
     .Call(`_shapr_sample_coalitions_cpp`, m, n_coalitions)

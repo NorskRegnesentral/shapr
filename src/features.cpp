@@ -1,6 +1,8 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+//' Sampling of coaltions
+//'
 //' @keywords internal
 // [[Rcpp::export]]
 List sample_coalitions_cpp(int m, IntegerVector n_coalitions) {
