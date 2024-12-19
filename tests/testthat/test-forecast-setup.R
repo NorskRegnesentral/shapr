@@ -173,7 +173,8 @@ test_that("erroneous input: `max_n_coalitions`", {
         approach = "independence",
         phi0 = p0_ar,
         max_n_coalitions = n_coalitions,
-        group_lags = FALSE
+        group_lags = FALSE,
+        iterative_args = list("initial_n_coalitions" = 20)
       )
     },
     error = TRUE

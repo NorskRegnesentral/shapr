@@ -16,7 +16,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 32 coalitions, 5 new. 
+      i Using 6 of 32 coalitions, 6 new. 
       
       -- Convergence info 
       i Not converged after 6 coalitions:
@@ -565,9 +565,9 @@
       3: 42.444 (0.00) -18.368 (4.08)   0.127 (4.13)  0.673 (0.13)
          explain_id  none        A        B       C
               <int> <num>    <num>    <num>   <num>
-      1:          1 42.44   0.7716  13.3373 -1.5069
-      2:          2 42.44   0.6006 -13.4404 -1.0396
-      3:          3 42.44 -18.3678   0.1268  0.6728
+      1:          1 42.44   1.0372  12.9494 -1.3845
+      2:          2 42.44   0.8661 -13.8283 -0.9173
+      3:          3 42.44 -18.1023  -0.2611  0.7951
 
 # output_lm_numeric_independence_converges_tol_paired
 
@@ -719,7 +719,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 32 coalitions, 5 new. 
+      i Using 6 of 32 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 10 of 32 coalitions, 4 new. 
@@ -757,7 +757,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 32 coalitions, 5 new. 
+      i Using 6 of 32 coalitions, 6 new. 
       
       -- Convergence info 
       i Not converged after 6 coalitions:
@@ -823,7 +823,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 32 coalitions, 5 new. 
+      i Using 6 of 32 coalitions, 6 new. 
       
       -- Convergence info 
       i Not converged after 6 coalitions:
@@ -957,7 +957,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 32 coalitions, 5 new. 
+      i Using 6 of 32 coalitions, 6 new. 
       
       -- Convergence info 
       i Not converged after 6 coalitions:
@@ -1091,7 +1091,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 32 coalitions, 5 new. 
+      i Using 6 of 32 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 10 of 32 coalitions, 4 new. 

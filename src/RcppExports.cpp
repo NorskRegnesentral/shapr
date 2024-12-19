@@ -195,6 +195,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sample_features_cpp_str_paired
+CharacterVector sample_features_cpp_str_paired(int m, IntegerVector n_features, bool paired_shap_sampling);
+RcppExport SEXP _shapr_sample_features_cpp_str_paired(SEXP mSEXP, SEXP n_featuresSEXP, SEXP paired_shap_samplingSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type n_features(n_featuresSEXP);
+    Rcpp::traits::input_parameter< bool >::type paired_shap_sampling(paired_shap_samplingSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_features_cpp_str_paired(m, n_features, paired_shap_sampling));
+    return rcpp_result_gen;
+END_RCPP
+}
 // observation_impute_cpp
 NumericMatrix observation_impute_cpp(IntegerVector index_xtrain, IntegerVector index_s, NumericMatrix x_train, NumericMatrix x_explain, IntegerMatrix S);
 RcppExport SEXP _shapr_observation_impute_cpp(SEXP index_xtrainSEXP, SEXP index_sSEXP, SEXP x_trainSEXP, SEXP x_explainSEXP, SEXP SSEXP) {
@@ -250,7 +263,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_prepare_data_gaussian_cpp", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp, 5},
     {"_shapr_prepare_data_gaussian_cpp_caus", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp_caus, 5},
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
-    {"_shapr_sample_coalitions_cpp", (DL_FUNC) &_shapr_sample_coalitions_cpp, 2},
+    {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
+    {"_shapr_sample_features_cpp_str_paired", (DL_FUNC) &_shapr_sample_features_cpp_str_paired, 3},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
     {"_shapr_weight_matrix_cpp", (DL_FUNC) &_shapr_weight_matrix_cpp, 4},
     {"_shapr_coalition_matrix_cpp", (DL_FUNC) &_shapr_coalition_matrix_cpp, 2},

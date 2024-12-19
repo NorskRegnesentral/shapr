@@ -218,6 +218,16 @@ sample_coalitions_cpp <- function(m, n_coalitions) {
     .Call(`_shapr_sample_coalitions_cpp`, m, n_coalitions)
 }
 
+#' We here return a vector of strings/characters, i.e., a CharacterVector,
+#' where each string is a space-separated list of integers.
+#' @param m Integer The number of elements to sample from, i.e., the number of features.
+#' @param n_features IntegerVector The number of features to sample for each feature combination.
+#' @param paired_shap_sampling Logical Should we return both the sampled coalition S and its complement Sbar.
+#' @keywords internal
+sample_features_cpp_str_paired <- function(m, n_features, paired_shap_sampling = TRUE) {
+    .Call(`_shapr_sample_features_cpp_str_paired`, m, n_features, paired_shap_sampling)
+}
+
 #' Get imputed data
 #'
 #' @param index_xtrain Positive integer. Represents a sequence of row indices from \code{x_train},

@@ -264,11 +264,11 @@
       
       i Using 6 of 6 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp   Month    Day
-              <int> <num>   <num>   <num>  <num>   <num>  <num>
-      1:          1 42.44 -17.410  26.305 13.958  -7.146 -3.105
-      2:          2 42.44  -2.592   5.563 -3.561 -11.136 -2.154
-      3:          3 42.44  21.260 -43.085 10.992  -8.054  1.319
+         explain_id  none Solar.R     Wind     Temp  Month     Day
+              <int> <num>   <num>    <num>    <num>  <num>   <num>
+      1:          1 42.44  -25.73  21.4308  21.4308 -1.140 -3.3927
+      2:          2 42.44   -7.98   0.8414   0.8414 -5.149 -2.4328
+      3:          3 42.44    8.03 -12.3436 -12.3436 -1.848  0.9372
 
 # output_asym_caus_conf_mix_empirical
 
@@ -477,11 +477,11 @@
       v Converged after 6 coalitions:
       Convergence tolerance reached!
     Output
-         explain_id  none       A      B      C
-              <int> <num>   <num>  <num>  <num>
-      1:          1 42.44 -17.921  39.86 -9.334
-      2:          2 42.44  -2.802  -5.92 -5.157
-      3:          3 42.44  -2.233 -20.16  4.828
+         explain_id  none      A      B       C
+              <int> <num>  <num>  <num>   <num>
+      1:          1 42.44 -5.082  32.51 -14.823
+      2:          2 42.44 10.059 -29.61   5.675
+      3:          3 42.44 11.355 -23.68  -5.247
 
 # output_mixed_sym_caus_conf_TRUE
 
@@ -530,7 +530,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 32 coalitions, 5 new. 
+      i Using 6 of 32 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 10 of 32 coalitions, 4 new. 
@@ -694,7 +694,7 @@
       -- iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
-      i Using 5 of 16 coalitions, 5 new. 
+      i Using 6 of 16 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 16 coalitions, 2 new. 
