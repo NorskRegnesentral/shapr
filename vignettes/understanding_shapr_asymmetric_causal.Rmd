@@ -594,7 +594,6 @@ explanation_asym_con[["gaussian"]] <- explain(
   phi0 = phi0,
   n_MC_samples = 1000,
   approach = "gaussian",
-  paired_shap_sampling = FALSE,
   asymmetric = TRUE,
   causal_ordering = causal_ordering,
   confounding = NULL # Default value
@@ -627,7 +626,6 @@ explanation_asym_con[["gaussian_non_iterative"]] <- explain(
   phi0 = phi0,
   n_MC_samples = 1000,
   approach = "gaussian",
-  paired_shap_sampling = FALSE,
   asymmetric = TRUE,
   causal_ordering = causal_ordering,
   confounding = NULL, # Default value
@@ -660,7 +658,6 @@ explanation_asym_con[["ctree"]] <- explain(
   phi0 = phi0,
   n_MC_samples = 1000,
   approach = "ctree",
-  paired_shap_sampling = FALSE,
   asymmetric = TRUE,
   causal_ordering = causal_ordering,
   confounding = NULL # Default value
@@ -693,7 +690,6 @@ explanation_asym_con[["xgboost"]] <- explain(
   phi0 = phi0,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
-  paired_shap_sampling = FALSE,
   asymmetric = TRUE,
   causal_ordering = causal_ordering,
   confounding = NULL # Default value
@@ -1119,7 +1115,6 @@ explanation_asym_cau[["gaussian"]] <- explain(
   phi0 = phi0,
   n_MC_samples = 1000,
   approach = "gaussian",
-  paired_shap_sampling = FALSE,
   asymmetric = TRUE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
@@ -1154,7 +1149,6 @@ explanation_asym_cau[["copula"]] <- explain(
   phi0 = phi0,
   n_MC_samples = 1000,
   approach = "copula",
-  paired_shap_sampling = FALSE,
   asymmetric = TRUE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
@@ -1193,7 +1187,6 @@ explanation_asym_cau[["vaeac"]] <- explain(
    n_MC_samples = 1000,
    approach = "vaeac",
    vaeac.epochs = 20,
-   paired_shap_sampling = FALSE,
    asymmetric = TRUE,
    causal_ordering = list(1, 2:3, 4:7),
    confounding = c(FALSE, TRUE, FALSE)
@@ -1600,7 +1593,6 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
   asymmetric = TRUE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE),
-  paired_shap_sampling = FALSE,
   verbose = c("basic", "convergence", "shapley"),
   max_n_coalitions = 10, # Instead of 20
   iterative = FALSE # Due to small number of coalitions
@@ -1790,7 +1782,6 @@ explanation_group_gaussian[["asymmetric_conditional"]] <-
     asymmetric = TRUE,
     causal_ordering = causal_ordering_group,
     confounding = NULL,
-    paired_shap_sampling = FALSE,
     n_MC_samples = 1000,
     group = group_list,
     iterative = FALSE
@@ -1859,7 +1850,6 @@ explanation_group_gaussian[["asymmetric_causal"]] <-
     asymmetric = TRUE,
     causal_ordering = causal_ordering_group,
     confounding = confounding,
-    paired_shap_sampling = FALSE,
     n_MC_samples = 1000,
     group = group_list,
     iterative = FALSE
