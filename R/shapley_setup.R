@@ -294,8 +294,6 @@ sample_coalition_table <- function(m,
   asymmetric <- !is.null(dt_valid_causal_coalitions)
 
   if (!is.null(prev_coal_samples)) {
-    # Compute prev_coal_samples_n_unique if not provided
-    if (is.null(prev_coal_samples_n_unique)) prev_coal_samples_n_unique <- length(unique(prev_coal_samples))
     coal_sample_all <- prev_coal_samples
     unique_samples <- prev_coal_samples_n_unique
     n_coalitions <- min(2^m, n_coalitions)
@@ -324,7 +322,7 @@ sample_coalition_table <- function(m,
         ]
     } else {
       # Sample the (paired) coalitions as strings
-      coalitions <- sample_features_cpp_str_paired(m, coal_size_sample, paired_shap_sampling)
+      coalitions <- sample_coalitions_cpp_str_paired(m, coal_size_sample, paired_shap_sampling)
     }
 
     # Add the new coalitions to the previously sampled coalitions

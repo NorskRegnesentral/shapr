@@ -33,9 +33,7 @@ Note that if \code{exact = TRUE}, \code{n_coalitions} is ignored.}
 The value to use as a replacement for infinite coalition weights when doing numerical operations.}
 
 \item{paired_shap_sampling}{Logical.
-If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
-That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
-computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
+Whether to do paired sampling of coalitions.}
 
 \item{prev_coal_samples}{Character vector.
 A vector of previously sampled coalitions as characters.

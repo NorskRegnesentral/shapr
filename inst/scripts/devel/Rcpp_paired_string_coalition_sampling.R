@@ -28,7 +28,7 @@
 #
 # //' @keywords internal
 # // [[Rcpp::export]]
-# CharacterVector sample_features_cpp_str_paired1(int m, IntegerVector n_features, bool paired_shap_sampling = true) {
+# CharacterVector sample_coalitions_cpp_str_paired1(int m, IntegerVector n_features, bool paired_shap_sampling = true) {
 #
 #   int n = n_features.length();
 #   int result_size = paired_shap_sampling ? 2 * n : n;
@@ -70,7 +70,7 @@
 #
 # //' @keywords internal
 # // [[Rcpp::export]]
-# CharacterVector sample_features_cpp_str_paired2(int m, IntegerVector n_features, bool paired_shap_sampling = true) {
+# CharacterVector sample_coalitions_cpp_str_paired2(int m, IntegerVector n_features, bool paired_shap_sampling = true) {
 #
 #   int n = n_features.length();
 #   int result_size = paired_shap_sampling ? 2 * n : n;
@@ -113,7 +113,7 @@
 #
 # //' @keywords internal
 # // [[Rcpp::export]]
-# CharacterVector sample_features_cpp_str_paired3(int m, IntegerVector n_features, bool paired_shap_sampling = true) {
+# CharacterVector sample_coalitions_cpp_str_paired3(int m, IntegerVector n_features, bool paired_shap_sampling = true) {
 #
 #   int n = n_features.size();
 #   int result_size = paired_shap_sampling ? 2 * n : n;
@@ -164,7 +164,7 @@
 #
 # //' @keywords internal
 # // [[Rcpp::export]]
-# CharacterVector sample_features_cpp_str_paired4(int m, IntegerVector n_features, bool paired_shap_sampling = true) {
+# CharacterVector sample_coalitions_cpp_str_paired4(int m, IntegerVector n_features, bool paired_shap_sampling = true) {
 #
 #   int n = n_features.size();
 #   int result_size = paired_shap_sampling ? 2 * n : n;

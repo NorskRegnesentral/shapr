@@ -1,42 +1,22 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-//' Sampling of coaltions
-//'
-//' @keywords internal
-// [[Rcpp::export]]
-List sample_coalitions_cpp(int m, IntegerVector n_coalitions) {
-
-    int n = n_coalitions.length();
-    List l(n);
-
-    for (int i = 0; i < n; i++) {
-
-        int s = n_coalitions[i];
-        IntegerVector k = sample(m, s);
-        std::sort(k.begin(), k.end());
-        l[i] = k;
-
-    }
-
-    return l;
-}
-
 //' We here return a vector of strings/characters, i.e., a CharacterVector,
 //' where each string is a space-separated list of integers.
-//' @param m Integer The number of elements to sample from, i.e., the number of features.
-//' @param n_features IntegerVector The number of features to sample for each feature combination.
-//' @param paired_shap_sampling Logical Should we return both the sampled coalition S and its complement Sbar.
+//'
+//' @param n_coalitions IntegerVector.
+//' The number of features to sample for each feature combination.
+//' @inheritParams create_coalition_table
 //' @keywords internal
 // [[Rcpp::export]]
-CharacterVector sample_features_cpp_str_paired(int m, IntegerVector n_features, bool paired_shap_sampling = true) {
+CharacterVector sample_coalitions_cpp_str_paired(int m, IntegerVector n_coalitions, bool paired_shap_sampling = true) {
 
-  int n = n_features.size();
+  int n = n_coalitions.size();
   CharacterVector result(paired_shap_sampling ? 2 * n : n);
 
   for (int i = 0; i < n; i++) {
 
-    int s = n_features[i];
+    int s = n_coalitions[i];
     IntegerVector k = sample(m, s);
     std::sort(k.begin(), k.end());
 

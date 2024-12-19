@@ -630,7 +630,7 @@ check_and_set_parameters <- function(internal, type) {
 
   # Check the arguments related to asymmetric and causal Shapley
   # Check the causal_ordering, which must happen before checking the causal sampling
-  if (type == "normal") internal <- check_and_set_causal_ordering(internal)
+  if (type == "regular") internal <- check_and_set_causal_ordering(internal)
   if (!is.null(confounding)) internal <- check_and_set_confounding(internal)
 
   # Check the causal sampling

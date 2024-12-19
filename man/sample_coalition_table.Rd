@@ -10,8 +10,9 @@ sample_coalition_table(
   weight_zero_m = 10^6,
   paired_shap_sampling = TRUE,
   prev_coal_samples = NULL,
+  prev_coal_samples_n_unique = NULL,
   kernelSHAP_reweighting,
-  valid_causal_coalitions = NULL,
+  n_samps_scale = 10,
   dt_valid_causal_coalitions = NULL
 )
 }
@@ -26,12 +27,16 @@ Note that if \code{exact = TRUE}, \code{n_coalitions} is ignored.}
 The value to use as a replacement for infinite coalition weights when doing numerical operations.}
 
 \item{paired_shap_sampling}{Logical.
-If \code{TRUE} (default), paired versions of all sampled coalitions are also included in the computation.
-That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then also coalition (2,4) is used for
-computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.}
+Whether to do paired sampling of coalitions.}
 
-\item{prev_coal_samples}{List.
-A list of previously sampled coalitions.}
+\item{prev_coal_samples}{Character vector.
+A vector of previously sampled coalitions as characters.
+Each string contains a coalition and the feature indices in the coalition is separated by a space.
+For example, "1 5 8" is a coalition with features 1, 5, and 8.}
+
+\item{prev_coal_samples_n_unique}{Positive integer.
+The number of unique coalitions in \code{prev_coal_samples}.
+This is a separate argument to avoid recomputing the number unnecessarily.}
 
 \item{kernelSHAP_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
@@ -45,6 +50,12 @@ probabilities.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
 \code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
+
+\item{n_samps_scale}{Positive integer.
+Integer that scales the number of coalitions \code{n_coalitions} to sample as sampling is cheap,
+while checking for \code{n_coalitions} unique coalitions is expensive, thus we over sample the
+number of coalitions by a factor of \code{n_samps_scale} and determine when we have \code{n_coalitions} unique
+coalitions and only use the coalitions up to this point and throw away the remaining coalitions.}
 
 \item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
 values explanations, and is \code{NULL} for symmetric Shapley values.
