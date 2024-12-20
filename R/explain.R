@@ -366,8 +366,7 @@
 #' @author Martin Jullum, Lars Henry Berge Olsen
 #'
 #' @references
-#'   - \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/
-#'   pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+#'   - \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
 #'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 #'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
 #'   - \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
