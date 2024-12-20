@@ -52,14 +52,14 @@ A list with the following elements:
 }
 \description{
 This function is used to extract the feature information from the model to be checked against the
-corresponding feature information in the data passed to \verb{[explain()]}.
+corresponding feature information in the data passed to \code{\link[=explain]{explain()}}.
 
 NOTE: You should never need to call this function explicitly.
 It is exported just to be easier accessible for users, see details.
 }
 \details{
 If you are explaining a model not supported natively, you may (optionally) enable such checking by
-creating this function yourself and passing it on to \verb{[explain()]}.
+creating this function yourself and passing it on to \code{\link[=explain]{explain()}}.
 }
 \examples{
 # Load example data
@@ -74,7 +74,7 @@ get_model_specs(model)
 
 }
 \seealso{
-For model classes not supported natively, you NEED to create an analogue to \verb{[predict_model()]}. See it's
+For model classes not supported natively, you NEED to create an analogue to \code{\link[=predict_model]{predict_model()}}. See it's
 help file for details.
 }
 \author{

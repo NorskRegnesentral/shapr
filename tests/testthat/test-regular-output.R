@@ -162,6 +162,7 @@ test_that("output_lm_numeric_ctree", {
 
 test_that("output_lm_numeric_vaeac", {
   skip_on_os("mac") # The code runs on macOS, but it gives different Shapley values due to inconsistencies in torch seed
+  skip_if_not(torch::torch_is_installed())
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -200,6 +201,7 @@ test_that("output_lm_categorical_ctree", {
 
 test_that("output_lm_categorical_vaeac", {
   skip_on_os("mac") # The code runs on macOS, but it gives different Shapley values due to inconsistencies in torch seed
+  skip_if_not(torch::torch_is_installed())
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -347,6 +349,7 @@ test_that("output_lm_mixed_ctree", {
 
 test_that("output_lm_mixed_vaeac", {
   skip_on_os("mac") # The code runs on macOS, but it gives different Shapley values due to inconsistencies in torch seed
+  skip_if_not(torch::torch_is_installed())
   expect_snapshot_rds(
     explain(
       testing = TRUE,
