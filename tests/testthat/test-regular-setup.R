@@ -1543,6 +1543,7 @@ test_that("counting the number of unique approaches", {
 
 
 test_that("vaeac_set_seed_works", {
+  skip_if_not(torch::torch_is_installed())
   # Train two vaeac models with the same seed
   explanation_vaeac_1 <- explain(
     testing = TRUE,
@@ -1583,6 +1584,8 @@ test_that("vaeac_set_seed_works", {
 })
 
 test_that("vaeac_pretreained_vaeac_model", {
+  skip_if_not(torch::torch_is_installed())
+
   # Test that we can skip training a new vaeac model if we already
   # have trained it in a previous shapr::explain object.
 
