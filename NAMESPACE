@@ -2,6 +2,7 @@
 
 S3method(get_model_specs,Arima)
 S3method(get_model_specs,ar)
+S3method(get_model_specs,default)
 S3method(get_model_specs,forecast_ARIMA)
 S3method(get_model_specs,gam)
 S3method(get_model_specs,glm)
