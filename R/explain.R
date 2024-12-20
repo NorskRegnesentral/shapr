@@ -391,7 +391,7 @@
 #'   dependence-aware Shapley values. Journal of Open Source Software, 5(46), 2027}
 #'   - \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
 #'   Olsen, L. H., Glad, I. K., Jullum, M., & Aas, K. (2022). Using Shapley values and variational autoencoders to
-#'   explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51.
+#'   explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51}
 #'   - \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{
 #'   Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
 #'   model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48}
