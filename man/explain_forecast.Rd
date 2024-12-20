@@ -296,6 +296,9 @@ iterative estimation routine.}
 \description{
 Computes dependence-aware Shapley values for observations in \code{explain_idx} from the specified
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
+See \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/
+pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+Aas, et. al (2021)} for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 }
 \details{
 This function explains a forecast of length \code{horizon}. The argument \code{train_idx}
@@ -336,19 +339,39 @@ explain_forecast(
 }
 \references{
 \itemize{
-\item Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
-More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
-\item Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
+\item \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/
+pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
+\item \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
 incorporating causal knowledge into model-agnostic explainability.
-Advances in neural information processing systems, 33, 1229-1239.
-\item Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal shapley values:
+Advances in neural information processing systems, 33, 1229-1239}
+\item \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal shapley values:
 Exploiting causal knowledge to explain individual predictions of complex models.
-Advances in neural information processing systems, 33, 4778-4789.
-\item Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
-model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
-\item Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410.
+Advances in neural information processing systems, 33, 4778-4789}
+\item \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{
+Jullum, M., Redelmeier, A. & Aas, K. (2021). Efficient and simple prediction explanations with
+groupShapley: A practical perspective. Italian Workshop on Explainable Artificial Intelligence 2021.}
+\item \href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
+Redelmeier, A., Jullum, M., & Aas, K. (2020). Explaining predictive models with mixed features using Shapley
+values and conditional inference trees. In Machine Learning and Knowledge Extraction:
+International Cross-Domain Conference, CD-MAKE 2020, Dublin, Ireland, August 25–28, 2020, Proceedings 4
+(pp. 117-137). Springer International Publishing.}
+\item \href{https://doi.org/10.21105/joss.02027}{
+Sellereite N., & Jullum, M. (2019). shapr: An R-package for explaining machine learning models with
+dependence-aware Shapley values. Journal of Open Source Software, 5(46), 2027}
+\item \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
+Olsen, L. H., Glad, I. K., Jullum, M., & Aas, K. (2022). Using Shapley values and variational autoencoders to
+explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51.
+\item \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{
+Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
+model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48}
+\item \href{https://arxiv.org/pdf/2410.04883}{
+Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410}
 }
 }
 \author{
-Martin Jullum, Lars Henry Berge Olsen
+Jon Lachmann, Martin Jullum
 }
