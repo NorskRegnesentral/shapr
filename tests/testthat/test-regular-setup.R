@@ -223,6 +223,10 @@ test_that("erroneous input: `x_train/x_explain`", {
 })
 
 test_that("erroneous input: `model`", {
+  # R versions earlier than 4.3 gives assigns the error to the internal function instead of the explain_forecast,
+  # and therefore marks this as an error (which it is not)
+  Rversion_number <- as.numeric(paste0(R.version$major, R.version$minor))
+  skip_if_not(Rversion_number >= 43)
   set.seed(123)
 
   expect_snapshot(
@@ -1543,6 +1547,7 @@ test_that("counting the number of unique approaches", {
 
 
 test_that("vaeac_set_seed_works", {
+  skip_if_not(torch::torch_is_installed())
   # Train two vaeac models with the same seed
   explanation_vaeac_1 <- explain(
     testing = TRUE,
@@ -1583,6 +1588,8 @@ test_that("vaeac_set_seed_works", {
 })
 
 test_that("vaeac_pretreained_vaeac_model", {
+  skip_if_not(torch::torch_is_installed())
+
   # Test that we can skip training a new vaeac model if we already
   # have trained it in a previous shapr::explain object.
 

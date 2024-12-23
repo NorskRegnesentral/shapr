@@ -74,7 +74,10 @@ and group coalitions if \code{group != NULL}.
 If \code{NULL} regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed.
 \code{group} then has length equal to the number of groups.
-The list element contains character vectors with the features included in each of the different groups.}
+The list element contains character vectors with the features included in each of the different groups.
+See
+\href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}
+for more information on group wise Shapley values.}
 
 \item{n_MC_samples}{Positive integer.
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
@@ -185,7 +188,8 @@ Used to calculate the time it took to run the full \code{explain} call.}
 If an object of class \code{shapr} is provided, or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
-want to continue the iterative estimation. See the vignette for examples.}
+want to continue the iterative estimation. See the
+\href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage} for examples.}
 
 \item{asymmetric}{Logical.
 Not applicable for (regular) non-causal or asymmetric explanations.
@@ -194,8 +198,11 @@ If \code{TRUE}, then \code{explain} compute asymmetric Shapley values based on t
 given by \code{causal_ordering}. That is, \code{explain} only uses the feature combinations/coalitions that
 respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and
 \code{confounding} is \code{NULL} (default), then \code{explain} computes asymmetric conditional Shapley values as specified in
-Frye et al. (2020). If \code{confounding} is provided, i.e., not \code{NULL}, then \code{explain} computes asymmetric causal
-Shapley values as specified in Heskes et al. (2020).}
+\href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+Frye et al. (2020)}. If \code{confounding} is provided, i.e., not \code{NULL}, then \code{explain} computes asymmetric causal
+Shapley values as specified in
+\href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+Heskes et al. (2020)}.}
 
 \item{causal_ordering}{List.
 Not applicable for (regular) non-causal or asymmetric explanations.

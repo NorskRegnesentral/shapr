@@ -130,20 +130,31 @@ get_p <- function(dt_vS, internal) {
 #' }
 #'
 #' @description Function that computes the Mean Squared Error (MSEv) of the contribution function
-#' v(s) as proposed by \href{https://arxiv.org/pdf/2006.01272.pdf}{Frye et al. (2019)} and used by
+#' v(s) as proposed by \href{https://arxiv.org/pdf/2006.01272}{Frye et al. (2019)} and used by
 #' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #'
 #' @details
 #' The MSEv evaluation criterion does not rely on access to the true contribution functions nor the
 #' true Shapley values to be computed. A lower value indicates better approximations, however, the
 #' scale and magnitude of the MSEv criterion is not directly interpretable in regard to the precision
-#' of the final estimated Shapley values. \href{https://arxiv.org/pdf/2305.09536.pdf}{Olsen et al. (2022)}
+#' of the final estimated Shapley values.
+#' \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{Olsen et al. (2024)}
 #' illustrates in Figure 11 a fairly strong linear relationship between the MSEv criterion and the
 #' MAE between the estimated and true Shapley values in a simulation study. Note that explicands
 #' refer to the observations whose predictions we are to explain.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
+#' @references
+#'   - \href{https://arxiv.org/pdf/2006.01272}{
+#'   Frye, C., de Mijolla, D., Begley, T., Cowton, L., Stanley, M., & Feige, I. (2021).
+#'   Shapley explainability on the data manifold. In International Conference on Learning Representations.}
+#'   - \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
+#'   Olsen, L. H., Glad, I. K., Jullum, M., & Aas, K. (2022). Using Shapley values and variational autoencoders to
+#'   explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51}
+#'   - \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{
+#'   Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
+#'   model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48}
 compute_MSEv_eval_crit <- function(internal,
                                    dt_vS,
                                    MSEv_uniform_comb_weights,

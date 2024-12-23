@@ -9,11 +9,13 @@ navbar:
       text: Vignettes
       menu:
       - text: "General usage of shapr"
-        href: articles/understanding_shapr.html
+        href: articles/general_usage.html
       - text: "Advanced usage of the `vaeac` approach"
-        href: articles/understanding_shapr_vaeac.html
+        href: articles/vaeac.html
       - text: "The separate and surrogate regression approches"
-        href: articles/understanding_shapr_regression.html
+        href: articles/regression.html
+      - text: "Asymmetric and Causal Shapley values"
+        href: articles/asymmetric_causal.html
     news:
       text: News
       href: news/index.html

@@ -42,7 +42,7 @@ get_feature_specs <- function(get_model_specs, model) {
       stop(paste0(
         "The get_model_specs function of class `", model_class0, "` is invalid.\n",
         "See the 'Advanced usage' section of the vignette:\n",
-        "vignette('understanding_shapr', package = 'shapr')\n",
+        "vignette('general_usage', package = 'shapr')\n",
         "for more information on running shapr with custom models.\n",
         "Note that `get_model_specs` is not required (can be set to NULL)\n",
         "unless you require consistency checks between model and data.\n",
@@ -58,7 +58,7 @@ get_feature_specs <- function(get_model_specs, model) {
           "The `get_model_specs` function of class `", model_class0,
           "` does not return a list of length 3 with elements \"labels\",\"classes\",\"factor_levels\".\n",
           "See the 'Advanced usage' section of the vignette:\n",
-          "vignette('understanding_shapr', package = 'shapr')\n",
+          "vignette('general_usage', package = 'shapr')\n",
           "for more information on running shapr with custom models and the required output format of get_model_specs."
         )
       )

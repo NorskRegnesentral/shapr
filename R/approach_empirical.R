@@ -13,7 +13,10 @@
 #' Represents the minimum proportion of the total empirical weight that data samples should use.
 #' If e.g. `eta = .8` we will choose the `K` samples with the largest weight so that the sum of the weights
 #' accounts for 80\% of the total weight.
-#' `eta` is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
+#' `eta` is the \eqn{\eta} parameter in equation (15) of
+# nolint start
+#' \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}.
+# nolint end
 #'
 #' @param empirical.fixed_sigma Positive numeric scalar.
 #' The default value is 0.1.
@@ -43,6 +46,12 @@
 #' @inheritParams default_doc_internal
 #'
 #' @export
+# nolint start
+#' @references
+#'   - \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+#'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+#'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
+# nolint end
 setup_approach.empirical <- function(internal,
                                      empirical.type = "fixed_sigma",
                                      empirical.eta = 0.95,

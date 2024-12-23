@@ -18,3 +18,4 @@ positive definite, and \code{\link[Matrix:nearPD]{Matrix::nearPD()}} is used to 
 \description{
 get_cov_mat
 }
+\keyword{internal}

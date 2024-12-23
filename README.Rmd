@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/grand-total/shapr)](https://cran.r-project.org/package=shapr)
 [![R build status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
@@ -168,7 +168,7 @@ print(explanation$shapley_values_est)
 plot(explanation)
 ```
 
-See the [vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html) for further basic usage
+See the [vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) for further basic usage
 examples.
 
 

@@ -35,7 +35,8 @@ probabilities.
 \code{'on_all'} means the original sampling probabilities are used for all coalitions.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
-\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).}
+\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see
+\href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
 
 \item{compute_sd}{Logical. Whether to estimate the standard deviations of the Shapley value estimates. This is TRUE
 whenever sampling based kernelSHAP is applied (either iteratively or with a fixed number of coalitions).}
@@ -52,6 +53,13 @@ than the number of parallel workers.}
 }
 \description{
 Gets the default values for the extra estimation arguments
+}
+\references{
+\itemize{
+\item \href{https://arxiv.org/pdf/2410.04883}{
+Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP.
+arXiv preprint arXiv:2410.04883.}
+}
 }
 \author{
 Martin Jullum

@@ -129,6 +129,13 @@ figure +
   ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
 }
 }
+\references{
+\itemize{
+\item \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
+Olsen, L. H., Glad, I. K., Jullum, M., & Aas, K. (2022). Using Shapley values and variational autoencoders to
+explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51}
+}
+}
 \author{
 Lars Henry Berge Olsen
 }

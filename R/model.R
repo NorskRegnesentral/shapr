@@ -30,9 +30,9 @@
 #' and pass it on to as an argument to `[explain()]`.
 #'
 #' For more details on how to explain such non-supported models (i.e. custom models), see the Advanced usage section
-#' of the vignette: \cr
-#' From R: `vignette("understanding_shapr", package = "shapr")`  \cr
-#' Web: <https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models>
+#' of the general usage: \cr
+#' From R: `vignette("general_usage", package = "shapr")`  \cr
+#' Web: <https://norskregnesentral.github.io/shapr/articles/general_usage.html#explain-custom-models>
 #'
 #' @return Numeric. Vector of size equal to the number of rows in `newdata`.
 #'
@@ -105,13 +105,13 @@ model_checker.default <- function(x) {
 #' @inheritParams predict_model
 #'
 #' @description This function is used to extract the feature information from the model to be checked against the
-#' corresponding feature information in the data passed to `[explain()]`.
+#' corresponding feature information in the data passed to [explain()].
 #'
 #' NOTE: You should never need to call this function explicitly.
 #' It is exported just to be easier accessible for users, see details.
 #'
 #' @details If you are explaining a model not supported natively, you may (optionally) enable such checking by
-#' creating this function yourself and passing it on to `[explain()]`.
+#' creating this function yourself and passing it on to [explain()].
 #'
 #' @return A list with the following elements:
 #' \describe{
@@ -121,7 +121,7 @@ model_checker.default <- function(x) {
 #'   (NULL if the feature is not a factor)}
 #' }
 #'
-#' @seealso For model classes not supported natively, you NEED to create an analogue to `[predict_model()]`. See it's
+#' @seealso For model classes not supported natively, you NEED to create an analogue to [predict_model()]. See it's
 #' help file for details.
 #'
 #' @author Martin Jullum
@@ -145,6 +145,7 @@ get_model_specs <- function(x) {
 }
 
 #' @rdname get_model_specs
+#' @export
 get_model_specs.default <- function(x) {
   # For custom models where there is no information
   return(list(labels = NA, classes = NA, factor_levels = NA))

@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
   fig.cap = "",
   fig.width = 9,
   fig.height = 5,
-  fig.path = "figure_main/", # Ensure that figures are saved in the right folder (this vignette will be built manually)
+  fig.path = "figure_general_usage/", # Ensure that figures are saved in the right folder (this vignette will be built manually)
   cache.path = "cache_main/", # Ensure that cached objects are saved in the right folder
   warning = FALSE,
   message = TRUE,
@@ -48,7 +48,7 @@ efficient approximation to Shapley values in higher dimensions, but it
 assumes independent features. @aas2019explaining extends the Kernel SHAP
 method to handle dependent features, resulting in more accurate
 approximations to the true Shapley values. See the
-[paper](https://www.sciencedirect.com/sdfe/reader/pii/S0004370221000539/pdf)
+[paper](https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf)
 (@aas2019explaining) for further details.
 
 
@@ -1065,7 +1065,7 @@ A wrapper for progressbar of the flexible `cli` package, is also available
 
 For a full list of all progression handlers and the customization
 options available with `progressr`, see the `progressr`
-[vignette](https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html).
+[vignette](https://furrr.futureverse.org/articles/progress.html).
 A full code example of using `progressr` with `shapr` is shown below:
 
 ```{r progressr,eval = FALSE}

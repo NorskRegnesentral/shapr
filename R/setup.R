@@ -1078,7 +1078,8 @@ set_extra_comp_params <- function(internal) {
 #' `'on_all'` means the original sampling probabilities are used for all coalitions.
 #' `'on_all_cond'` means the original sampling probabilities are used for all coalitions, while adjusting for the
 #' probability that they are sampled at least once.
-#' `'on_all_cond'` is preferred as it performs the best in simulation studies, see Olsen & Jullum (2024).
+#' `'on_all_cond'` is preferred as it performs the best in simulation studies, see
+#' \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.
 #' @param compute_sd Logical. Whether to estimate the standard deviations of the Shapley value estimates. This is TRUE
 #' whenever sampling based kernelSHAP is applied (either iteratively or with a fixed number of coalitions).
 #' @param n_boot_samps Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
@@ -1091,6 +1092,10 @@ set_extra_comp_params <- function(internal) {
 #' @inheritParams default_doc_export
 #' @export
 #' @author Martin Jullum
+#' @references
+#'  - \href{https://arxiv.org/pdf/2410.04883}{
+#'  Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP.
+#'  arXiv preprint arXiv:2410.04883.}
 get_extra_comp_args_default <- function(internal, # Only used to get the default value of compute_sd
                                         paired_shap_sampling = isFALSE(internal$parameters$asymmetric),
                                         kernelSHAP_reweighting = "on_all_cond",

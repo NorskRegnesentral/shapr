@@ -71,7 +71,7 @@
 #' @param ... Other arguments passed to underlying functions,
 #' like [ggbeeswarm::geom_beeswarm()] for `plot_type = "beeswarm"`.
 #'
-#' @details See the examples below, or `vignette("understanding_shapr", package = "shapr")` for an examples of
+#' @details See the examples below, or `vignette("general_usage", package = "shapr")` for an examples of
 #' how you should use the function.
 #'
 #' @return ggplot object with plots of the Shapley value explanations
@@ -548,6 +548,7 @@ order_for_plot <- function(dt_plot, N_features, bar_plot_order, top_k_features) 
 #' @param factor_cols Columns that are factors or character
 #' @return A list of a lookup table with each factor and level and its numeric value, a data.table
 #' very similar to the input data, but now with numeric values for factors, and the maximum feature value.
+#' @keywords internal
 process_factor_data <- function(dt, factor_cols) {
   dt_plot_numeric <- dt[!variable %in% factor_cols]
   dt_plot_numeric[, feature_value := as.numeric(feature_value)]

@@ -109,7 +109,7 @@ ggplot object with plots of the Shapley value explanations
 Plots the individual prediction explanations.
 }
 \details{
-See the examples below, or \code{vignette("understanding_shapr", package = "shapr")} for an examples of
+See the examples below, or \code{vignette("general_usage", package = "shapr")} for an examples of
 how you should use the function.
 }
 \examples{

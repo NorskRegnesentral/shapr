@@ -2,6 +2,11 @@
 #'
 #' @description Computes dependence-aware Shapley values for observations in `explain_idx` from the specified
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
+#' See
+# nolint start
+#' \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
+# nolint end
+#' for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 #'
 #' @inheritParams explain
 #' @param y Matrix, data.frame/data.table or a numeric vector.
@@ -57,6 +62,10 @@
 #' are required to "refit" the model at any given time index. This allows the different
 #' approaches to work in the same way they do for time-invariant models.
 #'
+#' See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#forecasting}{
+#' forecasting section of the general usages} for further details.
+#'
+#' @author Jon Lachmann, Martin Jullum
 #' @examples
 #'
 #' # Load example data
@@ -390,6 +399,7 @@ lag_data <- function(x, lags) {
 #' @return A list containing
 #' - fcast A matrix containing the exogenous observations needed for each observation.
 #' - group The list group with the exogenous groups appended.
+#' @keywords internal
 reg_forecast_setup <- function(x, horizon, group) {
   fcast <- matrix(NA, nrow(x) - horizon + 1, 0)
   names <- character()

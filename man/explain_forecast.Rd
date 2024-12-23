@@ -107,7 +107,10 @@ If \code{FALSE} all lags of each variable are explained individually.}
 If \code{NULL} regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed.
 \code{group} then has length equal to the number of groups.
-The list element contains character vectors with the features included in each of the different groups.}
+The list element contains character vectors with the features included in each of the different groups.
+See
+\href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}
+for more information on group wise Shapley values.}
 
 \item{n_MC_samples}{Positive integer.
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
@@ -219,7 +222,8 @@ The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
-\code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
+\code{eta} is the \eqn{\eta} parameter in equation (15) of
+\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}.}
     \item{\code{empirical.fixed_sigma}}{Positive numeric scalar.
 The default value is 0.1.
 Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
@@ -283,8 +287,8 @@ Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the de
 \item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
-\href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
-}{MSEv evaluation section in the vignette for details}.}
+\href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
+}{MSEv evaluation section in the general usage for details}.}
 \item{\code{timing}}{List containing timing information for the different parts of the computation.
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
@@ -296,6 +300,9 @@ iterative estimation routine.}
 \description{
 Computes dependence-aware Shapley values for observations in \code{explain_idx} from the specified
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
+See
+\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
+for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 }
 \details{
 This function explains a forecast of length \code{horizon}. The argument \code{train_idx}
@@ -307,6 +314,9 @@ As any autoregressive forecast model will require a set of lags to make a foreca
 arbitrary point in time, \code{explain_y_lags} and \code{explain_xreg_lags} define how many lags
 are required to "refit" the model at any given time index. This allows the different
 approaches to work in the same way they do for time-invariant models.
+
+See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#forecasting}{
+forecasting section of the general usages} for further details.
 }
 \examples{
 
@@ -336,19 +346,38 @@ explain_forecast(
 }
 \references{
 \itemize{
-\item Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
-More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
-\item Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
+\item \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
+\item \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
 incorporating causal knowledge into model-agnostic explainability.
-Advances in neural information processing systems, 33, 1229-1239.
-\item Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal shapley values:
+Advances in neural information processing systems, 33, 1229-1239}
+\item \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal shapley values:
 Exploiting causal knowledge to explain individual predictions of complex models.
-Advances in neural information processing systems, 33, 4778-4789.
-\item Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
-model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48.
-\item Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410.
+Advances in neural information processing systems, 33, 4778-4789}
+\item \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{
+Jullum, M., Redelmeier, A. & Aas, K. (2021). Efficient and simple prediction explanations with
+groupShapley: A practical perspective. Italian Workshop on Explainable Artificial Intelligence 2021.}
+\item \href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
+Redelmeier, A., Jullum, M., & Aas, K. (2020). Explaining predictive models with mixed features using Shapley
+values and conditional inference trees. In Machine Learning and Knowledge Extraction:
+International Cross-Domain Conference, CD-MAKE 2020, Dublin, Ireland, August 25–28, 2020, Proceedings 4
+(pp. 117-137). Springer International Publishing.}
+\item \href{https://doi.org/10.21105/joss.02027}{
+Sellereite N., & Jullum, M. (2019). shapr: An R-package for explaining machine learning models with
+dependence-aware Shapley values. Journal of Open Source Software, 5(46), 2027}
+\item \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
+Olsen, L. H., Glad, I. K., Jullum, M., & Aas, K. (2022). Using Shapley values and variational autoencoders to
+explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51}
+\item \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{
+Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
+model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48}
+\item \href{https://arxiv.org/pdf/2410.04883}{
+Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410}
 }
 }
 \author{
-Martin Jullum, Lars Henry Berge Olsen
+Jon Lachmann, Martin Jullum
 }

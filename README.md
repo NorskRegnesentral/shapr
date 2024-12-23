@@ -12,7 +12,7 @@ status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.s
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License:
-MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit/)
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
@@ -210,7 +210,7 @@ plot(explanation)
 <img src="man/figures/README-basic_example-1.png" width="100%" />
 
 See the
-[vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html)
+[vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html)
 for further basic usage examples.
 
 ## Contribution

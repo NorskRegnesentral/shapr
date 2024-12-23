@@ -153,7 +153,8 @@ The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
-\code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
+\code{eta} is the \eqn{\eta} parameter in equation (15) of
+\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}.}
 
 \item{empirical.fixed_sigma}{Positive numeric scalar.
 The default value is 0.1.
@@ -271,6 +272,15 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 \description{
 The different choices of \code{approach} take different (optional) parameters,
 which are forwarded from \code{\link[=explain]{explain()}}.
+See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage}
+for more information about the different approaches.
+}
+\references{
+\itemize{
+\item \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
+}
 }
 \author{
 Martin Jullum
