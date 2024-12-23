@@ -1,11 +1,14 @@
 ---
 title: "More details and advanced usage of the `vaeac` approach"
 author: "Lars Henry Berge Olsen"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    fig_caption: yes
 bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{The `vaeac` approach in `shapr`}
+  %\VignetteIndexEntry{More details and advanced usage of the `vaeac` approach}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   markdown:

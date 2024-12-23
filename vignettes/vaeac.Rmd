@@ -1,11 +1,14 @@
 ---
 title: "More details and advanced usage of the `vaeac` approach"
 author: "Lars Henry Berge Olsen"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    fig_caption: yes
 bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{The `vaeac` approach in `shapr`}
+  %\VignetteIndexEntry{More details and advanced usage of the `vaeac` approach}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   markdown:
@@ -584,8 +587,13 @@ progressr::with_progress({
 #> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
 #> The vaeac model contains 17032 trainable parameters.
 #> Initializing vaeac model number 1 of 2.
-#>                                                                                                           Initializing vaeac model number 2 of 2.
-#> ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: -6.593 | IWAE: -3…                                                                                                          Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.566 after 2 epochs. Continue to
+#> 
+                                                                                                          
+Initializing vaeac model number 2 of 2.
+#> ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: -6.593 | IWAE: -3…
+
+                                                                                                          
+Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.566 after 2 epochs. Continue to
 #> train this inititalization.
 #> ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of 2): Epoch: 2 | VLB: -4.566 | IWAE: -3…
 #> Results of the `vaeac` training process:

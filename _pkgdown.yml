@@ -14,6 +14,8 @@ navbar:
         href: articles/vaeac.html
       - text: "The separate and surrogate regression approches"
         href: articles/regression.html
+      - text: "Asymmetric and Causal Shapley values"
+        href: articles/asymmetric_causal.html
     news:
       text: News
       href: news/index.html

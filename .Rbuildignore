@@ -27,7 +27,7 @@ inst/compare_lundberg\.xgb\.obj
 ^vignettes/vaeac\.Rmd\.orig$
 ^vignettes/regression\.Rmd\.orig$
 ^vignettes/asymmetric_causal\.Rmd\.orig$
-^vignettes/figure_main/*$
+^vignettes/figure_general_usage/*$
 ^vignettes/cache_main/*$
 ^vignettes/figure_vaeac/*$
 ^vignettes/cache_vaeac/*$
