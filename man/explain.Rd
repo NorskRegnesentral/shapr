@@ -79,7 +79,10 @@ and group coalitions if \code{group != NULL}.
 If \code{NULL} regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed.
 \code{group} then has length equal to the number of groups.
-The list element contains character vectors with the features included in each of the different groups.}
+The list element contains character vectors with the features included in each of the different groups.
+See
+\href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}
+for more information on group wise Shapley values.}
 
 \item{n_MC_samples}{Positive integer.
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
@@ -137,7 +140,8 @@ Can also be used to override the default function for natively supported model c
 If an object of class \code{shapr} is provided, or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
-want to continue the iterative estimation. See the vignette for examples.}
+want to continue the iterative estimation. See the
+\href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{main vignette} for examples.}
 
 \item{asymmetric}{Logical.
 Not applicable for (regular) non-causal or asymmetric explanations.
@@ -146,8 +150,11 @@ If \code{TRUE}, then \code{explain} compute asymmetric Shapley values based on t
 given by \code{causal_ordering}. That is, \code{explain} only uses the feature combinations/coalitions that
 respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and
 \code{confounding} is \code{NULL} (default), then \code{explain} computes asymmetric conditional Shapley values as specified in
-Frye et al. (2020). If \code{confounding} is provided, i.e., not \code{NULL}, then \code{explain} computes asymmetric causal
-Shapley values as specified in Heskes et al. (2020).}
+\href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+Frye et al. (2020)}. If \code{confounding} is provided, i.e., not \code{NULL}, then \code{explain} computes asymmetric causal
+Shapley values as specified in
+\href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+Heskes et al. (2020)}.}
 
 \item{causal_ordering}{List.
 Not applicable for (regular) non-causal or asymmetric explanations.
@@ -333,7 +340,7 @@ Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the de
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
-}{MSEv evaluation section in the vignette for details}.}
+}{MSEv evaluation section in the main vignette for details}.}
 \item{\code{timing}}{List containing timing information for the different parts of the computation.
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
@@ -345,23 +352,45 @@ iterative estimation routine.}
 \description{
 Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
-See \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/
-pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
-Aas, et. al (2021)} for a thorough introduction to dependence-aware prediction explanation with Shapley values.
+See
+\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
+for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 }
 \details{
 The \code{shapr} package implements kernelSHAP estimation of dependence-aware Shapley values with
-eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
-\code{"empirical"}, \code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"vaeac"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
-\code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"}.
-It is also possible to combine the different approaches, see the vignettes for more information.
+eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.
+These are all introduced in the
+\href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{main vignette}.
+(From R: \code{vignette("understanding_shapr", package = "shapr")}).
+Moreover,
+\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}
+gives a general introduction to dependence-aware Shapley values, and the three approaches \code{"empirical"},
+\code{"gaussian"}, \code{"copula"}, and also discusses \code{"independence"}.
+\href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
+Redelmeier et al. (2020)} introduces the approach \code{"ctree"}.
+\href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} introduces the \code{"vaeac"}
+approach.
+Approach \code{"timeseries"} is discussed in
+\href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}.
+\code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"},
+as described in \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{Olsen et al. (2024)}.
+It is also possible to combine the different approaches, see the
+\href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{
+main vignette} for more information.
 
 The package also supports the computation of causal and asymmetric Shapley values as introduced by
-Heskes et al. (2020) and Frye et al. (2020).
-Asymmetric Shapley values were proposed by Heskes et al. (2020) as a way to incorporate causal knowledge in
+\href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+Heskes et al. (2020)} and
+\href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+Frye et al. (2020)}.
+Asymmetric Shapley values were proposed by
+\href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+Heskes et al. (2020)} as a way to incorporate causal knowledge in
 the real world by restricting the possible feature combinations/coalitions when computing the Shapley values to
 those consistent with a (partial) causal ordering.
-Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
+Causal Shapley values were proposed by
+\href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+Frye et al. (2020)} as a way to explain the total effect of features
 on the prediction, taking into account their causal relationships, by adapting the sampling procedure in \code{shapr}.
 
 The package allows for parallelized computation with progress updates through the tightly connected

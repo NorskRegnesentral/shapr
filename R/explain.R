@@ -2,9 +2,12 @@
 #'
 #' @description Computes dependence-aware Shapley values for observations in `x_explain` from the specified
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
-#' See \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/
-#'  pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
-#'  Aas, et. al (2021)} for a thorough introduction to dependence-aware prediction explanation with Shapley values.
+# nolint start
+#' See
+# nolint start
+#' \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
+# nolint end
+#' for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 #'
 #' @param x_train Matrix or data.frame/data.table.
 #' Contains the data used to estimate the (conditional) distributions for the features
@@ -45,6 +48,9 @@
 #' If provided, group wise Shapley values are computed.
 #' `group` then has length equal to the number of groups.
 #' The list element contains character vectors with the features included in each of the different groups.
+#' See
+#' \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}
+#' for more information on group wise Shapley values.
 #'
 #' @param n_MC_samples Positive integer.
 #' For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
@@ -122,7 +128,8 @@
 #' If an object of class `shapr` is provided, or string with a path to where intermediate results are strored,
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
-#' want to continue the iterative estimation. See the vignette for examples.
+#' want to continue the iterative estimation. See the
+#' \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{main vignette} for examples.
 #'
 #' @param asymmetric Logical.
 #' Not applicable for (regular) non-causal or asymmetric explanations.
@@ -131,8 +138,11 @@
 #' given by `causal_ordering`. That is, `explain` only uses the feature combinations/coalitions that
 #' respect the causal ordering when computing the asymmetric Shapley values. If `asymmetric` is `TRUE` and
 #' `confounding` is `NULL` (default), then `explain` computes asymmetric conditional Shapley values as specified in
-#' Frye et al. (2020). If `confounding` is provided, i.e., not `NULL`, then `explain` computes asymmetric causal
-#' Shapley values as specified in Heskes et al. (2020).
+#' \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+#' Frye et al. (2020)}. If `confounding` is provided, i.e., not `NULL`, then `explain` computes asymmetric causal
+#' Shapley values as specified in
+#' \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+#' Heskes et al. (2020)}.
 #'
 #' @param causal_ordering List.
 #' Not applicable for (regular) non-causal or asymmetric explanations.
@@ -175,17 +185,41 @@
 #' @inheritDotParams setup_approach.vaeac
 #'
 #' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
-#' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
-#' `"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
-#' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
-#' It is also possible to combine the different approaches, see the vignettes for more information.
+#' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.
+#' These are all introduced in the
+#' \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{main vignette}.
+#' (From R: `vignette("understanding_shapr", package = "shapr")`).
+#' Moreover,
+# nolint start
+#'  \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}
+# nolint end
+#' gives a general introduction to dependence-aware Shapley values, and the three approaches `"empirical"`,
+#' `"gaussian"`, `"copula"`, and also discusses `"independence"`.
+#' \href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
+#' Redelmeier et al. (2020)} introduces the approach `"ctree"`.
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} introduces the `"vaeac"`
+#' approach.
+#' Approach `"timeseries"` is discussed in
+#' \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}.
+#' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`,
+#' as described in \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{Olsen et al. (2024)}.
+#' It is also possible to combine the different approaches, see the
+#' \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{
+#' main vignette} for more information.
 #'
 #' The package also supports the computation of causal and asymmetric Shapley values as introduced by
-#' Heskes et al. (2020) and Frye et al. (2020).
-#' Asymmetric Shapley values were proposed by Heskes et al. (2020) as a way to incorporate causal knowledge in
+#' \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+#' Heskes et al. (2020)} and
+#' \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+#' Frye et al. (2020)}.
+#' Asymmetric Shapley values were proposed by
+#' \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+#' Heskes et al. (2020)} as a way to incorporate causal knowledge in
 #' the real world by restricting the possible feature combinations/coalitions when computing the Shapley values to
 #' those consistent with a (partial) causal ordering.
-#' Causal Shapley values were proposed by Frye et al. (2020) as a way to explain the total effect of features
+#' Causal Shapley values were proposed by
+#' \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+#' Frye et al. (2020)} as a way to explain the total effect of features
 #' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
 #' The package allows for parallelized computation with progress updates through the tightly connected
@@ -210,7 +244,7 @@
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations}
 #'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
 #'   \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
-#'   }{MSEv evaluation section in the vignette for details}.}
+#'   }{MSEv evaluation section in the main vignette for details}.}
 #'   \item{`timing`}{List containing timing information for the different parts of the computation.
 #'   `init_time` and `end_time` gives the time stamps for the start and end of the computation.
 #'   `total_time_secs` gives the total time in seconds for the complete execution of `explain()`.
@@ -365,6 +399,7 @@
 #'
 #' @author Martin Jullum, Lars Henry Berge Olsen
 #'
+# nolint start
 #' @references
 #'   - \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
 #'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
@@ -396,6 +431,7 @@
 #'   model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48}
 #'  -  \href{https://arxiv.org/pdf/2410.04883}{
 #'  Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410}
+# nolint end
 explain <- function(model,
                     x_explain,
                     x_train,

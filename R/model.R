@@ -30,7 +30,7 @@
 #' and pass it on to as an argument to `[explain()]`.
 #'
 #' For more details on how to explain such non-supported models (i.e. custom models), see the Advanced usage section
-#' of the vignette: \cr
+#' of the main vignette: \cr
 #' From R: `vignette("understanding_shapr", package = "shapr")`  \cr
 #' Web: <https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models>
 #'

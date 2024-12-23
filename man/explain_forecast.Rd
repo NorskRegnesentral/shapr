@@ -107,7 +107,10 @@ If \code{FALSE} all lags of each variable are explained individually.}
 If \code{NULL} regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed.
 \code{group} then has length equal to the number of groups.
-The list element contains character vectors with the features included in each of the different groups.}
+The list element contains character vectors with the features included in each of the different groups.
+See
+\href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}
+for more information on group wise Shapley values.}
 
 \item{n_MC_samples}{Positive integer.
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
@@ -284,7 +287,7 @@ Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the de
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
-}{MSEv evaluation section in the vignette for details}.}
+}{MSEv evaluation section in the main vignette for details}.}
 \item{\code{timing}}{List containing timing information for the different parts of the computation.
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
@@ -296,9 +299,9 @@ iterative estimation routine.}
 \description{
 Computes dependence-aware Shapley values for observations in \code{explain_idx} from the specified
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
-See \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/
-pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
-Aas, et. al (2021)} for a thorough introduction to dependence-aware prediction explanation with Shapley values.
+See
+\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
+for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 }
 \details{
 This function explains a forecast of length \code{horizon}. The argument \code{train_idx}
@@ -310,6 +313,9 @@ As any autoregressive forecast model will require a set of lags to make a foreca
 arbitrary point in time, \code{explain_y_lags} and \code{explain_xreg_lags} define how many lags
 are required to "refit" the model at any given time index. This allows the different
 approaches to work in the same way they do for time-invariant models.
+
+See the \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#forecasting}{
+forecasting section of the main vignettes} for further details.
 }
 \examples{
 
