@@ -172,6 +172,13 @@ We use the \code{vaeac} method at the epoch with the lowest validation error (IW
 other possibilities are available but setting the \code{vaeac.which_vaeac_model} parameter. See
 \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
 }
+\references{
+\itemize{
+\item \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
+Olsen, L. H., Glad, I. K., Jullum, M., & Aas, K. (2022). Using Shapley values and variational autoencoders to
+explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51}
+}
+}
 \author{
 Lars Henry Berge Olsen
 }

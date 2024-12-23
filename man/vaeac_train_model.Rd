@@ -204,6 +204,13 @@ initiated network parameter values to remedy poorly initiated values. After \cod
 \code{n_vaeacs_initialize} vaeac models are compared and the function continues to only train the best performing
 one for a total of \code{epochs} epochs. The networks are trained using the ADAM optimizer with the learning rate is \code{lr}.
 }
+\references{
+\itemize{
+\item \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
+Olsen, L. H., Glad, I. K., Jullum, M., & Aas, K. (2022). Using Shapley values and variational autoencoders to
+explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51}
+}
+}
 \author{
 Lars Henry Berge Olsen
 }

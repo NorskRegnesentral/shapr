@@ -2,7 +2,6 @@
 #'
 #' @description Computes dependence-aware Shapley values for observations in `x_explain` from the specified
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
-# nolint start
 #' See
 # nolint start
 #' \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}

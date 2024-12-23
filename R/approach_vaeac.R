@@ -370,6 +370,10 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' @return A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
 #' @export
 #' @author Lars Henry Berge Olsen
+#' @references
+#'   - \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
+#'   Olsen, L. H., Glad, I. K., Jullum, M., & Aas, K. (2022). Using Shapley values and variational autoencoders to
+#'   explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51}
 vaeac_train_model <- function(x_train,
                               model_description,
                               folder_to_save_model,
@@ -836,6 +840,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
 #'
 #' @return A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
 #' @export
+#' @inherit vaeac_train_model references
 #' @author Lars Henry Berge Olsen
 vaeac_train_model_continue <- function(explanation,
                                        epochs_new,
@@ -1728,6 +1733,7 @@ vaeac_check_parameters <- function(x_train,
 #'
 #' @export
 #' @author Lars Henry Berge Olsen
+#' @inherit vaeac_train_model references
 vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sys.time()),
                                          vaeac.folder_to_save_model = tempdir(),
                                          vaeac.pretrained_vaeac_model = NULL,
@@ -2600,6 +2606,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'
 #' @author Lars Henry Berge Olsen
 #' @export
+#' @inherit vaeac_train_model references
 plot_vaeac_eval_crit <- function(explanation_list,
                                  plot_from_nth_epoch = 1,
                                  plot_every_nth_epoch = 1,
@@ -2734,6 +2741,7 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #' @return A [GGally::ggpairs()] figure.
 #' @export
 #' @author Lars Henry Berge Olsen
+#' @inherit vaeac_train_model references
 #'
 #' @examples
 #' \dontrun{

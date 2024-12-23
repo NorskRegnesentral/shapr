@@ -222,7 +222,8 @@ The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
-\code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
+\code{eta} is the \eqn{\eta} parameter in equation (15) of
+\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}.}
     \item{\code{empirical.fixed_sigma}}{Positive numeric scalar.
 The default value is 0.1.
 Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.

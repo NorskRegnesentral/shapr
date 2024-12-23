@@ -2,6 +2,8 @@
 #'
 #' The different choices of `approach` take different (optional) parameters,
 #' which are forwarded from [explain()].
+#' See the \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{main vignette}
+#' for more information about the different approaches.
 #'
 #' @param ... Arguments passed to specific classes. See below
 #'

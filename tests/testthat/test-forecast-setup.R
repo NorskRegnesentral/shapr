@@ -102,7 +102,7 @@ test_that("erroneous input: `model`", {
   # R versions earlier than 4.3 gives assigns the error to the internal function instead of the explain_forecast,
   # and therefore marks this as an error (which it is not)
   Rversion_number <- as.numeric(paste0(R.version$major, R.version$minor))
-  skip_if_not(Rversion_number>=43)
+  skip_if_not(Rversion_number >= 43)
   set.seed(123)
 
   expect_snapshot(
