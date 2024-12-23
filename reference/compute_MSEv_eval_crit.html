@@ -31,13 +31,16 @@ Olsen et al. (2022)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/understanding_shapr.html">General usage of shapr</a>
+      <a href="../articles/general_usage.html">General usage of shapr</a>
     </li>
     <li>
-      <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
+      <a href="../articles/vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
     <li>
-      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+      <a href="../articles/regression.html">The separate and surrogate regression approches</a>
+    </li>
+    <li>
+      <a href="../articles/asymmetric_causal.html">Asymmetric and Causal Shapley values</a>
     </li>
   </ul></li>
 <li>
@@ -68,7 +71,7 @@ Olsen et al. (2022)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
 
     <div class="ref-description">
     <p>Function that computes the Mean Squared Error (MSEv) of the contribution function
-v(s) as proposed by <a href="https://arxiv.org/pdf/2006.01272.pdf" class="external-link">Frye et al. (2019)</a> and used by
+v(s) as proposed by <a href="https://arxiv.org/pdf/2006.01272" class="external-link">Frye et al. (2019)</a> and used by
 <a href="https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf" class="external-link">Olsen et al. (2022)</a>.</p>
     </div>
 
@@ -141,11 +144,25 @@ each coalition divided by the square root of the number of explicands.</p></dd>
     <p>The MSEv evaluation criterion does not rely on access to the true contribution functions nor the
 true Shapley values to be computed. A lower value indicates better approximations, however, the
 scale and magnitude of the MSEv criterion is not directly interpretable in regard to the precision
-of the final estimated Shapley values. <a href="https://arxiv.org/pdf/2305.09536.pdf" class="external-link">Olsen et al. (2022)</a>
+of the final estimated Shapley values.
+<a href="https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf" class="external-link">Olsen et al. (2024)</a>
 illustrates in Figure 11 a fairly strong linear relationship between the MSEv criterion and the
 MAE between the estimated and true Shapley values in a simulation study. Note that explicands
 refer to the observations whose predictions we are to explain.</p>
     </div>
+    <div id="references">
+    <h2>References</h2>
+
+<ul><li><p><a href="https://arxiv.org/pdf/2006.01272" class="external-link">
+Frye, C., de Mijolla, D., Begley, T., Cowton, L., Stanley, M., &amp; Feige, I. (2021).
+Shapley explainability on the data manifold. In International Conference on Learning Representations.</a></p></li>
+<li><p><a href="https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf" class="external-link">
+Olsen, L. H., Glad, I. K., Jullum, M., &amp; Aas, K. (2022). Using Shapley values and variational autoencoders to
+explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51</a></p></li>
+<li><p><a href="https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf" class="external-link">
+Olsen, L. H. B., Glad, I. K., Jullum, M., &amp; Aas, K. (2024). A comparative study of methods for estimating
+model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48</a></p></li>
+</ul></div>
     <div id="author">
     <h2>Author</h2>
     <p>Lars Henry Berge Olsen</p>

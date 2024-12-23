@@ -29,13 +29,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/understanding_shapr.html">General usage of shapr</a>
+      <a href="../articles/general_usage.html">General usage of shapr</a>
     </li>
     <li>
-      <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
+      <a href="../articles/vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
     <li>
-      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+      <a href="../articles/regression.html">The separate and surrogate regression approches</a>
+    </li>
+    <li>
+      <a href="../articles/asymmetric_causal.html">Asymmetric and Causal Shapley values</a>
     </li>
   </ul></li>
 <li>
@@ -203,7 +206,7 @@ like <code><a href="https://rdrr.io/pkg/ggbeeswarm/man/geom_beeswarm.html" class
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>See the examples below, or <code><a href="../articles/understanding_shapr.html">vignette("understanding_shapr", package = "shapr")</a></code> for an examples of
+    <p>See the examples below, or <code><a href="../articles/general_usage.html">vignette("general_usage", package = "shapr")</a></code> for an examples of
 how you should use the function.</p>
     </div>
     <div id="author">
@@ -246,13 +249,13 @@ how you should use the function.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-20 07:31:30</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-23 10:48:29</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 50</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvXc2vp/shapr_obj_29494400c5d9.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpdiQJC0/shapr_obj_2a4d4d507792.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -318,13 +321,13 @@ how you should use the function.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-20 07:31:36</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2024-12-23 10:48:35</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">ctree</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 50</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvXc2vp/shapr_obj_294975d736d2.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpdiQJC0/shapr_obj_2a4d2d50979c.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>

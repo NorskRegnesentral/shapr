@@ -29,13 +29,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/understanding_shapr.html">General usage of shapr</a>
+      <a href="../articles/general_usage.html">General usage of shapr</a>
     </li>
     <li>
-      <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
+      <a href="../articles/vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
     <li>
-      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+      <a href="../articles/regression.html">The separate and surrogate regression approches</a>
+    </li>
+    <li>
+      <a href="../articles/asymmetric_causal.html">Asymmetric and Causal Shapley values</a>
     </li>
   </ul></li>
 <li>
@@ -156,7 +159,10 @@ and group coalitions if <code>group != NULL</code>.
 If <code>NULL</code> regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed.
 <code>group</code> then has length equal to the number of groups.
-The list element contains character vectors with the features included in each of the different groups.</p></dd>
+The list element contains character vectors with the features included in each of the different groups.
+See
+<a href="https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf" class="external-link">Jullum et al. (2021)</a>
+for more information on group wise Shapley values.</p></dd>
 
 
 <dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
@@ -308,7 +314,8 @@ Used to calculate the time it took to run the full <code>explain</code> call.</p
 If an object of class <code>shapr</code> is provided, or string with a path to where intermediate results are strored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
-want to continue the iterative estimation. See the vignette for examples.</p></dd>
+want to continue the iterative estimation. See the
+<a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html">general usage</a> for examples.</p></dd>
 
 
 <dt id="arg-asymmetric">asymmetric<a class="anchor" aria-label="anchor" href="#arg-asymmetric"></a></dt>
@@ -319,8 +326,11 @@ If <code>TRUE</code>, then <code>explain</code> compute asymmetric Shapley value
 given by <code>causal_ordering</code>. That is, <code>explain</code> only uses the feature combinations/coalitions that
 respect the causal ordering when computing the asymmetric Shapley values. If <code>asymmetric</code> is <code>TRUE</code> and
 <code>confounding</code> is <code>NULL</code> (default), then <code>explain</code> computes asymmetric conditional Shapley values as specified in
-Frye et al. (2020). If <code>confounding</code> is provided, i.e., not <code>NULL</code>, then <code>explain</code> computes asymmetric causal
-Shapley values as specified in Heskes et al. (2020).</p></dd>
+<a href="https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf" class="external-link">
+Frye et al. (2020)</a>. If <code>confounding</code> is provided, i.e., not <code>NULL</code>, then <code>explain</code> computes asymmetric causal
+Shapley values as specified in
+<a href="https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf" class="external-link">
+Heskes et al. (2020)</a>.</p></dd>
 
 
 <dt id="arg-causal-ordering">causal_ordering<a class="anchor" aria-label="anchor" href="#arg-causal-ordering"></a></dt>

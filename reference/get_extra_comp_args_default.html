@@ -29,13 +29,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/understanding_shapr.html">General usage of shapr</a>
+      <a href="../articles/general_usage.html">General usage of shapr</a>
     </li>
     <li>
-      <a href="../articles/understanding_shapr_vaeac.html">Advanced usage of the `vaeac` approach</a>
+      <a href="../articles/vaeac.html">Advanced usage of the `vaeac` approach</a>
     </li>
     <li>
-      <a href="../articles/understanding_shapr_regression.html">The separate and surrogate regression approches</a>
+      <a href="../articles/regression.html">The separate and surrogate regression approches</a>
+    </li>
+    <li>
+      <a href="../articles/asymmetric_causal.html">Asymmetric and Causal Shapley values</a>
     </li>
   </ul></li>
 <li>
@@ -109,7 +112,8 @@ probabilities.
 <code>'on_all'</code> means the original sampling probabilities are used for all coalitions.
 <code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
-<code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see Olsen &amp; Jullum (2024).</p></dd>
+<code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see
+<a href="https://arxiv.org/pdf/2410.04883" class="external-link">Olsen &amp; Jullum (2024)</a>.</p></dd>
 
 
 <dt id="arg-compute-sd">compute_sd<a class="anchor" aria-label="anchor" href="#arg-compute-sd"></a></dt>
@@ -133,6 +137,13 @@ Larger numbers gives more frequent progress updates. If parallelization is appli
 than the number of parallel workers.</p></dd>
 
 </dl></div>
+    <div id="references">
+    <h2>References</h2>
+
+<ul><li><p><a href="https://arxiv.org/pdf/2410.04883" class="external-link">
+Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP.
+arXiv preprint arXiv:2410.04883.</a></p></li>
+</ul></div>
     <div id="author">
     <h2>Author</h2>
     <p>Martin Jullum</p>

@@ -2,11 +2,11 @@ pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
-  understanding_shapr_asymmetric_causal: understanding_shapr_asymmetric_causal.html
-  understanding_shapr_regression: understanding_shapr_regression.html
-  understanding_shapr_vaeac: understanding_shapr_vaeac.html
-  understanding_shapr: understanding_shapr.html
-last_built: 2024-12-20T07:31Z
+  asymmetric_causal: asymmetric_causal.html
+  general_usage: general_usage.html
+  regression: regression.html
+  vaeac: vaeac.html
+last_built: 2024-12-23T10:48Z
 urls:
   reference: https://norskregnesentral.github.io/shapr/reference
   article: https://norskregnesentral.github.io/shapr/articles
