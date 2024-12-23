@@ -374,6 +374,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #'   - \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
 #'   Olsen, L. H., Glad, I. K., Jullum, M., & Aas, K. (2022). Using Shapley values and variational autoencoders to
 #'   explain predictive models with dependent mixed features. Journal of machine learning research, 23(213), 1-51}
+#' @keywords internal
 vaeac_train_model <- function(x_train,
                               model_description,
                               folder_to_save_model,
@@ -2039,6 +2040,7 @@ vaeac_get_x_explain_extended <- function(x_explain, S, index_features) {
 #' each vaeac model.
 #' @export
 #' @author Lars Henry Berge Olsen
+#' @keywords internal
 vaeac_get_evaluation_criteria <- function(explanation_list) {
   # Check if user only provided a single explanation and did not put it in a list
   if ("shapr" %in% class(explanation_list)) explanation_list <- list(explanation_list)
@@ -2080,6 +2082,7 @@ vaeac_get_evaluation_criteria <- function(explanation_list) {
 #' #' There are conducted no checks to validate the indices.
 #'
 #' @return List of objects needed to train the `vaeac` model
+#' @keywords internal
 vaeac_get_data_objects <- function(x_train,
                                    log_exp_cont_feat,
                                    val_ratio,

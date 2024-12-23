@@ -83,3 +83,4 @@ List of objects needed to train the \code{vaeac} model
 \description{
 Function to set up data loaders and save file names
 }
+\keyword{internal}

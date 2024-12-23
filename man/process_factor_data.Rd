@@ -19,3 +19,4 @@ very similar to the input data, but now with numeric values for factors, and the
 Factors are given a numeric value above the highest numeric value in the data. The value of the different levels
 are sorted by factor and then level.
 }
+\keyword{internal}

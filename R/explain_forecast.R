@@ -399,6 +399,7 @@ lag_data <- function(x, lags) {
 #' @return A list containing
 #' - fcast A matrix containing the exogenous observations needed for each observation.
 #' - group The list group with the exogenous groups appended.
+#' @keywords internal
 reg_forecast_setup <- function(x, horizon, group) {
   fcast <- matrix(NA, nrow(x) - horizon + 1, 0)
   names <- character()

@@ -24,3 +24,4 @@ A list containing
 \description{
 Set up exogenous regressors for explanation in a forecast model.
 }
+\keyword{internal}
