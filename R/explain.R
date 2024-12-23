@@ -128,7 +128,7 @@
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 #' want to continue the iterative estimation. See the
-#' \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{main vignette} for examples.
+#' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage} for examples.
 #'
 #' @param asymmetric Logical.
 #' Not applicable for (regular) non-causal or asymmetric explanations.
@@ -186,8 +186,8 @@
 #' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
 #' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.
 #' These are all introduced in the
-#' \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{main vignette}.
-#' (From R: `vignette("understanding_shapr", package = "shapr")`).
+#' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage}.
+#' (From R: `vignette("general_usage", package = "shapr")`).
 #' Moreover,
 # nolint start
 #'  \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}
@@ -203,8 +203,8 @@
 #' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`,
 #' as described in \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{Olsen et al. (2024)}.
 #' It is also possible to combine the different approaches, see the
-#' \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html}{
-#' main vignette} for more information.
+#' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{
+#' general usage} for more information.
 #'
 #' The package also supports the computation of causal and asymmetric Shapley values as introduced by
 #' \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
@@ -242,8 +242,8 @@
 #'   \item{`internal`}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations}
 #'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
-#'   \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
-#'   }{MSEv evaluation section in the main vignette for details}.}
+#'   \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
+#'   }{MSEv evaluation section in the general usage for details}.}
 #'   \item{`timing`}{List containing timing information for the different parts of the computation.
 #'   `init_time` and `end_time` gives the time stamps for the start and end of the computation.
 #'   `total_time_secs` gives the total time in seconds for the complete execution of `explain()`.

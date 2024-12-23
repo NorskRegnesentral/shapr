@@ -287,8 +287,8 @@ Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the de
 \item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
-\href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#msev-evaluation-criterion
-}{MSEv evaluation section in the main vignette for details}.}
+\href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
+}{MSEv evaluation section in the general usage for details}.}
 \item{\code{timing}}{List containing timing information for the different parts of the computation.
 \code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
 \code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
@@ -315,8 +315,8 @@ arbitrary point in time, \code{explain_y_lags} and \code{explain_xreg_lags} defi
 are required to "refit" the model at any given time index. This allows the different
 approaches to work in the same way they do for time-invariant models.
 
-See the \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#forecasting}{
-forecasting section of the main vignettes} for further details.
+See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#forecasting}{
+forecasting section of the general usages} for further details.
 }
 \examples{
 

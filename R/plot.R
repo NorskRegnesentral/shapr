@@ -71,7 +71,7 @@
 #' @param ... Other arguments passed to underlying functions,
 #' like [ggbeeswarm::geom_beeswarm()] for `plot_type = "beeswarm"`.
 #'
-#' @details See the examples below, or `vignette("understanding_shapr", package = "shapr")` for an examples of
+#' @details See the examples below, or `vignette("general_usage", package = "shapr")` for an examples of
 #' how you should use the function.
 #'
 #' @return ggplot object with plots of the Shapley value explanations

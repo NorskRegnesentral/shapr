@@ -53,7 +53,7 @@ This allows models with large number of features to be explained with a signific
 Uses a different set of input argument which is more appropriate for these models. 
 * Re-implementation of `approach = 'independence'` method providing significantly faster computation (no longer as a special case of the `empirical` method). 
 Also allow the method to be used on models with categorical data  ([#315](https://github.com/NorskRegnesentral/shapr/pull/315)).
-* Added 'beeswarm' and 'waterfall' plots + new coloring scheme for all plots. See the [vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#ex) for examples.
+* Added 'beeswarm' and 'waterfall' plots + new coloring scheme for all plots. See the [vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html#ex) for examples.
 * Added timing of the various parts of the explanation process. 
 
 ### Under the hood
@@ -75,7 +75,7 @@ Previously, this was not possible with the prediction functions defined internal
 
 ### Documentation improvements
 
-* The [vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html) has been updated to reflect the new framework for explaining predictions, and all the new package features/functionality.
+* The [vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) has been updated to reflect the new framework for explaining predictions, and all the new package features/functionality.
 * New vignettes also for the regression paradigm, vaeac and the asymmetric/causal Shapley values
 
 # shapr 0.2.3 (GitHub only)

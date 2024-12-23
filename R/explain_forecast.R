@@ -62,8 +62,8 @@
 #' are required to "refit" the model at any given time index. This allows the different
 #' approaches to work in the same way they do for time-invariant models.
 #'
-#' See the \href{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#forecasting}{
-#' forecasting section of the main vignettes} for further details.
+#' See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#forecasting}{
+#' forecasting section of the general usages} for further details.
 #'
 #' @author Jon Lachmann, Martin Jullum
 #' @examples

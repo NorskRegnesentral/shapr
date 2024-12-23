@@ -696,7 +696,7 @@
       for single output models or a data.table of the correct
       dimensions for a multiple output model.
       See the 'Advanced usage' section of the vignette:
-      vignette('understanding_shapr', package = 'shapr')
+      vignette('general_usage', package = 'shapr')
       
       for more information on running shapr with custom models.
 
@@ -720,7 +720,7 @@
       for single output models or a data.table of the correct
       dimensions for a multiple output model.
       See the 'Advanced usage' section of the vignette:
-      vignette('understanding_shapr', package = 'shapr')
+      vignette('general_usage', package = 'shapr')
       
       for more information on running shapr with custom models.
 
@@ -742,7 +742,7 @@
       Error in `test_predict_model()`:
       ! The predict_model function of class `lm` is invalid.
       See the 'Advanced usage' section of the vignette:
-      vignette('understanding_shapr', package = 'shapr')
+      vignette('general_usage', package = 'shapr')
       for more information on running shapr with custom models.
       A basic function test threw the following error:
       Error in predict_model(model, x_test): unused argument (x_test)
@@ -765,7 +765,7 @@
       Error in `test_predict_model()`:
       ! The predict_model function of class `lm` is invalid.
       See the 'Advanced usage' section of the vignette:
-      vignette('understanding_shapr', package = 'shapr')
+      vignette('general_usage', package = 'shapr')
       for more information on running shapr with custom models.
       A basic function test threw the following error:
       Error in 1 + "bla": non-numeric argument to binary operator
@@ -794,7 +794,7 @@
       Error in `get_feature_specs()`:
       ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
       See the 'Advanced usage' section of the vignette:
-      vignette('understanding_shapr', package = 'shapr')
+      vignette('general_usage', package = 'shapr')
       for more information on running shapr with custom models and the required output format of get_model_specs.
 
 ---
@@ -810,7 +810,7 @@
       Error in `get_feature_specs()`:
       ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
       See the 'Advanced usage' section of the vignette:
-      vignette('understanding_shapr', package = 'shapr')
+      vignette('general_usage', package = 'shapr')
       for more information on running shapr with custom models and the required output format of get_model_specs.
 
 ---
@@ -826,7 +826,7 @@
       Error in `get_feature_specs()`:
       ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
       See the 'Advanced usage' section of the vignette:
-      vignette('understanding_shapr', package = 'shapr')
+      vignette('general_usage', package = 'shapr')
       for more information on running shapr with custom models and the required output format of get_model_specs.
 
 ---
@@ -842,7 +842,7 @@
       Error in `get_feature_specs()`:
       ! The get_model_specs function of class `lm` is invalid.
       See the 'Advanced usage' section of the vignette:
-      vignette('understanding_shapr', package = 'shapr')
+      vignette('general_usage', package = 'shapr')
       for more information on running shapr with custom models.
       Note that `get_model_specs` is not required (can be set to NULL)
       unless you require consistency checks between model and data.

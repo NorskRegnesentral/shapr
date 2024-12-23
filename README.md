@@ -210,7 +210,7 @@ plot(explanation)
 <img src="man/figures/README-basic_example-1.png" width="100%" />
 
 See the
-[vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html)
+[vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html)
 for further basic usage examples.
 
 ## Contribution

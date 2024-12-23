@@ -168,7 +168,7 @@ print(explanation$shapley_values_est)
 plot(explanation)
 ```
 
-See the [vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html) for further basic usage
+See the [vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) for further basic usage
 examples.
 
 

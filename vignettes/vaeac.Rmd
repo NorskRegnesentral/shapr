@@ -17,8 +17,8 @@ editor_options:
 
 <a id="intro"></a>
 
-In this vignette, we elaborate and illustrate the `vaeac` approach in more depth than in the main vignette.
-In the main vignette, only a few basic examples of using `vaeac` is included, while we here showcase more
+In this vignette, we elaborate and illustrate the `vaeac` approach in more depth than in the general usage.
+In the general usage, only a few basic examples of using `vaeac` is included, while we here showcase more
 advanced usage. See the overview above for what topics that are covered in this vignette.
 
 
@@ -75,7 +75,7 @@ in the calls to the `explain()` function.
 
 
 ## Basic Example {#basicexample}
-Here we go through how to use the `vaeac` approach on the same data as in the main vignette
+Here we go through how to use the `vaeac` approach on the same data as in the general usage
 
 First we load the shapr package
 
@@ -490,13 +490,13 @@ rbind(
 
 
 ## Progressr {#progress_bar}
-As discussed in the main vignette, the `shapr` package provides two ways for receiving information about the progress
+As discussed in the general usage, the `shapr` package provides two ways for receiving information about the progress
 of the approach. First, the `shapr` package provides progress updates of the computation of the Shapley values through
 the `progressr` package. Second, the user can also get various form of information through `verbose` in `explain()`.
 By letting `'vS_detail' %in% verbose`, we get extra information related to the `vaeac` approach.
 The `verbose` parameter works independently of the `progressr` package.
 Meaning that the user can chose to use none, either, or both options simultaneously.
-We give two examples here, and refer the reader to the main vignette for more detailed information.
+We give two examples here, and refer the reader to the general usage for more detailed information.
 
 By setting `c("basic", vS_details")`, we get both basic messages about the explanation case, and
 messages about the estimation of the `vaeac` approach.
@@ -553,7 +553,7 @@ expl_with_messages <- explain(
 For more visual information we can use the `progressr` package.
 This can help us see detailed progress of the training step for the final `vaeac` model.
 Note that by default `vS_details` is not part of `verbose`, meaning that we do not get any messages from the `vaeac`,
-approach and only get the progress bars. See the main vignette for examples for how to change the progress bar.
+approach and only get the progress bars. See the general usage for examples for how to change the progress bar.
 
 
 ``` r

@@ -30,9 +30,9 @@
 #' and pass it on to as an argument to `[explain()]`.
 #'
 #' For more details on how to explain such non-supported models (i.e. custom models), see the Advanced usage section
-#' of the main vignette: \cr
-#' From R: `vignette("understanding_shapr", package = "shapr")`  \cr
-#' Web: <https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models>
+#' of the general usage: \cr
+#' From R: `vignette("general_usage", package = "shapr")`  \cr
+#' Web: <https://norskregnesentral.github.io/shapr/articles/general_usage.html#explain-custom-models>
 #'
 #' @return Numeric. Vector of size equal to the number of rows in `newdata`.
 #'

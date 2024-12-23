@@ -6,16 +6,16 @@ old_wd <- getwd()
 
 setwd("vignettes/")
 
-knitr::knit("understanding_shapr.Rmd.orig", output = "understanding_shapr.Rmd")
-# knitr::purl("understanding_shapr.Rmd.orig", output = "understanding_shapr.R") # Don't need this
+knitr::knit("general_usage.Rmd.orig", output = "general_usage.Rmd")
+# knitr::purl("general_usage.Rmd.orig", output = "general_usage.R") # Don't need this
 
-knitr::knit("understanding_shapr_vaeac.Rmd.orig", output = "understanding_shapr_vaeac.Rmd")
-# knitr::purl("understanding_shapr_vaeac.Rmd.orig", output = "understanding_shapr_vaeac.R") # Don't need this
+knitr::knit("vaeac.Rmd.orig", output = "vaeac.Rmd")
+# knitr::purl("vaeac.Rmd.orig", output = "vaeac.R") # Don't need this
 
-knitr::knit("understanding_shapr_regression.Rmd.orig", output = "understanding_shapr_regression.Rmd")
-# knitr::purl("understanding_shapr_regression.Rmd.orig", output = "understanding_shapr_regression.R") # Don't need this
+knitr::knit("regression.Rmd.orig", output = "regression.Rmd")
+# knitr::purl("regression.Rmd.orig", output = "regression.R") # Don't need this
 
-knitr::knit("understanding_shapr_asymmetric_causal.Rmd.orig", output = "understanding_shapr_asymmetric_causal.Rmd")
-# knitr::purl("understanding_shapr_asymmetric_causal.Rmd.orig", output = "understanding_shapr_asymmetric_causal.R")
+knitr::knit("asymmetric_causal.Rmd.orig", output = "asymmetric_causal.Rmd")
+# knitr::purl("asymmetric_causal.Rmd.orig", output = "asymmetric_causal.R")
 
 setwd(old_wd)

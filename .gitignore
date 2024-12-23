@@ -25,6 +25,7 @@ docs
 .idea
 .DS_Store
 
-vignettes/cache_main/
+vignettes/cache_general_usage/
 vignettes/cache_vaeac/
 vignettes/cache_regression/
+vignettes/cache_asymmetric_causal/

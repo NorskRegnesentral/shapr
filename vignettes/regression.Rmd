@@ -77,7 +77,7 @@ add a pre-processing step for the regression models that do not
 natively support categorical data to encode the categorical features.
 
 We use the same data and predictive models in this
-vignette as in the main vignette.
+vignette as in the general usage.
 
 See the end of the [continous data](#summary) and
 [mixed data](#summary_mixed) sections for summary figures of all the
@@ -125,7 +125,7 @@ $g_S(\boldsymbol{x}_S) = \hat{v}(S) \approx v(S) = E[f(\boldsymbol{x}_\bar{S}, \
 ## Code {#separate_code}
 
 In this supplementary vignette, we use the same data and explain
-the same model type as in the main vignette. We train a simple
+the same model type as in the general usage. We train a simple
 `xgboost` model on the `airquality` dataset and demonstrate how
 to use the `shapr` and the separate regression method class to
 explain the individual predictions.
@@ -986,7 +986,7 @@ print_MSEv_scores_and_time(explanation_list)
 The `future` package can train the separate regression models
 in parallel. More specifically, we parallelize both the
 training step (when we fit the models) and the prediction
-step (when we compute $v(S)$). In the main vignette, we also
+step (when we compute $v(S)$). In the general usage, we also
 explain how to enable progress bars.
 
 In the code chunk below, we consider four regression-based
@@ -2018,7 +2018,7 @@ plot_SV_several_approaches(explanation_list[best_methods], index_explicands = 1:
 # Mixed data {#mixed}
 
 In this section, we replicate and extend the mixed data example
-from the main vignette by demonstrating the separate and surrogate
+from the general usage by demonstrating the separate and surrogate
 regression methods. Of the Monte Carlo-based methods, only the
 `independence` (not recommended), `ctree`, and `vaeac` methods support
 mixed data. We can divide the regression models into two groups based
@@ -2030,7 +2030,7 @@ this below using the `regression.recipe_func` function.
 
 ## Mixed data: setup
 
-First, we copy the setup from the main vignette.
+First, we copy the setup from the general usage.
 
 
 ``` r

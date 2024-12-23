@@ -23,10 +23,10 @@ inst/compare_lundberg\.xgb\.obj
 ^.Rprofile
 ^python$
 ^rebuild_long_running_vignette\.R$
-^vignettes/understanding_shapr\.Rmd\.orig$
-^vignettes/understanding_shapr_vaeac\.Rmd\.orig$
-^vignettes/understanding_shapr_regression\.Rmd\.orig$
-^vignettes/understanding_shapr_asymmetric_causal\.Rmd\.orig$
+^vignettes/general_usage\.Rmd\.orig$
+^vignettes/vaeac\.Rmd\.orig$
+^vignettes/regression\.Rmd\.orig$
+^vignettes/asymmetric_causal\.Rmd\.orig$
 ^vignettes/figure_main/*$
 ^vignettes/cache_main/*$
 ^vignettes/figure_vaeac/*$

@@ -61,7 +61,7 @@ test_predict_model <- function(x_test, predict_model, model, internal) {
     stop(paste0(
       "The predict_model function of class `", class(model), "` is invalid.\n",
       "See the 'Advanced usage' section of the vignette:\n",
-      "vignette('understanding_shapr', package = 'shapr')\n",
+      "vignette('general_usage', package = 'shapr')\n",
       "for more information on running shapr with custom models.\n",
       "A basic function test threw the following error:\n", as.character(tmp[[1]])
     ))
@@ -77,7 +77,7 @@ test_predict_model <- function(x_test, predict_model, model, internal) {
         "for single output models or a data.table of the correct\n",
         "dimensions for a multiple output model.\n",
         "See the 'Advanced usage' section of the vignette:\n",
-        "vignette('understanding_shapr', package = 'shapr')\n\n",
+        "vignette('general_usage', package = 'shapr')\n\n",
         "for more information on running shapr with custom models.\n"
       )
     )
