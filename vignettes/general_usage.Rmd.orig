@@ -48,7 +48,7 @@ efficient approximation to Shapley values in higher dimensions, but it
 assumes independent features. @aas2019explaining extends the Kernel SHAP
 method to handle dependent features, resulting in more accurate
 approximations to the true Shapley values. See the
-[paper](https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf)
+[paper](https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf)
 (@aas2019explaining) for further details.
 
 
