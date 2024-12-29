@@ -2,10 +2,7 @@
 #'
 #' @description Computes dependence-aware Shapley values for observations in `x_explain` from the specified
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
-#' See
-# nolint start
-#' \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
-# nolint end
+#' See \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 #' for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 #'
 #' @param x_train Matrix or data.frame/data.table.
@@ -189,9 +186,7 @@
 #' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage}.
 #' (From R: `vignette("general_usage", package = "shapr")`).
 #' Moreover,
-# nolint start
-#'  \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}
-# nolint end
+#'  \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 #' gives a general introduction to dependence-aware Shapley values, and the three approaches `"empirical"`,
 #' `"gaussian"`, `"copula"`, and also discusses `"independence"`.
 #' \href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
@@ -400,7 +395,7 @@
 #'
 # nolint start
 #' @references
-#'   - \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+#'   - \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{
 #'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 #'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
 #'   - \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{

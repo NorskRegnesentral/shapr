@@ -241,7 +241,7 @@ Represents the minimum proportion of the total empirical weight that data sample
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of
-\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}.}
+\href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.}
     \item{\code{empirical.fixed_sigma}}{Positive numeric scalar.
 The default value is 0.1.
 Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
@@ -353,8 +353,7 @@ iterative estimation routine.}
 \description{
 Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
-See
-\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
+See \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 }
 \details{
@@ -364,7 +363,7 @@ These are all introduced in the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage}.
 (From R: \code{vignette("general_usage", package = "shapr")}).
 Moreover,
-\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}
+\href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 gives a general introduction to dependence-aware Shapley values, and the three approaches \code{"empirical"},
 \code{"gaussian"}, \code{"copula"}, and also discusses \code{"independence"}.
 \href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
@@ -548,7 +547,7 @@ explain_iterative <- explain(
 }
 \references{
 \itemize{
-\item \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+\item \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
 \item \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
