@@ -8,7 +8,7 @@
 * Renamed various internal functions to be consistent with names in the rest of the package [#427](https://github.com/NorskRegnesentral/shapr/pull/427))
 * Remove MSEv from explain_forecast (as it was only supported for horizon=1). Should return in a more general manner in the future [#427](https://github.com/NorskRegnesentral/shapr/pull/427))
 * Improve efficiency of coalition sampling code and move to string sampling [#426](https://github.com/NorskRegnesentral/shapr/pull/426))
-* Bugfix `iterative = TRUE` for `explain_forecast()` which was not using coaltions from previous iterations [#426](https://github.com/NorskRegnesentral/shapr/pull/426))
+* Bugfix `iterative = TRUE` for `explain_forecast()` which was not using coalitions from previous iterations [#426](https://github.com/NorskRegnesentral/shapr/pull/426))
 * Bugfix the handling and output with the `verbose` argument for `explain_forecast()` [#425](https://github.com/NorskRegnesentral/shapr/pull/425))
 * Improved flexibility of the beeswarm plot functionality [#424](https://github.com/NorskRegnesentral/shapr/pull/424))
 * Bugfix edge case where the `party` package returns a `constparty` object [#423](https://github.com/NorskRegnesentral/shapr/pull/423))
@@ -88,7 +88,7 @@ Previously, this was not possible with the prediction functions defined internal
 
 # shapr 0.2.2
 
-* Patch to fix failing CRAN-tests on R-devel due to changed behavior of `attach()`: Fixed by changing how we simluate adding a function to .GlobalEnv in the failing test. Actual package not affected.
+* Patch to fix failing CRAN-tests on R-devel due to changed behavior of `attach()`: Fixed by changing how we simulate adding a function to .GlobalEnv in the failing test. Actual package not affected.
 
 # shapr 0.2.1
 

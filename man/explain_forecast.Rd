@@ -93,7 +93,7 @@ If eventually \code{TRUE}, the Shapley values are estimated iteratively in an it
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
@@ -165,15 +165,15 @@ E.g. \code{verbose = c("basic", "vS_details")} will display basic information + 
 }}
 
 \item{extra_computation_args}{Named list.
-Specifices extra arguments related to the computation of the Shapley values.
+Specifies extra arguments related to the computation of the Shapley values.
 See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{iterative_args}{Named list.
-Specifices the arguments for the iterative procedure.
+Specifies the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{output_args}{Named list.
-Specifices certain arguments related to the output of the function.
+Specifies certain arguments related to the output of the function.
 See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{

@@ -54,14 +54,14 @@ coalitions and only use the coalitions up to this point and throw away the remai
 A list mapping each coalition to the features it contains.}
 
 \item{approach0}{Character vector.
-Contains the approach to be used for eastimation of each coalition size. Same as \code{approach} in \code{\link[=explain]{explain()}}.}
+Contains the approach to be used for estimation of each coalition size. Same as \code{approach} in \code{\link[=explain]{explain()}}.}
 
 \item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
 values explanations, and is \code{NULL} for symmetric Shapley values.
 The data.table contains information about the coalitions that respects the causal ordering.}
 }
 \value{
-A data.table with info about the coaltions to use
+A data.table with info about the coalitions to use
 }
 \description{
 Define coalitions, and fetch additional information about each unique coalition

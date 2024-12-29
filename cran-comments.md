@@ -16,8 +16,10 @@ The win-builder and R-hub tests are run without snapshots tests (to replicate CR
 * GitHub Actions (windows-latest), R-version: release
 * GitHub Actions (macOS-latest), R-version: release
 * win-builder, R-versions: devel, release, oldrelease 
-* R-hub (Fedora Linux): R-version: devel
-* R-hub (Windows server 2022): R-version: devel
+* R-hub (ubuntu-latest): R-version: devel
+* R-hub (macos-13): R-version: devel
+* R-hub (macos-latest): R-version: devel
+* R-hub (windows-latest): R-version: devel
 
 ## R CMD check results
 
@@ -33,7 +35,7 @@ Possibly misspelled words in DESCRIPTION:
 > This refers to the Python wrapper of the package and is not misspelled.
 
 ## Downstream dependencies
-There is 2 downstream dependency (PPtreeregViz, SEMdeep) of shapr. In additon, the package shapviz provides additional
+There is 2 downstream dependency (PPtreeregViz, SEMdeep) of shapr. In addition, the package shapviz provides additional
 plotting functionality without stating an explicit dependency (I believe shapr actually should have be listed under 
 Suggests?)
 All packages fails on R CMD checks, but I have submitted PRs to fix the issues.

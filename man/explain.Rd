@@ -61,7 +61,7 @@ If eventually \code{TRUE}, the Shapley values are estimated iteratively in an it
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
@@ -137,7 +137,7 @@ disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{prev_shapr_object}{\code{shapr} object or string.
-If an object of class \code{shapr} is provided, or string with a path to where intermediate results are strored,
+If an object of class \code{shapr} is provided, or string with a path to where intermediate results are stored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the
@@ -183,15 +183,15 @@ specified, then \code{explain} computes asymmetric/symmetric causal Shapley valu
 regression-based approaches are not applicable to the causal Shapley value methodology.}
 
 \item{extra_computation_args}{Named list.
-Specifices extra arguments related to the computation of the Shapley values.
+Specifies extra arguments related to the computation of the Shapley values.
 See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{iterative_args}{Named list.
-Specifices the arguments for the iterative procedure.
+Specifies the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{output_args}{Named list.
-Specifices certain arguments related to the output of the function.
+Specifies certain arguments related to the output of the function.
 See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
@@ -275,7 +275,7 @@ example, \verb{"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine
 is also a valid input. It is essential to include the package prefix if the package is not loaded.}
     \item{\code{regression.tune_values}}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
 The data.frame must contain the possible hyperparameter value combinations to try.
-The column names must match the names of the tuneable parameters specified in \code{regression.model}.
+The column names must match the names of the tunable parameters specified in \code{regression.model}.
 If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
 for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the coalition See the regression

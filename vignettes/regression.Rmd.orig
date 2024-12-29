@@ -70,7 +70,7 @@ It is also possible to apply a wide range of pre-processing data
 steps. For instance, we can either apply the linear regression model directly to
 the data or pre-process the data to compute principal components
 (principal component regression) before fitting the linear regression to
-the first few eigenvectors (proessed features), see the [pre-process](#separate_preproc) section for an example.
+the first few eigenvectors (processed features), see the [pre-process](#separate_preproc) section for an example.
 In the [add new regression methods](#new) section, we demonstrate how to incorporate the  projection pursuit regression model into the `tidymodels` framework.
 
 Note that our framework does not currently support model
@@ -91,7 +91,7 @@ natively support categorical data to encode the categorical features.
 We use the same data and predictive models in this
 vignette as in the general usage.
 
-See the end of the [continous data](#summary) and
+See the end of the [continious data](#summary) and
 [mixed data](#summary_mixed) sections for summary figures of all the
 methods used in this vignette to compute the Shapley value explanations.
 
@@ -488,7 +488,7 @@ allows us to use different hyperparameter values for different coalition sizes,
 which is essential if a hyperparameter's domain changes with the coalition size.
 For example, see the example below where we want to tune the `mtry` parameter in
 `ranger` (random forest). The column names of `regression.tune_values` (or the
-output if it is a function) must match the tuneable hyperparameters specified
+output if it is a function) must match the tunable hyperparameters specified
 in `regression.model`. For the example above, `regression.tune_values` must be
 a one-column data.frame with the column name `tree_depth`. We can either
 manually specify the hyperparameter values or use the `dials` package, e.g.,

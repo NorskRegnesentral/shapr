@@ -3,7 +3,7 @@
 #' @inheritParams default_doc_export
 #'
 #' @param method Character
-#' Indicates whether the lappy method (default) or loop method should be used.
+#' Indicates whether the lapply method (default) or loop method should be used.
 #' Options other than "future" is only used for testing/debugging.
 #'
 #' @export

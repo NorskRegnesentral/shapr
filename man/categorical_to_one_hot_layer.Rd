@@ -25,7 +25,7 @@ It also replaces NaNs with zeros in order so that further layers may work correc
 }
 \details{
 Note that the module works with mixed data represented as 2-dimensional inputs and it
-works correctly with missing values in \code{groundtruth} as long as they are repsented by NaNs.
+works correctly with missing values in \code{groundtruth} as long as they are represented by NaNs.
 }
 \author{
 Lars Henry Berge Olsen

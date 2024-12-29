@@ -183,7 +183,7 @@ in the ordinary Kernel SHAP framework. @aas2019explaining propose three
 different approaches for estimating the conditional probabilities which
 are implemented: `empirical`, `gaussian` and `copula`. The package also
 implements the `ctree` method from @redelmeier2020explaining, the
-`vaeac` method from @olsen2022using and a `categorical` for cateogorical data.
+`vaeac` method from @olsen2022using and a `categorical` for categorical data.
 The original `independence` approach
 of @lundberg2017unified is also available. The methods may also be combined,
 such that e.g. one method is used when conditioning on a small number of
@@ -371,7 +371,7 @@ times each combination of feature values occurs, we can estimate the
 marginal and conditional probabilities as follows. Marginal
 probabilities are estimated by dividing the number of times a given
 feature (or features) takes on a certain value in the data set with the
-total number of observations in the data set. Condititional
+total number of observations in the data set. Conditional
 probabilities (for example, $P(X_1 = 1 | X_2 = 1)$) are estimated by
 first subsetting the data set to reflect the conditioning (i.e.,
 extracting all rows where $X_2 = 1$), and then dividing the number of
@@ -487,7 +487,7 @@ The other two plot options, `"beeswarm"` and `"scatter"`, can be useful
 when you have many observations that you want to explain. For the
 purpose of illustration, we explain the whole `airquality` dataset
 (including the training data) for these plot types. The
-`plot_type = "beeswarm"` summarises the distribution of the Shapley
+`plot_type = "beeswarm"` summarizes the distribution of the Shapley
 values along the x-axis across all features. Each point gives the
 Shapley value of a given instance, where the points are colored by the
 feature value of that instance:
@@ -909,7 +909,7 @@ can always be manually overridden by setting `iterative = FALSE` in the `explain
 The idea behind iterative estimation is to estimate sufficiently accurate Shapley value estimates faster.
 First, an initial number of coalitions is sampled, then, bootsrapping is used to estimate the variance of the Shapley
 values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
@@ -999,14 +999,14 @@ computations within each batch to be performed in parallel.
 The parallelization in `shapr::explain()` is handled by the
 `future_apply` package which builds on the `future` environment. These packages
 work on all OS, allows the user to decide the parallelization
-backend (mutliple R procesess or forking), works directly with hpc
+backend (multiple R processes or forking), works directly with hpc
 clusters, and also supports progress updates for the parallelized task
 via the associated `progressr` package
 (see [Verbosity and progress updates](#verbose)).
 
 Note that, since it takes some time to duplicate data into different
 processes/machines when running in parallel, it is not always
-preferrable to run `shapr::explain()` in parallel, at least not with
+preferable to run `shapr::explain()` in parallel, at least not with
 many parallel sessions/workers.
 Parallelization also increases the memory consumption proportionally, so you may want to limit
 the number of workers for that reason too.
@@ -1039,11 +1039,11 @@ and allows one or more of the strings `"basic"`, `"progress"`, `"convergence"`, 
 while `"vS_details"` displays information about the `v(S)` estimates for some of the approaches.
 If the user wants no printout, the argument can be set to `NULL`.
 
-In additon, progress updates for the computation of the `v(S)` values are (optionally) provided
+In addition, progress updates for the computation of the `v(S)` values are (optionally) provided
 through the R-package `progressr`.
 This gives the user full control over the visual appearance of these progress updates.
 The main reason for providing this separate progress update feature is that it
-integreats seamlessly with the parallelization framework `future` used by `shapr` (see [Parallelization](#para)),
+integrates seamlessly with the parallelization framework `future` used by `shapr` (see [Parallelization](#para)),
 and apparently is the only framework allowing progress updates also for parallelized tasks.
 These progress updates can be used in combination with, or independently of, the `verbose` argument.
 
@@ -1656,7 +1656,7 @@ predict(model_ar_temp, n.ahead = 2)$pred
 
 First, we pass the model and the data as `model` and `y`. Since we have
 an AR(2) model, we want to explain the forecasts in terms of the two
-previous lags, whihc we specify with `explain_y_lags = 2`. Then, we let
+previous lags, which we specify with `explain_y_lags = 2`. Then, we let
 `shapr` know which time indices to use as training data through the
 argument `train_idx`. We use `2:152`, meaning that we skip the first
 index, as we want to explain the two previous lags. Letting the training

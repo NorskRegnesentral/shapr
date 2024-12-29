@@ -2,7 +2,7 @@
 % Please edit documentation in R/save_results.R
 \name{save_results}
 \alias{save_results}
-\title{Saves the itermediate results to disk}
+\title{Saves the intermediate results to disk}
 \usage{
 save_results(internal)
 }
@@ -11,6 +11,6 @@ save_results(internal)
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
 \description{
-Saves the itermediate results to disk
+Saves the intermediate results to disk
 }
 \keyword{internal}

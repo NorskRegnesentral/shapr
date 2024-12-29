@@ -390,11 +390,11 @@ expl_batches_combinations_2 <- explain(
 
 The `vaeac` approach can use paired sampling to improve the stability of the vaeac training procedure.
 When using paired sampling, each observation in the training batches will be duplicated, but the first version will
-be masked by $S$ and the second verion will be masked by the complement $\bar{S}$. The mask are taken from the
+be masked by $S$ and the second version will be masked by the complement $\bar{S}$. The mask are taken from the
 `explanation$internal$objects$S` matrix. Note that `vaeac` does not check if the complement is also in said matrix.
 This means that if the Shapley value explanations are computed based on a subset of coalitions, then the `vaeac` model might be trained on coalitions which are not used when
-computing the Shapley values. This should not be considered as redundant training as it increases the stablility and
-performance of the `vaeac` model as a whole, hence, we reccomend to use paried samping (default). Furthermore, the masks
+computing the Shapley values. This should not be considered as redundant training as it increases the stability and
+performance of the `vaeac` model as a whole, hence, we recommend to use paired sampling (default). Furthermore, the masks
 are randomly selected for each observation in the batch. The training time when using paired sampling is higher in
 comparison to random sampling due to more complex implementation.
 
@@ -622,7 +622,7 @@ recommend to use many more epochs.
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
 We do this by using the `plot_vaeac_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
 respectively. We also use the `plot_vaeac_imputed_ggpairs()` function which generates samples from $p(x)$, this
-is ment as a sanity check to see that the `vaeac` model is able to follow the general structure/distribution of the
+is meant as a sanity check to see that the `vaeac` model is able to follow the general structure/distribution of the
 data. However, recall that the `vaeac` model is never trained on the empty coalition, so the produced samples should be taken with a grain of salt.
 
 

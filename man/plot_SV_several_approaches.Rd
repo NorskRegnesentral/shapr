@@ -34,7 +34,7 @@ The argument \code{index_explicands_sort} must be \code{FALSE} to plot the expli
 in the order specified in \code{index_x_explain}.}
 
 \item{index_explicands_sort}{Boolean. If \code{FALSE} (default), then \code{shapr} plots the explicands in the order
-specified in \code{index_explicands}. If \code{TRUE}, then \code{shapr} sort the indices in incressing oreder based on their id.}
+specified in \code{index_explicands}. If \code{TRUE}, then \code{shapr} sort the indices in increasing order based on their id.}
 
 \item{only_these_features}{String vector. Containing the names of the features which
 are to be included in the bar plots.}

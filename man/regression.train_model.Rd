@@ -55,7 +55,7 @@ the values provided in \code{regression.tune_values}. Note that no checks are co
 
 \item{regression.tune_values}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
 The data.frame must contain the possible hyperparameter value combinations to try.
-The column names must match the names of the tuneable parameters specified in \code{regression.model}.
+The column names must match the names of the tunable parameters specified in \code{regression.model}.
 If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
 for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the coalition See the regression

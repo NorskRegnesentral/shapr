@@ -107,24 +107,24 @@
 #' This provides sufficiently accurate Shapley value estimates faster.
 #' First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 #' values.
-#' A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+#' A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 #' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 #' coalitions.
 #' The process is repeated until the variances are below the threshold.
 #' Specifics related to the iterative process and convergence criterion are set through `iterative_args`.
 #'
 #' @param iterative_args Named list.
-#' Specifices the arguments for the iterative procedure.
+#' Specifies the arguments for the iterative procedure.
 #' See [get_iterative_args_default()] for description of the arguments and their default values.
 #' @param output_args Named list.
-#' Specifices certain arguments related to the output of the function.
+#' Specifies certain arguments related to the output of the function.
 #' See [get_output_args_default()] for description of the arguments and their default values.
 #' @param extra_computation_args Named list.
-#' Specifices extra arguments related to the computation of the Shapley values.
+#' Specifies extra arguments related to the computation of the Shapley values.
 #' See [get_extra_comp_args_default()] for description of the arguments and their default values.
 #'
 #' @param prev_shapr_object `shapr` object or string.
-#' If an object of class `shapr` is provided, or string with a path to where intermediate results are strored,
+#' If an object of class `shapr` is provided, or string with a path to where intermediate results are stored,
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 #' want to continue the iterative estimation. See the
@@ -582,7 +582,7 @@ explain <- function(model,
   return(output)
 }
 
-#' Cleans out certain output arguments to allow perfect reproducability of the output
+#' Cleans out certain output arguments to allow perfect reproducibility of the output
 #'
 #' @inheritParams default_doc_export
 #'

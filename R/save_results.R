@@ -1,4 +1,4 @@
-#' Saves the itermediate results to disk
+#' Saves the intermediate results to disk
 #'
 #' @inheritParams default_doc_export
 #'

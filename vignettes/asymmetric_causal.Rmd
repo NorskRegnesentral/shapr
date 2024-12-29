@@ -177,7 +177,7 @@ of the estimated multivariate Gaussian distribution. This means that for all
 other approaches, this is the same as using the `independence` approach
 in the conditional Shapley value explanation framework.
 
-# Symmetric conditioal Shapley values {#ConditionalSV}
+# Symmetric conditional Shapley values {#ConditionalSV}
 Causal Shapley values are equivalent to symmetric conditional Shapley values when all $M$
 features are combined in a single component $\tau = \mathcal{M} = \{1,2,...,M\}$ and
 all dependencies are induced by mutual interaction. Then $\text{pa}(\tau) = \emptyset$,

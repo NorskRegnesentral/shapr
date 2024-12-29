@@ -9,7 +9,7 @@
 #' is also a valid input. It is essential to include the package prefix if the package is not loaded.
 #' @param regression.tune_values Either `NULL` (default), a data.frame/data.table/tibble, or a function.
 #' The data.frame must contain the possible hyperparameter value combinations to try.
-#' The column names must match the names of the tuneable parameters specified in `regression.model`.
+#' The column names must match the names of the tunable parameters specified in `regression.model`.
 #' If `regression.tune_values` is a function, then it should take one argument `x` which is the training data
 #' for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 #' Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
