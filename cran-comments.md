@@ -25,7 +25,7 @@ The win-builder and R-hub tests are run without snapshots tests (to replicate CR
 
 There were no ERRORs or WARNINGs
 
-There were X NOTES
+There were 3 NOTES
 
 ### NOTE 1 (on win-builder (oldrelease)):
 
@@ -34,16 +34,37 @@ Possibly misspelled words in DESCRIPTION:
 
 > This refers to the Python wrapper of the package and is not misspelled.
 
+### NOTE 2 (on win-builder (release)):
+
+Examples with CPU (user + system) or elapsed time > 10s
+         user system elapsed
+explain 10.33   0.44   10.77
+
+> Although very limited, the examples requires some time to run as the computations are expensive.
+
+
+### NOTE 3 (multiple platforms):
+
+* checking installed package size ... NOTE
+  installed size is  8.0Mb
+  sub-directories of 1Mb or more:
+    doc    4.4Mb
+    libs   1.3Mb
+
+> The package is growing in size, uses more complied code, and the documentation is comprehensive
+
+
 ## Downstream dependencies
-There is 2 downstream dependency (PPtreeregViz, SEMdeep) of shapr. In addition, the package shapviz provides additional
-plotting functionality without stating an explicit dependency (I believe shapr actually should have be listed under 
-Suggests?)
-All packages fails on R CMD checks, but I have submitted PRs to fix the issues.
+There is 2 downstream dependency (`PPtreeregViz`, `SEMdeep`) of `shapr`. 
+In addition, the package `shapviz` provides additional plotting functionality without stating an explicit dependency 
+(I believe shapr actually should have be listed under Suggests?)
+
+The 3 packages fails on R CMD checks, but I have submitted PRs to fix all issues.
 
 ### PPtreeregViz
 
 * Nov 26th 2024 I submitted a PR fixing the issue: https://github.com/sunsmiling/PPtreeregViz/pull/2
-There has been no reaction from the maintainer
+There has been no reaction from the maintainer.
 
 ### SEMdeep
 
@@ -54,50 +75,8 @@ There has been no reaction from the maintainer.
 
 * Nov 15th 2024 I submitted a PR fixing the issue: https://github.com/ModelOriented/shapviz/pull/162
 The PR was merged to the GitHub version on Nov 16th 2024. The CRAN version has naturally not been updated yet.
-I will notify the maintainer when the new version of shapr is released on CRAN.
+I will notify the maintainer when the new version of `shapr` is released on CRAN.
 
 
-
-
-################### TO BE DELETED IN THE END ###############
-
-* checking installed package size ... NOTE
-  installed size is  5.0Mb
-  sub-directories of 1Mb or more:
-    libs   4.0Mb
-
-> Nothing has changed since the last submission.
-
-
-
-### NOTE 2 (on R-hub (Fedora Linux)):
-
-* checking HTML version of manual ... NOTE
-Skipping checking HTML validation: no command 'tidy' found
-Skipping checking math rendering: package 'V8' unavailable
-
-> Missing packages on R-hubs Windows Server 2022 platform.
-
-### NOTE 4 (on R-hub (Fedora Linux, Windows Server 2022)):
-
-*Found the following (possibly) invalid URLs:
-  URL: https://opensource.org/license/mit/
-    From: README.md
-    Status: 403
-    Message: Forbidden
-
-> I believe this is a false positive. Running 'urlchecker::url_check()' locally shows all URLs are correct.
-
-### NOTE 5 (on R-hub (Windows Server 2022)):
-
-* checking for detritus in the temp directory ... NOTE
-Found the following files/directories:
-  'lastMiKTeXException'
-
-> As noted in [R-hub issue #503](https://github.com/r-hub/rhub/issues/503), this could be due to a bug/crash in MiKTeX and can likely be ignored.
-
-## Downstream dependencies
-There is 1 downstream dependency (PPtreeregViz) of shapr
-I have also run R CMD check on that and it passed without errors, warnings or notes.
 
 

@@ -1,5 +1,6 @@
 # shapr 1.0.1 
 
+* Spelling checking and other minor clean up [#431](https://github.com/NorskRegnesentral/shapr/pull/431))
 * Add extra_computation_args and output_args to explain_forecast() [#428](https://github.com/NorskRegnesentral/shapr/pull/428))
 * Rename vaeac plotting functions [#428](https://github.com/NorskRegnesentral/shapr/pull/428))
 * Move explain() arguments `paired_shap_sampling` and `kernelSHAP_reweighting` into `extra_computation_args` [#428](https://github.com/NorskRegnesentral/shapr/pull/428))
