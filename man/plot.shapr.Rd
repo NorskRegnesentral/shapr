@@ -114,6 +114,7 @@ how you should use the function.
 }
 \examples{
 
+\dontrun{
 data("airquality")
 airquality <- airquality[complete.cases(airquality), ]
 x_var <- c("Solar.R", "Wind", "Temp", "Month")
@@ -202,6 +203,7 @@ x <- explain(
 if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
   plot(x, plot_type = "scatter")
   plot(x, plot_type = "beeswarm")
+}
 }
 
 }

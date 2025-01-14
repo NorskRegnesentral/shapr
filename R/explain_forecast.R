@@ -68,6 +68,7 @@
 #' @author Jon Lachmann, Martin Jullum
 #' @examples
 #'
+#' \dontrun{
 #' # Load example data
 #' data("airquality")
 #' data <- data.table::as.data.table(airquality)
@@ -90,6 +91,7 @@
 #'   phi0 = p0_ar,
 #'   group_lags = FALSE
 #' )
+#' }
 #'
 #' @export
 explain_forecast <- function(model,

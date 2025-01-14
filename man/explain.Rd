@@ -403,6 +403,7 @@ This combined batch computing of the v(S) values, enables fast and accurate esti
 in a memory friendly manner.
 }
 \examples{
+\dontrun{
 
 # Load example data
 data("airquality")
@@ -424,12 +425,11 @@ model <- lm(lm_formula, data = data_train)
 # Explain predictions
 p <- mean(data_train[, y_var])
 
-\dontrun{
 # (Optionally) enable parallelization via the future package
 if (requireNamespace("future", quietly = TRUE)) {
   future::plan("multisession", workers = 2)
 }
-}
+
 
 # (Optionally) enable progress updates within every iteration via the progressr package
 if (requireNamespace("progressr", quietly = TRUE)) {
@@ -543,6 +543,7 @@ explain_iterative <- explain(
   iterative = TRUE,
   iterative_args = list(initial_n_coalitions = 10)
 )
+}
 
 }
 \references{

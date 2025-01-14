@@ -320,6 +320,7 @@ forecasting section of the general usages} for further details.
 }
 \examples{
 
+\dontrun{
 # Load example data
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -342,6 +343,7 @@ explain_forecast(
   phi0 = p0_ar,
   group_lags = FALSE
 )
+}
 
 }
 \references{

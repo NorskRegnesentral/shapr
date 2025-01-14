@@ -79,6 +79,7 @@
 #' @export
 #' @examples
 #'
+#' \dontrun{
 #' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
 #' x_var <- c("Solar.R", "Wind", "Temp", "Month")
@@ -167,6 +168,7 @@
 #' if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
 #'   plot(x, plot_type = "scatter")
 #'   plot(x, plot_type = "beeswarm")
+#' }
 #' }
 #'
 #' @author Martin Jullum, Vilde Ung, Lars Henry Berge Olsen
