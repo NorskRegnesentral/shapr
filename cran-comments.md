@@ -25,7 +25,7 @@ The win-builder and R-hub tests are run without snapshots tests (to replicate CR
 
 There were no ERRORs or WARNINGs
 
-There were 3 NOTES
+There were 2 NOTES
 
 ### NOTE 1 (on win-builder (oldrelease)):
 
@@ -34,16 +34,8 @@ Possibly misspelled words in DESCRIPTION:
 
 > This refers to the Python wrapper of the package and is not misspelled.
 
-### NOTE 2 (on win-builder (release)):
 
-Examples with CPU (user + system) or elapsed time > 10s
-         user system elapsed
-explain 10.33   0.44   10.77
-
-> Although very limited, the examples requires some time to run as the computations are expensive.
-
-
-### NOTE 3 (multiple platforms):
+### NOTE 2 (multiple platforms):
 
 * checking installed package size ... NOTE
   installed size is  8.0Mb

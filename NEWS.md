@@ -17,7 +17,7 @@
 * Shined up the vignettes a bit [#421](https://github.com/NorskRegnesentral/shapr/pull/421))
 * Bugfix `keep_samp_for_vS` with iterative approach [#417](https://github.com/NorskRegnesentral/shapr/pull/417))
 * [Python] Brought the python code base up to speed with essentially all functionality in `explain()` in R [#416](https://github.com/NorskRegnesentral/shapr/pull/416))
-* 
+* Please CRAN with dontrun on long running examples + skip_on_cran for the parallelized tests.
 
 # shapr 1.0.0 (GitHub only)
 
