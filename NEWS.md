@@ -1,3 +1,5 @@
+# shapr (development version)
+
 # shapr 1.0.1 
 
 * Spelling checking and other minor clean up [#431](https://github.com/NorskRegnesentral/shapr/pull/431))
