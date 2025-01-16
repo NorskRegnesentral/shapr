@@ -28,9 +28,7 @@ def explain(
     iterative: bool | None = None,
     max_n_coalitions: int | None = None,
     group: dict | None = None,
-    paired_shap_sampling: bool = True,
     n_MC_samples: int = 1e3,
-    kernelSHAP_reweighting: str = "on_all_cond",
     seed: int | None = 1,
     verbose: str = "basic",
     predict_model: Callable = None,
@@ -78,14 +76,8 @@ def explain(
       If `None` regular feature wise Shapley values are computed.
       If provided, group wise Shapley values are computed. `group` then contains lists of unique feature names with the
       features included in each of the different groups.
-    paired_shap_sampling: bool, optional
-      If `True` (default), paired versions of all sampled coalitions are also included in the computation.
     n_MC_samples: int, optional
       Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation.
-    kernelSHAP_reweighting: str, optional
-      How to reweight the sampling frequency weights in the kernelSHAP solution after sampling, with the aim of reducing
-      the randomness and thereby the variance of the Shapley value estimates. One of `'none'`, `'on_N'`, `'on_all'`, 
-      `'on_all_cond'` (default).
     seed: int or None, optional
       Specifies the seed before any randomness based code is being run. If `None` the seed will be inherited from the calling environment.
     verbose: str or list[str], optional
@@ -181,7 +173,6 @@ def explain(
       x_train = py2r(x_train),
       x_explain = py2r(x_explain),
       approach = StrVector(approach),
-      paired_shap_sampling = paired_shap_sampling,
       phi0 = phi0,
       max_n_coalitions = maybe_null(max_n_coalitions),
       group = r_group,
@@ -190,13 +181,12 @@ def explain(
       feature_specs = rfeature_specs,
       verbose = StrVector(verbose),
       iterative = maybe_null(iterative),
-      iterative_args = iterative_args, # Might do some conversion here
-      kernelSHAP_reweighting = kernelSHAP_reweighting,
+      iterative_args = iterative_args, 
       asymmetric = asymmetric,
-      causal_ordering = r_causal_ordering, # Might do some conversion here
-      confounding = maybe_null(confounding), # Might do some conversion here
-      output_args = output_args, # Might do some conversion here
-      extra_computation_args = extra_computation_args, # Might do some conversion here
+      causal_ordering = r_causal_ordering, 
+      confounding = maybe_null(confounding), 
+      output_args = output_args, 
+      extra_computation_args = extra_computation_args, 
       init_time = init_time,
       is_python=True,
       **kwargs

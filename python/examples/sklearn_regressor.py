@@ -81,7 +81,7 @@ explanation_c_a = explain(
     approach = 'empirical',
     causal_ordering = causal_ordering,
     asymmetric = True,
-    paired_shap_sampling=False,
+    extra_computation_args = {"paired_shap_sampling": False},
     phi0 = dfy_train.mean().item()
 )
 print(explanation_c_a["shapley_values_est"])
