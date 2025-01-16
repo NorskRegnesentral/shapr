@@ -93,7 +93,7 @@ If eventually \code{TRUE}, the Shapley values are estimated iteratively in an it
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
@@ -165,15 +165,15 @@ E.g. \code{verbose = c("basic", "vS_details")} will display basic information + 
 }}
 
 \item{extra_computation_args}{Named list.
-Specifices extra arguments related to the computation of the Shapley values.
+Specifies extra arguments related to the computation of the Shapley values.
 See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{iterative_args}{Named list.
-Specifices the arguments for the iterative procedure.
+Specifies the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{output_args}{Named list.
-Specifices certain arguments related to the output of the function.
+Specifies certain arguments related to the output of the function.
 See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
@@ -223,7 +223,7 @@ Represents the minimum proportion of the total empirical weight that data sample
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of
-\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}.}
+\href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.}
     \item{\code{empirical.fixed_sigma}}{Positive numeric scalar.
 The default value is 0.1.
 Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
@@ -301,7 +301,7 @@ iterative estimation routine.}
 Computes dependence-aware Shapley values for observations in \code{explain_idx} from the specified
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
 See
-\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
+\href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas, et. al (2021)}
 for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 }
 \details{
@@ -320,6 +320,7 @@ forecasting section of the general usages} for further details.
 }
 \examples{
 
+\dontrun{
 # Load example data
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -342,11 +343,12 @@ explain_forecast(
   phi0 = p0_ar,
   group_lags = FALSE
 )
+}
 
 }
 \references{
 \itemize{
-\item \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+\item \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
 \item \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
@@ -365,7 +367,7 @@ Redelmeier, A., Jullum, M., & Aas, K. (2020). Explaining predictive models with 
 values and conditional inference trees. In Machine Learning and Knowledge Extraction:
 International Cross-Domain Conference, CD-MAKE 2020, Dublin, Ireland, August 25–28, 2020, Proceedings 4
 (pp. 117-137). Springer International Publishing.}
-\item \href{https://doi.org/10.21105/joss.02027}{
+\item \href{https://www.theoj.org/joss-papers/joss.02027/10.21105.joss.02027.pdf}{
 Sellereite N., & Jullum, M. (2019). shapr: An R-package for explaining machine learning models with
 dependence-aware Shapley values. Journal of Open Source Software, 5(46), 2027}
 \item \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{

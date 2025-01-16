@@ -1042,7 +1042,7 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
 #' This function creates a [torch::dataset()] object that represent a map from keys to data samples.
 #' It is used by the [torch::dataloader()] to load data which should be used to extract the
 #' batches for all epochs in the training phase of the neural network. Note that a dataset object
-#' is an R6 instanc, see \url{https://r6.r-lib.org/articles/Introduction.html}, which is classical
+#' is an R6 instance, see \url{https://r6.r-lib.org/articles/Introduction.html}, which is classical
 #' object-oriented programming, with self reference. I.e, [shapr::vaeac_dataset()] is a subclass
 #' of type [torch::dataset()].
 #'
@@ -1752,7 +1752,7 @@ gauss_cat_loss <- function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4)
 #' reconstructed or not.
 #'
 #' @details Note that the module works with mixed data represented as 2-dimensional inputs and it
-#' works correctly with missing values in `groundtruth` as long as they are repsented by NaNs.
+#' works correctly with missing values in `groundtruth` as long as they are represented by NaNs.
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal

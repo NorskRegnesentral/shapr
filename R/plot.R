@@ -11,7 +11,7 @@
 #'  contribution (their Shapley values).
 #'  `"scatter"` plots the feature values on the x-axis and Shapley values on the y-axis, as well as
 #'  (optionally) a background scatter_hist showing the distribution of the feature data.
-#'  `"beeswarm"` summarises the distribution of the Shapley values along the x-axis for all the features.
+#'  `"beeswarm"` summarizes the distribution of the Shapley values along the x-axis for all the features.
 #'  Each point gives the shapley value of a given instance, where the points are colored by the feature value
 #'  of that instance.
 #' @param digits Integer.
@@ -79,6 +79,7 @@
 #' @export
 #' @examples
 #'
+#' \dontrun{
 #' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
 #' x_var <- c("Solar.R", "Wind", "Temp", "Month")
@@ -167,6 +168,7 @@
 #' if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
 #'   plot(x, plot_type = "scatter")
 #'   plot(x, plot_type = "beeswarm")
+#' }
 #' }
 #'
 #' @author Martin Jullum, Vilde Ung, Lars Henry Berge Olsen
@@ -1443,7 +1445,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #' y-axis or not. If `FALSE` (default), then no value is shown for the groups. If `TRUE`, then `shapr` includes
 #' the mean of the features in each group.
 #' @param index_explicands_sort Boolean. If `FALSE` (default), then `shapr` plots the explicands in the order
-#' specified in `index_explicands`. If `TRUE`, then `shapr` sort the indices in incressing oreder based on their id.
+#' specified in `index_explicands`. If `TRUE`, then `shapr` sort the indices in increasing order based on their id.
 #'
 #' @return A [ggplot2::ggplot()] object.
 #' @export

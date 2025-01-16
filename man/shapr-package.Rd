@@ -6,7 +6,7 @@
 \alias{shapr-package}
 \title{shapr: Prediction Explanation with Dependence-Aware Shapley Values}
 \description{
-Complex machine learning models are often hard to interpret. However, in many situations it is crucial to understand and explain why a model made a specific prediction. Shapley values is the only method for such prediction explanation framework with a solid theoretical foundation. Previously known methods for estimating the Shapley values do, however, assume feature independence. This package implements methods which accounts for any feature dependence, and thereby produces more accurate estimates of the true Shapley values. An accompanying Python wrapper (shaprpy) is available on GitHub.
+Complex machine learning models are often hard to interpret. However, in many situations it is crucial to understand and explain why a model made a specific prediction. Shapley values is the only method for such prediction explanation framework with a solid theoretical foundation. Previously known methods for estimating the Shapley values do, however, assume feature independence. This package implements methods which accounts for any feature dependence, and thereby produces more accurate estimates of the true Shapley values. An accompanying 'Python' wrapper ('shaprpy') is available through the GitHub repository.
 }
 \seealso{
 Useful links:
@@ -22,8 +22,8 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Lars Henry Berge Olsen \email{lholsen@math.uio.no} (\href{https://orcid.org/0009-0006-9360-6993}{ORCID})
-  \item Annabelle Redelmeier \email{Annabelle.Redelmeier@nr.no}
+  \item Lars Henry Berge Olsen \email{lhbolsen@nr.no} (\href{https://orcid.org/0009-0006-9360-6993}{ORCID})
+  \item Annabelle Redelmeier \email{ardelmeier@gmail.com}
   \item Jon Lachmann \email{Jon@lachmann.nu} (\href{https://orcid.org/0000-0001-8396-5673}{ORCID})
   \item Nikolai Sellereite \email{nikolaisellereite@gmail.com} (\href{https://orcid.org/0000-0002-4671-0337}{ORCID})
 }
@@ -31,7 +31,7 @@ Authors:
 Other contributors:
 \itemize{
   \item Anders Løland \email{Anders.Loland@nr.no} [contributor]
-  \item Jens Christian Wahl \email{Jens.Christian.Wahl@nr.no} [contributor]
+  \item Jens Christian Wahl \email{jens.c.wahl@gmail.com} [contributor]
   \item Camilla Lingjærde [contributor]
   \item Norsk Regnesentral [copyright holder, funder]
 }

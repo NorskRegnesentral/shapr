@@ -142,14 +142,14 @@ shapley_setup <- function(internal) {
 #' number of coalitions by a factor of `n_samps_scale` and determine when we have `n_coalitions` unique
 #' coalitions and only use the coalitions up to this point and throw away the remaining coalitions.
 #' @param approach0 Character vector.
-#' Contains the approach to be used for eastimation of each coalition size. Same as `approach` in [explain()].
+#' Contains the approach to be used for estimation of each coalition size. Same as `approach` in [explain()].
 #' @param coal_feature_list List.
 #' A list mapping each coalition to the features it contains.
 #' @param dt_valid_causal_coalitions data.table. Only applicable for asymmetric Shapley
 #' values explanations, and is `NULL` for symmetric Shapley values.
 #' The data.table contains information about the coalitions that respects the causal ordering.
 #' @inheritParams explain
-#' @return A data.table with info about the coaltions to use
+#' @return A data.table with info about the coalitions to use
 #'
 #' @keywords internal
 #'

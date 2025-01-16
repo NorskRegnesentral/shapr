@@ -154,7 +154,7 @@ Represents the minimum proportion of the total empirical weight that data sample
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of
-\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}.}
+\href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.}
 
 \item{empirical.fixed_sigma}{Positive numeric scalar.
 The default value is 0.1.
@@ -205,7 +205,7 @@ is also a valid input. It is essential to include the package prefix if the pack
 
 \item{regression.tune_values}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
 The data.frame must contain the possible hyperparameter value combinations to try.
-The column names must match the names of the tuneable parameters specified in \code{regression.model}.
+The column names must match the names of the tunable parameters specified in \code{regression.model}.
 If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
 for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
@@ -277,7 +277,7 @@ for more information about the different approaches.
 }
 \references{
 \itemize{
-\item \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+\item \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
 }

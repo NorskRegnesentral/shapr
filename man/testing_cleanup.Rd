@@ -2,12 +2,12 @@
 % Please edit documentation in R/explain.R
 \name{testing_cleanup}
 \alias{testing_cleanup}
-\title{Cleans out certain output arguments to allow perfect reproducability of the output}
+\title{Cleans out certain output arguments to allow perfect reproducibility of the output}
 \usage{
 testing_cleanup(output)
 }
 \description{
-Cleans out certain output arguments to allow perfect reproducability of the output
+Cleans out certain output arguments to allow perfect reproducibility of the output
 }
 \author{
 Lars Henry Berge Olsen, Martin Jullum

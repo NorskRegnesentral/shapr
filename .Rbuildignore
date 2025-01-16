@@ -27,11 +27,12 @@ inst/compare_lundberg\.xgb\.obj
 ^vignettes/vaeac\.Rmd\.orig$
 ^vignettes/regression\.Rmd\.orig$
 ^vignettes/asymmetric_causal\.Rmd\.orig$
-^vignettes/figure_general_usage/*$
 ^vignettes/cache_main/*$
-^vignettes/figure_vaeac/*$
 ^vignettes/cache_vaeac/*$
-^vignettes/figure_regression/*$
 ^vignettes/cache_regression/*$
-^vignettes/figure_asymmetric_causal/*$
 ^vignettes/cache_asymmetric_causal/*$
+#^tests/testthat/_snaps/*$ # Uncomment when submitting to CRAN to reduce filesize
+^inst/code_paper/*$
+^inst/joss_paper/*$
+
+

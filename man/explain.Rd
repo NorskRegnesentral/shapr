@@ -61,7 +61,7 @@ If eventually \code{TRUE}, the Shapley values are estimated iteratively in an it
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
@@ -137,7 +137,7 @@ disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{prev_shapr_object}{\code{shapr} object or string.
-If an object of class \code{shapr} is provided, or string with a path to where intermediate results are strored,
+If an object of class \code{shapr} is provided, or string with a path to where intermediate results are stored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the
@@ -183,15 +183,15 @@ specified, then \code{explain} computes asymmetric/symmetric causal Shapley valu
 regression-based approaches are not applicable to the causal Shapley value methodology.}
 
 \item{extra_computation_args}{Named list.
-Specifices extra arguments related to the computation of the Shapley values.
+Specifies extra arguments related to the computation of the Shapley values.
 See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{iterative_args}{Named list.
-Specifices the arguments for the iterative procedure.
+Specifies the arguments for the iterative procedure.
 See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{output_args}{Named list.
-Specifices certain arguments related to the output of the function.
+Specifies certain arguments related to the output of the function.
 See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
@@ -241,7 +241,7 @@ Represents the minimum proportion of the total empirical weight that data sample
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of
-\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}.}
+\href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.}
     \item{\code{empirical.fixed_sigma}}{Positive numeric scalar.
 The default value is 0.1.
 Represents the kernel bandwidth in the distance computation used when conditioning on all different coalitions.
@@ -275,7 +275,7 @@ example, \verb{"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine
 is also a valid input. It is essential to include the package prefix if the package is not loaded.}
     \item{\code{regression.tune_values}}{Either \code{NULL} (default), a data.frame/data.table/tibble, or a function.
 The data.frame must contain the possible hyperparameter value combinations to try.
-The column names must match the names of the tuneable parameters specified in \code{regression.model}.
+The column names must match the names of the tunable parameters specified in \code{regression.model}.
 If \code{regression.tune_values} is a function, then it should take one argument \code{x} which is the training data
 for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
@@ -353,8 +353,7 @@ iterative estimation routine.}
 \description{
 Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
 \code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
-See
-\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
+See \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 }
 \details{
@@ -364,7 +363,7 @@ These are all introduced in the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage}.
 (From R: \code{vignette("general_usage", package = "shapr")}).
 Moreover,
-\href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}
+\href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 gives a general introduction to dependence-aware Shapley values, and the three approaches \code{"empirical"},
 \code{"gaussian"}, \code{"copula"}, and also discusses \code{"independence"}.
 \href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
@@ -404,6 +403,7 @@ This combined batch computing of the v(S) values, enables fast and accurate esti
 in a memory friendly manner.
 }
 \examples{
+\dontrun{
 
 # Load example data
 data("airquality")
@@ -425,12 +425,11 @@ model <- lm(lm_formula, data = data_train)
 # Explain predictions
 p <- mean(data_train[, y_var])
 
-\dontrun{
 # (Optionally) enable parallelization via the future package
 if (requireNamespace("future", quietly = TRUE)) {
   future::plan("multisession", workers = 2)
 }
-}
+
 
 # (Optionally) enable progress updates within every iteration via the progressr package
 if (requireNamespace("progressr", quietly = TRUE)) {
@@ -544,11 +543,12 @@ explain_iterative <- explain(
   iterative = TRUE,
   iterative_args = list(initial_n_coalitions = 10)
 )
+}
 
 }
 \references{
 \itemize{
-\item \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+\item \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
 \item \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
@@ -567,7 +567,7 @@ Redelmeier, A., Jullum, M., & Aas, K. (2020). Explaining predictive models with 
 values and conditional inference trees. In Machine Learning and Knowledge Extraction:
 International Cross-Domain Conference, CD-MAKE 2020, Dublin, Ireland, August 25–28, 2020, Proceedings 4
 (pp. 117-137). Springer International Publishing.}
-\item \href{https://doi.org/10.21105/joss.02027}{
+\item \href{https://www.theoj.org/joss-papers/joss.02027/10.21105.joss.02027.pdf}{
 Sellereite N., & Jullum, M. (2019). shapr: An R-package for explaining machine learning models with
 dependence-aware Shapley values. Journal of Open Source Software, 5(46), 2027}
 \item \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
