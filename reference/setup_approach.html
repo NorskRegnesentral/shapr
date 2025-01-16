@@ -66,7 +66,7 @@ for more information about the different approaches."><!-- mathjax --><script sr
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Set up the framework chosen approach</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a>, and 8 more</small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.1/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.1/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.1/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a>, and 8 more</small>
     <div class="hidden name"><code>setup_approach.Rd</code></div>
     </div>
 
@@ -247,7 +247,7 @@ Represents the minimum proportion of the total empirical weight that data sample
 If e.g. <code>eta = .8</code> we will choose the <code>K</code> samples with the largest weight so that the sum of the weights
 accounts for 80\<!-- % of the total weight. -->
 <code>eta</code> is the \(\eta\) parameter in equation (15) of
-<a href="https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&amp;pid=1-s2.0-S0004370221000539-main.pdf" class="external-link">Aas et al. (2021)</a>.</p></dd>
+<a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">Aas et al. (2021)</a>.</p></dd>
 
 
 <dt id="arg-empirical-fixed-sigma">empirical.fixed_sigma<a class="anchor" aria-label="anchor" href="#arg-empirical-fixed-sigma"></a></dt>
@@ -320,7 +320,7 @@ is also a valid input. It is essential to include the package prefix if the pack
 <dt id="arg-regression-tune-values">regression.tune_values<a class="anchor" aria-label="anchor" href="#arg-regression-tune-values"></a></dt>
 <dd><p>Either <code>NULL</code> (default), a data.frame/data.table/tibble, or a function.
 The data.frame must contain the possible hyperparameter value combinations to try.
-The column names must match the names of the tuneable parameters specified in <code>regression.model</code>.
+The column names must match the names of the tunable parameters specified in <code>regression.model</code>.
 If <code>regression.tune_values</code> is a function, then it should take one argument <code>x</code> which is the training data
 for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
@@ -414,7 +414,7 @@ This includes <code>vaeac.extra_parameters$epochs_initiation_phase</code>, where
     <div id="references">
     <h2>References</h2>
 
-<ul><li><p><a href="https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&amp;pid=1-s2.0-S0004370221000539-main.pdf" class="external-link">
+<ul><li><p><a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">
 Aas, K., Jullum, M., &amp; Løland, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502</a></p></li>
 </ul></div>

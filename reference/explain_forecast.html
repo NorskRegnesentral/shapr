@@ -67,7 +67,7 @@ for a thorough introduction to dependence-aware prediction explanation with Shap
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Explain a forecast from time series models with dependence-aware (conditional/observational) Shapley values</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/explain_forecast.R" class="external-link"><code>R/explain_forecast.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.1/R/explain_forecast.R" class="external-link"><code>R/explain_forecast.R</code></a></small>
     <div class="hidden name"><code>explain_forecast.Rd</code></div>
     </div>
 
@@ -75,7 +75,7 @@ for a thorough introduction to dependence-aware prediction explanation with Shap
     <p>Computes dependence-aware Shapley values for observations in <code>explain_idx</code> from the specified
 <code>model</code> by using the method specified in <code>approach</code> to estimate the conditional expectation.
 See
-<a href="https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&amp;pid=1-s2.0-S0004370221000539-main.pdf" class="external-link">Aas, et. al (2021)</a>
+<a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">Aas, et. al (2021)</a>
 for a thorough introduction to dependence-aware prediction explanation with Shapley values.</p>
     </div>
 
@@ -196,7 +196,7 @@ If eventually <code>TRUE</code>, the Shapley values are estimated iteratively in
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
@@ -286,19 +286,19 @@ E.g. <code>verbose = c("basic", "vS_details")</code> will display basic informat
 
 <dt id="arg-extra-computation-args">extra_computation_args<a class="anchor" aria-label="anchor" href="#arg-extra-computation-args"></a></dt>
 <dd><p>Named list.
-Specifices extra arguments related to the computation of the Shapley values.
+Specifies extra arguments related to the computation of the Shapley values.
 See <code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg-iterative-args">iterative_args<a class="anchor" aria-label="anchor" href="#arg-iterative-args"></a></dt>
 <dd><p>Named list.
-Specifices the arguments for the iterative procedure.
+Specifies the arguments for the iterative procedure.
 See <code><a href="get_iterative_args_default.html">get_iterative_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg-output-args">output_args<a class="anchor" aria-label="anchor" href="#arg-output-args"></a></dt>
 <dd><p>Named list.
-Specifices certain arguments related to the output of the function.
+Specifies certain arguments related to the output of the function.
 See <code><a href="get_output_args_default.html">get_output_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
@@ -364,7 +364,7 @@ Represents the minimum proportion of the total empirical weight that data sample
 If e.g. <code>eta = .8</code> we will choose the <code>K</code> samples with the largest weight so that the sum of the weights
 accounts for 80\<!-- % of the total weight. -->
 <code>eta</code> is the \(\eta\) parameter in equation (15) of
-<a href="https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&amp;pid=1-s2.0-S0004370221000539-main.pdf" class="external-link">Aas et al. (2021)</a>.</p></dd>
+<a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">Aas et al. (2021)</a>.</p></dd>
 
     <dt><code>empirical.fixed_sigma</code></dt>
 <dd><p>Positive numeric scalar.
@@ -501,7 +501,7 @@ forecasting section of the general usages</a> for further details.</p>
     <div id="references">
     <h2>References</h2>
 
-<ul><li><p><a href="https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&amp;pid=1-s2.0-S0004370221000539-main.pdf" class="external-link">
+<ul><li><p><a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">
 Aas, K., Jullum, M., &amp; Løland, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502</a></p></li>
 <li><p><a href="https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf" class="external-link">
@@ -520,7 +520,7 @@ Redelmeier, A., Jullum, M., &amp; Aas, K. (2020). Explaining predictive models w
 values and conditional inference trees. In Machine Learning and Knowledge Extraction:
 International Cross-Domain Conference, CD-MAKE 2020, Dublin, Ireland, August 25–28, 2020, Proceedings 4
 (pp. 117-137). Springer International Publishing.</a></p></li>
-<li><p><a href="https://doi.org/10.21105/joss.02027" class="external-link">
+<li><p><a href="https://www.theoj.org/joss-papers/joss.02027/10.21105.joss.02027.pdf" class="external-link">
 Sellereite N., &amp; Jullum, M. (2019). shapr: An R-package for explaining machine learning models with
 dependence-aware Shapley values. Journal of Open Source Software, 5(46), 2027</a></p></li>
 <li><p><a href="https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf" class="external-link">
@@ -540,6 +540,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Load example data</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"airquality"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span></span>
@@ -562,31 +563,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p0_ar</span>,</span></span>
 <span class="r-in"><span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Feature names extracted from the model contains NA.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Consistency checks between model and data is therefore disabled.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 4, </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 4.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-01-07 20:34:24</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;ar&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBYT6n/shapr_obj_818552bbd931.rds</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 4 of 4 coalitions. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    explain_idx horizon  none  Temp.1  Temp.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;int&gt;   &lt;int&gt; &lt;num&gt;   &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         152       1 77.88 -0.3972 -1.3912</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         153       1 77.88 -6.6177 -0.1835</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         152       2 77.88 -0.3285 -1.2034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:         153       2 77.88 -6.0208 -0.3371</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         152       3 77.88 -0.2915 -1.0552</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         153       3 77.88 -5.2122 -0.2553</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -63,7 +63,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Dataset used by the <code>vaeac</code> model</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_vaeac_torch_modules.R" class="external-link"><code>R/approach_vaeac_torch_modules.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.1/R/approach_vaeac_torch_modules.R" class="external-link"><code>R/approach_vaeac_torch_modules.R</code></a></small>
     <div class="hidden name"><code>vaeac_dataset.Rd</code></div>
     </div>
 
@@ -95,7 +95,7 @@ While the size for continuous features can either be <code>0</code> or <code>1</
     <p>This function creates a <code><a href="https://rdrr.io/pkg/torch/man/dataset.html" class="external-link">torch::dataset()</a></code> object that represent a map from keys to data samples.
 It is used by the <code><a href="https://rdrr.io/pkg/torch/man/dataloader.html" class="external-link">torch::dataloader()</a></code> to load data which should be used to extract the
 batches for all epochs in the training phase of the neural network. Note that a dataset object
-is an R6 instanc, see <a href="https://r6.r-lib.org/articles/Introduction.html" class="external-link">https://r6.r-lib.org/articles/Introduction.html</a>, which is classical
+is an R6 instance, see <a href="https://r6.r-lib.org/articles/Introduction.html" class="external-link">https://r6.r-lib.org/articles/Introduction.html</a>, which is classical
 object-oriented programming, with self reference. I.e, <code>vaeac_dataset()</code> is a subclass
 of type <code><a href="https://rdrr.io/pkg/torch/man/dataset.html" class="external-link">torch::dataset()</a></code>.</p>
     </div>

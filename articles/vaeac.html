@@ -92,7 +92,7 @@
 Berge Olsen</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/vignettes/vaeac.Rmd" class="external-link"><code>vignettes/vaeac.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.1/vignettes/vaeac.Rmd" class="external-link"><code>vignettes/vaeac.Rmd</code></a></small>
       <div class="hidden name"><code>vaeac.Rmd</code></div>
 
     </div>
@@ -487,7 +487,7 @@ the stability of the vaeac training procedure. When using paired
 sampling, each observation in the training batches will be duplicated,
 but the first version will be masked by
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-and the second verion will be masked by the complement
+and the second version will be masked by the complement
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>S</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{S}</annotation></semantics></math>.
 The mask are taken from the <code>explanation$internal$objects$S</code>
 matrix. Note that <code>vaeac</code> does not check if the complement is
@@ -495,11 +495,11 @@ also in said matrix. This means that if the Shapley value explanations
 are computed based on a subset of coalitions, then the
 <code>vaeac</code> model might be trained on coalitions which are not
 used when computing the Shapley values. This should not be considered as
-redundant training as it increases the stablility and performance of the
-<code>vaeac</code> model as a whole, hence, we reccomend to use paried
-samping (default). Furthermore, the masks are randomly selected for each
-observation in the batch. The training time when using paired sampling
-is higher in comparison to random sampling due to more complex
+redundant training as it increases the stability and performance of the
+<code>vaeac</code> model as a whole, hence, we recommend to use paired
+sampling (default). Furthermore, the masks are randomly selected for
+each observation in the batch. The training time when using paired
+sampling is higher in comparison to random sampling due to more complex
 implementation.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">expl_paired_sampling_TRUE</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -733,7 +733,7 @@ package, respectively. We also use the
 <code><a href="../reference/plot_vaeac_imputed_ggpairs.html">plot_vaeac_imputed_ggpairs()</a></code> function which generates
 samples from
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
-this is ment as a sanity check to see that the <code>vaeac</code> model
+this is meant as a sanity check to see that the <code>vaeac</code> model
 is able to follow the general structure/distribution of the data.
 However, recall that the <code>vaeac</code> model is never trained on
 the empty coalition, so the produced samples should be taken with a

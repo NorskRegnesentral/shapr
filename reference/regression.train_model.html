@@ -64,7 +64,7 @@ This function allows for cross validating the hyperparameters of the model."><!-
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Train a tidymodels model via workflows</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_regression_separate.R" class="external-link"><code>R/approach_regression_separate.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.1/R/approach_regression_separate.R" class="external-link"><code>R/approach_regression_separate.R</code></a></small>
     <div class="hidden name"><code>regression.train_model.Rd</code></div>
     </div>
 
@@ -138,7 +138,7 @@ the values provided in <code>regression.tune_values</code>. Note that no checks 
 <dt id="arg-regression-tune-values">regression.tune_values<a class="anchor" aria-label="anchor" href="#arg-regression-tune-values"></a></dt>
 <dd><p>Either <code>NULL</code> (default), a data.frame/data.table/tibble, or a function.
 The data.frame must contain the possible hyperparameter value combinations to try.
-The column names must match the names of the tuneable parameters specified in <code>regression.model</code>.
+The column names must match the names of the tunable parameters specified in <code>regression.model</code>.
 If <code>regression.tune_values</code> is a function, then it should take one argument <code>x</code> which is the training data
 for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the coalition See the regression

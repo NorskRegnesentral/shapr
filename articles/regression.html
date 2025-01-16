@@ -92,7 +92,7 @@ paradigm</h1>
 Berge Olsen</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/vignettes/regression.Rmd" class="external-link"><code>vignettes/regression.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.1/vignettes/regression.Rmd" class="external-link"><code>vignettes/regression.Rmd</code></a></small>
       <div class="hidden name"><code>regression.Rmd</code></div>
 
     </div>
@@ -135,7 +135,7 @@ apply a wide range of pre-processing data steps. For instance, we can
 either apply the linear regression model directly to the data or
 pre-process the data to compute principal components (principal
 component regression) before fitting the linear regression to the first
-few eigenvectors (proessed features), see the <a href="#separate_preproc">pre-process</a> section for an example. In the
+few eigenvectors (processed features), see the <a href="#separate_preproc">pre-process</a> section for an example. In the
 <a href="#new">add new regression methods</a> section, we demonstrate
 how to incorporate the projection pursuit regression model into the
 <code>tidymodels</code> framework.</p>
@@ -154,7 +154,7 @@ add a pre-processing step for the regression models that do not natively
 support categorical data to encode the categorical features.</p>
 <p>We use the same data and predictive models in this vignette as in the
 general usage.</p>
-<p>See the end of the <a href="#summary">continous data</a> and <a href="#summary_mixed">mixed data</a> sections for summary figures of all
+<p>See the end of the <a href="#summary">continious data</a> and <a href="#summary_mixed">mixed data</a> sections for summary figures of all
 the methods used in this vignette to compute the Shapley value
 explanations.</p>
 <div class="section level2">
@@ -681,7 +681,7 @@ if a hyperparameter’s domain changes with the coalition size. For
 example, see the example below where we want to tune the
 <code>mtry</code> parameter in <code>ranger</code> (random forest). The
 column names of <code>regression.tune_values</code> (or the output if it
-is a function) must match the tuneable hyperparameters specified in
+is a function) must match the tunable hyperparameters specified in
 <code>regression.model</code>. For the example above,
 <code>regression.tune_values</code> must be a one-column data.frame with
 the column name <code>tree_depth</code>. We can either manually specify

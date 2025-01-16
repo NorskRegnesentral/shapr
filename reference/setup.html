@@ -63,7 +63,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>check_setup</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/setup.R" class="external-link"><code>R/setup.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.1/R/setup.R" class="external-link"><code>R/setup.R</code></a></small>
     <div class="hidden name"><code>setup.Rd</code></div>
     </div>
 
@@ -276,7 +276,7 @@ If eventually <code>TRUE</code>, the Shapley values are estimated iteratively in
 This provides sufficiently accurate Shapley value estimates faster.
 First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 coalitions.
 The process is repeated until the variances are below the threshold.
@@ -285,7 +285,7 @@ Specifics related to the iterative process and convergence criterion are set thr
 
 <dt id="arg-iterative-args">iterative_args<a class="anchor" aria-label="anchor" href="#arg-iterative-args"></a></dt>
 <dd><p>Named list.
-Specifices the arguments for the iterative procedure.
+Specifies the arguments for the iterative procedure.
 See <code><a href="get_iterative_args_default.html">get_iterative_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
@@ -311,7 +311,7 @@ Used to calculate the time it took to run the full <code>explain</code> call.</p
 
 <dt id="arg-prev-shapr-object">prev_shapr_object<a class="anchor" aria-label="anchor" href="#arg-prev-shapr-object"></a></dt>
 <dd><p><code>shapr</code> object or string.
-If an object of class <code>shapr</code> is provided, or string with a path to where intermediate results are strored,
+If an object of class <code>shapr</code> is provided, or string with a path to where intermediate results are stored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the
@@ -365,13 +365,13 @@ regression-based approaches are not applicable to the causal Shapley value metho
 
 <dt id="arg-output-args">output_args<a class="anchor" aria-label="anchor" href="#arg-output-args"></a></dt>
 <dd><p>Named list.
-Specifices certain arguments related to the output of the function.
+Specifies certain arguments related to the output of the function.
 See <code><a href="get_output_args_default.html">get_output_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg-extra-computation-args">extra_computation_args<a class="anchor" aria-label="anchor" href="#arg-extra-computation-args"></a></dt>
 <dd><p>Named list.
-Specifices extra arguments related to the computation of the Shapley values.
+Specifies extra arguments related to the computation of the Shapley values.
 See <code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
