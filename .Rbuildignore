@@ -31,3 +31,8 @@ inst/compare_lundberg\.xgb\.obj
 ^vignettes/cache_vaeac/*$
 ^vignettes/cache_regression/*$
 ^vignettes/cache_asymmetric_causal/*$
+^tests/testthat/_snaps/*$
+^inst/code_paper/*$
+^inst/joss_paper/*$
+
+
