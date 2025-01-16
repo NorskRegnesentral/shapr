@@ -33,6 +33,7 @@ setup <- function(x_train,
                   output_size = 1,
                   max_n_coalitions,
                   group,
+                  horizon_group,
                   n_MC_samples,
                   seed,
                   feature_specs,
@@ -80,6 +81,7 @@ setup <- function(x_train,
     output_size = output_size,
     max_n_coalitions = max_n_coalitions,
     group = group,
+    horizon_group = horizon_group,
     n_MC_samples = n_MC_samples,
     seed = seed,
     type = type,
@@ -157,6 +159,7 @@ get_parameters <- function(approach,
                            output_size = 1,
                            max_n_coalitions,
                            group,
+                           horizon_group,
                            n_MC_samples,
                            seed,
                            type,
@@ -210,6 +213,12 @@ get_parameters <- function(approach,
     stop("`group` must be NULL or a list")
   }
 
+  # group (checked more thoroughly later)
+  if (!is.null(horizon_group) &&
+    !is.list(horizon_group)) {
+    stop("`horizon_group` must be NULL or a list")
+  }
+
   # n_MC_samples
   if (!(is.wholenumber(n_MC_samples) &&
     length(n_MC_samples) == 1 &&
@@ -217,7 +226,6 @@ get_parameters <- function(approach,
     n_MC_samples > 0)) {
     stop("`n_MC_samples` must be a single positive integer.")
   }
-
 
   # type
   if (!(type %in% c("regular", "forecast"))) {
@@ -294,6 +302,7 @@ get_parameters <- function(approach,
     phi0 = phi0,
     max_n_coalitions = max_n_coalitions,
     group = group,
+    horizon_group = horizon_group,
     n_MC_samples = n_MC_samples,
     seed = seed,
     is_python = is_python,
@@ -473,10 +482,11 @@ get_extra_parameters <- function(internal, type) {
   if (type == "forecast") {
     if (internal$parameters$group_lags) {
       internal$parameters$group <- internal$data$group
+      internal$parameters$horizon_group <- internal$data$horizon_group
     }
     internal$parameters$horizon_features <- lapply(
-      internal$data$horizon_group,
-      function(x) as.character(unlist(internal$data$group[x]))
+      internal$parameters$horizon_group,
+      function(x) as.character(unlist(internal$parameters$group[x]))
     )
   }
 
@@ -517,7 +527,6 @@ get_extra_parameters <- function(internal, type) {
 
     if (type == "forecast") {
       if (internal$parameters$group_lags) {
-        internal$parameters$horizon_group <- internal$data$horizon_group
         internal$parameters$shap_names <- internal$data$shap_names
       } else {
         internal$parameters$shap_names <- internal$parameters$group_names

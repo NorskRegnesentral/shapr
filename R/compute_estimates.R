@@ -181,8 +181,8 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
     for (i in seq_along(X_list)) {
       X <- X_list[[i]]
       if (is_groupwise) {
-        n_shapley_values <- length(internal$data$shap_names)
-        shap_names <- internal$data$shap_names
+        n_shapley_values <- internal$parameters$n_shapley_values
+        shap_names <- internal$parameters$shap_names
       } else {
         n_shapley_values <- length(internal$parameters$horizon_features[[i]])
         shap_names <- internal$parameters$horizon_features[[i]]
