@@ -485,8 +485,8 @@ get_extra_parameters <- function(internal, type) {
       internal$parameters$horizon_group <- internal$data$horizon_group
     }
     internal$parameters$horizon_features <- lapply(
-      internal$parameters$horizon_group,
-      function(x) as.character(unlist(internal$parameters$group[x]))
+      internal$data$horizon_group,
+      function(x) as.character(unlist(internal$data$group[x]))
     )
   }
 
