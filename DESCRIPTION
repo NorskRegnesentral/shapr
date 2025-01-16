@@ -7,7 +7,7 @@ Description: Complex machine learning models are often hard to interpret. Howeve
   with a solid theoretical foundation. Previously known methods for estimating the Shapley 
   values do, however, assume feature independence. This package implements methods which accounts for any feature 
   dependence, and thereby produces more accurate estimates of the true Shapley values.
-  An accompanying 'Python' wrapper ('shaprpy') is available through the GitHub repo.
+  An accompanying 'Python' wrapper ('shaprpy') is available through the GitHub repository.
 Authors@R: c(
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = c("cre", "aut"), comment = c(ORCID = "0000-0003-3908-5155")),
     person("Lars Henry Berge", "Olsen", email = "lhbolsen@nr.no", role = "aut", comment = c(ORCID = "0009-0006-9360-6993")),

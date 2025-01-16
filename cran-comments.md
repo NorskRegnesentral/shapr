@@ -1,5 +1,9 @@
 # shapr 1.0.1 (Major release)
 
+* **By CRAN request** after initial submission: 
+  * Fixed spelling in DESCRIPTION
+  * Reduced tarball size mainly by (temporary) removing snapshot files from the build as they are not run on CRAN.
+
 * Complete rewrite of the package compared to the previous CRAN release. We moved from two main user functions 
 `shapr()` and `explain()` to a single function `explain()` that includes both.
 Thus, this change breaks essentially all existing code that uses the previous version of the package.
@@ -23,24 +27,16 @@ The win-builder and R-hub tests are run without snapshots tests (to replicate CR
 
 ## R CMD check results
 
-There were no ERRORs or WARNINGs
+There were no ERRORs, WARNINGs
 
-There were 2 NOTES
+There were 1 NOTE
 
-### NOTE 1 (on win-builder (oldrelease)):
-
-Possibly misspelled words in DESCRIPTION:
-  shaprpy (10:35)
-
-> This refers to the Python wrapper of the package and is not misspelled.
-
-
-### NOTE 2 (multiple platforms):
+### NOTE (multiple platforms):
 
 * checking installed package size ... NOTE
-  installed size is  8.0Mb
+  installed size is  7.1Mb
   sub-directories of 1Mb or more:
-    doc    4.4Mb
+    doc    4.2Mb
     libs   1.3Mb
 
 > The package is growing in size, uses more complied code, and the documentation is comprehensive.
