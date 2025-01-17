@@ -147,6 +147,56 @@ test_that("forecast_output_arima_numeric_no_lags", {
   )
 })
 
+test_that("forecast_output_forecast_ARIMA_manual_group_numeric", {
+  expect_snapshot_rds(
+    explain_forecast(
+      testing = TRUE,
+      model = model_forecast_ARIMA_temp,
+      y = data_arima[1:150, "Temp"],
+      xreg = data_arima[, "Wind"],
+      train_idx = 2:148,
+      explain_idx = 149:150,
+      explain_y_lags = 2,
+      explain_xreg_lags = 2,
+      horizon = 2,
+      approach = "empirical",
+      phi0 = p0_ar[1:2],
+      group_lags = FALSE,
+      group = list(
+        Temp = c("Temp.1", "Temp.2"),
+        Wind = c("Wind.1", "Wind.2", "Wind.F1", "Wind.F2")
+      ),
+      n_batches = 1
+    ),
+    "forecast_output_forecast_ARIMA_manual_group_numeric"
+  )
+})
+
+test_that("forecast_output_forecast_ARIMA_manual_group_numeric2", {
+  expect_snapshot_rds(
+    explain_forecast(
+      testing = TRUE,
+      model = model_forecast_ARIMA_temp,
+      y = data_arima[1:150, "Temp"],
+      xreg = data_arima[, "Wind"],
+      train_idx = 2:148,
+      explain_idx = 149:150,
+      explain_y_lags = 2,
+      explain_xreg_lags = 2,
+      horizon = 2,
+      approach = "empirical",
+      phi0 = p0_ar[1:2],
+      group_lags = FALSE,
+      group = list(
+        Group1 = c("Wind.1", "Temp.1", "Wind.F2"),
+        Group2 = c("Wind.2", "Temp.2", "Wind.F1")
+      ),
+      n_batches = 1
+    ),
+    "forecast_output_forecast_ARIMA_manual_group_numeric2"
+  )
+})
+
 test_that("ARIMA gives the same output with different horizons", {
   h3 <- explain_forecast(
     testing = TRUE,
