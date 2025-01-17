@@ -2,10 +2,7 @@
 #'
 #' @description Computes dependence-aware Shapley values for observations in `x_explain` from the specified
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
-#' See
-# nolint start
-#' \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas, et. al (2021)}
-# nolint end
+#' See \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 #' for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 #'
 #' @param x_train Matrix or data.frame/data.table.
@@ -107,24 +104,24 @@
 #' This provides sufficiently accurate Shapley value estimates faster.
 #' First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
 #' values.
-#' A convergence criterion is used to determine if the variances of the Shapley values are sufficently small.
+#' A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 #' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
 #' coalitions.
 #' The process is repeated until the variances are below the threshold.
 #' Specifics related to the iterative process and convergence criterion are set through `iterative_args`.
 #'
 #' @param iterative_args Named list.
-#' Specifices the arguments for the iterative procedure.
+#' Specifies the arguments for the iterative procedure.
 #' See [get_iterative_args_default()] for description of the arguments and their default values.
 #' @param output_args Named list.
-#' Specifices certain arguments related to the output of the function.
+#' Specifies certain arguments related to the output of the function.
 #' See [get_output_args_default()] for description of the arguments and their default values.
 #' @param extra_computation_args Named list.
-#' Specifices extra arguments related to the computation of the Shapley values.
+#' Specifies extra arguments related to the computation of the Shapley values.
 #' See [get_extra_comp_args_default()] for description of the arguments and their default values.
 #'
 #' @param prev_shapr_object `shapr` object or string.
-#' If an object of class `shapr` is provided, or string with a path to where intermediate results are strored,
+#' If an object of class `shapr` is provided, or string with a path to where intermediate results are stored,
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 #' want to continue the iterative estimation. See the
@@ -189,9 +186,7 @@
 #' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage}.
 #' (From R: `vignette("general_usage", package = "shapr")`).
 #' Moreover,
-# nolint start
-#'  \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{Aas et al. (2021)}
-# nolint end
+#'  \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 #' gives a general introduction to dependence-aware Shapley values, and the three approaches `"empirical"`,
 #' `"gaussian"`, `"copula"`, and also discusses `"independence"`.
 #' \href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
@@ -253,6 +248,7 @@
 #' }
 #'
 #' @examples
+#' \dontrun{
 #'
 #' # Load example data
 #' data("airquality")
@@ -274,12 +270,11 @@
 #' # Explain predictions
 #' p <- mean(data_train[, y_var])
 #'
-#' \dontrun{
 #' # (Optionally) enable parallelization via the future package
 #' if (requireNamespace("future", quietly = TRUE)) {
 #'   future::plan("multisession", workers = 2)
 #' }
-#' }
+#'
 #'
 #' # (Optionally) enable progress updates within every iteration via the progressr package
 #' if (requireNamespace("progressr", quietly = TRUE)) {
@@ -393,6 +388,7 @@
 #'   iterative = TRUE,
 #'   iterative_args = list(initial_n_coalitions = 10)
 #' )
+#' }
 #'
 #' @export
 #'
@@ -400,7 +396,7 @@
 #'
 # nolint start
 #' @references
-#'   - \href{https://www.sciencedirect.com/science/article/pii/S0004370221000539/pdfft?md5=c3e4b95131ed944dc23b05a6170dbaee&pid=1-s2.0-S0004370221000539-main.pdf}{
+#'   - \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{
 #'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 #'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
 #'   - \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
@@ -419,7 +415,7 @@
 #'   values and conditional inference trees. In Machine Learning and Knowledge Extraction:
 #'   International Cross-Domain Conference, CD-MAKE 2020, Dublin, Ireland, August 25–28, 2020, Proceedings 4
 #'   (pp. 117-137). Springer International Publishing.}
-#'   - \href{https://doi.org/10.21105/joss.02027}{
+#'   - \href{https://www.theoj.org/joss-papers/joss.02027/10.21105.joss.02027.pdf}{
 #'   Sellereite N., & Jullum, M. (2019). shapr: An R-package for explaining machine learning models with
 #'   dependence-aware Shapley values. Journal of Open Source Software, 5(46), 2027}
 #'   - \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
@@ -582,7 +578,7 @@ explain <- function(model,
   return(output)
 }
 
-#' Cleans out certain output arguments to allow perfect reproducability of the output
+#' Cleans out certain output arguments to allow perfect reproducibility of the output
 #'
 #' @inheritParams default_doc_export
 #'

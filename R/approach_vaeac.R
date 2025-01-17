@@ -2018,13 +2018,13 @@ vaeac_get_full_state_list <- function(environment) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_get_x_explain_extended <- function(x_explain, S, index_features) {
-  n_coaltions <- length(index_features) # Get the number of active coalitions
+  n_coalitions <- length(index_features) # Get the number of active coalitions
   n_explain <- nrow(x_explain) # Get the number of explicands
   mask <- S[index_features, , drop = FALSE] # Get the masks/coalitions we are to generate MC samples for
   mask[mask == 0] <- NaN # Set zeros to `NaN` to indicate that they are missing and to be imputed by `vaeac`
   x_explain_extended <-
-    x_explain[rep(seq_len(nrow(x_explain)), each = n_coaltions), ] # Extend the explicands `n_coalitions` times
-  mask_extended <- mask[rep(seq(n_coaltions), times = n_explain), ] # Extend the masks `n_expliand` times
+    x_explain[rep(seq_len(nrow(x_explain)), each = n_coalitions), ] # Extend the explicands `n_coalitions` times
+  mask_extended <- mask[rep(seq(n_coalitions), times = n_explain), ] # Extend the masks `n_expliand` times
   x_explain_extended[is.na(mask_extended)] <- NaN # Apply the mask. The NaNs are features outside coalition S.
   return(x_explain_extended)
 }

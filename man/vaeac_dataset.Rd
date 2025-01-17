@@ -21,7 +21,7 @@ Convert a the data into a \code{\link[torch:dataset]{torch::dataset()}} which th
 This function creates a \code{\link[torch:dataset]{torch::dataset()}} object that represent a map from keys to data samples.
 It is used by the \code{\link[torch:dataloader]{torch::dataloader()}} to load data which should be used to extract the
 batches for all epochs in the training phase of the neural network. Note that a dataset object
-is an R6 instanc, see \url{https://r6.r-lib.org/articles/Introduction.html}, which is classical
+is an R6 instance, see \url{https://r6.r-lib.org/articles/Introduction.html}, which is classical
 object-oriented programming, with self reference. I.e, \code{\link[=vaeac_dataset]{vaeac_dataset()}} is a subclass
 of type \code{\link[torch:dataset]{torch::dataset()}}.
 }

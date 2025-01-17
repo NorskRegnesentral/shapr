@@ -1,5 +1,5 @@
 Package: shapr
-Version: 1.0.1
+Version: 1.0.1.9000
 Title: Prediction Explanation with Dependence-Aware Shapley Values
 Description: Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
@@ -7,15 +7,15 @@ Description: Complex machine learning models are often hard to interpret. Howeve
   with a solid theoretical foundation. Previously known methods for estimating the Shapley 
   values do, however, assume feature independence. This package implements methods which accounts for any feature 
   dependence, and thereby produces more accurate estimates of the true Shapley values.
-  An accompanying Python wrapper (shaprpy) is available on GitHub.
+  An accompanying 'Python' wrapper ('shaprpy') is available through the GitHub repository.
 Authors@R: c(
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = c("cre", "aut"), comment = c(ORCID = "0000-0003-3908-5155")),
-    person("Lars Henry Berge", "Olsen", email = "lholsen@math.uio.no", role = "aut", comment = c(ORCID = "0009-0006-9360-6993")),
-    person("Annabelle", "Redelmeier", email = "Annabelle.Redelmeier@nr.no", role = "aut"),
+    person("Lars Henry Berge", "Olsen", email = "lhbolsen@nr.no", role = "aut", comment = c(ORCID = "0009-0006-9360-6993")),
+    person("Annabelle", "Redelmeier", email = "ardelmeier@gmail.com", role = "aut"),
     person("Jon", "Lachmann", email = "Jon@lachmann.nu", role = "aut", comment = c(ORCID = "0000-0001-8396-5673")),
     person("Nikolai", "Sellereite", email = "nikolaisellereite@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-4671-0337")),
     person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
-    person("Jens Christian", "Wahl", email = "Jens.Christian.Wahl@nr.no", role = "ctb"), 
+    person("Jens Christian", "Wahl", email = "jens.c.wahl@gmail.com", role = "ctb"), 
     person("Camilla", "Lingjærde", role = "ctb"),
     person("Norsk Regnesentral", role =  c("cph", "fnd"))
     )

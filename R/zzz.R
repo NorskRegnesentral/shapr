@@ -1,5 +1,11 @@
 .onLoad <- function(libname = find.package("shapr"), pkgname = "shapr") {
-  # CRAN Note avoidance
+
+  # CRAN Note avoidance 1
+  # (as per https://stackoverflow.com/questions/77323811/r-package-to-cran-had-cpu-time-5-times-elapsed-time)
+  # CRAN OMP THREAD LIMIT
+  Sys.setenv("OMP_THREAD_LIMIT" = 1)
+
+  # CRAN Note avoidance 2:
   utils::globalVariables(
     c(
       ".",

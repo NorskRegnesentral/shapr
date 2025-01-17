@@ -11,7 +11,7 @@ compute_vS(internal, model, predict_model, method = "future")
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
 \item{method}{Character
-Indicates whether the lappy method (default) or loop method should be used.
+Indicates whether the lapply method (default) or loop method should be used.
 Options other than "future" is only used for testing/debugging.}
 }
 \description{

@@ -31,7 +31,7 @@ Specifies the type of plot to produce.
 contribution (their Shapley values).
 \code{"scatter"} plots the feature values on the x-axis and Shapley values on the y-axis, as well as
 (optionally) a background scatter_hist showing the distribution of the feature data.
-\code{"beeswarm"} summarises the distribution of the Shapley values along the x-axis for all the features.
+\code{"beeswarm"} summarizes the distribution of the Shapley values along the x-axis for all the features.
 Each point gives the shapley value of a given instance, where the points are colored by the feature value
 of that instance.}
 
@@ -114,6 +114,7 @@ how you should use the function.
 }
 \examples{
 
+\dontrun{
 data("airquality")
 airquality <- airquality[complete.cases(airquality), ]
 x_var <- c("Solar.R", "Wind", "Temp", "Month")
@@ -202,6 +203,7 @@ x <- explain(
 if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
   plot(x, plot_type = "scatter")
   plot(x, plot_type = "beeswarm")
+}
 }
 
 }
