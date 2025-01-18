@@ -141,23 +141,23 @@ test_that("output_asym_caus_conf_TRUE", {
 
 
 # ERRORCANDIDATE
-# test_that("output_asym_caus_conf_FALSE", {
-#   expect_snapshot_rds(
-#     explain(
-#       testing = TRUE,
-#       model = model_lm_numeric,
-#       x_explain = x_explain_numeric,
-#       x_train = x_train_numeric,
-#       approach = "gaussian",
-#       phi0 = p0,
-#       asymmetric = TRUE,
-#       causal_ordering = list(1:2, 3, 4:5),
-#       confounding = FALSE,
-#       n_MC_samples = 5 # Just for speed
-#     ),
-#     "output_asym_caus_conf_FALSE"
-#   )
-# })
+test_that("output_asym_caus_conf_FALSE", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      phi0 = p0,
+      asymmetric = TRUE,
+      causal_ordering = list(1:2, 3, 4:5),
+      confounding = FALSE,
+      n_MC_samples = 5 # Just for speed
+    ),
+    "output_asym_caus_conf_FALSE"
+  )
+})
 
 test_that("output_asym_caus_conf_mix", {
   expect_snapshot_rds(
@@ -251,23 +251,23 @@ test_that("output_sym_caus_conf_TRUE", {
 })
 
 # ERRORCANDIDATE
-test_that("output_sym_caus_conf_FALSE", {
-  expect_snapshot_rds(
-    explain(
-      testing = TRUE,
-      model = model_lm_numeric,
-      x_explain = x_explain_numeric,
-      x_train = x_train_numeric,
-      approach = "gaussian",
-      phi0 = p0,
-      asymmetric = FALSE,
-      causal_ordering = list(1:2, 3, 4:5),
-      confounding = FALSE,
-      n_MC_samples = 5 # Just for speed
-    ),
-    "output_sym_caus_conf_FALSE"
-  )
-})
+# test_that("output_sym_caus_conf_FALSE", {
+#   expect_snapshot_rds(
+#     explain(
+#       testing = TRUE,
+#       model = model_lm_numeric,
+#       x_explain = x_explain_numeric,
+#       x_train = x_train_numeric,
+#       approach = "gaussian",
+#       phi0 = p0,
+#       asymmetric = FALSE,
+#       causal_ordering = list(1:2, 3, 4:5),
+#       confounding = FALSE,
+#       n_MC_samples = 5 # Just for speed
+#     ),
+#     "output_sym_caus_conf_FALSE"
+#   )
+# })
 
 test_that("output_sym_caus_conf_mix", {
   expect_snapshot_rds(
