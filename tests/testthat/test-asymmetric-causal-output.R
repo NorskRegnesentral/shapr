@@ -250,7 +250,7 @@ test_that("output_sym_caus_conf_TRUE", {
   )
 })
 
-# ERRORCANDIDATE
+# THIS TEST THROWS THE ERROR!
 # test_that("output_sym_caus_conf_FALSE", {
 #   expect_snapshot_rds(
 #     explain(
