@@ -432,7 +432,7 @@ reg_forecast_setup <- function(x, horizon, group) {
 #' - group The list group with entries that differ per horizon split accordingly.
 #' - horizon_group A list of which groups are applicable per horizon.
 #' @keywords internal
-group_forecast_setup <- function (group, horizon_features) {
+group_forecast_setup <- function(group, horizon_features) {
   horizon_group <- vector("list", length(horizon_features))
   new_group <- list()
 
