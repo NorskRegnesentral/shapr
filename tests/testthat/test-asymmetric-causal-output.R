@@ -140,7 +140,6 @@ test_that("output_asym_caus_conf_TRUE", {
 })
 
 
-
 test_that("output_asym_caus_conf_FALSE", {
   expect_snapshot_rds(
     explain(
@@ -249,6 +248,7 @@ test_that("output_sym_caus_conf_TRUE", {
     "output_sym_caus_conf_TRUE"
   )
 })
+
 
 test_that("output_sym_caus_conf_FALSE", {
   expect_snapshot_rds(

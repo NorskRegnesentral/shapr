@@ -113,7 +113,6 @@ See the examples below, or \code{vignette("general_usage", package = "shapr")} f
 how you should use the function.
 }
 \examples{
-
 \dontrun{
 data("airquality")
 airquality <- airquality[complete.cases(airquality), ]

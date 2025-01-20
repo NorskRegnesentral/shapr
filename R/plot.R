@@ -78,7 +78,6 @@
 #'
 #' @export
 #' @examples
-#'
 #' \dontrun{
 #' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]

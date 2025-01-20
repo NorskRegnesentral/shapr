@@ -67,7 +67,6 @@
 #'
 #' @author Jon Lachmann, Martin Jullum
 #' @examples
-#'
 #' \dontrun{
 #' # Load example data
 #' data("airquality")
