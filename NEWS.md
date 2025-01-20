@@ -1,5 +1,8 @@
 # shapr (development version)
 
+* Fix CRAN NOTE which turned out to be bug related to returning NULL rather than integer(0) to identify (unconditional)
+asymmetric causal sampling [#435](https://github.com/NorskRegnesentral/shapr/pull/435)
+
 # shapr 1.0.1 
 
 * Spelling checking and other minor clean up [#431](https://github.com/NorskRegnesentral/shapr/pull/431))
