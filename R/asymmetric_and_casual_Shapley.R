@@ -375,9 +375,9 @@ get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALS
         # If confounding is FALSE, add intervened features in the same component to the `to_condition` set.
         # If confounding is TRUE, then no extra conditioning.
 
-        if (!confounding[i]){
+        if (!confounding[i]) {
           inter0 <- intersect(causal_ordering[[i]], index_given)
-          inter0 <- if(length(inter0) == 0) NULL else inter0
+          inter0 <- if (length(inter0) == 0) NULL else inter0
           to_condition <- union(inter0, to_condition)
         }
 
