@@ -374,11 +374,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind    Temp  Month     Day
-              <int> <num>   <num>   <num>   <num>  <num>   <num>
-      1:          1 42.44  -7.978  10.871 12.1981 -2.188 -0.3003
-      2:          2 42.44   3.637  -6.474 -9.6711 -1.850  0.4779
-      3:          3 42.44   1.926 -27.039  0.7298  1.404  5.4112
+         explain_id  none Solar.R    Wind   Temp  Month     Day
+              <int> <num>   <num>   <num>  <num>  <num>   <num>
+      1:          1 42.44  -8.606  10.387 13.963 -4.010  0.8685
+      2:          2 42.44   3.506  -6.071 -4.521 -6.183 -0.6104
+      3:          3 42.44   2.371 -26.300  2.790  1.600  1.9707
 
 # output_sym_caus_conf_mix
 

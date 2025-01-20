@@ -341,3 +341,33 @@ test_that("asymmetric erroneous input: `confounding`", {
     error = TRUE
   )
 })
+
+
+
+test_that("cond_sym_as_NULLconfounding", {
+  ex_condsym <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "gaussian",
+    phi0 = p0,
+    n_MC_samples = 5 # Just for speed
+  )
+
+  ex_NULLconfounding <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "gaussian",
+    phi0 = p0,
+    asymmetric = FALSE,
+    causal_ordering = list(1:2, 3, 4:5),
+    confounding = NULL,
+    n_MC_samples = 5 # Just for speed
+  )
+
+  # When confounding is NULL, causal_ordering is ignored and regular symmetric conditional shapley values is computed
+  expect_equal(ex_condsym$shapley_values_est, ex_NULLconfounding$shapley_values_est)
+})
