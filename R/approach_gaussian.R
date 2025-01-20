@@ -100,10 +100,6 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   # The `dt` object is a 3D array of dimension (n_MC_samples, n_explain * n_coalitions, n_features) for regular
   # Shapley and in the first step for causal Shapley values. For later steps in the causal Shapley value framework,
   # the `dt` object is a matrix of dimension (n_explain * n_coalitions, n_features).
-  global_keep_list <- list(MC_samples_mat = MC_samples_mat, x_explain_mat = x_explain_mat, S = S, mu = mu, cov_mat = cov_mat)
-
-  keeper[[length(keeper)+1]] <<- global_keep_list
-
   dt <- prepare_gauss(MC_samples_mat = MC_samples_mat, x_explain_mat = x_explain_mat, S = S, mu = mu, cov_mat = cov_mat)
 
   # Reshape `dt` to a 2D array of dimension (n_MC_samples * n_explain * n_coalitions, n_features) when needed
