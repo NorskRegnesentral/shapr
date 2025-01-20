@@ -533,6 +533,8 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         internal_copy$iter_list[[iter]]$X <-
           data.table(id_coalition = 1, features = list(S_now), n_features = length(S_now))
 
+        global_internal_copy <<- c(global_internal_copy,copy(internal_copy))
+
         # Generate the MC samples conditioning on S_now
         dt_new <- prepare_data(internal_copy, index_features = 1, ...)
 
