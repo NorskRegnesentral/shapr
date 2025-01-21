@@ -18,7 +18,8 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 See the pkgdown site at
 [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/)
 for a complete introduction with examples and documentation of the
-package. <!-- badges: end -->
+package. 
+<!-- badges: end -->
 
 ## NEWS
 
