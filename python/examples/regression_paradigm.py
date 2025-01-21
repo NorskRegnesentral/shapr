@@ -146,16 +146,28 @@ print("Method", "MSEv", "Elapsed time (seconds)")
 for i, (method, explanation) in enumerate(explanation_list.items()):
     print(method, round(explanation["MSEv"]["MSEv"].iloc[0].iloc[0], 3), round(explanation["timing"]["total_time_secs"][0], 3))
 
-
+"""
+Method MSEv Elapsed time (seconds)
+empirical 0.826 3.59
+sep_lm 1.635 13.578
+sep_pca 1.62 8.898
+sep_splines 1.62 8.538
+sep_tree_cv 1.436 229.078
+sep_xgboost 0.773 18.604
+sep_xgboost_cv 0.826 246.444
+sur_lm 1.772 0.528
+sur_rf 0.906 46.533
+sur_rf_cv 0.979 1111.281
+"""
 
 
 explanation_list["sep_xgboost"]["shapley_values_est"]
 
 """
-	explain_id	none	MedInc	HouseAge	AveRooms	AveBedrms	Population	AveOccup	Latitude	Longitude
-1	1	2.205937	-0.498764	0.193443	-0.073068	0.005078	-0.216733	-0.313781	-0.433844	-0.362689
-2	2	2.205938	-0.160032	0.014564	-0.417670	-0.117127	0.084102	0.151612	-0.486576	-0.326138
-3	3	2.205938	0.585638	0.239399	0.103826	-0.656533	0.349671	0.859701	0.275356	0.958495
-4	4	2.205938	0.311038	-0.114403	0.206639	0.041748	-0.178090	-0.061004	0.036681	0.045110
-5	5	2.205938	0.079439	-0.156861	-0.118913	0.093746	-0.097861	0.433192	-0.239588	-0.003852
+explain_id	none	MedInc	HouseAge	AveRooms	AveBedrms	Population	AveOccup	Latitude	Longitude
+1	1	2.205937	-0.508051	0.182084	-0.078603	0.014051	-0.198895	-0.327370	-0.421074	-0.362502
+2	2	2.205938	-0.167961	0.012070	-0.421726	-0.118408	0.075081	0.142799	-0.475425	-0.303695
+3	3	2.205938	0.602841	0.260374	0.095350	-0.656260	0.334603	0.856464	0.268199	0.953981
+4	4	2.205938	0.329671	-0.107425	0.222738	0.022782	-0.194580	-0.057752	0.032740	0.039545
+5	5	2.205938	0.055675	-0.160149	-0.119120	0.087631	-0.058983	0.394378	-0.224046	0.013916
 """

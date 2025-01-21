@@ -53,6 +53,8 @@ def recurse_r_tree(data):
         tmp = r2py(data).strftime("%Y-%m-%d %H:%M:%S")[0]
       return tmp
   elif type(data) == ListVector:
+      if type(data.names) == type(NULL):
+          data.names = [f"element_{i+1}" for i in range(len(data))]
       return dict(zip(data.names, [recurse_r_tree(d) for d in data]))
   elif type(data) == StrVector:
       return [recurse_r_tree(d) for d in data]
