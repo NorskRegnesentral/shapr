@@ -1,3 +1,8 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
 ## shaprpy
 
 Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/shapr).

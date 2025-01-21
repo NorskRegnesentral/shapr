@@ -1,9 +1,11 @@
 url: https://norskregnesentral.github.io/shapr/
-
+template:
+  bootstrap: 5
+  light-switch: true
 navbar:
   structure:
-    left:  [home,  articles, news, reference]
-    right: [github]
+    left:  [home,  articles, news, reference, python]
+    right: [search, github, lightswitch]
   components:
     articles:
       text: Vignettes
@@ -22,3 +24,6 @@ navbar:
     reference:
       text: Manual
       href: reference/index.html
+    python:
+      text: Python
+      href: README_py.html

@@ -79,7 +79,7 @@ natively support categorical data to encode the categorical features.
 We use the same data and predictive models in this
 vignette as in the general usage.
 
-See the end of the [continious data](#summary) and
+See the end of the [continious data](#summary_figures) and
 [mixed data](#summary_mixed) sections for summary figures of all the
 methods used in this vignette to compute the Shapley value explanations.
 
@@ -1755,7 +1755,7 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ![](figure_regression/ppr-plot-1.png)
 
 
-# Summary figures {#summary}
+# Summary figures {#summary_figures}
 
 In this section, we compute the Shapley value explanations for the
 Monte Carlo-based methods in the `shapr` package and compare the results
