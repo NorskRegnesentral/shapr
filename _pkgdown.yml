@@ -26,4 +26,4 @@ navbar:
       href: reference/index.html
     python:
       text: Python
-      href: README_py.html
+      href: shaprpy.html
