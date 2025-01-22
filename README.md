@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# shapr <img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
+# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="50px"/>
 
 <!-- badges: start -->
 
@@ -10,7 +10,7 @@
 [![R build
 status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+stable](https://img.shields.io/badge/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
@@ -18,8 +18,7 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 See the pkgdown site at
 [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/)
 for a complete introduction with examples and documentation of the
-package. 
-<!-- badges: end -->
+package. <!-- badges: end -->
 
 ## NEWS
 
@@ -63,8 +62,8 @@ We provide an (experimental) Python wrapper (`shaprpy`) which allows
 explaining Python models with the methodology implemented in `shapr`,
 directly from Python. The wrapper calls `R` internally, and therefore
 requires an installation of `R`. See
-[here](https://github.com/NorskRegnesentral/shapr/tree/master/python)
-for installation instructions and examples.
+[here](https://github.com/NorskRegnesentral/shapr/shaprpy.html) for
+installation instructions and examples.
 
 ## The package
 
@@ -183,14 +182,14 @@ explanation <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2025-01-21 13:30:06 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-01-22 09:27:00 ──────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
-#> '/tmp/Rtmpf5zleu/shapr_obj_3676de5b39f33b.rds'
+#> '/tmp/RtmpxZzUDA/shapr_obj_36f52e219f3f6f.rds'
 #> 
 #> ── Main computation started ──
 #> 

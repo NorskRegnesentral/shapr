@@ -41,11 +41,9 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
-      - name: Render python README to assets folder
+      - name: Copy shaprpy readme to folder for automatic deployment
         run: |
-          rmarkdown::render(input = "python/README.md",
-                  output_format = "html_document",
-                  output_file = "../pkgdown/assets/README_py.html")
+          file.copy("python/README.md", ".github/shaprpy.md")
         shell: Rscript {0}
 
       - name: Build site

@@ -15,13 +15,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-# shapr <img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
+# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="50px"/>
 
 <!-- badges: start -->
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-last-release/shapr)](https://cran.r-project.org/package=shapr)
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/grand-total/shapr)](https://cran.r-project.org/package=shapr)
 [![R build status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 
@@ -62,7 +62,7 @@ README with old syntax (v0.2.2).
 We provide an (experimental) Python wrapper (`shaprpy`) which allows explaining Python models with the methodology 
 implemented in `shapr`, directly from Python. 
 The wrapper calls `R` internally, and therefore requires an installation of `R`. 
-See [here](https://github.com/NorskRegnesentral/shapr/tree/master/python) for installation instructions and examples.
+See [here](https://github.com/NorskRegnesentral/shapr/shaprpy.html) for installation instructions and examples.
 
 
 ## The package
