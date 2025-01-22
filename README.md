@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="50px"/>
+# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="139"/>
 
 <!-- badges: start -->
 
@@ -10,7 +10,7 @@
 [![R build
 status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
@@ -45,7 +45,7 @@ for a complete list.
 
 ### Coming from shapr \< 1.0.0?
 
-`shapr` version \> 1.0.0 comes with a number of breaking changes. Most
+`shapr` version \>= 1.0.0 comes with a number of breaking changes. Most
 notably, we moved from using two function (`shapr()` and `explain()`) to
 a single function (`explain()`). In addition, custom models are now
 explained by passing the prediction function directly to `explain()`,
@@ -182,14 +182,14 @@ explanation <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2025-01-22 09:27:00 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-01-22 10:22:36 ──────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpxZzUDA/shapr_obj_36f52e219f3f6f.rds'
+#> '/tmp/RtmpAnmtGl/shapr_obj_371a1a52bf4cce.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -215,7 +215,12 @@ plot(explanation)
 
 See the [general usage
 vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html)
-for further basic usage examples.
+for further basic usage examples and brief introductions to the
+methodology. For more thorough information about the underlying
+methodology, see Aas, Jullum, and Løland (2021), Redelmeier, Jullum, and
+Aas (2020), Jullum, Redelmeier, and Aas (2021), Olsen et al. (2022),
+Olsen et al. (2024) . See also Sellereite and Jullum (2019) for a brief
+paper about the previous (\< 1.0.0) version of the package.
 
 ## Contribution
 
@@ -231,3 +236,59 @@ Conduct](https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
 
 ## References
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-aas2019explaining" class="csl-entry">
+
+Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining
+Individual Predictions When Features Are Dependent: More Accurate
+Approximations to Shapley Values.” *Artificial Intelligence* 298.
+
+</div>
+
+<div id="ref-jullum2021efficient" class="csl-entry">
+
+Jullum, Martin, Annabelle Redelmeier, and Kjersti Aas. 2021. “Efficient
+and Simple Prediction Explanations with groupShapley: A Practical
+Perspective.” In *Proceedings of the 2nd Italian Workshop on Explainable
+Artificial Intelligence*, 28–43. CEUR Workshop Proceedings.
+
+</div>
+
+<div id="ref-olsen2022using" class="csl-entry">
+
+Olsen, Lars Henry Berge, Ingrid Kristine Glad, Martin Jullum, and
+Kjersti Aas. 2022. “Using Shapley Values and Variational Autoencoders to
+Explain Predictive Models with Dependent Mixed Features.” *Journal of
+Machine Learning Research* 23 (213): 1–51.
+
+</div>
+
+<div id="ref-olsen2024comparative" class="csl-entry">
+
+———. 2024. “A Comparative Study of Methods for Estimating Model-Agnostic
+Shapley Value Explanations.” *Data Mining and Knowledge Discovery*,
+1–48.
+
+</div>
+
+<div id="ref-redelmeier2020explaining" class="csl-entry">
+
+Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining
+Predictive Models with Mixed Features Using Shapley Values and
+Conditional Inference Trees.” In *International Cross-Domain Conference
+for Machine Learning and Knowledge Extraction*, 117–37. Springer.
+
+</div>
+
+<div id="ref-sellereite2019shapr" class="csl-entry">
+
+Sellereite, N., and M. Jullum. 2019. “Shapr: An r-Package for Explaining
+Machine Learning Models with Dependence-Aware Shapley Values.” *Journal
+of Open Source Software* 5 (46): 2027.
+<https://doi.org/10.21105/joss.02027>.
+
+</div>
+
+</div>
