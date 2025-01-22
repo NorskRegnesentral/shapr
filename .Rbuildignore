@@ -6,7 +6,6 @@
 ^\.lintr$
 ^\.covrignore$
 ^LICENSE\.md$
-inst/compare_lundberg\.xgb\.obj
 ^\.github$
 ^CODE_OF_CONDUCT\.md$
 ^cran-comments\.md$
@@ -31,7 +30,7 @@ inst/compare_lundberg\.xgb\.obj
 ^vignettes/cache_vaeac/*$
 ^vignettes/cache_regression/*$
 ^vignettes/cache_asymmetric_causal/*$
-#^tests/testthat/_snaps/*$ # Uncomment when submitting to CRAN to reduce filesize
+^tests/testthat/_snaps/*$ # Uncomment when submitting to CRAN to reduce filesize
 ^inst/code_paper/*$
 ^inst/joss_paper/*$
 

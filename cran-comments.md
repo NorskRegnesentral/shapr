@@ -1,14 +1,9 @@
-# shapr 1.0.1 (Major release)
+# shapr 1.0.2 (Patch release)
 
-* **By CRAN request** after initial submission: 
-  * Fixed spelling in DESCRIPTION
-  * Reduced tarball size mainly by (temporary) removing snapshot files from the build as they are not run on CRAN.
-
-* Complete rewrite of the package compared to the previous CRAN release. We moved from two main user functions 
-`shapr()` and `explain()` to a single function `explain()` that includes both.
-Thus, this change breaks essentially all existing code that uses the previous version of the package.
-* A comprehensive list of changes and new functionality can be found in the NEWS.md file.
-* We deem the package fully mature at this stage, and therefore release it as a stable, major version.
+* Fix test error in prepare_data_gaussian_cpp seen on clang-UBSAN gcc-UBSAN compliers in CRAN checks. 
+Turned out to be an actual bug for an edge case.
+* Other minor fixes to GH repo, pkgdown site, python wrapper ++ unrelated to the actual shapr CRAN package.
+See NEWS.md for details.
 
 ## Test environments
 
@@ -41,13 +36,12 @@ There were 1 NOTE
 
 > The package is growing in size, uses more complied code, and the documentation is comprehensive.
 
-
 ## Downstream dependencies
 There is 2 downstream dependency (`PPtreeregViz`, `SEMdeep`) of `shapr`. 
 In addition, the package `shapviz` provides additional plotting functionality without stating an explicit dependency 
 (I believe shapr actually should have be listed under Suggests?)
 
-The 3 packages fails on R CMD checks, but I have submitted PRs to fix all issues.
+The 2 packages fails on R CMD checks, but I have submitted PRs to fix them.
 
 ### PPtreeregViz
 
@@ -61,7 +55,5 @@ There has been no reaction from the maintainer.
 
 ### shapviz
 
-* Nov 15th 2024 I submitted a PR fixing the issue: https://github.com/ModelOriented/shapviz/pull/162
-The PR was merged to the GitHub version of `shapviz` on Nov 16th 2024. 
-The CRAN version has naturally not been updated yet.
-I will notify the maintainer of `shapvix` when the new version of `shapr` is released on CRAN.
+*Passes the checks
+
