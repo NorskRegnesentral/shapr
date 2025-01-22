@@ -10,6 +10,8 @@ asymmetric causal sampling ([#435](https://github.com/NorskRegnesentral/shapr/pu
 [#438](https://github.com/NorskRegnesentral/shapr/pull/438))
 * Require data.table >= 1.15.0 to allow uniform usage of `by=.I`
 ([#434](https://github.com/NorskRegnesentral/shapr/issues/434))
+* Minor doc edits ([#439](https://github.com/NorskRegnesentral/shapr/issues/439))
+
 
 
 # shapr 1.0.1 

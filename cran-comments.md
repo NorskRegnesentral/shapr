@@ -14,17 +14,20 @@ The win-builder and R-hub tests are run without snapshots tests (to replicate CR
 * GHA (ubuntu-latest), R-version: devel, release, oldrel-1, oldrel-2
 * GHA (windows-latest), R-version: release
 * GHA (macOS-latest), R-version: release
-* win-builder, R-versions: devel, release, oldrelease 
+* devtools-win-builder, R-versions: devel, release, oldrelease 
+* devools-mac-builder, R-versions: release 
 * R-hub (ubuntu-latest): R-version: devel
 * R-hub (macos-13): R-version: devel
 * R-hub (macos-latest): R-version: devel
 * R-hub (windows-latest): R-version: devel
+* R-hub (clang-asan): R-version: devel
+
 
 ## R CMD check results
 
 There were no ERRORs, WARNINGs
 
-There were 1 NOTE
+There were in total 2 NOTES
 
 ### NOTE (multiple platforms):
 
@@ -35,6 +38,15 @@ There were 1 NOTE
     libs   1.3Mb
 
 > The package is growing in size, uses more complied code, and the documentation is comprehensive.
+
+### NOTE (win-builder):
+
+* checking CRAN incoming feasibility ... [20s] NOTE
+Maintainer: 'Martin Jullum <Martin.Jullum@nr.no>'
+
+Days since last update: 6
+
+> Correct. I was required to fix the issue by the CRAN team.
 
 ## Downstream dependencies
 There is 2 downstream dependency (`PPtreeregViz`, `SEMdeep`) of `shapr`. 
