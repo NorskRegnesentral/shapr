@@ -272,7 +272,7 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 \description{
 The different choices of \code{approach} take different (optional) parameters,
 which are forwarded from \code{\link[=explain]{explain()}}.
-See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage}
+See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}
 for more information about the different approaches.
 }
 \references{
