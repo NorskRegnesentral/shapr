@@ -422,3 +422,34 @@ reg_forecast_setup <- function(x, horizon, group) {
   colnames(fcast) <- names
   return(list(fcast = fcast, group = group, horizon_group = horizon_group))
 }
+
+#' Set up user provided groups for explanation in a forecast model.
+#'
+#' @param group The list of groups to be explained.
+#' @param horizon_features A list of features per horizon, to split appropriate groups over.
+#'
+#' @return A list containing
+#' - group The list group with entries that differ per horizon split accordingly.
+#' - horizon_group A list of which groups are applicable per horizon.
+#' @keywords internal
+group_forecast_setup <- function(group, horizon_features) {
+  horizon_group <- vector("list", length(horizon_features))
+  new_group <- list()
+
+  for (i in seq_along(group)) {
+    if (!all(group[[i]] %in% horizon_features[[1]])) {
+      for (h in seq_along(horizon_group)) {
+        new_name <- paste0(names(group)[i], ".", h)
+        new_group[[new_name]] <- group[[i]][group[[i]] %in% horizon_features[[h]]]
+        horizon_group[[h]] <- c(horizon_group[[h]], new_name)
+      }
+    } else {
+      name <- names(group)[i]
+      new_group[[name]] <- group[[i]]
+      for (h in seq_along(horizon_group)) {
+        horizon_group[[h]] <- c(horizon_group[[h]], name)
+      }
+    }
+  }
+  return(list(group = new_group, horizon_group = horizon_group))
+}

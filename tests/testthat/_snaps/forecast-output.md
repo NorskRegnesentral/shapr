@@ -244,3 +244,61 @@
       5:         149       3 77.88  -3.133  -3.133   -2.46
       6:         150       3 77.88  -1.383  -1.383   -1.91
 
+# forecast_output_forecast_ARIMA_manual_group_numeric
+
+    Code
+      (out <- code)
+    Message
+      Note: Feature names extracted from the model contains NA.
+      Consistency checks between model and data is therefore disabled.
+      
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
+      and is therefore set to 2^n_groups = 4.
+      
+      * Model class: <forecast_ARIMA/ARIMA/Arima>
+      * Approach: empirical
+      * Iterative estimation: FALSE
+      * Number of group-wise Shapley values: 2
+      * Number of observations to explain: 2
+      
+      -- Main computation started --
+      
+      i Using 4 of 4 coalitions. 
+    Output
+         explain_idx horizon  none    Temp   Wind
+               <int>   <int> <num>   <num>  <num>
+      1:         149       1 77.88 -5.3063 -5.201
+      2:         150       1 77.88 -1.4435 -4.192
+      3:         149       2 77.88 -3.6824 -7.202
+      4:         150       2 77.88 -0.2568 -3.220
+
+# forecast_output_forecast_ARIMA_manual_group_numeric2
+
+    Code
+      (out <- code)
+    Message
+      Note: Feature names extracted from the model contains NA.
+      Consistency checks between model and data is therefore disabled.
+      
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
+      and is therefore set to 2^n_groups = 4.
+      
+      * Model class: <forecast_ARIMA/ARIMA/Arima>
+      * Approach: empirical
+      * Iterative estimation: FALSE
+      * Number of group-wise Shapley values: 2
+      * Number of observations to explain: 2
+      
+      -- Main computation started --
+      
+      i Using 4 of 4 coalitions. 
+    Output
+         explain_idx horizon  none  Group1 Group2
+               <int>   <int> <num>   <num>  <num>
+      1:         149       1 77.88 -2.5593 -7.948
+      2:         150       1 77.88 -0.5681 -5.067
+      3:         149       2 77.88 -2.1223 -8.762
+      4:         150       2 77.88  0.7271 -4.203
+

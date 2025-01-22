@@ -218,7 +218,6 @@ get_parameters <- function(approach,
     stop("`n_MC_samples` must be a single positive integer.")
   }
 
-
   # type
   if (!(type %in% c("regular", "forecast"))) {
     stop("`type` must be either `regular` or `forecast`.\n")
@@ -471,13 +470,20 @@ compare_feature_specs <- function(spec1, spec2, name1 = "model", name2 = "x_trai
 #' @keywords internal
 get_extra_parameters <- function(internal, type) {
   if (type == "forecast") {
-    if (internal$parameters$group_lags) {
-      internal$parameters$group <- internal$data$group
-    }
     internal$parameters$horizon_features <- lapply(
       internal$data$horizon_group,
       function(x) as.character(unlist(internal$data$group[x]))
     )
+    if (internal$parameters$group_lags) {
+      internal$parameters$shap_names <- internal$data$shap_names
+      internal$parameters$group <- internal$data$group
+      internal$parameters$horizon_group <- internal$data$horizon_group
+    } else if (!is.null(internal$parameters$group)) {
+      internal$parameters$shap_names <- names(internal$parameters$group)
+      group_setup <- group_forecast_setup(internal$parameters$group, internal$parameters$horizon_features)
+      internal$parameters$group <- group_setup$group
+      internal$parameters$horizon_group <- group_setup$horizon_group
+    }
   }
 
   # get number of features and observations to explain
@@ -515,14 +521,7 @@ get_extra_parameters <- function(internal, type) {
     internal$parameters$group_names <- names(group)
     internal$parameters$group <- group
 
-    if (type == "forecast") {
-      if (internal$parameters$group_lags) {
-        internal$parameters$horizon_group <- internal$data$horizon_group
-        internal$parameters$shap_names <- internal$data$shap_names
-      } else {
-        internal$parameters$shap_names <- internal$parameters$group_names
-      }
-    } else {
+    if (type != "forecast") {
       # For regular explain
       internal$parameters$shap_names <- internal$parameters$group_names
     }
