@@ -17,8 +17,6 @@ The win-builder and R-hub tests are run without snapshots tests (to replicate CR
 * devtools-win-builder, R-versions: devel, release, oldrelease 
 * devools-mac-builder, R-versions: release 
 * R-hub (ubuntu-latest): R-version: devel
-* R-hub (macos-13): R-version: devel
-* R-hub (macos-latest): R-version: devel
 * R-hub (windows-latest): R-version: devel
 * R-hub (clang-asan): R-version: devel
 
