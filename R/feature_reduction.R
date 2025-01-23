@@ -125,6 +125,8 @@ check_reduction <- function(internal){
 
 
 reduce <- function(internal){
+  reduction_strategy <- internal$parameters$reduction_strategy
+
     iter <- length(internal$iter_list)
 
     exclude_feature = internal$iter_list[[iter]]$shap_reduction$exclude_feature
@@ -149,17 +151,16 @@ reduce <- function(internal){
     Xtmp[, coalitions_bar_next_char := sapply(coalitions_bar_next, paste0, collapse = "_")]
     Xtmp[, coalitions_bar_char := sapply(coalitions_bar, paste0, collapse = "_")]
 
-    Xtmp <<- copy(Xtmp)
-    reduction_strategy = "by_S"
+    if(is.null(reduction_strategy)) reduction_strategy = "by_S"
     if(reduction_strategy == "by_S"){
       # Uses 12|345 as replacement for 12|34, if 5 is removed
       setorder(Xtmp,id_coalition )
       Xtmp[, keep := !duplicated(coalitions_next_char)]
     } else if(reduction_strategy == "by_Sbar"){
       # Uses 125|34 as replacement for 12|34, if 5 is removed
-      setorder(Xtmp_bySbar,-id_coalition )
-      Xtmp_bySbar[, keep := !duplicated(coalitions_next_char)]
-      setorder(Xtmp_bySbar,id_coalition )
+      setorder(Xtmp,-id_coalition )
+      Xtmp[, keep := !duplicated(coalitions_next_char)]
+      setorder(Xtmp,id_coalition )
     } else {
       # Uses the mean of 125|34 and 12|345 as replacement for 12|34, if 5 is removed
       Xtmp[,keep:=TRUE]

@@ -94,9 +94,11 @@ expl_red <- shapr::explain(seed = 9,
 
 #### Testing
 
-Xtmp_byS <- copy(Xtmp)
-Xtmp_bySbar <- copy(Xtmp)
-Xtmp_both <- copy(Xtmp)
+Xtmp_org <- copy(Xtmp)
+
+Xtmp_byS <- copy(Xtmp_org)
+Xtmp_bySbar <- copy(Xtmp_org)
+Xtmp_both <- copy(Xtmp_org)
 
   # Uses 12|345 as replacement for 12|34, if 5 is removed
 setorder(Xtmp_byS,id_coalition )
@@ -113,6 +115,33 @@ Xtmp_both[,keep:=TRUE]
 Xtmp_byS[id_coalition %in% c(4,13,9,15),.(id_coalition,coalitions_bar,coalitions,coalitions_bar_next,coalitions_next,keep)]
 
 Xtmp_bySbar[id_coalition %in% c(4,13,9,15),.(id_coalition,coalitions_bar,coalitions,coalitions_bar_next,coalitions_next,keep)]
+
+Xtmp_byS[,.(id_coalition,coalitions_bar,coalitions,coalitions_bar_next,coalitions_next,keep)]
+
+Xtmp_bySbar[,.(id_coalition,coalitions_bar,coalitions,coalitions_bar_next,coalitions_next,keep)]
+
+
+Xtmp <- Xtmp_byS
+
+Xtmp[, id_coalition_next := .GRP, by = coalitions_next_char] # It suffices to group by coalitions_next_char, coalitions_bar_next is not needed
+
+# If any of the reduced coalitions are equal to the full and zero coalition,
+# we remove these, and keep the original zero and full coalition
+id_coalition_next_keepers <- Xtmp[c(1, .N), id_coalition_next]
+Xtmp[id_coalition_next %in% id_coalition_next_keepers, keep := FALSE]
+Xtmp[c(1, .N), keep := TRUE]
+
+# TODO: should this be dt_vS or dt_vS_curr?
+dt_vS = internal$iter_list[[iter]]$dt_vS
+cnames_dt_vS = colnames(dt_vS)
+
+
+weight_balancing = "mean" # "mean" or "sum"
+if (weight_balancing == "mean"){
+  Xtmp[-c(1, .N), sample_freq := max(round(mean(sample_freq)), 1), by = id_coalition_next]
+} else if (weight_balancing == "sum"){
+  Xtmp[-c(1, .N), sample_freq := sum(sample_freq), by = id_coalition_next]
+}
 
 
 #####
