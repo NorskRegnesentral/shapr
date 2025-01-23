@@ -84,9 +84,9 @@ for(i in seq_len(nrow(x_explain))){
                              paired_shap_sampling  = TRUE,
                              adaptive_arguments = list(allow_feature_reduction = TRUE,
                                                        fixed_n_coalitions_per_iter = 10,
-                                                       max_iter = 100,
+                                                       max_iter = 500,
                                                        initial_n_coalitions = 50,
-                                                       shapley_threshold_val = 0.2,
+                                                       shapley_threshold_val = 0.1,
                                                        shapley_threshold_prob = 0.2))
 
 
@@ -137,7 +137,7 @@ expl_full <- shapr::explain(model = model,
                             paired_shap_sampling  = TRUE,
                             adaptive_arguments = list(allow_feature_reduction = FALSE))
 
-save.image("MJ_testing_new_feature_reduction_code_val_02_paired.RData")
+save.image("MJ_testing_new_feature_reduction_code_val_01_paired.RData")
 
 
 MAE_std <- colMeans(abs(expl_full$shapley_values[,-1]-expl_standard$shapley_values[,-1]))
@@ -233,7 +233,7 @@ plot(MAE_std_redno_exact)
 points(MAE_red,col=2)
 
 #save.image("MJ_testing_new_feature_reduction_code.RData")
-save.image("MJ_testing_new_feature_reduction_code_val_02_paired.RData")
+save.image("MJ_testing_new_feature_reduction_code_val_01_paired.RData")
 
 ### Dobbeltsjekk om man kan stoppe ved ordinær convergence detection om man bruker reduction, eller om det ikke er mulig.
 
