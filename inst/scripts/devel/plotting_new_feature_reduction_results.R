@@ -10,7 +10,7 @@ MAE_list <- list()
 for(kkk in val){
   MAE_list[[kkk]] <- list()
 
-  load(paste0("MJ_testing_new_feature_reduction_code_val_0",kkk,".RData"))
+  load(paste0("MJ_testing_new_feature_reduction_code_val_0",kkk,"_paired.RData"))
 
   MAE_list[[kkk]]$meanMAE_obs_red <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-red_shap_vals[,-c(1,2,3)]))
 

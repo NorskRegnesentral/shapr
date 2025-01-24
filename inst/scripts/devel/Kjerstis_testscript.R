@@ -1,12 +1,16 @@
 library(data.table)
 library(MASS)
 library(Matrix)
+
+# (VIKTIG!) Installer spesifikk versjon av shapr-pakka som inneholder reduksjonsmetoden.
+remotes::install_github("NorskRegnesentral/shapr",ref="frida/shapley_feature_reduction")
+
 library(shapr)
 library(future)
 library(xgboost)
 
 nTrain  <- 10000
-nTest   <- 100
+nTest   <- 10
 simSeed <- 100
 
 nVar       <- 12
@@ -69,7 +73,7 @@ fixed_n_coalitions_per_iter = 10 # Number of new unique coalitions to in each it
                                  # In the standard setup this is usually set based on estimated number of coalitions needed to reach convergence,
                                  # but it makes more sense to fix it in the feature removal setting.
 max_iter = 500 # Upper limit of the number of iterations (not coalitions)
-initial_n_coalitions = 40 # Number of unique coalitions to sample in the first iteration
+initial_n_coalitions = 50 # Number of unique coalitions to sample in the first iteration
 shapley_threshold_val = 0.1 # The z in the formula for when the remove feature j: Pr(|\phi_j| > z) < y
 shapley_threshold_prob = 0.2 # The z in the formula for when the remove feature j: Pr(|\phi_j| > z) < y
 adaptive = TRUE # Whether to compute Shapley values iteratively or not. Must be used when allow_feature_reduction = TRUE
@@ -91,7 +95,7 @@ for(i in seq_len(nrow(x_explain))){
                              gaussian.mu=gaussian.mu,
                              gaussian.cov_mat=gaussian.cov_mat,
                              adaptive = adaptive,
-                             print_iter_info = TRUE,
+                             print_iter_info = FALSE,
                              paired_shap_sampling  = paired_shap_sampling,
                              adaptive_arguments = list(allow_feature_reduction = allow_feature_reduction,  # Set to FALSE to run regular
                                                        fixed_n_coalitions_per_iter = fixed_n_coalitions_per_iter,
@@ -105,21 +109,29 @@ for(i in seq_len(nrow(x_explain))){
   total_used_coal <- sapply(expl_red$internal$iter_list, function(sublist) sublist$total_n_coalitions)
   it_prob_of_val_above_threshold_val <- rbindlist(lapply(expl_red$internal$iter_list, function(sublist) sublist$prob_of_red)[-n_iter],fill=TRUE)
 
-  ll <- list(total_used_coal = total_used_coal,
-             it_shap_res = expl_red$internal$iter_results$dt_iter_shapley_est,
-             it_shap_sd = expl_red$internal$iter_results$dt_iter_shapley_sd,
-             it_prob_of_val_above_threshold_val = it_prob_of_val_above_threshold_val,
-             dropped_features = expl_red$internal$iter_list[[n_iter]]$shap_reduction$dropped_features
+  ll <- list(total_used_coal = total_used_coal, # Total number of v(S) evaluated after every iteration
+             it_shap_res = expl_red$internal$iter_results$dt_iter_shapley_est, # The estimated shapley values after every iteration
+             it_shap_sd = expl_red$internal$iter_results$dt_iter_shapley_sd,# The estimated sd of the shapley values after every iteration
+             it_prob_of_val_above_threshold_val = it_prob_of_val_above_threshold_val, # The probability of the shapley values being above shapley_threshold_val after every iteration
+             dropped_features = expl_red$internal$iter_list[[n_iter]]$shap_reduction$dropped_features # Vector of feature being removed
   )
   ret_list[[i]] <- ll
   print(i)
 }
 
+# The final Shapley values for all observations with the reduction method
+red_shap_vals <- rbindlist(lapply(ret_list, function(x) x$it_shap_res[.N]))
+
+# The fianl number of coalitions used for each observations
+tot_used_coal <- sapply(ret_list, function(x) x$total_used_coal[length(x$total_used_coal)])
+
+
+# Plain iterative computation for all observations (just for illustration, not used for anything below)
 expl_standard <- shapr::explain(model = model,
                                 x_explain= x_explain,
                                 x_train = x_train,
                                 approach = approach,
-                                n_MC_samples = n_MC_samples, # Maybe
+                                n_MC_samples = n_MC_samples,
                                 prediction_zero = p0,
                                 gaussian.mu=mu,
                                 gaussian.cov_mat=Sigma,
@@ -129,124 +141,59 @@ expl_standard <- shapr::explain(model = model,
 
 no_coal_standard <- expl_standard$internal$objects$X[,.N]-2
 
-future::plan("multisession", workers = 8) # Increase the number of workers for increased performance with many features
 
-# Enable progress updates of the v(S)-computations
-# Requires the progressr package
-progressr::handlers(global = TRUE)
-progressr::handlers("cli") # Using the cli package as backend (recommended for the estimates of the remaining time)
+# Full computation with all 2^12 coalitions for all observations
 
 expl_full <- shapr::explain(model = model,
                             x_explain= x_explain,
                             x_train = x_train,
                             approach = approach,
-                            n_MC_samples = n_MC_samples, # Maybe
+                            n_MC_samples = n_MC_samples,
                             prediction_zero = p0,
                             gaussian.mu=mu,
                             gaussian.cov_mat=Sigma,
                             adaptive = FALSE,
-                            paired_shap_sampling  = TRUE,
                             adaptive_arguments = list(allow_feature_reduction = FALSE))
 
-save.image("MJ_testing_new_feature_reduction_code_val_02_paired.RData")
+expl_full$internal$objects$X[,.N] # The number of coalitions (4096)
 
+# Rerun the regular method with the same number of coaltions used by the reduction method for each observation
 
-MAE_std <- colMeans(abs(expl_full$shapley_values[,-1]-expl_standard$shapley_values[,-1]))
-
-length(ret_list)
-
-red_shap_vals <- rbindlist(lapply(ret_list, function(x) x$it_shap_res[.N]))
-
-MAE_red <- colMeans(abs(expl_full$shapley_values[,-1]-red_shap_vals[,-c(1,2)]))
-
-tot_used_coal <- sapply(ret_list, function(x) x$total_used_coal[length(x$total_used_coal)])
-
-
-plot(MAE_std)
-lines(MAE_red,col=2)
-
-meanMAE_obs_std <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-expl_standard$shapley_values[,-c(1,2)]))
-meanMAE_obs_red<- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-red_shap_vals[,-c(1,2,3)]))
-
-par(mfrow=c(2,2))
-plot(meanMAE_obs_std,meanMAE_obs_red,xlim=c(0,0.4),ylim=c(0,0.4))
-abline(a=0,b=1,col=2)
-plot(meanMAE_obs_std[tot_used_coal<no_coal_standard],meanMAE_obs_red[tot_used_coal<no_coal_standard],col="green",xlim=c(0,0.4),ylim=c(0,0.4))
-points(meanMAE_obs_std[tot_used_coal>no_coal_standard],meanMAE_obs_red[tot_used_coal>no_coal_standard],col="red")
-abline(a=0,b=1,col=2)
-
-
-expl_standard_median_redno <- shapr::explain(model = model,
-                                             x_explain= x_explain,
-                                             x_train = x_train,
-                                             approach = approach,
-                                             n_MC_samples = n_MC_samples, # Maybe
-                                             prediction_zero = p0,
-                                             gaussian.mu=mu,
-                                             gaussian.cov_mat=Sigma,
-                                             adaptive = FALSE,
-                                             max_n_coalitions  = round(median(tot_used_coal)),
-                                             paired_shap_sampling  = TRUE,
-                                             adaptive_arguments = list(allow_feature_reduction = FALSE))
-
-meanMAE_obs_std_redno <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-expl_standard_median_redno$shapley_values[,-c(1,2)]))
-no_coal_standard_redno <- expl_standard_median_redno$internal$objects$X[,.N]-2
-
-plot(meanMAE_obs_std_redno,meanMAE_obs_red,xlim=c(0,0.4),ylim=c(0,0.4))
-abline(a=0,b=1,col=2)
-plot(meanMAE_obs_std_redno[tot_used_coal<no_coal_standard_redno],meanMAE_obs_red[tot_used_coal<no_coal_standard_redno],col="green",xlim=c(0,0.4),ylim=c(0,0.4))
-points(meanMAE_obs_std_redno[tot_used_coal>no_coal_standard_redno],meanMAE_obs_red[tot_used_coal>no_coal_standard_redno],col="red")
-abline(a=0,b=1,col=2)
-
-
-
-
-expl_standard_redno_list <- list()
+expl_no_reduction_list <- list()
 for(i in seq_len(nrow(x_explain))){
-  expl_standard_redno_list[[i]] <- shapr::explain(model = model,
-                                               x_explain= x_explain[i,],
-                                               x_train = x_train,
-                                               approach = approach,
-                                               n_MC_samples = n_MC_samples, # Maybe
-                                               prediction_zero = p0,
-                                               gaussian.mu=mu,
-                                               gaussian.cov_mat=Sigma,
-                                               adaptive = FALSE,
-                                               max_n_coalitions = tot_used_coal[i],
-                                               paired_shap_sampling  = TRUE,
-                                               adaptive_arguments = list(allow_feature_reduction = FALSE))
+  expl_no_reduction_list[[i]] <- shapr::explain(model = model,
+                                                         x_explain= x_explain[i,],
+                                                         x_train = x_train,
+                                                         approach = approach,
+                                                         n_MC_samples = n_MC_samples,
+                                                         prediction_zero = p0,
+                                                         gaussian.mu=mu,
+                                                         gaussian.cov_mat=Sigma,
+                                                         adaptive = FALSE,
+                                                         max_n_coalitions = tot_used_coal[i],
+                                                         paired_shap_sampling  = paired_shap_sampling,
+                                                         adaptive_arguments = list(allow_feature_reduction = FALSE))
   print(i)
 
 }
 
-shap_vals_redno_exact_list <- list()
+shap_vals_no_reduction_list <- list()
 for (i in seq_len(nrow(x_explain))){
-  shap_vals_redno_exact_list[[i]] <- expl_standard_redno_list[[i]]$shapley_values[1,]
+  shap_vals_no_reduction_list[[i]] <- expl_no_reduction_list[[i]]$shapley_values[1,]
 }
 
-shap_vals_redno_exact <- rbindlist(shap_vals_redno_exact_list)
-
-meanMAE_obs_std_redno_exact <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-shap_vals_redno_exact[,-c(1,2)]))
-
-plot(meanMAE_obs_std_redno_exact,meanMAE_obs_red,xlim=c(0,0.4),ylim=c(0,0.4))
-abline(a=0,b=1,col=2)
-
-meanMAE_obs_std_redno_exact_signif <- rowMeans(abs(expl_full$shapley_values[,3:8]-shap_vals_redno_exact[,3:8]))
-meanMAE_obs_red_signif <- rowMeans(abs(expl_full$shapley_values[,3:8]-red_shap_vals[,4:9]))
-
-plot(meanMAE_obs_std_redno_exact_signif,meanMAE_obs_red_signif,xlim=c(0,0.4),ylim=c(0,0.4))
-abline(a=0,b=1,col=2)
+no_red_shap_vals <- rbindlist(shap_vals_no_reduction_list)
 
 
-MAE_std_redno_exact <- colMeans(abs(expl_full$shapley_values[,-c(1)]-shap_vals_redno_exact[,-c(1)]))
+# MAE per observation
+MAE_obs_reduction <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-red_shap_vals[,-c(1,2,3)]))
 
-plot(MAE_std_redno_exact)
-points(MAE_red,col=2)
+MAE_obs_no_reduction <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-no_red_shap_vals[,-c(1,2)]))
 
-#save.image("MJ_testing_new_feature_reduction_code.RData")
-save.image("MJ_testing_new_feature_reduction_code_val_02_paired.RData")
+# MAE per feature
+MAE_feat_reduction <- colMeans(abs(expl_full$shapley_values[,-c(1,2)]-red_shap_vals[,-c(1,2,3)]))
 
-### Dobbeltsjekk om man kan stoppe ved ordinær convergence detection om man bruker reduction, eller om det ikke er mulig.
+MAE_feat_no_reduction <- colMeans(abs(expl_full$shapley_values[,-c(1,2)]-no_red_shap_vals[,-c(1,2)]))
 
 
 
