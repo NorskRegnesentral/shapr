@@ -3,7 +3,7 @@ library(MASS)
 library(Matrix)
 
 # (VIKTIG!) Installer spesifikk versjon av shapr-pakka som inneholder reduksjonsmetoden.
-remotes::install_github("NorskRegnesentral/shapr",ref="frida/shapley_feature_reduction")
+#remotes::install_github("NorskRegnesentral/shapr",ref="frida/shapley_feature_reduction")
 
 library(shapr)
 library(future)
@@ -74,7 +74,7 @@ fixed_n_coalitions_per_iter = 10 # Number of new unique coalitions to in each it
                                  # but it makes more sense to fix it in the feature removal setting.
 max_iter = 500 # Upper limit of the number of iterations (not coalitions)
 initial_n_coalitions = 50 # Number of unique coalitions to sample in the first iteration
-shapley_threshold_val = 0.1 # The z in the formula for when the remove feature j: Pr(|\phi_j| > z) < y
+shapley_threshold_val = 0.3 # The z in the formula for when the remove feature j: Pr(|\phi_j| > z) < y
 shapley_threshold_prob = 0.2 # The z in the formula for when the remove feature j: Pr(|\phi_j| > z) < y
 adaptive = TRUE # Whether to compute Shapley values iteratively or not. Must be used when allow_feature_reduction = TRUE
 n_MC_samples <- 1000 # Number of Monte Carlo samples used in the numerical integration of the Shapley values
@@ -86,6 +86,8 @@ ret_list <- list()
 
 for(i in seq_len(nrow(x_explain))){
 
+
+
   expl_red <- shapr::explain(model = model,
                              x_explain= x_explain[i,], # For allow_feature_reduction = TRUE, this must contain only a SINGLE row
                              x_train = x_train,
@@ -95,7 +97,7 @@ for(i in seq_len(nrow(x_explain))){
                              gaussian.mu=gaussian.mu,
                              gaussian.cov_mat=gaussian.cov_mat,
                              adaptive = adaptive,
-                             print_iter_info = FALSE,
+                             print_iter_info = TRUE,
                              paired_shap_sampling  = paired_shap_sampling,
                              adaptive_arguments = list(allow_feature_reduction = allow_feature_reduction,  # Set to FALSE to run regular
                                                        fixed_n_coalitions_per_iter = fixed_n_coalitions_per_iter,
