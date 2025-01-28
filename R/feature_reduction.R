@@ -1,7 +1,7 @@
 probfunc <- function(est, sd, shapley_threshold_val,addnoise=TRUE){
   prob <- 1 - (pnorm(shapley_threshold_val, mean = est, sd = sd) - pnorm(-shapley_threshold_val, mean = est, sd = sd))
   if(addnoise){
-    prob <- prob + runif(10^(-7),10^(-6))  # Making sure there are no identical probabilities
+    prob <- prob + runif(length(est),10^(-7),10^(-6))  # Making sure there are no identical probabilities
   }
   return(prob)
 }

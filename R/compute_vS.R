@@ -8,7 +8,6 @@
 #'
 #' @export
 compute_vS <- function(internal, model, predict_model, method = "future") {
-  method = ""
   iter <- length(internal$iter_list)
 
   S_batch <- internal$iter_list[[iter]]$S_batch
