@@ -10,6 +10,11 @@ compute_estimates <- function(internal, vS_list) {
 
   internal$timing_list$compute_vS <- Sys.time()
 
+  shapley_comp_method <- internal$parameters$shapley_comp_method
+  if(is.null(shapley_comp_method)){
+    shapley_comp_method = "kernel" # "kernel", "frida"
+  }
+
 
   iter <- length(internal$iter_list)
   compute_sd <- internal$iter_list[[iter]]$compute_sd
@@ -27,7 +32,23 @@ compute_estimates <- function(internal, vS_list) {
   dt_vS = processed_vS_list$dt_vS
 
   # Compute the Shapley values
-  dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+
+  if(shapley_comp_method == "kernel"){
+    dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+  }
+  if(shapley_comp_method == "frida"){
+    internal <- compute_shapley_frida(internal, processed_vS_list$dt_vS)
+    dt_shapley_est <- data.table::as.data.table(cbind(internal$parameters$prediction_zero,
+                                                      internal$iter_list[[iter]]$frida_shapley_values)
+    )
+    colnames(dt_shapley_est) <- c("none", internal$parameters$shap_names_org)
+  }
+  if(shapley_comp_method == "both"){
+    dt_shapley_est <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+
+    internal <- compute_shapley_frida(internal, processed_vS_list$dt_vS)
+  }
+
   if (adaptive){
     if (internal$parameters$adaptive_arguments$allow_feature_reduction){
       keep = internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_est
@@ -52,10 +73,35 @@ compute_estimates <- function(internal, vS_list) {
   internal$timing_list$compute_shapley <- Sys.time()
 
   if (compute_sd) {
-    dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
+    if(shapley_comp_method == "kernel"){
+      dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
+    }
+    if(shapley_comp_method == "frida"){
+
+      internal <- bootstrap_shapley_frida(internal, n_boot_samps = n_boot_samps)
+      dt_shapley_sd <- data.table::as.data.table(
+        cbind(0,
+              internal$iter_list[[iter]]$frida_boot_shapley_values
+        )
+      )
+      colnames(dt_shapley_sd) <- c("none", internal$parameters$shap_names_org)
+    }
+    if(shapley_comp_method == "both"){
+      t0_kernel <- Sys.time()
+
+      dt_shapley_sd <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
+
+      time_kernel <<- time_kernel + Sys.time() - t0_kernel
+      t0_frida <- Sys.time()
+
+      internal <- bootstrap_shapley_frida(internal, n_boot_samps = n_boot_samps)
+      time_frida <<- time_frida + Sys.time() - t0_frida
+    }
+
+
     # dt_shapley_sd2 <- bootstrap_shapley_new(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS, seed = 685153)
     # internal <- bootstrap_shapley_frida(internal, n_boot_samps = n_boot_samps)
-    # frida_boot_sd <- internal$iter_list[[iter]]$frida_boot_shapley_values
+    #
 
     # inds = which(colnames(dt_shapley_sd) %in% internal$parameters$feature_names )
 

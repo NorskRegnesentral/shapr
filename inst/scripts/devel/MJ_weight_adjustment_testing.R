@@ -11,12 +11,34 @@
 
 #### Just some old unusable code below here ####
 
-org <- shapr:::exact_coalition_table(5)[]
+m = 5
+weight_zero_m = 10^6
+org <- shapr:::exact_coalition_table(m)[]
+org[, shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m)/shapr:::sum_shapley_weights(m)]
+org[c(1,.N),shapley_weight := 0]
+
+
 org[,coalitions_char := unlist(lapply(coalitions, function(x) paste(x, collapse = "_")))]
 org[,coalitions_new := lapply(coalitions, function(x) x[!(x %in% 5)])]
 org[,coalitions_new_char := unlist(lapply(coalitions_new, function(x) paste(x, collapse = "_")))]
 #org[,shapley_weight_new := sum(shapley_weight)/shapr:::sum_shapley_weights(5),by=coalitions_new_char]
-org[,shapley_weight_new := sum(shapley_weight),by=coalitions_new_char]
+org2 <- org[,list(shapley_weight_new = sum(shapley_weight)),by=coalitions_new_char]
+org2[c(1,.N),shapley_weight_new := 0]
+org2[,sum(shapley_weight_new)]
+org2[,shapley_weight_new_sumto1 := shapley_weight_new/sum(shapley_weight_new)]
+
+
+new <- shapr:::exact_coalition_table(m-1)[]
+new[, shapley_weight := shapley_weights(m = m-1, N = N, n_components = coalition_size, weight_zero_m)/shapr:::sum_shapley_weights(m-1)]
+new[c(1,.N),shapley_weight := 0]
+new[,coalitions_char := unlist(lapply(coalitions, function(x) paste(x, collapse = "_")))]
+
+new[,.(coalitions_char,shapley_weight)]
+org2
+
+
+
+org
 org[coalitions_new_char=="",shapley_weight_new := 10^6]
 org[coalitions_new_char==paste0(1:4,collapse="_"),shapley_weight_new := 10^6]
 
