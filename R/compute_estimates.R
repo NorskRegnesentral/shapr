@@ -453,6 +453,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100, seed = 123) {
     boot_sd_array[, , i] <- copy(kshap_boot)
   }
 
+
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
 
   dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
@@ -545,6 +546,9 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
   X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
   }
 
+  X_boot_org <<- copy(X_boot)
+
+
   for (i in seq_len(n_boot_samps)) {
 
     this_X <- X_boot[boot_id == i] # This is highly inefficient, but probably the best way to deal with the reweighting for now
@@ -562,6 +566,9 @@ bootstrap_shapley_new <- function(internal, dt_vS, n_boot_samps = 100, seed = 12
 
     boot_sd_array[, , i] <- copy(kshap_boot)
   }
+
+  boot_sd_array_org <<- boot_sd_array
+
 
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
 
@@ -661,6 +668,8 @@ bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
     X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
   }
 
+  X_boot_frida <<- copy(X_boot)
+
   n_features = internal$parameters$n_features
   n_row_all = internal$iter_list[[iter]]$X[-c(1, .N), sum(shapley_weight)]
 
@@ -695,18 +704,20 @@ bootstrap_shapley_frida <- function(internal, n_boot_samps = 100, seed = 123) {
 
     # Effective number of rows in this iteration
     n_row_this_iter = this_X[-c(1, .N), sum(shapley_weight)]
-    A_list[[i]] = compute_A(A_list[[i]], this_X, this_S, n_row_all, n_row_this_iter)
+    A_list[[i]] = shapr:::compute_A(A_list[[i]], this_X, this_S, n_row_all, n_row_this_iter)
 
-    b_list[[i]] = compute_b(b_list[[i]], this_dt_vS, this_X, this_S, n_row_all, n_row_this_iter, p0)
-    boot_sd_array[, , i] = calculate_shapley_values_frida(A_list[[i]], b_list[[i]], preds, p0)
+    b_list[[i]] = shapr:::compute_b(b_list[[i]], this_dt_vS, this_X, this_S, n_row_all, n_row_this_iter, p0)
+    boot_sd_array[, , i] = shapr:::calculate_shapley_values_frida(A_list[[i]], b_list[[i]], preds, p0)
   }
 
+  boot_sd_array_frida <<- copy(boot_sd_array)
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
 
   internal$iter_list[[iter]]$A_boot = A_list
   internal$iter_list[[iter]]$b_boot = b_list
 
   dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
+  print(dt_kshap_boot_sd)
   # colnames(dt_kshap_boot_sd) <- c("none", shap_names)
 
   internal$iter_list[[iter]]$frida_boot_shapley_values = std_dev_mat
