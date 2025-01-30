@@ -1,5 +1,10 @@
 # shapr 1.0.2 (Patch release)
 
+* (Resubmission of exactly the same package as submitted Jan 22nd. During check 
+there seemed to be installation issues with the dials and rsample package (unrelated to my package).
+Unfortunately my emails commenting on this seems to have not reached the CRAN team, which unfortunately removed shapr 1.0.1.
+on CRAN. See below for original patch release comments.)
+
 * Fix test error in prepare_data_gaussian_cpp seen on clang-UBSAN gcc-UBSAN compliers in CRAN checks. 
 Turned out to be an actual bug for an edge case.
 * Other minor fixes to GH repo, pkgdown site, python wrapper ++ unrelated to the actual shapr CRAN package.
