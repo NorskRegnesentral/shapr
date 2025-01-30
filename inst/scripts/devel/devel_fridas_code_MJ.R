@@ -130,8 +130,8 @@ expl_red_frida <- shapr::explain(model = model,
                            paired_shap_sampling  = paired_shap_sampling,
                            adaptive_arguments = list(allow_feature_reduction = FALSE,  # Set to FALSE to run regular
                                                      fixed_n_coalitions_per_iter = fixed_n_coalitions_per_iter,
-                                                     max_iter = 10,
-                                                     initial_n_coalitions = initial_n_coalitions,
+                                                     max_iter = 3,
+                                                     initial_n_coalitions = 20,
                                                      shapley_threshold_val = shapley_threshold_val,
                                                      shapley_threshold_prob = shapley_threshold_prob),
                            shapley_comp_method = "frida")
@@ -148,14 +148,14 @@ expl_red_both <- shapr::explain(model = model,
                                  gaussian.cov_mat=gaussian.cov_mat,
                                  adaptive = adaptive,
                                  print_iter_info = TRUE,
-                                 paired_shap_sampling  = paired_shap_sampling,
+                                 paired_shap_sampling  = FALSE,
                                  adaptive_arguments = list(allow_feature_reduction = FALSE,  # Set to FALSE to run regular
                                                            fixed_n_coalitions_per_iter = fixed_n_coalitions_per_iter,
-                                                           max_iter = 3,
+                                                           max_iter = 1,
                                                            initial_n_coalitions = 20,
                                                            shapley_threshold_val = shapley_threshold_val,
                                                            shapley_threshold_prob = shapley_threshold_prob,
-                                                           n_boot_samps = 1000),
+                                                           n_boot_samps = 10),
                                  shapley_comp_method = "both")
 
 time_frida
@@ -174,6 +174,117 @@ expl_red_both$internal$iter_results$dt_iter_shapley_sd[,-(1:3)]
 
 
 t(sapply(expl_red_both$internal$iter_list,function(x) x$frida_boot_shapley_values))
+
+
+#### Looking into Fridas bootstrapping code
+
+internal <- expl_red_both$internal
+dt_vS <- internal$output$dt_vS
+n_boot_samps = 10
+seed = 123
+
+shapr:::bootstrap_shapley_new(internal,dt_vS,n_boot_samps = 10,seed=1234)
+aa=shapr:::bootstrap_shapley_frida(internal,n_boot_samps = 10,seed=1234)
+
+round(abs(boot_sd_array_org[1,-1,]-boot_sd_array_frida[1,,]),3)
+
+boot_sd_array_frida[,,1]
+
+X_boot_frida[boot_id==1]
+X_boot_org[boot_id==1]
+
+
+X_boot_org[boot_id==2]
+
+
+weight_matrix(
+  X = X_boot_org[boot_id==2],
+  normalize_W_weights = TRUE
+)-
+  weight_matrix(
+    X = X_boot_frida[boot_id==2],
+    normalize_W_weights = TRUE
+  )
+
+#### Fridas shapley computation, manually
+
+
+X_curr <- copy(X_boot[boot_id == 2])
+X_curr <- rbind(X_curr,X_boot[boot_id == 1][12,])
+setkey(X_curr,id_coalition)
+
+
+n_row_all <- X_curr[-c(1,.N),sum(shapley_weight)]
+n_row_this_iter <- n_row_all
+n_features <- 12
+
+S_curr <- coalition_matrix_cpp(
+  coalitions = X_curr[["coalitions"]],
+  m = n_features
+)
+
+dt_vS_curr <- dt_vS[X_curr[,id_coalition]]
+
+p0 = internal$parameters$prediction_zero
+preds = dt_vS[.N, -"id_coalition"]
+
+A0 = matrix(0, n_features, n_features)
+b0 = 0
+
+A = compute_A(A0, X_curr, S_curr, n_row_all, n_row_this_iter)
+
+b = compute_b(b0, dt_vS_curr, X_curr, S_curr, n_row_all, n_row_this_iter, p0)
+
+(shapley_values = c(p0,calculate_shapley_values_frida(A, b, preds, p0)))
+
+as.vector(weight_matrix(
+  X = X_curr[],
+  normalize_W_weights = TRUE
+) %*% as.matrix(dt_vS_curr[,2]))
+
+### from bootstrap code:
+
+X_curr <- internal$iter_list[[iter]]$X_curr
+
+
+iter = 1
+S_curr = internal$iter_list[[iter]]$S_curr
+dt_vS_curr <- copy(dt_vS)
+X_boot <- X_boot_frida
+i=1
+
+this_X <- X_boot[boot_id == i] # This is highly inefficient, but probably the best way to deal with the reweighting for now
+inds = X_curr[, .I[id_coalition %in% this_X$id_coalition]]
+this_S = S_curr[inds, ]
+this_dt_vS = dt_vS_curr[inds, ]
+
+  # shapley_reweighting(this_X, reweight = shapley_reweight) # TODO: Implement reweighting for Frida
+
+# Effective number of rows in this iteration
+n_row_this_iter = this_X[-c(1, .N), sum(shapley_weight)]
+n_row_all <- X_curr[-c(1,.N),sum(shapley_weight)]
+
+A0 = matrix(0, n_features, n_features)
+b0 = 0
+
+shapr:::create_A_new_cpp(this_S[2:(nrow(this_S) - 1), ], diag(this_X[2:(nrow(this_S) - 1), shapley_weight]))
+
+A1 = shapr:::compute_A(A0, this_X, this_S, n_row_all, n_row_this_iter)
+
+b1 = shapr:::compute_b(b0, this_dt_vS, this_X, this_S, n_row_all, n_row_this_iter, p0)
+(shapval = c(p0,shapr:::calculate_shapley_values_frida(A1, b1, preds, p0)))
+
+
+round(abs(shapval-as.vector(weight_matrix(
+  X = this_X,
+  normalize_W_weights = TRUE
+) %*% as.matrix(this_dt_vS[,2]))),4)
+
+
+
+
+
+boot_sd_array_frida[1,,]
 
 
 for(i in seq_len(nrow(x_explain))){
