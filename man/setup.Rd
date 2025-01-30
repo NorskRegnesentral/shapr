@@ -189,7 +189,7 @@ If an object of class \code{shapr} is provided, or string with a path to where i
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the
-\href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage} for examples.}
+\href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette} for examples.}
 
 \item{asymmetric}{Logical.
 Not applicable for (regular) non-causal or asymmetric explanations.

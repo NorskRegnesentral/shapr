@@ -125,7 +125,7 @@
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 #' want to continue the iterative estimation. See the
-#' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage} for examples.
+#' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette} for examples.
 #'
 #' @param asymmetric Logical.
 #' Not applicable for (regular) non-causal or asymmetric explanations.
@@ -183,7 +183,7 @@
 #' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
 #' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.
 #' These are all introduced in the
-#' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage}.
+#' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}.
 #' (From R: `vignette("general_usage", package = "shapr")`).
 #' Moreover,
 #'  \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
