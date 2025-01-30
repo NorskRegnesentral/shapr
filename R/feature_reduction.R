@@ -64,7 +64,7 @@ check_reduction <- function(internal){
     kshap_est_mat = as.matrix(dt_shapley_est[, -"explain_id"])
     kshap_sd_mat = as.matrix(dt_shapley_sd[, -"explain_id"])
 
-    prob_of_red <- probfunc(kshap_est_mat, kshap_sd_mat, shapley_threshold_val)
+    prob_of_red <- probfunc(kshap_est_mat[,-1,drop=FALSE], kshap_sd_mat[,-1,drop=FALSE], shapley_threshold_val)
     internal$iter_list[[iter]]$prob_of_red = as.data.table(prob_of_red)
 
     if (!any(prob_of_red < shapley_threshold_prob)){
@@ -91,8 +91,8 @@ check_reduction <- function(internal){
         return(row.names)
     }
 
-    exclude_feature = which.min(prob_of_red[, -1])
-    exclude_feature_names = min.names(prob_of_red[, -1])
+    exclude_feature = which.min(prob_of_red)
+    exclude_feature_names = colnames(prob_of_red)[exclude_feature]
 
     # Keep the Shapley value estimate of the features that are excluded
     keep = internal$iter_list[[iter]]$shap_reduction$reduced_dt_shapley_est
