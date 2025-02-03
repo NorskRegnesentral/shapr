@@ -9,27 +9,40 @@ library(shapr)
 library(future)
 library(xgboost)
 
+###################################################################################################
+#
+# Har sjekket at naar alle korrelasjoner er 0 og vi ikke har interaksjoner, saa faar vi de
+# teoretiske Shapley-verdiene
+#
+##################################################################################################
+
+
+#################################################################################################
+###################################################################################################
 nTrain  <- 10000
 nTest   <- 10
-simSeed <- 100
-
 nVar       <- 12
+nVarRed    <- 3
+rhoLarge  <- 0.98
+rhoSmall <- 0.0
+rhoBetween <- 0.0
 corMat <- diag(nVar)
-corMat[1:3,1:3] <- 0.5
-corMat[4:6,4:6] <- 0.5
-corMat[7:9,7:9] <- 0.5
+corMat[1:nVarRed,1:nVarRed]                 <- rhoLarge
+corMat[(nVarRed+1):nVar,(nVarRed+1):nVar]   <- rhoSmall
+corMat[1:nVarRed,(nVarRed+1):nVar]          <- rhoBetween
+corMat[(nVarRed+1):nVar,1:nVarRed]          <- rhoBetween
 diag(corMat) <- 1
 mu <- rep(0,nVar)
+indep.ind <- seq(nVarRed+1,nVar)
 
 predFuncT <- function(X)
 {
   n <- dim(X)[1]
-  eps <- rnorm(n,0,1)
-  y <- 1+ 5*X[,1]+4*X[,2]+3*X[,3]+2*X[,4]+1*X[,5]
+  eps <- rnorm(n,0,0.01)
+  y <- 0.5*X[,1]+0.3*X[,2]+0.4*X[,3]+0.2*X[,4]+0.6*X[,5]+0.3*X[,6]+0.2*X[,7]+0.1*X[,8]
   y <- y + eps
 }
-
-###################################################################################################
+simSeed <-100
 set.seed(simSeed)
 library(mvtnorm)
 X       <- rmvnorm(n=nTrain,mean=mu,sigma=corMat)
@@ -69,24 +82,22 @@ set.seed(123)
 #### SETTINGS FOR SHAPLEY VALUE COMPUTATIONS ####
 allow_feature_reduction = TRUE # Set to FALSE to compute Shapley values without removing features
 paired_shap_sampling = TRUE # Whether we sample coalitions in pairs or not
-fixed_n_coalitions_per_iter = 10 # Number of new unique coalitions to in each iteration. Only one feature can be removed in each iteration.
-                                 # In the standard setup this is usually set based on estimated number of coalitions needed to reach convergence,
-                                 # but it makes more sense to fix it in the feature removal setting.
+fixed_n_coalitions_per_iter = 2 # Number of new unique coalitions to in each iteration. Only one feature can be removed in each iteration.
+# In the standard setup this is usually set based on estimated number of coalitions needed to reach convergence,
+# but it makes more sense to fix it in the feature removal setting.
 max_iter = 500 # Upper limit of the number of iterations (not coalitions)
-initial_n_coalitions = 50 # Number of unique coalitions to sample in the first iteration
-shapley_threshold_val = 0.3 # The z in the formula for when the remove feature j: Pr(|\phi_j| > z) < y
+initial_n_coalitions = 30 # Number of unique coalitions to sample in the first iteration
+shapley_threshold_val = 0.2 # The z in the formula for when the remove feature j: Pr(|\phi_j| > z) < y
 shapley_threshold_prob = 0.2 # The z in the formula for when the remove feature j: Pr(|\phi_j| > z) < y
 adaptive = TRUE # Whether to compute Shapley values iteratively or not. Must be used when allow_feature_reduction = TRUE
 n_MC_samples <- 1000 # Number of Monte Carlo samples used in the numerical integration of the Shapley values
-approach = "ctree" # "gaussian", "ctree", "vaeac", "independence" or similar. See ?shapr::explain for the full set of options.
+approach = "gaussian" # "gaussian", "ctree", "vaeac", "independence" or similar. See ?shapr::explain for the full set of options.
 gaussian.mu=mu # The mean of the Gaussian distribution used in the Gaussian approach. Set to NULL to estimate it from x_explain
 gaussian.cov_mat=Sigma # The covariance matrix of the Gaussian distribution used in the Gaussian approach. Set to NULL to estimate it from x_explain
 
 ret_list <- list()
 
 for(i in seq_len(nrow(x_explain))){
-
-
 
   expl_red <- shapr::explain(model = model,
                              x_explain= x_explain[i,], # For allow_feature_reduction = TRUE, this must contain only a SINGLE row
@@ -97,7 +108,7 @@ for(i in seq_len(nrow(x_explain))){
                              gaussian.mu=gaussian.mu,
                              gaussian.cov_mat=gaussian.cov_mat,
                              adaptive = adaptive,
-                             print_iter_info = TRUE,
+                             print_iter_info = FALSE,
                              paired_shap_sampling  = paired_shap_sampling,
                              adaptive_arguments = list(allow_feature_reduction = allow_feature_reduction,  # Set to FALSE to run regular
                                                        fixed_n_coalitions_per_iter = fixed_n_coalitions_per_iter,
@@ -105,7 +116,6 @@ for(i in seq_len(nrow(x_explain))){
                                                        initial_n_coalitions = initial_n_coalitions,
                                                        shapley_threshold_val = shapley_threshold_val,
                                                        shapley_threshold_prob = shapley_threshold_prob))
-
 
   n_iter <- length(expl_red$internal$iter_list)
   total_used_coal <- sapply(expl_red$internal$iter_list, function(sublist) sublist$total_n_coalitions)
@@ -129,6 +139,7 @@ tot_used_coal <- sapply(ret_list, function(x) x$total_used_coal[length(x$total_u
 
 
 # Plain iterative computation for all observations (just for illustration, not used for anything below)
+#Kjoerer alle observasjoner samtidig
 expl_standard <- shapr::explain(model = model,
                                 x_explain= x_explain,
                                 x_train = x_train,
@@ -164,17 +175,17 @@ expl_full$internal$objects$X[,.N] # The number of coalitions (4096)
 expl_no_reduction_list <- list()
 for(i in seq_len(nrow(x_explain))){
   expl_no_reduction_list[[i]] <- shapr::explain(model = model,
-                                                         x_explain= x_explain[i,],
-                                                         x_train = x_train,
-                                                         approach = approach,
-                                                         n_MC_samples = n_MC_samples,
-                                                         prediction_zero = p0,
-                                                         gaussian.mu=mu,
-                                                         gaussian.cov_mat=Sigma,
-                                                         adaptive = FALSE,
-                                                         max_n_coalitions = tot_used_coal[i],
-                                                         paired_shap_sampling  = paired_shap_sampling,
-                                                         adaptive_arguments = list(allow_feature_reduction = FALSE))
+                                                x_explain= x_explain[i,],
+                                                x_train = x_train,
+                                                approach = approach,
+                                                n_MC_samples = n_MC_samples,
+                                                prediction_zero = p0,
+                                                gaussian.mu=mu,
+                                                gaussian.cov_mat=Sigma,
+                                                adaptive = FALSE,
+                                                max_n_coalitions = tot_used_coal[i],
+                                                paired_shap_sampling  = paired_shap_sampling,
+                                                adaptive_arguments = list(allow_feature_reduction = FALSE))
   print(i)
 
 }
@@ -186,17 +197,25 @@ for (i in seq_len(nrow(x_explain))){
 
 no_red_shap_vals <- rbindlist(shap_vals_no_reduction_list)
 
+kernelShapTrue <- matrix(scan("/nr/project/stat/BigInsight/Projects/Explanations/EffektivShapley/Kjersti/IntegreatRetreatNov24/LinearModel1/kernelShapTrue.txt", sep=";"),ncol=13,byrow=T)
 
 # MAE per observation
-MAE_obs_reduction <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-red_shap_vals[,-c(1,2,3)]))
+#MAE_obs_reduction <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-red_shap_vals[,-c(1,2,3)]))
+MAE_obs_reduction <- rowMeans(abs(head(kernelShapTrue,nTest)-red_shap_vals[,-c(1,2)]))
 
-MAE_obs_no_reduction <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-no_red_shap_vals[,-c(1,2)]))
+#MAE_obs_no_reduction <- rowMeans(abs(expl_full$shapley_values[,-c(1,2)]-no_red_shap_vals[,-c(1,2)]))
+MAE_obs_no_reduction <- rowMeans(abs(head(kernelShapTrue,nTest)-no_red_shap_vals[,-c(1)]))
+
+plot.ts(cbind(MAE_obs_no_reduction,MAE_obs_reduction),plot.type="single")
+lines(MAE_obs_no_reduction,col=3)
 
 # MAE per feature
-MAE_feat_reduction <- colMeans(abs(expl_full$shapley_values[,-c(1,2)]-red_shap_vals[,-c(1,2,3)]))
+#MAE_feat_reduction <- colMeans(abs(expl_full$shapley_values[,-c(1,2)]-red_shap_vals[,-c(1,2,3)]))
+MAE_feat_reduction <- colMeans(abs(head(kernelShapTrue,nTest)-red_shap_vals[,-c(1,2)]))
 
-MAE_feat_no_reduction <- colMeans(abs(expl_full$shapley_values[,-c(1,2)]-no_red_shap_vals[,-c(1,2)]))
+#MAE_feat_no_reduction <- colMeans(abs(expl_full$shapley_values[,-c(1,2)]-no_red_shap_vals[,-c(1,2)]))
+MAE_feat_no_reduction <- colMeans(abs(head(kernelShapTrue,nTest)-no_red_shap_vals[,-c(1)]))
 
-
-
+plot.ts(cbind(MAE_feat_no_reduction,MAE_feat_reduction),plot.type="single")
+lines(MAE_feat_no_reduction,col=3)
 
