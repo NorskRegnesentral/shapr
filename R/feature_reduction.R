@@ -119,6 +119,14 @@ check_reduction <- function(internal){
     internal$parameters$feature_names <- internal$parameters$feature_names[!internal$parameters$feature_names %in% exclude_feature_names]
     internal$parameters$shap_names <- internal$parameters$shap_names[!internal$parameters$shap_names %in% exclude_feature_names]
 
+    internal$data$x_train <- subset(internal$data$x_train,select=-exclude_feature)
+    internal$data$x_explain <- subset(internal$data$x_explain,select=-exclude_feature)
+
+    if("gaussian" %in% approach){
+      internal$parameters$gaussian.mu <- internal$parameters$gaussian.mu[-exclude_feature]
+      internal$parameters$gaussian.cov_mat <- internal$parameters$gaussian.cov_mat[-exclude_feature,-exclude_feature]
+    }
+
     internal$iter_list[[iter]]$shap_reduction$exclude_feature <- exclude_feature
 
     internal <- reduce(internal)
@@ -155,6 +163,7 @@ reduce <- function(internal){
     Xtmp[, coalitions_bar_char := sapply(coalitions_bar, paste0, collapse = "_")]
 
     if(is.null(reduction_strategy)) reduction_strategy = "by_S"
+
     if(reduction_strategy == "by_S"){
       # Uses 12|345 as replacement for 12|34, if 5 is removed
       setorder(Xtmp,id_coalition )
@@ -264,6 +273,9 @@ reduce <- function(internal){
 
     internal$iter_list[[iter]]$coal_samples_org = internal$iter_list[[iter]]$coal_samples
     internal$iter_list[[iter]]$coal_samples <- coal_samples
+
+
+
 
     return(internal)
 }

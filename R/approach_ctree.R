@@ -52,7 +52,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   ctree.minsplit <- internal$parameters$ctree.minsplit
   ctree.minbucket <- internal$parameters$ctree.minbucket
   ctree.sample <- internal$parameters$ctree.sample
-  labels <- internal$objects$feature_specs$labels
+  feature_names <- internal$parameters$feature_names
 
   iter <- length(internal$iter_list)
 
@@ -100,7 +100,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   dt[id_coalition %in% c(1, 2^n_features), w := 1.0]
 
   # only return unique dt
-  dt2 <- dt[, sum(w), by = c("id_coalition", labels, "id")]
+  dt2 <- dt[, sum(w), by = c("id_coalition", feature_names, "id")]
   setnames(dt2, "V1", "w")
 
   return(dt2)

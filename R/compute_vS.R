@@ -12,7 +12,6 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
 
   S_batch <- internal$iter_list[[iter]]$S_batch
 
-
   if (method == "future") {
     vS_list <- future_compute_vS_batch(
       S_batch = S_batch,
