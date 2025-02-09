@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,7 +42,7 @@
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">News</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Manual</a></li>
-<li class="nav-item"><a class="nav-link" href="shaprpy.html">Python</a></li>
+<li class="nav-item"><a class="nav-link" href="README_py.html">Python</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -65,7 +65,7 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="shapr-">shapr <img src="reference/figures/nrlogo_new.jpg" align="right" height="139"><a class="anchor" aria-label="anchor" href="#shapr-"></a>
+<div class="page-header"><h1 id="shapr-">shapr <img src="reference/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"><a class="anchor" aria-label="anchor" href="#shapr-"></a>
 </h1></div>
 <!-- badges: start -->
 
@@ -87,13 +87,13 @@
 <div class="section level3">
 <h3 id="coming-from-shapr--100">Coming from shapr &lt; 1.0.0?<a class="anchor" aria-label="anchor" href="#coming-from-shapr--100"></a>
 </h3>
-<p><code>shapr</code> version &gt;= 1.0.0 comes with a number of breaking changes. Most notably, we moved from using two function (<code><a href="reference/shapr-package.html">shapr()</a></code> and <code><a href="reference/explain.html">explain()</a></code>) to a single function (<code><a href="reference/explain.html">explain()</a></code>). In addition, custom models are now explained by passing the prediction function directly to <code><a href="reference/explain.html">explain()</a></code>, quite a few input arguments got new names, and a few functions for edge cases was removed to simplify the code base.</p>
+<p><code>shapr</code> version &gt; 1.0.0 comes with a number of breaking changes. Most notably, we moved from using two function (<code><a href="reference/shapr-package.html">shapr()</a></code> and <code><a href="reference/explain.html">explain()</a></code>) to a single function (<code><a href="reference/explain.html">explain()</a></code>). In addition, custom models are now explained by passing the prediction function directly to <code><a href="reference/explain.html">explain()</a></code>, quite a few input arguments got new names, and a few functions for edge cases was removed to simplify the code base.</p>
 <p>Click <a href="https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md" class="external-link">here</a> to view a version of this README with old syntax (v0.2.2).</p>
 </div>
 <div class="section level3">
 <h3 id="python-wrapper">Python wrapper<a class="anchor" aria-label="anchor" href="#python-wrapper"></a>
 </h3>
-<p>We provide an (experimental) Python wrapper (<code>shaprpy</code>) which allows explaining Python models with the methodology implemented in <code>shapr</code>, directly from Python. The wrapper calls <code>R</code> internally, and therefore requires an installation of <code>R</code>. See <a href="https://github.com/NorskRegnesentral/shapr/shaprpy.html" class="external-link">here</a> for installation instructions and examples.</p>
+<p>We provide an (experimental) Python wrapper (<code>shaprpy</code>) which allows explaining Python models with the methodology implemented in <code>shapr</code>, directly from Python. The wrapper calls <code>R</code> internally, and therefore requires an installation of <code>R</code>. See <a href="https://github.com/NorskRegnesentral/shapr/tree/master/python" class="external-link">here</a> for installation instructions and examples.</p>
 </div>
 </div>
 <div class="section level2">
@@ -181,14 +181,14 @@
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-01-22 10:22:36 ──────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-01-21 13:30:06 ──────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/RtmpAnmtGl/shapr_obj_371a1a52bf4cce.rds'</span></span>
+<span><span class="co">#&gt; '/tmp/Rtmpf5zleu/shapr_obj_3676de5b39f33b.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -209,7 +209,7 @@
 <span><span class="co"># Finally we plot the resulting explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-basic_example-1.png" width="100%"></p>
-<p>See the <a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html">general usage vignette</a> for further basic usage examples and brief introductions to the methodology. For more thorough information about the underlying methodology, see Aas, Jullum, and Løland (2021), Redelmeier, Jullum, and Aas (2020), Jullum, Redelmeier, and Aas (2021), Olsen et al. (2022), Olsen et al. (2024) . See also Sellereite and Jullum (2019) for a brief paper about the previous (&lt; 1.0.0) version of the package.</p>
+<p>See the <a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html">general usage vignette</a> for further basic usage examples.</p>
 </div>
 <div class="section level2">
 <h2 id="contribution">Contribution<a class="anchor" aria-label="anchor" href="#contribution"></a>
@@ -220,26 +220,6 @@
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-aas2019explaining" class="csl-entry">
-Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298.
-</div>
-<div id="ref-jullum2021efficient" class="csl-entry">
-Jullum, Martin, Annabelle Redelmeier, and Kjersti Aas. 2021. “Efficient and Simple Prediction Explanations with groupShapley: A Practical Perspective.” In <em>Proceedings of the 2nd Italian Workshop on Explainable Artificial Intelligence</em>, 28–43. CEUR Workshop Proceedings.
-</div>
-<div id="ref-olsen2022using" class="csl-entry">
-Olsen, Lars Henry Berge, Ingrid Kristine Glad, Martin Jullum, and Kjersti Aas. 2022. “Using Shapley Values and Variational Autoencoders to Explain Predictive Models with Dependent Mixed Features.” <em>Journal of Machine Learning Research</em> 23 (213): 1–51.
-</div>
-<div id="ref-olsen2024comparative" class="csl-entry">
-———. 2024. “A Comparative Study of Methods for Estimating Model-Agnostic Shapley Value Explanations.” <em>Data Mining and Knowledge Discovery</em>, 1–48.
-</div>
-<div id="ref-redelmeier2020explaining" class="csl-entry">
-Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predictive Models with Mixed Features Using Shapley Values and Conditional Inference Trees.” In <em>International Cross-Domain Conference for Machine Learning and Knowledge Extraction</em>, 117–37. Springer.
-</div>
-<div id="ref-sellereite2019shapr" class="csl-entry">
-Sellereite, N., and M. Jullum. 2019. “Shapr: An r-Package for Explaining Machine Learning Models with Dependence-Aware Shapley Values.” <em>Journal of Open Source Software</em> 5 (46): 2027. <a href="https://doi.org/10.21105/joss.02027" class="external-link uri">https://doi.org/10.21105/joss.02027</a>.
-</div>
-</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -293,7 +273,7 @@ Sellereite, N., and M. Jullum. 2019. “Shapr: An r-Package for Explaining Machi
 <li><a href="https://cran.r-project.org/package=shapr" class="external-link"><img src="https://www.r-pkg.org/badges/version-last-release/shapr" alt="CRAN_Status_Badge"></a></li>
 <li><a href="https://cran.r-project.org/package=shapr" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/shapr" alt="CRAN_Downloads_Badge"></a></li>
 <li><a href="https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check" class="external-link"><img src="https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://opensource.org/license/mit" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 <li><a href="https://doi.org/10.21105/joss.02027" class="external-link"><img src="https://joss.theoj.org/papers/10.21105/joss.02027/status.svg" alt="DOI"></a></li>
 </ul>
