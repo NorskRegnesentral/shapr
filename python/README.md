@@ -1,19 +1,15 @@
----
-output:
-  html_document: default
-  pdf_document: default
----
-## shaprpy
+
+# shaprpy
 
 Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/shapr).
 
-NOTE: This wrapper is in an EXPERIMENTAL state. Bugs and breaking changes are not unlikely to occur.
+NOTE: This wrapper is in an EXPERIMENTAL state. Bugs are not unlikely to occur.
 
 ### Install
 
 The below instructions assume you already have `pip` and `R` installed and exposed to the python environment where you want to run `shaprpy`. 
 Official instructions for installing `pip` can be found [here](https://pip.pypa.io/en/stable/installation/), and for `R` [here](https://cran.r-project.org/).
-R can also be installed with pip as follows:
+`R` can also be installed with pip as follows:
 ```
 pip install rbase
 ```
