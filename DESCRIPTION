@@ -1,5 +1,5 @@
 Package: shapr
-Version: 1.0.1.9000
+Version: 1.0.2.9000
 Title: Prediction Explanation with Dependence-Aware Shapley Values
 Description: Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
@@ -30,7 +30,7 @@ RoxygenNote: 7.3.2
 Depends: R (>= 3.5.0)
 Imports: 
     stats,
-    data.table,
+    data.table (>= 1.15.0),
     Rcpp (>= 0.12.15),
     Matrix,
     future.apply,
