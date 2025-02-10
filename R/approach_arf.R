@@ -65,7 +65,7 @@ prepare_data.arf <- function(internal, index_features = NULL, ...) {
     for(j in seq_along(features)) {
       evi <- x_explain[i,.SD, .SDcols = features[[j]]]
 
-      samp <- forge(arf_sampler, n_synth = n_MC_samples, evidence = evi)
+      samp <- arf::forge(arf_sampler, n_synth = n_MC_samples, evidence = evi)
 
       l[[j]] <- samp
 
