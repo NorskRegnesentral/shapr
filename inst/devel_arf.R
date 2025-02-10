@@ -27,39 +27,6 @@ model <- xgboost(
 # Specifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
-# Computing the Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "empirical",
-  phi0 = p0
-)
-
-### TESINT ARF ###
-
-#install.packages("arf")
-library(arf)
-
-head(x_train)
-
-x_train[,Month_fact:=as.factor(Month)]
-
-future::plan("multisession", workers = 2) # Increase the number of workers for increased performance with many features
-
-arf_xtrain <- arf::adversarial_rf(x_train, mtry = 4)
-
-params_arf <- arf::forde(arf_xtrain, x_train)
-
-evi <- data.frame(Solar.R = c(190), Temp = c(67))
-
-synth2 <- forge(params_arf, n_synth = 1000, evidence = evi)
-
-
-
-
-
 
 e_arf <- explain(
   model = model,
@@ -106,3 +73,33 @@ e_ctree$MSEv$MSEv
 
 
 
+#
+# # Computing the Shapley values with kernelSHAP accounting for feature dependence using
+# # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+# explanation <- explain(
+#   model = model,
+#   x_explain = x_explain,
+#   x_train = x_train,
+#   approach = "empirical",
+#   phi0 = p0
+# )
+#
+# ### TESINT ARF ###
+#
+# #install.packages("arf")
+# library(arf)
+#
+# head(x_train)
+#
+# x_train[,Month_fact:=as.factor(Month)]
+#
+# future::plan("multisession", workers = 2) # Increase the number of workers for increased performance with many features
+#
+# arf_xtrain <- arf::adversarial_rf(x_train, mtry = 4)
+#
+# params_arf <- arf::forde(arf_xtrain, x_train)
+#
+# evi <- data.frame(Solar.R = c(190), Temp = c(67))
+#
+# synth2 <- forge(params_arf, n_synth = 1000, evidence = evi)
+#
