@@ -1,6 +1,6 @@
 #' @rdname setup_approach
 #'
-#' @inheritParams default_doc_explain
+#' @inheritParams default_doc_export
 #'
 #' @export
 setup_approach.arf <- function(internal,
@@ -8,8 +8,10 @@ setup_approach.arf <- function(internal,
                                arf.min_node_size = 2L,
                                arf.delta = 0,
                                arf.max_iters = 10L,
+                               arf.alpha = 0.1,
+                               arf.epsilon = 1e-15,
                                ...) {
-  defaults <- mget(c("arf.num_trees", "arf.min_node_size", "arf.delta", "arf.max_iters"))
+  defaults <- mget(c("arf.num_trees", "arf.min_node_size", "arf.delta", "arf.max_iters", "arf.alpha", "arf.epsilon"))
 
   internal <- insert_defaults(internal, defaults)
 
@@ -19,6 +21,9 @@ setup_approach.arf <- function(internal,
   min_node_size <- internal$parameters$arf.min_node_size
   delta <- internal$parameters$arf.delta
   max_iters <- internal$parameters$arf.max_iters
+  alpha <- internal$parameters$arf.alpha
+  epsilon <- internal$parameters$arf.epsilon
+
 
   arf0 <- arf::adversarial_rf(x_train,
                               num_trees = num_trees,
@@ -27,7 +32,11 @@ setup_approach.arf <- function(internal,
                               max_iters = max_iters,
                               verbose = FALSE)
 
-  internal$objects$arf_sampler <- arf::forde(arf0, x_train)
+  internal$objects$arf_sampler <- arf::forde(arf0,
+                                             x_train,
+                                             finite_bounds = "local",
+                                             alpha = alpha,
+                                             epsilon = epsilon)
 
   return(internal)
 }
@@ -60,24 +69,25 @@ prepare_data.arf <- function(internal, index_features = NULL, ...) {
   }
 
 
-  for (i in seq_len(n_explain)) {
-    l <- list()
-    for(j in seq_along(features)) {
-      evi <- x_explain[i,.SD, .SDcols = features[[j]]]
+  aa=Sys.time()
+  unfeatures <- lapply(features, function(x) setdiff(1:n_features, x))
 
-      samp <- arf::forge(arf_sampler, n_synth = n_MC_samples, evidence = evi)
-
-      l[[j]] <- samp
-
-    }
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_coalition")
-    dt_l[[i]][, w := 1 / n_MC_samples]
-    dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, id_coalition := index_features[id_coalition]]
+  evi_list <- list()
+  for(j in seq_along(features)) {
+    evi_list[[j]] <- data.table::copy(x_explain)
+    data.table::set(evi_list[[j]], j = unfeatures[[j]], value = NA)
   }
 
-  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  evi <- data.table::rbindlist(evi_list)
+
+  dt <- as.data.table(arf::forge(arf_sampler, n_synth = n_MC_samples, evidence = evi,evidence_row_mode = "separate"))
+
+  dt[, w := 1 / n_MC_samples]
+  dt[, id := rep(rep(seq_len(n_explain),each = n_MC_samples), length(features))]
+  dt[, id_coalition := rep(seq_along(features),each = n_MC_samples*n_explain)]
+  dt[, id_coalition := index_features[id_coalition]]
   dt[id_coalition %in% c(1, 2^n_features), w := 1.0]
+  setcolorder(dt,"id_coalition")
 
   # only return unique dt
   dt2 <- dt[, sum(w), by = c("id_coalition", feature_names, "id")]

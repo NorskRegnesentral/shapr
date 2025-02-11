@@ -54,7 +54,7 @@ e_ctree <- explain(
 
 e_arf$shapley_values_est
 
-e_arf$shapley_values_est
+e_ctree$shapley_values_est
 
 e_arf$timing$total_time_secs
 e_emp$timing$total_time_secs

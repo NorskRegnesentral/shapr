@@ -30,6 +30,8 @@ setup_approach(internal, ...)
   arf.min_node_size = 2L,
   arf.delta = 0,
   arf.max_iters = 10L,
+  arf.alpha = 0.1,
+  arf.epsilon = 1e-15,
   ...
 )
 

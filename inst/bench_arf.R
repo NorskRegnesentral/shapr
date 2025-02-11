@@ -52,60 +52,105 @@ p0 <- mean(y_train)
 #  phi0 = p0,iterative = FALSE
 #)
 
-future::plan("multisession", workers = 4) # Increase the number of workers for increased performance with many features
+future::plan("multisession", workers = 5) # Increase the number of workers for increased performance with many features
 
 progressr::handlers(global = TRUE)
 progressr::handlers("cli") # Using the cli package as backend (recommended for the
 
-e_arf <- explain(
-  model = model,
-  x_explain = head(x_explain,10),
-  x_train = head(x_train,1000),
-  approach = "arf",
-  phi0 = p0,iterative = FALSE
-)
-
-# Register cores - Windows
-library(doParallel)
-cl <- makeCluster(4)
-registerDoParallel(cl)
+# Get an idea about the scaliability of the ARF approach
 
 e_arf <- explain(
   model = model,
   x_explain = head(x_explain,10),
   x_train = head(x_train,1000),
   approach = "arf",
-  phi0 = p0,iterative = FALSE
+  phi0 = p0,iterative = FALSE,max_n_coalitions = 10
 )
 
 
+e_arf2 <- explain(
+  model = model,
+  x_explain = head(x_explain,50),
+  x_train = head(x_train,1000),
+  approach = "arf",
+  phi0 = p0,iterative = FALSE,max_n_coalitions = 10
+)
 
-e_ctree <- explain(
+
+e_arf3 <- explain(
   model = model,
   x_explain = head(x_explain,10),
+  x_train = head(x_train,5000),
+  approach = "arf",
+  phi0 = p0,iterative = FALSE,max_n_coalitions = 10
+)
+
+
+e_arf4 <- explain(
+  model = model,
+  x_explain = head(x_explain,10),
+  x_train = head(x_train,1000),
+  approach = "arf",
+  phi0 = p0,iterative = FALSE,max_n_coalitions = 50
+)
+
+
+e_arf$timing$total_time_secs
+e_arf$timing$total_time_secs*5
+e_arf2$timing$total_time_secs
+e_arf3$timing$total_time_secs
+e_arf4$timing$total_time_secs
+
+# > e_arf$timing$total_time_secs
+# [1] 7.78881
+# > e_arf$timing$total_time_secs*5
+# [1] 38.94405
+# > e_arf2$timing$total_time_secs
+# [1] 11.73266
+# > e_arf3$timing$total_time_secs
+# [1] 7.52352
+# > e_arf4$timing$total_time_secs
+# [1] 8.814752
+
+future::plan("multisession", workers = 10) # Increase the number of workers for increased performance with many features
+
+e_arf0 <- explain(
+  model = model,
+  x_explain = head(x_explain,100),
+  x_train = head(x_train,1000),
+  approach = "arf",
+  phi0 = p0,iterative = FALSE,max_n_coalitions = 500
+)
+
+e_ctree0 <- explain(
+  model = model,
+  x_explain = head(x_explain,100),
   x_train = head(x_train,1000),
   approach = "ctree",
-  phi0 = p0,iterative = FALSE
+  phi0 = p0,iterative = FALSE,max_n_coalitions = 500
 )
 
 
-#e_gauss <- explain(
-#  model = model,
-#  x_explain = head(x_explain,10),
-#  x_train = head(x_train,1000),
-#  approach = "gaussian",
-#  phi0 = p0,iterative = FALSE
-#)
-
-#e_emp$timing$total_time_secs
-e_arf$timing$total_time_secs
-e_ctree$timing$total_time_secs
-#e_gauss$timing$total_time_secs
+e_arf0$timing$total_time_secs
+e_ctree0$timing$total_time_secs
 
 
-#e_emp$MSEv$MSEv
-e_arf$MSEv$MSEv
-e_ctree$MSEv$MSEv
-#e_gauss$MSEv$MSEv
+e_arf0$MSEv$MSEv
+e_ctree0$MSEv$MSEv
+
+# > e_arf0$timing$total_time_secs
+# [1] 279.4276
+# > e_ctree0$timing$total_time_secs
+# [1] 771.6911
+# >
+#   >
+#   > e_arf0$MSEv$MSEv
+# MSEv     MSEv_sd
+# <num>       <num>
+#   1: 0.02304781 0.001990692
+# > e_ctree0$MSEv$MSEv
+# MSEv     MSEv_sd
+# <num>       <num>
+#   1: 0.02101031 0.001956703
 
 
