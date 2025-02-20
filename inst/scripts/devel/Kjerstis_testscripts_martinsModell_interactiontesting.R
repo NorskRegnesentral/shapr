@@ -18,7 +18,7 @@ library(xgboost)
 #################################################################################################
 ###################################################################################################
 nTrain  <- 10000
-nTest   <- 100
+nTest   <- 10
 simSeed <- 100
 
 nVar       <- 12
@@ -49,7 +49,9 @@ trainData <- as.data.frame(cbind(y,X))
 ytest <- predFuncT(Xtest)
 testData <- as.data.frame(cbind(ytest,Xtest))
 
-model <- lm(y~., data = trainData)
+model <- lm(y~V2+V3+V4+V5+V6+V12*V13-V12-V13, data = trainData)
+
+model <- lm(y~.+V12*V13, data = trainData)
 
 ###########################################################################################################
 
@@ -157,6 +159,10 @@ no_coal_standard <- expl_standard$internal$objects$X[,.N]-2
 
 # Full computation with all 2^12 coalitions for all observations
 
+future::multisession()
+progressr::handlers(global = TRUE)
+progressr::handlers("cli")
+
 expl_full <- shapr::explain(model = model,
                             x_explain= x_explain,
                             x_train = x_train,
@@ -167,6 +173,30 @@ expl_full <- shapr::explain(model = model,
                             gaussian.cov_mat=Sigma,
                             adaptive = FALSE,
                             adaptive_arguments = list(allow_feature_reduction = FALSE))
+
+expl_full$shapley_values
+
+# obs 4 has V2 with small shapley value. Will check if v(1,S) for different S is similar to V(S) for different S
+
+dt_vS <- expl_full$internal$output$dt_vS
+X <- expl_full$internal$objects$X
+
+X[,coalitions_str := sapply(coalitions, paste0, collapse = "_")]
+
+coal_with_1 <- X[coalitions_str %in% c("1","1_2","1_2_3","1_2_3_4"),id_coalition]
+coal_without_1 <- X[coalitions_str %in% c("","2","2_3","2_3_4"),id_coalition]
+
+dt_vS[id_coalition %in% coal_with_1,p_hat1_4]
+#[1] -0.2960277 -1.8295669 -3.0791259 -3.3204031
+dt_vS[id_coalition %in% coal_without_1,p_hat1_4]
+#[1]  0.9797508 -2.4882002 -3.6035339 -4.2394226
+
+
+expl_red$internal$iter_list[[1]]$dt_vS
+expl_red$internal$iter_list[[1]]$dt_vS_org
+
+
+
 
 expl_full$internal$objects$X[,.N] # The number of coalitions (4096)
 
