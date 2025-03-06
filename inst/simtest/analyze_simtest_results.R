@@ -1,12 +1,15 @@
 
 library(data.table)
-
 library(ggplot2)
+library(stringr)
+
+source("inst/simtest/source_Martin_funcs.R")
 
 result_folder <- "inst/simtest/results"
 
 files <- list.files(result_folder, full.names = TRUE, pattern = ".*\\.rds$")
 
+files <- files[grepl("NEW",files)]
 
 sh_error_dt_list <- list()
 vS_error_dt_list <- list()
@@ -140,9 +143,9 @@ ggsave("inst/simtest/results/plots/vS_error_lm.pdf", p4, width=16, height=10)
 ggsave("inst/simtest/results/plots/est_time_secs.pdf", p5, width=16, height=10)
 
 ### Now generate the same plots, but with only arf and ctree
-sh_error_dt_all_arf <- sh_error_dt_all[estimator %in% c("arf","ctree")]
-vS_error_dt_all_arf <- vS_error_dt_all[estimator %in% c("arf","ctree")]
-est_time_secs_all_arf <- est_time_secs_all[estimator %in% c("arf","ctree")]
+sh_error_dt_all_arf <- sh_error_dt_all[estimator %in% c("arf","arf100","ctree")]
+vS_error_dt_all_arf <- vS_error_dt_all[estimator %in% c("arf","arf100","ctree")]
+est_time_secs_all_arf <- est_time_secs_all[estimator %in% c("arf", "arf100","ctree")]
 
 pp1 <- ggplot(sh_error_dt_all_arf[model_type=="gam"], aes(x=estimator, y=abs(error), fill=estimator)) +
   geom_boxplot(outliers=FALSE) +

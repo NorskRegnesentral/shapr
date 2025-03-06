@@ -7,7 +7,7 @@ pred_function = "gam"  # "rf
 n_train = 1000
 experiments_arg = if (pred_function == "gam") 1:14 else 10:14
 
-approaches <- c("reg_sep-lm","reg_sep-gam", "arf", "gaussian", "ctree")
+approaches <- c("reg_sep-lm","reg_sep-gam", "arf", "arf100", "gaussian", "ctree")
 
 #rhos = 0.5
 rhos = c(0, seq(0.1, 0.9, 0.2))
@@ -308,6 +308,20 @@ for (distribution_param_idx in seq(1, length(distribution_params))) {
           n_MC_samples = num_samples_monte_carlo_sample_Shapley_values
         )
         expl_list[[approach]] <- expl
+      } else  if(approach == "arf100"){
+        expl <- shapr::explain(
+          model = model,
+          x_explain = x_explain,
+          x_train = x_train,
+          predict_model = predict_model,
+          approach = "arf",
+          arf.num_trees = 100,
+          phi0 = phi0,
+          iterative = FALSE,
+          seed = 123,
+          n_MC_samples = num_samples_monte_carlo_sample_Shapley_values
+        )
+        expl_list[[approach]] <- expl
       } else { # if approach is regression
         approach0 <- strsplit(approach,"-")[[1]]
         approach1 <- ifelse(approach0[1]=="reg_sep","regression_separate","regression_surrogate")
@@ -343,7 +357,7 @@ for (distribution_param_idx in seq(1, length(distribution_params))) {
 
       res_list$est_explainer <- expl_list
       # Saving results (overwriting with more approaches for every iteration in the approach loop)
-      saveRDS(res_list, file = paste0("inst/simtest/results/",current_save_name,".rds"))
+      saveRDS(res_list, file = paste0("inst/simtest/results/NEW_",current_save_name,".rds"))
 
 
     }
