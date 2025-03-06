@@ -32,6 +32,8 @@ setup_approach(internal, ...)
   arf.max_iters = 10L,
   arf.alpha = 0.1,
   arf.epsilon = 1e-15,
+  arf.parallel_train = TRUE,
+  arf.parallel_gen = FALSE,
   ...
 )
 

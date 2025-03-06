@@ -10,8 +10,11 @@ setup_approach.arf <- function(internal,
                                arf.max_iters = 10L,
                                arf.alpha = 0.1,
                                arf.epsilon = 1e-15,
+                               arf.parallel_train = TRUE,
+                               arf.parallel_gen = FALSE,
                                ...) {
-  defaults <- mget(c("arf.num_trees", "arf.min_node_size", "arf.delta", "arf.max_iters", "arf.alpha", "arf.epsilon"))
+  defaults <- mget(c("arf.num_trees", "arf.min_node_size", "arf.delta", "arf.max_iters",
+                     "arf.alpha", "arf.epsilon", "arf.parallel_train", "arf.parallel_gen"))
 
   internal <- insert_defaults(internal, defaults)
 
@@ -23,6 +26,7 @@ setup_approach.arf <- function(internal,
   max_iters <- internal$parameters$arf.max_iters
   alpha <- internal$parameters$arf.alpha
   epsilon <- internal$parameters$arf.epsilon
+  parallel_train <- internal$parameters$arf.parallel_train
 
 
   arf0 <- arf::adversarial_rf(x_train,
@@ -30,13 +34,15 @@ setup_approach.arf <- function(internal,
                               min_node_size = min_node_size,
                               delta = delta,
                               max_iters = max_iters,
-                              verbose = FALSE)
+                              verbose = FALSE,
+                              parallel = parallel_train)
 
   internal$objects$arf_sampler <- arf::forde(arf0,
                                              x_train,
                                              finite_bounds = "local",
                                              alpha = alpha,
-                                             epsilon = epsilon)
+                                             epsilon = epsilon,
+                                             parallel = parallel_train)
 
   return(internal)
 }
@@ -54,6 +60,8 @@ prepare_data.arf <- function(internal, index_features = NULL, ...) {
   n_features <- internal$parameters$n_features
   feature_names <- internal$parameters$feature_names
   arf_sampler <- internal$objects$arf_sampler
+  parallel_gen <- internal$parameters$arf.parallel_gen
+
 
   iter <- length(internal$iter_list)
 
@@ -80,7 +88,11 @@ prepare_data.arf <- function(internal, index_features = NULL, ...) {
 
   evi <- data.table::rbindlist(evi_list)
 
-  dt <- as.data.table(arf::forge(arf_sampler, n_synth = n_MC_samples, evidence = evi,evidence_row_mode = "separate"))
+  dt <- as.data.table(arf::forge(arf_sampler,
+                                 n_synth = n_MC_samples,
+                                 evidence = evi,
+                                 evidence_row_mode = "separate",
+                                 parallel = parallel_gen))
 
   dt[, w := 1 / n_MC_samples]
   dt[, id := rep(rep(seq_len(n_explain),each = n_MC_samples), length(features))]
