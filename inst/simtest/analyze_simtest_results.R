@@ -9,7 +9,7 @@ result_folder <- "inst/simtest/results"
 
 files <- list.files(result_folder, full.names = TRUE, pattern = ".*\\.rds$")
 
-files <- files[grepl("NEW",files)]
+files <- files[grepl("YES",files)]
 
 sh_error_dt_list <- list()
 vS_error_dt_list <- list()
@@ -49,8 +49,8 @@ for(i in seq_along(files)){
     sh_error_dt[, rho := res$data_dist_param]
     vS_error_dt[, rho := res$data_dist_param]
 
-    sh_error_dt_list[[length(sh_error_dt_list)+1]] <- sh_error_dt
-    vS_error_dt_list[[length(vS_error_dt_list)+1]] <- vS_error_dt
+    sh_error_dt_list[[length(sh_error_dt_list)+1]] <- copy(sh_error_dt)
+    vS_error_dt_list[[length(vS_error_dt_list)+1]] <- copy(vS_error_dt)
 
     est_time_secs_list[[length(est_time_secs_list)+1]] <- data.table(estimator=est_name,
                                                                      model_name = res$model_name,

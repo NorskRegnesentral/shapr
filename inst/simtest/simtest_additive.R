@@ -272,7 +272,7 @@ for (distribution_param_idx in seq(1, length(distribution_params))) {
     predict_model <- NULL
     if(current_predictive_function_name=="gam") predict_model = mgcv::predict.bam
 
-    expl_true2 <- shapr::explain(
+    expl_true <- shapr::explain(
       model = model,
       x_explain = x_explain,
       x_train = x_train,
@@ -357,7 +357,7 @@ for (distribution_param_idx in seq(1, length(distribution_params))) {
 
       res_list$est_explainer <- expl_list
       # Saving results (overwriting with more approaches for every iteration in the approach loop)
-      saveRDS(res_list, file = paste0("inst/simtest/results/NEW_",current_save_name,".rds"))
+      saveRDS(res_list, file = paste0("inst/simtest/results/YES_",current_save_name,".rds"))
 
 
     }
