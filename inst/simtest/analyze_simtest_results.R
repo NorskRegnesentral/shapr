@@ -102,14 +102,14 @@ p1 <- ggplot(sh_error_dt_all[model_type=="gam"], aes(x=estimator, y=abs(error), 
   geom_boxplot(outliers=FALSE) +
   facet_grid(interaction~rho,labeller=label_both) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  coord_flip()+
+  coord_flip()+  scale_y_log10()+
   ggtitle("Absolute Shapley value errors for GAM models with varying interaction and feature correlation with Gaussian data distribution")
 
 p2 <- ggplot(sh_error_dt_all[model_type=="lm"], aes(x=estimator, y=abs(error), fill=estimator)) +
   geom_boxplot(outliers=FALSE) +
   facet_grid(interaction~rho,labeller=label_both) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  coord_flip()+
+  coord_flip()+  scale_y_log10()+
   ggtitle("Absolute Shapley value errors for LM models with varying interaction and feature correlation with Gaussian data distribution")
 
 
@@ -117,21 +117,21 @@ p3 <- ggplot(vS_error_dt_all[model_type=="gam"], aes(x=estimator, y=abs(error), 
   geom_boxplot(outliers=FALSE) +
   facet_grid(interaction~rho,labeller=label_both) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  coord_flip()+
+  coord_flip()+  scale_y_log10()+
   ggtitle("Absolute v(S) errors for GAM models with varying interaction and feature correlation with Gaussian data distribution")
 
 p4 <- ggplot(vS_error_dt_all[model_type=="lm"], aes(x=estimator, y=abs(error), fill=estimator)) +
   geom_boxplot(outliers=FALSE) +
   facet_grid(interaction~rho,labeller=label_both) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  coord_flip()+
+  coord_flip()+  scale_y_log10()+
   ggtitle("Absolute v(S) errors for LM models with varying interaction and feature correlation with Gaussian data distribution")
 
 
 p5 <- ggplot(est_time_secs_all, aes(x=estimator, y=time_secs, fill=estimator)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  coord_flip()+
+  coord_flip()+  scale_y_log10()+
   ggtitle("Timing across estimators for all models and data features correlation with Gaussian data distribution")
 
 
@@ -151,7 +151,7 @@ pp1 <- ggplot(sh_error_dt_all_arf[model_type=="gam"], aes(x=estimator, y=abs(err
   geom_boxplot(outliers=FALSE) +
   facet_grid(interaction~rho,labeller=label_both) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  coord_flip()+
+  coord_flip()+  scale_y_log10()+
   ggtitle("Absolute Shapley value errors for GAM models with varying interaction and feature correlation with Gaussian data distribution")
 
 pp2 <- ggplot(sh_error_dt_all_arf[model_type=="lm"], aes(x=estimator, y=abs(error), fill=estimator)) +
@@ -159,6 +159,7 @@ pp2 <- ggplot(sh_error_dt_all_arf[model_type=="lm"], aes(x=estimator, y=abs(erro
   facet_grid(interaction~rho,labeller=label_both) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   coord_flip()+
+  scale_y_log10()+
   ggtitle("Absolute Shapley value errors for LM models with varying interaction and feature correlation with Gaussian data distribution")
 
 pp3 <- ggplot(vS_error_dt_all_arf[model_type=="gam"], aes(x=estimator, y=abs(error), fill=estimator)) +
@@ -166,6 +167,7 @@ pp3 <- ggplot(vS_error_dt_all_arf[model_type=="gam"], aes(x=estimator, y=abs(err
   facet_grid(interaction~rho,labeller=label_both) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   coord_flip()+
+  scale_y_log10()+
   ggtitle("Absolute v(S) errors for GAM models with varying interaction and feature correlation with Gaussian data distribution")
 
 pp4 <- ggplot(vS_error_dt_all_arf[model_type=="lm"], aes(x=estimator, y=abs(error), fill=estimator)) +
@@ -173,13 +175,14 @@ pp4 <- ggplot(vS_error_dt_all_arf[model_type=="lm"], aes(x=estimator, y=abs(erro
   facet_grid(interaction~rho,labeller=label_both) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   coord_flip()+
+  scale_y_log10()+
   ggtitle("Absolute v(S) errors for LM models with varying interaction and feature correlation with Gaussian data distribution")
 
 
 pp5 <- ggplot(est_time_secs_all_arf, aes(x=estimator, y=time_secs, fill=estimator)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  coord_flip()+
+  coord_flip()+  scale_y_log10()+
   ggtitle("Timing across estimators for all models and data features correlation with Gaussian data distribution")
 
 ggsave("inst/simtest/results/plots/sh_error_gam_arf_ctree.pdf", pp1, width=16, height=10)
