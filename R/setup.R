@@ -608,8 +608,13 @@ check_and_set_parameters <- function(internal, type) {
     group <- internal$parameters$group
   }
 
-  # Check group
-  if (!is.null(group)) check_groups(feature_names, group)
+  # EXPERIMENTAL : Allow overlapping groups (simply by disabling the any group checking if allow_overlapping_groups = TRUE)
+  allow_overlapping_groups <- internal$parameters$experimental_args$allow_overlapping_groups
+
+  if(is.null(allow_overlapping_groups) || !allow_overlapping_groups){
+    # Check group
+    if (!is.null(group)) check_groups(feature_names, group)
+  }
 
   # Check approach
   # EXPERIMENTAL: Disable check_approach if coalition_approach_dt is available (we assume everything is in order then)

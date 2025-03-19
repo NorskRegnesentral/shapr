@@ -231,7 +231,51 @@ all.equal(test3_ctree$internal$output$dt_vS[id_coalition%in%coal_ctree],
 
 
 
+##### TEST 4 ####
+# Test overlapping groups
 
 
+group = list(A = c("Wind","Temp"), B = c("Month","Wind"), C = c("Solar.R","Month"))
+
+
+test4_reg <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "regression_separate",
+  group = group,
+  phi0 = p0, max_n_coalitions = 10,
+  experimental_args = list(allow_overlapping_groups = TRUE)
+)
+
+test4_reg$internal$objects$S
+
+test4_reg$internal$objects$X
+
+
+
+group = list(A = c("Wind","Month"), B = c("Month","Wind","Temp"), C = c("Solar.R"),C2="Solar.R")
+
+
+test4_ctree <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "ctree",
+  group = group,
+  phi0 = p0,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000,
+  experimental_args = list(allow_overlapping_groups = TRUE)
+)
+
+test4_ctree$shapley_values_est
+# Sanity check, C and C2 gets exactly the same shapley values.
+
+test4_ctree$internal$objects$S
+
+test4_ctree$internal$objects$X
+
+test4_ctree$internal$output$dt_vS
 
 

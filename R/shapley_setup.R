@@ -218,6 +218,9 @@ create_coalition_table <- function(m,
 
   dt[, features := lapply(coalitions, FUN = coal_feature_mapper, coal_feature_list = coal_feature_list)]
 
+  dt[,features:=lapply(features,unique)] # EXPERIMENTAL: In order to remove duplicates for overlapping groups
+
+
   # Adding approach to X (needed for the combined approaches)
   if (length(approach0) > 1) {
     dt[!(coalition_size %in% c(0, m)), approach := approach0[coalition_size]]
