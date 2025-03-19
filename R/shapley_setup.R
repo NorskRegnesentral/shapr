@@ -61,10 +61,6 @@ shapley_setup <- function(internal) {
     setorder(X,id_coalition)
     setkey(X,coalition_size)
 
-    # Updating approach to ensure we iterate over it as required
-    approach <- X[,unique(approach)]
-    internal$parameters$approach <- approach
-
   }
 
 
