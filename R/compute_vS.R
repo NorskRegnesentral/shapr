@@ -65,7 +65,16 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
 
 #' @keywords internal
 batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
-  regression <- internal$parameters$regression
+  # EXPERIMENTAL - making regression_separate work with combined approach
+  iter <- length(internal$iter_list)
+  approach0 <- internal$iter_list[[iter]]$X[,approach[S]]
+  approach <- approach0[!is.na(approach0)]
+  if (any(approach %in% "regression_separate")) {
+    regression <- TRUE
+  } else {
+    regression <- FALSE
+  }
+  #regression <- internal$parameters$regression # PREVIOUS
 
   # Check if we are to use regression or Monte Carlo integration to compute the contribution function values
   if (regression) {

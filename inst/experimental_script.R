@@ -122,7 +122,7 @@ group = list(A = c("Wind","Temp"), B = c("Month"), C = "Solar.R")
 
 
 
-test1_indep <- explain(
+test2_indep <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -131,7 +131,7 @@ test1_indep <- explain(
   phi0 = p0, max_n_coalitions = 10
 )
 
-test1_ctree <- explain(
+test2_ctree <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -143,7 +143,7 @@ test1_ctree <- explain(
   n_MC_samples = 1000
 )
 
-test1_mixed <- explain(
+test2_mixed <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -156,34 +156,82 @@ test1_mixed <- explain(
   experimental_args = list(coalition_approach_dt=coalition_approach_dt)
 )
 
-coal_indep <- test1_indep$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="independence",coalitions_str],id_coalition]
-coal_ctree <- test1_ctree$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="ctree",coalitions_str],id_coalition]
+coal_indep <- test2_indep$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="independence",coalitions_str],id_coalition]
+coal_ctree <- test2_ctree$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="ctree",coalitions_str],id_coalition]
 
 
-all.equal(test1_indep$internal$output$dt_vS[id_coalition%in%coal_indep],
-          test1_mixed$internal$output$dt_vS[id_coalition%in%coal_indep])
+all.equal(test2_indep$internal$output$dt_vS[id_coalition%in%coal_indep],
+          test2_mixed$internal$output$dt_vS[id_coalition%in%coal_indep])
 
 
-all.equal(test1_ctree$internal$output$dt_vS[id_coalition%in%coal_ctree],
-          test1_mixed$internal$output$dt_vS[id_coalition%in%coal_ctree])
-
-
-
-coalition_approach_dt
+all.equal(test2_ctree$internal$output$dt_vS[id_coalition%in%coal_ctree],
+          test2_mixed$internal$output$dt_vS[id_coalition%in%coal_ctree])
 
 
 
-test1_ctree <- explain(
+##### TEST 3 ####
+# Specify coalition_approach_dt with the approach to use for each specific coalition
+# BUT USING GROUPS, and with regression_separate as one of the approaches
+
+coalition_approach_dt <- rbind(
+  data.table(coalitions_str = c("1","3"),
+             approach_new = "ctree"),
+  data.table(coalitions_str = "2",
+             approach_new = "regression_separate")
+)
+
+group = list(A = c("Wind","Temp"), B = c("Month"), C = "Solar.R")
+
+
+
+test3_reg <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "regression_separate",
+  group = group,
+  phi0 = p0, max_n_coalitions = 10
+)
+
+test3_ctree <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
+  group = group,
   phi0 = p0,
-  seed = 1245,
-  max_n_coalitions = 16,
+  max_n_coalitions = 10,
   ctree.sample = FALSE,
   n_MC_samples = 1000
 )
+
+test3_mixed <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "independence", # Does not matter, but needs to be passed
+  group = group,
+  phi0 = p0,
+  max_n_coalitions = 10,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000,
+  experimental_args = list(coalition_approach_dt=coalition_approach_dt)
+)
+
+coal_reg <- test3_reg$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="regression_separate",coalitions_str],id_coalition]
+coal_ctree <- test3_ctree$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="ctree",coalitions_str],id_coalition]
+
+
+all.equal(test3_reg$internal$output$dt_vS[id_coalition%in%coal_indep],
+          test3_mixed$internal$output$dt_vS[id_coalition%in%coal_indep])
+
+
+all.equal(test3_ctree$internal$output$dt_vS[id_coalition%in%coal_ctree],
+          test3_mixed$internal$output$dt_vS[id_coalition%in%coal_ctree])
+
+
+
+
 
 
 

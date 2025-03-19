@@ -1433,8 +1433,6 @@ check_regression <- function(internal) {
     ))
   }
 
-  # Remove n_MC_samples if we are doing regression, as we are not doing MC sampling
-  internal$parameters$n_MC_samples <- NULL
 
   return(internal)
 }
