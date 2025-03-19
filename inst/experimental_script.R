@@ -40,8 +40,12 @@ explanation <- explain(
 ##### TEST 1 ####
 # Specify coalition_approach_dt with the approach to use for each specific coalition
 
-coalition_approach_dt <- data.table(coalitions_str = c("2","3","4","2 3","3 4","2 3 4"),
-                                    approach_new = "ctree")
+coalition_approach_dt <- rbind(
+  data.table(coalitions_str = c("2","3","4","2 3","3 4","2 3 4"),
+             approach_new = "ctree"),
+  data.table(coalitions_str = c("1","1 2","1 3","1 4","1 2 3","1 2 4","1 3 4"),
+             approach_new = "independence"))
+
 
 test1_indep <- explain(
   model = model,
@@ -66,17 +70,17 @@ test1_mixed <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-#  approach = "independence",
+  approach = "independence", # Does not matter
   phi0 = p0,
   max_n_coalitions = 10,
   ctree.sample = FALSE,
   n_MC_samples = 1000,
-  experimental_args = list(coalition_approach_dt=coalition_approach_dt),
-  approach = c("ctree",rep("independence",ncol(x_explain)-2))
+  experimental_args = list(coalition_approach_dt=coalition_approach_dt)
 )
 
-coal_indep <- test1_indep$internal$objects$X[!(coalitions_str%in%coalition_approach_dt$coalitions_str),id_coalition]
-coal_ctree <- test1_indep$internal$objects$X[(coalitions_str%in%coalition_approach_dt$coalitions_str),id_coalition]
+coal_indep <- test1_indep$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="independence",coalitions_str],id_coalition]
+coal_ctree <- test1_ctree$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="ctree",coalitions_str],id_coalition]
+
 
 all.equal(test1_indep$internal$output$dt_vS[id_coalition%in%coal_indep],
           test1_mixed$internal$output$dt_vS[id_coalition%in%coal_indep])
@@ -86,21 +90,83 @@ all.equal(test1_ctree$internal$output$dt_vS[id_coalition%in%coal_ctree],
           test1_mixed$internal$output$dt_vS[id_coalition%in%coal_ctree])
 
 #####
+#
+#
+#
+# merge(test1_indep$internal$output$dt_vS,
+#       test1_indep$internal$objects$X[,.(id_coalition,approach)],
+#       by="id_coalition")
+#
+# merge(test1_ctree$internal$output$dt_vS,
+#       test1_ctree$internal$objects$X[,.(id_coalition,approach)],
+#       by="id_coalition")
+#
+#
+# merge(test1_mixed$internal$output$dt_vS,
+#       test1_mixed$internal$objects$X[,.(id_coalition,approach)],
+#       by="id_coalition")
+
+
+##### TEST 2 ####
+# Specify coalition_approach_dt with the approach to use for each specific coalition
+# BUT USING GROUPS
+
+coalition_approach_dt <- rbind(
+  data.table(coalitions_str = c("1","3"),
+             approach_new = "ctree"),
+  data.table(coalitions_str = "2",
+             approach_new = "independence")
+)
+
+group = list(A = c("Wind","Temp"), B = c("Month"), C = "Solar.R")
 
 
 
-merge(test1_indep$internal$output$dt_vS,
-      test1_indep$internal$objects$X[,.(id_coalition,approach)],
-      by="id_coalition")
+test1_indep <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "independence",
+  group = group,
+  phi0 = p0, max_n_coalitions = 10
+)
 
-merge(test1_ctree$internal$output$dt_vS,
-      test1_ctree$internal$objects$X[,.(id_coalition,approach)],
-      by="id_coalition")
+test1_ctree <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "ctree",
+  group = group,
+  phi0 = p0,
+  max_n_coalitions = 10,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000
+)
+
+test1_mixed <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "independence", # Does not matter, but needs to be passed
+  group = group,
+  phi0 = p0,
+  max_n_coalitions = 10,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000,
+  experimental_args = list(coalition_approach_dt=coalition_approach_dt)
+)
+
+coal_indep <- test1_indep$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="independence",coalitions_str],id_coalition]
+coal_ctree <- test1_ctree$internal$objects$X[coalitions_str%in%coalition_approach_dt[approach_new=="ctree",coalitions_str],id_coalition]
 
 
-merge(test1_mixed$internal$output$dt_vS,
-      test1_mixed$internal$objects$X[,.(id_coalition,approach)],
-      by="id_coalition")
+all.equal(test1_indep$internal$output$dt_vS[id_coalition%in%coal_indep],
+          test1_mixed$internal$output$dt_vS[id_coalition%in%coal_indep])
+
+
+all.equal(test1_ctree$internal$output$dt_vS[id_coalition%in%coal_ctree],
+          test1_mixed$internal$output$dt_vS[id_coalition%in%coal_ctree])
+
 
 
 coalition_approach_dt
