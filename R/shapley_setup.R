@@ -521,11 +521,9 @@ create_S_batch <- function(internal, seed = NULL) {
 
   if (length(approach0) > 1) {
     if (type == "forecast") {
+      # TODO: Unsure if this is really needed
       X0[!(coalition_size == 0 | id_coalition %in% full_ids), approach := approach0[coalition_size]]
-    } else {
-      X0[!(coalition_size %in% c(0, n_shapley_values)), approach := approach0[coalition_size]]
     }
-
     # Finding the number of batches per approach
     batch_count_dt <- X0[!is.na(approach), list(
       n_batches_per_approach =
@@ -573,9 +571,8 @@ create_S_batch <- function(internal, seed = NULL) {
     }
   } else {
     if (type == "forecast") {
+      # TODO: Unsure if this is really needed
       X0[!(coalition_size == 0 | id_coalition %in% full_ids), approach := approach0]
-    } else {
-      X0[!(coalition_size %in% c(0, n_shapley_values)), approach := approach0]
     }
 
     # Spreading the batches
