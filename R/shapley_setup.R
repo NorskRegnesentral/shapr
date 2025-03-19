@@ -48,6 +48,24 @@ shapley_setup <- function(internal) {
 
   coalition_map <- X[, .(id_coalition, coalitions_str)]
 
+  # EXPERIMENTAL: Overwriting the set approach using the coalition_approach_dt
+  # which specifies the approach to use for each specific coalition
+  coalition_approach_dt <- internal$parameters$experimental_args$coalition_approach_dt
+  if(!is.null(coalition_approach_dt)){
+    X <- merge(X,coalition_approach_dt,by="coalitions_str",all.x=TRUE,all.y=FALSE)
+
+    X[!is.na(approach_new),approach:=approach_new]
+
+    X[,approach_new:=NULL]
+
+    setorder(X,id_coalition)
+    setkey(X,coalition_size)
+
+    # Updating approach to ensure we iterate over it as required
+    approach <- X[,unique(approach)]
+    internal$parameters$approach <- approach
+
+  }
 
 
   # Get weighted matrix ----------------
