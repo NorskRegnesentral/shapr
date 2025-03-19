@@ -74,6 +74,7 @@ setup <- function(x_train,
   }
 
 
+
   internal$parameters <- get_parameters(
     approach = approach,
     phi0 = phi0,
@@ -327,6 +328,12 @@ get_parameters <- function(approach,
 
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
+
+  # EXPERIMENTAL: Overwriting the passed approach using the coalition_approach_dt when it is passed to explain()
+  coalition_approach_dt <- parameters$experimental_args$coalition_approach_dt
+  if(!is.null(coalition_approach_dt)){
+    parameters$approach <- coalition_approach_dt[,unique(approach_new)]
+  }
 
   # Set boolean to represent if a regression approach is used (any in case of several approaches)
   parameters$regression <- any(grepl("regression", parameters$approach))
@@ -605,7 +612,11 @@ check_and_set_parameters <- function(internal, type) {
   if (!is.null(group)) check_groups(feature_names, group)
 
   # Check approach
-  check_approach(internal)
+  # EXPERIMENTAL: Disable check_approach if coalition_approach_dt is available (we assume everything is in order then)
+  coalition_approach_dt <- internal$parameters$experimental_args$coalition_approach_dt
+  if(is.null(coalition_approach_dt)){
+    check_approach(internal)
+  }
 
   # Check the arguments related to asymmetric and causal Shapley
   # Check the causal_ordering, which must happen before checking the causal sampling
