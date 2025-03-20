@@ -228,41 +228,67 @@ create_marginal_data_cat <- function(n_MC_samples,
 #' @param sort_features_in_coalitions Boolean. If `TRUE`, then the feature indices in the
 #' coalitions are sorted in increasing order. If `FALSE`, then the function maintains the
 #' order of features within each group given in `causal_ordering`.
+#' @param free_causal_values Vector of integers containing the indices of the features that are not
+#' in the causal ordering. These features are free to be in any coalition.
 #'
 #' @return List of vectors containing all coalitions that respects the causal ordering.
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-get_valid_causal_coalitions <- function(causal_ordering, sort_features_in_coalitions = TRUE) {
+get_valid_causal_coalitions <- function(causal_ordering, free_causal_values = NULL, sort_features_in_coalitions = TRUE) {
   # Create a list to store the possible coalitions and start with the empty coalition
   coalitions <- list(numeric(0))
 
-  # Iterate over the remaining partial causal orderings
-  for (i in seq(1, length(causal_ordering))) {
-    # Get the number of features in the ith component of the (partial) causal ordering
+  # Build the causal coalitions from the causal_ordering
+  for (i in seq_along(causal_ordering)) {
     ith_order_length <- length(causal_ordering[[i]])
 
-    # Create a list of vectors containing all possible feature coalitions except the empty one (with temp indices)
+    # Get all non-empty subsets (using indices) of the current causal component
     ith_order_coalitions <-
       unlist(lapply(seq(ith_order_length), utils::combn, x = ith_order_length, simplify = FALSE), recursive = FALSE)
 
-    # Get the ancestors of the ith component of the (partial) causal ordering
+    # Ancestors are the coalition from the previous components
     ancestors <- coalitions[[length(coalitions)]]
 
-    # Update the indices by adding the number of ancestors and concatenate the ancestors
-    coalitions <-
-      c(coalitions, sapply(ith_order_coalitions, function(x) c(ancestors, x + length(ancestors)), simplify = FALSE))
+    # Append each combination (adjusting indices) to the current ancestors
+    coalitions <- c(coalitions, lapply(ith_order_coalitions, function(x) c(ancestors, x + length(ancestors))))
   }
 
-  # Sort the causal components such that the singletons are in the right order
-  if (sort_features_in_coalitions) causal_ordering <- sapply(causal_ordering, sort)
+  # If sorting is requested, sort each component in the causal_ordering
+  if (sort_features_in_coalitions) causal_ordering <- lapply(causal_ordering, sort)
 
-  # Convert the temporary indices to the correct feature indices
-  coalitions <- sapply(coalitions, function(x) unlist(causal_ordering)[x])
+  # Map the temporary indices to the actual feature indices from the causal ordering
+  causal_features <- unlist(causal_ordering)
+  coalitions <- lapply(coalitions, function(x) causal_features[x])
 
-  # Sort the coalitions
-  if (sort_features_in_coalitions) coalitions <- sapply(coalitions, sort)
+  # Optionally sort the coalition’s features
+  if (sort_features_in_coalitions) coalitions <- lapply(coalitions, sort)
+
+  # If free features are provided, combine them with each causal coalition.
+  # Every subset of free_causal_values is allowed.
+  if (!is.null(free_causal_values)) {
+    free_power_set <- generate_power_set(free_causal_values)
+
+    # For each coalition from the causal ordering, add every possible subset of free features
+    coalitions <- unlist(lapply(coalitions, function(causal_coalition) {
+      lapply(free_power_set, function(free_coalition) sort(c(causal_coalition, free_coalition)))
+    }), recursive = FALSE)
+  }
 
   return(coalitions)
+}
+
+# Helper function to generate the power set of a given vector.
+# It returns a list of all subsets (including the empty set).
+generate_power_set <- function(vec) {
+  n <- length(vec)
+  ps <- list(numeric(0))
+  if(n == 0) return(ps)
+  indices <- seq_len(n)
+  for (k in 1:n) {
+    comb_indices <- combn(indices, k, simplify = FALSE)
+    ps <- c(ps, lapply(comb_indices, function(idx) vec[idx]))
+  }
+  return(ps)
 }
 
 #' Get the number of coalitions that respects the causal ordering
@@ -289,8 +315,10 @@ get_valid_causal_coalitions <- function(causal_ordering, sort_features_in_coalit
 #' @return Integer. The (maximum) number of coalitions that respects the causal ordering.
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-get_max_n_coalitions_causal <- function(causal_ordering) {
-  return(sum(2^sapply(causal_ordering, length)) - length(causal_ordering) + 1)
+get_max_n_coalitions_causal <- function(causal_ordering,free_causal_values) {
+  org <- sum(2^sapply(causal_ordering, length)) - length(causal_ordering) + 1
+  adj <- org*(2^length(free_causal_values))
+  return(adj)
 }
 
 #' Get the steps for generating MC samples for coalitions following a causal ordering

@@ -280,4 +280,131 @@ test4_ctree$internal$output$dt_vS
 
 
 
-1+1
+##### TEST 5 ####
+# Non-complete causal ordering
+
+# First an actual complete causal ordering
+
+causal_ordering = list(c("Month"),c("Wind","Temp"), "Solar.R")
+
+
+test5_ctree <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "ctree",
+  causal_ordering = causal_ordering,
+  asymmetric = TRUE,
+  confounding = NULL,
+  phi0 = p0,
+  max_n_coalitions = 10,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000
+)
+
+
+test5_gaussian <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  causal_ordering = causal_ordering,
+  asymmetric = TRUE,
+  confounding = NULL,
+  phi0 = p0,
+  max_n_coalitions = 10,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000
+)
+
+test5_gaussian$internal$objects$dt_valid_causal_coalitions
+
+causal_ordering2 = list(c("Wind","Temp"), "Solar.R")
+
+test5_gaussian2 <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  causal_ordering = causal_ordering2,
+  asymmetric = TRUE,
+  confounding = NULL,
+  phi0 = p0,
+  max_n_coalitions = 1000,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000
+)
+
+test5_gaussian2$internal$objects$X
+test5_gaussian2$internal$objects$S
+
+#### Groups
+
+causal_ordering3 = list("A", "B")
+
+group <- list(A=c("Wind","Temp"), B=c("Solar.R"),C=c("Month"))
+
+test5_gaussian3 <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  causal_ordering = causal_ordering3,
+  group = group,
+  asymmetric = TRUE,
+  confounding = NULL,
+  phi0 = p0,
+  max_n_coalitions = 1000,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000
+)
+
+test5_gaussian3$internal$objects$S
+test5_gaussian3$internal$objects$X
+
+causal_ordering2
+
+# Not working for some reason
+test5_ctree3 <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "ctree",
+  causal_ordering = causal_ordering2,
+  asymmetric = TRUE,
+  confounding = NULL,
+  phi0 = p0,
+  max_n_coalitions = 1000,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000
+)
+
+
+test5_ctree_none <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "ctree",
+  phi0 = p0,
+  max_n_coalitions = 1000,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000
+)
+
+
+
+
+
+
+shapr:::get_valid_causal_coalitions(causal_ordering = causal_ordering,sort_features_in_coalitions = TRUE)
+
+# 3 -> 2, but 1 and 4 can be anywhere
+
+m <- 4
+causal_ordering <- list(3, 2)
+get_valid_causal_coalitions(causal_ordering = causal_ordering,TRUE,c(1,4))
+
+
+
+S <- shapr:::coalition_matrix_cpp(yes,m=m)
+

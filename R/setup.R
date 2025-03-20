@@ -668,6 +668,7 @@ check_and_set_causal_ordering <- function(internal) {
   feature_names <- internal$parameters$feature_names
   group_names <- internal$parameters$group_names
 
+
   # Get the labels of the features or groups, and the number of them
   labels_now <- if (is_groupwise) group_names else feature_names
 
@@ -688,12 +689,14 @@ check_and_set_causal_ordering <- function(internal) {
   # Ensure that causal_ordering_names represents the causal ordering using the feature name representation
   causal_ordering_names <- relist(labels_now[unlist(causal_ordering)], causal_ordering)
 
-  # Check that the we have n_features elements and that they are 1 through n_features (i.e., no duplicates).
+  # Get the free features and check that the there are no repeitions in the causal_ordering
   causal_ordering_vec_sort <- sort(unlist(causal_ordering))
-  if (length(causal_ordering_vec_sort) != n_shapley_values || any(causal_ordering_vec_sort != seq(n_shapley_values))) {
+  free_causal_values <- seq(n_shapley_values)[!(seq(n_shapley_values) %in% causal_ordering_vec_sort)]
+
+  if (any(duplicated(causal_ordering_vec_sort))) {
     stop(paste0(
-      "`causal_ordering` is incomplete/incorrect. It must contain all ",
-      feat_group_txt, " names or indices exactly once.\n"
+      "`causal_ordering` contains duplicates. It must contain ",
+      feat_group_txt, " names or indices no more than once.\n"
     ))
   }
 
@@ -711,6 +714,8 @@ check_and_set_causal_ordering <- function(internal) {
   internal$parameters$causal_ordering_names <- causal_ordering_names
   internal$parameters$causal_ordering_names_string <-
     paste0("{", paste(sapply(causal_ordering_names, paste, collapse = ", "), collapse = "}, {"), "}")
+
+  internal$parameters$free_causal_values <- free_causal_values
 
   return(internal)
 }
@@ -780,13 +785,17 @@ check_and_set_asymmetric <- function(internal) {
   causal_ordering <- internal$parameters$causal_ordering
   max_n_coalitions <- internal$parameters$max_n_coalitions
 
+  n_shapley_values <- internal$parameters$n_shapley_values
+
+  free_causal_values <- internal$parameters$free_causal_values
+
   # Get the number of coalitions that respects the (partial) causal ordering
-  internal$parameters$max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
+  internal$parameters$max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering, free_causal_values)
 
   # Get the coalitions that respects the (partial) causal ordering
   internal$objects$dt_valid_causal_coalitions <- exact_coalition_table(
-    m = internal$parameters$n_shapley_values,
-    dt_valid_causal_coalitions = data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering))
+    m = n_shapley_values,
+    dt_valid_causal_coalitions = data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering,free_causal_values = free_causal_values))
   )
 
   # Normalize the weights. Note that weight of a coalition size is even spread out among the valid coalitions
