@@ -285,7 +285,7 @@ test4_ctree$internal$output$dt_vS
 
 # First an actual complete causal ordering
 
-causal_ordering = list(c("Month"),c("Wind","Temp"), "Solar.R")
+causal_ordering = list(4,c(2,3), 1) # Equivalent to list(c("Month"),c("Wind","Temp"), "Solar.R")
 
 
 test5_ctree <- explain(
@@ -295,9 +295,8 @@ test5_ctree <- explain(
   approach = "ctree",
   causal_ordering = causal_ordering,
   asymmetric = TRUE,
-  confounding = NULL,
   phi0 = p0,
-  max_n_coalitions = 10,
+  max_n_coalitions = 1000,
   ctree.sample = FALSE,
   n_MC_samples = 1000
 )
@@ -310,16 +309,17 @@ test5_gaussian <- explain(
   approach = "gaussian",
   causal_ordering = causal_ordering,
   asymmetric = TRUE,
-  confounding = NULL,
   phi0 = p0,
-  max_n_coalitions = 10,
+  max_n_coalitions = 1000,
   ctree.sample = FALSE,
   n_MC_samples = 1000
 )
 
-test5_gaussian$internal$objects$dt_valid_causal_coalitions
+test5_gaussian$internal$objects$X
 
-causal_ordering2 = list(c("Wind","Temp"), "Solar.R")
+
+# Now an incomplete-ordering
+causal_ordering2 = list(4,c(2,3)) # 1 is free
 
 test5_gaussian2 <- explain(
   model = model,
@@ -328,7 +328,6 @@ test5_gaussian2 <- explain(
   approach = "gaussian",
   causal_ordering = causal_ordering2,
   asymmetric = TRUE,
-  confounding = NULL,
   phi0 = p0,
   max_n_coalitions = 1000,
   ctree.sample = FALSE,
@@ -338,11 +337,8 @@ test5_gaussian2 <- explain(
 test5_gaussian2$internal$objects$X
 test5_gaussian2$internal$objects$S
 
-#### Groups
-
-causal_ordering3 = list("A", "B")
-
-group <- list(A=c("Wind","Temp"), B=c("Solar.R"),C=c("Month"))
+# Now an incomplete-ordering
+causal_ordering3 = list(c(2,3),1) # 4 is free
 
 test5_gaussian3 <- explain(
   model = model,
@@ -350,61 +346,72 @@ test5_gaussian3 <- explain(
   x_train = x_train,
   approach = "gaussian",
   causal_ordering = causal_ordering3,
+  asymmetric = TRUE,
+  phi0 = p0,
+  max_n_coalitions = 1000,
+  ctree.sample = FALSE,
+  n_MC_samples = 1000
+)
+
+test5_gaussian3$internal$objects$X
+test5_gaussian3$internal$objects$S
+
+
+#### Incomplete causal ordering with groups ####
+
+causal_ordering3 = list(1,2)#list("A", "B") # C is free
+
+group <- list(A=c("Wind","Temp"), B=c("Solar.R"),C=c("Month"))
+
+test6_gaussian <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  causal_ordering = causal_ordering3,
   group = group,
   asymmetric = TRUE,
-  confounding = NULL,
   phi0 = p0,
   max_n_coalitions = 1000,
   ctree.sample = FALSE,
   n_MC_samples = 1000
 )
 
-test5_gaussian3$internal$objects$S
-test5_gaussian3$internal$objects$X
-
-causal_ordering2
+test6_gaussian$internal$objects$S
+test6_gaussian$internal$objects$X
 
 # Not working for some reason
-test5_ctree3 <- explain(
+test6_ctree <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  causal_ordering = causal_ordering2,
+  causal_ordering = causal_ordering3,
+  group = group,
   asymmetric = TRUE,
-  confounding = NULL,
   phi0 = p0,
   max_n_coalitions = 1000,
   ctree.sample = FALSE,
   n_MC_samples = 1000
 )
 
+test6_ctree$internal$objects$S
+test6_ctree$internal$objects$X
 
-test5_ctree_none <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "ctree",
-  phi0 = p0,
-  max_n_coalitions = 1000,
-  ctree.sample = FALSE,
-  n_MC_samples = 1000
-)
+test6_ctree$shapley_values_est
+test6_gaussian$shapley_values_est
 
 
+### Looking carefully into the valid coalitions for random case
 
+m <- 6
+causal_ordering <- list(6,c(3,2),1) # 4 and 5 are free
+free_causal_values <- seq_len(m)[!(seq_len(m) %in% unlist(causal_ordering))]
 
+valid_coal_list <- shapr:::get_valid_causal_coalitions(causal_ordering = causal_ordering,free_causal_values = free_causal_values)
 
+# Getting the binary matrix for these coalitions
 
-shapr:::get_valid_causal_coalitions(causal_ordering = causal_ordering,sort_features_in_coalitions = TRUE)
+(S_valid <- shapr:::coalition_matrix_cpp(valid_coal_list,m=m))
 
-# 3 -> 2, but 1 and 4 can be anywhere
-
-m <- 4
-causal_ordering <- list(3, 2)
-get_valid_causal_coalitions(causal_ordering = causal_ordering,TRUE,c(1,4))
-
-
-
-S <- shapr:::coalition_matrix_cpp(yes,m=m)
-
+# Looks good!
