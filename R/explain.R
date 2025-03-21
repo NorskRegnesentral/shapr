@@ -248,7 +248,7 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'
 #' # Load example data
 #' data("airquality")

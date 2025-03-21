@@ -2511,7 +2511,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' `plot_type` parameter.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(xgboost)
 #' library(data.table)
 #' library(shapr)
@@ -2747,10 +2747,8 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #' @inherit vaeac_train_model references
 #'
 #' @examples
-#' \dontrun{
-#' library(xgboost)
-#' library(data.table)
-#' library(shapr)
+#' \donttest{
+#' if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
 #'
 #' data("airquality")
 #' data <- data.table::as.data.table(airquality)
@@ -2765,14 +2763,14 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #' x_explain <- data[ind_x_explain, ..x_var]
 #'
 #' # Fitting a basic xgboost model to the training data
-#' model <- xgboost(
+#' model <- xgbost::xgboost(
 #'   data = as.matrix(x_train),
 #'   label = y_train,
 #'   nround = 100,
 #'   verbose = FALSE
 #' )
 #'
-#' explanation <- explain(
+#' explanation <- shapr::explain(
 #'   model = model,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
@@ -2784,7 +2782,7 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #' )
 #'
 #' # Plot the results
-#' figure <- plot_vaeac_imputed_ggpairs(
+#' figure <- shapr::plot_vaeac_imputed_ggpairs(
 #'   explanation = explanation,
 #'   which_vaeac_model = "best",
 #'   x_true = x_train,
@@ -2796,6 +2794,7 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #' figure +
 #'   ggplot2::scale_color_manual(values = c("#E69F00", "#999999")) +
 #'   ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
+#' }
 #' }
 plot_vaeac_imputed_ggpairs <- function(
     explanation,

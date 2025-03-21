@@ -78,7 +78,7 @@
 #'
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
 #' x_var <- c("Solar.R", "Wind", "Temp", "Month")
@@ -891,12 +891,8 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #' @export
 #' @examples
-#' \dontrun{
-#' # Load necessary libraries
-#' library(xgboost)
-#' library(data.table)
-#' library(shapr)
-#' library(ggplot2)
+#' \donttest{
+#' if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
 #'
 #' # Get the data
 #' data("airquality")
@@ -983,59 +979,58 @@ make_waterfall_plot <- function(dt_plot,
 #'   "Combined" = explanation_combined
 #' )
 #'
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   # Create the default MSEv plot where we average over both the coalitions and observations
-#'   # with approximate 95% confidence intervals
-#'   plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95, plot_type = "overall")
+#' # Create the default MSEv plot where we average over both the coalitions and observations
+#' # with approximate 95% confidence intervals
+#' plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95, plot_type = "overall")
 #'
-#'   # Can also create plots of the MSEv criterion averaged only over the coalitions or observations.
-#'   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
-#'     CI_level = 0.95,
-#'     plot_type = c("overall", "comb", "explicand")
+#' # Can also create plots of the MSEv criterion averaged only over the coalitions or observations.
+#' MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
+#'   CI_level = 0.95,
+#'   plot_type = c("overall", "comb", "explicand")
+#' )
+#' MSEv_figures$MSEv_bar
+#' MSEv_figures$MSEv_coalition_bar
+#' MSEv_figures$MSEv_explicand_bar
+#'
+#' # When there are many coalitions or observations, then it can be easier to look at line plots
+#' MSEv_figures$MSEv_coalition_line_point
+#' MSEv_figures$MSEv_explicand_line_point
+#'
+#' # We can specify which observations or coalitions to plot
+#' plot_MSEv_eval_crit(explanation_list_named,
+#'   plot_type = "explicand",
+#'   index_x_explain = c(1, 3:4, 6),
+#'   CI_level = 0.95
+#' )$MSEv_explicand_bar
+#' plot_MSEv_eval_crit(explanation_list_named,
+#'   plot_type = "comb",
+#'   id_coalition = c(3, 4, 9, 13:15),
+#'   CI_level = 0.95
+#' )$MSEv_coalition_bar
+#'
+#' # We can alter the figures if other palette schemes or design is wanted
+#' bar_text_n_decimals <- 1
+#' MSEv_figures$MSEv_bar +
+#'   ggplot2::scale_x_discrete(limits = rev(levels(MSEv_figures$MSEv_bar$data$Method))) +
+#'   ggplot2::coord_flip() +
+#'   ggplot2::scale_fill_discrete() + #' Default ggplot2 palette
+#'   ggplot2::theme_minimal() + #' This must be set before the other theme call
+#'   ggplot2::theme(
+#'     plot.title = ggplot2::element_text(size = 10),
+#'     legend.position = "bottom"
+#'   ) +
+#'   ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
+#'   ggplot2::geom_text(
+#'     ggplot2::aes(label = sprintf(
+#'       paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+#'       round(MSEv, bar_text_n_decimals)
+#'     )),
+#'     vjust = -1.1, # This value must be altered based on the plot dimension
+#'     hjust = 1.1, # This value must be altered based on the plot dimension
+#'     color = "black",
+#'     position = ggplot2::position_dodge(0.9),
+#'     size = 5
 #'   )
-#'   MSEv_figures$MSEv_bar
-#'   MSEv_figures$MSEv_coalition_bar
-#'   MSEv_figures$MSEv_explicand_bar
-#'
-#'   # When there are many coalitions or observations, then it can be easier to look at line plots
-#'   MSEv_figures$MSEv_coalition_line_point
-#'   MSEv_figures$MSEv_explicand_line_point
-#'
-#'   # We can specify which observations or coalitions to plot
-#'   plot_MSEv_eval_crit(explanation_list_named,
-#'     plot_type = "explicand",
-#'     index_x_explain = c(1, 3:4, 6),
-#'     CI_level = 0.95
-#'   )$MSEv_explicand_bar
-#'   plot_MSEv_eval_crit(explanation_list_named,
-#'     plot_type = "comb",
-#'     id_coalition = c(3, 4, 9, 13:15),
-#'     CI_level = 0.95
-#'   )$MSEv_coalition_bar
-#'
-#'   # We can alter the figures if other palette schemes or design is wanted
-#'   bar_text_n_decimals <- 1
-#'   MSEv_figures$MSEv_bar +
-#'     ggplot2::scale_x_discrete(limits = rev(levels(MSEv_figures$MSEv_bar$data$Method))) +
-#'     ggplot2::coord_flip() +
-#'     ggplot2::scale_fill_discrete() + #' Default ggplot2 palette
-#'     ggplot2::theme_minimal() + #' This must be set before the other theme call
-#'     ggplot2::theme(
-#'       plot.title = ggplot2::element_text(size = 10),
-#'       legend.position = "bottom"
-#'     ) +
-#'     ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
-#'     ggplot2::geom_text(
-#'       ggplot2::aes(label = sprintf(
-#'         paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-#'         round(MSEv, bar_text_n_decimals)
-#'       )),
-#'       vjust = -1.1, # This value must be altered based on the plot dimension
-#'       hjust = 1.1, # This value must be altered based on the plot dimension
-#'       color = "black",
-#'       position = ggplot2::position_dodge(0.9),
-#'       size = 5
-#'     )
 #' }
 #' }
 #'
@@ -1451,9 +1446,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'
 #' @examples
 #' \dontrun{
-#' # Load necessary libraries
-#' library(xgboost)
-#' library(data.table)
+#' if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
 #'
 #' # Get the data
 #' data("airquality")
@@ -1540,7 +1533,6 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   "Combined" = explanation_combined
 #' )
 #'
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   # The function uses the provided names.
 #'   plot_SV_several_approaches(explanation_list)
 #'
