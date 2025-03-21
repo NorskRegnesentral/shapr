@@ -991,16 +991,6 @@ vaeac_normalize_data <- function(data_torch, one_hot_max_sizes, norm_mean = NULL
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-#'
-#' @examples
-#' \dontrun{
-#' data <- data.table(matrix(rgamma(500 * 3, 2), ncol = 3))
-#' preprocessed <- vaeac_preprocess_data(data)
-#' preprocessed$data_preprocessed
-#' postprocessed <- vaeac_postprocess_data(preprocessed$data_preprocessed, preprocessed)
-#' postprocessed
-#' all.equal(data, postprocessed)
-#' }
 vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
   # Go from vaeac type data back to data.table used in shapr
   if (!"data.table" %in% class(data)) data <- as.data.table(data)
@@ -1052,35 +1042,6 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-#'
-#' @examples
-#' \dontrun{
-#' p <- 5
-#' N <- 14
-#' batch_size <- 10
-#' one_hot_max_sizes <- rep(1, p)
-#' vaeac_ds <- vaeac_dataset(
-#'   torch_tensor(matrix(rnorm(p * N), ncol = p),
-#'     dtype = torch_float()
-#'   ),
-#'   one_hot_max_sizes
-#' )
-#' vaeac_ds
-#'
-#' vaeac_dl <- torch::dataloader(
-#'   vaeac_ds,
-#'   batch_size = batch_size,
-#'   shuffle = TRUE,
-#'   drop_last = FALSE
-#' )
-#' vaeac_dl$.length()
-#' vaeac_dl$.iter()
-#'
-#' vaeac_iterator <- vaeac_dl$.iter()
-#' vaeac_iterator$.next() # batch1
-#' vaeac_iterator$.next() # batch2
-#' vaeac_iterator$.next() # Empty
-#' }
 vaeac_dataset <- function(X, one_hot_max_sizes) {
   vaeac_dataset_tmp <- torch::dataset(
     name = "vaeac_dataset", # field name The name of the `torch::dataset`.
@@ -1117,33 +1078,6 @@ vaeac_dataset <- function(X, one_hot_max_sizes) {
 #' @param shuffle Boolean. If `TRUE`, then the data is shuffled. If `FALSE`,
 #' then the data is returned in chronological order.
 #'
-#' @examples
-#' \dontrun{
-#' # Example how to use it combined with mask generators with paired sampling activated
-#' batch_size <- 4
-#' if (batch_size %% 2 == 1) batch_size <- batch_size - 1 # Make sure that batch size is even
-#' n_features <- 3
-#' n_observations <- 5
-#' shuffle <- TRUE
-#' data <- torch_tensor(matrix(rep(seq(n_observations), each = n_features),
-#'   ncol = n_features, byrow = TRUE
-#' ))
-#' data
-#' dataset <- vaeac_dataset(data, rep(1, n_features))
-#' dataload <- torch::dataloader(dataset,
-#'   batch_size = batch_size,
-#'   sampler = paired_sampler(dataset,
-#'     shuffle = shuffle
-#'   )
-#' )
-#' dataload$.length() # Number of batches, same as ceiling((2 * n_observations) / batch_size)
-#' mask_generator <- mcar_mask_generator(paired = TRUE)
-#' coro::loop(for (batch in dataload) {
-#'   mask <- mask_generator(batch)
-#'   obs <- mask * batch
-#'   print(torch::torch_cat(c(batch, mask, obs), -1))
-#' })
-#' }
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 paired_sampler <- function(vaeac_dataset_object, shuffle = FALSE) {
@@ -1189,27 +1123,6 @@ paired_sampler <- function(vaeac_dataset_object, shuffle = FALSE) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 #'
-#' @examples
-#' \dontrun{
-#' memory_layer_env <- new.env()
-#' net1 <- torch::nn_sequential(
-#'   memory_layer("#1", shared_env = memory_layer_env),
-#'   memory_layer("#0.1", shared_env = memory_layer_env),
-#'   torch::nn_linear(512, 256),
-#'   torch::nn_leaky_relu(), # Here add cannot be TRUE because the dimensions mismatch
-#'   memory_layer("#0.1", shared_env = memory_layer_env, output = TRUE, add = FALSE),
-#'   torch::nn_linear(768, 256),
-#'   # the dimension after the concatenation with skip-connection is 512 + 256 = 768
-#' )
-#' net2 <- torch::nn_equential(
-#'   torch::nn_linear(512, 512),
-#'   memory_layer("#1", shared_env = memory_layer_env, output = TRUE, add = TRUE),
-#'   ...
-#' )
-#' # Here a and c must be of correct dimensions, e.g., a = torch::torch_ones(1,512).
-#' b <- net1(a)
-#' d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
-#' }
 memory_layer <- function(id, shared_env, output = FALSE, add = FALSE, verbose = FALSE) {
   memory_layer_tmp <- torch::nn_module(
     classname = "memory_layer", # field classname Name of the of torch::nn_module object.
@@ -1850,13 +1763,6 @@ categorical_to_one_hot_layer <- function(one_hot_max_sizes, add_nans_map_for_col
 #' - Input: \eqn{(N, p)} where N is the number of observations in the `batch` and \eqn{p} is the number of features.
 #' - Output: \eqn{(N, p)}, same shape as the input
 #'
-#' @examples
-#' \dontrun{
-#' mask_gen <- mcar_mask_generator(masking_ratio = 0.5, paired_sampling = FALSE)
-#' batch <- torch::torch_randn(c(5, 3))
-#' mask_gen(batch)
-#' }
-#'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 mcar_mask_generator <- function(masking_ratio = 0.5, paired_sampling = FALSE) {
@@ -1962,16 +1868,6 @@ mcar_mask_generator <- function(masking_ratio = 0.5, paired_sampling = FALSE) {
 #' the first half and second half of the rows are duplicates of each other. That is,
 #' `batch = [row1, row1, row2, row2, row3, row3, ...]`.
 #'
-#' @examples
-#' \dontrun{
-#' probs <- c(1, 8, 6, 3, 2)
-#' mask_gen <- specified_prob_mask_generator(probs)
-#' masks <- mask_gen(torch::torch_randn(c(10000, length(probs)) - 1))
-#' empirical_prob <- table(as.array(masks$sum(2)))
-#' empirical_prob / sum(empirical_prob)
-#' probs / sum(probs)
-#' }
-#'
 #' @keywords internal
 specified_prob_mask_generator <- function(masking_probs, paired_sampling = FALSE) {
   specified_prob_mask_gen_tmp <- torch::nn_module(
@@ -2064,19 +1960,6 @@ specified_prob_mask_generator <- function(masking_probs, paired_sampling = FALSE
 #' If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
 #' the first half and second half of the rows are duplicates of each other. That is,
 #' `batch = [row1, row1, row2, row2, row3, row3, ...]`.
-#'
-#' @examples
-#' \dontrun{
-#' masks <- torch_tensor(matrix(c(0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),
-#'   nrow = 3, ncol = 4, byrow = TRUE
-#' ))
-#' masks_probs <- c(3, 1, 6)
-#' mask_gen <- specified_masks_mask_generator(masks = masks, masks_probs = masks_probs)
-#' empirical_prob <-
-#'   table(as.array(mask_gen(torch::torch_randn(c(10000, ncol(masks))))$sum(-1)))
-#' empirical_prob / sum(empirical_prob)
-#' masks_probs / sum(masks_probs)
-#' }
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
