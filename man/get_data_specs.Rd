@@ -27,20 +27,6 @@ This function is used to extract the feature information to be checked against t
 information extracted from the model and other data sets.
 The function is only called internally
 }
-\examples{
-# Load example data
-\dontrun{
-data("airquality")
-airquality <- airquality[complete.cases(airquality), ]
-# Split data into test- and training data
-x_train <- head(airquality, -3)
-x_explain <- tail(airquality, 3)
-# Split data into test- and training data
-x_train <- data.table::as.data.table(head(airquality))
-x_train[, Temp := as.factor(Temp)]
-shapr:::get_data_specs(x_train)
-}
-}
 \author{
 Martin Jullum
 }

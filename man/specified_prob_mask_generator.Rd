@@ -31,15 +31,4 @@ Note that mcar_mask_generator with p = 0.5 is the same as using \code{\link[=spe
 increasing the probability of having a masks with many masked features improved vaeac's performance by focusing more
 on these situations during training.
 }
-\examples{
-\dontrun{
-probs <- c(1, 8, 6, 3, 2)
-mask_gen <- specified_prob_mask_generator(probs)
-masks <- mask_gen(torch::torch_randn(c(10000, length(probs)) - 1))
-empirical_prob <- table(as.array(masks$sum(2)))
-empirical_prob / sum(empirical_prob)
-probs / sum(probs)
-}
-
-}
 \keyword{internal}

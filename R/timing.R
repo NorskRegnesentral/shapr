@@ -2,6 +2,8 @@
 #'
 #' @inheritParams default_doc_export
 #'
+#' @return List of reformatted timing information
+#'
 #' @export
 #' @keywords internal
 compute_time <- function(internal) {

@@ -50,7 +50,7 @@ See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al.
 \href{https://borea17.github.io/paper_summaries/iwae/}{blog post} for a summary of the VLB and IWAE.
 }
 \examples{
-\dontrun{
+\donttest{
 library(xgboost)
 library(data.table)
 library(shapr)

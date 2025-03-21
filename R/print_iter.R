@@ -2,6 +2,8 @@
 #'
 #' @inheritParams default_doc_export
 #'
+#' @return No return value (but prints iterative information)
+#'
 #' @export
 #' @keywords internal
 print_iter <- function(internal) {

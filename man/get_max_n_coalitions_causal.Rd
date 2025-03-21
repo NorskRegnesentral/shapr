@@ -36,16 +36,6 @@ and we subtract one as we do not want to include the situation where no features
 the \eqn{i}th partial causal component are present. In the end, we add 1 for the
 empty coalition.
 }
-\examples{
-\dontrun{
-get_max_n_coalitions_causal(list(1:10)) # 2^10 = 1024 (no causal order)
-get_max_n_coalitions_causal(list(1:3, 4:7, 8:10)) # 30
-get_max_n_coalitions_causal(list(1:3, 4:5, 6:7, 8, 9:10)) # 18
-get_max_n_coalitions_causal(list(1:3, c(4, 8), c(5, 7), 6, 9:10)) # 18
-get_max_n_coalitions_causal(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) # 11
-}
-
-}
 \author{
 Lars Henry Berge Olsen
 }

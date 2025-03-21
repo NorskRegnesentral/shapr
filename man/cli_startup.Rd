@@ -30,6 +30,9 @@ Note that any combination of four strings can be used.
 E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.
 }}
 }
+\value{
+No return value (but prints startup messages with cli)
+}
 \description{
 Printing startup messages with cli
 }

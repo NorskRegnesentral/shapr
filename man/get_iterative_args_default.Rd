@@ -36,6 +36,9 @@ The number of \code{n_coalitions} actually used in the next iteration is set to 
 It is wise to start with smaller numbers to avoid using too many \code{n_coalitions} due to uncertain estimates in
 the first iterations.}
 }
+\value{
+A list with the default values for the iterative estimation procedure
+}
 \description{
 Function to specify arguments of the iterative estimation procedure
 }

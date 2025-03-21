@@ -2,6 +2,8 @@
 #'
 #' @inheritParams default_doc_export
 #'
+#' @return The internal list updated with the coalitions to be estimated
+#'
 #' @export
 #' @keywords internal
 shapley_setup <- function(internal) {

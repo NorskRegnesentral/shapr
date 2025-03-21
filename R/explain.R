@@ -582,6 +582,8 @@ explain <- function(model,
 #'
 #' @inheritParams default_doc_export
 #'
+#' @return Cleaned up version of the output list used for testthat testing
+#'
 #' @export
 #' @keywords internal
 #' @author Lars Henry Berge Olsen, Martin Jullum

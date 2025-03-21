@@ -30,6 +30,9 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 \item{iter}{Integer.
 The iteration number. Only used internally.}
 }
+\value{
+No return value (but prints iterative messages with cli)
+}
 \description{
 Printing messages in iterative procedure with cli
 }

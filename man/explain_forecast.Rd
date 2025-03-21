@@ -319,7 +319,7 @@ See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.h
 forecasting section of the general usages} for further details.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load example data
 data("airquality")
 data <- data.table::as.data.table(airquality)

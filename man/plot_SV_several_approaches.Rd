@@ -89,9 +89,7 @@ the features values plotted are the mean feature values for all features in each
 }
 \examples{
 \dontrun{
-# Load necessary libraries
-library(xgboost)
-library(data.table)
+if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
 
 # Get the data
 data("airquality")
@@ -178,7 +176,6 @@ explanation_list <- list(
   "Combined" = explanation_combined
 )
 
-if (requireNamespace("ggplot2", quietly = TRUE)) {
   # The function uses the provided names.
   plot_SV_several_approaches(explanation_list)
 

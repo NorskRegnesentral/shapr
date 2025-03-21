@@ -10,6 +10,9 @@ shapley_setup(internal)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+The internal list updated with the coalitions to be estimated
+}
 \description{
 Set up the kernelSHAP framework
 }

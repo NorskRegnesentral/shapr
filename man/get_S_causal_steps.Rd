@@ -51,48 +51,6 @@ For \code{as_string == FALSE}, then we rather return a vector where \code{result
 \description{
 Get the steps for generating MC samples for coalitions following a causal ordering
 }
-\examples{
-\dontrun{
-m <- 5
-causal_ordering <- list(1:2, 3:4, 5)
-S <- shapr::feature_matrix_cpp(get_valid_causal_coalitions(causal_ordering = causal_ordering),
-  m = m
-)
-confounding <- c(TRUE, TRUE, FALSE)
-get_S_causal_steps(S, causal_ordering, confounding, as_string = TRUE)
-
-# Look at the effect of changing the confounding assumptions
-SS1 <- get_S_causal_steps(S, causal_ordering,
-  confounding = c(FALSE, FALSE, FALSE),
-  as_string = TRUE
-)
-SS2 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, FALSE, FALSE), as_string = TRUE)
-SS3 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, FALSE), as_string = TRUE)
-SS4 <- get_S_causal_steps(S, causal_ordering, confounding = c(TRUE, TRUE, TRUE), as_string = TRUE)
-
-all.equal(SS1, SS2)
-SS1[[2]] # Condition on 1 as there is no confounding in the first component
-SS2[[2]] # Do NOT condition on 1 as there is confounding in the first component
-SS1[[3]]
-SS2[[3]]
-
-all.equal(SS1, SS3)
-SS1[[2]] # Condition on 1 as there is no confounding in the first component
-SS3[[2]] # Do NOT condition on 1 as there is confounding in the first component
-SS1[[5]] # Condition on 3 as there is no confounding in the second component
-SS3[[5]] # Do NOT condition on 3 as there is confounding in the second component
-SS1[[6]]
-SS3[[6]]
-
-all.equal(SS2, SS3)
-SS2[[5]]
-SS3[[5]]
-SS2[[6]]
-SS3[[6]]
-
-all.equal(SS3, SS4) # No difference as the last component is a singleton
-}
-}
 \author{
 Lars Henry Berge Olsen
 }

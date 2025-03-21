@@ -78,10 +78,8 @@ introduction to \code{\link[GGally:ggpairs]{GGally::ggpairs()}}, and the corresp
 \href{https://ggobi.github.io/ggally/articles/ggally_plots.html}{vignette}.
 }
 \examples{
-\dontrun{
-library(xgboost)
-library(data.table)
-library(shapr)
+\donttest{
+if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -96,14 +94,14 @@ y_train <- data[-ind_x_explain, get(y_var)]
 x_explain <- data[ind_x_explain, ..x_var]
 
 # Fitting a basic xgboost model to the training data
-model <- xgboost(
+model <- xgbost::xgboost(
   data = as.matrix(x_train),
   label = y_train,
   nround = 100,
   verbose = FALSE
 )
 
-explanation <- explain(
+explanation <- shapr::explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -115,7 +113,7 @@ explanation <- explain(
 )
 
 # Plot the results
-figure <- plot_vaeac_imputed_ggpairs(
+figure <- shapr::plot_vaeac_imputed_ggpairs(
   explanation = explanation,
   which_vaeac_model = "best",
   x_true = x_train,
@@ -127,6 +125,7 @@ figure
 figure +
   ggplot2::scale_color_manual(values = c("#E69F00", "#999999")) +
   ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
+}
 }
 }
 \references{

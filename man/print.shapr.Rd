@@ -14,6 +14,9 @@ Number of digits to display to the console}
 
 \item{...}{Unused}
 }
+\value{
+No return value (but prints the shapley values to the console)
+}
 \description{
 Print method for shapr objects
 }

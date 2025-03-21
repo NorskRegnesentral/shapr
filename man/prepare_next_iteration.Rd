@@ -10,6 +10,9 @@ prepare_next_iteration(internal)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+The (updated) internal list
+}
 \description{
 Prepares the next iteration of the iterative sampling algorithm
 }

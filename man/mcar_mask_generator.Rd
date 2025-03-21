@@ -32,14 +32,6 @@ missing values, indicated by the "NaN" token, which will always be masked.
 }
 }
 
-\examples{
-\dontrun{
-mask_gen <- mcar_mask_generator(masking_ratio = 0.5, paired_sampling = FALSE)
-batch <- torch::torch_randn(c(5, 3))
-mask_gen(batch)
-}
-
-}
 \author{
 Lars Henry Berge Olsen
 }

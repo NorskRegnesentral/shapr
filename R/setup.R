@@ -24,6 +24,9 @@
 #' @param init_time POSIXct object.
 #' The time when the `explain()` function was called, as outputted by `Sys.time()`.
 #' Used to calculate the time it took to run the full `explain` call.
+#'
+#' @return A internal list, containing parameters, info, data and computations needed for the later computations.
+#'  The list is expanded and modified in other functions.
 #' @export
 #' @keywords internal
 setup <- function(x_train,
@@ -972,6 +975,8 @@ set_output_parameters <- function(internal) {
 #' @param saving_path String.
 #' The path to the directory where the results of the iterative estimation procedure should be saved.
 #' Defaults to a temporary directory.
+#'
+#' @return A list of default output arguments.
 #' @export
 #' @author Martin Jullum
 get_output_args_default <- function(keep_samp_for_vS = FALSE,
@@ -1045,7 +1050,7 @@ set_extra_comp_params <- function(internal) {
   return(internal)
 }
 
-#' Gets the default values for the extra estimation arguments
+#' Gets the default values for the extra computation arguments
 #'
 #' @param paired_shap_sampling Logical.
 #' If `TRUE` paired versions of all sampled coalitions are also included in the computation.
@@ -1076,6 +1081,9 @@ set_extra_comp_params <- function(internal) {
 #' than the number of parallel workers.
 #' @inheritParams default_doc_export
 #' @export
+#'
+#' @return A list with the default values for the extra computation arguments.
+#'
 #' @author Martin Jullum
 #' @references
 #'  - \href{https://arxiv.org/pdf/2410.04883}{
@@ -1642,6 +1650,8 @@ check_vs_prev_shapr_object <- function(internal) {
 #' the first iterations.
 #' @inheritParams default_doc_export
 #'
+#' @return A list with the default values for the iterative estimation procedure
+#'
 #' @export
 #' @author Martin Jullum
 get_iterative_args_default <- function(internal,
@@ -1690,6 +1700,8 @@ get_iterative_args_default <- function(internal,
 #' Additional setup for regression-based methods
 #'
 #' @inheritParams default_doc_export
+#'
+#' @return The (updated) internal list
 #'
 #' @export
 #' @keywords internal

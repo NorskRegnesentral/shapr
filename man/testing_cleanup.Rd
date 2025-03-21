@@ -6,6 +6,9 @@
 \usage{
 testing_cleanup(output)
 }
+\value{
+Cleaned up version of the output list used for testthat testing
+}
 \description{
 Cleans out certain output arguments to allow perfect reproducibility of the output
 }

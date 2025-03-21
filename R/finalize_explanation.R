@@ -2,6 +2,8 @@
 #'
 #' @inheritParams default_doc_export
 #'
+#' @return List of reformatted output information extracted from `internal`
+#'
 #' @export
 #' @keywords internal
 finalize_explanation <- function(internal) {

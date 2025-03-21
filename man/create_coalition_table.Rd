@@ -66,16 +66,6 @@ A data.table with info about the coalitions to use
 \description{
 Define coalitions, and fetch additional information about each unique coalition
 }
-\examples{
-\dontrun{
-# All coalitions
-x <- create_coalition_table(m = 3)
-nrow(x) # Equals 2^3 = 8
-
-# Subsample of coalitions
-x <- shapr:::create_coalition_table(m = 10, exact = FALSE, n_coalitions = 1e2)
-}
-}
 \author{
 Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen
 }

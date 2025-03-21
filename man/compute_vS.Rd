@@ -14,6 +14,9 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 Indicates whether the lapply method (default) or loop method should be used.
 Options other than "future" is only used for testing/debugging.}
 }
+\value{
+List of \code{v(S)} for different coalitions \code{S}, optionally also with the samples used to estimate \code{v(S)}
+}
 \description{
 Computes \code{v(S)} for all features subsets \code{S}.
 }

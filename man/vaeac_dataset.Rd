@@ -25,35 +25,6 @@ is an R6 instance, see \url{https://r6.r-lib.org/articles/Introduction.html}, wh
 object-oriented programming, with self reference. I.e, \code{\link[=vaeac_dataset]{vaeac_dataset()}} is a subclass
 of type \code{\link[torch:dataset]{torch::dataset()}}.
 }
-\examples{
-\dontrun{
-p <- 5
-N <- 14
-batch_size <- 10
-one_hot_max_sizes <- rep(1, p)
-vaeac_ds <- vaeac_dataset(
-  torch_tensor(matrix(rnorm(p * N), ncol = p),
-    dtype = torch_float()
-  ),
-  one_hot_max_sizes
-)
-vaeac_ds
-
-vaeac_dl <- torch::dataloader(
-  vaeac_ds,
-  batch_size = batch_size,
-  shuffle = TRUE,
-  drop_last = FALSE
-)
-vaeac_dl$.length()
-vaeac_dl$.iter()
-
-vaeac_iterator <- vaeac_dl$.iter()
-vaeac_iterator$.next() # batch1
-vaeac_iterator$.next() # batch2
-vaeac_iterator$.next() # Empty
-}
-}
 \author{
 Lars Henry Berge Olsen
 }

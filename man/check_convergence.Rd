@@ -10,6 +10,9 @@ check_convergence(internal)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+The (updated) internal list
+}
 \description{
 Checks the convergence according to the convergence threshold
 }

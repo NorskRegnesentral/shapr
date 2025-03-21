@@ -4,6 +4,7 @@
 #' @param digits Scalar Integer.
 #' Number of digits to display to the console
 #' @param ... Unused
+#' @return No return value (but prints the shapley values to the console)
 #' @export
 print.shapr <- function(x, digits = 4, ...) {
   shap <- copy(x$shapley_values_est)
