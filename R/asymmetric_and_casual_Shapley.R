@@ -76,26 +76,6 @@ convert_feature_name_to_idx <- function(causal_ordering, labels, feat_group_txt)
 #'
 #' @return Data table of dimension `n_MC_samples` \eqn{\times} `length(Sbar_features)` with the sampled observations.
 #'
-#'
-#' @examples
-#' \dontrun{
-#' data("airquality")
-#' data <- data.table::as.data.table(airquality)
-#' data <- data[complete.cases(data), ]
-#'
-#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
-#' y_var <- "Ozone"
-#'
-#' ind_x_explain <- 1:6
-#' x_train <- data[-ind_x_explain, ..x_var]
-#' x_train
-#' shapr:::create_marginal_data_training(
-#'   x_train = x_train,
-#'   Sbar_features = c(1, 4),
-#'   n_MC_samples = 10
-#' )
-#' }
-#'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 create_marginal_data_training <- function(x_train,
