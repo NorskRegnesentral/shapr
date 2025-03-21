@@ -166,8 +166,8 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   cond_dt_unique <- unique(cond_dt, by = feature_conditioned)
   check <- cond_dt_unique[id_coalition != 1][, .(sum_prob = sum(marg_prob)), by = "id_coalition"][["sum_prob"]]
   if (!all(round(check) == 1)) {
-    print("Warning - not all marginal probabilities sum to 1. There could be a problem
-          with the joint probabilities. Consider checking.")
+    warning("Not all marginal probabilities sum to 1. There could be a problem
+            with the joint probabilities. Consider checking.")
   }
 
   # make x_explain
@@ -184,8 +184,8 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   # check conditional probabilities
   check <- dt[id_coalition != 1][, .(sum_prob = sum(cond_prob)), by = c("id_coalition", "id")][["sum_prob"]]
   if (!all(round(check) == 1)) {
-    print("Warning - not all conditional probabilities sum to 1. There could be a problem
-          with the joint probabilities. Consider checking.")
+    warning("Not all conditional probabilities sum to 1. There could be a problem
+            with the joint probabilities. Consider checking.")
   }
 
   setnames(dt, "cond_prob", "w")
