@@ -4,23 +4,7 @@ linters: linters_with_defaults(
         object_usage_linter = NULL,
         commented_code_linter = NULL,
         indentation_linter = NULL,
-        cyclocomp_linter = NULL,
-        undesirable_function_linter = undesirable_function_linter(
-    fun = c(all_undesirable_functions,list(
-    # Base messaging
-    "message" = "use cli::cli_inform()",
-    "warning" = "use cli::cli_warn()",
-    "stop" = "use cli::cli_abort()",
-    # rlang messaging
-    "inform" = "use cli::cli_inform()",
-    "warn" = "use cli::cli_warn()",
-    "abort" = "use cli::cli_abort()",
-    # older cli
-    "cli_alert_danger" = "use cli::cli_inform()",
-    "cli_alert_info" = "use cli::cli_inform()",
-    "cli_alert_success" = "use cli::cli_inform()",
-    "cli_alert_warning" = "use cli::cli_inform()")),
-    symbol_is_undesirable = FALSE))
+        cyclocomp_linter = NULL)
 exclusions: list(
         "inst/scripts",
         "inst/code_paper",
