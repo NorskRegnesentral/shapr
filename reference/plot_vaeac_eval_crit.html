@@ -135,13 +135,13 @@ explain predictive models with dependent mixed features. Journal of machine lear
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://norskregnesentral.github.io/shapr/">shapr</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"airquality"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Solar.R"</span>, <span class="st">"Wind"</span>, <span class="st">"Temp"</span>, <span class="st">"Month"</span><span class="op">)</span></span></span>
@@ -163,7 +163,7 @@ explain predictive models with dependent mixed features. Journal of machine lear
 <span class="r-in"><span>  model <span class="op">=</span> <span class="va">model</span>,</span></span>
 <span class="r-in"><span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span></span>
 <span class="r-in"><span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
-<span class="r-in"><span>  approach <span class="op">=</span> <span class="va">approach</span>,</span></span>
+<span class="r-in"><span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span></span>
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1</span>, <span class="co"># As we are only interested in the training of the vaeac</span></span></span>
 <span class="r-in"><span>  vaeac.epochs <span class="op">=</span> <span class="fl">10</span>, <span class="co"># Should be higher in applications.</span></span></span>
@@ -172,12 +172,30 @@ explain predictive models with dependent mixed features. Journal of machine lear
 <span class="r-in"><span>  vaeac.depth <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vaeac.paired_sampling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Feature classes extracted from the model contains NA.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Assuming feature classes from the data are correct.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:40</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">vaeac</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 6</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_86674f2d9bd8.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in setup_approach.vaeac(internal, model = model, predict_model = predict_model):</span> `torch` is not properly installed. Please run `torch::install_torch()`.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">explanation_regular</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  model <span class="op">=</span> <span class="va">model</span>,</span></span>
 <span class="r-in"><span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span></span>
 <span class="r-in"><span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
-<span class="r-in"><span>  approach <span class="op">=</span> <span class="va">approach</span>,</span></span>
+<span class="r-in"><span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span></span>
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1</span>, <span class="co"># As we are only interested in the training of the vaeac</span></span></span>
 <span class="r-in"><span>  vaeac.epochs <span class="op">=</span> <span class="fl">10</span>, <span class="co"># Should be higher in applications.</span></span></span>
@@ -186,15 +204,35 @@ explain predictive models with dependent mixed features. Journal of machine lear
 <span class="r-in"><span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vaeac.paired_sampling <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Feature classes extracted from the model contains NA.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Assuming feature classes from the data are correct.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:40</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">vaeac</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 6</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_866714a85504.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in setup_approach.vaeac(internal, model = model, predict_model = predict_model):</span> `torch` is not properly installed. Please run `torch::install_torch()`.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Collect the explanation objects in an named list</span></span></span>
 <span class="r-in"><span><span class="va">explanation_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"Regular sampling"</span> <span class="op">=</span> <span class="va">explanation_regular</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"Paired sampling"</span> <span class="op">=</span> <span class="va">explanation_paired</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'explanation_regular' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Call the function with the named list, will use the provided names</span></span></span>
 <span class="r-in"><span><span class="fu">plot_vaeac_eval_crit</span><span class="op">(</span>explanation_list <span class="op">=</span> <span class="va">explanation_list</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'explanation_list' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The function also works if we have only one method,</span></span></span>
 <span class="r-in"><span><span class="co"># but then one should only look at the method plot.</span></span></span>
@@ -202,6 +240,7 @@ explain predictive models with dependent mixed features. Journal of machine lear
 <span class="r-in"><span>  explanation_list <span class="op">=</span> <span class="va">explanation_list</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'explanation_list' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Can alter the plot</span></span></span>
 <span class="r-in"><span><span class="fu">plot_vaeac_eval_crit</span><span class="op">(</span></span></span>
@@ -210,6 +249,7 @@ explain predictive models with dependent mixed features. Journal of machine lear
 <span class="r-in"><span>  plot_every_nth_epoch <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  facet_wrap_scales <span class="op">=</span> <span class="st">"free"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'explanation_list' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If we only want the VLB</span></span></span>
 <span class="r-in"><span><span class="fu">plot_vaeac_eval_crit</span><span class="op">(</span></span></span>
@@ -217,19 +257,24 @@ explain predictive models with dependent mixed features. Journal of machine lear
 <span class="r-in"><span>  criteria <span class="op">=</span> <span class="st">"VLB"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"criterion"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'explanation_list' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If we want only want the criterion version</span></span></span>
 <span class="r-in"><span><span class="va">tmp_fig_criterion</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu">plot_vaeac_eval_crit</span><span class="op">(</span>explanation_list <span class="op">=</span> <span class="va">explanation_list</span>, plot_type <span class="op">=</span> <span class="st">"criterion"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'explanation_list' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Since tmp_fig_criterion is a ggplot2 object, we can alter it</span></span></span>
 <span class="r-in"><span><span class="co"># by, e.g,. adding points or smooths with se bands</span></span></span>
 <span class="r-in"><span><span class="va">tmp_fig_criterion</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>shape <span class="op">=</span> <span class="st">"circle"</span>, size <span class="op">=</span> <span class="fl">1</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">Method</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'tmp_fig_criterion' not found</span>
 <span class="r-in"><span><span class="va">tmp_fig_criterion</span><span class="op">$</span><span class="va">layers</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'tmp_fig_criterion' not found</span>
 <span class="r-in"><span><span class="va">tmp_fig_criterion</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"loess"</span>, formula <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, se <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'tmp_fig_criterion' not found</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

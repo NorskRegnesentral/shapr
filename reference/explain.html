@@ -612,7 +612,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load example data</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"airquality"</span><span class="op">)</span></span></span>
@@ -644,6 +644,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"progressr"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span>global <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in globalCallingHandlers(condition = global_progression_handler):</span> should not be called with handlers on the stack</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Empirical approach</span></span></span>
 <span class="r-in"><span><span class="va">explain1</span> <span class="op">&lt;-</span> <span class="fu">explain</span><span class="op">(</span></span></span>
@@ -654,6 +655,21 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:02</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_8667702f5898.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Gaussian approach</span></span></span>
 <span class="r-in"><span><span class="va">explain2</span> <span class="op">&lt;-</span> <span class="fu">explain</span><span class="op">(</span></span></span>
@@ -664,6 +680,21 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:04</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">gaussian</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_86675e164299.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Gaussian copula approach</span></span></span>
 <span class="r-in"><span><span class="va">explain3</span> <span class="op">&lt;-</span> <span class="fu">explain</span><span class="op">(</span></span></span>
@@ -674,6 +705,21 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:05</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">copula</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_866747cc81b0.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># ctree approach</span></span></span>
 <span class="r-in"><span><span class="va">explain4</span> <span class="op">&lt;-</span> <span class="fu">explain</span><span class="op">(</span></span></span>
@@ -684,6 +730,21 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:06</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">ctree</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_8667308b0e30.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Combined approach</span></span></span>
 <span class="r-in"><span><span class="va">approach</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"empirical"</span><span class="op">)</span></span></span>
@@ -695,15 +756,36 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:09</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">gaussian</span>, <span style="font-style: italic;">gaussian</span>, and <span style="font-style: italic;">empirical</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_8667a68ba50.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Print the Shapley values</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explain1</span><span class="op">$</span><span class="va">shapley_values_est</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    explain_id     none   Solar.R       Wind       Temp     Month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;num&gt;     &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:          1 42.78704  6.124296 -20.137653  -5.033967 -5.987303</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:          2 42.78704 -1.470838  11.525868  -9.487924 -5.597657</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:          3 42.78704  3.524599  -5.335059 -16.599988 -8.703929</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot the results</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explain1</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explain1</span>, plot_type <span class="op">=</span> <span class="st">"waterfall"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-plt img"><img src="explain-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Group-wise explanations</span></span></span>
 <span class="r-in"><span><span class="va">group_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Temp"</span>, <span class="st">"Month"</span><span class="op">)</span>, B <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Wind"</span>, <span class="st">"Solar.R"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -717,7 +799,27 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p</span>,</span></span>
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_groups = 4, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_groups = 4.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:11</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">group-wise</span> Shapley values: 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_86672f8d1292.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 4 of 4 coalitions. </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explain_groups</span><span class="op">$</span><span class="va">shapley_values_est</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    explain_id     none         A          B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;num&gt;     &lt;num&gt;      &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:          1 42.78704 -11.63856 -13.396062</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:          2 42.78704 -10.36824   5.337683</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:          3 42.78704 -25.79874  -1.315633</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Separate and surrogate regression approaches with linear regression models.</span></span></span>
 <span class="r-in"><span><span class="va">explain_separate_lm</span> <span class="op">&lt;-</span> <span class="fu">explain</span><span class="op">(</span></span></span>
@@ -728,6 +830,21 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  approach <span class="op">=</span> <span class="st">"regression_separate"</span>,</span></span>
 <span class="r-in"><span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:12</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">regression_separate</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_86675c1ee33f.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">explain_surrogate_lm</span> <span class="op">&lt;-</span> <span class="fu">explain</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  model <span class="op">=</span> <span class="va">model</span>,</span></span>
@@ -737,6 +854,21 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  approach <span class="op">=</span> <span class="st">"regression_surrogate"</span>,</span></span>
 <span class="r-in"><span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:14</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">regression_surrogate</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_8667463ca324.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 16 of 16 coalitions. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Iterative estimation</span></span></span>
 <span class="r-in"><span><span class="co"># For illustration purposes only. By default not used for such small dimensions as here</span></span></span>
@@ -752,7 +884,29 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  iterative <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  iterative_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>initial_n_coalitions <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 16, </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 16.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-03-24 12:38:15</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">gaussian</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">TRUE</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmppCVVzT/shapr_obj_8667f10d587.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">iterative computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Iteration 1</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 10 of 16 coalitions, 10 new. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Iteration 2</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 12 of 16 coalitions, 2 new. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Iteration 3</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 14 of 16 coalitions, 2 new. </span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

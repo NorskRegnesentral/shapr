@@ -81,36 +81,6 @@ more information. This function does not use batch iterators, which might increa
     <p>Lars Henry Berge Olsen</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Example how to use it combined with mask generators with paired sampling activated</span></span></span>
-<span class="r-in"><span><span class="va">batch_size</span> <span class="op">&lt;-</span> <span class="fl">4</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="va">batch_size</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">2</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="va">batch_size</span> <span class="op">&lt;-</span> <span class="va">batch_size</span> <span class="op">-</span> <span class="fl">1</span> <span class="co"># Make sure that batch size is even</span></span></span>
-<span class="r-in"><span><span class="va">n_features</span> <span class="op">&lt;-</span> <span class="fl">3</span></span></span>
-<span class="r-in"><span><span class="va">n_observations</span> <span class="op">&lt;-</span> <span class="fl">5</span></span></span>
-<span class="r-in"><span><span class="va">shuffle</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">torch_tensor</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">n_observations</span><span class="op">)</span>, each <span class="op">=</span> <span class="va">n_features</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  ncol <span class="op">=</span> <span class="va">n_features</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">data</span></span></span>
-<span class="r-in"><span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="vaeac_dataset.html">vaeac_dataset</a></span><span class="op">(</span><span class="va">data</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">n_features</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dataload</span> <span class="op">&lt;-</span> <span class="fu">torch</span><span class="fu">::</span><span class="fu"><a href="https://torch.mlverse.org/docs/reference/dataloader.html" class="external-link">dataloader</a></span><span class="op">(</span><span class="va">dataset</span>,</span></span>
-<span class="r-in"><span>  batch_size <span class="op">=</span> <span class="va">batch_size</span>,</span></span>
-<span class="r-in"><span>  sampler <span class="op">=</span> <span class="fu">paired_sampler</span><span class="op">(</span><span class="va">dataset</span>,</span></span>
-<span class="r-in"><span>    shuffle <span class="op">=</span> <span class="va">shuffle</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dataload</span><span class="op">$</span><span class="fu">.length</span><span class="op">(</span><span class="op">)</span> <span class="co"># Number of batches, same as ceiling((2 * n_observations) / batch_size)</span></span></span>
-<span class="r-in"><span><span class="va">mask_generator</span> <span class="op">&lt;-</span> <span class="fu"><a href="mcar_mask_generator.html">mcar_mask_generator</a></span><span class="op">(</span>paired <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">coro</span><span class="fu">::</span><span class="fu"><a href="https://coro.r-lib.org/reference/collect.html" class="external-link">loop</a></span><span class="op">(</span><span class="kw">for</span> <span class="op">(</span><span class="va">batch</span> <span class="kw">in</span> <span class="va">dataload</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">mask</span> <span class="op">&lt;-</span> <span class="fu">mask_generator</span><span class="op">(</span><span class="va">batch</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">obs</span> <span class="op">&lt;-</span> <span class="va">mask</span> <span class="op">*</span> <span class="va">batch</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">torch</span><span class="fu">::</span><span class="fu"><a href="https://torch.mlverse.org/docs/reference/torch_cat.html" class="external-link">torch_cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">batch</span>, <span class="va">mask</span>, <span class="va">obs</span><span class="op">)</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

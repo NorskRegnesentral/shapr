@@ -97,30 +97,6 @@ specified <code>id</code> is not in storage when the layer with <code>output = T
     <p>Lars Henry Berge Olsen</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">memory_layer_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">net1</span> <span class="op">&lt;-</span> <span class="fu">torch</span><span class="fu">::</span><span class="fu"><a href="https://torch.mlverse.org/docs/reference/nn_sequential.html" class="external-link">nn_sequential</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">memory_layer</span><span class="op">(</span><span class="st">"#1"</span>, shared_env <span class="op">=</span> <span class="va">memory_layer_env</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu">memory_layer</span><span class="op">(</span><span class="st">"#0.1"</span>, shared_env <span class="op">=</span> <span class="va">memory_layer_env</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu">torch</span><span class="fu">::</span><span class="fu"><a href="https://torch.mlverse.org/docs/reference/nn_linear.html" class="external-link">nn_linear</a></span><span class="op">(</span><span class="fl">512</span>, <span class="fl">256</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu">torch</span><span class="fu">::</span><span class="fu"><a href="https://torch.mlverse.org/docs/reference/nn_leaky_relu.html" class="external-link">nn_leaky_relu</a></span><span class="op">(</span><span class="op">)</span>, <span class="co"># Here add cannot be TRUE because the dimensions mismatch</span></span></span>
-<span class="r-in"><span>  <span class="fu">memory_layer</span><span class="op">(</span><span class="st">"#0.1"</span>, shared_env <span class="op">=</span> <span class="va">memory_layer_env</span>, output <span class="op">=</span> <span class="cn">TRUE</span>, add <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu">torch</span><span class="fu">::</span><span class="fu"><a href="https://torch.mlverse.org/docs/reference/nn_linear.html" class="external-link">nn_linear</a></span><span class="op">(</span><span class="fl">768</span>, <span class="fl">256</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="co"># the dimension after the concatenation with skip-connection is 512 + 256 = 768</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">net2</span> <span class="op">&lt;-</span> <span class="fu">torch</span><span class="fu">::</span><span class="fu">nn_equential</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">torch</span><span class="fu">::</span><span class="fu"><a href="https://torch.mlverse.org/docs/reference/nn_linear.html" class="external-link">nn_linear</a></span><span class="op">(</span><span class="fl">512</span>, <span class="fl">512</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu">memory_layer</span><span class="op">(</span><span class="st">"#1"</span>, shared_env <span class="op">=</span> <span class="va">memory_layer_env</span>, output <span class="op">=</span> <span class="cn">TRUE</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="va">...</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Here a and c must be of correct dimensions, e.g., a = torch::torch_ones(1,512).</span></span></span>
-<span class="r-in"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu">net1</span><span class="op">(</span><span class="va">a</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">net2</span><span class="op">(</span><span class="va">c</span><span class="op">)</span> <span class="co"># net2 must be called after net1, otherwise tensor '#1' will not be in storage.</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

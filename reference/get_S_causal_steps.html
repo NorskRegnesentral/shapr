@@ -115,50 +115,6 @@ For <code>as_string == FALSE</code>, then we rather return a vector where <code>
     <p>Lars Henry Berge Olsen</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fl">5</span></span></span>
-<span class="r-in"><span><span class="va">causal_ordering</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">S</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="fu">::</span><span class="fu">feature_matrix_cpp</span><span class="op">(</span><span class="fu"><a href="get_valid_causal_coalitions.html">get_valid_causal_coalitions</a></span><span class="op">(</span>causal_ordering <span class="op">=</span> <span class="va">causal_ordering</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  m <span class="op">=</span> <span class="va">m</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">confounding</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">get_S_causal_steps</span><span class="op">(</span><span class="va">S</span>, <span class="va">causal_ordering</span>, <span class="va">confounding</span>, as_string <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Look at the effect of changing the confounding assumptions</span></span></span>
-<span class="r-in"><span><span class="va">SS1</span> <span class="op">&lt;-</span> <span class="fu">get_S_causal_steps</span><span class="op">(</span><span class="va">S</span>, <span class="va">causal_ordering</span>,</span></span>
-<span class="r-in"><span>  confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">FALSE</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  as_string <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">SS2</span> <span class="op">&lt;-</span> <span class="fu">get_S_causal_steps</span><span class="op">(</span><span class="va">S</span>, <span class="va">causal_ordering</span>, confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">FALSE</span><span class="op">)</span>, as_string <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">SS3</span> <span class="op">&lt;-</span> <span class="fu">get_S_causal_steps</span><span class="op">(</span><span class="va">S</span>, <span class="va">causal_ordering</span>, confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, as_string <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">SS4</span> <span class="op">&lt;-</span> <span class="fu">get_S_causal_steps</span><span class="op">(</span><span class="va">S</span>, <span class="va">causal_ordering</span>, confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">TRUE</span><span class="op">)</span>, as_string <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">SS1</span>, <span class="va">SS2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">SS1</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="co"># Condition on 1 as there is no confounding in the first component</span></span></span>
-<span class="r-in"><span><span class="va">SS2</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="co"># Do NOT condition on 1 as there is confounding in the first component</span></span></span>
-<span class="r-in"><span><span class="va">SS1</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">SS2</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">SS1</span>, <span class="va">SS3</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">SS1</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="co"># Condition on 1 as there is no confounding in the first component</span></span></span>
-<span class="r-in"><span><span class="va">SS3</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="co"># Do NOT condition on 1 as there is confounding in the first component</span></span></span>
-<span class="r-in"><span><span class="va">SS1</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span> <span class="co"># Condition on 3 as there is no confounding in the second component</span></span></span>
-<span class="r-in"><span><span class="va">SS3</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span> <span class="co"># Do NOT condition on 3 as there is confounding in the second component</span></span></span>
-<span class="r-in"><span><span class="va">SS1</span><span class="op">[[</span><span class="fl">6</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">SS3</span><span class="op">[[</span><span class="fl">6</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">SS2</span>, <span class="va">SS3</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">SS2</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">SS3</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">SS2</span><span class="op">[[</span><span class="fl">6</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">SS3</span><span class="op">[[</span><span class="fl">6</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">SS3</span>, <span class="va">SS4</span><span class="op">)</span> <span class="co"># No difference as the last component is a singleton</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
