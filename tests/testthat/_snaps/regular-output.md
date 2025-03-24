@@ -1,7 +1,9 @@
 # output_lm_numeric_independence
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -26,7 +28,9 @@
 # output_lm_numeric_independence_MSEv_Shapley_weights
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -51,7 +55,9 @@
 # output_lm_numeric_empirical
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -76,7 +82,9 @@
 # output_lm_numeric_empirical_n_coalitions
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       * Model class: <lm>
       * Approach: empirical
@@ -97,7 +105,9 @@
 # output_lm_numeric_empirical_independence
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -157,7 +167,9 @@
 # output_lm_numeric_empirical_AICc_each
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       * Model class: <lm>
       * Approach: empirical
@@ -178,7 +190,9 @@
 # output_lm_numeric_empirical_AICc_full
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       * Model class: <lm>
       * Approach: empirical
@@ -199,7 +213,9 @@
 # output_lm_numeric_gaussian
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -224,7 +240,9 @@
 # output_lm_numeric_copula
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -249,7 +267,9 @@
 # output_lm_numeric_ctree
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -274,7 +294,9 @@
 # output_lm_numeric_vaeac
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -290,16 +312,18 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp    Month     Day
-              <int> <num>   <num>   <num>  <num>    <num>   <num>
-      1:          1 42.44  -4.941   7.495 17.471 -4.35451 -3.0686
-      2:          2 42.44   1.824  -5.193 -8.943  0.07104 -1.6383
-      3:          3 42.44   4.530 -20.285  3.170 -4.28496 -0.6978
+         explain_id  none Solar.R   Wind  Temp  Month    Day
+              <int> <num>   <num>  <num> <num>  <num>  <num>
+      1:          1  42.4   -4.94   7.50 17.47 -4.355 -3.069
+      2:          2  42.4    1.82  -5.19 -8.94  0.071 -1.638
+      3:          3  42.4    4.53 -20.29  3.17 -4.285 -0.698
 
 # output_lm_categorical_ctree
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -324,7 +348,9 @@
 # output_lm_categorical_vaeac
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -342,14 +368,16 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1 42.44       -1.966              12.55         -4.716       -6.38
-      2:          2 42.44       -2.405             -14.39         14.433      -12.47
-      3:          3 42.44        2.755             -14.24          3.222      -10.10
+      1:          1  42.4        -1.97               12.6          -4.72       -6.38
+      2:          2  42.4        -2.41              -14.4          14.43      -12.47
+      3:          3  42.4         2.76              -14.2           3.22      -10.10
 
 # output_lm_categorical_categorical
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -374,7 +402,9 @@
 # output_lm_categorical_independence
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -399,7 +429,9 @@
 # output_lm_ts_timeseries
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_groups = 16, 
@@ -423,7 +455,9 @@
 # output_lm_numeric_comb1
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -448,7 +482,9 @@
 # output_lm_numeric_comb2
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -473,7 +509,9 @@
 # output_lm_numeric_comb3
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -498,7 +536,9 @@
 # output_lm_mixed_independence
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -523,7 +563,9 @@
 # output_lm_mixed_ctree
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -548,7 +590,9 @@
 # output_lm_mixed_vaeac
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -564,16 +608,18 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind     Temp     Day Month_factor
-              <int> <num>   <num>   <num>    <num>   <num>        <num>
-      1:          1 42.44  -5.050   6.861 15.73013 -0.2083       -6.749
-      2:          2 42.44   2.600  -4.636 -2.26409 -3.1294       -7.954
-      3:          3 42.44   5.139 -17.878 -0.01372  0.5855        1.567
+         explain_id  none Solar.R   Wind    Temp    Day Month_factor
+              <int> <num>   <num>  <num>   <num>  <num>        <num>
+      1:          1  42.4   -5.05   6.86 15.7301 -0.208        -6.75
+      2:          2  42.4    2.60  -4.64 -2.2641 -3.129        -7.95
+      3:          3  42.4    5.14 -17.88 -0.0137  0.585         1.57
 
 # output_lm_mixed_comb
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -598,7 +644,9 @@
 # output_custom_lm_numeric_independence_1
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -623,7 +671,9 @@
 # output_custom_lm_numeric_independence_2
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
@@ -651,7 +701,9 @@
 # output_custom_xgboost_mixed_dummy_ctree
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
@@ -679,7 +731,9 @@
 # output_lm_numeric_interaction
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 4, 
@@ -704,7 +758,9 @@
 # output_lm_numeric_ctree_parallelized
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -729,7 +785,9 @@
 # output_lm_numeric_empirical_progress
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
