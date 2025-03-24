@@ -419,9 +419,9 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp    Day Month_factor
-              <int> <num>   <num>   <num>  <num>  <num>        <num>
-      1:          1 42.44 -11.165   8.002  20.61  2.030       -8.896
-      2:          2 42.44   4.143  -1.515 -11.23  2.025       -8.806
-      3:          3 42.44   6.515 -18.268  -4.06 -3.992        9.204
+         explain_id  none Solar.R    Wind    Temp    Day Month_factor
+              <int> <num>   <num>   <num>   <num>  <num>        <num>
+      1:          1 42.44 -16.407  10.197  18.183  2.884       -4.273
+      2:          2 42.44   4.681  -3.793 -12.439  2.704       -6.536
+      3:          3 42.44   4.517 -17.537  -3.886 -1.690        7.996
 
