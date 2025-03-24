@@ -78,7 +78,7 @@ explanation_paired <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  approach = approach,
+  approach = "vaeac",
   phi0 = p0,
   n_MC_samples = 1, # As we are only interested in the training of the vaeac
   vaeac.epochs = 10, # Should be higher in applications.
@@ -92,7 +92,7 @@ explanation_regular <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  approach = approach,
+  approach = "vaeac",
   phi0 = p0,
   n_MC_samples = 1, # As we are only interested in the training of the vaeac
   vaeac.epochs = 10, # Should be higher in applications.
