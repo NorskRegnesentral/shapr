@@ -1,7 +1,9 @@
 # output_asymmetric_conditional
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -28,7 +30,9 @@
 # output_asym_cond_reg
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -55,7 +59,9 @@
 # output_asym_cond_reg_iterative
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -86,7 +92,9 @@
 # output_symmetric_conditional
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -111,7 +119,9 @@
 # output_symmetric_marginal_independence
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -138,7 +148,9 @@
 # output_symmetric_marginal_gaussian
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -165,7 +177,9 @@
 # output_asym_caus_conf_TRUE
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -193,7 +207,9 @@
 # output_asym_caus_conf_FALSE
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -221,7 +237,9 @@
 # output_asym_caus_conf_mix
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -249,7 +267,9 @@
 # output_asym_caus_conf_mix_n_coal
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       * Model class: <lm>
       * Approach: gaussian
@@ -273,7 +293,9 @@
 # output_asym_caus_conf_mix_empirical
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -301,7 +323,9 @@
 # output_asym_caus_conf_mix_ctree
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -329,7 +353,9 @@
 # output_sym_caus_conf_TRUE
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -356,7 +382,9 @@
 # output_sym_caus_conf_FALSE
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -383,7 +411,9 @@
 # output_sym_caus_conf_mix
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -410,7 +440,9 @@
 # output_sym_caus_conf_TRUE_group
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
@@ -437,7 +469,9 @@
 # output_sym_caus_conf_mix_group
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
@@ -464,7 +498,9 @@
 # output_sym_caus_conf_mix_group_iterative
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
@@ -486,7 +522,9 @@
 # output_mixed_sym_caus_conf_TRUE
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -513,7 +551,9 @@
 # output_mixed_sym_caus_conf_TRUE_iterative
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -562,7 +602,9 @@
 # output_mixed_asym_caus_conf_mixed
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -590,7 +632,9 @@
 # output_mixed_asym_caus_conf_mixed_2
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -618,7 +662,9 @@
 # output_mixed_asym_cond_reg
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
@@ -649,7 +695,9 @@
 # output_categorical_asym_causal_mixed_cat
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -676,7 +724,9 @@
 # output_cat_asym_causal_mixed_cat_ad
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -717,7 +767,9 @@
 # output_categorical_asym_causal_mixed_ctree
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 

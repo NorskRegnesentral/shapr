@@ -812,7 +812,9 @@
 # output_lm_numeric_independence_keep_samp_for_vS
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
