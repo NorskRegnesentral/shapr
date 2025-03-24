@@ -12,7 +12,7 @@ test_that("forecast_output_ar_numeric", {
       phi0 = p0_ar,
       seed = 1,
       group_lags = FALSE
-      ),
+    ),
     "forecast_output_ar_numeric"
   )
 })
