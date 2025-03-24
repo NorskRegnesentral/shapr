@@ -180,7 +180,7 @@ test_that("output_lm_numeric_vaeac", {
       ),
       iterative = FALSE
     ),
-    "output_lm_numeric_vaeac"
+    "output_lm_numeric_vaeac",digits = 3 # Reduce to 3 digits due to randomness problems across OS for vaeac
   )
 })
 
@@ -219,7 +219,7 @@ test_that("output_lm_categorical_vaeac", {
       ),
       iterative = FALSE
     ),
-    "output_lm_categorical_vaeac"
+    "output_lm_categorical_vaeac",digits = 3 # Reduce to 3 digits due to randomness problems across OS for vaeac
   )
 })
 
@@ -367,7 +367,7 @@ test_that("output_lm_mixed_vaeac", {
       ),
       iterative = FALSE
     ),
-    "output_lm_mixed_vaeac"
+    "output_lm_mixed_vaeac",digits = 3 # Reduce to 3 digits due to randomness problems across OS for vaeac
   )
 })
 

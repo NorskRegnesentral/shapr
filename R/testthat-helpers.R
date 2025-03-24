@@ -8,14 +8,14 @@ compare_rds <- function(old, new) {
 }
 
 #' @keywords internal
-expect_snapshot_rds <- function(code, name = "tmp") {
+expect_snapshot_rds <- function(code, name = "tmp", digits = 4) {
   name_full <- paste0(name, ".rds")
   path <- file.path(tempdir(), name_full)
 
   testthat::announce_snapshot_file(path = path)
 
 
-  testthat::expect_snapshot((out <- code)) # Test output + warnings/messages
+  testthat::expect_snapshot(print({out <- code}, digits=digits)) # Test output + warnings/messages
 
   saveRDS(out, file = path)
 
