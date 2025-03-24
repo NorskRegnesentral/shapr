@@ -1,7 +1,9 @@
 # forecast_output_ar_numeric
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -32,7 +34,9 @@
 # forecast_output_arima_numeric
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -71,7 +75,9 @@
 # forecast_output_arima_numeric_iterative
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -116,7 +122,9 @@
 # forecast_output_arima_numeric_iterative_groups
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -154,7 +162,9 @@
 # forecast_output_arima_numeric_no_xreg
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -185,7 +195,9 @@
 # forecast_output_forecast_ARIMA_group_numeric
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -216,7 +228,9 @@
 # forecast_output_arima_numeric_no_lags
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -247,7 +261,9 @@
 # forecast_output_forecast_ARIMA_manual_group_numeric
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -276,7 +292,9 @@
 # forecast_output_forecast_ARIMA_manual_group_numeric2
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.

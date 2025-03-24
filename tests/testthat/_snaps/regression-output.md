@@ -1,7 +1,9 @@
 # output_lm_numeric_lm_separate_iterative
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -36,7 +38,9 @@
 # output_lm_numeric_lm_separate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -61,7 +65,9 @@
 # output_lm_numeric_lm_separate_n_comb
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       * Model class: <lm>
       * Approach: regression_separate
@@ -82,7 +88,9 @@
 # output_lm_categorical_lm_separate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -107,7 +115,9 @@
 # output_lm_mixed_lm_separate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -132,7 +142,9 @@
 # output_lm_mixed_splines_separate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -157,7 +169,9 @@
 # output_lm_mixed_decision_tree_cv_separate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -182,7 +196,9 @@
 # output_lm_mixed_decision_tree_cv_separate_parallel
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -207,7 +223,9 @@
 # output_lm_mixed_xgboost_separate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -232,7 +250,9 @@
 # output_lm_numeric_lm_surrogate_iterative
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -261,7 +281,9 @@
 # output_lm_numeric_lm_surrogate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -286,7 +308,9 @@
 # output_lm_numeric_lm_surrogate_n_comb
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       * Model class: <lm>
       * Approach: regression_surrogate
@@ -307,7 +331,9 @@
 # output_lm_numeric_lm_surrogate_reg_surr_n_comb
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       * Model class: <lm>
       * Approach: regression_surrogate
@@ -328,7 +354,9 @@
 # output_lm_categorical_lm_surrogate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -353,7 +381,9 @@
 # output_lm_mixed_lm_surrogate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -378,7 +408,9 @@
 # output_lm_mixed_decision_tree_cv_surrogate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -403,7 +435,9 @@
 # output_lm_mixed_xgboost_surrogate
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 

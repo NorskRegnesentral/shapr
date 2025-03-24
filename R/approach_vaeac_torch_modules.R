@@ -1190,6 +1190,10 @@ memory_layer <- function(id, shared_env, output = FALSE, add = FALSE, verbose = 
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 skip_connection <- function(...) {
+  # Remove NULL objects from the arguments list
+  args <- list(...)
+  non_null_args <- args[!sapply(args, is.null)]
+
   skip_connection_tmp <- torch::nn_module(
     classname = "skip_connection", # field classname Name of the of torch::nn_module object
     # description Initialize a new skip_connection module
@@ -1200,7 +1204,7 @@ skip_connection <- function(...) {
     }
   )
 
-  return(skip_connection_tmp(... = ...))
+  return(do.call(skip_connection_tmp, non_null_args))
 }
 
 

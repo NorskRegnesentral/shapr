@@ -1,7 +1,9 @@
 # output_lm_numeric_independence_reach_exact
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -112,7 +114,9 @@
 # output_lm_numeric_independence_converges_tol
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -190,7 +194,9 @@
 # output_lm_numeric_independence_converges_maxit
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -378,7 +384,9 @@
 # output_lm_numeric_indep_conv_max_n_coalitions
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       
       -- Iteration 1 -----------------------------------------------------------------
@@ -474,7 +482,9 @@
 # output_lm_numeric_gaussian_group_converges_tol
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
@@ -503,7 +513,9 @@
 # output_lm_numeric_independence_converges_tol_paired
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -581,7 +593,9 @@
 # output_lm_numeric_independence_saving_and_cont_est
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -597,7 +611,9 @@
 ---
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -613,7 +629,9 @@
 # output_verbose_1
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -648,7 +666,9 @@
 # output_verbose_1_3
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -705,7 +725,9 @@
 # output_verbose_1_3_4
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -816,7 +838,9 @@
 # output_verbose_1_3_4_5
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -927,7 +951,9 @@
 # output_lm_numeric_independence_keep_samp_for_vS
 
     Code
-      (out <- code)
+      print({
+        out <- code
+      }, digits = digits)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
