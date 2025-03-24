@@ -6,6 +6,7 @@ test_that("iterative_args are respected", {
     x_train = x_train_numeric,
     approach = "independence",
     phi0 = p0,
+    seed = 1,
     max_n_coalitions = 30,
     iterative_args = list(
       initial_n_coalitions = 6,
@@ -41,6 +42,7 @@ test_that("iterative feature wise and groupwise computations identical", {
     x_train = x_train_numeric,
     approach = "gaussian",
     phi0 = p0,
+    seed = 1,
     iterative_args = list(
       initial_n_coalitions = 5,
       convergence_tol = 0.1
@@ -57,6 +59,7 @@ test_that("iterative feature wise and groupwise computations identical", {
     approach = "gaussian",
     group = groups,
     phi0 = p0,
+    seed = 1,
     iterative_args = list(
       initial_n_coalitions = 5,
       convergence_tol = 0.1
@@ -83,6 +86,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         phi0 = p0,
+        seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_numeric_1)
       )
     },
@@ -100,6 +104,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         phi0 = p0,
+        seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_numeric_2)
       )
     },
@@ -117,6 +122,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         phi0 = p0,
+        seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_integer)
       )
     },
@@ -134,6 +140,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         phi0 = p0,
+        seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_too_long)
       )
     },
@@ -151,6 +158,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         phi0 = p0,
+        seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_is_NA)
       )
     },
@@ -168,6 +176,7 @@ test_that("erroneous input: `min_n_batches`", {
         x_train = x_train_numeric,
         approach = "independence",
         phi0 = p0,
+        seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_positive)
       )
     },
@@ -184,6 +193,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "empirical",
     phi0 = p0,
+    seed = 1,
     extra_computation_args = list(min_n_batches = 5, max_batch_size = 10)
   )
 
@@ -194,6 +204,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "empirical",
     phi0 = p0,
+    seed = 1,
     extra_computation_args = list(min_n_batches = 10, max_batch_size = 10)
   )
 
@@ -216,6 +227,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "ctree",
     phi0 = p0,
+    seed = 1,
     extra_computation_args = list(min_n_batches = 5, max_batch_size = 10)
   )
 
@@ -226,6 +238,7 @@ test_that("different n_batches gives same/different shapley values for different
     x_train = x_train_numeric,
     approach = "ctree",
     phi0 = p0,
+    seed = 1,
     extra_computation_args = list(min_n_batches = 10, max_batch_size = 10)
   )
 

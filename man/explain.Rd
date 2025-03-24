@@ -14,7 +14,7 @@ explain(
   max_n_coalitions = NULL,
   group = NULL,
   n_MC_samples = 1000,
-  seed = 1,
+  seed = NULL,
   verbose = "basic",
   predict_model = NULL,
   get_model_specs = NULL,
