@@ -1,3 +1,16 @@
+# shapr 1.0.3
+
+* Fix documentation issues detected during shapr 1.0.2 release ([#442](https://github.com/NorskRegnesentral/shapr/pull/442))
+  * Remove examples from unexported functions
+  * Replace \dontrun by \donttest for long running examples
+  * Replace usage of `print()` by `warning()` on two occasions
+* Fix issue with `Expected <nn_module> but got object of type <NULL>` 
+`approach='vaeac'` after recent `torch` update broke it ([#444](https://github.com/NorskRegnesentral/shapr/pull/444))
+* Other minor fixes
+  * Add digits as arguments to the internal snapshot testing `expect_snapshot_rds()` to reduce false positive roundoff-errors between platforms ([#444](https://github.com/NorskRegnesentral/shapr/pull/444))
+
+
+
 # shapr 1.0.2
 
 * Fix CRAN NOTE which turned out to be bug related to returning NULL rather than integer(0) to identify (unconditional)
