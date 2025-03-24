@@ -893,144 +893,143 @@ make_waterfall_plot <- function(dt_plot,
 #' @examples
 #' \donttest{
 #' if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
+#'   # Get the data
+#'   data("airquality")
+#'   data <- data.table::as.data.table(airquality)
+#'   data <- data[complete.cases(data), ]
 #'
-#' # Get the data
-#' data("airquality")
-#' data <- data.table::as.data.table(airquality)
-#' data <- data[complete.cases(data), ]
+#'   #' Define the features and the response
+#'   x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#'   y_var <- "Ozone"
 #'
-#' #' Define the features and the response
-#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
-#' y_var <- "Ozone"
+#'   # Split data into test and training data set
+#'   ind_x_explain <- 1:25
+#'   x_train <- data[-ind_x_explain, ..x_var]
+#'   y_train <- data[-ind_x_explain, get(y_var)]
+#'   x_explain <- data[ind_x_explain, ..x_var]
 #'
-#' # Split data into test and training data set
-#' ind_x_explain <- 1:25
-#' x_train <- data[-ind_x_explain, ..x_var]
-#' y_train <- data[-ind_x_explain, get(y_var)]
-#' x_explain <- data[ind_x_explain, ..x_var]
-#'
-#' # Fitting a basic xgboost model to the training data
-#' model <- xgboost::xgboost(
-#'   data = as.matrix(x_train),
-#'   label = y_train,
-#'   nround = 20,
-#'   verbose = FALSE
-#' )
-#'
-#' # Specifying the phi_0, i.e. the expected prediction without any features
-#' phi0 <- mean(y_train)
-#'
-#' # Independence approach
-#' explanation_independence <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "independence",
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e2
-#' )
-#'
-#' # Gaussian 1e1 approach
-#' explanation_gaussian_1e1 <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "gaussian",
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e1
-#' )
-#'
-#' # Gaussian 1e2 approach
-#' explanation_gaussian_1e2 <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "gaussian",
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e2
-#' )
-#'
-#' # ctree approach
-#' explanation_ctree <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "ctree",
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e2
-#' )
-#'
-#' # Combined approach
-#' explanation_combined <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = c("gaussian", "independence", "ctree"),
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e2
-#' )
-#'
-#' # Create a list of explanations with names
-#' explanation_list_named <- list(
-#'   "Ind." = explanation_independence,
-#'   "Gaus. 1e1" = explanation_gaussian_1e1,
-#'   "Gaus. 1e2" = explanation_gaussian_1e2,
-#'   "Ctree" = explanation_ctree,
-#'   "Combined" = explanation_combined
-#' )
-#'
-#' # Create the default MSEv plot where we average over both the coalitions and observations
-#' # with approximate 95% confidence intervals
-#' plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95, plot_type = "overall")
-#'
-#' # Can also create plots of the MSEv criterion averaged only over the coalitions or observations.
-#' MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
-#'   CI_level = 0.95,
-#'   plot_type = c("overall", "comb", "explicand")
-#' )
-#' MSEv_figures$MSEv_bar
-#' MSEv_figures$MSEv_coalition_bar
-#' MSEv_figures$MSEv_explicand_bar
-#'
-#' # When there are many coalitions or observations, then it can be easier to look at line plots
-#' MSEv_figures$MSEv_coalition_line_point
-#' MSEv_figures$MSEv_explicand_line_point
-#'
-#' # We can specify which observations or coalitions to plot
-#' plot_MSEv_eval_crit(explanation_list_named,
-#'   plot_type = "explicand",
-#'   index_x_explain = c(1, 3:4, 6),
-#'   CI_level = 0.95
-#' )$MSEv_explicand_bar
-#' plot_MSEv_eval_crit(explanation_list_named,
-#'   plot_type = "comb",
-#'   id_coalition = c(3, 4, 9, 13:15),
-#'   CI_level = 0.95
-#' )$MSEv_coalition_bar
-#'
-#' # We can alter the figures if other palette schemes or design is wanted
-#' bar_text_n_decimals <- 1
-#' MSEv_figures$MSEv_bar +
-#'   ggplot2::scale_x_discrete(limits = rev(levels(MSEv_figures$MSEv_bar$data$Method))) +
-#'   ggplot2::coord_flip() +
-#'   ggplot2::scale_fill_discrete() + #' Default ggplot2 palette
-#'   ggplot2::theme_minimal() + #' This must be set before the other theme call
-#'   ggplot2::theme(
-#'     plot.title = ggplot2::element_text(size = 10),
-#'     legend.position = "bottom"
-#'   ) +
-#'   ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
-#'   ggplot2::geom_text(
-#'     ggplot2::aes(label = sprintf(
-#'       paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-#'       round(MSEv, bar_text_n_decimals)
-#'     )),
-#'     vjust = -1.1, # This value must be altered based on the plot dimension
-#'     hjust = 1.1, # This value must be altered based on the plot dimension
-#'     color = "black",
-#'     position = ggplot2::position_dodge(0.9),
-#'     size = 5
+#'   # Fitting a basic xgboost model to the training data
+#'   model <- xgboost::xgboost(
+#'     data = as.matrix(x_train),
+#'     label = y_train,
+#'     nround = 20,
+#'     verbose = FALSE
 #'   )
+#'
+#'   # Specifying the phi_0, i.e. the expected prediction without any features
+#'   phi0 <- mean(y_train)
+#'
+#'   # Independence approach
+#'   explanation_independence <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = "independence",
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e2
+#'   )
+#'
+#'   # Gaussian 1e1 approach
+#'   explanation_gaussian_1e1 <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = "gaussian",
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e1
+#'   )
+#'
+#'   # Gaussian 1e2 approach
+#'   explanation_gaussian_1e2 <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = "gaussian",
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e2
+#'   )
+#'
+#'   # ctree approach
+#'   explanation_ctree <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = "ctree",
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e2
+#'   )
+#'
+#'   # Combined approach
+#'   explanation_combined <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = c("gaussian", "independence", "ctree"),
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e2
+#'   )
+#'
+#'   # Create a list of explanations with names
+#'   explanation_list_named <- list(
+#'     "Ind." = explanation_independence,
+#'     "Gaus. 1e1" = explanation_gaussian_1e1,
+#'     "Gaus. 1e2" = explanation_gaussian_1e2,
+#'     "Ctree" = explanation_ctree,
+#'     "Combined" = explanation_combined
+#'   )
+#'
+#'   # Create the default MSEv plot where we average over both the coalitions and observations
+#'   # with approximate 95% confidence intervals
+#'   plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95, plot_type = "overall")
+#'
+#'   # Can also create plots of the MSEv criterion averaged only over the coalitions or observations.
+#'   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
+#'     CI_level = 0.95,
+#'     plot_type = c("overall", "comb", "explicand")
+#'   )
+#'   MSEv_figures$MSEv_bar
+#'   MSEv_figures$MSEv_coalition_bar
+#'   MSEv_figures$MSEv_explicand_bar
+#'
+#'   # When there are many coalitions or observations, then it can be easier to look at line plots
+#'   MSEv_figures$MSEv_coalition_line_point
+#'   MSEv_figures$MSEv_explicand_line_point
+#'
+#'   # We can specify which observations or coalitions to plot
+#'   plot_MSEv_eval_crit(explanation_list_named,
+#'     plot_type = "explicand",
+#'     index_x_explain = c(1, 3:4, 6),
+#'     CI_level = 0.95
+#'   )$MSEv_explicand_bar
+#'   plot_MSEv_eval_crit(explanation_list_named,
+#'     plot_type = "comb",
+#'     id_coalition = c(3, 4, 9, 13:15),
+#'     CI_level = 0.95
+#'   )$MSEv_coalition_bar
+#'
+#'   # We can alter the figures if other palette schemes or design is wanted
+#'   bar_text_n_decimals <- 1
+#'   MSEv_figures$MSEv_bar +
+#'     ggplot2::scale_x_discrete(limits = rev(levels(MSEv_figures$MSEv_bar$data$Method))) +
+#'     ggplot2::coord_flip() +
+#'     ggplot2::scale_fill_discrete() + #' Default ggplot2 palette
+#'     ggplot2::theme_minimal() + #' This must be set before the other theme call
+#'     ggplot2::theme(
+#'       plot.title = ggplot2::element_text(size = 10),
+#'       legend.position = "bottom"
+#'     ) +
+#'     ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
+#'     ggplot2::geom_text(
+#'       ggplot2::aes(label = sprintf(
+#'         paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+#'         round(MSEv, bar_text_n_decimals)
+#'       )),
+#'       vjust = -1.1, # This value must be altered based on the plot dimension
+#'       hjust = 1.1, # This value must be altered based on the plot dimension
+#'       color = "black",
+#'       position = ggplot2::position_dodge(0.9),
+#'       size = 5
+#'     )
 #' }
 #' }
 #'
@@ -1447,91 +1446,90 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #' @examples
 #' \dontrun{
 #' if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
+#'   # Get the data
+#'   data("airquality")
+#'   data <- data.table::as.data.table(airquality)
+#'   data <- data[complete.cases(data), ]
 #'
-#' # Get the data
-#' data("airquality")
-#' data <- data.table::as.data.table(airquality)
-#' data <- data[complete.cases(data), ]
+#'   # Define the features and the response
+#'   x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#'   y_var <- "Ozone"
 #'
-#' # Define the features and the response
-#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
-#' y_var <- "Ozone"
+#'   # Split data into test and training data set
+#'   ind_x_explain <- 1:12
+#'   x_train <- data[-ind_x_explain, ..x_var]
+#'   y_train <- data[-ind_x_explain, get(y_var)]
+#'   x_explain <- data[ind_x_explain, ..x_var]
 #'
-#' # Split data into test and training data set
-#' ind_x_explain <- 1:12
-#' x_train <- data[-ind_x_explain, ..x_var]
-#' y_train <- data[-ind_x_explain, get(y_var)]
-#' x_explain <- data[ind_x_explain, ..x_var]
+#'   # Fitting a basic xgboost model to the training data
+#'   model <- xgboost::xgboost(
+#'     data = as.matrix(x_train),
+#'     label = y_train,
+#'     nround = 20,
+#'     verbose = FALSE
+#'   )
 #'
-#' # Fitting a basic xgboost model to the training data
-#' model <- xgboost::xgboost(
-#'   data = as.matrix(x_train),
-#'   label = y_train,
-#'   nround = 20,
-#'   verbose = FALSE
-#' )
+#'   # Specifying the phi_0, i.e. the expected prediction without any features
+#'   phi0 <- mean(y_train)
 #'
-#' # Specifying the phi_0, i.e. the expected prediction without any features
-#' phi0 <- mean(y_train)
+#'   # Independence approach
+#'   explanation_independence <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = "independence",
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e2
+#'   )
 #'
-#' # Independence approach
-#' explanation_independence <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "independence",
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e2
-#' )
+#'   # Empirical approach
+#'   explanation_empirical <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = "empirical",
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e2
+#'   )
 #'
-#' # Empirical approach
-#' explanation_empirical <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "empirical",
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e2
-#' )
+#'   # Gaussian 1e1 approach
+#'   explanation_gaussian_1e1 <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = "gaussian",
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e1
+#'   )
 #'
-#' # Gaussian 1e1 approach
-#' explanation_gaussian_1e1 <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "gaussian",
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e1
-#' )
+#'   # Gaussian 1e2 approach
+#'   explanation_gaussian_1e2 <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = "gaussian",
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e2
+#'   )
 #'
-#' # Gaussian 1e2 approach
-#' explanation_gaussian_1e2 <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "gaussian",
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e2
-#' )
+#'   # Combined approach
+#'   explanation_combined <- explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = c("gaussian", "ctree", "empirical"),
+#'     phi0 = phi0,
+#'     n_MC_samples = 1e2
+#'   )
 #'
-#' # Combined approach
-#' explanation_combined <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = c("gaussian", "ctree", "empirical"),
-#'   phi0 = phi0,
-#'   n_MC_samples = 1e2
-#' )
-#'
-#' # Create a list of explanations with names
-#' explanation_list <- list(
-#'   "Ind." = explanation_independence,
-#'   "Emp." = explanation_empirical,
-#'   "Gaus. 1e1" = explanation_gaussian_1e1,
-#'   "Gaus. 1e2" = explanation_gaussian_1e2,
-#'   "Combined" = explanation_combined
-#' )
+#'   # Create a list of explanations with names
+#'   explanation_list <- list(
+#'     "Ind." = explanation_independence,
+#'     "Emp." = explanation_empirical,
+#'     "Gaus. 1e1" = explanation_gaussian_1e1,
+#'     "Gaus. 1e2" = explanation_gaussian_1e2,
+#'     "Combined" = explanation_combined
+#'   )
 #'
 #'   # The function uses the provided names.
 #'   plot_SV_several_approaches(explanation_list)
