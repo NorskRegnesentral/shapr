@@ -15,7 +15,12 @@ expect_snapshot_rds <- function(code, name = "tmp", digits = 4) {
   testthat::announce_snapshot_file(path = path)
 
 
-  testthat::expect_snapshot(print({out <- code}, digits=digits)) # Test output + warnings/messages
+  testthat::expect_snapshot(print(
+    {
+      out <- code
+    },
+    digits = digits
+  )) # Test output + warnings/messages
 
   saveRDS(out, file = path)
 
