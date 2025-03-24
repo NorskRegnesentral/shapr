@@ -2762,7 +2762,7 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #'   x_explain <- data[ind_x_explain, ..x_var]
 #'
 #'   # Fitting a basic xgboost model to the training data
-#'   model <- xgbost::xgboost(
+#'   model <- xgboost::xgboost(
 #'     data = as.matrix(x_train),
 #'     label = y_train,
 #'     nround = 100,
