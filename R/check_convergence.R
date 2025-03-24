@@ -2,6 +2,8 @@
 #'
 #' @inheritParams default_doc_export
 #'
+#' @return The (updated) internal list
+#'
 #' @export
 #' @keywords internal
 check_convergence <- function(internal) {

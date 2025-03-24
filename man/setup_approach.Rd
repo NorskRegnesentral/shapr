@@ -17,7 +17,7 @@
 \alias{setup_approach.regression_surrogate}
 \alias{setup_approach.timeseries}
 \alias{setup_approach.vaeac}
-\title{Set up the framework chosen approach}
+\title{Set up the framework for the chosen approach}
 \usage{
 setup_approach(internal, ...)
 
@@ -268,6 +268,9 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 
 \item{vaeac.extra_parameters}{Named list with extra parameters to the \code{vaeac} approach. See
 \code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
+}
+\value{
+Updated internal object with the approach set up
 }
 \description{
 The different choices of \code{approach} take different (optional) parameters,

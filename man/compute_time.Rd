@@ -10,6 +10,9 @@ compute_time(internal)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+List of reformatted timing information
+}
 \description{
 Gathers and computes the timing of the different parts of the explain function.
 }

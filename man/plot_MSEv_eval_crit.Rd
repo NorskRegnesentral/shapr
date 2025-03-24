@@ -61,99 +61,93 @@ criterion, but also for each observation/explicand and coalition by only averagi
 the coalitions and observations/explicands, respectively.
 }
 \examples{
-\dontrun{
-# Load necessary libraries
-library(xgboost)
-library(data.table)
-library(shapr)
-library(ggplot2)
+\donttest{
+if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
+  # Get the data
+  data("airquality")
+  data <- data.table::as.data.table(airquality)
+  data <- data[complete.cases(data), ]
 
-# Get the data
-data("airquality")
-data <- data.table::as.data.table(airquality)
-data <- data[complete.cases(data), ]
+  #' Define the features and the response
+  x_var <- c("Solar.R", "Wind", "Temp", "Month")
+  y_var <- "Ozone"
 
-#' Define the features and the response
-x_var <- c("Solar.R", "Wind", "Temp", "Month")
-y_var <- "Ozone"
+  # Split data into test and training data set
+  ind_x_explain <- 1:25
+  x_train <- data[-ind_x_explain, ..x_var]
+  y_train <- data[-ind_x_explain, get(y_var)]
+  x_explain <- data[ind_x_explain, ..x_var]
 
-# Split data into test and training data set
-ind_x_explain <- 1:25
-x_train <- data[-ind_x_explain, ..x_var]
-y_train <- data[-ind_x_explain, get(y_var)]
-x_explain <- data[ind_x_explain, ..x_var]
+  # Fitting a basic xgboost model to the training data
+  model <- xgboost::xgboost(
+    data = as.matrix(x_train),
+    label = y_train,
+    nround = 20,
+    verbose = FALSE
+  )
 
-# Fitting a basic xgboost model to the training data
-model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
-  nround = 20,
-  verbose = FALSE
-)
+  # Specifying the phi_0, i.e. the expected prediction without any features
+  phi0 <- mean(y_train)
 
-# Specifying the phi_0, i.e. the expected prediction without any features
-phi0 <- mean(y_train)
+  # Independence approach
+  explanation_independence <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "independence",
+    phi0 = phi0,
+    n_MC_samples = 1e2
+  )
 
-# Independence approach
-explanation_independence <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "independence",
-  phi0 = phi0,
-  n_MC_samples = 1e2
-)
+  # Gaussian 1e1 approach
+  explanation_gaussian_1e1 <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "gaussian",
+    phi0 = phi0,
+    n_MC_samples = 1e1
+  )
 
-# Gaussian 1e1 approach
-explanation_gaussian_1e1 <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "gaussian",
-  phi0 = phi0,
-  n_MC_samples = 1e1
-)
+  # Gaussian 1e2 approach
+  explanation_gaussian_1e2 <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "gaussian",
+    phi0 = phi0,
+    n_MC_samples = 1e2
+  )
 
-# Gaussian 1e2 approach
-explanation_gaussian_1e2 <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "gaussian",
-  phi0 = phi0,
-  n_MC_samples = 1e2
-)
+  # ctree approach
+  explanation_ctree <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "ctree",
+    phi0 = phi0,
+    n_MC_samples = 1e2
+  )
 
-# ctree approach
-explanation_ctree <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "ctree",
-  phi0 = phi0,
-  n_MC_samples = 1e2
-)
+  # Combined approach
+  explanation_combined <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = c("gaussian", "independence", "ctree"),
+    phi0 = phi0,
+    n_MC_samples = 1e2
+  )
 
-# Combined approach
-explanation_combined <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = c("gaussian", "independence", "ctree"),
-  phi0 = phi0,
-  n_MC_samples = 1e2
-)
+  # Create a list of explanations with names
+  explanation_list_named <- list(
+    "Ind." = explanation_independence,
+    "Gaus. 1e1" = explanation_gaussian_1e1,
+    "Gaus. 1e2" = explanation_gaussian_1e2,
+    "Ctree" = explanation_ctree,
+    "Combined" = explanation_combined
+  )
 
-# Create a list of explanations with names
-explanation_list_named <- list(
-  "Ind." = explanation_independence,
-  "Gaus. 1e1" = explanation_gaussian_1e1,
-  "Gaus. 1e2" = explanation_gaussian_1e2,
-  "Ctree" = explanation_ctree,
-  "Combined" = explanation_combined
-)
-
-if (requireNamespace("ggplot2", quietly = TRUE)) {
   # Create the default MSEv plot where we average over both the coalitions and observations
   # with approximate 95\% confidence intervals
   plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95, plot_type = "overall")

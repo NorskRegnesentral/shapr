@@ -2,6 +2,8 @@
 #'
 #' @inheritParams default_doc_export
 #'
+#' @return The internal list updated with the coalitions to be estimated
+#'
 #' @export
 #' @keywords internal
 shapley_setup <- function(internal) {
@@ -154,16 +156,6 @@ shapley_setup <- function(internal) {
 #' @keywords internal
 #'
 #' @author Nikolai Sellereite, Martin Jullum, Lars Henry Berge Olsen
-#'
-#' @examples
-#' \dontrun{
-#' # All coalitions
-#' x <- create_coalition_table(m = 3)
-#' nrow(x) # Equals 2^3 = 8
-#'
-#' # Subsample of coalitions
-#' x <- shapr:::create_coalition_table(m = 10, exact = FALSE, n_coalitions = 1e2)
-#' }
 create_coalition_table <- function(m,
                                    exact = TRUE,
                                    n_coalitions = 200,

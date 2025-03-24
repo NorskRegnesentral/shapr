@@ -13,6 +13,9 @@ Output from \code{\link[=compute_vS]{compute_vS()}}}
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+The vS_list after being merged with previously computed vS_lists (stored in internal)
+}
 \description{
 Appends the new vS_list to the prev vS_list
 }

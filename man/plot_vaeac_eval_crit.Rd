@@ -50,7 +50,7 @@ See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al.
 \href{https://borea17.github.io/paper_summaries/iwae/}{blog post} for a summary of the VLB and IWAE.
 }
 \examples{
-\dontrun{
+\donttest{
 library(xgboost)
 library(data.table)
 library(shapr)
@@ -78,7 +78,7 @@ explanation_paired <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  approach = approach,
+  approach = "vaeac",
   phi0 = p0,
   n_MC_samples = 1, # As we are only interested in the training of the vaeac
   vaeac.epochs = 10, # Should be higher in applications.
@@ -92,7 +92,7 @@ explanation_regular <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  approach = approach,
+  approach = "vaeac",
   phi0 = p0,
   n_MC_samples = 1, # As we are only interested in the training of the vaeac
   vaeac.epochs = 10, # Should be higher in applications.

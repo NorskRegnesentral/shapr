@@ -13,6 +13,9 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 \item{vS_list}{List
 Output from \code{\link[=compute_vS]{compute_vS()}}}
 }
+\value{
+The (updated) internal list
+}
 \description{
 Computes the the Shapley values and their standard deviation given the \code{v(S)}
 }

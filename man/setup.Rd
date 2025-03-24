@@ -240,6 +240,10 @@ See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} fo
 
 \item{...}{Further arguments passed to specific approaches, see below.}
 }
+\value{
+A internal list, containing parameters, info, data and computations needed for the later computations.
+The list is expanded and modified in other functions.
+}
 \description{
 check_setup
 }

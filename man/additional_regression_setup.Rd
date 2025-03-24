@@ -10,6 +10,9 @@ additional_regression_setup(internal, model, predict_model)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+The (updated) internal list
+}
 \description{
 Additional setup for regression-based methods
 }

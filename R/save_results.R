@@ -2,6 +2,8 @@
 #'
 #' @inheritParams default_doc_export
 #'
+#' @return No return value (but saves the intermediate results to disk)
+#'
 #' @export
 #' @keywords internal
 save_results <- function(internal) {
@@ -19,4 +21,5 @@ save_results <- function(internal) {
   saveRDS(internal[c("parameters", "iter_list")], saving_path_copy)
   if (file.exists(saving_path)) file.remove(saving_path)
   file.rename(saving_path_copy, saving_path)
+  NULL
 }

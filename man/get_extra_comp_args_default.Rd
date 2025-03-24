@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup.R
 \name{get_extra_comp_args_default}
 \alias{get_extra_comp_args_default}
-\title{Gets the default values for the extra estimation arguments}
+\title{Gets the default values for the extra computation arguments}
 \usage{
 get_extra_comp_args_default(
   internal,
@@ -51,8 +51,11 @@ A larger numbers requires more memory, but may have a slight computational advan
 Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
 than the number of parallel workers.}
 }
+\value{
+A list with the default values for the extra computation arguments.
+}
 \description{
-Gets the default values for the extra estimation arguments
+Gets the default values for the extra computation arguments
 }
 \references{
 \itemize{

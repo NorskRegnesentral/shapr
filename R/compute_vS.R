@@ -6,6 +6,8 @@
 #' Indicates whether the lapply method (default) or loop method should be used.
 #' Options other than "future" is only used for testing/debugging.
 #'
+#' @return List of `v(S)` for different coalitions `S`, optionally also with the samples used to estimate `v(S)`
+#'
 #' @export
 #' @keywords internal
 compute_vS <- function(internal, model, predict_model, method = "future") {
@@ -223,6 +225,8 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
 #' Appends the new vS_list to the prev vS_list
 #'
 #' @inheritParams compute_estimates
+#'
+#' @return The vS_list after being merged with previously computed vS_lists (stored in internal)
 #'
 #' @export
 #' @keywords internal

@@ -403,7 +403,7 @@ This combined batch computing of the v(S) values, enables fast and accurate esti
 in a memory friendly manner.
 }
 \examples{
-\dontrun{
+\donttest{
 
 # Load example data
 data("airquality")

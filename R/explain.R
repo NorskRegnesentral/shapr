@@ -248,7 +248,7 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'
 #' # Load example data
 #' data("airquality")
@@ -582,6 +582,8 @@ explain <- function(model,
 #'
 #' @inheritParams default_doc_export
 #'
+#' @return Cleaned up version of the output list used for testthat testing
+#'
 #' @export
 #' @keywords internal
 #' @author Lars Henry Berge Olsen, Martin Jullum
@@ -606,8 +608,8 @@ testing_cleanup <- function(output) {
   # Removing the fit times for regression surrogate models
   if ("regression_surrogate" %in% output$internal$parameters$approach) {
     # Deletes the fit_times for approach = regression_surrogate to make tests pass.
-    # In the future we could delete this only when a new argument in explain called testing is TRUE
     output$internal$objects$regression.surrogate_model$pre$mold$blueprint$recipe$fit_times <- NULL
+    output$internal$objects$regression.surrogate_model$fit$fit$elapsed <- NULL
   }
 
   # Delete the saving_path

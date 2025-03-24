@@ -67,7 +67,7 @@
 #'
 #' @author Jon Lachmann, Martin Jullum
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load example data
 #' data("airquality")
 #' data <- data.table::as.data.table(airquality)

@@ -1,4 +1,4 @@
-#' Set up the framework chosen approach
+#' Set up the framework for the chosen approach
 #'
 #' The different choices of `approach` take different (optional) parameters,
 #' which are forwarded from [explain()].
@@ -8,6 +8,8 @@
 #' @param ... Arguments passed to specific classes. See below
 #'
 #' @inheritParams default_doc_export
+#'
+#' @return Updated internal object with the approach set up
 #'
 #' @export
 #' @keywords internal
