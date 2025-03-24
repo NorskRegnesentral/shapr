@@ -153,6 +153,8 @@ get_model_specs.default <- function(x) {
 
 
 #' Provides a data.table with the supported models
+#'
+#' @return A data.table with the supported models.
 #' @export
 get_supported_models <- function() {
   DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs), "info"), keep.rownames = TRUE)

@@ -4,6 +4,8 @@
 #' @param vS_list List
 #' Output from [compute_vS()]
 #'
+#' @return The (updated) internal list
+#'
 #' @export
 #' @keywords internal
 compute_estimates <- function(internal, vS_list) {

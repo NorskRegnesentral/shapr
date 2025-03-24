@@ -4,8 +4,7 @@ linters: linters_with_defaults(
         object_usage_linter = NULL,
         commented_code_linter = NULL,
         indentation_linter = NULL,
-        cyclocomp_linter = NULL
-    )
+        return_linter = NULL)
 exclusions: list(
         "inst/scripts",
         "inst/code_paper",

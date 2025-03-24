@@ -2511,7 +2511,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' `plot_type` parameter.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(xgboost)
 #' library(data.table)
 #' library(shapr)
@@ -2539,7 +2539,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'   model = model,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
-#'   approach = approach,
+#'   approach = "vaeac",
 #'   phi0 = p0,
 #'   n_MC_samples = 1, # As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 10, # Should be higher in applications.
@@ -2553,7 +2553,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'   model = model,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
-#'   approach = approach,
+#'   approach = "vaeac",
 #'   phi0 = p0,
 #'   n_MC_samples = 1, # As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 10, # Should be higher in applications.
@@ -2747,55 +2747,53 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #' @inherit vaeac_train_model references
 #'
 #' @examples
-#' \dontrun{
-#' library(xgboost)
-#' library(data.table)
-#' library(shapr)
+#' \donttest{
+#' if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
+#'   data("airquality")
+#'   data <- data.table::as.data.table(airquality)
+#'   data <- data[complete.cases(data), ]
 #'
-#' data("airquality")
-#' data <- data.table::as.data.table(airquality)
-#' data <- data[complete.cases(data), ]
+#'   x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#'   y_var <- "Ozone"
 #'
-#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
-#' y_var <- "Ozone"
+#'   ind_x_explain <- 1:6
+#'   x_train <- data[-ind_x_explain, ..x_var]
+#'   y_train <- data[-ind_x_explain, get(y_var)]
+#'   x_explain <- data[ind_x_explain, ..x_var]
 #'
-#' ind_x_explain <- 1:6
-#' x_train <- data[-ind_x_explain, ..x_var]
-#' y_train <- data[-ind_x_explain, get(y_var)]
-#' x_explain <- data[ind_x_explain, ..x_var]
+#'   # Fitting a basic xgboost model to the training data
+#'   model <- xgboost::xgboost(
+#'     data = as.matrix(x_train),
+#'     label = y_train,
+#'     nround = 100,
+#'     verbose = FALSE
+#'   )
 #'
-#' # Fitting a basic xgboost model to the training data
-#' model <- xgboost(
-#'   data = as.matrix(x_train),
-#'   label = y_train,
-#'   nround = 100,
-#'   verbose = FALSE
-#' )
+#'   explanation <- shapr::explain(
+#'     model = model,
+#'     x_explain = x_explain,
+#'     x_train = x_train,
+#'     approach = "vaeac",
+#'     phi0 = mean(y_train),
+#'     n_MC_samples = 1,
+#'     vaeac.epochs = 10,
+#'     vaeac.n_vaeacs_initialize = 1
+#'   )
 #'
-#' explanation <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "vaeac",
-#'   phi0 = mean(y_train),
-#'   n_MC_samples = 1,
-#'   vaeac.epochs = 10,
-#'   vaeac.n_vaeacs_initialize = 1
-#' )
+#'   # Plot the results
+#'   figure <- shapr::plot_vaeac_imputed_ggpairs(
+#'     explanation = explanation,
+#'     which_vaeac_model = "best",
+#'     x_true = x_train,
+#'     add_title = TRUE
+#'   )
+#'   figure
 #'
-#' # Plot the results
-#' figure <- plot_vaeac_imputed_ggpairs(
-#'   explanation = explanation,
-#'   which_vaeac_model = "best",
-#'   x_true = x_train,
-#'   add_title = TRUE
-#' )
-#' figure
-#'
-#' # Note that this is an ggplot2 object which we can alter, e.g., we can change the colors.
-#' figure +
-#'   ggplot2::scale_color_manual(values = c("#E69F00", "#999999")) +
-#'   ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
+#'   # Note that this is an ggplot2 object which we can alter, e.g., we can change the colors.
+#'   figure +
+#'     ggplot2::scale_color_manual(values = c("#E69F00", "#999999")) +
+#'     ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
+#' }
 #' }
 plot_vaeac_imputed_ggpairs <- function(
     explanation,

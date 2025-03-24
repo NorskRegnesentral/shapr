@@ -10,6 +10,9 @@ save_results(internal)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+No return value (but saves the intermediate results to disk)
+}
 \description{
 Saves the intermediate results to disk
 }

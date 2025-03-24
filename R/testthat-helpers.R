@@ -1,16 +1,4 @@
 #' @keywords internal
-helper_rds <- function(code, name = "tmp.rds") {
-  path <- file.path(tempdir(), name)
-  testthat::expect_snapshot_output({
-    cat(paste0("Output from ", name, "\n"))
-    code
-  })
-  saveRDS(code, file = path)
-
-  path
-}
-
-#' @keywords internal
 compare_rds <- function(old, new) {
   old <- readRDS(old)
   new <- readRDS(new)

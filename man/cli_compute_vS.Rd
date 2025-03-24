@@ -10,6 +10,9 @@ cli_compute_vS(internal)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+No return value (but prints compute_vS messages with cli)
+}
 \description{
 Printing messages in compute_vS with cli
 }

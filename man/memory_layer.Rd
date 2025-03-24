@@ -29,28 +29,6 @@ layer takes stored tensor from the storage. I.e., when memory layer is used in t
 returns sum of the stored vector and an \code{input}, otherwise it returns their concatenation. If the tensor with
 specified \code{id} is not in storage when the layer with \code{output = TRUE} is called, it would cause an exception.
 }
-\examples{
-\dontrun{
-memory_layer_env <- new.env()
-net1 <- torch::nn_sequential(
-  memory_layer("#1", shared_env = memory_layer_env),
-  memory_layer("#0.1", shared_env = memory_layer_env),
-  torch::nn_linear(512, 256),
-  torch::nn_leaky_relu(), # Here add cannot be TRUE because the dimensions mismatch
-  memory_layer("#0.1", shared_env = memory_layer_env, output = TRUE, add = FALSE),
-  torch::nn_linear(768, 256),
-  # the dimension after the concatenation with skip-connection is 512 + 256 = 768
-)
-net2 <- torch::nn_equential(
-  torch::nn_linear(512, 512),
-  memory_layer("#1", shared_env = memory_layer_env, output = TRUE, add = TRUE),
-  ...
-)
-# Here a and c must be of correct dimensions, e.g., a = torch::torch_ones(1,512).
-b <- net1(a)
-d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
-}
-}
 \author{
 Lars Henry Berge Olsen
 }

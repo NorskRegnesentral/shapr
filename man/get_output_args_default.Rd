@@ -25,6 +25,9 @@ Note that the Shapley kernel weights are replaced by the sampling frequency when
 The path to the directory where the results of the iterative estimation procedure should be saved.
 Defaults to a temporary directory.}
 }
+\value{
+A list of default output arguments.
+}
 \description{
 Gets the default values for the output arguments
 }

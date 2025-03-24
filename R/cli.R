@@ -5,6 +5,8 @@
 #' @inheritParams default_doc_export
 #' @inheritParams explain
 #'
+#' @return No return value (but prints startup messages with cli)
+#'
 #' @export
 #' @keywords internal
 cli_startup <- function(internal, model_class, verbose) {
@@ -77,6 +79,8 @@ cli_startup <- function(internal, model_class, verbose) {
 #' @inheritParams default_doc_export
 #' @inheritParams explain
 #'
+#' @return No return value (but prints compute_vS messages with cli)
+#'
 #' @export
 #' @keywords internal
 cli_compute_vS <- function(internal) {
@@ -100,6 +104,8 @@ cli_compute_vS <- function(internal) {
 #'
 #' @inheritParams default_doc_export
 #' @inheritParams explain
+#'
+#' @return No return value (but prints iterative messages with cli)
 #'
 #' @export
 #' @keywords internal

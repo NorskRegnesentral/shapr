@@ -10,6 +10,9 @@ finalize_explanation(internal)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+List of reformatted output information extracted from \code{internal}
+}
 \description{
 Gathers the final output to create the explanation object
 }

@@ -10,6 +10,9 @@ print_iter(internal)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
+\value{
+No return value (but prints iterative information)
+}
 \description{
 Prints iterative information
 }
