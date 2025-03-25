@@ -2,8 +2,8 @@
 #' @inheritParams explain_forecast
 #' @export
 predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explain_lags, y, xreg, ...) {
-  if (!requireNamespace("stats", quietly = TRUE)) {
-    stop("The stats package is required for predicting stats models")
+  if (!requireNamespace("forecast", quietly = TRUE)) {
+    stop("The forecast package is required when explaining Arima models")
   }
 
   prediction <- matrix(NA, length(explain_idx), horizon)

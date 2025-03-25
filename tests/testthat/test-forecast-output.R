@@ -1,3 +1,5 @@
+skip_if_not_installed("forecast")
+
 test_that("forecast_output_ar_numeric", {
   expect_snapshot_rds(
     explain_forecast(
