@@ -59,7 +59,7 @@
 #'
 #' @param seed Positive integer.
 #' Specifies the seed before any randomness based code is being run.
-#' If `NULL` no seed is set in the calling environment.
+#' If `NULL` (default) no seed is set in the calling environment.
 #'
 #' @param predict_model Function.
 #' The prediction function used when `model` is not natively supported.
