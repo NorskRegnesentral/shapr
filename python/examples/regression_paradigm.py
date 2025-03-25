@@ -28,7 +28,8 @@ explanation_list["empirical"] = explain(
     x_explain=dfx_test,
     approach='empirical',
     iterative = False,
-    phi0=dfy_train.mean().item()
+    phi0=dfy_train.mean().item(),
+    seed = 1
 )
 
 # Explain the model using several separate regression methods
@@ -39,7 +40,8 @@ explanation_list["sep_lm"] = explain(
     x_explain=dfx_test,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
-    regression_model='parsnip::linear_reg()'
+    regression_model='parsnip::linear_reg()',
+    seed = 1
 )
 
 # Principal component regression with (up to) three principal components
@@ -52,7 +54,8 @@ explanation_list["sep_pca"] = explain(
     regression_model='parsnip::linear_reg()',
     regression_recipe_func='''function(regression_recipe) {
         return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 3))
-    }'''
+    }''',
+    seed = 1
 )
 
 #  GAM with splines with (up to) three degrees of freedom
@@ -65,7 +68,8 @@ explanation_list["sep_splines"] = explain(
     regression_model='parsnip::linear_reg()',
     regression_recipe_func='''function(regression_recipe) {
         return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 3))
-    }'''
+    }''',
+    seed = 1
 )
 
 # Decision tree with cross validated tree depth
@@ -77,7 +81,8 @@ explanation_list["sep_tree_cv"] = explain(
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::decision_tree(tree_depth = hardhat::tune(), engine = 'rpart', mode = 'regression')",
     regression_tune_values='dials::grid_regular(dials::tree_depth(), levels = 4)',
-    regression_vfold_cv_para={'v': 5}
+    regression_vfold_cv_para={'v': 5},
+    seed = 1
 )
 
 # XGboost with default parameters
@@ -87,7 +92,8 @@ explanation_list["sep_xgboost"] = explain(
     x_explain=dfx_test,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
-    regression_model="parsnip::boost_tree(engine = 'xgboost', mode = 'regression')"
+    regression_model="parsnip::boost_tree(engine = 'xgboost', mode = 'regression')",
+    seed = 1
 )
 
 # XGboost with cross validated number of trees
@@ -99,7 +105,8 @@ explanation_list["sep_xgboost_cv"] = explain(
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::boost_tree(trees = hardhat::tune(), engine = 'xgboost', mode = 'regression')",
     regression_tune_values='expand.grid(trees = c(10, 15, 25, 50, 100, 500))',
-    regression_vfold_cv_para={'v': 5}
+    regression_vfold_cv_para={'v': 5},
+    seed = 1
 )
 
 # Explain the model using several surrogate regression methods
@@ -110,7 +117,8 @@ explanation_list["sur_lm"] = explain(
     x_explain=dfx_test,
     approach='regression_surrogate',
     phi0=dfy_train.mean().item(),
-    regression_model='parsnip::linear_reg()'
+    regression_model='parsnip::linear_reg()',
+    seed = 1
 )
 
 # Using random forest with default parameters as the surrogate model
@@ -120,7 +128,8 @@ explanation_list["sur_rf"] = explain(
     x_explain=dfx_test,
     approach='regression_surrogate',
     phi0=dfy_train.mean().item(),
-    regression_model="parsnip::rand_forest(engine = 'ranger', mode = 'regression')"
+    regression_model="parsnip::rand_forest(engine = 'ranger', mode = 'regression')",
+    seed = 1
 )
 
 # Using random forest with parameters tuned by cross-validation as the surrogate model
@@ -138,7 +147,8 @@ explanation_list["sur_rf_cv"] = explain(
       dials::trees(c(50, 750)),
       levels = 4
     )""",
-    regression_vfold_cv_para={'v': 4}
+    regression_vfold_cv_para={'v': 4},
+    seed = 1
 )
 
 # Print the MSEv evaluation criterion scores

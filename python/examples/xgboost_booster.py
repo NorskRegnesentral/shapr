@@ -15,6 +15,7 @@ explanation = explain(
     x_explain = dfx_test,
     approach = 'gaussian',
     phi0 = dfy_train.mean().item(),
+    seed = 1
 )
 
 print(explanation["shapley_values_est"])

@@ -43,6 +43,7 @@ explanation = explain(
     approach = 'empirical',
     predict_model = lambda m, x: m(torch.from_numpy(x.values).float()).cpu().detach().numpy(),
     phi0 = dfy_train.mean().item(),
+    seed = 1
 )
 print(explanation["shapley_values_est"])
 
