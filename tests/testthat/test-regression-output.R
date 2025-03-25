@@ -8,6 +8,7 @@ test_that("output_lm_numeric_lm_separate_iterative", {
       x_train = x_train_numeric,
       approach = "regression_separate",
       phi0 = p0,
+      seed = 1,
       regression.model = parsnip::linear_reg(),
       iterative = TRUE
     ),
@@ -25,6 +26,7 @@ test_that("output_lm_numeric_lm_separate", {
       x_train = x_train_numeric,
       approach = "regression_separate",
       phi0 = p0,
+      seed = 1,
       regression.model = parsnip::linear_reg(),
       iterative = FALSE
     ),
@@ -41,6 +43,7 @@ test_that("output_lm_numeric_lm_separate_n_comb", {
       x_train = x_train_numeric,
       approach = "regression_separate",
       phi0 = p0,
+      seed = 1,
       max_n_coalitions = 10,
       regression.model = parsnip::linear_reg(),
       iterative = FALSE
@@ -58,6 +61,7 @@ test_that("output_lm_categorical_lm_separate", {
       x_train = x_train_categorical,
       approach = "regression_separate",
       phi0 = p0,
+      seed = 1,
       regression.model = parsnip::linear_reg(),
       iterative = FALSE
     ),
@@ -74,6 +78,7 @@ test_that("output_lm_mixed_lm_separate", {
       x_train = x_train_mixed,
       approach = "regression_separate",
       phi0 = p0,
+      seed = 1,
       regression.model = parsnip::linear_reg(),
       iterative = FALSE
     ),
@@ -90,6 +95,7 @@ test_that("output_lm_mixed_splines_separate", {
       x_train = x_train_mixed,
       approach = "regression_separate",
       phi0 = p0,
+      seed = 1,
       regression.model = parsnip::linear_reg(),
       regression.recipe_func = function(regression.recipe) {
         recipes::step_ns(regression.recipe, recipes::all_numeric_predictors(), deg_free = 2)
@@ -108,6 +114,7 @@ test_that("output_lm_mixed_decision_tree_cv_separate", {
       x_explain = x_explain_mixed,
       x_train = x_train_mixed,
       phi0 = p0,
+      seed = 1,
       approach = "regression_separate",
       regression.model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
       regression.tune_values = data.frame(tree_depth = c(1, 2)),
@@ -128,6 +135,7 @@ test_that("output_lm_mixed_decision_tree_cv_separate_parallel", {
       x_explain = x_explain_mixed,
       x_train = x_train_mixed,
       phi0 = p0,
+      seed = 1,
       approach = "regression_separate",
       regression.model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
       regression.tune_values = data.frame(tree_depth = c(1, 2)),
@@ -147,6 +155,7 @@ test_that("output_lm_mixed_xgboost_separate", {
       x_explain = x_explain_mixed,
       x_train = x_train_mixed,
       phi0 = p0,
+      seed = 1,
       approach = "regression_separate",
       regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
       regression.recipe_func = function(regression.recipe) {
@@ -168,6 +177,7 @@ test_that("output_lm_numeric_lm_surrogate_iterative", {
       x_train = x_train_numeric,
       approach = "regression_surrogate",
       phi0 = p0,
+      seed = 1,
       regression.model = parsnip::linear_reg(),
       iterative = TRUE
     ),
@@ -185,6 +195,7 @@ test_that("output_lm_numeric_lm_surrogate", {
       x_train = x_train_numeric,
       approach = "regression_surrogate",
       phi0 = p0,
+      seed = 1,
       regression.model = parsnip::linear_reg(),
       iterative = FALSE
     ),
@@ -201,6 +212,7 @@ test_that("output_lm_numeric_lm_surrogate_n_comb", {
       x_train = x_train_numeric,
       approach = "regression_surrogate",
       phi0 = p0,
+      seed = 1,
       max_n_coalitions = 12,
       regression.model = parsnip::linear_reg(),
       iterative = FALSE
@@ -218,6 +230,7 @@ test_that("output_lm_numeric_lm_surrogate_reg_surr_n_comb", {
       x_train = x_train_numeric,
       approach = "regression_surrogate",
       phi0 = p0,
+      seed = 1,
       max_n_coalitions = 12,
       regression.model = parsnip::linear_reg(),
       regression.surrogate_n_comb = 8,
@@ -236,6 +249,7 @@ test_that("output_lm_categorical_lm_surrogate", {
       x_train = x_train_categorical,
       approach = "regression_surrogate",
       phi0 = p0,
+      seed = 1,
       regression.model = parsnip::linear_reg(),
       iterative = FALSE
     ),
@@ -252,6 +266,7 @@ test_that("output_lm_mixed_lm_surrogate", {
       x_train = x_train_mixed,
       approach = "regression_surrogate",
       phi0 = p0,
+      seed = 1,
       regression.model = parsnip::linear_reg(),
       iterative = FALSE
     ),
@@ -267,6 +282,7 @@ test_that("output_lm_mixed_decision_tree_cv_surrogate", {
       x_explain = x_explain_mixed,
       x_train = x_train_mixed,
       phi0 = p0,
+      seed = 1,
       approach = "regression_surrogate",
       regression.model = parsnip::decision_tree(tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"),
       regression.tune_values = data.frame(tree_depth = c(1, 2)),
@@ -285,6 +301,7 @@ test_that("output_lm_mixed_xgboost_surrogate", {
       x_explain = x_explain_mixed,
       x_train = x_train_mixed,
       phi0 = p0,
+      seed = 1,
       approach = "regression_surrogate",
       regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
       regression.recipe_func = function(regression.recipe) {

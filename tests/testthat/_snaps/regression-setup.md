@@ -2,8 +2,9 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = c("regression_surrogate",
-          "gaussian", "independence", "empirical"), iterative = FALSE)
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = c(
+          "regression_surrogate", "gaussian", "independence", "empirical"),
+        iterative = FALSE)
     Condition
       Error in `check_approach()`:
       ! The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.
@@ -12,8 +13,8 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = c("regression_separate",
-          "gaussian", "independence", "empirical"), iterative = FALSE)
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = c(
+          "regression_separate", "gaussian", "independence", "empirical"), iterative = FALSE)
     Condition
       Error in `check_approach()`:
       ! The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.
@@ -22,7 +23,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = NULL)
     Message
       Success with message:
@@ -37,7 +38,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = lm)
     Message
       Success with message:
@@ -52,7 +53,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"))
     Message
@@ -68,7 +69,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(num_terms = c(1, 2,
           3)))
@@ -85,7 +86,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
           3), num_terms = c(1, 2, 3)))
@@ -102,7 +103,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = 2, engine = "rpart",
           mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1,
           2, 3)))
@@ -119,7 +120,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_surrogate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)), iterative = FALSE)
     Message
       Success with message:
@@ -143,7 +144,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = 2, engine = "rpart",
           mode = "regression"), regression.tune_values = as.matrix(data.frame(
           tree_depth = c(1, 2, 3))))
@@ -160,7 +161,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = function(x) c(1, 2, 3))
     Message
@@ -176,7 +177,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = function(x) data.frame(
           wrong_name = c(1, 2, 3)))
@@ -193,7 +194,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
           3)), regression.vfold_cv_para = 10)
@@ -210,7 +211,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
           3)), regression.vfold_cv_para = list(10))
@@ -227,7 +228,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
         mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
           3)), regression.vfold_cv_para = list(hey = 10))
@@ -244,7 +245,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_separate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.recipe_func = 3)
     Message
       Success with message:
@@ -259,7 +260,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_surrogate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.recipe_func = function(x) {
           return(2)
         }, iterative = FALSE)
@@ -285,7 +286,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_surrogate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1, iterative = FALSE)
     Message
       Success with message:
@@ -309,7 +310,7 @@
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
-        x_train = x_train_numeric, phi0 = p0, approach = "regression_surrogate",
+        x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.surrogate_n_comb = 0, iterative = FALSE)
     Message
       Success with message:

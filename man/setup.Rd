@@ -90,7 +90,7 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
-If \code{NULL} no seed is set in the calling environment.}
+If \code{NULL} (default) no seed is set in the calling environment.}
 
 \item{feature_specs}{List. The output from \code{\link[=get_model_specs]{get_model_specs()}} or \code{\link[=get_data_specs]{get_data_specs()}}.
 Contains the 3 elements:

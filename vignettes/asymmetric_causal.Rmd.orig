@@ -416,6 +416,7 @@ explanation_sym_con[["gaussian"]] <- explain(
   x_explain = x_explain,
   approach = "gaussian",
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   asymmetric = FALSE, # Default value (TRUE will give the same since `causal_ordering = NULL`)
   causal_ordering = NULL, # Default value
@@ -428,6 +429,7 @@ explanation_sym_con[["ctree"]] <- explain(
   x_explain = x_explain,
   approach = "ctree",
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   asymmetric = FALSE, # Default value (TRUE will give the same since `causal_ordering = NULL`)
   causal_ordering = NULL, # Default value
@@ -439,6 +441,7 @@ explanation_sym_con[["xgboost"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
   asymmetric = FALSE, # Default value (TRUE will give the same as `causal_ordering = NULL`)
@@ -488,6 +491,7 @@ explanation_asym_con[["gaussian"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "gaussian",
   asymmetric = TRUE,
@@ -500,6 +504,7 @@ explanation_asym_con[["gaussian_non_iterative"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "gaussian",
   asymmetric = TRUE,
@@ -513,6 +518,7 @@ explanation_asym_con[["ctree"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "ctree",
   asymmetric = TRUE,
@@ -525,6 +531,7 @@ explanation_asym_con[["xgboost"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
   asymmetric = TRUE,
@@ -601,6 +608,7 @@ explanation_sym_marg[["gaussian"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "gaussian",
   asymmetric = FALSE,
@@ -614,6 +622,7 @@ explanation_sym_marg[["independence_marg"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "independence",
   asymmetric = FALSE,
@@ -627,6 +636,7 @@ explanation_sym_marg[["independence_con"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "independence"
 )
@@ -671,6 +681,7 @@ explanation_sym_cau[["gaussian"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "gaussian",
   asymmetric = FALSE,
@@ -689,6 +700,7 @@ explanation_sym_cau[["copula"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "copula",
   asymmetric = FALSE,
@@ -719,6 +731,7 @@ explanation_asym_cau[["gaussian"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "gaussian",
   asymmetric = TRUE,
@@ -732,6 +745,7 @@ explanation_asym_cau[["copula"]] <- explain(
   x_train = x_train,
   x_explain = x_explain,
   phi0 = phi0,
+  seed = 1,
   n_MC_samples = 1000,
   approach = "copula",
   asymmetric = TRUE,
@@ -741,16 +755,17 @@ explanation_asym_cau[["copula"]] <- explain(
 
 # Use the vaeac approach
 explanation_asym_cau[["vaeac"]] <- explain(
-   model = model,
-   x_train = x_train,
-   x_explain = x_explain,
-   phi0 = phi0,
-   n_MC_samples = 1000,
-   approach = "vaeac",
-   vaeac.epochs = 20,
-   asymmetric = TRUE,
-   causal_ordering = list(1, 2:3, 4:7),
-   confounding = c(FALSE, TRUE, FALSE)
+  model = model,
+  x_train = x_train,
+  x_explain = x_explain,
+  phi0 = phi0,
+  seed = 1,
+  n_MC_samples = 1000,
+  approach = "vaeac",
+  vaeac.epochs = 20,
+  asymmetric = TRUE,
+  causal_ordering = list(1, 2:3, 4:7),
+  confounding = c(FALSE, TRUE, FALSE)
  )
 ```
 We can look at the elapsed time.
@@ -1071,6 +1086,7 @@ explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
   x_explain = x_explain,
   approach = "gaussian",
   phi0 = phi0,
+  seed = 1,
   asymmetric = FALSE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE),
@@ -1083,6 +1099,7 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
   x_explain = x_explain,
   approach = "gaussian",
   phi0 = phi0,
+  seed = 1,
   asymmetric = TRUE,
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE),
@@ -1156,6 +1173,7 @@ explanation_group_gaussian[["symmetric_marginal"]] <-
     x_explain = x_explain,
     approach = "gaussian",
     phi0 = phi0,
+    seed = 1,
     asymmetric = FALSE,
     causal_ordering = list(seq(length(group_list))), # or `NULL`
     confounding = TRUE,
@@ -1171,6 +1189,7 @@ explanation_group_gaussian[["symmetric_conditional"]] <-
     x_explain = x_explain,
     approach = "gaussian",
     phi0 = phi0,
+    seed = 1,
     asymmetric = FALSE,
     causal_ordering = list(seq(length(group_list))), # or `NULL`
     confounding = NULL,
@@ -1186,6 +1205,7 @@ explanation_group_gaussian[["asymmetric_conditional"]] <-
     x_explain = x_explain,
     approach = "gaussian",
     phi0 = phi0,
+    seed = 1,
     asymmetric = TRUE,
     causal_ordering = causal_ordering_group,
     confounding = NULL,
@@ -1201,6 +1221,7 @@ explanation_group_gaussian[["symmetric_causal"]] <-
     x_explain = x_explain,
     approach = "gaussian",
     phi0 = phi0,
+    seed = 1,
     asymmetric = FALSE,
     causal_ordering = causal_ordering_group,
     confounding = confounding,
@@ -1216,6 +1237,7 @@ explanation_group_gaussian[["asymmetric_causal"]] <-
     x_explain = x_explain,
     approach = "gaussian",
     phi0 = phi0,
+    seed = 1,
     asymmetric = TRUE,
     causal_ordering = causal_ordering_group,
     confounding = confounding,
