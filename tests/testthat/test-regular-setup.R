@@ -804,7 +804,6 @@ test_that("erroneous input: `seed`", {
         x_train = x_train_numeric,
         approach = "independence",
         phi0 = p0,
-        seed = 1,
         seed = seed_not_integer_interpretable
       )
     },
