@@ -2,6 +2,7 @@
 
 * Fix CRAN errors of type `Expected <nn_module> but got object of type <NULL>` occurring after the recent `torch` update, causing the `approach='vaeac'` to break. 
 * Fix documentation issues detected during shapr 1.0.2 release
+* Change default seed from 1 to NULL.
 * Other minor fixes.
 See NEWS.md for details.
 

@@ -6,9 +6,11 @@
   * Replace usage of `print()` by `warning()` on two occasions
 * Fix issue with `Expected <nn_module> but got object of type <NULL>` 
 `approach='vaeac'` after recent `torch` update broke it ([#444](https://github.com/NorskRegnesentral/shapr/pull/444))
+* Changes default seed in `explain()` and `explain_forecast()` from 1 to NULL to avoid set.seed() to conflict with later called code ([#445](https://github.com/NorskRegnesentral/shapr/pull/445))
+
 * Other minor fixes
   * Add digits as arguments to the internal snapshot testing `expect_snapshot_rds()` to reduce false positive roundoff-errors between platforms ([#444](https://github.com/NorskRegnesentral/shapr/pull/444))
-
+  * Adjust dependencies in Suggests and their usage in tests ([#446](https://github.com/NorskRegnesentral/shapr/pull/446))
 
 
 # shapr 1.0.2
