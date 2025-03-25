@@ -18,6 +18,9 @@ model_arima_temp_noxreg <- arima(data_arima$Temp[1:150], c(2, 1, 0))
 if (!requireNamespace("forecast", quietly = TRUE)) {
   warning("The forecast package is required for testing explain_forecast()")
 } else {
-  model_forecast_ARIMA_temp <- forecast::Arima(data_arima$Temp[1:150], order = c(2, 1, 0), xreg = data_arima$Wind[1:150])
+  model_forecast_ARIMA_temp <- forecast::Arima(
+    data_arima$Temp[1:150],
+    order = c(2, 1, 0),
+    xreg = data_arima$Wind[1:150]
+  )
 }
-
