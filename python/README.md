@@ -57,7 +57,7 @@ explanation = explain(
 print(explanation["shapley_values_est"])
 ```
 
-`shaprpy` knows how to explain predictions from models from `sklearn`, `keras` and `xgboost`. 
+`shaprpy` knows how to explain predictions from models from `sklearn`, `keras` (sequential) and `xgboost`. 
 For other models, one can provide a custom `predict_model` function (and optionally a custom `get_model_specs`) to `shaprpy.explain`.
 
 See `/examples` for runnable examples, including an example of a custom PyTorch model.
