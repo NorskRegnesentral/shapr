@@ -43,13 +43,13 @@ predict the contribution function for all coalitions.
 
 The `shapr` package supports any regression model from the
 popular `tidymodels` package developed by @tidymodels. The
-[`tidymodels`](https://tidymodels.org//) framework is a
+[`tidymodels`](https://tidymodels.org/) framework is a
 collection of packages for modeling and machine learning
 using [`tidyverse`](https://www.tidyverse.org/) principles.
 Some packages included in the `tidymodels` framework are
 `parsnip`, `recipes`, `workflows` `tune`, and `rsample`;
 see the [setup](#setup) section below for more examples.
-Furthermore, click [here](https://tidymodels.org//find/parsnip/)
+Furthermore, click [here](https://tidymodels.org/find/parsnip/)
 to access the complete list of supported regression models
 in the `tidymodels` package. There are currently 80 supported
 models, but the framework also allows adding regression models not
@@ -521,7 +521,7 @@ to specify that we want to use the implementation in the
 specify that we are doing regression. The `tidymodels`
 framework uses the default hyperparameter values set in
 `rpart` when we do not specify them. By searching for
-"decision tree" in the [list of tidymodels](https://tidymodels.org//find/parsnip/),
+"decision tree" in the [list of tidymodels](https://tidymodels.org/find/parsnip/),
 we see that the default hyperparameter values for the
 [`decision_tree_rpart`](https://parsnip.tidymodels.org//reference/details_decision_tree_rpart.html)
 model are `tree_depth = 30`, `min_n = 2`, and `cost_complexity = 0.01`.
@@ -1489,7 +1489,7 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 # Add new regression methods {#new}
 
 Even though the `tidymodels` framework contains many
-[models](https://tidymodels.org//find/parsnip/), we might
+[models](https://tidymodels.org/find/parsnip/), we might
 want to add additional methods. In the following section, we
 demonstrate how to add the projection pursuit regression (PPR)
 model as a new method that can be used by `shapr` to compute the
@@ -1498,7 +1498,7 @@ Shapley value explanations, both as a separate and surrogate method.
 We use the `ppr()` implementation in the `stats` package to fit
 the PPR model. The model has several hyperparameters that can be
 tuned, but the main hyperparameter is the number of terms `nterms`.
-The following is based on the [`tidymodels` guide](https://tidymodels.org//learn/develop/models/)
+The following is based on the [`tidymodels` guide](https://tidymodels.org/learn/develop/models/)
 on adding new regression models. We refer to that guide for more
 details and explanations of the code below.
 
