@@ -89,7 +89,7 @@
 <span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    phi0 <span class="op">=</span> dfy_train.mean().item(),</span>
 <span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>)</span>
 <span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="bu">print</span>(explanation[<span class="st">"shapley_values_est"</span>])</span></code></pre></div>
-<p><code>shaprpy</code> knows how to explain predictions from models from <code>sklearn</code>, <code>keras</code> and <code>xgboost</code>. For other models, one can provide a custom <code>predict_model</code> function (and optionally a custom <code>get_model_specs</code>) to <code>shaprpy.explain</code>.</p>
+<p><code>shaprpy</code> knows how to explain predictions from models from <code>sklearn</code>, <code>keras</code> (sequential) and <code>xgboost</code>. For other models, one can provide a custom <code>predict_model</code> function (and optionally a custom <code>get_model_specs</code>) to <code>shaprpy.explain</code>.</p>
 <p>See <code>/examples</code> for runnable examples, including an example of a custom PyTorch model.</p>
 <p>The <code>/examples/regression_paradigm.py</code> file demonstrates how to use the regression paradigm explained in <a href="https://link.springer.com/article/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a>. We describe how to specify the regression model, how to enable automatic cross-validation of the model’s hyperparameters, and applying pre-processing steps to the data before fitting the regression models. We refer to <a href="https://link.springer.com/article/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a> for when one should use the different paradigms, method classes, and methods.</p>
 </div>
