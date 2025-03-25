@@ -1,3 +1,5 @@
+skip_if_not_installed("ggplot2")
+
 set.seed(123) #
 
 explain_mixed <- explain(
@@ -6,7 +8,8 @@ explain_mixed <- explain(
   x_explain = x_explain_mixed,
   x_train = x_train_mixed,
   approach = "independence",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 explain_numeric_empirical <- explain(
@@ -15,7 +18,8 @@ explain_numeric_empirical <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 explain_numeric_gaussian <- explain(
@@ -24,7 +28,8 @@ explain_numeric_gaussian <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "gaussian",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 explain_numeric_ctree <- explain(
@@ -33,7 +38,8 @@ explain_numeric_ctree <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = "ctree",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 explain_numeric_combined <- explain(
@@ -42,7 +48,8 @@ explain_numeric_combined <- explain(
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
   approach = c("empirical", "ctree", "gaussian", "ctree"),
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 # Create a list of explanations with names

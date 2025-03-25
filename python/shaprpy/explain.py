@@ -29,7 +29,7 @@ def explain(
     max_n_coalitions: int | None = None,
     group: dict | None = None,
     n_MC_samples: int = 1e3,
-    seed: int | None = 1,
+    seed: int | None = None,
     verbose: str = "basic",
     predict_model: Callable = None,
     get_model_specs: Callable = None,
@@ -79,7 +79,8 @@ def explain(
     n_MC_samples: int, optional
       Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation.
     seed: int or None, optional
-      Specifies the seed before any randomness based code is being run. If `None` the seed will be inherited from the calling environment.
+      Specifies the seed before any randomness based code is being run. 
+      If `None` (default) the seed will be inherited from the calling environment.
     verbose: str or list[str], optional
       Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
       `"convergence"`, `"shapley"`  and `"vS_details"`. `None` means no printout.

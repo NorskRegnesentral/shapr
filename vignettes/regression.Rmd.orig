@@ -251,7 +251,8 @@ explanation_list$MC_empirical <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 ```
 
@@ -318,6 +319,7 @@ explanation_list$sep_pcr <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = function(regression_recipe) {
@@ -389,6 +391,7 @@ explanation_list$sep_reicpe_example <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = regression.recipe_func
@@ -432,6 +435,7 @@ explanation_list$sep_tree_stump <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(
     tree_depth = 1,
@@ -448,6 +452,7 @@ explanation_list$sep_tree_default <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
@@ -532,6 +537,7 @@ explanation_list$sep_tree_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(), engine = "rpart", mode = "regression"
@@ -546,6 +552,7 @@ explanation_list$sep_tree_cv_2 <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(),
@@ -576,6 +583,7 @@ explanation_list$sep_rf <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
@@ -586,6 +594,7 @@ explanation_list$sep_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   verbose = c("basic","vS_details"), # To get printouts
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(
@@ -660,6 +669,7 @@ explanation_list$sep_xgboost <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
@@ -670,6 +680,7 @@ explanation_list$sep_xgboost_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model =
     parsnip::boost_tree(trees = hardhat::tune(), engine = "xgboost", mode = "regression"),
@@ -684,6 +695,7 @@ explanation_list$sep_xgboost_cv_par <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model =
     parsnip::boost_tree(trees = hardhat::tune(), engine = "xgboost", mode = "regression"),
@@ -698,6 +710,7 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
@@ -770,6 +783,7 @@ explanation_list$sur_lm <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
@@ -780,6 +794,7 @@ explanation_list$sur_xgboost <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
@@ -790,6 +805,7 @@ explanation_list$sur_xgboost_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
@@ -807,6 +823,7 @@ explanation_list$sur_rf <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
@@ -817,6 +834,7 @@ explanation_list$sur_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -856,6 +874,7 @@ explanation_list$sur_rf_cv_par <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -1035,6 +1054,7 @@ explanation_list$sep_ppr <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = ppr_reg(num_terms = 2)
 )
@@ -1045,6 +1065,7 @@ explanation_list$sep_ppr_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = ppr_reg(num_terms = hardhat::tune()),
   regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 4)), levels = 3),
@@ -1057,6 +1078,7 @@ explanation_list$sur_ppr <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = ppr_reg(num_terms = 3)
 )
@@ -1067,6 +1089,7 @@ explanation_list$sur_ppr_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = ppr_reg(num_terms = hardhat::tune()),
   regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 8)), levels = 4),
@@ -1107,7 +1130,8 @@ explanation_list_MC$MC_independence <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "independence",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 # Copy the Shapley value explanations for the empirical method
@@ -1119,7 +1143,8 @@ explanation_list_MC$MC_gaussian <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 # Compute the Shapley value explanations using the copula method
@@ -1128,7 +1153,8 @@ explanation_list_MC$MC_copula <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "copula",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 # Compute the Shapley value explanations using the ctree method
@@ -1137,7 +1163,8 @@ explanation_list_MC$MC_ctree <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 # Compute the Shapley value explanations using the vaeac method
@@ -1147,6 +1174,7 @@ explanation_list_MC$MC_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   phi0 = p0,
+  seed = 1,
   vaeac.epochs = 10
 )
 
@@ -1261,6 +1289,7 @@ explanation_list_mixed$MC_independence <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "independence"
 )
 
@@ -1269,6 +1298,7 @@ explanation_list_mixed$MC_ctree <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "ctree"
 )
 
@@ -1277,6 +1307,7 @@ explanation_list_mixed$MC_vaeac <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "vaeac"
 )
 ```
@@ -1295,6 +1326,7 @@ explanation_list_mixed$sep_lm <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg()
 )
@@ -1305,6 +1337,7 @@ explanation_list_mixed$sep_splines <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = function(regression_recipe) {
@@ -1318,6 +1351,7 @@ explanation_list_mixed$sep_tree <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
@@ -1328,6 +1362,7 @@ explanation_list_mixed$sep_tree_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(),
@@ -1346,6 +1381,7 @@ explanation_list_mixed$sep_rf <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
@@ -1356,6 +1392,7 @@ explanation_list_mixed$sep_rf_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -1373,6 +1410,7 @@ explanation_list_mixed$sep_xgboost <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
   regression.recipe_func = function(regression_recipe) {
@@ -1386,6 +1424,7 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
@@ -1415,6 +1454,7 @@ explanation_list_mixed$sur_lm <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
@@ -1426,6 +1466,7 @@ explanation_list_mixed$sur_splines <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = function(recipe) {
@@ -1439,6 +1480,7 @@ explanation_list_mixed$sur_tree <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
@@ -1449,6 +1491,7 @@ explanation_list_mixed$sur_tree_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::decision_tree(
     tree_depth = hardhat::tune(),
@@ -1467,6 +1510,7 @@ explanation_list_mixed$sur_rf <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
@@ -1477,6 +1521,7 @@ explanation_list_mixed$sur_rf_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = "ranger", mode = "regression"
@@ -1491,6 +1536,7 @@ explanation_list_mixed$sur_xgboost <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression"),
   regression.recipe_func = function(regression_recipe) {
@@ -1504,6 +1550,7 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   phi0 = p0_cat,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(
     trees = hardhat::tune(),
@@ -1589,6 +1636,7 @@ explanation_list_str$sep_lm <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = "parsnip::linear_reg()"
 )
@@ -1598,6 +1646,7 @@ explanation_list_str$sep_pcr <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = "parsnip::linear_reg()",
   regression.recipe_func = "function(regression_recipe) {
@@ -1610,6 +1659,7 @@ explanation_list_str$sep_splines <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = "function(regression_recipe) {
@@ -1622,6 +1672,7 @@ explanation_list_str$sep_tree_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = "parsnip::decision_tree(
     tree_depth = hardhat::tune(), engine = 'rpart', mode = 'regression'
@@ -1636,6 +1687,7 @@ explanation_list_str$sep_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_separate",
   regression.model = "parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'
@@ -1653,6 +1705,7 @@ explanation_list_str$sur_rf_cv <- explain(
   x_explain = x_explain,
   x_train = x_train,
   phi0 = p0,
+  seed = 1,
   approach = "regression_surrogate",
   regression.model = "parsnip::rand_forest(
     mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'

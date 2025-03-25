@@ -9,6 +9,7 @@ test_that("output_lm_numeric_independence_reach_exact", {
       x_train = x_train_numeric,
       approach = "independence",
       phi0 = p0,
+      seed = 1,
       iterative = TRUE,
       verbose = c("basic", "convergence", "shapley")
     ),
@@ -25,6 +26,7 @@ test_that("output_lm_numeric_independence_converges_tol", {
       x_train = x_train_numeric,
       approach = "independence",
       phi0 = p0,
+      seed = 1,
       iterative_args = list(
         initial_n_coalitions = 10,
         convergence_tol = 0.1
@@ -45,6 +47,7 @@ test_that("output_lm_numeric_independence_converges_maxit", {
       x_train = x_train_numeric,
       approach = "independence",
       phi0 = p0,
+      seed = 1,
       iterative_args = list(
         initial_n_coalitions = 10,
         convergence_tol = 0.001,
@@ -67,6 +70,7 @@ test_that("output_lm_numeric_indep_conv_max_n_coalitions", {
       x_train = x_train_numeric,
       approach = "independence",
       phi0 = p0,
+      seed = 1,
       max_n_coalitions = 20,
       iterative = TRUE,
       verbose = c("convergence", "shapley")
@@ -92,6 +96,7 @@ test_that("output_lm_numeric_gaussian_group_converges_tol", {
       approach = "gaussian",
       group = groups,
       phi0 = p0,
+      seed = 1,
       iterative_args = list(
         initial_n_coalitions = 5,
         convergence_tol = 0.1
@@ -112,6 +117,7 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
       x_train = x_train_numeric,
       approach = "independence",
       phi0 = p0,
+      seed = 1,
       iterative_args = list(
         initial_n_coalitions = 10,
         convergence_tol = 0.1
@@ -264,6 +270,7 @@ test_that("output_verbose_1", {
       x_train = x_train_numeric,
       approach = "gaussian",
       phi0 = p0,
+      seed = 1,
       iterative = TRUE,
       verbose = c("basic")
     ),
@@ -280,6 +287,7 @@ test_that("output_verbose_1_3", {
       x_train = x_train_numeric,
       approach = "gaussian",
       phi0 = p0,
+      seed = 1,
       iterative = TRUE,
       verbose = c("basic", "convergence")
     ),
@@ -296,6 +304,7 @@ test_that("output_verbose_1_3_4", {
       x_train = x_train_numeric,
       approach = "gaussian",
       phi0 = p0,
+      seed = 1,
       iterative = TRUE,
       verbose = c("basic", "convergence", "shapley")
     ),
@@ -312,6 +321,7 @@ test_that("output_verbose_1_3_4_5", {
       x_train = x_train_numeric,
       approach = "gaussian",
       phi0 = p0,
+      seed = 1,
       iterative = TRUE,
       verbose = c("basic", "convergence", "shapley", "vS_details")
     ),
@@ -330,6 +340,7 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
       x_train = x_train_numeric,
       approach = "independence",
       phi0 = p0,
+      seed = 1,
       output_args = list(keep_samp_for_vS = TRUE),
       iterative = TRUE
     )),

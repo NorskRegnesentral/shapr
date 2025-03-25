@@ -59,7 +59,7 @@
 #'
 #' @param seed Positive integer.
 #' Specifies the seed before any randomness based code is being run.
-#' If `NULL` no seed is set in the calling environment.
+#' If `NULL` (default) no seed is set in the calling environment.
 #'
 #' @param predict_model Function.
 #' The prediction function used when `model` is not natively supported.
@@ -436,7 +436,7 @@ explain <- function(model,
                     max_n_coalitions = NULL,
                     group = NULL,
                     n_MC_samples = 1e3,
-                    seed = 1,
+                    seed = NULL,
                     verbose = "basic",
                     predict_model = NULL,
                     get_model_specs = NULL,
