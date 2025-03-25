@@ -569,6 +569,7 @@ used.</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># Default value (TRUE will give the same since `causal_ordering = NULL`)</span></span>
 <span>  causal_ordering <span class="op">=</span> <span class="cn">NULL</span>, <span class="co"># Default value</span></span>
@@ -605,6 +606,7 @@ used.</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"ctree"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># Default value (TRUE will give the same since `causal_ordering = NULL`)</span></span>
 <span>  causal_ordering <span class="op">=</span> <span class="cn">NULL</span>, <span class="co"># Default value</span></span>
@@ -655,6 +657,7 @@ used.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"regression_separate"</span>,</span>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/boost_tree.html" class="external-link">boost_tree</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"xgboost"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># Default value (TRUE will give the same as `causal_ordering = NULL`)</span></span>
@@ -736,6 +739,7 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -780,6 +784,7 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -812,6 +817,7 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"ctree"</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -847,6 +853,7 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"regression_separate"</span>,</span>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/boost_tree.html" class="external-link">boost_tree</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"xgboost"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1018,6 +1025,7 @@ due to different sampling setups/orders.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -1054,6 +1062,7 @@ due to different sampling setups/orders.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"independence"</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -1090,6 +1099,7 @@ due to different sampling setups/orders.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"independence"</span></span>
 <span><span class="op">)</span></span>
@@ -1167,6 +1177,7 @@ applicable.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -1205,6 +1216,7 @@ applicable.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"copula"</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -1262,6 +1274,7 @@ are faster as the number of coalitions are reduced.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1302,6 +1315,7 @@ are faster as the number of coalitions are reduced.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"copula"</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1335,16 +1349,17 @@ are faster as the number of coalitions are reduced.</p>
 <span></span>
 <span><span class="co"># Use the vaeac approach</span></span>
 <span><span class="va">explanation_asym_cau</span><span class="op">[[</span><span class="st">"vaeac"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
-<span>   model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>   x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
-<span>   x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
-<span>   phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
-<span>   n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>   approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
-<span>   vaeac.epochs <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>   asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>   causal_ordering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span>
-<span>   confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  n_MC_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
+<span>  vaeac.epochs <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  causal_ordering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span>
+<span>  confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
 <span> <span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
@@ -1686,6 +1701,7 @@ that the elapsed times are approximately halved, too.</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  causal_ordering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span>
 <span>  confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
@@ -1724,6 +1740,7 @@ that the elapsed times are approximately halved, too.</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  causal_ordering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span>
 <span>  confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
@@ -1832,6 +1849,7 @@ Shapley value frameworks.</p>
 <span>    x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>    approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>    phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>    seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    asymmetric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    causal_ordering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">group_list</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="co"># or `NULL`</span></span>
 <span>    confounding <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1866,6 +1884,7 @@ Shapley value frameworks.</p>
 <span>    x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>    approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>    phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>    seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    asymmetric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    causal_ordering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">group_list</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="co"># or `NULL`</span></span>
 <span>    confounding <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -1898,6 +1917,7 @@ Shapley value frameworks.</p>
 <span>    x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>    approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>    phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>    seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    causal_ordering <span class="op">=</span> <span class="va">causal_ordering_group</span>,</span>
 <span>    confounding <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -1932,6 +1952,7 @@ Shapley value frameworks.</p>
 <span>    x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>    approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>    phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>    seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    asymmetric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    causal_ordering <span class="op">=</span> <span class="va">causal_ordering_group</span>,</span>
 <span>    confounding <span class="op">=</span> <span class="va">confounding</span>,</span>
@@ -1966,6 +1987,7 @@ Shapley value frameworks.</p>
 <span>    x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>    approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>    phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>    seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    asymmetric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    causal_ordering <span class="op">=</span> <span class="va">causal_ordering_group</span>,</span>
 <span>    confounding <span class="op">=</span> <span class="va">confounding</span>,</span>

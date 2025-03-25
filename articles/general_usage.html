@@ -633,7 +633,8 @@ argument. Allowed values are <code>"gaussian"</code>,
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
-<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
@@ -694,7 +695,8 @@ the points are colored by the feature value of that instance:</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain_many</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
-<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
@@ -749,7 +751,8 @@ mixed data in the following manner:</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain_cat</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train_cat</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"ctree"</span>,</span>
-<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
@@ -783,6 +786,7 @@ trees in the following manner. The default values are based on <span class="cita
 <span>  x_train <span class="op">=</span> <span class="va">x_train_cat</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"ctree"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ctree.mincriterion <span class="op">=</span> <span class="fl">0.80</span>,</span>
 <span>  ctree.minsplit <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  ctree.minbucket <span class="op">=</span> <span class="fl">20</span></span>
@@ -834,7 +838,8 @@ categorical approach as follows:</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain_all_cat</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train_all_cat</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"categorical"</span>,</span>
-<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
@@ -909,6 +914,7 @@ necessary).</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train_ts</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"timeseries"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0_ts</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  group <span class="op">=</span> <span class="va">group_ts</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Success with message:</span></span>
@@ -1089,6 +1095,7 @@ combining them into lists.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"independence"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -1117,6 +1124,7 @@ combining them into lists.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -1145,6 +1153,7 @@ combining them into lists.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e1</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -1173,6 +1182,7 @@ combining them into lists.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -1201,6 +1211,7 @@ combining them into lists.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"empirical"</span>, <span class="st">"independence"</span><span class="op">)</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span>,</span>
 <span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -1388,6 +1399,7 @@ estimation procedure.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  iterative <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  iterative_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>convergence_tol <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -1473,7 +1485,8 @@ parallelization with two workers.</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
-<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
@@ -1560,7 +1573,8 @@ A full code example of using <code>progressr</code> with
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
-<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ■■■■■■■■■■■                       32% | Estimating v(S) ETA:  2s</span></span></code></pre></div>
@@ -1635,7 +1649,8 @@ features.</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"empirical"</span>, <span class="st">"copula"</span>, <span class="st">"gaussian"</span><span class="op">)</span>,</span>
-<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
@@ -1668,7 +1683,8 @@ features:</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ctree"</span>, <span class="st">"ctree"</span>, <span class="st">"empirical"</span><span class="op">)</span>,</span>
-<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
@@ -1711,6 +1727,7 @@ easy using <code>shapr</code>:</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  group <span class="op">=</span> <span class="va">group_list</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
@@ -1844,6 +1861,7 @@ to the same airquality data set as used above.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  predict_model <span class="op">=</span> <span class="va">MY_predict_model</span>,</span>
 <span>  get_model_specs <span class="op">=</span> <span class="va">MY_get_model_specs</span></span>
 <span><span class="op">)</span></span>
@@ -1885,6 +1903,7 @@ to the same airquality data set as used above.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  predict_model <span class="op">=</span> <span class="va">MY_MINIMAL_predict_model</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().</span></span>
@@ -1959,7 +1978,8 @@ below.</p>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
-<span>  phi0 <span class="op">=</span> <span class="va">p0</span></span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
@@ -2013,6 +2033,7 @@ function, while the extra parameters are included in a named list called
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  vaeac.width <span class="op">=</span> <span class="fl">16</span>,</span>
 <span>  vaeac.depth <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -2069,6 +2090,7 @@ set it so low here to make the vignette faster to build.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  vaeac.width <span class="op">=</span> <span class="fl">16</span>,</span>
 <span>  vaeac.depth <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -2160,6 +2182,7 @@ long-running computations.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  max_n_coalitions <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  iterative <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -2198,6 +2221,7 @@ long-running computations.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  max_n_coalitions <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  iterative_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>convergence_tol <span class="op">=</span> <span class="fl">0.005</span><span class="op">)</span>, <span class="co"># Decrease the convergence threshold</span></span>
 <span>  prev_shapr_object <span class="op">=</span> <span class="va">ex_init</span></span>
@@ -2228,6 +2252,7 @@ long-running computations.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  max_n_coalitions <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prev_shapr_object <span class="op">=</span> <span class="va">ex_further</span><span class="op">$</span><span class="va">saving_path</span></span>
 <span><span class="op">)</span></span>

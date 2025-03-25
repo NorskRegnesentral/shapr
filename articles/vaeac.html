@@ -215,6 +215,7 @@ same data as in the general usage</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  vaeac.epochs <span class="op">=</span> <span class="va">vaeac.epochs</span>,</span>
 <span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="va">vaeac.n_vaeacs_initialize</span></span>
@@ -278,6 +279,7 @@ the previous example and send it to <code><a href="../reference/explain.html">ex
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    vaeac.pretrained_vaeac_model <span class="op">=</span> <span class="va">explanation</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">vaeac</span></span>
@@ -325,6 +327,7 @@ then <code>shapr</code> will give a message that it loads a pretrained
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    vaeac.pretrained_vaeac_model <span class="op">=</span> <span class="va">explanation</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">vaeac</span><span class="op">$</span><span class="va">models</span><span class="op">$</span><span class="va">best</span></span>
@@ -373,6 +376,7 @@ way around.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  max_n_coalitions <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -432,6 +436,7 @@ the sampled coalitions.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  max_n_coalitions <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -488,6 +493,7 @@ implementation.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  vaeac.epochs <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -517,6 +523,7 @@ implementation.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  vaeac.epochs <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -592,6 +599,7 @@ of the <code>vaeac</code> approach.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"basic"</span>,<span class="st">"vS_details"</span><span class="op">)</span>,</span>
 <span>  vaeac.epochs <span class="op">=</span> <span class="fl">5</span>,</span>
@@ -649,44 +657,45 @@ how to change the progress bar.</p>
 <span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>    <span class="at">x_train =</span> x_train,</span>
 <span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>    <span class="at">approach =</span> <span class="st">"vaeac"</span>,</span>
 <span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>    <span class="at">phi0 =</span> phi0,</span>
-<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>    <span class="at">n_MC_samples =</span> n_MC_samples,</span>
-<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="st">"vS_details"</span>,</span>
-<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>    <span class="at">vaeac.epochs =</span> <span class="dv">5</span>,</span>
-<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>    <span class="at">vaeac.n_vaeacs_initialize =</span> <span class="dv">2</span></span>
-<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>  )</span>
-<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a>})</span>
-<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
-<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
-<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co">#&gt; Success with message:</span></span>
-<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
-<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
-<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
-<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
-<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#&gt; Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.</span></span>
-<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
-<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
-<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a>                                                                                                          </span>
-<span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a>Initializing vaeac model number <span class="dv">2</span> of <span class="fl">2.</span></span>
-<span id="cb15-31"><a href="#cb15-31" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: -6.593 | IWAE: -3…</span></span>
-<span id="cb15-32"><a href="#cb15-32" tabindex="-1"></a></span>
-<span id="cb15-33"><a href="#cb15-33" tabindex="-1"></a>                                                                                                          </span>
-<span id="cb15-34"><a href="#cb15-34" tabindex="-1"></a>Best vaeac inititalization was number <span class="dv">2</span> (of <span class="dv">2</span>) with a training VLB <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.566</span> after <span class="dv">2</span> epochs. Continue to</span>
-<span id="cb15-35"><a href="#cb15-35" tabindex="-1"></a><span class="co">#&gt; train this inititalization.</span></span>
-<span id="cb15-36"><a href="#cb15-36" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of 2): Epoch: 2 | VLB: -4.566 | IWAE: -3…</span></span>
-<span id="cb15-37"><a href="#cb15-37" tabindex="-1"></a><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
-<span id="cb15-38"><a href="#cb15-38" tabindex="-1"></a><span class="co">#&gt; Best epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
-<span id="cb15-39"><a href="#cb15-39" tabindex="-1"></a><span class="co">#&gt; Best running avg epoch: 5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
-<span id="cb15-40"><a href="#cb15-40" tabindex="-1"></a><span class="co">#&gt; Last epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
-<span id="cb15-41"><a href="#cb15-41" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb15-42"><a href="#cb15-42" tabindex="-1"></a><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpCcS4cy' at</span></span>
-<span id="cb15-43"><a href="#cb15-43" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.01.09.652795_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
-<span id="cb15-44"><a href="#cb15-44" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.01.09.652795_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
-<span id="cb15-45"><a href="#cb15-45" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.01.09.652795_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span>
-<span id="cb15-46"><a href="#cb15-46" tabindex="-1"></a><span class="fu">all.equal</span>(expl_with_messages<span class="sc">$</span>shapley_values_est, expl_with_progressr<span class="sc">$</span>shapley_values_est)</span>
-<span id="cb15-47"><a href="#cb15-47" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>    <span class="at">seed =</span> <span class="dv">1</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>    <span class="at">n_MC_samples =</span> n_MC_samples,</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="st">"vS_details"</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>    <span class="at">vaeac.epochs =</span> <span class="dv">5</span>,</span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>    <span class="at">vaeac.n_vaeacs_initialize =</span> <span class="dv">2</span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a>  )</span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a>})</span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#&gt; Success with message:</span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#&gt; ── Extra info about the pretrained vaeac model ──</span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#&gt; Training the `vaeac` model with the provided parameters from scratch on CPU.</span></span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#&gt; Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.</span></span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#&gt; The vaeac model contains 17032 trainable parameters.</span></span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="co">#&gt; Initializing vaeac model number 1 of 2.</span></span>
+<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a>                                                                                                          </span>
+<span id="cb15-31"><a href="#cb15-31" tabindex="-1"></a>Initializing vaeac model number <span class="dv">2</span> of <span class="fl">2.</span></span>
+<span id="cb15-32"><a href="#cb15-32" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: -6.593 | IWAE: -3…</span></span>
+<span id="cb15-33"><a href="#cb15-33" tabindex="-1"></a></span>
+<span id="cb15-34"><a href="#cb15-34" tabindex="-1"></a>                                                                                                          </span>
+<span id="cb15-35"><a href="#cb15-35" tabindex="-1"></a>Best vaeac inititalization was number <span class="dv">2</span> (of <span class="dv">2</span>) with a training VLB <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.566</span> after <span class="dv">2</span> epochs. Continue to</span>
+<span id="cb15-36"><a href="#cb15-36" tabindex="-1"></a><span class="co">#&gt; train this inititalization.</span></span>
+<span id="cb15-37"><a href="#cb15-37" tabindex="-1"></a><span class="co">#&gt; ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of 2): Epoch: 2 | VLB: -4.566 | IWAE: -3…</span></span>
+<span id="cb15-38"><a href="#cb15-38" tabindex="-1"></a><span class="co">#&gt; Results of the `vaeac` training process:</span></span>
+<span id="cb15-39"><a href="#cb15-39" tabindex="-1"></a><span class="co">#&gt; Best epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
+<span id="cb15-40"><a href="#cb15-40" tabindex="-1"></a><span class="co">#&gt; Best running avg epoch: 5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
+<span id="cb15-41"><a href="#cb15-41" tabindex="-1"></a><span class="co">#&gt; Last epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149</span></span>
+<span id="cb15-42"><a href="#cb15-42" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-43"><a href="#cb15-43" tabindex="-1"></a><span class="co">#&gt; ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpCcS4cy' at</span></span>
+<span id="cb15-44"><a href="#cb15-44" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.01.09.652795_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'</span></span>
+<span id="cb15-45"><a href="#cb15-45" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.01.09.652795_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'</span></span>
+<span id="cb15-46"><a href="#cb15-46" tabindex="-1"></a><span class="co">#&gt; '/tmp/RtmpCcS4cy/X2024.11.21.20.01.09.652795_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'</span></span>
+<span id="cb15-47"><a href="#cb15-47" tabindex="-1"></a><span class="fu">all.equal</span>(expl_with_messages<span class="sc">$</span>shapley_values_est, expl_with_progressr<span class="sc">$</span>shapley_values_est)</span>
+<span id="cb15-48"><a href="#cb15-48" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="continue_training">Continue the training of the vaeac approach<a class="anchor" aria-label="anchor" href="#continue_training"></a>
@@ -725,6 +734,7 @@ grain of salt.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">250</span>,</span>
 <span>  vaeac.epochs <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">2</span></span>
@@ -758,6 +768,7 @@ grain of salt.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">250</span>,</span>
 <span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    vaeac.pretrained_vaeac_model <span class="op">=</span> <span class="va">expl_train_more</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">vaeac</span></span>
@@ -787,6 +798,7 @@ grain of salt.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">250</span>,</span>
 <span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    vaeac.pretrained_vaeac_model <span class="op">=</span> <span class="va">expl_train_even_more</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">vaeac</span></span>
@@ -849,6 +861,7 @@ validation score for <code>5</code> epochs.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">250</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"basic"</span>,<span class="st">"vS_details"</span><span class="op">)</span>,</span>
 <span>  vaeac.epochs <span class="op">=</span> <span class="fl">1000</span>, <span class="co"># Set it to a big number</span></span>
@@ -946,6 +959,7 @@ early stopping. We see a non-significant difference.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">250</span>,</span>
 <span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    vaeac.pretrained_vaeac_model <span class="op">=</span> <span class="va">expl_early_stopping_train_more</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">vaeac</span></span>
@@ -1003,6 +1017,7 @@ the Shapley value computations.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Temp"</span>, <span class="st">"Month"</span><span class="op">)</span>, B <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Wind"</span>, <span class="st">"Solar.R"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="va">n_MC_samples</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="st">"vS_details"</span>,</span>
@@ -1083,6 +1098,7 @@ default parameters.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train_cat</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"ctree"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">250</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
@@ -1110,6 +1126,7 @@ default parameters.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train_cat</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">250</span>,</span>
 <span>  vaeac.epochs <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">4</span></span>
@@ -1139,6 +1156,7 @@ default parameters.</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train_cat</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">phi0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">250</span>,</span>
 <span>  vaeac.epochs <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">4</span>,</span>
