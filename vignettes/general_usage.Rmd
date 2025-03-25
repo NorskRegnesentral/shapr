@@ -448,7 +448,8 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -517,7 +518,8 @@ explanation_plot <- explain(
   x_explain = x_explain_many,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -580,7 +582,8 @@ explanation_lm_cat <- explain(
   x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -620,6 +623,7 @@ explanation_ctree <- explain(
   x_train = x_train_cat,
   approach = "ctree",
   phi0 = p0,
+  seed = 1,
   ctree.mincriterion = 0.80,
   ctree.minsplit = 20,
   ctree.minbucket = 20
@@ -675,7 +679,8 @@ explanation_cat_method <- explain(
   x_explain = x_explain_all_cat,
   x_train = x_train_all_cat,
   approach = "categorical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -752,6 +757,7 @@ explanation_timeseries <- explain(
   x_train = x_train_ts,
   approach = "timeseries",
   phi0 = p0_ts,
+  seed = 1,
   group = group_ts
 )
 #> Success with message:
@@ -877,6 +883,7 @@ explanation_independence <- explain(
   x_train = x_train,
   approach = "independence",
   phi0 = p0,
+  seed = 1,
   n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -905,6 +912,7 @@ explanation_empirical <- explain(
   x_train = x_train,
   approach = "empirical",
   phi0 = p0,
+  seed = 1,
   n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -933,6 +941,7 @@ explanation_gaussian_1e1 <- explain(
   x_train = x_train,
   approach = "gaussian",
   phi0 = p0,
+  seed = 1,
   n_MC_samples = 1e1,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -961,6 +970,7 @@ explanation_gaussian_1e2 <- explain(
   x_train = x_train,
   approach = "gaussian",
   phi0 = p0,
+  seed = 1,
   n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -989,6 +999,7 @@ explanation_combined <- explain(
   x_train = x_train,
   approach = c("gaussian", "empirical", "independence"),
   phi0 = p0,
+  seed = 1,
   n_MC_samples = 1e2,
   MSEv_uniform_comb_weights = TRUE
 )
@@ -1181,6 +1192,7 @@ ex <- explain(
   x_train = x_train,
   approach = "gaussian",
   phi0 = p0,
+  seed = 1,
   iterative = TRUE,
   iterative_args = list(convergence_tol = 0.1)
 )
@@ -1265,7 +1277,8 @@ explanation_par <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -1344,7 +1357,8 @@ ex_progress <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
 # ■■■■■■■■■■■                       32% | Estimating v(S) ETA:  2s
@@ -1425,7 +1439,8 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("empirical", "copula", "gaussian"),
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -1462,7 +1477,8 @@ explanation_combined <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = c("ctree", "ctree", "empirical"),
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 #> Note: Feature classes extracted from the model contains NA.
 #> Assuming feature classes from the data are correct.
@@ -1506,6 +1522,7 @@ explanation_group <- explain(
   x_train = x_train,
   approach = "empirical",
   phi0 = p0,
+  seed = 1,
   group = group_list
 )
 #> Note: Feature classes extracted from the model contains NA.
@@ -1639,6 +1656,7 @@ explanation_custom <- explain(
   x_train = x_train,
   approach = "empirical",
   phi0 = p0,
+  seed = 1,
   predict_model = MY_predict_model,
   get_model_specs = MY_get_model_specs
 )
@@ -1683,6 +1701,7 @@ explanation_custom_minimal <- explain(
   x_train = x_train,
   approach = "empirical",
   phi0 = p0,
+  seed = 1,
   predict_model = MY_MINIMAL_predict_model
 )
 #> Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
@@ -1752,7 +1771,8 @@ explanation_tidymodels <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 #> Success with message:
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
@@ -1802,6 +1822,7 @@ explanation_vaeac <- explain(
   x_train = x_train,
   approach = "vaeac",
   phi0 = p0,
+  seed = 1,
   n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
@@ -1856,6 +1877,7 @@ explanation_vaeac_early_stop <- explain(
   x_train = x_train,
   approach = "vaeac",
   phi0 = p0,
+  seed = 1,
   n_MC_samples = 100,
   vaeac.width = 16,
   vaeac.depth = 2,
@@ -1951,6 +1973,7 @@ ex_init <- explain(
   x_train = x_train,
   approach = "gaussian",
   phi0 = p0,
+  seed = 1,
   max_n_coalitions = 20,
   iterative = TRUE
 )
@@ -1989,6 +2012,7 @@ ex_further <- explain(
   x_train = x_train,
   approach = "gaussian",
   phi0 = p0,
+  seed = 1,
   max_n_coalitions = 25,
   iterative_args = list(convergence_tol = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_init
@@ -2019,6 +2043,7 @@ ex_even_further <- explain(
   x_train = x_train,
   approach = "gaussian",
   phi0 = p0,
+  seed = 1,
   max_n_coalitions = NULL,
   prev_shapr_object = ex_further$saving_path
 )
