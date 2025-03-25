@@ -55,7 +55,6 @@ Suggests:
     forecast,
     torch,
     GGally,
-    progress,
     coro,
     parsnip,
     recipes,
