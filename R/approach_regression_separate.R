@@ -2,7 +2,7 @@
 #' @rdname setup_approach
 #'
 #' @param regression.model A `tidymodels` object of class `model_specs`. Default is a linear regression model, i.e.,
-#' [parsnip::linear_reg()]. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
+#' [parsnip::linear_reg()]. See \href{https://tidymodels.org//find/parsnip/}{tidymodels} for all possible models,
 #' and see the vignette for how to add new/own models. Note, to make it easier to call `explain()` from Python, the
 #' `regression.model` parameter can also be a string specifying the model which will be parsed and evaluated. For
 #' example, `"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine = "ranger", mode = "regression")"`
@@ -257,7 +257,7 @@ regression.get_y_hat <- function(internal, model, predict_model) {
 #' Get if model is to be tuned
 #'
 #' That is, if the regression model contains hyperparameters we are to tune using cross validation.
-#' See \href{https://www.tidymodels.org/find/parsnip/#model-args}{tidymodels} for default model hyperparameters.
+#' See \href{https://tidymodels.org//find/parsnip/#model-args}{tidymodels} for default model hyperparameters.
 #'
 #' @inheritParams setup_approach.regression_separate
 #' @inheritParams default_doc_internal

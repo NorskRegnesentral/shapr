@@ -62,7 +62,7 @@ README with old syntax (v0.2.2).
 We provide an (experimental) Python wrapper (`shaprpy`) which allows explaining Python models with the methodology 
 implemented in `shapr`, directly from Python. 
 The wrapper calls `R` internally, and therefore requires an installation of `R`. 
-See [here](https://github.com/NorskRegnesentral/shapr/shaprpy.html) for installation instructions and examples.
+See [here](https://github.com/NorskRegnesentral/shapr/blob/master/python/README.md) for installation instructions and examples.
 
 
 ## The package

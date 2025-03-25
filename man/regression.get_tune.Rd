@@ -8,7 +8,7 @@ regression.get_tune(regression.model, regression.tune_values, x_train)
 }
 \arguments{
 \item{regression.model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
-\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
+\code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://tidymodels.org//find/parsnip/}{tidymodels} for all possible models,
 and see the vignette for how to add new/own models. Note, to make it easier to call \code{explain()} from Python, the
 \code{regression.model} parameter can also be a string specifying the model which will be parsed and evaluated. For
 example, \verb{"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine = "ranger", mode = "regression")"}
@@ -33,7 +33,7 @@ A boolean variable indicating if the regression model is to be tuned.
 }
 \description{
 That is, if the regression model contains hyperparameters we are to tune using cross validation.
-See \href{https://www.tidymodels.org/find/parsnip/#model-args}{tidymodels} for default model hyperparameters.
+See \href{https://tidymodels.org//find/parsnip/#model-args}{tidymodels} for default model hyperparameters.
 }
 \author{
 Lars Henry Berge Olsen

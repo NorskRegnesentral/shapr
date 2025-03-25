@@ -62,8 +62,8 @@ We provide an (experimental) Python wrapper (`shaprpy`) which allows
 explaining Python models with the methodology implemented in `shapr`,
 directly from Python. The wrapper calls `R` internally, and therefore
 requires an installation of `R`. See
-[here](https://github.com/NorskRegnesentral/shapr/shaprpy.html) for
-installation instructions and examples.
+[here](https://github.com/NorskRegnesentral/shapr/blob/master/python/README.md)
+for installation instructions and examples.
 
 ## The package
 
@@ -182,14 +182,14 @@ explanation <- explain(
 #> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
 #> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2025-01-22 10:22:36 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-03-25 22:04:05 ──────────────────────────
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpAnmtGl/shapr_obj_371a1a52bf4cce.rds'
+#> '/tmp/RtmpAGhup3/shapr_obj_1368573c33597.rds'
 #> 
 #> ── Main computation started ──
 #> 
