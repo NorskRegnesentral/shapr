@@ -1,4 +1,7 @@
-# 01.09.23: Moved from ubuntu-latest to ubuntu-20.04 to avoid actions being cancelled
+# 25.03.25: Dared to go back to ubuntu-latest since ubuntu-20.04 is being deprecated
+# https://github.com/actions/runner-images/issues/11101
+
+# 01.09.23: Moved from ubuntu-latest to ubuntu-latest to avoid actions being cancelled
 # This is potentially due to CPU quota being exceeded as suggested
 # here: https://github.com/actions/runner-images/issues/6680 and
 # here: https://github.com/actions/runner-images/discussions/7188)
@@ -14,7 +17,7 @@ name: lint-changed-files
 
 jobs:
   lint-changed-files:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
