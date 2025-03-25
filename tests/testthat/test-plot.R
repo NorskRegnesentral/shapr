@@ -1,3 +1,5 @@
+skip_if_not_installed("ggplot2")
+
 set.seed(123) #
 
 explain_mixed <- explain(
