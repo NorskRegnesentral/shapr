@@ -389,6 +389,12 @@
 #'   iterative_args = list(initial_n_coalitions = 10)
 #' )
 #' }
+#' \dontshow{
+#' if (requireNamespace("future", quietly = TRUE)) {
+#'   # R CMD check: make sure any open connections are closed afterward
+#'   if (!inherits(future::plan(), "sequential")) plan(sequential)
+#' }
+#' }
 #'
 #' @export
 #'
