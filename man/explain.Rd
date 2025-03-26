@@ -466,6 +466,7 @@ explain3 <- explain(
   n_MC_samples = 1e2
 )
 
+if (requireNamespace("party", quietly = TRUE)) {
 # ctree approach
 explain4 <- explain(
   model = model,
@@ -475,6 +476,7 @@ explain4 <- explain(
   phi0 = p,
   n_MC_samples = 1e2
 )
+}
 
 # Combined approach
 approach <- c("gaussian", "gaussian", "empirical")

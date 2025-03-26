@@ -51,6 +51,10 @@ See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al.
 }
 \examples{
 \donttest{
+
+if (requireNamespace("xgboost", quietly = TRUE) &&
+requireNamespace("torch", quietly = TRUE) &&
+torch::torch_is_installed()) {
 library(xgboost)
 library(data.table)
 library(shapr)
@@ -144,6 +148,7 @@ tmp_fig_criterion$layers[[1]] <- NULL
 tmp_fig_criterion + ggplot2::geom_smooth(method = "loess", formula = y ~ x, se = TRUE) +
   ggplot2::scale_color_brewer(palette = "Set1") +
   ggplot2::theme_minimal()
+}
 }
 
 }
