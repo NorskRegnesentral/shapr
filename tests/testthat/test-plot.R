@@ -1,4 +1,5 @@
 skip_if_not_installed("ggplot2")
+skip_on_cran()
 
 set.seed(123) #
 

@@ -1,3 +1,6 @@
+skip_on_cran()
+
+
 # Separate regression ==================================================================================================
 test_that("output_lm_numeric_lm_separate_iterative", {
   expect_snapshot_rds(

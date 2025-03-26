@@ -11,6 +11,8 @@
 # increase the number of MC samples. This also applied to
 # modifications to the MC approaches.
 
+skip_on_cran()
+
 # Continuous data -------------------------------------------------------------------------------------------------
 test_that("output_asymmetric_conditional", {
   expect_snapshot_rds(

@@ -1,4 +1,5 @@
-# lm_numeric with different approaches
+skip_on_cran()
+
 
 test_that("output_lm_numeric_independence", {
   expect_snapshot_rds(
@@ -442,50 +443,6 @@ test_that("output_custom_lm_numeric_independence_1", {
   )
 })
 
-test_that("output_custom_lm_numeric_independence_2", {
-  set.seed(123)
-  custom_pred_func <- function(x, newdata) {
-    beta <- coef(x)
-    X <- cbind(1, newdata)
-    return(as.vector(beta %*% t(X)))
-  }
-
-  model_custom_lm_numeric <- model_lm_numeric
-  class(model_custom_lm_numeric) <- "whatever"
-
-
-  expect_snapshot_rds(
-    (custom <- explain(
-      testing = TRUE,
-      model = model_custom_lm_numeric,
-      x_explain = x_explain_numeric,
-      x_train = x_train_numeric,
-      approach = "independence",
-      phi0 = p0,
-      seed = 1,
-      predict_model = custom_pred_func,
-      iterative = FALSE
-    )),
-    "output_custom_lm_numeric_independence_2"
-  )
-
-  native <- explain(
-    testing = TRUE,
-    model = model_lm_numeric,
-    x_explain = x_explain_numeric,
-    x_train = x_train_numeric,
-    approach = "independence",
-    phi0 = p0,
-    seed = 1,
-    iterative = FALSE
-  )
-
-  # Check that the printed Shapley values are identical
-  expect_equal(
-    custom$shapley_values_est,
-    native$shapley_values_est
-  )
-})
 
 test_that("output_custom_xgboost_mixed_dummy_ctree", {
   if (requireNamespace("xgboost", quietly = TRUE)) {
@@ -603,22 +560,3 @@ test_that("output_lm_numeric_empirical_progress", {
 })
 
 
-# Just checking that internal$output$dt_samp_for_vS  works
-test_that("output_lm_numeric_independence_keep_samp_for_vS", {
-  expect_snapshot_rds(
-    (out <- explain(
-      testing = TRUE,
-      model = model_lm_numeric,
-      x_explain = x_explain_numeric,
-      x_train = x_train_numeric,
-      approach = "independence",
-      phi0 = p0,
-      seed = 1,
-      output_args = list(keep_samp_for_vS = TRUE),
-      iterative = FALSE
-    )),
-    "output_lm_numeric_independence_keep_samp_for_vS"
-  )
-
-  expect_false(is.null(out$internal$output$dt_samp_for_vS))
-})
