@@ -19,22 +19,9 @@ The win-builder and R-hub tests are run without snapshots tests (to replicate CR
 * devools-mac-builder, R-versions: release 
 * R-hub (ubuntu-latest): R-version: devel
 * R-hub (windows-latest): R-version: devel
+* R-hub (mac-latest): R-version: devel
 * R-hub (clang-asan): R-version: devel
-
 
 ## R CMD check results
 
-There were no ERRORs, WARNINGs
-
-There were in total 1 NOTE
-
-### NOTE (multiple platforms):
-
-* checking installed package size ... NOTE
-  installed size is  7.1Mb
-  sub-directories of 1Mb or more:
-    doc    4.2Mb
-    libs   1.3Mb
-
-> The package is growing in size, uses more complied code, and the documentation is comprehensive.
-
+There were no ERRORs, WARNINGs or NOTEs
