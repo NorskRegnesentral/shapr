@@ -2534,7 +2534,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'     label = y_train,
 #'     nround = 100,
 #'     verbose = FALSE
-#'   )
+#'   ) 
 #'
 #'   # Specifying the phi_0, i.e. the expected prediction without any features
 #'   p0 <- mean(y_train)
