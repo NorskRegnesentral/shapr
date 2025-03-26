@@ -392,7 +392,7 @@
 #' \dontshow{
 #' if (requireNamespace("future", quietly = TRUE)) {
 #'   # R CMD check: make sure any open connections are closed afterward
-#'   if (!inherits(future::plan(), "sequential")) future::plan(sequential)
+#'   if (!inherits(future::plan(), "sequential")) future::plan("sequential")
 #' }
 #' }
 #'
