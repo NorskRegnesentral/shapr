@@ -668,36 +668,6 @@
       2:          2 42.44   2.250  -3.345 -5.232 -5.581 -1.971
       3:          3 42.44   3.708 -18.610 -1.440 -2.541  1.316
 
-# output_custom_lm_numeric_independence_2
-
-    Code
-      print({
-        out <- code
-      }, digits = digits)
-    Message
-      Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
-      
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
-      * Model class: <whatever>
-      * Approach: independence
-      * Iterative estimation: FALSE
-      * Number of feature-wise Shapley values: 5
-      * Number of observations to explain: 3
-      
-      -- Main computation started --
-      
-      i Using 32 of 32 coalitions. 
-    Output
-         explain_id  none Solar.R    Wind   Temp  Month    Day
-              <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -4.537   8.269 17.517 -5.581 -3.066
-      2:          2 42.44   2.250  -3.345 -5.232 -5.581 -1.971
-      3:          3 42.44   3.708 -18.610 -1.440 -2.541  1.316
-
 # output_custom_xgboost_mixed_dummy_ctree
 
     Code
@@ -808,31 +778,4 @@
       1:          1 42.44 -13.252  15.541 12.826 -5.77179  3.259
       2:          2 42.44   2.758  -3.325 -7.992 -7.12800  1.808
       3:          3 42.44   6.805 -22.126  3.730 -0.09234 -5.885
-
-# output_lm_numeric_independence_keep_samp_for_vS
-
-    Code
-      print({
-        out <- code
-      }, digits = digits)
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
-      * Model class: <lm>
-      * Approach: independence
-      * Iterative estimation: FALSE
-      * Number of feature-wise Shapley values: 5
-      * Number of observations to explain: 3
-      
-      -- Main computation started --
-      
-      i Using 32 of 32 coalitions. 
-    Output
-         explain_id  none Solar.R    Wind   Temp  Month    Day
-              <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -4.537   8.269 17.517 -5.581 -3.066
-      2:          2 42.44   2.250  -3.345 -5.232 -5.581 -1.971
-      3:          3 42.44   3.708 -18.610 -1.440 -2.541  1.316
 
