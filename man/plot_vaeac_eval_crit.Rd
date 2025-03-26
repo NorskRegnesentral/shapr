@@ -55,10 +55,6 @@ See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al.
 if (requireNamespace("xgboost", quietly = TRUE) &&
   requireNamespace("torch", quietly = TRUE) &&
   torch::torch_is_installed()) {
-  library(xgboost)
-  library(data.table)
-  library(shapr)
-
   data("airquality")
   data <- data.table::as.data.table(airquality)
   data <- data[complete.cases(data), ]
@@ -72,7 +68,12 @@ if (requireNamespace("xgboost", quietly = TRUE) &&
   x_explain <- data[ind_x_explain, ..x_var]
 
   # Fitting a basic xgboost model to the training data
-  model <- xgboost(data = as.matrix(x_train), label = y_train, nround = 100, verbose = FALSE)
+  model <- xgboost::xgboost(
+    data = as.matrix(x_train),
+    label = y_train,
+    nround = 100,
+    verbose = FALSE
+  )
 
   # Specifying the phi_0, i.e. the expected prediction without any features
   p0 <- mean(y_train)
