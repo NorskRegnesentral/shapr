@@ -79,7 +79,11 @@ introduction to \code{\link[GGally:ggpairs]{GGally::ggpairs()}}, and the corresp
 }
 \examples{
 \donttest{
-if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
+
+if (requireNamespace("xgboost", quietly = TRUE) &&
+  requireNamespace("ggplot2", quietly = TRUE) &&
+  requireNamespace("torch", quietly = TRUE) &&
+  torch::torch_is_installed()) {
   data("airquality")
   data <- data.table::as.data.table(airquality)
   data <- data[complete.cases(data), ]
