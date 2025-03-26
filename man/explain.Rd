@@ -467,15 +467,15 @@ explain3 <- explain(
 )
 
 if (requireNamespace("party", quietly = TRUE)) {
-# ctree approach
-explain4 <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "ctree",
-  phi0 = p,
-  n_MC_samples = 1e2
-)
+  # ctree approach
+  explain4 <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "ctree",
+    phi0 = p,
+    n_MC_samples = 1e2
+  )
 }
 
 # Combined approach
