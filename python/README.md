@@ -3,7 +3,7 @@
 
 Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/shapr).
 
-NOTE: This wrapper is in an EXPERIMENTAL state. Bugs are not unlikely to occur.
+NOTE: This wrapper is not as comprehensively tested as the `R`-package. 
 
 ### Install
 
