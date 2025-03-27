@@ -613,11 +613,10 @@ testing_cleanup <- function(output) {
       NULL
   }
 
-  # Removing the fit times for regression surrogate models
+  # Removing the the model object for regression surrogate models to avoid non-reproducibility
+  # in both fit-times and model object structure
   if ("regression_surrogate" %in% output$internal$parameters$approach) {
-    # Deletes the fit_times for approach = regression_surrogate to make tests pass.
-    output$internal$objects$regression.surrogate_model$pre$mold$blueprint$recipe$fit_times <- NULL
-    output$internal$objects$regression.surrogate_model$fit$fit$elapsed <- NULL
+    output$internal$objects$regression.surrogate_model <- NULL
   }
 
   # Delete the saving_path
