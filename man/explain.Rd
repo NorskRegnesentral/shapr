@@ -466,15 +466,17 @@ explain3 <- explain(
   n_MC_samples = 1e2
 )
 
-# ctree approach
-explain4 <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "ctree",
-  phi0 = p,
-  n_MC_samples = 1e2
-)
+if (requireNamespace("party", quietly = TRUE)) {
+  # ctree approach
+  explain4 <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "ctree",
+    phi0 = p,
+    n_MC_samples = 1e2
+  )
+}
 
 # Combined approach
 approach <- c("gaussian", "gaussian", "empirical")
@@ -543,6 +545,12 @@ explain_iterative <- explain(
   iterative = TRUE,
   iterative_args = list(initial_n_coalitions = 10)
 )
+}
+\dontshow{
+if (requireNamespace("future", quietly = TRUE)) {
+  # R CMD check: make sure any open connections are closed afterward
+  if (!inherits(future::plan(), "sequential")) future::plan("sequential")
+}
 }
 
 }

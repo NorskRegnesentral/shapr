@@ -585,3 +585,154 @@ test_that("Forecast data setup produces expected results", {
   # The data is just linearly increasing, idx 99 should be idx 100 - 1 at each value.
   expect_equal(x_explain - 1, as.numeric(formatted_data$x_train[98, ]))
 })
+
+
+# Tests producing output, but also other aspects below here
+# These should be run on cran and are therefore placed here instead of in test-forecast-output.R
+
+
+test_that("ARIMA gives the same output with different horizons", {
+  h3 <- explain_forecast(
+    testing = TRUE,
+    model = model_arima_temp,
+    y = data_arima[1:150, "Temp"],
+    xreg = data_arima[, "Wind"],
+    train_idx = 2:148,
+    explain_idx = 149:150,
+    explain_y_lags = 2,
+    explain_xreg_lags = 2,
+    horizon = 3,
+    approach = "empirical",
+    phi0 = p0_ar[1:3],
+    seed = 1,
+    group_lags = FALSE,
+    max_n_coalitions = 200,
+    iterative = FALSE
+  )
+
+
+  h2 <- explain_forecast(
+    testing = TRUE,
+    model = model_arima_temp,
+    y = data_arima[1:150, "Temp"],
+    xreg = data_arima[, "Wind"],
+    train_idx = 2:148,
+    explain_idx = 149:150,
+    explain_y_lags = 2,
+    explain_xreg_lags = 2,
+    horizon = 2,
+    approach = "empirical",
+    phi0 = p0_ar[1:2],
+    seed = 1,
+    group_lags = FALSE,
+    max_n_coalitions = 100,
+    iterative = FALSE
+  )
+
+  h1 <- explain_forecast(
+    testing = TRUE,
+    model = model_arima_temp,
+    y = data_arima[1:150, "Temp"],
+    xreg = data_arima[, "Wind"],
+    train_idx = 2:148,
+    explain_idx = 149:150,
+    explain_y_lags = 2,
+    explain_xreg_lags = 2,
+    horizon = 1,
+    approach = "empirical",
+    phi0 = p0_ar[1],
+    seed = 1,
+    group_lags = FALSE,
+    max_n_coalitions = 50,
+    iterative = FALSE
+  )
+
+  cols_horizon1 <- h2$internal$objects$cols_per_horizon[[1]]
+  expect_equal(
+    h2$shapley_values_est[horizon == 1, ..cols_horizon1],
+    h1$shapley_values_est[horizon == 1, ..cols_horizon1]
+  )
+
+  expect_equal(
+    h3$shapley_values_est[horizon == 1, ..cols_horizon1],
+    h1$shapley_values_est[horizon == 1, ..cols_horizon1]
+  )
+
+  cols_horizon2 <- h2$internal$objects$cols_per_horizon[[2]]
+  expect_equal(
+    h3$shapley_values_est[horizon == 2, ..cols_horizon2],
+    h2$shapley_values_est[horizon == 2, ..cols_horizon2]
+  )
+})
+
+test_that("ARIMA gives the same output with different horizons with grouping", {
+  h3 <- explain_forecast(
+    testing = TRUE,
+    model = model_arima_temp,
+    y = data_arima[1:150, "Temp"],
+    xreg = data_arima[, "Wind"],
+    train_idx = 2:148,
+    explain_idx = 149:150,
+    explain_y_lags = 2,
+    explain_xreg_lags = 2,
+    horizon = 3,
+    approach = "empirical",
+    phi0 = p0_ar[1:3],
+    seed = 1,
+    group_lags = TRUE,
+    max_n_coalitions = 50,
+    iterative = FALSE
+  )
+
+
+  h2 <- explain_forecast(
+    testing = TRUE,
+    model = model_arima_temp,
+    y = data_arima[1:150, "Temp"],
+    xreg = data_arima[, "Wind"],
+    train_idx = 2:148,
+    explain_idx = 149:150,
+    explain_y_lags = 2,
+    explain_xreg_lags = 2,
+    horizon = 2,
+    approach = "empirical",
+    phi0 = p0_ar[1:2],
+    seed = 1,
+    group_lags = TRUE,
+    max_n_coalitions = 50,
+    iterative = FALSE
+  )
+
+  h1 <- explain_forecast(
+    testing = TRUE,
+    model = model_arima_temp,
+    y = data_arima[1:150, "Temp"],
+    xreg = data_arima[, "Wind"],
+    train_idx = 2:148,
+    explain_idx = 149:150,
+    explain_y_lags = 2,
+    explain_xreg_lags = 2,
+    horizon = 1,
+    approach = "empirical",
+    phi0 = p0_ar[1],
+    seed = 1,
+    group_lags = TRUE,
+    max_n_coalitions = 50,
+    iterative = FALSE
+  )
+
+  expect_equal(
+    h2$shapley_values_est[horizon == 1],
+    h1$shapley_values_est[horizon == 1]
+  )
+
+  expect_equal(
+    h3$shapley_values_est[horizon == 1],
+    h1$shapley_values_est[horizon == 1]
+  )
+
+  expect_equal(
+    h3$shapley_values_est[horizon == 2],
+    h2$shapley_values_est[horizon == 2]
+  )
+})

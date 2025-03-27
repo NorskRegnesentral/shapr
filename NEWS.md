@@ -1,3 +1,22 @@
+# shapr 1.0.3.9000 (GitHub development version)
+
+* Deletes the regression-surrogate parsnip object when testing to avoid future conflicts with model object changes. (Second last commit in [#447](https://github.com/NorskRegnesentral/shapr/pull/447))
+
+# shapr 1.0.3
+
+* Fix documentation issues detected during shapr 1.0.2 release ([#442](https://github.com/NorskRegnesentral/shapr/pull/442))
+  * Remove examples from unexported functions
+  * Replace \dontrun by \donttest for long running examples
+  * Replace usage of `print()` by `warning()` on two occasions
+* Fix issue with `Expected <nn_module> but got object of type <NULL>` for
+`approach='vaeac'` after recent `torch` update broke it ([#444](https://github.com/NorskRegnesentral/shapr/pull/444))
+* Changes default seed in `explain()` and `explain_forecast()` from 1 to NULL to avoid set.seed() to conflict with later called code ([#445](https://github.com/NorskRegnesentral/shapr/pull/445))
+
+* Other minor fixes
+  * Add digits as arguments to the internal snapshot testing `expect_snapshot_rds()` to reduce false positive roundoff-errors between platforms ([#444](https://github.com/NorskRegnesentral/shapr/pull/444))
+  * Adjust dependencies in Suggests and their usage in tests ([#446](https://github.com/NorskRegnesentral/shapr/pull/446))
+  * Used skip_on_cran() to reduce check time on CRAN for snapshot tests which where not tested anyway
+
 # shapr 1.0.2
 
 * Fix CRAN NOTE which turned out to be bug related to returning NULL rather than integer(0) to identify (unconditional)

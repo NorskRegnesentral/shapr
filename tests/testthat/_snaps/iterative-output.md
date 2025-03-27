@@ -590,42 +590,6 @@
       2:          2 42.44   2.350  -3.335 -5.260 -5.609 -2.025
       3:          3 42.44   3.808 -18.600 -1.469 -2.570  1.261
 
-# output_lm_numeric_independence_saving_and_cont_est
-
-    Code
-      print({
-        out <- code
-      }, digits = digits)
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
-    Output
-         explain_id  none Solar.R    Wind   Temp Month    Day
-              <int> <num>   <num>   <num>  <num> <num>  <num>
-      1:          1 42.44  -4.578   8.290 17.503 -5.54 -3.072
-      2:          2 42.44   2.209  -3.325 -5.246 -5.54 -1.977
-      3:          3 42.44   3.667 -18.590 -1.455 -2.50  1.310
-
----
-
-    Code
-      print({
-        out <- code
-      }, digits = digits)
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
-    Output
-         explain_id  none Solar.R    Wind   Temp Month    Day
-              <int> <num>   <num>   <num>  <num> <num>  <num>
-      1:          1 42.44  -4.578   8.290 17.503 -5.54 -3.072
-      2:          2 42.44   2.209  -3.325 -5.246 -5.54 -1.977
-      3:          3 42.44   3.667 -18.590 -1.455 -2.50  1.310
-
 # output_verbose_1
 
     Code
@@ -947,41 +911,4 @@
       1:          1 42.44  -8.648   7.809  14.6337  0.5440 -1.7362
       2:          2 42.44   4.789  -4.388 -11.4817 -1.5130 -1.2857
       3:          3 42.44   7.623 -25.456   0.1543 -0.7341  0.8447
-
-# output_lm_numeric_independence_keep_samp_for_vS
-
-    Code
-      print({
-        out <- code
-      }, digits = digits)
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
-      * Model class: <lm>
-      * Approach: independence
-      * Iterative estimation: TRUE
-      * Number of feature-wise Shapley values: 5
-      * Number of observations to explain: 3
-      
-      -- iterative computation started --
-      
-      -- Iteration 1 -----------------------------------------------------------------
-      i Using 6 of 32 coalitions, 6 new. 
-      
-      -- Iteration 2 -----------------------------------------------------------------
-      i Using 10 of 32 coalitions, 4 new. 
-      
-      -- Iteration 3 -----------------------------------------------------------------
-      i Using 12 of 32 coalitions, 2 new. 
-      
-      -- Iteration 4 -----------------------------------------------------------------
-      i Using 16 of 32 coalitions, 4 new. 
-    Output
-         explain_id  none Solar.R    Wind   Temp  Month    Day
-              <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -4.532   8.262 17.522 -5.582 -3.068
-      2:          2 42.44   2.255  -3.352 -5.227 -5.582 -1.972
-      3:          3 42.44   3.713 -18.617 -1.436 -2.542  1.314
 
