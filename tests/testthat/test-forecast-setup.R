@@ -736,4 +736,3 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
     h2$shapley_values_est[horizon == 2]
   )
 })
-

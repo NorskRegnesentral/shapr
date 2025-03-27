@@ -202,4 +202,3 @@ test_that("forecast_output_forecast_ARIMA_manual_group_numeric2", {
     "forecast_output_forecast_ARIMA_manual_group_numeric2"
   )
 })
-

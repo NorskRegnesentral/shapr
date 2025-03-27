@@ -410,4 +410,3 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
 
   expect_false(is.null(out$internal$output$dt_samp_for_vS))
 })
-

@@ -201,5 +201,3 @@ test_that("output_verbose_1_3_4_5", {
     "output_verbose_1_3_4_5"
   )
 })
-
-

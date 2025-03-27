@@ -558,5 +558,3 @@ test_that("output_lm_numeric_empirical_progress", {
     "output_lm_numeric_empirical_progress"
   )
 })
-
-
