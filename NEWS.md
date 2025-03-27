@@ -1,3 +1,7 @@
+# shapr 1.0.3.9000 (GitHub development version)
+
+* Deletes the regression-surrogate parsnip object when testing to avoid future conflicts with model object changes. (Second last commit in [#447](https://github.com/NorskRegnesentral/shapr/pull/447))
+
 # shapr 1.0.3
 
 * Fix documentation issues detected during shapr 1.0.2 release ([#442](https://github.com/NorskRegnesentral/shapr/pull/442))
