@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,9 +43,13 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.3/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.3.9000" id="shapr-1039000-github-development-version">shapr 1.0.3.9000 (GitHub development version)<a class="anchor" aria-label="anchor" href="#shapr-1039000-github-development-version"></a></h2>
+<ul><li>Deletes the regression-surrogate parsnip object when testing to avoid future conflicts with model object changes. (Second last commit in <a href="https://github.com/NorskRegnesentral/shapr/pull/447" class="external-link">#447</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.3" id="shapr-103">shapr 1.0.3<a class="anchor" aria-label="anchor" href="#shapr-103"></a></h2><p class="text-muted">CRAN release: 2025-03-26</p>
 <ul><li>
@@ -54,12 +58,13 @@
 <li>Replace by for long running examples</li>
 <li>Replace usage of <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> by <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning()</a></code> on two occasions</li>
 </ul></li>
-<li><p>Fix issue with <code>Expected &lt;nn_module&gt; but got object of type &lt;NULL&gt;</code> <code>approach='vaeac'</code> after recent <code>torch</code> update broke it (<a href="https://github.com/NorskRegnesentral/shapr/pull/444" class="external-link">#444</a>)</p></li>
+<li><p>Fix issue with <code>Expected &lt;nn_module&gt; but got object of type &lt;NULL&gt;</code> for <code>approach='vaeac'</code> after recent <code>torch</code> update broke it (<a href="https://github.com/NorskRegnesentral/shapr/pull/444" class="external-link">#444</a>)</p></li>
 <li><p>Changes default seed in <code><a href="../reference/explain.html">explain()</a></code> and <code><a href="../reference/explain_forecast.html">explain_forecast()</a></code> from 1 to NULL to avoid set.seed() to conflict with later called code (<a href="https://github.com/NorskRegnesentral/shapr/pull/445" class="external-link">#445</a>)</p></li>
 <li>
 <p>Other minor fixes</p>
 <ul><li>Add digits as arguments to the internal snapshot testing <code>expect_snapshot_rds()</code> to reduce false positive roundoff-errors between platforms (<a href="https://github.com/NorskRegnesentral/shapr/pull/444" class="external-link">#444</a>)</li>
 <li>Adjust dependencies in Suggests and their usage in tests (<a href="https://github.com/NorskRegnesentral/shapr/pull/446" class="external-link">#446</a>)</li>
+<li>Used skip_on_cran() to reduce check time on CRAN for snapshot tests which where not tested anyway</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
