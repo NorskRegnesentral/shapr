@@ -27,7 +27,17 @@ model <- readRDS(file.path("data_and_models", "model.rds"))
 library(future)
 library(progressr)
 future::plan(multisession, workers = 4)
+#+ echo=FALSE
+# When calling progressr::handlers(global = TRUE) from within knitr::spin("code_R.R"), we get
+# 'Error in globalCallingHandlers(condition = global_progression_handler): should not be called with handlers on the stack',
+# which is a known limitation of progressr/R.
+# This line is therefore not evaluated here, but still shown in the rendered document
+# The output is not affected by this, as the progressr::handlers(global = TRUE) is only used to show progress bars,
+# but we want to include it in the code since it is helpful for users when running interactively,
+# as opposed to more cumbersome with_progress() wrapper which would work with knitr::spin("code_R.R").
+#+ eval = FALSE
 progressr::handlers(global = TRUE)
+#+
 
 #### Example code in Section 3 ####
 
@@ -139,7 +149,7 @@ ggplot2::ggsave(file.path("paper_figures","waterfall_group.pdf"),width = 7, heig
 
 
 #+
-#### Generates Figure 6 in the paper ####
+#### Figure 6 in the paper ####
 
 #+ fig-beeswarm_caus_asym, echo=FALSE, message=FALSE, fig.width=14, fig.height=4, fig.scale=1.1
 library(ggplot2)
@@ -261,7 +271,7 @@ exp_asym_cau <- explain(
 #### Example code in Section 6 ####
 
 # Read additional data
-x_full <- fread(file.path(path_data_and_model,"x_full.csv"))
+x_full <- fread(file.path("data_and_models","x_full.csv"))
 data_fit <- x_full[seq_len(729), ]
 
 # Fit AR(2)-model

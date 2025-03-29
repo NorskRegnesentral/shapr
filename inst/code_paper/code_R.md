@@ -26,8 +26,14 @@ model <- readRDS(file.path("data_and_models", "model.rds"))
 library(future)
 library(progressr)
 future::plan(multisession, workers = 4)
-progressr::handlers(global = TRUE)
+```
 
+
+``` r
+progressr::handlers(global = TRUE)
+```
+
+``` r
 #### Example code in Section 3 ####
 
 # 20 indep
@@ -133,7 +139,7 @@ exp_iter_ctree <- explain(model = model,
 ```
 
 ```
-## ── Starting `shapr::explain()` at 2025-03-29 23:55:12 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain()` at 2025-03-30 00:20:00 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ```
@@ -157,7 +163,7 @@ exp_iter_ctree <- explain(model = model,
 ```
 
 ```
-## • Computations (temporary) saved at: '/tmp/RtmpViPUFY/shapr_obj_2b13b45b1699.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp4dErZR/shapr_obj_2e08b14bc6caf.rds'
 ```
 
 ```
@@ -340,7 +346,7 @@ plot(exp_g_reg_tuned,index_x_explain = 6,plot_type="waterfall")
 
 
 ``` r
-#### Generates Figure 6 in the paper ####
+#### Figure 6 in the paper ####
 ```
 ![plot of chunk fig-beeswarm_caus_asym](figure/fig-beeswarm_caus_asym-1.png)
 
@@ -371,7 +377,7 @@ exp_asym_cau <- explain(
 #### Example code in Section 6 ####
 
 # Read additional data
-x_full <- fread(file.path(path_data_and_model,"x_full.csv"))
+x_full <- fread(file.path("data_and_models","x_full.csv"))
 data_fit <- x_full[seq_len(729), ]
 
 # Fit AR(2)-model
@@ -407,7 +413,7 @@ exp_fc_ar <- explain_forecast(
 ```
 
 ```
-## ── Starting `shapr::explain()` at 2025-03-29 23:56:09 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain()` at 2025-03-30 00:20:55 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ```
@@ -431,7 +437,7 @@ exp_fc_ar <- explain_forecast(
 ```
 
 ```
-## • Computations (temporary) saved at: '/tmp/RtmpViPUFY/shapr_obj_2b13b110d0ed6.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp4dErZR/shapr_obj_2e08b1e744229.rds'
 ```
 
 ```
@@ -501,7 +507,7 @@ exp_fc_arimax <- explain_forecast(
 ```
 
 ```
-## ── Starting `shapr::explain()` at 2025-03-29 23:56:10 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain()` at 2025-03-30 00:20:56 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ```
@@ -525,7 +531,7 @@ exp_fc_arimax <- explain_forecast(
 ```
 
 ```
-## • Computations (temporary) saved at: '/tmp/RtmpViPUFY/shapr_obj_2b13b233ae292.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp4dErZR/shapr_obj_2e08b7cbb8ca.rds'
 ```
 
 ```
@@ -587,12 +593,12 @@ sessionInfo()
 ## [1] ggpubr_0.6.0      ggplot2_3.5.1     progressr_0.15.1  future_1.34.0     shapr_1.0.3.9000  data.table_1.17.0 xgboost_1.7.9.1  
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] gridExtra_2.3       testthat_3.2.3      rlang_1.1.5         magrittr_2.0.3      furrr_0.3.1         tseries_0.10-58     compiler_4.4.1      systemfonts_1.1.0   vctrs_0.6.5         lhs_1.2.0           quadprog_1.5-8      tune_1.3.0          pkgconfig_2.0.3    
-##  [14] fastmap_1.2.0       backports_1.5.0     labeling_0.4.3      rmarkdown_2.29      markdown_1.13       prodlim_2024.06.25  ggbeeswarm_0.7.2    ragg_1.3.3          purrr_1.0.4         xfun_0.51           jsonlite_1.9.1      recipes_1.2.0       broom_1.0.7        
-##  [27] parallel_4.4.1      R6_2.6.1            rsample_1.2.1       parallelly_1.43.0   car_3.1-3           rpart_4.1.23        brio_1.1.5          lmtest_0.9-40       lubridate_1.9.4     Rcpp_1.0.14         dials_1.4.0         iterators_1.0.14    knitr_1.50         
+##   [1] gridExtra_2.3       testthat_3.2.3      rlang_1.1.5         magrittr_2.0.3      tseries_0.10-58     furrr_0.3.1         compiler_4.4.1      systemfonts_1.1.0   vctrs_0.6.5         quadprog_1.5-8      lhs_1.2.0           tune_1.3.0          pkgconfig_2.0.3    
+##  [14] fastmap_1.2.0       backports_1.5.0     labeling_0.4.3      rmarkdown_2.29      prodlim_2024.06.25  markdown_1.13       ggbeeswarm_0.7.2    ragg_1.3.3          purrr_1.0.4         xfun_0.51           jsonlite_1.9.1      recipes_1.2.0       broom_1.0.7        
+##  [27] parallel_4.4.1      R6_2.6.1            rsample_1.2.1       parallelly_1.43.0   car_3.1-3           rpart_4.1.23        lmtest_0.9-40       brio_1.1.5          lubridate_1.9.4     Rcpp_1.0.14         dials_1.4.0         iterators_1.0.14    knitr_1.50         
 ##  [40] future.apply_1.11.3 zoo_1.8-13          Matrix_1.7-0        splines_4.4.1       nnet_7.3-19         timechange_0.3.0    tidyselect_1.2.1    rstudioapi_0.17.1   abind_1.4-8         yaml_2.3.10         timeDate_4041.110   codetools_0.2-20    curl_6.2.1         
 ##  [53] listenv_0.9.1       lattice_0.22-6      tibble_3.2.1        quantmod_0.4.26     withr_3.0.2         urca_1.3-4          evaluate_1.0.3      survival_3.6-4      xts_0.14.1          pillar_1.10.1       carData_3.0-5       foreach_1.5.2       TTR_0.24.4         
-##  [66] generics_0.1.3      forecast_8.23.0     commonmark_1.9.5    munsell_0.5.1       scales_1.3.0        globals_0.16.3      class_7.3-22        glue_1.8.0          tools_4.4.1         gower_1.0.2         ggsignif_0.6.4      cowplot_1.1.3       grid_4.4.1         
+##  [66] generics_0.1.3      forecast_8.23.0     munsell_0.5.1       commonmark_1.9.5    scales_1.3.0        globals_0.16.3      class_7.3-22        glue_1.8.0          tools_4.4.1         gower_1.0.2         ggsignif_0.6.4      cowplot_1.1.3       grid_4.4.1         
 ##  [79] yardstick_1.3.2     tidyr_1.3.1         ipred_0.9-15        colorspace_2.1-1    nlme_3.1-164        beeswarm_0.4.0      fracdiff_1.5-3      vipor_0.4.7         Formula_1.2-5       cli_3.6.4           DiceDesign_1.10     textshaping_0.4.0   workflows_1.2.0    
 ##  [92] parsnip_1.3.1       lava_1.8.1          dplyr_1.1.4         gtable_0.3.6        GPfit_1.0-8         rstatix_0.7.2       digest_0.6.37       farver_2.1.2        htmltools_0.5.8.1   lifecycle_1.0.4     hardhat_1.4.1       mime_0.13           MASS_7.3-60.2
 ```
