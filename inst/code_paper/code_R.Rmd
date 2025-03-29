@@ -1,3 +1,5 @@
+
+```{r}
 ## Replication script for the R-examples used in the paper
 # shapr: Explaining Machine Learning Models with Conditional Shapley Values in R and Python
 
@@ -5,10 +7,6 @@
 # shapr, xgboost, data.table, future, progressr, ggplot2, ggpubr
 
 
-# /*
-# Already run, and data/models are saved to ensure reproducibility
-# source("R_prep_data_and_model.R")
-# */
 
 
 #### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
@@ -76,10 +74,12 @@ exp_iter_ctree <- explain(model = model,
 
 library(ggplot2)
 
-#+ fig-scatter_ctree, fig.width=7, fig.height=3
+```
+```{r fig-scatter_ctree, fig.width=7, fig.height=3}
 plot(exp_iter_ctree, plot_type = "scatter",scatter_features = c("atemp","windspeed"))
 
-#+ echo=FALSE
+```
+```{r echo=FALSE}
 # Produce the pdf used in Figure 3 in the paper
 ggplot2::ggsave(file.path("paper_figures","scatter_ctree.pdf"),width = 7, height = 3)
 
@@ -129,19 +129,23 @@ exp_g_reg_tuned$MSEv$MSEv
 # Print Shapley value for the best one
 head(exp_g_reg_tuned$shapley_values_est)
 
-#+ fig-waterfall_group, fig.width=7, fig.height=4
+```
+```{r fig-waterfall_group, fig.width=7, fig.height=4}
 # Waterfall plot for the best one
 plot(exp_g_reg_tuned,index_x_explain = 6,plot_type="waterfall")
 
-#+ echo=FALSE
+```
+```{r echo=FALSE}
 # Produce the pdf used in Figure 3 in the paper
 ggplot2::ggsave(file.path("paper_figures","waterfall_group.pdf"),width = 7, height = 4) # !NOTSHOWN
 
 
-#+
+```
+```{r}
 #### Generates Figure 6 in the paper ####
 
-#+ fig-beeswarm_caus_asym, echo=FALSE, message=FALSE, fig.width=14, fig.height=4, fig.scale=1.1
+```
+```{r fig-beeswarm_caus_asym, echo=FALSE, message=FALSE, fig.width=14, fig.height=4, fig.scale=1.1}
 library(ggplot2)
 library(ggpubr)
 
@@ -233,7 +237,8 @@ ggplot2::ggsave(file.path("paper_figures","beeswarm_caus_asym.pdf"),
                 width = 14,
                 height = 4)
 
-#+ eval=FALSE, echo=TRUE
+```
+```{r eval=FALSE, echo=TRUE}
 #### Generic example code for Section 4 (not ran for paper) ####
 
 # Specify the causal ordering and confounding
@@ -257,7 +262,8 @@ exp_asym_cau <- explain(
 
 
 
-#+
+```
+```{r}
 #### Example code in Section 6 ####
 
 # Read additional data
@@ -303,11 +309,13 @@ print(exp_fc_arimax)
 
 #### Wrapping up ####
 
-#+ echo=FALSE
+```
+```{r echo=FALSE}
 # Make sure any open connections opened future::plan(multisession, workers = 4) are closed afterwards
 future::plan("sequential")
 
-#+
+```
+```{r}
 sessionInfo()
-
+```
 
