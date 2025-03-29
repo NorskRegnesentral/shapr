@@ -1,19 +1,13 @@
 
-library(xgboost)
-library(data.table)
-library(shapr)
-
-path0 <- "https://raw.githubusercontent.com/NorskRegnesentral/shapr/refs/heads/"
-path <- paste0(path0,"master/inst/code_paper/")
-x_full <- fread(paste0(path, "x_full.csv"))
-
+# Read additional data
+x_full <- fread(file.path(path_data_and_model,"x_full.csv"))
 data_fit <- x_full[seq_len(729), ]
 
+# Fit AR(2)-model
 model_ar <- ar(data_fit$temp, order = 2)
-
 phi0_ar <- rep(mean(data_fit$temp), 3)
 
-explain_forecast(
+exp_fc_ar <- explain_forecast(
   model = model_ar,
   y = x_full[, "temp"],
   train_idx = 2:729,
@@ -24,13 +18,13 @@ explain_forecast(
   phi0 = phi0_ar,
   group_lags = FALSE
 )
+print(exp_fc_ar)
 
-
-data_fit <- x_full[seq_len(729), ]
+# Fit ARIMA(2,0,0)-model
 model_arimax <- arima(data_fit$temp, order = c(2, 0, 0), xreg = data_fit$windspeed)
 phi0_arimax <- rep(mean(data_fit$temp), 2)
 
-explain_forecast(
+exp_fc_arimax <- explain_forecast(
   model = model_arimax,
   y = x_full[, "temp"],
   xreg = x_full[, "windspeed"],
@@ -43,3 +37,5 @@ explain_forecast(
   phi0 = phi0_arimax,
   group_lags = TRUE
 )
+
+print(exp_fc_arimax)

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title></title>
+<style type="text/css">
+/**
+ * Prism.s theme ported from highlight.js's xcode style
+ */
+pre code {
+  padding: 1em;
+}
+.token.comment {
+  color: #007400;
+}
+.token.punctuation {
+  color: #999;
+}
+.token.tag,
+.token.selector {
+  color: #aa0d91;
+}
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol {
+  color: #1c00cf;
+}
+.token.property,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin {
+  color: #c41a16;
+}
+.token.inserted {
+  background-color: #ccffd8;
+}
+.token.deleted {
+  background-color: #ffebe9;
+}
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #9a6e3a;
+}
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #836c28;
+}
+.token.function,
+.token.class-name {
+  color: #DD4A68;
+}
+.token.regex,
+.token.important,
+.token.variable {
+  color: #5c2699;
+}
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+.token.italic {
+  font-style: italic;
+}
+</style>
+<style type="text/css">
+body {
+  font-family: sans-serif;
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+body, .footnotes, code { font-size: .9em; }
+li li { font-size: .95em; }
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+pre, img { max-width: 100%; }
+pre, pre:hover {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+pre code {
+  display: block;
+  overflow-x: auto;
+}
+code { font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace; }
+:not(pre) > code, code[class] { background-color: #F8F8F8; }
+code.language-undefined, pre > code:not([class]) {
+  background-color: inherit;
+  border: 1px solid #eee;
+}
+table {
+  margin: auto;
+  border-top: 1px solid #666;
+}
+table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+thead, tfoot, tr:nth-child(even) { background: #eee; }
+blockquote {
+  color: #666;
+  margin: 0;
+  padding-left: 1em;
+  border-left: 0.5em solid #eee;
+}
+hr, .footnotes::before { border: 1px dashed #ddd; }
+.frontmatter { text-align: center; }
+#TOC .numbered li { list-style: none; }
+#TOC .numbered { padding-left: 0; }
+#TOC .numbered ul { padding-left: 1em; }
+table, .body h2 { border-bottom: 1px solid #666; }
+.body .appendix, .appendix ~ h2 { border-bottom-style: dashed; }
+.footnote-ref a::before { content: "["; }
+.footnote-ref a::after { content: "]"; }
+section.footnotes::before {
+  content: "";
+  display: block;
+  max-width: 20em;
+}
+
+@media print {
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+  tr, img { page-break-inside: avoid; }
+}
+@media only screen and (min-width: 992px) {
+  pre { white-space: pre; }
+}
+</style>
+</head>
+<body>
+<div class="frontmatter">
+<div class="title"><h1></h1></div>
+<div class="author"><h2></h2></div>
+<div class="date"><h3></h3></div>
+</div>
+<div class="body">
+<pre><code class="language-r">library(here)
+path_source &lt;- &quot;source&quot;
+
+#source(file.path(path_source,&quot;prep_data_and_model.R&quot;)) # Already run, and data/models are saved to ensure reproducibility
+
+source(file.path(path_source,&quot;code_sec_3.R&quot;))
+</code></pre>
+<pre><code>## Error in globalCallingHandlers(condition = global_progression_handler): should not be called with handlers on the stack
+</code></pre>
+<pre><code class="language-r">source(file.path(path_source,&quot;code_sec_4.R&quot;))
+</code></pre>
+<pre><code>## Error in globalCallingHandlers(condition = global_progression_handler): should not be called with handlers on the stack
+</code></pre>
+<pre><code class="language-r">source(file.path(path_source,&quot;code_sec_6.R&quot;))
+</code></pre>
+<pre><code>## Error in globalCallingHandlers(condition = global_progression_handler): should not be called with handlers on the stack
+</code></pre>
+<pre><code class="language-r">sessionInfo()
+</code></pre>
+<pre><code>## R version 4.4.1 (2024-06-14)
+## Platform: x86_64-pc-linux-gnu
+## Running under: Ubuntu 20.04.6 LTS
+## 
+## Matrix products: default
+## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3;  LAPACK version 3.9.0
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## time zone: Europe/Oslo
+## tzcode source: system (glibc)
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] here_1.0.1        ggpubr_0.6.0      ggplot2_3.5.1     progressr_0.15.1  future_1.34.0     shapr_1.0.3.9000  data.table_1.17.0 xgboost_1.7.9.1  
+## 
+## loaded via a namespace (and not attached):
+##  [1] generics_0.1.3    tidyr_1.3.1       rstatix_0.7.2     lattice_0.22-6    listenv_0.9.1     digest_0.6.37     magrittr_2.0.3    evaluate_1.0.3    grid_4.4.1        parsnip_1.3.1     rprojroot_2.0.4   jsonlite_1.9.1    Matrix_1.7-0      backports_1.5.0   Formula_1.2-5    
+## [16] gridExtra_2.3     purrr_1.0.4       scales_1.3.0      codetools_0.2-20  abind_1.4-8       cli_3.6.4         rlang_1.1.5       hardhat_1.4.1     parallelly_1.43.0 cowplot_1.1.3     munsell_0.5.1     withr_3.0.2       ggbeeswarm_0.7.2  tools_4.4.1       parallel_4.4.1   
+## [31] ggsignif_0.6.4    dplyr_1.1.4       colorspace_2.1-1  globals_0.16.3    broom_1.0.7       vctrs_0.6.5       R6_2.6.1          lifecycle_1.0.4   car_3.1-3         vipor_0.4.7       pkgconfig_2.0.3   beeswarm_0.4.0    pillar_1.10.1     gtable_0.3.6      glue_1.8.0       
+## [46] Rcpp_1.0.14       xfun_0.51         tibble_3.2.1      tidyselect_1.2.1  knitr_1.50        rstudioapi_0.17.1 carData_3.0-5     compiler_4.4.1
+</code></pre>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+</body>
+</html>

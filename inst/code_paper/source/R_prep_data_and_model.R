@@ -1,6 +1,8 @@
 library(xgboost)
 library(data.table)
 
+path_data_and_model <- "./inst/code_paper/data_and_models/"
+
 # Bike sharing data from http://archive.ics.uci.edu/dataset/275/bike+sharing+dataset
 # with license https://creativecommons.org/licenses/by/4.0/
 
@@ -54,14 +56,14 @@ model <- xgboost::xgboost(
 )
 
 #### Writing training and explanation data to csv files
-fwrite(x_full, file="inst/code_paper/x_full.csv")
-fwrite(x_train, file="inst/code_paper/x_train.csv")
-fwrite(as.data.table(y_train), file="inst/code_paper/y_train.csv")
-fwrite(x_explain, file="inst/code_paper/x_explain.csv")
-fwrite(as.data.table(y_explain), file="inst/code_paper/y_explain.csv")
+fwrite(x_full, file=file.path(path_data_and_model,"x_full.csv"))
+fwrite(x_train, file=file.path(path_data_and_model,"x_train.csv"))
+fwrite(as.data.table(y_train), file=file.path(path_data_and_model,"y_train.csv"))
+fwrite(x_explain, file=file.path(path_data_and_model,"x_explain.csv"))
+fwrite(as.data.table(y_explain), file=file.path(path_data_and_model,"y_explain.csv"))
 
 # We save the xgboost model object
-xgb.save(model, "inst/code_paper/xgb.model")
-saveRDS(model, "inst/code_paper/model.rds")
+xgboost::xgb.save(model, file.path(path_data_and_model,"xgb.model"))
+saveRDS(model, file.path(path_data_and_model,"model.rds"))
 
 
