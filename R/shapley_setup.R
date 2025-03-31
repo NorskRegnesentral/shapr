@@ -21,6 +21,7 @@ shapley_setup <- function(internal) {
   confounding <- internal$parameters$confounding
   dt_valid_causal_coalitions <- internal$objects$dt_valid_causal_coalitions # NULL if asymmetric is FALSE
   max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal # NULL if asymmetric is FALSE
+  dt_coal_determ_info <- internal$objects$dt_coal_determ_info # NULL if not semi-deterministic sampling
 
 
   iter <- length(internal$iter_list)
@@ -29,6 +30,7 @@ shapley_setup <- function(internal) {
   exact <- internal$iter_list[[iter]]$exact
   prev_coal_samples <- internal$iter_list[[iter]]$prev_coal_samples
   prev_coal_samples_n_unique <- internal$iter_list[[iter]]$prev_coal_samples_n_unique
+  prev_X <- internal$iter_list[[iter]]$X # NULL in first iteration
 
   if ("progress" %in% verbose) {
     cli::cli_progress_step("Sampling coalitions")
@@ -45,6 +47,8 @@ shapley_setup <- function(internal) {
     coal_feature_list = coal_feature_list,
     approach0 = approach,
     kernelSHAP_reweighting = kernelSHAP_reweighting,
+    prev_X = prev_X,
+    dt_coal_determ_info = dt_coal_determ_info,
     dt_valid_causal_coalitions = dt_valid_causal_coalitions
   )
 
@@ -79,6 +83,7 @@ shapley_setup <- function(internal) {
 
 
   if (isFALSE(exact)) {
+    ## TODO: denne vil ikke funke lenger
     coal_samples <- rep(X[-c(1, .N), coalitions_str], X[-c(1, .N), sample_freq])
   } else {
     coal_samples <- NA
@@ -147,6 +152,10 @@ shapley_setup <- function(internal) {
 #' Contains the approach to be used for estimation of each coalition size. Same as `approach` in [explain()].
 #' @param coal_feature_list List.
 #' A list mapping each coalition to the features it contains.
+#' @param prev_X data.table. The X data.table from the previous iteration.
+#' @param dt_coal_determ_info data.table. Only applicable for semi-deterministic sampling, and is `NULL` for
+#' the other sampling strategies. The data.table contains information about the which coalitions should be
+#' deterministically included and which can be sampled.
 #' @param dt_valid_causal_coalitions data.table. Only applicable for asymmetric Shapley
 #' values explanations, and is `NULL` for symmetric Shapley values.
 #' The data.table contains information about the coalitions that respects the causal ordering.
@@ -167,6 +176,8 @@ create_coalition_table <- function(m,
                                    coal_feature_list = as.list(seq_len(m)),
                                    approach0 = "gaussian",
                                    kernelSHAP_reweighting = "none",
+                                   prev_X = NULL,
+                                   dt_coal_determ_info = NULL,
                                    dt_valid_causal_coalitions = NULL) {
   if (exact) {
     dt <- exact_coalition_table(
@@ -175,17 +186,30 @@ create_coalition_table <- function(m,
       dt_valid_causal_coalitions = dt_valid_causal_coalitions
     )
   } else {
-    dt <- sample_coalition_table(
-      m = m,
-      n_coalitions = n_coalitions,
-      weight_zero_m = weight_zero_m,
-      paired_shap_sampling = paired_shap_sampling,
-      prev_coal_samples = prev_coal_samples,
-      prev_coal_samples_n_unique = prev_coal_samples_n_unique,
-      n_samps_scale = n_samps_scale,
-      kernelSHAP_reweighting = kernelSHAP_reweighting,
-      dt_valid_causal_coalitions = dt_valid_causal_coalitions
-    )
+    if (!is.null(dt_coal_determ_info)) {
+      dt <- sample_coalition_table_determ(
+        m = m,
+        n_coalitions = n_coalitions,
+        weight_zero_m = weight_zero_m,
+        prev_coal_samples = prev_coal_samples,
+        prev_coal_samples_n_unique = prev_coal_samples_n_unique,
+        prev_X = prev_X,
+        kernelSHAP_reweighting = kernelSHAP_reweighting,
+        dt_coal_determ_info = dt_coal_determ_info
+      )
+    } else {
+      dt <- sample_coalition_table(
+        m = m,
+        n_coalitions = n_coalitions,
+        weight_zero_m = weight_zero_m,
+        paired_shap_sampling = paired_shap_sampling,
+        prev_coal_samples = prev_coal_samples,
+        prev_coal_samples_n_unique = prev_coal_samples_n_unique,
+        n_samps_scale = n_samps_scale,
+        kernelSHAP_reweighting = kernelSHAP_reweighting,
+        dt_valid_causal_coalitions = dt_valid_causal_coalitions
+      )
+    }
     stopifnot(
       data.table::is.data.table(dt),
       !is.null(dt[["p"]])
@@ -208,7 +232,7 @@ create_coalition_table <- function(m,
 
 #' @keywords internal
 kernelSHAP_reweighting <- function(X, reweight = "on_N") {
-  # Updates the shapley weights in X based on the reweighting strategy BY REFERENCE
+  # Updates the Shapley weights in X based on the reweighting strategy BY REFERENCE
 
   if (reweight == "on_N") {
     X[-c(1, .N), shapley_weight := mean(shapley_weight), by = N]
@@ -236,21 +260,76 @@ kernelSHAP_reweighting <- function(X, reweight = "on_N") {
   return(NULL)
 }
 
+#' @keywords internal
+kernelSHAP_reweighting_determ <- function(X, reweight = "on_N", m = NULL, reweighted_shapley_weight = NULL) {
+  # Updates the Shapley weights in X based on the reweighting strategy BY REFERENCE
+  # Only used for semi-deterministic sampling, i.e., this function is slightly
+  # different from kernelSHAP_reweighting
+
+  if (is.null(reweighted_shapley_weight)) {
+    # It is null for random sampling
+    m <- X[.N, coalition_size] # Assume last row is the full coalition
+    rel_ind = -c(1, nrow(X))
+    func_shapley_weights = function(m, N, coalition_size, weight_zero_m = 10^6) {
+      shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = weight_zero_m) /
+        sum_shapley_weights(m)
+    }
+
+  } else {
+    # We are doing semi-deterministic sampling
+    rel_ind = seq_len(nrow(X))
+    if (is.null(m)) stop("`m` must be provided for semi-deterministic sampling")
+    func_shapley_weights = function(m, N, coalition_size, weight_zero_m = 10^6) {
+      reweighted_shapley_weight[coalition_size]
+    }
+  }
+
+  # Do the reweighting
+  if (reweight == "on_N") {
+    X[rel_ind, shapley_weight := mean(shapley_weight), by = N]
+  } else if (reweight == "on_all") {
+    X[rel_ind, shapley_weight := func_shapley_weights(m = m, N = N, coalition_size = coalition_size)]
+  } else if (reweight == "on_all_cond") {
+    K <- X[, sum(sample_freq)]
+    X[rel_ind, shapley_weight := func_shapley_weights(m = m, N = N, coalition_size = coalition_size)]
+    X[rel_ind, cond := 1 - (1 - shapley_weight)^K]
+    X[rel_ind, shapley_weight := shapley_weight / cond]
+  }
+  # strategy= "none" or something else do nothing
+  return(NULL)
+}
+
 #' Get table with all (exact) coalitions
 #'
 #' @inheritParams create_coalition_table
 #' @keywords internal
 exact_coalition_table <- function(m,
+                                  max_paired_coal_size = NULL,
                                   dt_valid_causal_coalitions = NULL,
                                   weight_zero_m = 10^6) {
   # Create all valid coalitions for regular/symmetric or asymmetric Shapley values
   if (is.null(dt_valid_causal_coalitions)) {
-    # Regular/symmetric Shapley values: use all 2^m coalitions
-    coalitions0 <- unlist(lapply(0:m, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
+    # Regular/symmetric Shapley values:
+    if (is.null(max_paired_coal_size)) {
+      # Use all 2^m coalitions
+      seq_coal_size <- seq(0, m)
+    } else {
+      # Only coalitions of size 0, 1, ..., max_paired_coal_size, ..., m - max_paired_coal_size, ..., m - 1, m.
+      if (max_paired_coal_size > as.integer(ceiling((m - 1) / 2))) {
+        stop(paste0("The argument `max_paired_coal_size` (", max_paired_coal_size, ") is larger ",
+                    "than the number of paired coalition sizes (", as.integer(ceiling((m - 1) / 2)), ")."))
+      }
+
+      # Use unique such that the coalition size where |S| = |S_bar| is not included twice.
+      seq_coal_size = unique(c(seq(0, max_paired_coal_size), m - seq(max_paired_coal_size, 0)))
+    }
+    # Make list of the relevant coalitions
+    coalitions0 <- unlist(lapply(seq_coal_size, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
   } else {
     # Asymmetric Shapley values: use only the coalitions that respect the causal ordering
     coalitions0 <- dt_valid_causal_coalitions[, coalitions]
   }
+
 
   dt <- data.table::data.table(id_coalition = seq_along(coalitions0))
   dt[, coalitions := coalitions0]
@@ -260,6 +339,233 @@ exact_coalition_table <- function(m,
   dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m)]
   dt[, sample_freq := NA]
   return(dt)
+}
+
+#' Get table with sampled coalitions using the semi-deterministic sampling approach
+#'
+#' @inheritParams create_coalition_table
+#' @keywords internal
+sample_coalition_table_determ <- function(m,
+                                          n_coalitions = 200,
+                                          weight_zero_m = 10^6,
+                                          paired_shap_sampling = TRUE,
+                                          prev_X = NULL,
+                                          prev_coal_samples = NULL,
+                                          prev_coal_samples_n_unique = NULL,
+                                          kernelSHAP_reweighting,
+                                          dt_coal_determ_info,
+                                          n_samps_scale = 10) {
+
+  # TODO: remove this. this is given to the function
+  m = 10
+  dt_coal_determ_info = get_dt_coal_determ_info(m)
+  n_coalitions = 50
+
+
+  # Setup
+  if (!is.null(prev_coal_samples)) {
+    coal_sample_all <- prev_coal_samples
+    unique_samples <- prev_coal_samples_n_unique
+    n_coalitions <- min(2^m, n_coalitions)
+    # Adjusts for the the unique samples, zero and m samples
+  } else {
+    coal_sample_all <- c()
+    unique_samples <- 0
+  }
+
+
+
+  # Extract the relevant information about the deterministic sampling based on the number of coalitions.
+  # This one-row data.table contains the information about which coalition sizes to deterministically include, e.g.,
+  # the weight used for the deterministic coalitions and the weights used to sample the non-deterministic coalitions.
+  rel_info = dt_coal_determ_info[n_coalitions <= n_coal_max][1]
+
+  # The maximum paired coalition size to deterministically include.
+  # If 0, then empty and grand coalitions are the only coalitions that are deterministically included.
+  # If 1, then all coalitions of size 1 and m-1 are also deterministically included.
+  max_paired_coal_size = rel_info[, paired_sizes]
+
+  # Get the number of coalitions we are deterministically including
+  n_coal_determ = rel_info[, n_coal_determ]
+
+  # The weight used for the deterministic and sampled coalitions should sum to one,
+  # when omitting the empty and grand coalitions.
+  # Here we extract the proportion of the weight used on the deterministic coalitions.
+  # I.e., we will reweight the deterministic coalitions such that they sum to this weight.
+  weight_deterministic = rel_info[, weight_used]
+
+  # The same, but the weight given to the sampled coalitions.
+  weight_sample = rel_info[, weight_remaining]
+
+  # Get the coalition sizes to sample and the probabilities of sampling these sizes.
+  coal_sizes_sample = rel_info[, coal_sizes_sep_sample[[1]]]
+  coal_sizes_sample_prob = rel_info[, coal_sizes_sep_sample_prob[[1]]]
+
+  # Extract the coalition sizes we are to sample. and the probabilities of sampling these sizes.
+  # Note that this is done on a paired basis, so we only consider the lower
+
+  That is, if we sample a coalition of size 2, then we also sample the
+  # paired coalition of size m-2, and
+  paired_sizes_to_sample = rel_info[, paired_sizes_to_sample[[1]]]
+  paired_sizes_to_sample_prob = rel_info[, paired_sizes_to_sample_prob[[1]]]
+
+
+  # For the moment, we split in whether we are doing sampling for the first time or not
+  if (is.null(prev_X)) {
+
+    # Get the deterministically included coalitions
+    dt_deterministic <- exact_coalition_table(
+      m = m,
+      max_paired_coal_size = max_paired_coal_size,
+      weight_zero_m = weight_zero_m
+    )
+
+    # Reweight the deterministic coalitions such that they sum to weight_deterministic
+    dt_deterministic[-c(1, .N), shapley_weight := shapley_weight * weight_deterministic / sum(shapley_weight)]
+    dt_deterministic[, sum(shapley_weight), coalition_size]
+
+    # Get the number of coalitions we need to sample
+    # unique_samples = nrow(dt_deterministic)
+    n_samples_needed = n_coalitions - n_coal_determ
+    n_unique_coal_sampled = 0
+
+    # Loop until we have drawn enough unique samples
+    while (n_unique_coal_sampled < n_samples_needed) {
+
+      # Sample the coalition sizes
+      coal_size_sample <- sample(
+        x = rel_info[, paired_sizes_to_sample[[1]]], # The non-deterministic coalition sizes
+        size = as.integer(n_coalitions * n_samps_scale / 2), # Divide by two as we sample paired coalitions
+        prob = rel_info[, paired_sizes_to_sample_prob[[1]]], # The probabilities of the non-deterministic coal. sizes
+        replace = TRUE
+      )
+
+      # Sample the paired coalitions as strings
+      coalitions <- sample_coalitions_cpp_str_paired(m, coal_size_sample, paired_shap_sampling = TRUE)
+      # freq = table(sapply(coalitions, function(s) stringi::stri_count_fixed(s, " ")))
+      # freq = freq / sum(freq)
+      # freq
+
+
+      # Add the new coalitions to the previously sampled coalitions
+      coal_sample_all <- c(coal_sample_all, coalitions)
+
+      # Get the cumulative number of unique coalitions for each coalition in coal_sample_all
+      dt_cumsum <- data.table(coalitions = coal_sample_all, N_S = cumsum(!duplicated(coal_sample_all)))[, L := .I]
+
+      # Extract rows where the N_S value increases (i.e., where we sample a new unique coalition)
+      dt_N_S_and_L <- dt_cumsum[N_S != data.table::shift(N_S, type = "lag", fill = 0)]
+
+      # Get the number of unique coalitions sampled
+      n_unique_coal_sampled <- dt_N_S_and_L[.N, N_S]
+    }
+
+    # Post processing: keep only the coalitions until n_samples_needed
+    coal_sample_all <- coal_sample_all[seq(dt_N_S_and_L[N_S == n_samples_needed, L])]
+
+    ## Create the X data table for the sampled coalitions
+    X <- data.table(coalitions_str = coal_sample_all)[, .(sample_freq = .N), by = coalitions_str]
+    X[, shapley_weight := as.numeric(sample_freq)]
+
+    # Convert coalition strings to vector of integers as in old setup.
+    X[, coalitions := lapply(strsplit(coalitions_str, " "), as.integer)]
+    X[, coalition_size := as.integer(sapply(coalitions, length))] # as.integer to match old format
+    X[, N := as.integer(n[coalition_size])] # use as.integer to match the format in the old code
+    #X[, p := p[coalition_size]]
+
+    X
+    dt_deterministic
+
+    # Add id column and order the data table
+    data.table::setkeyv(X, "coalition_size")
+    data.table::setorder(X, "coalition_size")
+    X[, id_coalition := .I]
+    colorder <- c("id_coalition", "coalitions", "coalitions_str", "coalition_size", "N", "shapley_weight")
+    data.table::setcolorder(X, colorder)
+
+    ##### Reweight the Shapley weights in X by reference according to the reweighting strategy #####
+    XX = copy(X)
+
+    # Need to add empty and grand coalition as the kernelSHAP_reweighting function requires this
+    XX = rbind(dt_deterministic[1], XX, dt_deterministic[.N])
+    XX[, shapley_weight_old := shapley_weight]
+
+    # "on_N", "on_all", "on_all_cond"
+    XX_on_N = copy(XX)
+    XX_on_all = copy(XX)
+    XX_on_all_cond = copy(XX)
+    kernelSHAP_reweighting(XX_on_N, reweight = "on_N")
+    kernelSHAP_reweighting(XX_on_all, reweight = "on_all")
+    kernelSHAP_reweighting(XX_on_all_cond, reweight = "on_all_cond")
+
+    XX_on_N
+    XX_on_N[, mean(shapley_weight), N]
+    XX_on_N[-c(1,.N), sum(shapley_weight)]
+
+    XX_on_all
+    XX_on_all[-c(1,.N), sum(shapley_weight)]
+
+
+    rel_info[, remaining_weight_sampled_sizes[[1]]]
+
+    # Reweight the weights such that they sums to the remaining weight
+    X = copy(XX_on_N[-c(1,.N)])
+
+    # Fix the weights in X
+    X[, sum(shapley_weight)]
+    X[, shapley_weight := shapley_weight * rel_info[, weight_remaining] / sum(shapley_weight)]
+    X[, sum(shapley_weight)]
+
+    X[, sum(shapley_weight), N]
+    reweighted_shapley_weight = rel_info[, reweighted_shapley_weight[[1]]]
+
+
+    kernelSHAP_reweighting_determ(X,
+                                  reweight = kernelSHAP_reweighting,
+                                  m = m,
+                                  reweighted_shapley_weight = reweighted_shapley_weight)
+
+    # Combine the deterministic and sampled coalitions
+
+
+    weights_remaining
+    dt_coal_determ_info[.N, paired_size_weights_paired[[1]][-seq(rel_info[, id_step])]]
+
+
+    remaining_weight_sampled_sizes
+
+  } else {
+
+
+    coal_sample_all_lengths = lengths(coal_sample_all)
+    coal_sample_all = coal_sample_all[!coal_sample_all_lengths %in% rel_info[, coal_sizes_used[[1]]]]
+
+
+    dt[1, Col[[1]]]
+  }
+
+
+
+
+  # Logic:
+  # Check how many fixed coalitions we can include.
+  # Include any if we can.
+  # Remove the fixed from the sampled coalitions.
+  # If the new sum of fixed + previous sampled is larger than the new value (in case the fixed were not sampled)
+  # then we do not need to sample anything and we essentially remove some of the sampled.
+  # Otherwise Start sampling the new coalitions.
+  # When we have enough coalitions.
+  # Combine the DT_deterministic and DT_sampled.
+  # Then add option for c-kernel on DT_smapled.
+  # Update the weights such that the DT_determ and DT_sampled repsesnt the correct amount.
+  # THen the rest should go by itself.
+
+
+
+
+
+
+
 }
 
 #' Get table with sampled coalitions
@@ -396,10 +702,11 @@ shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
 }
 
 #' @keywords internal
-sum_shapley_weights <- function(m) {
+sum_shapley_weights <- function(m, nn = NULL) {
   coal_samp_vec <- seq(m - 1)
   n <- sapply(coal_samp_vec, choose, n = m)
-  w <- shapley_weights(m = m, N = n, coal_samp_vec) * n
+  if (is.null(nn)) nn = n
+  w <- shapley_weights(m = m, N = n, coal_samp_vec) * nn
   return(sum(w))
 }
 

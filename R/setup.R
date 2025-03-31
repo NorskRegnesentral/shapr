@@ -1020,7 +1020,7 @@ check_output_args <- function(output_args) {
 }
 
 
-#' @author Martin Jullum
+#' @author Martin Jullum and Lars Henry Berge Olsen
 #' @keywords internal
 set_extra_comp_params <- function(internal) {
   extra_computation_args <- internal$parameters$extra_computation_args
@@ -1045,7 +1045,39 @@ set_extra_comp_params <- function(internal) {
     ))
   }
 
+  # Check and set the semi-deterministic sampling
+  internal <- check_and_set_semi_determ_samp(internal)
+
   internal$parameters$extra_computation_args <- extra_computation_args
+
+  return(internal)
+}
+
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+check_and_set_semi_determ_samp <- function(internal) {
+  semi_deterministic_sampling = internal$parameters$extra_computation_args$semi_deterministic_sampling
+  paired_shap_sampling = internal$parameters$extra_computation_args$paired_shap_sampling
+  type = internal$parameters$type
+  asymmetric = internal$parameters$asymmetric
+
+  # Only do checks if we are doing semi-deterministic sampling
+  if (semi_deterministic_sampling) {
+    if (!paired_shap_sampling) {
+      stop("`paired_shap_sampling` cannot be FALSE when `semi_deterministic_sampling` is TRUE.")
+    }
+
+    if (type != "regular") {
+      stop("`semi_deterministic_sampling` is only supported for regular Shapley values.")
+    }
+
+    if (asymmetric) {
+      stop("`semi_deterministic_sampling` is not supported for asymmetric Shapley values.")
+    }
+
+    # Get the information about which coalitions to deterministically include at different number of coalitions
+    internal$objects$dt_coal_determ_info = get_dt_coal_determ_info(internal$parameters$n_shapley_values)
+  }
 
   return(internal)
 }
@@ -1058,6 +1090,12 @@ set_extra_comp_params <- function(internal) {
 #' computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.
 #' `TRUE` is the default and is recommended for highest accuracy.
 #' For asymmetric, `FALSE` is the default and the only legal value.
+#' @param semi_deterministic_sampling Logical.
+#' If `FALSE` (default), then we sample from all coalitions.
+#' If `TRUE`, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
+#' coalitions that are expected to be sample based on the number of coalitions are deterministically included such
+#' that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
+#' and the idea is based on PySHAP strategy in the paper \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.
 #' @param kernelSHAP_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
 #' The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
@@ -1091,6 +1129,7 @@ set_extra_comp_params <- function(internal) {
 #'  arXiv preprint arXiv:2410.04883.}
 get_extra_comp_args_default <- function(internal, # Only used to get the default value of compute_sd
                                         paired_shap_sampling = isFALSE(internal$parameters$asymmetric),
+                                        semi_deterministic_sampling = FALSE,
                                         kernelSHAP_reweighting = "on_all_cond",
                                         compute_sd = isFALSE(internal$parameters$exact),
                                         n_boot_samps = 100,
@@ -1106,6 +1145,11 @@ check_extra_computation_args <- function(extra_computation_args) {
   # paired_shap_sampling
   if (!is.logical(paired_shap_sampling) && length(paired_shap_sampling) == 1) {
     stop("`paired_shap_sampling` must be a single logical.")
+  }
+
+  # semi_deterministic_sampling
+  if (!is.logical(semi_deterministic_sampling) && length(semi_deterministic_sampling) == 1) {
+    stop("`semi_deterministic_sampling` must be a single logical.")
   }
 
   # kernelSHAP_reweighting
