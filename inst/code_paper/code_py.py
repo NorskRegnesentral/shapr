@@ -3,13 +3,13 @@ import pandas as pd
 from shaprpy import explain
 
 # Read data  
-x_train = pd.read_csv("data_and_models" + "x_train.csv")
-x_explain = pd.read_csv("data_and_models" + "x_explain.csv")
-y_train = pd.read_csv("data_and_models" + "y_train.csv")
+x_train = pd.read_csv("data_and_models/" + "x_train.csv")
+x_explain = pd.read_csv("data_and_models/" + "x_explain.csv")
+y_train = pd.read_csv("data_and_models/" + "y_train.csv")
 
 # Load the XGBoost model from the raw format and add feature names
 model = xgb.Booster()
-model.load_model("data_and_models" +"xgb.model")
+model.load_model("data_and_models/" +"xgb.model")
 model.feature_names = x_train.columns.tolist() 
 
 exp_20_ctree = explain(

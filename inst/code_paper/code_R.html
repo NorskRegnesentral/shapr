@@ -216,19 +216,32 @@ exp_20_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code class="language-r">print(exp_20_ctree)
 </code></pre>
-<pre><code>##      explain_id  none   trend cosyear sinyear   temp   atemp windspeed     hum
-##           &lt;int&gt; &lt;num&gt;   &lt;num&gt;   &lt;num&gt;   &lt;num&gt;  &lt;num&gt;   &lt;num&gt;     &lt;num&gt;   &lt;num&gt;
-##   1:          1  4537 -2378.2  -902.5   -54.9  236.5  -847.1    -16.86  172.33
-##   2:          2  4537 -1267.7  -801.4  -103.7  559.6 -1668.7   -208.54  426.87
-##   3:          3  4537 -1170.2  -788.4  -204.3  497.4 -1493.5   -390.98  284.54
-##   4:          4  4537 -1543.5  -689.6  -170.7  708.8 -1635.4   -207.19  -21.12
-##   5:          5  4537 -1558.3  -727.3  -197.5  590.8 -2180.7   -212.53  778.08
-##  ---                                                                          
-## 142:        142  4537   557.3  -574.0   462.2  436.3 -1146.0   -145.87  591.22
-## 143:        143  4537   791.6  -803.2   332.2 1133.2  -982.3     34.75  294.41
-## 144:        144  4537  1203.0  -576.7   110.8 1352.0  -392.0     57.43  113.10
-## 145:        145  4537   258.8  -652.1   256.2 -482.5 -1470.7     30.31  345.06
-## 146:        146  4537  -994.0  -956.0   192.7 -393.7 -1148.4    812.57 -801.37
+<pre><code>##      explain_id  none   trend cosyear sinyear
+##           &lt;int&gt; &lt;num&gt;   &lt;num&gt;   &lt;num&gt;   &lt;num&gt;
+##   1:          1  4537 -2378.2  -902.5   -54.9
+##   2:          2  4537 -1267.7  -801.4  -103.7
+##   3:          3  4537 -1170.2  -788.4  -204.3
+##   4:          4  4537 -1543.5  -689.6  -170.7
+##   5:          5  4537 -1558.3  -727.3  -197.5
+##  ---                                         
+## 142:        142  4537   557.3  -574.0   462.2
+## 143:        143  4537   791.6  -803.2   332.2
+## 144:        144  4537  1203.0  -576.7   110.8
+## 145:        145  4537   258.8  -652.1   256.2
+## 146:        146  4537  -994.0  -956.0   192.7
+##        temp   atemp windspeed     hum
+##       &lt;num&gt;   &lt;num&gt;     &lt;num&gt;   &lt;num&gt;
+##   1:  236.5  -847.1    -16.86  172.33
+##   2:  559.6 -1668.7   -208.54  426.87
+##   3:  497.4 -1493.5   -390.98  284.54
+##   4:  708.8 -1635.4   -207.19  -21.12
+##   5:  590.8 -2180.7   -212.53  778.08
+##  ---                                 
+## 142:  436.3 -1146.0   -145.87  591.22
+## 143: 1133.2  -982.3     34.75  294.41
+## 144: 1352.0  -392.0     57.43  113.10
+## 145: -482.5 -1470.7     30.31  345.06
+## 146: -393.7 -1148.4    812.57 -801.37
 </code></pre>
 <pre><code class="language-r">### Continued estimation
 exp_iter_ctree &lt;- explain(model = model,
@@ -250,7 +263,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Starting `shapr::explain()` at 2025-03-30 00:20:00 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Starting `shapr::explain()` at 2025-03-31 21
 </code></pre>
 <pre><code>## • Model class: &lt;xgb.Booster&gt;
 </code></pre>
@@ -262,7 +275,8 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## • Number of observations to explain: 146
 </code></pre>
-<pre><code>## • Computations (temporary) saved at: '/tmp/Rtmp4dErZR/shapr_obj_2e08b14bc6caf.rds'
+<pre><code>## • Computations (temporary) saved at:
+## '/tmp/RtmpEX1sCg/shapr_obj_352941249046.rds'
 </code></pre>
 <pre><code>## 
 </code></pre>
@@ -270,7 +284,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Iteration 3 ────────────────────────────────
 </code></pre>
 <pre><code>## ℹ Using 32 of 128 coalitions, 12 new.
 </code></pre>
@@ -285,7 +299,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Iteration 4 ────────────────────────────────
 </code></pre>
 <pre><code>## ℹ Using 52 of 128 coalitions, 20 new.
 </code></pre>
@@ -300,7 +314,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Iteration 5 ────────────────────────────────
 </code></pre>
 <pre><code>## ℹ Using 62 of 128 coalitions, 10 new.
 </code></pre>
@@ -315,7 +329,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Iteration 6 ────────────────────────────────
 </code></pre>
 <pre><code>## ℹ Using 66 of 128 coalitions, 4 new.
 </code></pre>
@@ -355,14 +369,22 @@ library(ggplot2)
 ##      &lt;num&gt;    &lt;num&gt;
 ## 1: 1534033 142277.4
 </code></pre>
-<pre><code>##    explain_id     none      temp      time   weather
-##         &lt;int&gt;    &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;
-## 1:          1 4536.598  -371.659 -2757.175 -661.8197
-## 2:          2 4536.598 -1041.262 -1609.387 -412.9517
-## 3:          3 4536.598 -1118.937 -1560.695 -585.7902
-## 4:          4 4536.598 -1361.832 -1781.578 -415.2823
-## 5:          5 4536.598 -1887.654 -1745.006  125.1834
-## 6:          6 4536.598 -1810.055 -1927.635  478.3566
+<pre><code>##    explain_id     none      temp      time
+##         &lt;int&gt;    &lt;num&gt;     &lt;num&gt;     &lt;num&gt;
+## 1:          1 4536.598  -371.659 -2757.175
+## 2:          2 4536.598 -1041.262 -1609.387
+## 3:          3 4536.598 -1118.937 -1560.695
+## 4:          4 4536.598 -1361.832 -1781.578
+## 5:          5 4536.598 -1887.654 -1745.006
+## 6:          6 4536.598 -1810.055 -1927.635
+##      weather
+##        &lt;num&gt;
+## 1: -661.8197
+## 2: -412.9517
+## 3: -585.7902
+## 4: -415.2823
+## 5:  125.1834
+## 6:  478.3566
 </code></pre>
 <pre><code class="language-r"># Waterfall plot for the best one
 plot(exp_g_reg_tuned,index_x_explain = 6,plot_type=&quot;waterfall&quot;)
@@ -423,7 +445,7 @@ exp_fc_ar &lt;- explain_forecast(
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Starting `shapr::explain()` at 2025-03-30 00:20:55 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Starting `shapr::explain()` at 2025-03-31 21
 </code></pre>
 <pre><code>## • Model class: &lt;ar&gt;
 </code></pre>
@@ -435,7 +457,8 @@ exp_fc_ar &lt;- explain_forecast(
 </code></pre>
 <pre><code>## • Number of observations to explain: 2
 </code></pre>
-<pre><code>## • Computations (temporary) saved at: '/tmp/Rtmp4dErZR/shapr_obj_2e08b1e744229.rds'
+<pre><code>## • Computations (temporary) saved at:
+## '/tmp/RtmpEX1sCg/shapr_obj_352947befbe8.rds'
 </code></pre>
 <pre><code>## 
 </code></pre>
@@ -481,9 +504,13 @@ exp_fc_arimax &lt;- explain_forecast(
 ## max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
 ## and is therefore set to 2^n_groups = 4.
 </code></pre>
+<pre><code>## Registered S3 method overwritten by 'quantmod':
+##   method            from
+##   as.zoo.data.frame zoo
+</code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Starting `shapr::explain()` at 2025-03-30 00:20:56 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Starting `shapr::explain()` at 2025-03-31 21
 </code></pre>
 <pre><code>## • Model class: &lt;Arima&gt;
 </code></pre>
@@ -495,7 +522,8 @@ exp_fc_arimax &lt;- explain_forecast(
 </code></pre>
 <pre><code>## • Number of observations to explain: 1
 </code></pre>
-<pre><code>## • Computations (temporary) saved at: '/tmp/Rtmp4dErZR/shapr_obj_2e08b7cbb8ca.rds'
+<pre><code>## • Computations (temporary) saved at:
+## '/tmp/RtmpEX1sCg/shapr_obj_352943aef2515.rds'
 </code></pre>
 <pre><code>## 
 </code></pre>
@@ -525,27 +553,81 @@ exp_fc_arimax &lt;- explain_forecast(
 ## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3;  LAPACK version 3.9.0
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_US.UTF-8      
+##  [2] LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8       
+##  [4] LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8   
+##  [6] LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8      
+##  [8] LC_NAME=C                 
+##  [9] LC_ADDRESS=C              
+## [10] LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8
+## [12] LC_IDENTIFICATION=C       
 ## 
 ## time zone: Europe/Oslo
 ## tzcode source: system (glibc)
 ## 
 ## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## [1] stats     graphics  grDevices utils    
+## [5] datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggpubr_0.6.0      ggplot2_3.5.1     progressr_0.15.1  future_1.34.0     shapr_1.0.3.9000  data.table_1.17.0 xgboost_1.7.9.1  
+## [1] ggpubr_0.6.0      ggplot2_3.5.1    
+## [3] progressr_0.15.1  future_1.34.0    
+## [5] shapr_1.0.3.9000  data.table_1.17.0
+## [7] xgboost_1.7.9.1  
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] gridExtra_2.3       testthat_3.2.3      rlang_1.1.5         magrittr_2.0.3      tseries_0.10-58     furrr_0.3.1         compiler_4.4.1      systemfonts_1.1.0   vctrs_0.6.5         quadprog_1.5-8      lhs_1.2.0           tune_1.3.0          pkgconfig_2.0.3    
-##  [14] fastmap_1.2.0       backports_1.5.0     labeling_0.4.3      rmarkdown_2.29      prodlim_2024.06.25  markdown_1.13       ggbeeswarm_0.7.2    ragg_1.3.3          purrr_1.0.4         xfun_0.51           jsonlite_1.9.1      recipes_1.2.0       broom_1.0.7        
-##  [27] parallel_4.4.1      R6_2.6.1            rsample_1.2.1       parallelly_1.43.0   car_3.1-3           rpart_4.1.23        lmtest_0.9-40       brio_1.1.5          lubridate_1.9.4     Rcpp_1.0.14         dials_1.4.0         iterators_1.0.14    knitr_1.50         
-##  [40] future.apply_1.11.3 zoo_1.8-13          Matrix_1.7-0        splines_4.4.1       nnet_7.3-19         timechange_0.3.0    tidyselect_1.2.1    rstudioapi_0.17.1   abind_1.4-8         yaml_2.3.10         timeDate_4041.110   codetools_0.2-20    curl_6.2.1         
-##  [53] listenv_0.9.1       lattice_0.22-6      tibble_3.2.1        quantmod_0.4.26     withr_3.0.2         urca_1.3-4          evaluate_1.0.3      survival_3.6-4      xts_0.14.1          pillar_1.10.1       carData_3.0-5       foreach_1.5.2       TTR_0.24.4         
-##  [66] generics_0.1.3      forecast_8.23.0     munsell_0.5.1       commonmark_1.9.5    scales_1.3.0        globals_0.16.3      class_7.3-22        glue_1.8.0          tools_4.4.1         gower_1.0.2         ggsignif_0.6.4      cowplot_1.1.3       grid_4.4.1         
-##  [79] yardstick_1.3.2     tidyr_1.3.1         ipred_0.9-15        colorspace_2.1-1    nlme_3.1-164        beeswarm_0.4.0      fracdiff_1.5-3      vipor_0.4.7         Formula_1.2-5       cli_3.6.4           DiceDesign_1.10     textshaping_0.4.0   workflows_1.2.0    
-##  [92] parsnip_1.3.1       lava_1.8.1          dplyr_1.1.4         gtable_0.3.6        GPfit_1.0-8         rstatix_0.7.2       digest_0.6.37       farver_2.1.2        htmltools_0.5.8.1   lifecycle_1.0.4     hardhat_1.4.1       mime_0.13           MASS_7.3-60.2
+##  [1] gridExtra_2.3       rlang_1.1.5        
+##  [3] magrittr_2.0.3      furrr_0.3.1        
+##  [5] tseries_0.10-58     compiler_4.4.1     
+##  [7] systemfonts_1.1.0   vctrs_0.6.5        
+##  [9] lhs_1.2.0           quadprog_1.5-8     
+## [11] tune_1.3.0          pkgconfig_2.0.3    
+## [13] backports_1.5.0     labeling_0.4.3     
+## [15] prodlim_2024.06.25  ggbeeswarm_0.7.2   
+## [17] ragg_1.3.3          purrr_1.0.4        
+## [19] xfun_0.51           jsonlite_1.9.1     
+## [21] recipes_1.2.0       broom_1.0.7        
+## [23] parallel_4.4.1      R6_2.6.1           
+## [25] rsample_1.2.1       parallelly_1.43.0  
+## [27] car_3.1-3           rpart_4.1.23       
+## [29] lmtest_0.9-40       lubridate_1.9.4    
+## [31] Rcpp_1.0.14         dials_1.4.0        
+## [33] iterators_1.0.14    knitr_1.50         
+## [35] future.apply_1.11.3 zoo_1.8-13         
+## [37] Matrix_1.7-0        splines_4.4.1      
+## [39] nnet_7.3-19         timechange_0.3.0   
+## [41] tidyselect_1.2.1    rstudioapi_0.17.1  
+## [43] abind_1.4-8         timeDate_4041.110  
+## [45] codetools_0.2-20    curl_6.2.1         
+## [47] listenv_0.9.1       lattice_0.22-6     
+## [49] tibble_3.2.1        quantmod_0.4.26    
+## [51] withr_3.0.2         urca_1.3-4         
+## [53] evaluate_1.0.3      survival_3.6-4     
+## [55] xts_0.14.1          pillar_1.10.1      
+## [57] carData_3.0-5       foreach_1.5.2      
+## [59] generics_0.1.3      TTR_0.24.4         
+## [61] forecast_8.23.0     munsell_0.5.1      
+## [63] scales_1.3.0        globals_0.16.3     
+## [65] class_7.3-22        glue_1.8.0         
+## [67] tools_4.4.1         gower_1.0.2        
+## [69] ggsignif_0.6.4      cowplot_1.1.3      
+## [71] grid_4.4.1          yardstick_1.3.2    
+## [73] tidyr_1.3.1         ipred_0.9-15       
+## [75] colorspace_2.1-1    nlme_3.1-164       
+## [77] beeswarm_0.4.0      fracdiff_1.5-3     
+## [79] vipor_0.4.7         Formula_1.2-5      
+## [81] cli_3.6.4           DiceDesign_1.10    
+## [83] textshaping_0.4.0   workflows_1.2.0    
+## [85] parsnip_1.3.1       lava_1.8.1         
+## [87] dplyr_1.1.4         gtable_0.3.6       
+## [89] GPfit_1.0-8         rstatix_0.7.2      
+## [91] digest_0.6.37       farver_2.1.2       
+## [93] lifecycle_1.0.4     hardhat_1.4.1      
+## [95] MASS_7.3-60.2
 </code></pre>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
