@@ -256,8 +256,9 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
     setkey(X_boot, boot_id, id_coalition)
     X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
-    X_boot[, shapley_weight := sample_freq]
+    X_boot[, shapley_weight := as.numeric(sample_freq)]
     X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+    # X_boot[coalition_size %in% c(0, n_shapley_values), sample_freq := NA_integer_]
   } else {
     X_boot0 <- X_samp[
       sample.int(
@@ -274,13 +275,15 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
     setkey(X_boot, boot_id, id_coalition)
     X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
-    X_boot[, shapley_weight := sample_freq]
+    X_boot[, shapley_weight := as.numeric(sample_freq)]
     if (type == "forecast") {
       id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
       full_ids <- id_coalition_mapper_dt$id_coalition[id_coalition_mapper_dt$full]
       X_boot[coalition_size == 0 | id_coalition %in% full_ids, shapley_weight := X_org[1, shapley_weight]]
+      # X_boot[coalition_size == 0 | id_coalition %in% full_ids, sample_freq := NA_integer_]
     } else {
       X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+      # X_boot[coalition_size %in% c(0, n_shapley_values), sample_freq := NA_integer_]
     }
   }
 
