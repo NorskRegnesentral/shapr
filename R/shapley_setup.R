@@ -222,7 +222,7 @@ kernelSHAP_reweighting <- function(X, reweight = "on_N") {
     ) / sum_shapley_weights(m)]
   } else if (reweight == "on_all_cond") {
     m <- X[.N, coalition_size]
-    K <- X[, sum(sample_freq)]
+    K <- X[, sum(sample_freq)] # -c(1, .N)
     X[-c(1, .N), shapley_weight := shapley_weights(
       m = m,
       N = N,

@@ -254,7 +254,7 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
 
     X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ][, boot_id := rep(seq(n_boot_samps), times = 2)], X_boot0)
     setkey(X_boot, boot_id, id_coalition)
-    X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
+    X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
     X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
@@ -272,7 +272,7 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
     X_boot[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot + 2)]
 
     setkey(X_boot, boot_id, id_coalition)
-    X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
+    X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[, shapley_weight := sample_freq]
     if (type == "forecast") {
