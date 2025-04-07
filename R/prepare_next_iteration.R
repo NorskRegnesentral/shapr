@@ -10,7 +10,7 @@ prepare_next_iteration <- function(internal) {
   iter <- length(internal$iter_list)
   converged <- internal$iter_list[[iter]]$converged
   paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
-
+  semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
 
   if (converged == FALSE) {
     next_iter_list <- list()
@@ -74,6 +74,13 @@ prepare_next_iteration <- function(internal) {
 
     next_iter_list$prev_coal_samples <- current_coal_samples
     next_iter_list$prev_coal_samples_n_unique <- current_coal_samples_n_unique
+
+    if (semi_deterministic_sampling) {
+      next_iter_list$dt_coal_determ_info =
+        internal$iter_list[[iter]]$dt_coal_determ_info[next_iter_list$n_coalitions <= n_coal_max][1]
+      next_iter_list$prev_X <- internal$iter_list[[iter]]$X
+    }
+
   } else {
     next_iter_list <- list()
   }
