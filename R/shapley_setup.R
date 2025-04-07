@@ -147,6 +147,8 @@ shapley_setup <- function(internal) {
 #' @param prev_coal_samples_n_unique Positive integer.
 #' The number of unique coalitions in `prev_coal_samples`.
 #' This is a separate argument to avoid recomputing the number unnecessarily.
+#' @param prev_X data.table. The X data.table from the previous iteration.
+#' Only used for semi-deterministic sampling if `semi_deterministic_sampling == TRUE`.
 #' @param n_samps_scale Positive integer.
 #' Integer that scales the number of coalitions `n_coalitions` to sample as sampling is cheap,
 #' while checking for `n_coalitions` unique coalitions is expensive, thus we over sample the
@@ -156,7 +158,6 @@ shapley_setup <- function(internal) {
 #' Contains the approach to be used for estimation of each coalition size. Same as `approach` in [explain()].
 #' @param coal_feature_list List.
 #' A list mapping each coalition to the features it contains.
-#' @param prev_X data.table. The X data.table from the previous iteration.
 #' @param dt_coal_determ_info data.table. Only applicable for semi-deterministic sampling, and is `NULL` for
 #' the other sampling strategies. The data.table contains information about the which coalitions should be
 #' deterministically included and which can be sampled.
@@ -176,11 +177,12 @@ create_coalition_table <- function(m,
                                    paired_shap_sampling = TRUE,
                                    prev_coal_samples = NULL,
                                    prev_coal_samples_n_unique = NULL,
+                                   prev_X = NULL,
                                    n_samps_scale = 10,
                                    coal_feature_list = as.list(seq_len(m)),
                                    approach0 = "gaussian",
                                    kernelSHAP_reweighting = "none",
-                                   prev_X = NULL,
+                                   semi_deterministic_sampling = FALSE,
                                    dt_coal_determ_info = NULL,
                                    dt_valid_causal_coalitions = NULL) {
   if (exact) {
@@ -190,13 +192,11 @@ create_coalition_table <- function(m,
       dt_valid_causal_coalitions = dt_valid_causal_coalitions
     )
   } else {
-    if (!is.null(dt_coal_determ_info)) {
+    if (semi_deterministic_sampling) {
       dt <- sample_coalition_table_determ(
         m = m,
         n_coalitions = n_coalitions,
         weight_zero_m = weight_zero_m,
-        prev_coal_samples = prev_coal_samples,
-        prev_coal_samples_n_unique = prev_coal_samples_n_unique,
         prev_X = prev_X,
         kernelSHAP_reweighting = kernelSHAP_reweighting,
         dt_coal_determ_info = dt_coal_determ_info
