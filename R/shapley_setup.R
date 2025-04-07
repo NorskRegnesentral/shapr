@@ -919,7 +919,7 @@ shapley_setup_forecast <- function(internal) {
   cols_per_horizon <- internal$parameters$horizon_features
   horizon_features <- lapply(cols_per_horizon, function(x) which(internal$parameters$feature_names %in% x))
 
-  # Apply create_coalition_table, weigth_matrix and coalition_matrix_cpp to each of the different horizons
+  # Apply create_coalition_table, weight_matrix and coalition_matrix_cpp to each of the different horizons
   for (i in seq_along(horizon_features)) {
     if (is_groupwise && !is.null(horizon_group)) {
       this_coal_feature_list <- coal_feature_list[sapply(
