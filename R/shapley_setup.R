@@ -21,8 +21,8 @@ shapley_setup <- function(internal) {
   confounding <- internal$parameters$confounding
   dt_valid_causal_coalitions <- internal$objects$dt_valid_causal_coalitions # NULL if asymmetric is FALSE
   max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal # NULL if asymmetric is FALSE
-  dt_coal_determ_info <- internal$objects$dt_coal_determ_info # NULL if not semi-deterministic sampling
-
+  semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
+  # dt_coal_determ_info <- internal$objects$dt_coal_determ_info # NULL if not semi-deterministic sampling
 
   iter <- length(internal$iter_list)
 
@@ -31,11 +31,14 @@ shapley_setup <- function(internal) {
   prev_coal_samples <- internal$iter_list[[iter]]$prev_coal_samples
   prev_coal_samples_n_unique <- internal$iter_list[[iter]]$prev_coal_samples_n_unique
   prev_X <- internal$iter_list[[iter]]$X # NULL in first iteration
+  dt_coal_determ_info <- internal$iter_list[[iter]]$dt_coal_determ_info # NULL in first iteration
 
   if ("progress" %in% verbose) {
     cli::cli_progress_step("Sampling coalitions")
   }
 
+  # TODO: discuss with Martin if we need prev_coal_samples and prev_coal_samples_n_unique for regular
+  # sampling oer if we can just use the prev_X and then extract the relevant information from it.
   X <- create_coalition_table(
     m = n_shapley_values,
     exact = exact,
@@ -44,10 +47,11 @@ shapley_setup <- function(internal) {
     paired_shap_sampling = paired_shap_sampling,
     prev_coal_samples = prev_coal_samples,
     prev_coal_samples_n_unique = prev_coal_samples_n_unique,
+    prev_X = prev_X,
     coal_feature_list = coal_feature_list,
     approach0 = approach,
     kernelSHAP_reweighting = kernelSHAP_reweighting,
-    prev_X = prev_X,
+    semi_deterministic_sampling = semi_deterministic_sampling,
     dt_coal_determ_info = dt_coal_determ_info,
     dt_valid_causal_coalitions = dt_valid_causal_coalitions
   )
