@@ -709,7 +709,7 @@ shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
 sum_shapley_weights <- function(m, nn = NULL) {
   coal_samp_vec <- seq(m - 1)
   n <- sapply(coal_samp_vec, choose, n = m)
-  if (is.null(nn)) nn = n
+  if (is.null(nn)) nn <- n
   w <- shapley_weights(m = m, N = n, coal_samp_vec) * nn
   return(sum(w))
 }
