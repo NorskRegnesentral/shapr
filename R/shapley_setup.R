@@ -587,7 +587,7 @@ sample_coalition_table <- function(m,
                                    dt_valid_causal_coalitions = NULL) {
   # Setup
   coal_samp_vec <- seq(m - 1)
-  n <- choose(m, coal_samp_vec)
+  n <- as.integer(choose(m, coal_samp_vec))
   w <- shapley_weights(m = m, N = n, coal_samp_vec) * n
   p <- w / sum(w)
 
@@ -648,40 +648,47 @@ sample_coalition_table <- function(m,
 
   # Convert coalition strings to vector of integers as in old setup.
   X[, coalitions := lapply(strsplit(coalitions_str, " "), as.integer)]
-  X[, coalition_size := as.integer(sapply(coalitions, length))] # as.integer to match old format
-  X[, N := as.integer(n[coalition_size])] # use as.integer to match the format in the old code
-  X[, p := p[coalition_size]]
-
-  # Add the empty and grand coalitions to X
-  X_empty_coalition <- data.table(
-    coalitions_str = NA_character_, # list(character(0)) makes column into a list instead of character vector
-    sample_freq = 1L,
-    shapley_weight = weight_zero_m,
-    coalitions = list(integer(0)), # empty coalition. Need to be list for this to be a data.table of one row
-    coalition_size = 0L,
-    N = 1L,
-    p = NA
-  )
-  X_full_coalition <- data.table(
-    coalitions_str = paste(seq(m), collapse = " "),
-    sample_freq = 1L,
-    shapley_weight = weight_zero_m,
-    coalitions = list(seq(m)),
-    coalition_size = as.integer(m),
-    N = 1L,
-    p = NA
-  )
-  X <- data.table::rbindlist(list(X_empty_coalition, X, X_full_coalition), use.names = TRUE)
+  X[, coalition_size := lengths(coalitions)]
+  X[, N := n[coalition_size]]
+  X[, p := p[coalition_size]] #TODO: check if we can remove p as not used
 
   # Add id column and order the data table
   data.table::setkeyv(X, "coalition_size")
   data.table::setorder(X, "coalition_size")
-  X[, id_coalition := .I]
+  X[, id_coalition := .I + 1]
   colorder <- c("id_coalition", "coalitions", "coalitions_str", "coalition_size", "N", "shapley_weight", "p")
   data.table::setcolorder(X, colorder)
 
   # Reweight the Shapley weights in X by reference
-  kernelSHAP_reweighting(X, reweight = kernelSHAP_reweighting)
+  kernelSHAP_reweighting(X, m = m, reweight = "on_all_cond")
+
+  # TODO: check if we can replace this with
+  # XX = data.table::rbindlist(list(X_empty_coalition, X_full_coalition), use.names = TRUE)
+  # XX_new = exact_coalition_table(m = m, paired_coal_size = 0, weight_zero_m = weight_zero_m)
+  # print(XX)
+  # print(XX_new)
+  # Add the empty and grand coalitions to X
+  X_empty_coalition <- data.table(
+    id_coalition = 1L,
+    coalitions = list(integer(0)), # empty coalition. Need to be list for this to be a data.table of one row
+    coalitions_str = NA_character_, # list(character(0)) makes column into a list instead of character vector
+    coalition_size = 0L,
+    N = 1L,
+    shapley_weight = weight_zero_m,
+    p = NA,
+    sample_freq = 1L
+  )
+  X_full_coalition <- data.table(
+    id_coalition = X[, .N] + 2,
+    coalitions = list(seq(m)),
+    coalitions_str = paste(seq(m), collapse = " "),
+    coalition_size = as.integer(m),
+    N = 1L,
+    shapley_weight = weight_zero_m,
+    p = NA,
+    sample_freq = 1L
+  )
+  X <- data.table::rbindlist(list(X_empty_coalition, X, X_full_coalition), use.names = TRUE)
 
   return(X)
 }
