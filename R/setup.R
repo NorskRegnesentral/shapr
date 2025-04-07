@@ -1045,10 +1045,10 @@ set_extra_comp_params <- function(internal) {
     ))
   }
 
+  internal$parameters$extra_computation_args <- extra_computation_args
+
   # Check and set the semi-deterministic sampling
   internal <- check_and_set_semi_determ_samp(internal)
-
-  internal$parameters$extra_computation_args <- extra_computation_args
 
   return(internal)
 }
@@ -1056,10 +1056,10 @@ set_extra_comp_params <- function(internal) {
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 check_and_set_semi_determ_samp <- function(internal) {
-  semi_deterministic_sampling = internal$parameters$extra_computation_args$semi_deterministic_sampling
-  paired_shap_sampling = internal$parameters$extra_computation_args$paired_shap_sampling
-  type = internal$parameters$type
-  asymmetric = internal$parameters$asymmetric
+  semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
+  paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
+  type <- internal$parameters$type
+  asymmetric <- internal$parameters$asymmetric
 
   # Only do checks if we are doing semi-deterministic sampling
   if (semi_deterministic_sampling) {
@@ -1076,7 +1076,7 @@ check_and_set_semi_determ_samp <- function(internal) {
     }
 
     # Get the information about which coalitions to deterministically include at different number of coalitions
-    internal$objects$dt_coal_determ_info = get_dt_coal_determ_info(internal$parameters$n_shapley_values)
+    internal$objects$dt_coal_determ_info <- get_dt_coal_determ_info(m = internal$parameters$n_shapley_values)
   }
 
   return(internal)
@@ -1493,6 +1493,8 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
   iterative <- internal$parameters$iterative
 
   paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
+  semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
+  dt_coal_determ_info <- internal$objects$dt_coal_determ_info
 
   iterative_args <- internal$parameters$iterative_args
 
@@ -1547,6 +1549,15 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
       n_coal_next_iter_factor = iterative_args$n_coal_next_iter_factor_vec[1],
       n_batches = set_n_batches(iterative_args$initial_n_coalitions, internal)
     )
+    if (semi_deterministic_sampling) {
+      internal$iter_list[[1]] <- c(
+        internal$iter_list[[1]],
+        list(
+          dt_coal_determ_info = dt_coal_determ_info[internal$iter_list[[1]]$n_coalitions <= n_coal_max][1],
+          prev_X = NULL
+        )
+      )
+    }
   }
 
   return(internal)
