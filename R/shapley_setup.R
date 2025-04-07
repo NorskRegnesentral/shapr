@@ -599,7 +599,7 @@ sample_coalition_table <- function(m,
   data.table::setcolorder(X, colorder)
 
   # Reweight the Shapley weights in X by reference
-  kernelSHAP_reweighting(X, m = m, reweight = "on_all_cond")
+  kernelSHAP_reweighting(X = X, m = m, reweight = kernelSHAP_reweighting)
 
   # TODO: check if we can replace this with
   # XX = data.table::rbindlist(list(X_empty_coalition, X_full_coalition), use.names = TRUE)
