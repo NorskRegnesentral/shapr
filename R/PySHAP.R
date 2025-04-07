@@ -1,9 +1,89 @@
-
+# TODO: DELETE THIS FILE
+# Just to develop some code
 if (FALSE) {
 
+  # reweighted_shapley_kernel = function(m, paired_size = 1) {
+  #   # We include all coalition sizes from paired_size to m - paired_size.
+  #   # So paired_size must be a number between 1 and m - 1.
+  #
+  #   # Get the relevant indicies
+  #   rel_ind = seq(paired_size, m - paired_size)
+  #
+  #   # Get the total weigh of each coalition size from 1 to m - 1
+  #   weight = sapply(seq(m - 1), function(i) (m - 1) / (i * (m - i)))
+  #
+  #   # Set the non-relevant indices to zero
+  #   weight[-rel_ind] = 0
+  #
+  #   # Normalize the weights of the remaining coalition sizes
+  #   weight = weight / sum(weight)
+  #
+  #   # Divide the normalized weights by the number of coalitions
+  #   # of each size to get the weight of each coalition
+  #   weight[rel_ind] = weight[rel_ind] / choose(m, rel_ind)
+  #
+  #   return(weight)
+  # }
+
   dt_coal_determ_info = get_dt_coal_determ_info(10)
+  m = 5
+  all.equal(get_dt_coal_determ_info(m), get_dt_coal_determ_info_old(m))
 
   get_dt_coal_determ_info = function(m, weight_zero_m = 10^6) {
+
+    # Get the number of coalition sizes for S when considering S to always be the smallest of S and Sbar.
+    n_coal_sizes = as.integer(ceiling((m - 1) / 2))
+
+    # Get the number of coalitions of each size
+    n_coal_each_size = choose(m, seq(n_coal_sizes))
+
+    # Get the number of coalitions deterministically included when including the different coalition sizes
+    n_coal_determ = pmin(2^m, sapply(seq(n_coal_sizes + 1), function(i) 2 + 2 * sum(choose(m, seq_len(i - 1)))))
+
+    # Get the coalition sizes to sample
+    coal_sizes_sep_sample = c(lapply(seq(n_coal_sizes), function(size) seq(size, m-size)), NA)
+
+    # Get the (normalized) Shapley kernel weight for each coalition sizes
+    coal_size_weight = sapply(seq(m-1), function(i) (m - 1.0) / (i * (m - i)))
+    coal_size_weight = coal_size_weight / sum(coal_size_weight)
+
+    # Get the weights of the coalitions deterministically included
+    weight_determ = c(sapply(seq(0, n_coal_sizes - 1), function(paired_size){
+      sum(coal_size_weight[-seq(paired_size + 1, m - paired_size - 1)])
+    }), 1)
+
+    # Get the sampling probabilities for each coalition size when included the previous sizes
+    coal_sizes_sep_sample_prob = c(lapply(seq(n_coal_sizes), function(size) {
+      weigts = coal_size_weight[seq(size, m-size)]
+      return(weigts / sum(weigts))
+    }), NA)
+
+    # Get the probability of sampling the most likely coalition size when including the previous sizes
+    coal_size_sampling_prob_rel = c(sapply(coal_sizes_sep_sample_prob[seq(n_coal_sizes - 1)], "[[", 1), 1)
+
+    # Get the number of coalitions to sample to include all coalitions of the different coalition sizes
+    # based on their sampling probability and adding the previously deterministically included coalitions.
+    n_coal_needed = ceiling(n_coal_each_size / coal_size_sampling_prob_rel) + n_coal_determ[seq(n_coal_sizes)]
+
+    # Get the max number of coalitions before we include the smaller coalition size. Ensure even numbers due to pairing.
+    n_coal_needed_max = c(sapply(n_coal_needed, function(x) ifelse(x %% 2 == 0, x - 2, x - 1)), 2^m)
+
+    # Create a data table with all relevant information
+    dt_deterministic = data.table(
+      id_step = seq(n_coal_sizes + 1),
+      paired_coal_size = seq(0, n_coal_sizes),
+      n_coal_max = n_coal_needed_max,
+      n_coal_determ = n_coal_determ,
+      weight_determ = weight_determ,
+      weight_sample = 1 - weight_determ,
+      coal_sizes_sample = coal_sizes_sep_sample,
+      coal_sizes_sample_prob = coal_sizes_sep_sample_prob
+    )
+
+    return(dt_deterministic)
+  }
+
+  get_dt_coal_determ_info_old = function(m, weight_zero_m = 10^6) {
 
     # Get the number of coalition sizes for S when considering S to always be the smallest of S and Sbar.
     n_coal_sizes = as.integer(ceiling((m - 1) / 2))
@@ -43,7 +123,7 @@ if (FALSE) {
     coal_sizes_used = lapply(coal_size_weight_ext_zeroed, function(x) seq(0, length(x) - 1)[x > .Machine$double.eps])
 
     # Get the weights of the coalitions deterministically included
-    weight_used = sapply(coal_size_weight_ext_zeroed, function(weights) sum(weights[-c(1, length(weights))]))
+    weight_determ = sapply(coal_size_weight_ext_zeroed, function(weights) sum(weights[-c(1, length(weights))]))
 
     # Create a list with the sampling probability for each coalition size when included the previous sizes
     coal_size_sampling_prob = c(lapply(seq(n_coal_sizes), function(size) {
@@ -66,6 +146,18 @@ if (FALSE) {
     # Get the number of coalitions deterministically included when including the different coalition sizes
     n_coal_determ = pmin(2^m, sapply(seq(n_coal_sizes + 1), function(i) 2 + 2 * sum(choose(m, seq_len(i - 1)))))
 
+    # n_coal_sizes = as.integer(ceiling((m - 1) / 2))
+    # m
+    # coal_size = 1
+    # get_n_coal_determ = function(m, coal_size) {
+    #   min(2^m, 2 + 2*sum(choose(m, seq_len(coal_size))))
+    # }
+    #
+    # get_coal_size_determ(m, n_coalitions) {
+    #
+    #
+    # }
+
     # Get the number of coalitions of each size
     n_coal_each_size = choose(m, seq(n_coal_sizes))
     n_coal_each_size[seq(n_coal_sizes_paired)] = 2 * n_coal_each_size[seq(n_coal_sizes_paired)]
@@ -79,47 +171,117 @@ if (FALSE) {
     n_coal_needed_max = c(n_coal_needed_max, 2^m)
 
     # Get the reweighted Shapley kernel weight for the coalition sizes that are to be sampled
-    reweighted_shapley_weight = c(lapply(seq(0, n_coal_sizes_paired), function(paired_size){
-      # Get only the weights of the coalition sizes to be sampled
-      coal_size_weight_now = coal_size_weight[seq(paired_size + 1, m - paired_size - 1)]
-      coal_size_weight_now = coal_size_weight_now / sum(coal_size_weight_now)
+    # reweighted_shapley_weight = c(lapply(seq(0, n_coal_sizes_paired), function(paired_size){
+    #
+    #   # Get only the weights of the coalition sizes to be sampled
+    #   coal_size_weight_now = coal_size_weight[seq(paired_size + 1, m - paired_size - 1)]
+    #   coal_size_weight_now = coal_size_weight_now / sum(coal_size_weight_now)
+    #
+    #   # Get the number of coalitions of each size to be sampled
+    #   n_coal_each_size_single_now = choose(m, seq(paired_size + 1, m - paired_size - 1))
+    #
+    #   # Get the Shapley kernel weight for each coalition of each size
+    #   reweighted_shapley_kernel = coal_size_weight_now / n_coal_each_size_single_now
+    #
+    #   # Pad it with zeros
+    #   reweighted_shapley_kernel = c(rep(0, paired_size), reweighted_shapley_kernel, rep(0, paired_size))
+    #
+    #   return(reweighted_shapley_kernel)
+    # }), NA)
 
-      # Get the number of coalitions of each size to be sampled
-      n_coal_each_size_single_now = choose(m, seq(paired_size + 1, m - paired_size - 1))
-
-      # Get the Shapley kernel weight for each coalition of each size
-      reweighted_shapley_kernel = coal_size_weight_now / n_coal_each_size_single_now
-
-      # Pad it with zeros
-      reweighted_shapley_kernel = c(rep(0, paired_size), reweighted_shapley_kernel, rep(0, paired_size))
-
-      return(reweighted_shapley_kernel)
+    reweighted_shapley_weight_arr = c(lapply(seq(0, n_coal_sizes_paired - 1), function(paired_size){
+      reweighted_shapley_weight(m, paired_size)
     }), NA)
 
+    # reweighted_shapley_kernel
+    #
+    #
+    # reweighted_shapley_kernel(m, 4)
+    #
+    #   sw = shapley_weights(
+    #          m = m,
+    #          N = choose(m, seq(m-1)),
+    #          n_components = seq(m-1),
+    #          weight_zero_m = 10^6
+    #     )
+    #   sw
+    #   sw = sw / sum_shapley_weights(m)
+    #   sw
+    #
+    #   sum_shapley_weights(m)
+    #   non_rel_ind = c(seq(1, max_paired_size), seq(m - max_paired_size + 1, m))
+    #
+    #
+    #
+    #   coal_size_weight / sum(coal_size_weight)
+    #
+    #   sum(coal_size_weight)
+    #
+    #   sum_shapley_weights(m)
+    #
+    #   max_paired_size = 3
+    # Get the original Shapley kernel weight for the coalition sizes
+    # coal_size_weight = sapply(seq(m-1), function(i) (m - 1.0) / (i * (m - i)))
+    # coal_size_weight = coal_size_weight / sum(coal_size_weight)
+    #
+    # if (!is.null(max_paired_size)) {
+    #
+    #   # Get only the weights of the coalition sizes to be sampled
+    #   coal_size_weight_now = coal_size_weight[seq(max_paired_size + 1, m - max_paired_size - 1)]
+    #   coal_size_weight_now = coal_size_weight_now / sum(coal_size_weight_now)
+    #   coal_size_weight_now
+    #
+    #   # Get the number of coalitions of each size to be sampled
+    #   n_coal_each_size_single_now = choose(m, seq(max_paired_size + 1, m - max_paired_size - 1))
+    #
+    #   # Get the Shapley kernel weight for each coalition of each size
+    #   reweighted_shapley_kernel = coal_size_weight_now / n_coal_each_size_single_now
+    #
+    #   # Pad it with zeros
+    #   coal_size_weight = c(rep(0, max_paired_size), reweighted_shapley_kernel, rep(0, max_paired_size))
+    #   coal_size_weight
+    #   coal_size_weight_new
+    #
+    # }
 
-    # Create a data table to store the results
-    dt_deterministic = data.table(
-      id_step = seq(n_coal_sizes + 1),
-      paired_sizes = seq(0, n_coal_sizes),
-      n_coal_max = n_coal_needed_max,
-      n_coal_determ = n_coal_determ[seq(n_coal_sizes + 1)],
-      weight_used = weight_used,
-      weight_remaining = 1 - weight_used,
-      paired_sizes_to_sample = c(sapply(seq(0, n_coal_sizes - 1), function(i) seq(1+i, ceiling((m - 1) / 2))), list(NA)),
-      paired_sizes_to_sample_prob = coal_size_sampling_prob,
-      paired_size_weights_paired = sapply(seq(0, n_coal_sizes), function(i) coal_size_weight_paired_ext[seq(i+1)]),
-      size_weights = coal_size_weight_ext_zeroed,
-      coal_sizes_used = coal_sizes_used,
-      reweighted_shapley_weight = reweighted_shapley_weight,
-      coal_sizes_sep_deterministic = coal_sizes_sep_deterministic,
-      coal_sizes_sep_sample = coal_sizes_sep_sample,
-      coal_sizes_sep_sample_prob = coal_sizes_sep_sample_prob
-    )
+    # return(coal_size_weight)
 
 
 
-    return(dt_deterministic)
-  }
+  # Create a data table to store the results
+  dt_deterministic = data.table(
+    id_step = seq(n_coal_sizes + 1),
+    coal_size = seq(0, n_coal_sizes),
+    n_coal_max = n_coal_needed_max,
+    n_coal_determ = n_coal_determ[seq(n_coal_sizes + 1)],
+    weight_determ = weight_determ,
+    weight_sample = 1 - weight_determ,
+    paired_sizes_to_sample = c(sapply(seq(0, n_coal_sizes - 1), function(i) seq(1+i, ceiling((m - 1) / 2))), list(NA)),
+    paired_sizes_to_sample_prob = coal_size_sampling_prob,
+    paired_size_weights_paired = sapply(seq(0, n_coal_sizes), function(i) coal_size_weight_paired_ext[seq(i+1)]),
+    size_weights = coal_size_weight_ext_zeroed,
+    coal_sizes_used = coal_sizes_used,
+    reweighted_shapley_weight_arr = reweighted_shapley_weight_arr,
+    coal_sizes_sep_deterministic = coal_sizes_sep_deterministic,
+    coal_sizes_sep_sample = coal_sizes_sep_sample,
+    coal_sizes_sep_sample_prob = coal_sizes_sep_sample_prob
+  )
+
+  dt_deterministic = data.table(
+    id_step = seq(n_coal_sizes + 1),
+    paired_coal_size = seq(0, n_coal_sizes),
+    n_coal_max = n_coal_needed_max,
+    n_coal_determ = n_coal_determ[seq(n_coal_sizes + 1)],
+    weight_determ = weight_determ,
+    weight_sample = 1 - weight_determ,
+    coal_sizes_sample = coal_sizes_sep_sample,
+    coal_sizes_sample_prob = coal_sizes_sep_sample_prob
+  )
+
+
+
+  return(dt_deterministic)
+}
 
 #' Title
 #'
@@ -158,7 +320,7 @@ n_coalitions_kernelSHAP = function(m, weight_zero_m = 10^6) {
 
 
 
-   arrays_list
+  arrays_list
 
 
 
@@ -210,8 +372,8 @@ n_coalitions_kernelSHAP = function(m, weight_zero_m = 10^6) {
   dt_n_comb_needed[, max_n_coalitions := n_comb_needed]
   dt_n_comb_needed[, n_coalitions_fixed := pmin(2^m, 2 + 2 * sapply(id_step, function(id) sum(choose(m, seq_len(id - 1)))))]
   dt_n_comb_needed[, weights_paired_coalitions_fixed := sapply(paired_sizes_included, function(i) weight_vector_extended[seq(i+1)])]
-  dt_n_comb_needed[, interior_weight_used := sapply(weights_paired_coalitions_fixed, function(i) sum(i[-1]))]
-  dt_n_comb_needed[, interior_weight_remaining := 1 - interior_weight_used]
+  dt_n_comb_needed[, interior_weight_determ := sapply(weights_paired_coalitions_fixed, function(i) sum(i[-1]))]
+  dt_n_comb_needed[, interior_weight_sample := 1 - interior_weight_determ]
   dt_n_comb_needed[-.N, sizes_to_sample := sapply(paired_sizes_included, function(i) seq(1+i, ceiling((m - 1) / 2)))]
   dt_n_comb_needed[.N, sizes_to_sample := NA]
   dt_n_comb_needed[, sizes_to_sample_weights := c(remaining_weight_vector_list, NA)]
@@ -409,6 +571,87 @@ exact_coalition_table_determ_old = function(m, max_paired_coal_size_include, wei
   # # coalitions0 <- unlist(lapply(0:1, utils::combn, x = m, simplify = FALSE), recursive = FALSE)
 }
 
+#' @keywords internal
+kernelSHAP_reweighting_old <- function(X, reweight = "on_N") {
+  # Updates the Shapley weights in X based on the reweighting strategy BY REFERENCE
 
+  if (reweight == "on_N") {
+    X[-c(1, .N), shapley_weight := mean(shapley_weight), by = N]
+  } else if (reweight == "on_all") {
+    m <- X[.N, coalition_size]
+    X[-c(1, .N), shapley_weight := shapley_weights(
+      m = m,
+      N = N,
+      n_components = coalition_size,
+      weight_zero_m = 10^6
+    ) / sum_shapley_weights(m)]
+  } else if (reweight == "on_all_cond") {
+    m <- X[.N, coalition_size]
+    K <- X[, sum(sample_freq)]
+    X[-c(1, .N), shapley_weight := shapley_weights(
+      m = m,
+      N = N,
+      n_components = coalition_size,
+      weight_zero_m = 10^6
+    ) / sum_shapley_weights(m)]
+    X[-c(1, .N), cond := 1 - (1 - shapley_weight)^K]
+    X[-c(1, .N), shapley_weight := shapley_weight / cond]
+  }
+  # strategy= "none" or something else do nothing
+  return(NULL)
+}
+
+
+#' @keywords internal
+kernelSHAP_reweighting_determ <- function(X, reweight = "on_N", m = NULL, reweighted_shapley_weight = NULL) {
+  # Updates the Shapley weights in X based on the reweighting strategy BY REFERENCE
+  # Only used for semi-deterministic sampling, i.e., this function is slightly
+  # different from kernelSHAP_reweighting
+
+  if (is.null(reweighted_shapley_weight)) {
+    # It is null for random sampling
+    m <- X[.N, coalition_size] # Assume last row is the full coalition
+    rel_ind = -c(1, nrow(X))
+    func_shapley_weights = function(m, N, coalition_size, weight_zero_m = 10^6) {
+      shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m = weight_zero_m) /
+        sum_shapley_weights(m)
+    }
+
+  } else {
+    # We are doing semi-deterministic sampling
+    rel_ind = seq_len(nrow(X))
+    if (is.null(m)) stop("`m` must be provided for semi-deterministic sampling")
+    func_shapley_weights = function(m, N, coalition_size, weight_zero_m = 10^6) {
+      reweighted_shapley_weight[coalition_size]
+    }
+  }
+
+  # Do the reweighting
+  if (reweight == "on_N") {
+    X[rel_ind, shapley_weight := mean(shapley_weight), by = N]
+  } else if (reweight == "on_all") {
+    X[rel_ind, shapley_weight := func_shapley_weights(m = m, N = N, coalition_size = coalition_size)]
+  } else if (reweight == "on_all_cond") {
+    K <- X[, sum(sample_freq)]
+    X[rel_ind, shapley_weight := func_shapley_weights(m = m, N = N, coalition_size = coalition_size)]
+    X[rel_ind, cond := 1 - (1 - shapley_weight)^K]
+    X[rel_ind, shapley_weight := shapley_weight / cond]
+  }
+  # strategy= "none" or something else do nothing
+  return(NULL)
+}
 
 }
+# Logic:
+# Check how many fixed coalitions we can include.
+# Include any if we can.
+# Remove the fixed from the sampled coalitions.
+# If the new sum of fixed + previous sampled is larger than the new value (in case the fixed were not sampled)
+# then we do not need to sample anything and we essentially remove some of the sampled.
+# Otherwise Start sampling the new coalitions.
+# When we have enough coalitions.
+# Combine the DT_deterministic and DT_sampled.
+# Then add option for c-kernel on DT_smapled.
+# Update the weights such that the DT_determ and DT_sampled repsesnt the correct amount.
+# THen the rest should go by itself.
+
