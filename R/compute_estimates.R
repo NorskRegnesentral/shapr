@@ -210,15 +210,23 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
 
   n_explain <- internal$parameters$n_explain
   paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
+  semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
+
+  if (semi_deterministic_sampling) {
+    paired_coal_size <- internal$iter_list[[iter]]$dt_coal_determ_info$paired_coal_size
+  } else {
+    paired_coal_size <- 0
+  }
 
   X_org <- copy(X)
 
   boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
 
-  X_keep <- X_org[c(1, .N), .(id_coalition, coalitions, coalition_size, N)]
+  # Split X_org into the deterministic coalitions and the sampled coalitions
+  X_keep <- X_org[is.na(sample_freq), .(id_coalition, coalitions, coalition_size, N, shapley_weight)]
   X_samp <- X_org[
-    -c(1, .N),
+    !is.na(sample_freq),
     .(id_coalition, coalitions, coalitions_str, coalition_size, N, shapley_weight, sample_freq)
   ]
 
