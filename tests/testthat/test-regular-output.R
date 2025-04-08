@@ -516,7 +516,7 @@ test_that("output_lm_numeric_interaction", {
 })
 
 test_that("output_lm_numeric_ctree_parallelized", {
-  testthat::skip_on_cran() # Avoiding CRAN Note: Running R code in ‘testthat.R’ had CPU time 3.6 times elapsed time
+  testthat::skip_on_cran() # Avoiding CRAN Note: Running R code in 'testthat.R' had CPU time 3.6 times elapsed time
   future::plan("multisession", workers = 2)
   expect_snapshot_rds(
     {

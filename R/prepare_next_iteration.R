@@ -76,11 +76,10 @@ prepare_next_iteration <- function(internal) {
     next_iter_list$prev_coal_samples_n_unique <- current_coal_samples_n_unique
 
     if (semi_deterministic_sampling) {
-      next_iter_list$dt_coal_determ_info =
+      next_iter_list$dt_coal_determ_info <-
         internal$objects$dt_coal_determ_info[next_iter_list$n_coalitions <= n_coal_max][1]
       next_iter_list$prev_X <- internal$iter_list[[iter]]$X
     }
-
   } else {
     next_iter_list <- list()
   }

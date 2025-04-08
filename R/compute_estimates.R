@@ -273,7 +273,6 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
     X_boot[is.na(shapley_weight), sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[is.na(shapley_weight), shapley_weight := as.numeric(sample_freq)]
-
   } else {
     X_boot0 <- X_samp[
       sample.int(
@@ -308,20 +307,22 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
     this_X_samp <- this_X[!is.na(sample_freq)]
 
     # Reweight the sampled coalitions
-    kernelSHAP_reweighting(X = this_X_samp,
-                           m = n_shapley_values,
-                           reweight = shapley_reweight,
-                           paired_coal_size = paired_coal_size)
+    kernelSHAP_reweighting(
+      X = this_X_samp,
+      m = n_shapley_values,
+      reweight = shapley_reweight,
+      paired_coal_size = paired_coal_size
+    )
 
     # For semi-deterministic sampling, we reweight the sampled coalitions. The deterministic once are already reweighed.
     if (semi_deterministic_sampling) {
-      weight_sample = internal$iter_list[[iter]]$dt_coal_determ_info$weight_sample
+      weight_sample <- internal$iter_list[[iter]]$dt_coal_determ_info$weight_sample
       this_X_samp[, shapley_weight := weight_sample * shapley_weight / sum(shapley_weight)]
     }
 
     # Merge the deterministic and sampled coalitions. Use that the coalitions in this_X_keep is paired.
     this_X <- data.table::rbindlist(list(this_X_keep[seq(1, .N / 2)], this_X_samp, this_X_keep[seq((.N / 2) + 1, .N)]),
-                               use.names = TRUE
+      use.names = TRUE
     )
 
     W_boot <- weight_matrix(

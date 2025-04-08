@@ -1,6 +1,4 @@
 test_that("semi_deterministic_samplign when not paired sampling", {
-
-
   expect_snapshot(
     {
       # no regression model passed

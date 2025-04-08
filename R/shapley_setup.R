@@ -88,7 +88,7 @@ shapley_setup <- function(internal) {
   internal$iter_list[[iter]]$n_sampled_coalitions <- internal$iter_list[[iter]]$n_coalitions - 2
 
 
-  if (isFALSE(exact) & !semi_deterministic_sampling) {
+  if (isFALSE(exact) && !semi_deterministic_sampling) {
     coal_samples <- rep(X[-c(1, .N), coalitions_str], X[-c(1, .N), sample_freq])
   } else {
     coal_samples <- NA
@@ -231,47 +231,46 @@ create_coalition_table <- function(m,
 }
 
 #' @keywords internal
-get_dt_coal_determ_info = function(m, weight_zero_m = 10^6) {
-
+get_dt_coal_determ_info <- function(m, weight_zero_m = 10^6) {
   # Get the number of coalition sizes for S when considering S to always be the smallest of S and Sbar.
-  n_coal_sizes = as.integer(ceiling((m - 1) / 2))
+  n_coal_sizes <- as.integer(ceiling((m - 1) / 2))
 
   # Get the number of coalitions of each size
-  n_coal_each_size = choose(m, seq(n_coal_sizes))
+  n_coal_each_size <- choose(m, seq(n_coal_sizes))
 
   # Get the number of coalitions deterministically included when including the different coalition sizes
-  n_coal_determ = pmin(2^m, sapply(seq(n_coal_sizes + 1), function(i) 2 + 2 * sum(choose(m, seq_len(i - 1)))))
+  n_coal_determ <- pmin(2^m, sapply(seq(n_coal_sizes + 1), function(i) 2 + 2 * sum(choose(m, seq_len(i - 1)))))
 
   # Get the coalition sizes to sample
-  coal_sizes_sep_sample = c(lapply(seq(n_coal_sizes), function(size) seq(size, m-size)), NA)
+  coal_sizes_sep_sample <- c(lapply(seq(n_coal_sizes), function(size) seq(size, m - size)), NA)
 
   # Get the (normalized) Shapley kernel weight for each coalition sizes
-  coal_size_weight = sapply(seq(m-1), function(i) (m - 1.0) / (i * (m - i)))
-  coal_size_weight = coal_size_weight / sum(coal_size_weight)
+  coal_size_weight <- sapply(seq(m - 1), function(i) (m - 1.0) / (i * (m - i)))
+  coal_size_weight <- coal_size_weight / sum(coal_size_weight)
 
   # Get the weights of the coalitions deterministically included
-  weight_determ = c(sapply(seq(0, n_coal_sizes - 1), function(paired_size){
+  weight_determ <- c(sapply(seq(0, n_coal_sizes - 1), function(paired_size) {
     sum(coal_size_weight[-seq(paired_size + 1, m - paired_size - 1)])
   }), 1)
 
   # Get the sampling probabilities for each coalition size when included the previous sizes
-  coal_sizes_sep_sample_prob = c(lapply(seq(n_coal_sizes), function(size) {
-    weigts = coal_size_weight[seq(size, m-size)]
+  coal_sizes_sep_sample_prob <- c(lapply(seq(n_coal_sizes), function(size) {
+    weigts <- coal_size_weight[seq(size, m - size)]
     return(weigts / sum(weigts))
   }), NA)
 
   # Get the probability of sampling the most likely coalition size when including the previous sizes
-  coal_size_sampling_prob_rel = sapply(coal_sizes_sep_sample_prob[seq(n_coal_sizes)], "[[", 1)
+  coal_size_sampling_prob_rel <- sapply(coal_sizes_sep_sample_prob[seq(n_coal_sizes)], "[[", 1)
 
   # Get the number of coalitions to sample to include all coalitions of the different coalition sizes
   # based on their sampling probability and adding the previously deterministically included coalitions.
-  n_coal_needed = ceiling(n_coal_each_size / coal_size_sampling_prob_rel) + n_coal_determ[seq(n_coal_sizes)]
+  n_coal_needed <- ceiling(n_coal_each_size / coal_size_sampling_prob_rel) + n_coal_determ[seq(n_coal_sizes)]
 
   # Get the max number of coalitions before we include the smaller coalition size. Ensure even numbers due to pairing.
-  n_coal_needed_max = c(sapply(n_coal_needed, function(x) ifelse(x %% 2 == 0, x - 2, x - 1)), 2^m)
+  n_coal_needed_max <- c(sapply(n_coal_needed, function(x) ifelse(x %% 2 == 0, x - 2, x - 1)), 2^m)
 
   # Create a data table with all relevant information
-  dt_deterministic = data.table(
+  dt_deterministic <- data.table(
     paired_coal_size = seq(0, n_coal_sizes),
     n_coal_max = n_coal_needed_max,
     n_coal_determ = n_coal_determ,
@@ -348,7 +347,6 @@ exact_coalition_table <- function(m,
                                   paired_coal_size = ceiling((m - 1) / 2),
                                   dt_valid_causal_coalitions = NULL,
                                   weight_zero_m = 10^6) {
-
   # Create all valid coalitions for regular/symmetric or asymmetric Shapley values
   if (is.null(dt_valid_causal_coalitions)) {
     # Regular/symmetric Shapley values: (default paired_coal_size yields seq(0, m))
@@ -390,7 +388,6 @@ sample_coalition_table_determ <- function(m,
                                           kernelSHAP_reweighting,
                                           dt_coal_determ_info,
                                           n_samps_scale = 10) {
-
   # Ensure that n_coalitions is not larger than the maximum number of coalitions
   n_coalitions <- min(2^m, n_coalitions)
 
@@ -410,7 +407,7 @@ sample_coalition_table_determ <- function(m,
   coal_sizes_sample_prob <- dt_coal_determ_info[, coal_sizes_sample_prob[[1]]]
 
   # Get the number of coalitions of each size (both deterministic and sampleable coalition sizes)
-  n_coal_each_size = as.integer(choose(m, seq(m-1)))
+  n_coal_each_size <- as.integer(choose(m, seq(m - 1)))
 
   # Create the data.table with the deterministic included coalitions and reweight them
   X_determ <- exact_coalition_table(m = m, paired_coal_size = paired_coal_size, weight_zero_m = weight_zero_m)
@@ -588,7 +585,7 @@ sample_coalition_table <- function(m,
   kernelSHAP_reweighting(X = X, m = m, reweight = kernelSHAP_reweighting)
 
   # Get the deterministic coalitions, i.e., empty and grand coalitions
-  X_determ = exact_coalition_table(m = m, paired_coal_size = 0, weight_zero_m = weight_zero_m)
+  X_determ <- exact_coalition_table(m = m, paired_coal_size = 0, weight_zero_m = weight_zero_m)
 
   # Combine the deterministic and sampled coalitions
   X <- data.table::rbindlist(list(X_determ[seq(1, .N / 2)], X, X_determ[seq((.N / 2) + 1, .N)]), use.names = TRUE)
