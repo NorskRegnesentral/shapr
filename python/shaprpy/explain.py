@@ -13,6 +13,7 @@ data_table = importr('data.table')
 shapr = importr('shapr')
 utils = importr('utils')
 base = importr('base')
+stats = importr('stats')
 
 
 def maybe_null(val):
@@ -232,11 +233,19 @@ def explain(
       # Only actually called for approach in ["regression_surrogate", "vaeac"]
       rinternal = shapr.setup_approach(rinternal)
 
+      #print("Gaussian samples from R 1:", list(stats.rnorm(n=5)))
+
       # Compute the vS
       vS_list = compute_vS(rinternal, model, predict_model)
 
+      #print("Gaussian samples from R 2:", list(stats.rnorm(n=5)))
+
+
       # Compute Shapley value estimates and bootstrapped standard deviations
       rinternal = shapr.compute_estimates(rinternal, vS_list)
+
+      # Sample a Gaussian variable in R and print it
+      #print("Gaussian samples from R 3:", list(stats.rnorm(n=5)))
 
       # Check convergence based on estimates and standard deviations (and thresholds)
       rinternal = shapr.check_convergence(rinternal)
@@ -307,6 +316,10 @@ def compute_vS(rinternal, model, predict_model):
   # verbose
   shapr.cli_compute_vS(rinternal)
   
+  stats.rnorm(1) # Perform a single sample to forward the RNG state one step. This is done to ensurie consistency with 
+                # future.apply::future_lapply in R which does this to to guarantee consistency for parallellization.
+                # See ?future.apply::future_lapply for details
+
   vS_list = ro.ListVector({})
   for i, S in enumerate(S_batch):
     vS_list.rx2[i+1] = batch_compute_vS(S=S, rinternal=rinternal, model=model, predict_model=predict_model)
