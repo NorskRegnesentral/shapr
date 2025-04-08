@@ -12,6 +12,10 @@ model = xgb.Booster()
 model.load_model("data_and_models/" +"xgb.model")
 model.feature_names = x_train.columns.tolist() 
 
+# Predict x_explain using the XGBoost model
+d_explain = xgb.DMatrix(x_explain)
+predictions = model.predict(d_explain)
+
 exp_20_ctree = explain(
     model = model,
     x_train = x_train,
@@ -19,7 +23,8 @@ exp_20_ctree = explain(
     approach = 'ctree',
     phi0 = y_train.mean().item(),
     max_n_coalitions=20,
-    ctree_sample = False)
+    ctree_sample = False,
+    seed = 1)
 
 
 # Print the Shapley values

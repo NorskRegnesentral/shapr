@@ -7510,7 +7510,7 @@ a.anchor-link {
 </style>
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
-<main><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=6996eae9">
+<main><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=72dd5815">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7518,13 +7518,23 @@ a.anchor-link {
 <div class="jp-InputPrompt jp-InputArea-prompt">In [1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">xgboost</span> <span class="k">as</span> <span class="nn">xgb</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">shaprpy</span> <span class="kn">import</span> <span class="n">explain</span>
-<span class="c1">#import os</span>
-<span class="c1">#os.chdir("inst/code_paper")</span>
-<span class="c1">#print("Current working directory:", os.getcwd())</span>
-<span class="c1"># Read data  </span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xgboost</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xgb</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shaprpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">explain</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=6303d981">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Read data  </span>
 <span class="n">x_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"data_and_models/"</span> <span class="o">+</span> <span class="s2">"x_train.csv"</span><span class="p">)</span>
 <span class="n">x_explain</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"data_and_models/"</span> <span class="o">+</span> <span class="s2">"x_explain.csv"</span><span class="p">)</span>
 <span class="n">y_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"data_and_models/"</span> <span class="o">+</span> <span class="s2">"y_train.csv"</span><span class="p">)</span>
@@ -7533,12 +7543,12 @@ a.anchor-link {
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=ada0a430">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=015ec858">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Load the XGBoost model from the raw format and add feature names</span>
@@ -7550,12 +7560,28 @@ a.anchor-link {
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cdf90c92">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=ea8b3494">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Predict x_explain using the XGBoost model</span>
+<span class="n">d_explain</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">DMatrix</span><span class="p">(</span><span class="n">x_explain</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">d_explain</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=435c6eee">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">exp_20_ctree</span> <span class="o">=</span> <span class="n">explain</span><span class="p">(</span>
@@ -7565,7 +7591,8 @@ a.anchor-link {
     <span class="n">approach</span> <span class="o">=</span> <span class="s1">'ctree'</span><span class="p">,</span>
     <span class="n">phi0</span> <span class="o">=</span> <span class="n">y_train</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
     <span class="n">max_n_coalitions</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">ctree_sample</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">ctree_sample</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7595,7 +7622,7 @@ Assuming feature classes from the data are correct.
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>── Starting `shapr::explain()` at 2025-03-31 20:12:24 ──────────────────────────
+<pre>── Starting `shapr::explain()` at 2025-04-08 13:33:18 ──────────────────────────
 </pre>
 </div>
 </div>
@@ -7638,7 +7665,7 @@ Assuming feature classes from the data are correct.
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>• Computations (temporary) saved at:
-'/tmp/RtmpBdo852/shapr_obj_37d9977e90003.rds'
+'/tmp/Rtmp0uqks1/shapr_obj_5f2a846d08639.rds'
 </pre>
 </div>
 </div>
@@ -7700,12 +7727,12 @@ Assuming feature classes from the data are correct.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0c0a7290">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=35b37527">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Print the Shapley values</span>
@@ -7723,17 +7750,17 @@ Assuming feature classes from the data are correct.
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>       none   trend  cosyear  sinyear    temp   atemp  windspeed    hum
-1    4536.6 -2488.6   -222.6     14.5  -472.1  -417.7      120.8 -324.9
-2    4536.6  -284.0     -9.6   -210.8 -1117.1 -1158.7     -190.1  -93.4
-3    4536.6   431.7   -171.3   -331.2 -1186.7  -981.6     -960.6  -65.7
-4    4536.6  -776.0    -58.4   -266.9 -1070.1  -924.0      241.8 -705.1
-5    4536.6  -582.1    -83.3   -277.3 -1410.9 -1227.4      193.0 -119.5
+1    4536.6 -2378.2   -902.5    -54.9   236.5  -847.1      -16.9  172.3
+2    4536.6 -1267.7   -801.4   -103.7   559.6 -1668.7     -208.5  426.9
+3    4536.6 -1170.2   -788.4   -204.3   497.4 -1493.5     -391.0  284.5
+4    4536.6 -1543.5   -689.6   -170.7   708.8 -1635.4     -207.2  -21.1
+5    4536.6 -1558.3   -727.3   -197.5   590.8 -2180.7     -212.5  778.1
 ..      ...     ...      ...      ...     ...     ...        ...    ...
-142  4536.6   606.4    -46.1    128.8  -448.5  -554.8      203.6  291.8
-143  4536.6  1209.5   -153.7   -125.5  -346.9  -181.1      256.7  141.6
-144  4536.6  1240.5   -283.5    -66.0   162.8   347.7      486.5  -20.3
-145  4536.6   -37.3     42.4     32.5 -1350.0  -854.0      255.5  195.9
-146  4536.6 -1253.3    -40.1    -76.7  -895.9  -887.6      313.1 -447.9
+142  4536.6   557.3   -574.0    462.2   436.3 -1146.0     -145.9  591.2
+143  4536.6   791.6   -803.2    332.2  1133.2  -982.3       34.8  294.4
+144  4536.6  1203.0   -576.7    110.8  1352.0  -392.0       57.4  113.1
+145  4536.6   258.8   -652.1    256.2  -482.5 -1470.7       30.3  345.1
+146  4536.6  -994.0   -956.0    192.7  -393.7 -1148.4      812.6 -801.4
 
 [146 rows x 8 columns]
 </pre>
