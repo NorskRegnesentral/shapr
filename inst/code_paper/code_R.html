@@ -158,7 +158,10 @@ section.footnotes::before {
 
 library(xgboost)
 library(data.table)
-library(shapr)
+</code></pre>
+<pre><code>## data.table 1.17.0 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com
+</code></pre>
+<pre><code class="language-r">library(shapr)
 
 x_explain &lt;- fread(file.path(&quot;data_and_models&quot;, &quot;x_explain.csv&quot;))
 x_train &lt;- fread(file.path(&quot;data_and_models&quot;, &quot;x_train.csv&quot;))
@@ -195,12 +198,43 @@ exp_20_ctree &lt;- explain(model = model,
                         max_n_coalitions = 20,
                         approach = &quot;ctree&quot;,
                         phi0 = mean(y_train),
-                        verbose = NULL,
                         ctree.sample = FALSE,
                         seed = 1)
 </code></pre>
 <pre><code>## Note: Feature classes extracted from the model contains NA.
 ## Assuming feature classes from the data are correct.
+</code></pre>
+<pre><code>## 
+</code></pre>
+<pre><code>## ── Starting `shapr::explain()` at 2025-04-08 13:35:19 ────────────────────────────────────────────────────────────────────────────
+</code></pre>
+<pre><code>## • Model class: &lt;xgb.Booster&gt;
+</code></pre>
+<pre><code>## • Approach: ctree
+</code></pre>
+<pre><code>## • Iterative estimation: TRUE
+</code></pre>
+<pre><code>## • Number of feature-wise Shapley values: 7
+</code></pre>
+<pre><code>## • Number of observations to explain: 146
+</code></pre>
+<pre><code>## • Computations (temporary) saved at: '/tmp/Rtmpv8b2OL/shapr_obj_5f5891a28d498.rds'
+</code></pre>
+<pre><code>## 
+</code></pre>
+<pre><code>## ── iterative computation started ──
+</code></pre>
+<pre><code>## 
+</code></pre>
+<pre><code>## ── Iteration 1 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</code></pre>
+<pre><code>## ℹ Using 14 of 128 coalitions, 14 new.
+</code></pre>
+<pre><code>## 
+</code></pre>
+<pre><code>## ── Iteration 2 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</code></pre>
+<pre><code>## ℹ Using 20 of 128 coalitions, 6 new.
 </code></pre>
 <pre><code class="language-r">exp_20_indep$MSEv$MSEv
 </code></pre>
@@ -216,32 +250,19 @@ exp_20_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code class="language-r">print(exp_20_ctree)
 </code></pre>
-<pre><code>##      explain_id  none   trend cosyear sinyear
-##           &lt;int&gt; &lt;num&gt;   &lt;num&gt;   &lt;num&gt;   &lt;num&gt;
-##   1:          1  4537 -2378.2  -902.5   -54.9
-##   2:          2  4537 -1267.7  -801.4  -103.7
-##   3:          3  4537 -1170.2  -788.4  -204.3
-##   4:          4  4537 -1543.5  -689.6  -170.7
-##   5:          5  4537 -1558.3  -727.3  -197.5
-##  ---                                         
-## 142:        142  4537   557.3  -574.0   462.2
-## 143:        143  4537   791.6  -803.2   332.2
-## 144:        144  4537  1203.0  -576.7   110.8
-## 145:        145  4537   258.8  -652.1   256.2
-## 146:        146  4537  -994.0  -956.0   192.7
-##        temp   atemp windspeed     hum
-##       &lt;num&gt;   &lt;num&gt;     &lt;num&gt;   &lt;num&gt;
-##   1:  236.5  -847.1    -16.86  172.33
-##   2:  559.6 -1668.7   -208.54  426.87
-##   3:  497.4 -1493.5   -390.98  284.54
-##   4:  708.8 -1635.4   -207.19  -21.12
-##   5:  590.8 -2180.7   -212.53  778.08
-##  ---                                 
-## 142:  436.3 -1146.0   -145.87  591.22
-## 143: 1133.2  -982.3     34.75  294.41
-## 144: 1352.0  -392.0     57.43  113.10
-## 145: -482.5 -1470.7     30.31  345.06
-## 146: -393.7 -1148.4    812.57 -801.37
+<pre><code>##      explain_id  none   trend cosyear sinyear   temp   atemp windspeed     hum
+##           &lt;int&gt; &lt;num&gt;   &lt;num&gt;   &lt;num&gt;   &lt;num&gt;  &lt;num&gt;   &lt;num&gt;     &lt;num&gt;   &lt;num&gt;
+##   1:          1  4537 -2378.2  -902.5   -54.9  236.5  -847.1    -16.86  172.33
+##   2:          2  4537 -1267.7  -801.4  -103.7  559.6 -1668.7   -208.54  426.87
+##   3:          3  4537 -1170.2  -788.4  -204.3  497.4 -1493.5   -390.98  284.54
+##   4:          4  4537 -1543.5  -689.6  -170.7  708.8 -1635.4   -207.19  -21.12
+##   5:          5  4537 -1558.3  -727.3  -197.5  590.8 -2180.7   -212.53  778.08
+##  ---                                                                          
+## 142:        142  4537   557.3  -574.0   462.2  436.3 -1146.0   -145.87  591.22
+## 143:        143  4537   791.6  -803.2   332.2 1133.2  -982.3     34.75  294.41
+## 144:        144  4537  1203.0  -576.7   110.8 1352.0  -392.0     57.43  113.10
+## 145:        145  4537   258.8  -652.1   256.2 -482.5 -1470.7     30.31  345.06
+## 146:        146  4537  -994.0  -956.0   192.7 -393.7 -1148.4    812.57 -801.37
 </code></pre>
 <pre><code class="language-r">### Continued estimation
 exp_iter_ctree &lt;- explain(model = model,
@@ -263,7 +284,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Starting `shapr::explain()` at 2025-03-31 21
+<pre><code>## ── Starting `shapr::explain()` at 2025-04-08 13:35:26 ────────────────────────────────────────────────────────────────────────────
 </code></pre>
 <pre><code>## • Model class: &lt;xgb.Booster&gt;
 </code></pre>
@@ -275,8 +296,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## • Number of observations to explain: 146
 </code></pre>
-<pre><code>## • Computations (temporary) saved at:
-## '/tmp/RtmpEX1sCg/shapr_obj_352941249046.rds'
+<pre><code>## • Computations (temporary) saved at: '/tmp/Rtmpv8b2OL/shapr_obj_5f5897a0f7b18.rds'
 </code></pre>
 <pre><code>## 
 </code></pre>
@@ -284,7 +304,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Iteration 3 ────────────────────────────────
+<pre><code>## ── Iteration 3 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre>
 <pre><code>## ℹ Using 32 of 128 coalitions, 12 new.
 </code></pre>
@@ -299,7 +319,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Iteration 4 ────────────────────────────────
+<pre><code>## ── Iteration 4 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre>
 <pre><code>## ℹ Using 52 of 128 coalitions, 20 new.
 </code></pre>
@@ -314,7 +334,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Iteration 5 ────────────────────────────────
+<pre><code>## ── Iteration 5 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre>
 <pre><code>## ℹ Using 62 of 128 coalitions, 10 new.
 </code></pre>
@@ -329,7 +349,7 @@ exp_iter_ctree &lt;- explain(model = model,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Iteration 6 ────────────────────────────────
+<pre><code>## ── Iteration 6 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre>
 <pre><code>## ℹ Using 66 of 128 coalitions, 4 new.
 </code></pre>
@@ -347,6 +367,25 @@ library(ggplot2)
 <pre><code class="language-r">plot(exp_iter_ctree, plot_type = &quot;scatter&quot;,scatter_features = c(&quot;atemp&quot;,&quot;windspeed&quot;))
 </code></pre>
 <p><img src="data:image/png;base64,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" alt="plot of chunk fig-scatter_ctree" /></p>
+<pre><code class="language-r">### Grouping
+
+group &lt;- list(temp = c(&quot;temp&quot;, &quot;atemp&quot;),
+              time = c(&quot;trend&quot;, &quot;cosyear&quot;, &quot;sinyear&quot;),
+              weather = c(&quot;hum&quot;,&quot;windspeed&quot;))
+
+exp_g_reg &lt;- explain(model = model,
+                     x_explain = x_explain,
+                     x_train = x_train,
+                     phi0 = mean(y_train),
+                     group = group,
+                     approach = &quot;regression_separate&quot;,
+                     regression.model = parsnip::boost_tree(
+                       engine = &quot;xgboost&quot;,
+                       mode = &quot;regression&quot;
+                     ),
+                     verbose = NULL,
+                     seed = 1)
+</code></pre>
 <pre><code>## Note: Feature classes extracted from the model contains NA.
 ## Assuming feature classes from the data are correct.
 </code></pre>
@@ -354,37 +393,55 @@ library(ggplot2)
 ## max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
 ## and is therefore set to 2^n_groups = 8.
 </code></pre>
+<pre><code class="language-r">tree_vals &lt;- c(10, 15, 25, 50, 100, 500)
+exp_g_reg_tuned &lt;- explain(model = model,
+                           x_explain = x_explain,
+                           x_train = x_train,
+                           phi0 = mean(y_train),
+                           group = group,
+                           approach = &quot;regression_separate&quot;,
+                           regression.model =
+                             parsnip::boost_tree(
+                               trees = hardhat::tune(),
+                               engine = &quot;xgboost&quot;, mode = &quot;regression&quot;
+                             ),
+                           regression.tune_values = expand.grid(
+                             trees = tree_vals
+                           ),
+                           regression.vfold_cv_para = list(v = 5),
+                           verbose = NULL,
+                           seed = 1)
+</code></pre>
 <pre><code>## Note: Feature classes extracted from the model contains NA.
 ## Assuming feature classes from the data are correct.
-</code></pre>
-<pre><code>## Success with message:
+## 
+## Success with message:
 ## max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
 ## and is therefore set to 2^n_groups = 8.
+</code></pre>
+<pre><code class="language-r">exp_g_reg$MSEv$MSEv
 </code></pre>
 <pre><code>##       MSEv  MSEv_sd
 ##      &lt;num&gt;    &lt;num&gt;
 ## 1: 1547240 142123.2
 </code></pre>
+<pre><code class="language-r">exp_g_reg_tuned$MSEv$MSEv
+</code></pre>
 <pre><code>##       MSEv  MSEv_sd
 ##      &lt;num&gt;    &lt;num&gt;
 ## 1: 1534033 142277.4
 </code></pre>
-<pre><code>##    explain_id     none      temp      time
-##         &lt;int&gt;    &lt;num&gt;     &lt;num&gt;     &lt;num&gt;
-## 1:          1 4536.598  -371.659 -2757.175
-## 2:          2 4536.598 -1041.262 -1609.387
-## 3:          3 4536.598 -1118.937 -1560.695
-## 4:          4 4536.598 -1361.832 -1781.578
-## 5:          5 4536.598 -1887.654 -1745.006
-## 6:          6 4536.598 -1810.055 -1927.635
-##      weather
-##        &lt;num&gt;
-## 1: -661.8197
-## 2: -412.9517
-## 3: -585.7902
-## 4: -415.2823
-## 5:  125.1834
-## 6:  478.3566
+<pre><code class="language-r"># Print Shapley value for the best one
+head(exp_g_reg_tuned$shapley_values_est)
+</code></pre>
+<pre><code>##    explain_id     none      temp      time   weather
+##         &lt;int&gt;    &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;
+## 1:          1 4536.598  -371.659 -2757.175 -661.8197
+## 2:          2 4536.598 -1041.262 -1609.387 -412.9517
+## 3:          3 4536.598 -1118.937 -1560.695 -585.7902
+## 4:          4 4536.598 -1361.832 -1781.578 -415.2823
+## 5:          5 4536.598 -1887.654 -1745.006  125.1834
+## 6:          6 4536.598 -1810.055 -1927.635  478.3566
 </code></pre>
 <pre><code class="language-r"># Waterfall plot for the best one
 plot(exp_g_reg_tuned,index_x_explain = 6,plot_type=&quot;waterfall&quot;)
@@ -433,7 +490,8 @@ exp_fc_ar &lt;- explain_forecast(
   horizon = 3,
   approach = &quot;empirical&quot;,
   phi0 = phi0_ar,
-  group_lags = FALSE
+  group_lags = FALSE,
+  seed = 1
 )
 </code></pre>
 <pre><code>## Note: Feature names extracted from the model contains NA.
@@ -445,7 +503,7 @@ exp_fc_ar &lt;- explain_forecast(
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Starting `shapr::explain()` at 2025-03-31 21
+<pre><code>## ── Starting `shapr::explain()` at 2025-04-08 13:36:26 ────────────────────────────────────────────────────────────────────────────
 </code></pre>
 <pre><code>## • Model class: &lt;ar&gt;
 </code></pre>
@@ -457,8 +515,7 @@ exp_fc_ar &lt;- explain_forecast(
 </code></pre>
 <pre><code>## • Number of observations to explain: 2
 </code></pre>
-<pre><code>## • Computations (temporary) saved at:
-## '/tmp/RtmpEX1sCg/shapr_obj_352947befbe8.rds'
+<pre><code>## • Computations (temporary) saved at: '/tmp/Rtmpv8b2OL/shapr_obj_5f58969e962a1.rds'
 </code></pre>
 <pre><code>## 
 </code></pre>
@@ -494,7 +551,8 @@ exp_fc_arimax &lt;- explain_forecast(
   horizon = 2,
   approach = &quot;empirical&quot;,
   phi0 = phi0_arimax,
-  group_lags = TRUE
+  group_lags = TRUE,
+  seed = 1
 )
 </code></pre>
 <pre><code>## Note: Feature names extracted from the model contains NA.
@@ -510,7 +568,7 @@ exp_fc_arimax &lt;- explain_forecast(
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Starting `shapr::explain()` at 2025-03-31 21
+<pre><code>## ── Starting `shapr::explain()` at 2025-04-08 13:36:27 ────────────────────────────────────────────────────────────────────────────
 </code></pre>
 <pre><code>## • Model class: &lt;Arima&gt;
 </code></pre>
@@ -522,8 +580,7 @@ exp_fc_arimax &lt;- explain_forecast(
 </code></pre>
 <pre><code>## • Number of observations to explain: 1
 </code></pre>
-<pre><code>## • Computations (temporary) saved at:
-## '/tmp/RtmpEX1sCg/shapr_obj_352943aef2515.rds'
+<pre><code>## • Computations (temporary) saved at: '/tmp/Rtmpv8b2OL/shapr_obj_5f5897cb8c2e8.rds'
 </code></pre>
 <pre><code>## 
 </code></pre>
@@ -553,81 +610,37 @@ exp_fc_arimax &lt;- explain_forecast(
 ## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3;  LAPACK version 3.9.0
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_US.UTF-8      
-##  [2] LC_NUMERIC=C              
-##  [3] LC_TIME=en_US.UTF-8       
-##  [4] LC_COLLATE=en_US.UTF-8    
-##  [5] LC_MONETARY=en_US.UTF-8   
-##  [6] LC_MESSAGES=en_US.UTF-8   
-##  [7] LC_PAPER=en_US.UTF-8      
-##  [8] LC_NAME=C                 
-##  [9] LC_ADDRESS=C              
-## [10] LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_US.UTF-8
-## [12] LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## time zone: Europe/Oslo
 ## tzcode source: system (glibc)
 ## 
 ## attached base packages:
-## [1] stats     graphics  grDevices utils    
-## [5] datasets  methods   base     
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggpubr_0.6.0      ggplot2_3.5.1    
-## [3] progressr_0.15.1  future_1.34.0    
-## [5] shapr_1.0.3.9000  data.table_1.17.0
-## [7] xgboost_1.7.9.1  
+## [1] ggpubr_0.6.0      ggplot2_3.5.1     progressr_0.15.1  future_1.34.0     shapr_1.0.3.9000  data.table_1.17.0 xgboost_1.7.9.1  
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] gridExtra_2.3       rlang_1.1.5        
-##  [3] magrittr_2.0.3      furrr_0.3.1        
-##  [5] tseries_0.10-58     compiler_4.4.1     
-##  [7] systemfonts_1.1.0   vctrs_0.6.5        
-##  [9] lhs_1.2.0           quadprog_1.5-8     
-## [11] tune_1.3.0          pkgconfig_2.0.3    
-## [13] backports_1.5.0     labeling_0.4.3     
-## [15] prodlim_2024.06.25  ggbeeswarm_0.7.2   
-## [17] ragg_1.3.3          purrr_1.0.4        
-## [19] xfun_0.51           jsonlite_1.9.1     
-## [21] recipes_1.2.0       broom_1.0.7        
-## [23] parallel_4.4.1      R6_2.6.1           
-## [25] rsample_1.2.1       parallelly_1.43.0  
-## [27] car_3.1-3           rpart_4.1.23       
-## [29] lmtest_0.9-40       lubridate_1.9.4    
-## [31] Rcpp_1.0.14         dials_1.4.0        
-## [33] iterators_1.0.14    knitr_1.50         
-## [35] future.apply_1.11.3 zoo_1.8-13         
-## [37] Matrix_1.7-0        splines_4.4.1      
-## [39] nnet_7.3-19         timechange_0.3.0   
-## [41] tidyselect_1.2.1    rstudioapi_0.17.1  
-## [43] abind_1.4-8         timeDate_4041.110  
-## [45] codetools_0.2-20    curl_6.2.1         
-## [47] listenv_0.9.1       lattice_0.22-6     
-## [49] tibble_3.2.1        quantmod_0.4.26    
-## [51] withr_3.0.2         urca_1.3-4         
-## [53] evaluate_1.0.3      survival_3.6-4     
-## [55] xts_0.14.1          pillar_1.10.1      
-## [57] carData_3.0-5       foreach_1.5.2      
-## [59] generics_0.1.3      TTR_0.24.4         
-## [61] forecast_8.23.0     munsell_0.5.1      
-## [63] scales_1.3.0        globals_0.16.3     
-## [65] class_7.3-22        glue_1.8.0         
-## [67] tools_4.4.1         gower_1.0.2        
-## [69] ggsignif_0.6.4      cowplot_1.1.3      
-## [71] grid_4.4.1          yardstick_1.3.2    
-## [73] tidyr_1.3.1         ipred_0.9-15       
-## [75] colorspace_2.1-1    nlme_3.1-164       
-## [77] beeswarm_0.4.0      fracdiff_1.5-3     
-## [79] vipor_0.4.7         Formula_1.2-5      
-## [81] cli_3.6.4           DiceDesign_1.10    
-## [83] textshaping_0.4.0   workflows_1.2.0    
-## [85] parsnip_1.3.1       lava_1.8.1         
-## [87] dplyr_1.1.4         gtable_0.3.6       
-## [89] GPfit_1.0-8         rstatix_0.7.2      
-## [91] digest_0.6.37       farver_2.1.2       
-## [93] lifecycle_1.0.4     hardhat_1.4.1      
-## [95] MASS_7.3-60.2
+##  [1] gridExtra_2.3       testthat_3.2.3      rlang_1.1.5         magrittr_2.0.3      furrr_0.3.1         tseries_0.10-58    
+##  [7] compiler_4.4.1      systemfonts_1.1.0   vctrs_0.6.5         lhs_1.2.0           quadprog_1.5-8      tune_1.3.0         
+## [13] pkgconfig_2.0.3     backports_1.5.0     labeling_0.4.3      prodlim_2024.06.25  ggbeeswarm_0.7.2    ragg_1.3.3         
+## [19] purrr_1.0.4         xfun_0.51           jsonlite_1.9.1      recipes_1.2.0       broom_1.0.7         parallel_4.4.1     
+## [25] R6_2.6.1            rsample_1.2.1       parallelly_1.43.0   car_3.1-3           rpart_4.1.23        brio_1.1.5         
+## [31] lmtest_0.9-40       lubridate_1.9.4     Rcpp_1.0.14         dials_1.4.0         iterators_1.0.14    knitr_1.50         
+## [37] future.apply_1.11.3 zoo_1.8-13          Matrix_1.7-0        splines_4.4.1       nnet_7.3-19         timechange_0.3.0   
+## [43] tidyselect_1.2.1    rstudioapi_0.17.1   abind_1.4-8         timeDate_4041.110   codetools_0.2-20    curl_6.2.1         
+## [49] listenv_0.9.1       lattice_0.22-6      tibble_3.2.1        quantmod_0.4.26     withr_3.0.2         urca_1.3-4         
+## [55] evaluate_1.0.3      survival_3.6-4      xts_0.14.1          pillar_1.10.1       carData_3.0-5       foreach_1.5.2      
+## [61] generics_0.1.3      TTR_0.24.4          forecast_8.23.0     munsell_0.5.1       scales_1.3.0        globals_0.16.3     
+## [67] class_7.3-22        glue_1.8.0          tools_4.4.1         gower_1.0.2         ggsignif_0.6.4      cowplot_1.1.3      
+## [73] grid_4.4.1          yardstick_1.3.2     tidyr_1.3.1         ipred_0.9-15        colorspace_2.1-1    nlme_3.1-164       
+## [79] beeswarm_0.4.0      fracdiff_1.5-3      vipor_0.4.7         Formula_1.2-5       cli_3.6.4           DiceDesign_1.10    
+## [85] textshaping_0.4.0   workflows_1.2.0     parsnip_1.3.1       lava_1.8.1          dplyr_1.1.4         gtable_0.3.6       
+## [91] GPfit_1.0-8         rstatix_0.7.2       digest_0.6.37       farver_2.1.2        lifecycle_1.0.4     hardhat_1.4.1      
+## [97] MASS_7.3-60.2
 </code></pre>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>

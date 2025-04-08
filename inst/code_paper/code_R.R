@@ -59,7 +59,6 @@ exp_20_ctree <- explain(model = model,
                         max_n_coalitions = 20,
                         approach = "ctree",
                         phi0 = mean(y_train),
-                        verbose = NULL,
                         ctree.sample = FALSE,
                         seed = 1)
 
@@ -93,7 +92,7 @@ plot(exp_iter_ctree, plot_type = "scatter",scatter_features = c("atemp","windspe
 # Produce the pdf used in Figure 3 in the paper
 ggplot2::ggsave(file.path("paper_figures","scatter_ctree.pdf"),width = 7, height = 3)
 
-
+#+
 ### Grouping
 
 group <- list(temp = c("temp", "atemp"),
@@ -287,7 +286,8 @@ exp_fc_ar <- explain_forecast(
   horizon = 3,
   approach = "empirical",
   phi0 = phi0_ar,
-  group_lags = FALSE
+  group_lags = FALSE,
+  seed = 1
 )
 print(exp_fc_ar)
 
@@ -306,7 +306,8 @@ exp_fc_arimax <- explain_forecast(
   horizon = 2,
   approach = "empirical",
   phi0 = phi0_arimax,
-  group_lags = TRUE
+  group_lags = TRUE,
+  seed = 1
 )
 
 print(exp_fc_arimax)
