@@ -749,7 +749,6 @@ check_and_set_causal_sampling <- function(internal) {
 #' @author Lars Henry Berge Olsen
 check_and_set_asymmetric <- function(internal) {
   asymmetric <- internal$parameters$asymmetric
-  # exact <- internal$parameters$exact
   causal_ordering <- internal$parameters$causal_ordering
   max_n_coalitions <- internal$parameters$max_n_coalitions
 
