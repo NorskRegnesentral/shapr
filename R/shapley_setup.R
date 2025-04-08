@@ -316,7 +316,7 @@ reweighted_shapley_weight <- function(m, paired_coal_size = 0) {
 #' @keywords internal
 kernelSHAP_reweighting <- function(X,
                                    m,
-                                   reweight = "on_N",
+                                   reweight = "on_all_cond",
                                    paired_coal_size = 0) {
   # Updates the Shapley weights in all rows in X based on the reweighting strategy BY REFERENCE.
 
