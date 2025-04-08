@@ -478,7 +478,7 @@ sample_coalition_table_determ <- function(m,
   # Add id column and order the data table
   data.table::setkeyv(X, "coalition_size")
   data.table::setorder(X, "coalition_size")
-  data.table::setcolorder(X, c("id_coalition", "coalitions", "coalitions_str", "coalition_size", "N", "shapley_weight"))
+  data.table::setcolorder(X, c("coalitions", "coalitions_str", "coalition_size", "N", "shapley_weight"))
 
   # Reweight the Shapley weights in X by reference according to the reweighting strategy
   kernelSHAP_reweighting(X = X, m = m, reweight = kernelSHAP_reweighting, paired_coal_size = paired_coal_size)
