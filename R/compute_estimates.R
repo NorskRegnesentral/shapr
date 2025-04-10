@@ -289,7 +289,7 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
     setkey(X_boot, boot_id, id_coalition)
     X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
-    X_boot[, shapley_weight := sample_freq]
+    X_boot[, shapley_weight := as.numeric(sample_freq)]
     if (type == "forecast") {
       id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
       full_ids <- id_coalition_mapper_dt$id_coalition[id_coalition_mapper_dt$full]
