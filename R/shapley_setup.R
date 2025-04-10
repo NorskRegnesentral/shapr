@@ -578,7 +578,6 @@ sample_coalition_table <- function(m,
   # Add id column and order the data table
   data.table::setkeyv(X, "coalition_size")
   data.table::setorder(X, "coalition_size")
-  X[, id_coalition := .I]
   data.table::setcolorder(X, c("id_coalition", "coalitions", "coalitions_str", "coalition_size", "N", "shapley_weight"))
 
   # Reweight the Shapley weights in X by reference
@@ -588,8 +587,10 @@ sample_coalition_table <- function(m,
   X_determ <- exact_coalition_table(m = m, paired_coal_size = 0, weight_zero_m = weight_zero_m)
 
   # Combine the deterministic and sampled coalitions
-  X <- data.table::rbindlist(list(X_determ[seq(1, .N / 2)], X, X_determ[seq((.N / 2) + 1, .N)]), use.names = TRUE)
-  X[, id_coalition := .I] # Update the id
+  X <- data.table::rbindlist(list(X_determ[seq(1, .N / 2)], X, X_determ[seq((.N / 2) + 1, .N)]),
+    use.names = TRUE, fill = TRUE
+  )
+  X[, id_coalition := .I]
 
   return(X)
 }
