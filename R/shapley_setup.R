@@ -166,6 +166,7 @@ shapley_setup <- function(internal) {
 #' values explanations, and is `NULL` for symmetric Shapley values.
 #' The data.table contains information about the coalitions that respects the causal ordering.
 #' @inheritParams explain
+#' @inheritParams get_extra_comp_args_default
 #' @return A data.table with info about the coalitions to use
 #'
 #' @keywords internal
