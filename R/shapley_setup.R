@@ -222,7 +222,7 @@ kernelSHAP_reweighting <- function(X, reweight = "on_N") {
     ) / sum_shapley_weights(m)]
   } else if (reweight == "on_all_cond") {
     m <- X[.N, coalition_size]
-    K <- X[, sum(sample_freq)]
+    K <- X[-c(1, .N), sum(sample_freq)]
     X[-c(1, .N), shapley_weight := shapley_weights(
       m = m,
       N = N,
@@ -345,7 +345,7 @@ sample_coalition_table <- function(m,
   # Add the empty and grand coalitions to X
   X_empty_coalition <- data.table(
     coalitions_str = NA_character_, # list(character(0)) makes column into a list instead of character vector
-    sample_freq = 1L,
+    sample_freq = NA_integer_,
     shapley_weight = weight_zero_m,
     coalitions = list(integer(0)), # empty coalition. Need to be list for this to be a data.table of one row
     coalition_size = 0L,
@@ -354,7 +354,7 @@ sample_coalition_table <- function(m,
   )
   X_full_coalition <- data.table(
     coalitions_str = paste(seq(m), collapse = " "),
-    sample_freq = 1L,
+    sample_freq = NA_integer_,
     shapley_weight = weight_zero_m,
     coalitions = list(seq(m)),
     coalition_size = as.integer(m),
