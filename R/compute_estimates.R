@@ -283,7 +283,7 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
       ),
       .(id_coalition, coalitions, coalition_size, N)
     ]
-    X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ], X_boot0)
+    X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), -"shapley_weight"], X_boot0)
     X_boot[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot + 2)]
 
     setkey(X_boot, boot_id, id_coalition)
@@ -294,8 +294,10 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
       id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
       full_ids <- id_coalition_mapper_dt$id_coalition[id_coalition_mapper_dt$full]
       X_boot[coalition_size == 0 | id_coalition %in% full_ids, shapley_weight := X_org[1, shapley_weight]]
+      X_boot[coalition_size == 0 | id_coalition %in% full_ids, sample_freq := NA_integer_]
     } else {
       X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+      X_boot[coalition_size %in% c(0, n_shapley_values), sample_freq := NA_integer_]
     }
   }
 
