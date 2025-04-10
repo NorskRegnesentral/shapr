@@ -1,0 +1,54 @@
+# semi_deterministic_samplign: not paired sampling
+
+    Code
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
+        extra_computation_args = list(paired_shap_sampling = FALSE,
+          semi_deterministic_sampling = TRUE))
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
+    Condition
+      Error in `check_and_set_semi_determ_samp()`:
+      ! `paired_shap_sampling` cannot be FALSE when `semi_deterministic_sampling` is TRUE.
+
+# semi_deterministic_samplign: not regular sampling
+
+    Code
+      explain_forecast(testing = TRUE, model = model_ar_temp, y = data_arima[, "Temp"],
+      train_idx = 2:151, explain_idx = 152:153, explain_y_lags = 2, horizon = 3,
+      approach = "empirical", phi0 = p0_ar, seed = 1, group_lags = FALSE,
+      extra_computation_args = list(paired_shap_sampling = TRUE,
+        semi_deterministic_sampling = TRUE))
+    Message
+      Note: Feature names extracted from the model contains NA.
+      Consistency checks between model and data is therefore disabled.
+      
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 4, 
+      and is therefore set to 2^n_features = 4.
+      
+    Condition
+      Error in `check_and_set_semi_determ_samp()`:
+      ! `semi_deterministic_sampling` is only supported for regular Shapley values.
+
+# semi_deterministic_samplign: not symmetric sampling
+
+    Code
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
+        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1,
+        asymmetric = TRUE, causal_ordering = list(1:2, 3, 4:5), confounding = NULL,
+        extra_computation_args = list(paired_shap_sampling = TRUE,
+          semi_deterministic_sampling = TRUE))
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
+      ordering 8, and is therefore set to 8.
+      
+    Condition
+      Error in `set_extra_comp_params()`:
+      ! Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.
+      Asymmetric Shapley values do not support paired sampling as the paired coalitions will not necessarily respect the causal ordering.
+
