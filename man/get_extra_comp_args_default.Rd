@@ -7,6 +7,7 @@
 get_extra_comp_args_default(
   internal,
   paired_shap_sampling = isFALSE(internal$parameters$asymmetric),
+  semi_deterministic_sampling = FALSE,
   kernelSHAP_reweighting = "on_all_cond",
   compute_sd = isFALSE(internal$parameters$exact),
   n_boot_samps = 100,
@@ -24,6 +25,13 @@ That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then a
 computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.
 \code{TRUE} is the default and is recommended for highest accuracy.
 For asymmetric, \code{FALSE} is the default and the only legal value.}
+
+\item{semi_deterministic_sampling}{Logical.
+If \code{FALSE} (default), then we sample from all coalitions.
+If \code{TRUE}, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
+coalitions that are expected to be sample based on the number of coalitions are deterministically included such
+that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
+and the idea is based on PySHAP strategy in the paper \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
 
 \item{kernelSHAP_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.

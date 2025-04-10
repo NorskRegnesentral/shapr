@@ -129,7 +129,7 @@ test_that("output_lm_mixed_decision_tree_cv_separate", {
 })
 
 test_that("output_lm_mixed_decision_tree_cv_separate_parallel", {
-  testthat::skip_on_cran() # Avoiding CRAN Note: Running R code in ‘testthat.R’ had CPU time 3.6 times elapsed time
+  testthat::skip_on_cran() # Avoiding CRAN Note: Running R code in 'testthat.R' had CPU time 3.6 times elapsed time
   future::plan("multisession", workers = 2)
   expect_snapshot_rds(
     explain(

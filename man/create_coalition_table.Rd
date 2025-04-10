@@ -12,10 +12,13 @@ create_coalition_table(
   paired_shap_sampling = TRUE,
   prev_coal_samples = NULL,
   prev_coal_samples_n_unique = NULL,
+  prev_X = NULL,
   n_samps_scale = 10,
   coal_feature_list = as.list(seq_len(m)),
   approach0 = "gaussian",
   kernelSHAP_reweighting = "none",
+  semi_deterministic_sampling = FALSE,
+  dt_coal_determ_info = NULL,
   dt_valid_causal_coalitions = NULL
 )
 }
@@ -44,6 +47,9 @@ For example, "1 5 8" is a coalition with features 1, 5, and 8.}
 The number of unique coalitions in \code{prev_coal_samples}.
 This is a separate argument to avoid recomputing the number unnecessarily.}
 
+\item{prev_X}{data.table. The X data.table from the previous iteration.
+Only used for semi-deterministic sampling if \code{semi_deterministic_sampling == TRUE}.}
+
 \item{n_samps_scale}{Positive integer.
 Integer that scales the number of coalitions \code{n_coalitions} to sample as sampling is cheap,
 while checking for \code{n_coalitions} unique coalitions is expensive, thus we over sample the
@@ -55,6 +61,30 @@ A list mapping each coalition to the features it contains.}
 
 \item{approach0}{Character vector.
 Contains the approach to be used for estimation of each coalition size. Same as \code{approach} in \code{\link[=explain]{explain()}}.}
+
+\item{kernelSHAP_reweighting}{String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
+\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+\code{'on_all'} means the original sampling probabilities are used for all coalitions.
+\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see
+\href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
+
+\item{semi_deterministic_sampling}{Logical.
+If \code{FALSE} (default), then we sample from all coalitions.
+If \code{TRUE}, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
+coalitions that are expected to be sample based on the number of coalitions are deterministically included such
+that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
+and the idea is based on PySHAP strategy in the paper \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
+
+\item{dt_coal_determ_info}{data.table. Only applicable for semi-deterministic sampling, and is \code{NULL} for
+the other sampling strategies. The data.table contains information about the which coalitions should be
+deterministically included and which can be sampled.}
 
 \item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
 values explanations, and is \code{NULL} for symmetric Shapley values.

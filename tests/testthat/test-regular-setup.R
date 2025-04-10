@@ -1405,7 +1405,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 })
 
 test_that("parallelization gives same output for any approach", {
-  testthat::skip_on_cran() # Avoiding CRAN Note: Running R code in ‘testthat.R’ had CPU time 3.6 times elapsed time
+  testthat::skip_on_cran() # Avoiding CRAN Note: Running R code in 'testthat.R' had CPU time 3.6 times elapsed time
   # Empirical is seed independent
   explain.empirical_sequential <- explain(
     testing = TRUE,
