@@ -67,6 +67,27 @@ test_that("output_lm_numeric_empirical_n_coalitions", {
   )
 })
 
+test_that("output_lm_numeric_empirical_n_coalitions_unpaired_on_N", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "empirical",
+      phi0 = p0,
+      seed = 1,
+      max_n_coalitions = 20,
+      iterative = FALSE,
+      extra_computation_args = list(
+        kernelSHAP_reweighting = "on_N",
+        paired_shap_sampling = FALSE
+      )
+    ),
+    "output_lm_numeric_empirical_n_coalitions_unpaired_on_N"
+  )
+})
+
 test_that("output_lm_numeric_empirical_independence", {
   set.seed(123)
   expect_snapshot_rds(
