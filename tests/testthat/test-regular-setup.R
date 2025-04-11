@@ -1202,6 +1202,7 @@ test_that("incompatible input: `data/approach`", {
 })
 
 test_that("Correct dimension of S when sampling combinations", {
+  skip_if_not_installed("party")
   max_n_coalitions <- 10
 
   res <- explain(
@@ -1219,6 +1220,7 @@ test_that("Correct dimension of S when sampling combinations", {
 })
 
 test_that("Message with too low `max_n_coalitions`", {
+  skip_if_not_installed("Matrix")
   max_n_coalitions <- ncol(x_explain_numeric) - 1
 
   expect_snapshot(
@@ -1259,6 +1261,8 @@ test_that("Message with too low `max_n_coalitions`", {
 })
 
 test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weights", {
+  skip_if_not_installed("Matrix")
+
   # Check that the `explain()` function enters the exact mode when max_n_coalitions
   # is larger than or equal to 2^m.
 
@@ -1336,6 +1340,7 @@ test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weight
 })
 
 test_that("Correct dimension of S when sampling combinations with groups", {
+  skip_if_not_installed("party")
   max_n_coalitions <- 6
 
   groups <- list(
@@ -1405,6 +1410,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 })
 
 test_that("parallelization gives same output for any approach", {
+  skip_if_not_installed(c("future","future.apply","party"))
   testthat::skip_on_cran() # Avoiding CRAN Note: Running R code in ‘testthat.R’ had CPU time 3.6 times elapsed time
   # Empirical is seed independent
   explain.empirical_sequential <- explain(
@@ -1470,6 +1476,8 @@ test_that("parallelization gives same output for any approach", {
 
 
 test_that("gaussian approach use the user provided parameters", {
+  skip_if_not_installed("Matrix")
+
   # approach "gaussian" with default parameter estimation, i.e., sample mean and covariance
   e.gaussian_samp_mean_cov <- explain(
     testing = TRUE,
@@ -1524,6 +1532,7 @@ test_that("gaussian approach use the user provided parameters", {
 
 
 test_that("setting the seed for combined approaches works", {
+  skip_if_not_installed(c("Matrix","party"))
   # Check that setting the seed works for a combination of approaches
   explanation_combined_1 <- explain(
     testing = TRUE,
@@ -1550,6 +1559,7 @@ test_that("setting the seed for combined approaches works", {
 })
 
 test_that("counting the number of unique approaches", {
+  skip_if_not_installed(c("Matrix","party"))
   # Test several combinations of combined approaches and check that the number of
   # counted unique approaches is correct.
   # Recall that the last approach is not counted in `n_unique_approaches` as
@@ -1619,6 +1629,7 @@ test_that("counting the number of unique approaches", {
 
 
 test_that("vaeac_set_seed_works", {
+  skip_if_not_installed(c("torch","coro"))
   skip_if_not(torch::torch_is_installed())
   # Train two vaeac models with the same seed
   explanation_vaeac_1 <- explain(
@@ -1660,6 +1671,7 @@ test_that("vaeac_set_seed_works", {
 })
 
 test_that("vaeac_pretreained_vaeac_model", {
+  skip_if_not_installed(c("torch","coro"))
   skip_if_not(torch::torch_is_installed())
 
   # Test that we can skip training a new vaeac model if we already
@@ -1731,6 +1743,8 @@ test_that("vaeac_pretreained_vaeac_model", {
 
 
 test_that("feature wise and groupwise computations are identical", {
+  skip_if_not_installed("Matrix")
+
   groups <- list(
     Solar.R = "Solar.R",
     Wind = "Wind",
