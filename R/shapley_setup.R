@@ -28,9 +28,6 @@ shapley_setup <- function(internal) {
 
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   exact <- internal$iter_list[[iter]]$exact
-  # TODO REMOVE
-  # prev_coal_samples <- internal$iter_list[[iter]]$prev_coal_samples
-  # prev_coal_samples_n_unique <- internal$iter_list[[iter]]$prev_coal_samples_n_unique
   prev_X <- internal$iter_list[[iter]]$prev_X # NULL in first iteration
   dt_coal_samp_info <- internal$iter_list[[iter]]$dt_coal_samp_info # NULL in first iteration
 
@@ -38,13 +35,6 @@ shapley_setup <- function(internal) {
     cli::cli_progress_step("Sampling coalitions")
   }
 
-  # TODO: discuss with Martin if we need prev_coal_samples and prev_coal_samples_n_unique for regular
-  # sampling or if we can just use the prev_X and then extract the relevant information from it.
-  # I think we leave it as it is now. The point was that with semi deterministic sampling, I did not
-  # Want to create a vector of all the sampled coalitions with replication to then later have to figure
-  # out which of those I have to remove as they now are deterministically included. Then it is better to
-  # postpone this when I know which coalitions that will be deterministically included, but that I do not know
-  # before the next iteration. TODO: DELETE THIS COMMENT WHEN DONE
   X <- create_coalition_table(
     m = n_shapley_values,
     exact = exact,
@@ -52,8 +42,6 @@ shapley_setup <- function(internal) {
     n_coal_each_size = n_coal_each_size,
     weight_zero_m = 10^6,
     paired_shap_sampling = paired_shap_sampling,
-    # prev_coal_samples = prev_coal_samples,
-    # prev_coal_samples_n_unique = prev_coal_samples_n_unique,
     prev_X = prev_X,
     coal_feature_list = coal_feature_list,
     approach0 = approach,
@@ -148,13 +136,6 @@ shapley_setup <- function(internal) {
 #' The value to use as a replacement for infinite coalition weights when doing numerical operations.
 #' @param paired_shap_sampling Logical.
 #' Whether to do paired sampling of coalitions.
-#' @param prev_coal_samples Character vector.
-#' A vector of previously sampled coalitions as characters.
-#' Each string contains a coalition and the feature indices in the coalition is separated by a space.
-#' For example, "1 5 8" is a coalition with features 1, 5, and 8.
-#' @param prev_coal_samples_n_unique Positive integer.
-#' The number of unique coalitions in `prev_coal_samples`.
-#' This is a separate argument to avoid recomputing the number unnecessarily.
 #' @param prev_X data.table. The X data.table from the previous iteration.
 #' @param n_samps_scale Positive integer.
 #' Integer that scales the number of coalitions `n_coalitions` to sample as sampling is cheap,
@@ -185,8 +166,6 @@ create_coalition_table <- function(m,
                                    n_coal_each_size = choose(m, seq(m - 1)),
                                    weight_zero_m = 10^6,
                                    paired_shap_sampling = TRUE,
-                                   prev_coal_samples = NULL,
-                                   prev_coal_samples_n_unique = NULL,
                                    prev_X = NULL,
                                    n_samps_scale = 10,
                                    coal_feature_list = as.list(seq_len(m)),
@@ -209,8 +188,6 @@ create_coalition_table <- function(m,
       weight_zero_m = weight_zero_m,
       paired_shap_sampling = paired_shap_sampling,
       prev_X = prev_X,
-      prev_coal_samples = prev_coal_samples,
-      prev_coal_samples_n_unique = prev_coal_samples_n_unique,
       n_samps_scale = n_samps_scale,
       kernelSHAP_reweighting = kernelSHAP_reweighting,
       semi_deterministic_sampling = semi_deterministic_sampling,
@@ -416,8 +393,6 @@ sample_coalition_table <- function(m,
                                    n_coal_each_size = choose(m, seq(m - 1)),
                                    weight_zero_m = 10^6,
                                    paired_shap_sampling = TRUE,
-                                   prev_coal_samples = NULL,
-                                   prev_coal_samples_n_unique = NULL,
                                    prev_X = NULL,
                                    kernelSHAP_reweighting = "on_all_cond",
                                    semi_deterministic_sampling = FALSE,
@@ -470,11 +445,7 @@ sample_coalition_table <- function(m,
 
     # Get the number of unique sampled coalitions
     n_unique_coal_sampled <- nrow(X_prev_rel)
-  # } else if (!is.null(prev_coal_samples)) {
-  #   # Not in the first iteration and have sampled coalitions before using the regular sampling strategy.
-  #   coal_sample_all <- prev_coal_samples
-  #   n_unique_coal_sampled <- prev_coal_samples_n_unique
-  #   # TODO remove this else if
+
   } else {
     # We are in the first iteration and have not sampled any coalitions yet
     coal_sample_all <- c()
@@ -781,10 +752,8 @@ shapley_setup_forecast <- function(internal) {
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   exact <- internal$iter_list[[iter]]$exact
 
-  prev_coal_samples <- internal$iter_list[[iter]]$prev_coal_samples # A list of length length(horizon_features)
-  prev_coal_samples_n_unique <- internal$iter_list[[iter]]$prev_coal_samples_n_unique # Same as in the previous line
-  prev_X_list <- internal$iter_list[[iter]]$prev_X_list # NULL in first iteration, list of dt with length length(horizon_features)
-  dt_coal_samp_info <- internal$iter_list[[iter]]$dt_coal_samp_info # NULL in first iteration
+  # NULL in first iteration, list of dt with length length(horizon_features)
+  prev_X_list <- internal$iter_list[[iter]]$prev_X_list
 
   # Lists to store the sampled coalitions for each horizon and the number of unique coalitions
   coal_samples <- coal_samples_n_unique <- list()
@@ -817,8 +786,6 @@ shapley_setup_forecast <- function(internal) {
       n_coal_each_size = choose(n_this_featcomb, seq(n_this_featcomb - 1)),
       weight_zero_m = 10^6,
       paired_shap_sampling = paired_shap_sampling,
-      # prev_coal_samples = prev_coal_samples[[i]],
-      # prev_coal_samples_n_unique = prev_coal_samples_n_unique[[i]],
       prev_X = prev_X_list[[i]],
       coal_feature_list = this_coal_feature_list,
       approach0 = approach,
