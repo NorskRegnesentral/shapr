@@ -1411,7 +1411,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 
 test_that("parallelization gives same output for any approach", {
   skip_if_not_installed("party")
-  skup_if_not_installed("future")
+  skip_if_not_installed("future")
 
   # Empirical is seed independent
   explain.empirical_sequential <- explain(

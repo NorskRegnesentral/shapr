@@ -136,7 +136,7 @@ test_that("output_lm_mixed_decision_tree_cv_separate", {
 })
 
 test_that("output_lm_mixed_decision_tree_cv_separate_parallel", {
-  skup_if_not_installed("future")
+  skip_if_not_installed("future")
   future::plan("multisession", workers = 2)
   expect_snapshot_rds(
     explain(
