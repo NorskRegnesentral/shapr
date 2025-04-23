@@ -54,8 +54,8 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
-        mode = "regression"))
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
+        engine = "rpart", mode = "regression"))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -70,9 +70,9 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
-        mode = "regression"), regression.tune_values = data.frame(num_terms = c(1, 2,
-          3)))
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
+        engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
+          num_terms = c(1, 2, 3)))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -87,9 +87,9 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
-        mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
-          3), num_terms = c(1, 2, 3)))
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
+        engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
+          tree_depth = c(1, 2, 3), num_terms = c(1, 2, 3)))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -162,8 +162,9 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
-        mode = "regression"), regression.tune_values = function(x) c(1, 2, 3))
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
+        engine = "rpart", mode = "regression"), regression.tune_values = function(x)
+          c(1, 2, 3))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -178,9 +179,9 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
-        mode = "regression"), regression.tune_values = function(x) data.frame(
-          wrong_name = c(1, 2, 3)))
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
+        engine = "rpart", mode = "regression"), regression.tune_values = function(x)
+          data.frame(wrong_name = c(1, 2, 3)))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -195,9 +196,9 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
-        mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
-          3)), regression.vfold_cv_para = 10)
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
+        engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
+          tree_depth = c(1, 2, 3)), regression.vfold_cv_para = 10)
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -212,9 +213,9 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
-        mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
-          3)), regression.vfold_cv_para = list(10))
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
+        engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
+          tree_depth = c(1, 2, 3)), regression.vfold_cv_para = list(10))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
@@ -229,9 +230,9 @@
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart",
-        mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1, 2,
-          3)), regression.vfold_cv_para = list(hey = 10))
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
+        engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
+          tree_depth = c(1, 2, 3)), regression.vfold_cv_para = list(hey = 10))
     Message
       Success with message:
       max_n_coalitions is NULL or larger than or 2^n_features = 32, 
