@@ -77,21 +77,11 @@ shapley_setup <- function(internal) {
   internal$iter_list[[iter]]$n_coalitions <- nrow(S)
   # The number of sampled coalitions to be used for convergence detection only (exclude the zero and full prediction)
   internal$iter_list[[iter]]$n_sampled_coalitions <- internal$iter_list[[iter]]$n_coalitions - 2
-
-
-  if (isFALSE(exact) && !semi_deterministic_sampling) {
-    coal_samples <- rep(X[-c(1, .N), coalitions_str], X[-c(1, .N), sample_freq])
-  } else {
-    coal_samples <- NA
-  }
-
   internal$iter_list[[iter]]$X <- X
   internal$iter_list[[iter]]$W <- W
   internal$iter_list[[iter]]$S <- S
   internal$iter_list[[iter]]$coalition_map <- coalition_map
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
-  internal$iter_list[[iter]]$coal_samples <- coal_samples
-  internal$iter_list[[iter]]$coal_samples_n_unique <- nrow(X) - 2 # Subtract empty and grand coalition
 
   # If we are doing causal Shapley values, then get the step-wise data generating process for each coalition
   if (causal_sampling) {
@@ -729,9 +719,6 @@ shapley_setup_forecast <- function(internal) {
   # NULL in first iteration, list of dt with length length(horizon_features)
   prev_X_list <- internal$iter_list[[iter]]$prev_X_list
 
-  # Lists to store the sampled coalitions for each horizon and the number of unique coalitions
-  coal_samples <- coal_samples_n_unique <- list()
-
   X_list <- W_list <- list()
 
   cols_per_horizon <- internal$parameters$horizon_features
@@ -771,17 +758,6 @@ shapley_setup_forecast <- function(internal) {
       X = X_list[[i]],
       normalize_W_weights = TRUE
     )
-
-    ### Store the coalitions for this horizon for the next iteration
-    # Getting the sampled coalitions for each horizon. We do not store this if exact, as then all is used.
-    if (isFALSE(exact)) {
-      coal_samples[[i]] <- rep(X_list[[i]][-c(1, .N), coalitions_str], X_list[[i]][-c(1, .N), sample_freq])
-    } else {
-      coal_samples[[i]] <- NA
-    }
-
-    # Extract the number of unique coalitions from the previous iteration
-    coal_samples_n_unique[[i]] <- nrow(X_list[[i]]) - 2 # Subtract empty and grand coalition
   }
 
   # Merge the coalition data.table to single one to use for computing conditional expectations later on
@@ -839,8 +815,6 @@ shapley_setup_forecast <- function(internal) {
   internal$iter_list[[iter]]$X_list <- X_list
   internal$iter_list[[iter]]$coalition_map <- coalition_map
   internal$iter_list[[iter]]$S_batch <- create_S_batch(internal)
-  internal$iter_list[[iter]]$coal_samples <- coal_samples
-  internal$iter_list[[iter]]$coal_samples_n_unique <- coal_samples_n_unique
 
   internal$objects$cols_per_horizon <- cols_per_horizon
   internal$objects$W_list <- W_list
