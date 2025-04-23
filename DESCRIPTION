@@ -33,7 +33,6 @@ Imports:
     data.table (>= 1.15.0),
     Rcpp (>= 0.12.15),
     Matrix,
-    future,
     future.apply,
     methods
 Suggests: 

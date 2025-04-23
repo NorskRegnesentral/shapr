@@ -1,5 +1,3 @@
-skip_if_not_installed("Matrix")
-
 
 test_that("asymmetric erroneous input: `causal_ordering`", {
   set.seed(123)

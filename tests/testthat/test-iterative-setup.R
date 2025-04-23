@@ -27,8 +27,6 @@ test_that("iterative_args are respected", {
 
 
 test_that("iterative feature wise and groupwise computations identical", {
-  skip_if_not_installed("Matrix")
-
   groups <- list(
     Solar.R = "Solar.R",
     Wind = "Wind",

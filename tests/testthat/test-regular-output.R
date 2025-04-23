@@ -124,8 +124,6 @@ test_that("output_lm_numeric_empirical_AICc_full", {
 })
 
 test_that("output_lm_numeric_gaussian", {
-  skip_if_not_installed("Matrix")
-
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -142,8 +140,6 @@ test_that("output_lm_numeric_gaussian", {
 })
 
 test_that("output_lm_numeric_copula", {
-  skip_if_not_installed("Matrix")
-
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -179,7 +175,8 @@ test_that("output_lm_numeric_ctree", {
 
 test_that("output_lm_numeric_vaeac", {
   skip_on_os("mac") # The code runs on macOS, but it gives different Shapley values due to inconsistencies in torch seed
-  skip_if_not_installed(c("torch","coro"))
+  skip_if_not_installed("torch")
+  skip_if_not_installed("coro")
   skip_if_not(torch::torch_is_installed())
 
   expect_snapshot_rds(
@@ -225,7 +222,8 @@ test_that("output_lm_categorical_ctree", {
 
 test_that("output_lm_categorical_vaeac", {
   skip_on_os("mac") # The code runs on macOS, but it gives different Shapley values due to inconsistencies in torch seed
-  skip_if_not_installed(c("torch","coro"))
+  skip_if_not_installed("torch")
+  skip_if_not_installed("coro")
   skip_if_not(torch::torch_is_installed())
 
   expect_snapshot_rds(
@@ -301,7 +299,7 @@ test_that("output_lm_ts_timeseries", {
 })
 
 test_that("output_lm_numeric_comb1", {
-  skip_if_not_installed(c("Matrix","party"))
+  skip_if_not_installed("party")
 
   expect_snapshot_rds(
     explain(
@@ -319,7 +317,7 @@ test_that("output_lm_numeric_comb1", {
 })
 
 test_that("output_lm_numeric_comb2", {
-  skip_if_not_installed(c("Matrix","party"))
+  skip_if_not_installed("party")
 
   expect_snapshot_rds(
     explain(
@@ -337,8 +335,6 @@ test_that("output_lm_numeric_comb2", {
 })
 
 test_that("output_lm_numeric_comb3", {
-  skip_if_not_installed("Matrix")
-
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -393,7 +389,8 @@ test_that("output_lm_mixed_ctree", {
 
 test_that("output_lm_mixed_vaeac", {
   skip_on_os("mac") # The code runs on macOS, but it gives different Shapley values due to inconsistencies in torch seed
-  skip_if_not_installed(c("torch","coro"))
+  skip_if_not_installed("torch")
+  skip_if_not_installed("coro")
   skip_if_not(torch::torch_is_installed())
 
   expect_snapshot_rds(
@@ -469,7 +466,8 @@ test_that("output_custom_lm_numeric_independence_1", {
 
 
 test_that("output_custom_xgboost_mixed_dummy_ctree", {
-  skip_if_not_installed(c("party","xgboost"))
+  skip_if_not_installed("party")
+  skip_if_not_installed("xgboost")
 
   x_train_mixed_dummy <- model.matrix(~ . + 0, x_train_mixed)
   x_explain_mixed_dummy <- model.matrix(~ . + 0, x_explain_mixed)
@@ -540,8 +538,9 @@ test_that("output_lm_numeric_interaction", {
 })
 
 test_that("output_lm_numeric_ctree_parallelized", {
-  testthat::skip_on_cran() # Avoiding CRAN Note: Running R code in ‘testthat.R’ had CPU time 3.6 times elapsed time
-  testthat::skip_if_not_installed("party")
+  skip_if_not_installed("party")
+  skup_if_not_installed("future")
+
 
   future::plan("multisession", workers = 2)
   expect_snapshot_rds(
@@ -566,6 +565,7 @@ test_that("output_lm_numeric_ctree_parallelized", {
 # It just checks whether calling on progressr does not produce an error or unexpected output.
 test_that("output_lm_numeric_empirical_progress", {
   skip_if_not_installed("progressr")
+
   progressr::handlers("txtprogressbar")
   expect_snapshot_rds(
     {

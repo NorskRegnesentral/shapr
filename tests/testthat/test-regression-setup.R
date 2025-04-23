@@ -1,8 +1,12 @@
-skip_if_not_installed(c("parsnip", "rlang", "recipe", "workflows", "rsample", "tune", "yardstick"))
+skip_if_not_installed("parsnip")
+skip_if_not_installed("rlang")
+skip_if_not_installed("recipe")
+skip_if_not_installed("workflows")
+skip_if_not_installed("rsample")
+skip_if_not_installed("tune")
+skip_if_not_installed("yardstick")
 
 test_that("regression erroneous input: `approach`", {
-  skip_if_not_installed("Matrix")
-
   set.seed(123)
 
   expect_snapshot(

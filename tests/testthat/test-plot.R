@@ -1,5 +1,7 @@
 skip_on_cran()
-skip_if_not_installed(c("ggplot2","vdiffr","Matrix","party"))
+skip_if_not_installed("ggplot2")
+skip_if_not_installed("vdiffr")
+skip_if_not_installed("party")
 
 
 set.seed(123) #
