@@ -80,7 +80,6 @@ prepare_next_iteration <- function(internal) {
       next_iter_list$dt_coal_samp_info <-
         internal$objects$dt_coal_samp_info[next_iter_list$n_coalitions <= n_coal_max][1]
     }
-
   } else {
     next_iter_list <- list()
   }

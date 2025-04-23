@@ -445,7 +445,6 @@ sample_coalition_table <- function(m,
 
     # Get the number of unique sampled coalitions
     n_unique_coal_sampled <- nrow(X_prev_rel)
-
   } else {
     # We are in the first iteration and have not sampled any coalitions yet
     coal_sample_all <- c()
@@ -454,21 +453,19 @@ sample_coalition_table <- function(m,
 
   # Only sample coalitions if we need to sample more coalitions
   if (n_unique_coal_sampled < n_samples_needed) {
-
     # Get the number of coalitions to sample, divide by two if paired sampling
     n_samp <- as.integer(n_coalitions * n_samps_scale / ifelse(paired_shap_sampling, 2, 1))
 
     # Loop until we have drawn enough unique samples
     while (n_unique_coal_sampled < n_samples_needed) {
-
       # Sample the coalitions based on if we are computing regular/symmetric or asymmetric Shapley values
       if (asymmetric) {
         # Sample the causal coalitions from the valid causal coalitions with the Shapley weight as the probability.
         # The weights of each coalition size is split evenly among the members of each coalition size.
         coalitions <-
           dt_valid_causal_coalitions[-c(1, .N)][sample(
-            x = .N, size = n_samp, replace = TRUE, prob = shapley_weight), coalitions_str
-          ]
+            x = .N, size = n_samp, replace = TRUE, prob = shapley_weight
+          ), coalitions_str]
       } else {
         # Sample the coalition sizes
         coal_size_samples <- sample(x = coal_sizes_sample, size = n_samp, prob = coal_sizes_sample_prob, replace = TRUE)

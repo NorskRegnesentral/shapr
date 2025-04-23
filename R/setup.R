@@ -612,7 +612,7 @@ check_and_set_parameters <- function(internal, type) {
       internal$objects$dt_valid_causal_coalitions[, .N, by = .(coalition_size)][-c(1, .N), N]
   } else {
     # Do not set it for forecast, as it is generated on the fly as the value of changes with the horizon
-    if (type != "forecast") internal$parameters$n_coal_each_size <- as.integer(choose(m, seq(m-1)))
+    if (type != "forecast") internal$parameters$n_coal_each_size <- as.integer(choose(m, seq(m - 1)))
   }
 
   # Adjust max_n_coalitions
@@ -769,7 +769,8 @@ check_and_set_asymmetric <- function(internal) {
     # Get the coalitions that respects the (partial) causal ordering
     internal$objects$dt_valid_causal_coalitions <- exact_coalition_table(
       m = internal$parameters$n_shapley_values,
-      dt_valid_causal_coalitions = data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering))
+      dt_valid_causal_coalitions =
+        data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering))
     )
 
     # Normalize the weights. Note that weight of a coalition size is even spread out among the valid coalitions
@@ -779,7 +780,6 @@ check_and_set_asymmetric <- function(internal) {
 
     # Convert the coalitions to strings. Needed when sampling the coalitions in `sample_coalition_table()`.
     internal$objects$dt_valid_causal_coalitions[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
-
   } else {
 
   }
@@ -1092,7 +1092,8 @@ check_and_set_sampling_info <- function(internal) {
 
   # Skip for forecast as it is then generated on the fly as the number of shapley values changes with the horizon.
   if (type != "forecast") {
-    # Get the information about which coalitions to sample and deterministically include at different number of coalitions
+    # Get the information about which coalitions to sample and
+    # deterministically include at different number of coalitions
     internal$objects$dt_coal_samp_info <- get_dt_coal_samp_info(
       m = internal$parameters$n_shapley_values,
       semi_deterministic_sampling = semi_deterministic_sampling

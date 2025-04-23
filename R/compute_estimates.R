@@ -191,7 +191,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
       }
       dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
       dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
-      n_coal_each_size = choose(n_shapley_values, seq(n_shapley_values - 1))
+      n_coal_each_size <- choose(n_shapley_values, seq(n_shapley_values - 1))
       result[[i]] <-
         bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_coal_each_size, n_boot_samps)
     }
