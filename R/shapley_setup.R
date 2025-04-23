@@ -311,10 +311,6 @@ reweighted_shapley_weight <- function(m, paired_coal_size = 0, n_coal_each_size 
   # where all (m choose n_coal_size) coalitions are available for each coalition size.
 
   # TODO: remove checks in the end as this is an internal function where this should always apply
-  if (paired_coal_size != 0 && !is.null(n_coal_each_size)) {
-    stop("paired_coal_size must be 0 when n_coal_each_size is used.")
-  }
-
   if (length(n_coal_each_size) != m - 1) {
     stop(paste0("n_coal_each_size must be of length ", m - 1, "."))
   }
@@ -325,9 +321,6 @@ reweighted_shapley_weight <- function(m, paired_coal_size = 0, n_coal_each_size 
 
   # Get the relevant indices
   rel_ind <- seq(paired_coal_size + 1, m - paired_coal_size - 1)
-
-  # Get the number of valid coalitions of each relevant size
-  n_coal_each_size = n_coal_each_size[rel_ind]
 
   # Get the total weigh of each coalition size from 1 to m - 1
   weight <- sapply(seq(m - 1), function(i) (m - 1) / (i * (m - i)))
@@ -340,7 +333,7 @@ reweighted_shapley_weight <- function(m, paired_coal_size = 0, n_coal_each_size 
 
   # Divide the normalized weights by the number of coalitions
   # of each size to get the weight of each coalition
-  weight[rel_ind] <- weight[rel_ind] / n_coal_each_size
+  weight[rel_ind] <- weight[rel_ind] / n_coal_each_size[rel_ind]
 
   return(weight)
 }
