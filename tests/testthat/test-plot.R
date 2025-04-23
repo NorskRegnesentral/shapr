@@ -65,7 +65,6 @@ explanation_list_named <- list(
 )
 
 test_that("checking default outputs", {
-
   vdiffr::expect_doppelganger(
     title = "bar_plot_default",
     fig = plot(explain_mixed)
@@ -90,7 +89,6 @@ test_that("checking default outputs", {
 })
 
 test_that("bar_plot_new_arguments", {
-
   vdiffr::expect_doppelganger(
     title = "bar_plot_digits_5",
     fig = plot(explain_mixed, digits = 5)
@@ -123,7 +121,6 @@ test_that("bar_plot_new_arguments", {
 })
 
 test_that("waterfall_plot_new_arguments", {
-
   vdiffr::expect_doppelganger(
     title = "waterfall_plot_digits_5",
     fig = plot(explain_mixed, plot_type = "waterfall", digits = 5)
@@ -146,7 +143,6 @@ test_that("waterfall_plot_new_arguments", {
 })
 
 test_that("scatter_plot_new_arguments", {
-
   vdiffr::expect_doppelganger(
     title = "scatter_plot_index_x_explain_1_2",
     fig = plot(explain_mixed, plot_type = "scatter", index_x_explain = c(1, 2))
@@ -183,7 +179,6 @@ test_that("beeswarm_plot_new_arguments", {
 })
 
 test_that("MSEv evaluation criterion plots", {
-
   MSEv_plots <- plot_MSEv_eval_crit(
     explanation_list_named,
     plot_type = c("overall", "comb", "explicand"),
@@ -275,7 +270,6 @@ test_that("MSEv evaluation criterion plots", {
 })
 
 test_that("plot_SV_several_approaches_explanations", {
-
   vdiffr::expect_doppelganger(
     title = "plot_SV_several_approaches_default",
     fig = plot_SV_several_approaches(explanation_list_named)

@@ -1,4 +1,3 @@
-
 test_that("asymmetric erroneous input: `causal_ordering`", {
   set.seed(123)
 

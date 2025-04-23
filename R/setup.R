@@ -346,12 +346,11 @@ check_verbose <- function(verbose) {
       )
     )
   }
-  if(!is.null(verbose)){
+  if (!is.null(verbose)) {
     if (!requireNamespace("cli", quietly = TRUE)) {
       stop("`cli` is not installed. Please run `install.packages('cli')` to use the verbose argument.")
     }
   }
-
 }
 
 #' @keywords internal
