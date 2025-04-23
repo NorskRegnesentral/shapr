@@ -513,6 +513,8 @@ explain_groups <- explain(
 print(explain_groups$shapley_values_est)
 
 # Separate and surrogate regression approaches with linear regression models.
+req_pkgs <- c("parsnip", "rlang", "recipe", "workflows", "rsample", "tune", "yardstick")
+if (requireNamespace(req_pkgs, quietly = TRUE)) {
 explain_separate_lm <- explain(
   model = model,
   x_explain = x_explain,
@@ -530,6 +532,7 @@ explain_surrogate_lm <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
+}
 
 # Iterative estimation
 # For illustration purposes only. By default not used for such small dimensions as here

@@ -565,6 +565,7 @@ test_that("output_lm_numeric_ctree_parallelized", {
 # Nothing special here, as the test does not record the actual progress output.
 # It just checks whether calling on progressr does not produce an error or unexpected output.
 test_that("output_lm_numeric_empirical_progress", {
+  skip_if_not_installed("progressr")
   progressr::handlers("txtprogressbar")
   expect_snapshot_rds(
     {

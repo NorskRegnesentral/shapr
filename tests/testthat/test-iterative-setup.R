@@ -27,6 +27,8 @@ test_that("iterative_args are respected", {
 
 
 test_that("iterative feature wise and groupwise computations identical", {
+  skip_if_not_installed("Matrix")
+
   groups <- list(
     Solar.R = "Solar.R",
     Wind = "Wind",
@@ -185,6 +187,8 @@ test_that("erroneous input: `min_n_batches`", {
 })
 
 test_that("different n_batches gives same/different shapley values for different approaches", {
+  skip_if_not_installed("party")
+
   # approach "empirical" is seed independent
   explain.empirical_n_batches_5 <- explain(
     testing = TRUE,

@@ -83,6 +83,8 @@ test_that("output_lm_numeric_indep_conv_max_n_coalitions", {
 
 
 test_that("output_lm_numeric_gaussian_group_converges_tol", {
+  skip_if_not_installed("Matrix")
+
   groups <- list(
     A = c("Solar.R", "Wind"),
     B = c("Temp", "Month"),

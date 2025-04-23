@@ -1,4 +1,5 @@
 skip_on_cran()
+skip_if_not_installed(c("parsnip", "rlang", "recipe", "workflows", "rsample", "tune", "yardstick"))
 
 
 # Separate regression ==================================================================================================

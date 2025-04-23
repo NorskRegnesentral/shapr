@@ -15,6 +15,8 @@ skip_on_cran()
 
 # Continuous data -------------------------------------------------------------------------------------------------
 test_that("output_asymmetric_conditional", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -34,6 +36,8 @@ test_that("output_asymmetric_conditional", {
 })
 
 test_that("output_asym_cond_reg", {
+  skip_if_not_installed(c("parsnip", "rlang", "recipe", "workflows"))
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -53,6 +57,8 @@ test_that("output_asym_cond_reg", {
 })
 
 test_that("output_asym_cond_reg_iterative", {
+  skip_if_not_installed(c("parsnip", "rlang", "recipe", "workflows"))
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -73,6 +79,8 @@ test_that("output_asym_cond_reg_iterative", {
 })
 
 test_that("output_symmetric_conditional", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -111,6 +119,8 @@ test_that("output_symmetric_marginal_independence", {
 })
 
 test_that("output_symmetric_marginal_gaussian", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -130,6 +140,8 @@ test_that("output_symmetric_marginal_gaussian", {
 })
 
 test_that("output_asym_caus_conf_TRUE", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -150,6 +162,8 @@ test_that("output_asym_caus_conf_TRUE", {
 
 
 test_that("output_asym_caus_conf_FALSE", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -169,6 +183,8 @@ test_that("output_asym_caus_conf_FALSE", {
 })
 
 test_that("output_asym_caus_conf_mix", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -188,6 +204,8 @@ test_that("output_asym_caus_conf_mix", {
 })
 
 test_that("output_asym_caus_conf_mix_n_coal", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -227,6 +245,8 @@ test_that("output_asym_caus_conf_mix_empirical", {
 })
 
 test_that("output_asym_caus_conf_mix_ctree", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -246,6 +266,8 @@ test_that("output_asym_caus_conf_mix_ctree", {
 })
 
 test_that("output_sym_caus_conf_TRUE", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -266,6 +288,8 @@ test_that("output_sym_caus_conf_TRUE", {
 
 
 test_that("output_sym_caus_conf_FALSE", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -285,6 +309,8 @@ test_that("output_sym_caus_conf_FALSE", {
 })
 
 test_that("output_sym_caus_conf_mix", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -306,6 +332,8 @@ test_that("output_sym_caus_conf_mix", {
 
 ## Group-wise  -----------------------------------------------------------------------------------------------------
 test_that("output_sym_caus_conf_TRUE_group", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -327,6 +355,8 @@ test_that("output_sym_caus_conf_TRUE_group", {
 
 
 test_that("output_sym_caus_conf_mix_group", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -347,6 +377,8 @@ test_that("output_sym_caus_conf_mix_group", {
 })
 
 test_that("output_sym_caus_conf_mix_group_iterative", {
+  skip_if_not_installed("Matrix")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -374,6 +406,8 @@ test_that("output_sym_caus_conf_mix_group_iterative", {
 
 # Mixed data ------------------------------------------------------------------------------------------------------
 test_that("output_mixed_sym_caus_conf_TRUE", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -393,6 +427,8 @@ test_that("output_mixed_sym_caus_conf_TRUE", {
 })
 
 test_that("output_mixed_sym_caus_conf_TRUE_iterative", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -413,6 +449,8 @@ test_that("output_mixed_sym_caus_conf_TRUE_iterative", {
 })
 
 test_that("output_mixed_asym_caus_conf_mixed", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -432,6 +470,8 @@ test_that("output_mixed_asym_caus_conf_mixed", {
 })
 
 test_that("output_mixed_asym_caus_conf_mixed_2", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -452,6 +492,8 @@ test_that("output_mixed_asym_caus_conf_mixed_2", {
 
 
 test_that("output_mixed_asym_cond_reg", {
+  skip_if_not_installed(c("parsnip", "rlang", "recipe", "workflows"))
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -517,6 +559,8 @@ test_that("output_cat_asym_causal_mixed_cat_ad", {
 })
 
 test_that("output_categorical_asym_causal_mixed_ctree", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,

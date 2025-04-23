@@ -79,6 +79,7 @@
 #' @export
 #' @examples
 #' \donttest{
+#' if(requireNamespace("party", quietly = TRUE)){
 #' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
 #' x_var <- c("Solar.R", "Wind", "Temp", "Month")
@@ -108,7 +109,7 @@
 #'   n_MC_samples = 1e2
 #' )
 #'
-#' if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
+#' if (requireNamespace(c("ggplot2", "ggbeeswarm"), quietly = TRUE)) {
 #'   # The default plotting option is a bar plot of the Shapley values
 #'   # We draw bar plots for the first 4 observations
 #'   plot(x, index_x_explain = 1:4)
@@ -164,9 +165,10 @@
 #'   n_MC_samples = 1e2
 #' )
 #'
-#' if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggbeeswarm", quietly = TRUE)) {
+#' if (requireNamespace(c("ggplot2", "ggbeeswarm"), quietly = TRUE)) {
 #'   plot(x, plot_type = "scatter")
 #'   plot(x, plot_type = "beeswarm")
+#' }
 #' }
 #' }
 #'

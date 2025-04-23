@@ -51,7 +51,7 @@ Applicable for \code{plot_type} \code{"bar"} and \code{"waterfall"}}
 should be used to render the labels. This is useful for displaying labels that would otherwise overlap.}
 
 \item{axis_labels_rotate_angle}{Numeric. The angle of the axis label, where 0 means horizontal, 45 means tilted,
-and 90 means vertical. Compared to setting the angle in\code{\link[ggplot2:theme]{ggplot2::theme()}} / \code{\link[ggplot2:element]{ggplot2::element_text()}}, this also
+and 90 means vertical. Compared to setting the angle in\code{\link[ggplot2:theme]{ggplot2::theme()}} / \code{\link[ggplot2:element_text]{ggplot2::element_text()}}, this also
 uses some heuristics to automatically pick the \code{hjust} and \code{vjust} that you probably want.}
 
 \item{horizontal_bars}{Boolean. Flip Cartesian coordinates so that horizontal becomes vertical,
@@ -65,7 +65,7 @@ y conditional on x, to x conditional on y. See \code{\link[ggplot2:coord_flip]{g
 
 \item{geom_col_width}{Numeric. Bar width. By default, set to 85\% of the \code{\link[ggplot2:resolution]{ggplot2::resolution()}} of the data.}
 
-\item{brewer_palette}{String. Name of one of the color palettes from \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::RColorBrewer()}}.
+\item{brewer_palette}{String. Name of one of the color palettes from \code{\link[RColorBrewer:RColorBrewer]{RColorBrewer::RColorBrewer()}}.
 If \code{NULL}, then the function uses the default \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} color scheme.
 The following palettes are available for use with these scales:
 \describe{
