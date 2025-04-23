@@ -67,7 +67,7 @@ test_that("output_lm_numeric_empirical_n_coalitions", {
   )
 })
 
-test_that("output_lm_numeric_empirical_n_coalitions_unpaired_on_N", {
+test_that("output_lm_numeric_empirical_n_coal_unpaired_on_N", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -84,7 +84,7 @@ test_that("output_lm_numeric_empirical_n_coalitions_unpaired_on_N", {
         paired_shap_sampling = FALSE
       )
     ),
-    "output_lm_numeric_empirical_n_coalitions_unpaired_on_N"
+    "output_lm_numeric_empirical_n_coal_unpaired_on_N"
   )
 })
 

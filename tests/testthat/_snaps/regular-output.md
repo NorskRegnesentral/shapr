@@ -102,7 +102,7 @@
       2:          2 42.44   3.044  -4.511 -8.918 -6.1276  2.632
       3:          3 42.44   5.599 -23.352  4.228 -0.8872 -3.156
 
-# output_lm_numeric_empirical_n_coalitions_unpaired_on_N
+# output_lm_numeric_empirical_n_coal_unpaired_on_N
 
     Code
       print({
