@@ -1,29 +1,3 @@
-# output_semi_determ_sampling_n_determ_sample_coal_18
-
-    Code
-      print({
-        out <- code
-      }, digits = digits)
-    Output
-         explain_id  none Solar.R    Wind   Temp  Month    Day
-              <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -3.389   7.949 14.864 -4.626 -2.196
-      2:          2 42.44   3.083  -3.561 -4.635 -6.028 -2.738
-      3:          3 42.44   3.732 -18.903 -1.043 -3.556  2.202
-
-# output_semi_determ_sampling_n_determ_sample_coal_20
-
-    Code
-      print({
-        out <- code
-      }, digits = digits)
-    Output
-         explain_id  none Solar.R    Wind   Temp  Month    Day
-              <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -4.331   7.521 17.475 -5.006 -3.057
-      2:          2 42.44   2.873  -4.405 -4.707 -4.967 -2.673
-      3:          3 42.44   3.354 -18.354 -1.828 -2.822  2.082
-
 # output_semi_determ_sampling_iterative_reach_exact
 
     Code
