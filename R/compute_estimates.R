@@ -191,20 +191,29 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
       }
       dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
       dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
-      result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps)
+      n_coal_each_size = choose(n_shapley_values, seq(n_shapley_values - 1))
+      result[[i]] <-
+        bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_coal_each_size, n_boot_samps)
     }
     result <- cbind(internal$parameters$output_labels, rbindlist(result, fill = TRUE))
   } else {
     X <- internal$iter_list[[iter]]$X
     n_shapley_values <- internal$parameters$n_shapley_values
     shap_names <- internal$parameters$shap_names
-    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps)
+    n_coal_each_size <- internal$parameters$n_coal_each_size
+    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_coal_each_size, n_boot_samps)
   }
   return(result)
 }
 
 #' @keywords internal
-bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100) {
+bootstrap_shapley_inner <- function(X,
+                                    n_shapley_values,
+                                    shap_names,
+                                    internal,
+                                    dt_vS,
+                                    n_coal_each_size,
+                                    n_boot_samps = 100) {
   type <- internal$parameters$type
   iter <- length(internal$iter_list)
 
@@ -213,11 +222,12 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
   semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
-  if (semi_deterministic_sampling) {
-    paired_coal_size <- internal$iter_list[[iter]]$dt_coal_determ_info$paired_coal_size
+  if (type == "regular") {
+    paired_coal_size <- internal$iter_list[[iter]]$dt_coal_samp_info$paired_coal_size
   } else {
-    paired_coal_size <- 0
+    paired_coal_size <- 0 # For forecast we can always include all coalitions
   }
+
 
   X_org <- copy(X)
 
@@ -313,12 +323,13 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
       X = this_X_samp,
       m = n_shapley_values,
       reweight = shapley_reweight,
-      paired_coal_size = paired_coal_size
+      paired_coal_size = paired_coal_size,
+      n_coal_each_size = n_coal_each_size
     )
 
     # For semi-deterministic sampling, we reweight the sampled coalitions. The deterministic once are already reweighed.
     if (semi_deterministic_sampling) {
-      weight_sample <- internal$iter_list[[iter]]$dt_coal_determ_info$weight_sample
+      weight_sample <- internal$iter_list[[iter]]$dt_coal_samp_info$weight_sample
       this_X_samp[, shapley_weight := weight_sample * shapley_weight / sum(shapley_weight)]
     }
 

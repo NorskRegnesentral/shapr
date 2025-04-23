@@ -581,6 +581,7 @@ check_and_set_parameters <- function(internal, type) {
   confounding <- internal$parameters$confounding
   asymmetric <- internal$parameters$asymmetric
   regression <- internal$parameters$regression
+  m <- internal$parameters$n_shapley_values
 
   if (type == "forecast") {
     horizon <- internal$parameters$horizon
@@ -604,6 +605,15 @@ check_and_set_parameters <- function(internal, type) {
   # Check the causal sampling
   internal <- check_and_set_causal_sampling(internal)
   if (asymmetric) internal <- check_and_set_asymmetric(internal)
+
+  # Get the number of valid coalitions of each size
+  if (asymmetric) {
+    internal$parameters$n_coal_each_size <-
+      internal$objects$dt_valid_causal_coalitions[, .N, by = .(coalition_size)][-c(1, .N), N]
+  } else {
+    # Do not set it for forecast, as it is generated on the fly as the value of changes with the horizon
+    if (type != "forecast") internal$parameters$n_coal_each_size <- as.integer(choose(m, seq(m-1)))
+  }
 
   # Adjust max_n_coalitions
   internal$parameters$max_n_coalitions <- adjust_max_n_coalitions(internal)
@@ -752,22 +762,27 @@ check_and_set_asymmetric <- function(internal) {
   causal_ordering <- internal$parameters$causal_ordering
   max_n_coalitions <- internal$parameters$max_n_coalitions
 
-  # Get the number of coalitions that respects the (partial) causal ordering
-  internal$parameters$max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
+  if (asymmetric) {
+    # Get the number of coalitions that respects the (partial) causal ordering
+    internal$parameters$max_n_coalitions_causal <- get_max_n_coalitions_causal(causal_ordering = causal_ordering)
 
-  # Get the coalitions that respects the (partial) causal ordering
-  internal$objects$dt_valid_causal_coalitions <- exact_coalition_table(
-    m = internal$parameters$n_shapley_values,
-    dt_valid_causal_coalitions = data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering))
-  )
+    # Get the coalitions that respects the (partial) causal ordering
+    internal$objects$dt_valid_causal_coalitions <- exact_coalition_table(
+      m = internal$parameters$n_shapley_values,
+      dt_valid_causal_coalitions = data.table(coalitions = get_valid_causal_coalitions(causal_ordering = causal_ordering))
+    )
 
-  # Normalize the weights. Note that weight of a coalition size is even spread out among the valid coalitions
-  # of each size. I.e., if there is only one valid coalition of size |S|, then it gets the weight of the
-  # choose(M, |S|) coalitions of said size.
-  internal$objects$dt_valid_causal_coalitions[-c(1, .N), shapley_weight_norm := shapley_weight / sum(shapley_weight)]
+    # Normalize the weights. Note that weight of a coalition size is even spread out among the valid coalitions
+    # of each size. I.e., if there is only one valid coalition of size |S|, then it gets the weight of the
+    # choose(M, |S|) coalitions of said size.
+    internal$objects$dt_valid_causal_coalitions[-c(1, .N), shapley_weight_norm := shapley_weight / sum(shapley_weight)]
 
-  # Convert the coalitions to strings. Needed when sampling the coalitions in `sample_coalition_table()`.
-  internal$objects$dt_valid_causal_coalitions[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
+    # Convert the coalitions to strings. Needed when sampling the coalitions in `sample_coalition_table()`.
+    internal$objects$dt_valid_causal_coalitions[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
+
+  } else {
+
+  }
 
   return(internal)
 }
@@ -1046,15 +1061,15 @@ set_extra_comp_params <- function(internal) {
 
   internal$parameters$extra_computation_args <- extra_computation_args
 
-  # Check and set the semi-deterministic sampling
-  internal <- check_and_set_semi_determ_samp(internal)
+  # Check and set the regular/semi-deterministic sampling
+  internal <- check_and_set_sampling_info(internal)
 
   return(internal)
 }
 
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-check_and_set_semi_determ_samp <- function(internal) {
+check_and_set_sampling_info <- function(internal) {
   semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
   type <- internal$parameters$type
@@ -1073,9 +1088,15 @@ check_and_set_semi_determ_samp <- function(internal) {
     if (asymmetric) {
       stop("`semi_deterministic_sampling` is not supported for asymmetric Shapley values.")
     }
+  }
 
-    # Get the information about which coalitions to deterministically include at different number of coalitions
-    internal$objects$dt_coal_determ_info <- get_dt_coal_determ_info(m = internal$parameters$n_shapley_values)
+  # Skip for forecast as it is then generated on the fly as the number of shapley values changes with the horizon.
+  if (type != "forecast") {
+    # Get the information about which coalitions to sample and deterministically include at different number of coalitions
+    internal$objects$dt_coal_samp_info <- get_dt_coal_samp_info(
+      m = internal$parameters$n_shapley_values,
+      semi_deterministic_sampling = semi_deterministic_sampling
+    )
   }
 
   return(internal)
@@ -1490,10 +1511,10 @@ compare_vecs <- function(vec1, vec2, vec_type, name1, name2) {
 #' @keywords internal
 set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
   iterative <- internal$parameters$iterative
+  type <- internal$parameters$type
 
   paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
-  semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
-  dt_coal_determ_info <- internal$objects$dt_coal_determ_info
+  dt_coal_samp_info <- internal$objects$dt_coal_samp_info
 
   iterative_args <- internal$parameters$iterative_args
 
@@ -1553,14 +1574,9 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
       n_coal_next_iter_factor = iterative_args$n_coal_next_iter_factor_vec[1],
       n_batches = set_n_batches(iterative_args$initial_n_coalitions, internal)
     )
-    if (semi_deterministic_sampling) {
-      internal$iter_list[[1]] <- c(
-        internal$iter_list[[1]],
-        list(
-          dt_coal_determ_info = dt_coal_determ_info[internal$iter_list[[1]]$n_coalitions <= n_coal_max][1],
-          prev_X = NULL
-        )
-      )
+    if (type != "forecast") {
+      internal$iter_list[[1]]$dt_coal_samp_info <-
+        dt_coal_samp_info[iterative_args$initial_n_coalitions <= n_coal_max][1]
     }
   }
 
