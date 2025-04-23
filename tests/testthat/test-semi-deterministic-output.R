@@ -1,6 +1,6 @@
 skip_on_cran()
 
-test_that("output_semi_determ_sampling_iterative_reach_exact", {
+test_that("output_semi_determ_iterative_reach_exact", {
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -14,12 +14,12 @@ test_that("output_semi_determ_sampling_iterative_reach_exact", {
       verbose = c("basic", "convergence", "shapley"),
       extra_computation_args = list(semi_deterministic_sampling = TRUE)
     ),
-    "output_semi_determ_sampling_iterative_reach_exact"
+    "output_semi_determ_iterative_reach_exact"
   )
 })
 
 
-test_that("output_semi_determ_sampling_group_converges_tol", {
+test_that("output_semi_determ_group_converges_tol", {
   groups <- list(
     A = c("Solar.R", "Wind"),
     B = c("Temp", "Month"),
@@ -45,11 +45,11 @@ test_that("output_semi_determ_sampling_group_converges_tol", {
       verbose = c("basic", "convergence", "shapley"),
       extra_computation_args = list(semi_deterministic_sampling = TRUE)
     ),
-    "output_semi_determ_sampling_group_converges_tol"
+    "output_semi_determ_group_converges_tol"
   )
 })
 
-test_that("output_semi_determ_sampling_ts_timeseries", {
+test_that("output_semi_determ_ts_timeseries", {
   expect_snapshot_rds(
     explanation_timeseries <- explain(
       testing = TRUE,
@@ -66,6 +66,6 @@ test_that("output_semi_determ_sampling_ts_timeseries", {
       verbose = c("basic", "convergence", "shapley"),
       extra_computation_args = list(semi_deterministic_sampling = TRUE)
     ),
-    "output_semi_determ_sampling_lm_timeseries_method"
+    "output_semi_determ_lm_timeseries_method"
   )
 })

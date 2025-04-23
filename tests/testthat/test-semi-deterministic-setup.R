@@ -68,7 +68,7 @@ test_that("semi_deterministic_samplign: not symmetric sampling", {
   )
 })
 
-test_that("output_semi_determ_sampling_n_determ_sample_coal_18", {
+test_that("setup_semi_determ_n_determ_sample_coal_18", {
   # Should only deterministically include empty and grand coalition
   ex_18 <- explain(
     testing = TRUE,
@@ -94,10 +94,10 @@ test_that("output_semi_determ_sampling_n_determ_sample_coal_18", {
   expect_equal(ex_18_expected, as.data.frame(table(ex_18$internal$objects$X[is.na(sample_freq), coalition_size])))
 
   # Check the rds objects
-  expect_snapshot_rds(ex_18, "output_semi_determ_sampling_n_determ_sample_coal_18")
+  expect_snapshot_rds(ex_18, "setup_semi_determ_n_determ_sample_coal_18")
 })
 
-test_that("output_semi_determ_sampling_n_determ_sample_coal_20", {
+test_that("setup_semi_determ_n_determ_sample_coal_20", {
   # Should deterministically include empty and grand coalition, and coalitions of size 1 and 4 (m - 1)
   ex_20 <- explain(
     testing = TRUE,
@@ -123,5 +123,5 @@ test_that("output_semi_determ_sampling_n_determ_sample_coal_20", {
   expect_equal(ex_20_expected, as.data.frame(table(ex_20$internal$objects$X[is.na(sample_freq), coalition_size])))
 
   # Check the rds objects
-  expect_snapshot_rds(ex_20, "output_semi_determ_sampling_n_determ_sample_coal_20")
+  expect_snapshot_rds(ex_20, "setup_semi_determ_n_determ_sample_coal_20")
 })

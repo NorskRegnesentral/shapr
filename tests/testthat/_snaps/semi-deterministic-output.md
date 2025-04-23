@@ -1,4 +1,4 @@
-# output_semi_determ_sampling_iterative_reach_exact
+# output_semi_determ_iterative_reach_exact
 
     Code
       print({
@@ -111,7 +111,7 @@
       2:          2 42.44   2.255  -3.352 -5.227 -5.582 -1.972
       3:          3 42.44   3.713 -18.617 -1.436 -2.542  1.314
 
-# output_semi_determ_sampling_group_converges_tol
+# output_semi_determ_group_converges_tol
 
     Code
       print({
@@ -150,7 +150,7 @@
       2:          2 42.44   0.8661 -13.8283 -0.9173
       3:          3 42.44 -18.1023  -0.2611  0.7951
 
-# output_semi_determ_sampling_ts_timeseries
+# output_semi_determ_ts_timeseries
 
     Code
       print({

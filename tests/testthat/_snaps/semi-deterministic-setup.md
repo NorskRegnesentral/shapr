@@ -52,7 +52,7 @@
       ! Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values.
       Asymmetric Shapley values do not support paired sampling as the paired coalitions will not necessarily respect the causal ordering.
 
-# output_semi_determ_sampling_n_determ_sample_coal_18
+# setup_semi_determ_n_determ_sample_coal_18
 
     Code
       print({
@@ -65,7 +65,7 @@
       2:          2 42.44   3.083  -3.561 -4.635 -6.028 -2.738
       3:          3 42.44   3.732 -18.903 -1.043 -3.556  2.202
 
-# output_semi_determ_sampling_n_determ_sample_coal_20
+# setup_semi_determ_n_determ_sample_coal_20
 
     Code
       print({
