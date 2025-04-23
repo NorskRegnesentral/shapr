@@ -288,7 +288,7 @@ reweighted_shapley_weight <- function(m, paired_coal_size = 0, n_coal_each_size 
   # the weight of all coalitions of this size. This is not the case for regular/symmetric Shapley values
   # where all (m choose n_coal_size) coalitions are available for each coalition size.
 
-  # TODO: remove checks in the end as this is an internal function where this should always apply
+  # Checks that can be removed as this is an internal function where this should always apply
   if (length(n_coal_each_size) != m - 1) {
     stop(paste0("n_coal_each_size must be of length ", m - 1, "."))
   }
@@ -358,7 +358,7 @@ exact_coalition_table <- function(m,
     # Regular/symmetric Shapley values: (default paired_coal_size yields seq(0, m))
     # Use only coalitions of size 0, 1, ..., paired_coal_size, ..., m - paired_coal_size, ..., m - 1, m.
 
-    # TODO: remove check in the end as this is an internal function where this should always apply
+    # Checks that can be removed as this is an internal function where this should always apply
     if (paired_coal_size > as.integer(ceiling((m - 1) / 2))) {
       stop(paste0("paired_coal_size (", paired_coal_size, ") is larger than the maximum (", ceiling((m - 1) / 2), ")."))
     }
@@ -543,29 +543,6 @@ shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
   x <- (m - 1) / (N * n_components * (m - n_components))
   x[!is.finite(x)] <- weight_zero_m
   x
-}
-
-#' @keywords internal
-sum_shapley_weights <- function(m, nn = NULL) {
-  # TODO: delete this function after discussing with martin the nn thing with asymmetric.
-  coal_samp_vec <- seq(m - 1)
-  n <- sapply(coal_samp_vec, choose, n = m)
-  if (is.null(nn)) nn <- n
-  w <- shapley_weights(m = m, N = n, coal_samp_vec) * nn
-  return(sum(w))
-}
-
-#' @keywords internal
-helper_coalition <- function(m, coal_sample) {
-  x <- coalition_matrix_cpp(coal_sample, m)
-  dt <- data.table::data.table(x)
-  cnms <- paste0("V", seq(m))
-  data.table::setnames(dt, cnms)
-  dt[, sample_frequence := as.integer(.N), by = cnms]
-  dt[, is_duplicate := duplicated(dt)]
-  dt[, (cnms) := NULL]
-
-  return(dt)
 }
 
 #' @keywords internal
