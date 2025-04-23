@@ -36,7 +36,7 @@ test_that("output_asymmetric_conditional", {
 test_that("output_asym_cond_reg", {
   skip_if_not_installed("parsnip")
   skip_if_not_installed("rlang")
-  skip_if_not_installed("recipe")
+  skip_if_not_installed("recipes")
   skip_if_not_installed("workflows")
 
   expect_snapshot_rds(
@@ -60,7 +60,7 @@ test_that("output_asym_cond_reg", {
 test_that("output_asym_cond_reg_iterative", {
   skip_if_not_installed("parsnip")
   skip_if_not_installed("rlang")
-  skip_if_not_installed("recipe")
+  skip_if_not_installed("recipes")
   skip_if_not_installed("workflows")
 
   expect_snapshot_rds(
@@ -474,7 +474,7 @@ test_that("output_mixed_asym_caus_conf_mixed_2", {
 test_that("output_mixed_asym_cond_reg", {
   skip_if_not_installed("parsnip")
   skip_if_not_installed("rlang")
-  skip_if_not_installed("recipe")
+  skip_if_not_installed("recipes")
   skip_if_not_installed("workflows")
 
   expect_snapshot_rds(

@@ -539,7 +539,7 @@ test_that("output_lm_numeric_interaction", {
 
 test_that("output_lm_numeric_ctree_parallelized", {
   skip_if_not_installed("party")
-  skup_if_not_installed("future")
+  skip_if_not_installed("future")
 
 
   future::plan("multisession", workers = 2)
