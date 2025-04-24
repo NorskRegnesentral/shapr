@@ -19,7 +19,7 @@ Indicates which features are conditioned on.}
 
 \item{x_train}{Data.table with training data.}
 
-\item{use_partykit}{String. In some semi-rare cases \code{\link[partykit:ctree]{partykit::ctree()}} runs into an error related to the LINPACK
+\item{use_partykit}{String. In some semi-rare cases \code{\link[party:ctree]{party::ctree()}} runs into an error related to the LINPACK
 used by R. To get around this problem, one may fall back to using the newer (but slower) \code{\link[partykit:ctree]{partykit::ctree()}}
 function, which is a reimplementation of the same method. Setting this parameter to \code{"on_error"} (default)
 falls back to  \code{\link[partykit:ctree]{partykit::ctree()}}, if \code{\link[party:ctree]{party::ctree()}} fails. Other options are \code{"never"}, which always

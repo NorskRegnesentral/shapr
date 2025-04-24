@@ -1,4 +1,11 @@
 skip_on_cran()
+skip_if_not_installed("parsnip")
+skip_if_not_installed("rlang")
+skip_if_not_installed("recipes")
+skip_if_not_installed("workflows")
+skip_if_not_installed("rsample")
+skip_if_not_installed("tune")
+skip_if_not_installed("yardstick")
 
 
 # Separate regression ==================================================================================================
@@ -129,7 +136,7 @@ test_that("output_lm_mixed_decision_tree_cv_separate", {
 })
 
 test_that("output_lm_mixed_decision_tree_cv_separate_parallel", {
-  testthat::skip_on_cran() # Avoiding CRAN Note: Running R code in 'testthat.R' had CPU time 3.6 times elapsed time
+  skip_if_not_installed("future")
   future::plan("multisession", workers = 2)
   expect_snapshot_rds(
     explain(
