@@ -77,7 +77,7 @@ Indicates which features are conditioned on.</p></dd>
 
 
 <dt id="arg-use-partykit">use_partykit<a class="anchor" aria-label="anchor" href="#arg-use-partykit"></a></dt>
-<dd><p>String. In some semi-rare cases <code><a href="https://rdrr.io/pkg/partykit/man/ctree.html" class="external-link">partykit::ctree()</a></code> runs into an error related to the LINPACK
+<dd><p>String. In some semi-rare cases <code><a href="https://rdrr.io/pkg/party/man/ctree.html" class="external-link">party::ctree()</a></code> runs into an error related to the LINPACK
 used by R. To get around this problem, one may fall back to using the newer (but slower) <code><a href="https://rdrr.io/pkg/partykit/man/ctree.html" class="external-link">partykit::ctree()</a></code>
 function, which is a reimplementation of the same method. Setting this parameter to <code>"on_error"</code> (default)
 falls back to  <code><a href="https://rdrr.io/pkg/partykit/man/ctree.html" class="external-link">partykit::ctree()</a></code>, if <code><a href="https://rdrr.io/pkg/party/man/ctree.html" class="external-link">party::ctree()</a></code> fails. Other options are <code>"never"</code>, which always
