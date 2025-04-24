@@ -159,7 +159,9 @@
       "shapley_weight_norm",
       "L",
       "N_S",
-      "paired_shap_sampling"
+      "paired_shap_sampling",
+      "semi_deterministic_sampling",
+      "n_coal_max"
     )
   )
 

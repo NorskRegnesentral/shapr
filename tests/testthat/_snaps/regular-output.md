@@ -102,6 +102,29 @@
       2:          2 42.44   3.044  -4.511 -8.918 -6.1276  2.632
       3:          3 42.44   5.599 -23.352  4.228 -0.8872 -3.156
 
+# output_lm_numeric_empirical_n_coal_unpaired_on_N
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Message
+      * Model class: <lm>
+      * Approach: empirical
+      * Iterative estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 20 of 32 coalitions. 
+    Output
+         explain_id  none Solar.R    Wind   Temp  Month    Day
+              <int> <num>   <num>   <num>  <num>  <num>  <num>
+      1:          1 42.44 -14.780  14.745 13.447 -3.975  3.164
+      2:          2 42.44   4.254  -3.284 -7.536 -9.798  2.485
+      3:          3 42.44   4.144 -20.306  2.532  3.106 -7.043
+
 # output_lm_numeric_empirical_independence
 
     Code
