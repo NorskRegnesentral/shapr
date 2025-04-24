@@ -227,7 +227,7 @@ bootstrap_shapley_inner <- function(X,
     max_fixed_coal_size <- 0
   } else {
     # For semi_deterministic_sampling = FALSE, this will be 0 and all coalitions except empty and grand are sampleable
-    max_fixed_coal_size <- internal$iter_list[[iter]]$dt_coal_samp_info$exact_coalition_table
+    max_fixed_coal_size <- internal$iter_list[[iter]]$dt_coal_samp_info$max_fixed_coal_size
   }
 
   X_org <- copy(X)

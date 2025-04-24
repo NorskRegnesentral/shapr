@@ -350,7 +350,7 @@ exact_coalition_table <- function(m,
     # Use only coalitions of size 0, 1, ..., max_fixed_coal_size, ..., m - max_fixed_coal_size, ..., m - 1, m.
 
     # Checks that can be removed as this is an internal function where this should always apply
-    if (max_fixed_coal_size > as.integer(ceiling((m - 1) / 2))) {
+    if (max_fixed_coal_size > ceiling((m - 1) / 2)) {
       stop(paste0("max_fixed_coal_size (", max_fixed_coal_size, ") is larger than the maximum (",
                   ceiling((m - 1) / 2), ")."))
     }

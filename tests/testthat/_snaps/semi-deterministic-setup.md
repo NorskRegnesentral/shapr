@@ -32,7 +32,7 @@
       
     Condition
       Error in `check_and_set_sampling_info()`:
-      ! `semi_deterministic_sampling` is only supported for regular Shapley values.
+      ! `semi_deterministic_sampling` is not suppored for explain_forecast().
 
 # semi_deterministic_sampling: not symmetric sampling
 
