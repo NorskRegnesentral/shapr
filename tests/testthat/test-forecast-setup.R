@@ -1,3 +1,5 @@
+skip_if_not_installed("forecast")
+
 test_that("error with custom model without providing predict_model", {
   set.seed(123)
 

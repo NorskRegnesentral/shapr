@@ -34,6 +34,11 @@ test_that("output_asymmetric_conditional", {
 })
 
 test_that("output_asym_cond_reg", {
+  skip_if_not_installed("parsnip")
+  skip_if_not_installed("rlang")
+  skip_if_not_installed("recipes")
+  skip_if_not_installed("workflows")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -53,6 +58,11 @@ test_that("output_asym_cond_reg", {
 })
 
 test_that("output_asym_cond_reg_iterative", {
+  skip_if_not_installed("parsnip")
+  skip_if_not_installed("rlang")
+  skip_if_not_installed("recipes")
+  skip_if_not_installed("workflows")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -227,6 +237,8 @@ test_that("output_asym_caus_conf_mix_empirical", {
 })
 
 test_that("output_asym_caus_conf_mix_ctree", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -374,6 +386,8 @@ test_that("output_sym_caus_conf_mix_group_iterative", {
 
 # Mixed data ------------------------------------------------------------------------------------------------------
 test_that("output_mixed_sym_caus_conf_TRUE", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -393,6 +407,8 @@ test_that("output_mixed_sym_caus_conf_TRUE", {
 })
 
 test_that("output_mixed_sym_caus_conf_TRUE_iterative", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -413,6 +429,8 @@ test_that("output_mixed_sym_caus_conf_TRUE_iterative", {
 })
 
 test_that("output_mixed_asym_caus_conf_mixed", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -432,6 +450,8 @@ test_that("output_mixed_asym_caus_conf_mixed", {
 })
 
 test_that("output_mixed_asym_caus_conf_mixed_2", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -452,6 +472,11 @@ test_that("output_mixed_asym_caus_conf_mixed_2", {
 
 
 test_that("output_mixed_asym_cond_reg", {
+  skip_if_not_installed("parsnip")
+  skip_if_not_installed("rlang")
+  skip_if_not_installed("recipes")
+  skip_if_not_installed("workflows")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,
@@ -517,6 +542,8 @@ test_that("output_cat_asym_causal_mixed_cat_ad", {
 })
 
 test_that("output_categorical_asym_causal_mixed_ctree", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     explain(
       testing = TRUE,

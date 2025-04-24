@@ -228,16 +228,6 @@ get_parameters <- function(approach,
 
   # verbose
   check_verbose(verbose)
-  if (!is.null(verbose) &&
-    (!is.character(verbose) || !(all(verbose %in% c("basic", "progress", "convergence", "shapley", "vS_details"))))
-  ) {
-    stop(
-      paste0(
-        "`verbose` must be NULL or a string (vector) containing one or more of the strings ",
-        "`basic`, `progress`, `convergence`, `shapley`, `vS_details`.\n"
-      )
-    )
-  }
 
   # parameters only used for type "forecast"
   if (type == "forecast") {
@@ -355,6 +345,11 @@ check_verbose <- function(verbose) {
         "`basic`, `progress`, `convergence`, `shapley`, `vS_details`.\n"
       )
     )
+  }
+  if (!is.null(verbose)) {
+    if (!requireNamespace("cli", quietly = TRUE)) {
+      stop("`cli` is not installed. Please run `install.packages('cli')` to use the verbose argument.")
+    }
   }
 }
 

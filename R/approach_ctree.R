@@ -115,7 +115,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
 #' @param given_ind Integer vector.
 #' Indicates which features are conditioned on.
 #'
-#' @param use_partykit String. In some semi-rare cases [partykit::ctree()] runs into an error related to the LINPACK
+#' @param use_partykit String. In some semi-rare cases [party::ctree()] runs into an error related to the LINPACK
 #' used by R. To get around this problem, one may fall back to using the newer (but slower) [partykit::ctree()]
 #' function, which is a reimplementation of the same method. Setting this parameter to `"on_error"` (default)
 #' falls back to  [partykit::ctree()], if [party::ctree()] fails. Other options are `"never"`, which always

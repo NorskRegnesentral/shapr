@@ -1,3 +1,11 @@
+skip_if_not_installed("parsnip")
+skip_if_not_installed("rlang")
+skip_if_not_installed("recipes")
+skip_if_not_installed("workflows")
+skip_if_not_installed("rsample")
+skip_if_not_installed("tune")
+skip_if_not_installed("yardstick")
+
 test_that("regression erroneous input: `approach`", {
   set.seed(123)
 
@@ -84,7 +92,7 @@ test_that("regression erroneous input: `regression.model`", {
         phi0 = p0,
         seed = 1,
         approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression")
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(), engine = "rpart", mode = "regression")
       )
     },
     error = TRUE
@@ -101,7 +109,7 @@ test_that("regression erroneous input: `regression.model`", {
         phi0 = p0,
         seed = 1,
         approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(num_terms = c(1, 2, 3))
       )
     },
@@ -119,7 +127,7 @@ test_that("regression erroneous input: `regression.model`", {
         phi0 = p0,
         seed = 1,
         approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3), num_terms = c(1, 2, 3))
       )
     },
@@ -196,7 +204,7 @@ test_that("regression erroneous input: `regression.tune_values`", {
         phi0 = p0,
         seed = 1,
         approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = function(x) c(1, 2, 3)
       )
     },
@@ -214,7 +222,7 @@ test_that("regression erroneous input: `regression.tune_values`", {
         phi0 = p0,
         seed = 1,
         approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = function(x) data.frame(wrong_name = c(1, 2, 3))
       )
     },
@@ -236,7 +244,7 @@ test_that("regression erroneous input: `regression.vfold_cv_para`", {
         phi0 = p0,
         seed = 1,
         approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)),
         regression.vfold_cv_para = 10
       )
@@ -255,7 +263,7 @@ test_that("regression erroneous input: `regression.vfold_cv_para`", {
         phi0 = p0,
         seed = 1,
         approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)),
         regression.vfold_cv_para = list(10)
       )
@@ -274,7 +282,7 @@ test_that("regression erroneous input: `regression.vfold_cv_para`", {
         phi0 = p0,
         seed = 1,
         approach = "regression_separate",
-        regression.model = parsnip::decision_tree(tree_depth = tune(), engine = "rpart", mode = "regression"),
+        regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(), engine = "rpart", mode = "regression"),
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)),
         regression.vfold_cv_para = list(hey = 10)
       )

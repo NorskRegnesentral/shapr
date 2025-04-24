@@ -185,6 +185,8 @@ test_that("erroneous input: `min_n_batches`", {
 })
 
 test_that("different n_batches gives same/different shapley values for different approaches", {
+  skip_if_not_installed("party")
+
   # approach "empirical" is seed independent
   explain.empirical_n_batches_5 <- explain(
     testing = TRUE,
