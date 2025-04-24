@@ -10,6 +10,8 @@ prepare_next_iteration <- function(internal) {
   iter <- length(internal$iter_list)
   converged <- internal$iter_list[[iter]]$converged
   paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
+  semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
+  type <- internal$parameters$type
 
 
   if (converged == FALSE) {
@@ -25,8 +27,6 @@ prepare_next_iteration <- function(internal) {
     n_coal_next_iter_factor <- internal$iter_list[[iter]]$n_coal_next_iter_factor
     current_n_coalitions <- internal$iter_list[[iter]]$n_sampled_coalitions + 2 # Used instead of n_coalitions to
     # deal with forecast special case
-    current_coal_samples <- internal$iter_list[[iter]]$coal_samples
-    current_coal_samples_n_unique <- internal$iter_list[[iter]]$coal_samples_n_unique
 
     if (is.null(fixed_n_coalitions_per_iter)) {
       proposal_next_n_coalitions <- current_n_coalitions + ceiling(est_remaining_coalitions * n_coal_next_iter_factor)
@@ -71,9 +71,15 @@ prepare_next_iteration <- function(internal) {
 
     next_iter_list$n_batches <- set_n_batches(next_iter_list$new_n_coalitions, internal)
 
-
-    next_iter_list$prev_coal_samples <- current_coal_samples
-    next_iter_list$prev_coal_samples_n_unique <- current_coal_samples_n_unique
+    if (type == "forecast") {
+      # Do not update dt_coal_samp_info for forecast as it is generated on the fly since the
+      # number of features changes with the horizon.
+      next_iter_list$prev_X_list <- internal$iter_list[[iter]]$X_list
+    } else {
+      next_iter_list$prev_X <- internal$iter_list[[iter]]$X
+      next_iter_list$dt_coal_samp_info <-
+        internal$objects$dt_coal_samp_info[next_iter_list$n_coalitions <= n_coal_max][1]
+    }
   } else {
     next_iter_list <- list()
   }

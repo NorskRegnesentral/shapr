@@ -542,7 +542,7 @@ explain <- function(model,
     # Compute the vS
     vS_list <- compute_vS(internal, model, predict_model)
 
-    # Compute shapley value estimated and bootstrapped standard deviations
+    # Compute Shapley value estimates and bootstrapped standard deviations
     internal <- compute_estimates(internal, vS_list)
 
     # Check convergence based on estimates and standard deviations (and thresholds)
