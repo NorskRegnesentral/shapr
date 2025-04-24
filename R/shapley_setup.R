@@ -284,8 +284,10 @@ reweighted_shapley_weight <- function(m, max_fixed_coal_size = 0, n_coal_each_si
   }
 
   if (max_fixed_coal_size > ceiling((m - 1) / 2)) {
-    stop(paste0("max_fixed_coal_size (", max_fixed_coal_size, ") is larger than the maximum (",
-                ceiling((m - 1) / 2), ")."))
+    stop(paste0(
+      "max_fixed_coal_size (", max_fixed_coal_size, ") is larger than the maximum (",
+      ceiling((m - 1) / 2), ")."
+    ))
   }
 
   # Get the relevant indices
@@ -351,8 +353,10 @@ exact_coalition_table <- function(m,
 
     # Checks that can be removed as this is an internal function where this should always apply
     if (max_fixed_coal_size > ceiling((m - 1) / 2)) {
-      stop(paste0("max_fixed_coal_size (", max_fixed_coal_size, ") is larger than the maximum (",
-                  ceiling((m - 1) / 2), ")."))
+      stop(paste0(
+        "max_fixed_coal_size (", max_fixed_coal_size, ") is larger than the maximum (",
+        ceiling((m - 1) / 2), ")."
+      ))
     }
 
     # Use unique such that the coalition size where |S| = |S_bar| is not included twice
