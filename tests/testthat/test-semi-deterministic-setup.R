@@ -1,4 +1,4 @@
-test_that("semi_deterministic_samplign: not paired sampling", {
+test_that("semi_deterministic_sampling: not paired sampling", {
   expect_snapshot(
     {
       explain(
@@ -19,7 +19,7 @@ test_that("semi_deterministic_samplign: not paired sampling", {
   )
 })
 
-test_that("semi_deterministic_samplign: not regular sampling", {
+test_that("semi_deterministic_sampling: not regular sampling", {
   expect_snapshot(
     {
       explain_forecast(
@@ -44,7 +44,7 @@ test_that("semi_deterministic_samplign: not regular sampling", {
   )
 })
 
-test_that("semi_deterministic_samplign: not symmetric sampling", {
+test_that("semi_deterministic_sampling: not symmetric sampling", {
   expect_snapshot(
     {
       explain(

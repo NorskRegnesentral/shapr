@@ -1,4 +1,4 @@
-# semi_deterministic_samplign: not paired sampling
+# semi_deterministic_sampling: not paired sampling
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
@@ -14,7 +14,7 @@
       Error in `check_and_set_sampling_info()`:
       ! `paired_shap_sampling` cannot be FALSE when `semi_deterministic_sampling` is TRUE.
 
-# semi_deterministic_samplign: not regular sampling
+# semi_deterministic_sampling: not regular sampling
 
     Code
       explain_forecast(testing = TRUE, model = model_ar_temp, y = data_arima[, "Temp"],
@@ -34,7 +34,7 @@
       Error in `check_and_set_sampling_info()`:
       ! `semi_deterministic_sampling` is only supported for regular Shapley values.
 
-# semi_deterministic_samplign: not symmetric sampling
+# semi_deterministic_sampling: not symmetric sampling
 
     Code
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
