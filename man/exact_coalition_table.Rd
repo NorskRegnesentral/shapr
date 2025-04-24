@@ -6,7 +6,7 @@
 \usage{
 exact_coalition_table(
   m,
-  paired_coal_size = ceiling((m - 1)/2),
+  max_fixed_coal_size = ceiling((m - 1)/2),
   dt_valid_causal_coalitions = NULL,
   weight_zero_m = 10^6
 )

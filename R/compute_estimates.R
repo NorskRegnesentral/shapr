@@ -222,12 +222,13 @@ bootstrap_shapley_inner <- function(X,
   semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
-  if (type == "regular") {
-    paired_coal_size <- internal$iter_list[[iter]]$dt_coal_samp_info$paired_coal_size
+  if (type == "forecast") {
+    # For forecast we set it to zero as all coalitions except empty and grand can be sampled
+    max_fixed_coal_size <- 0
   } else {
-    paired_coal_size <- 0 # For forecast we can always include all coalitions
+    # For semi_deterministic_sampling = FALSE, this will be 0 and all coalitions except empty and grand are sampleable
+    max_fixed_coal_size <- internal$iter_list[[iter]]$dt_coal_samp_info$exact_coalition_table
   }
-
 
   X_org <- copy(X)
 
@@ -323,7 +324,7 @@ bootstrap_shapley_inner <- function(X,
       X = this_X_samp,
       m = n_shapley_values,
       reweight = shapley_reweight,
-      paired_coal_size = paired_coal_size,
+      max_fixed_coal_size = max_fixed_coal_size,
       n_coal_each_size = n_coal_each_size
     )
 

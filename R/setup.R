@@ -1082,7 +1082,7 @@ check_and_set_sampling_info <- function(internal) {
     }
 
     if (type != "regular") {
-      stop("`semi_deterministic_sampling` is only supported for regular Shapley values.")
+      stop("`semi_deterministic_sampling` is not suppored for explain_forecast().")
     }
 
     if (asymmetric) {
@@ -1090,7 +1090,7 @@ check_and_set_sampling_info <- function(internal) {
     }
   }
 
-  # Skip for forecast as it is then generated on the fly as the number of shapley values changes with the horizon.
+  # Skip for forecast as it is generated on the fly as the number of Shapley values changes with the horizon.
   if (type != "forecast") {
     # Get the information about which coalitions to sample and
     # deterministically include at different number of coalitions
@@ -1114,9 +1114,9 @@ check_and_set_sampling_info <- function(internal) {
 #' @param semi_deterministic_sampling Logical.
 #' If `FALSE` (default), then we sample from all coalitions.
 #' If `TRUE`, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
-#' coalitions that are expected to be sample based on the number of coalitions are deterministically included such
+#' coalitions that are expected to be sampled based on the number of coalitions are deterministically included such
 #' that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
-#' and the idea is based on PySHAP strategy in the paper \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.
+#' and corresponds to the PySHAP* strategy in the paper \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.
 #' @param kernelSHAP_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
 #' The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
