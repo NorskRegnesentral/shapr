@@ -541,7 +541,6 @@ test_that("output_lm_numeric_ctree_parallelized", {
   skip_if_not_installed("party")
   skip_if_not_installed("future")
 
-
   future::plan("multisession", workers = 2)
   expect_snapshot_rds(
     {

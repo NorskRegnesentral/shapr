@@ -1220,7 +1220,6 @@ test_that("Correct dimension of S when sampling combinations", {
 })
 
 test_that("Message with too low `max_n_coalitions`", {
-  skip_if_not_installed("Matrix")
   max_n_coalitions <- ncol(x_explain_numeric) - 1
 
   expect_snapshot(
@@ -1261,8 +1260,6 @@ test_that("Message with too low `max_n_coalitions`", {
 })
 
 test_that("Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weights", {
-  skip_if_not_installed("Matrix")
-
   # Check that the `explain()` function enters the exact mode when max_n_coalitions
   # is larger than or equal to 2^m.
 
@@ -1477,8 +1474,6 @@ test_that("parallelization gives same output for any approach", {
 
 
 test_that("gaussian approach use the user provided parameters", {
-  skip_if_not_installed("Matrix")
-
   # approach "gaussian" with default parameter estimation, i.e., sample mean and covariance
   e.gaussian_samp_mean_cov <- explain(
     testing = TRUE,
@@ -1746,8 +1741,6 @@ test_that("vaeac_pretreained_vaeac_model", {
 
 
 test_that("feature wise and groupwise computations are identical", {
-  skip_if_not_installed("Matrix")
-
   groups <- list(
     Solar.R = "Solar.R",
     Wind = "Wind",
