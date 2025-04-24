@@ -56,6 +56,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_extra_comp_args_default</span><span class="op">(</span></span>
 <span>  <span class="va">internal</span>,</span>
 <span>  paired_shap_sampling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isFALSE</a></span><span class="op">(</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">asymmetric</span><span class="op">)</span>,</span>
+<span>  semi_deterministic_sampling <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  kernelSHAP_reweighting <span class="op">=</span> <span class="st">"on_all_cond"</span>,</span>
 <span>  compute_sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isFALSE</a></span><span class="op">(</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">exact</span><span class="op">)</span>,</span>
 <span>  n_boot_samps <span class="op">=</span> <span class="fl">100</span>,</span>
@@ -80,6 +81,15 @@ That is, if there are 5 features and e.g. coalitions (1,3,5) are sampled, then a
 computing the Shapley values. This is done to reduce the variance of the Shapley value estimates.
 <code>TRUE</code> is the default and is recommended for highest accuracy.
 For asymmetric, <code>FALSE</code> is the default and the only legal value.</p></dd>
+
+
+<dt id="arg-semi-deterministic-sampling">semi_deterministic_sampling<a class="anchor" aria-label="anchor" href="#arg-semi-deterministic-sampling"></a></dt>
+<dd><p>Logical.
+If <code>FALSE</code> (default), then we sample from all coalitions.
+If <code>TRUE</code>, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
+coalitions that are expected to be sampled based on the number of coalitions are deterministically included such
+that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
+and corresponds to the PySHAP* strategy in the paper <a href="https://arxiv.org/pdf/2410.04883" class="external-link">Olsen &amp; Jullum (2024)</a>.</p></dd>
 
 
 <dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>

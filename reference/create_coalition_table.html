@@ -57,14 +57,16 @@
 <span>  <span class="va">m</span>,</span>
 <span>  exact <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  n_coalitions <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>  n_coal_each_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">choose</a></span><span class="op">(</span><span class="va">m</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">m</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  weight_zero_m <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">6</span>,</span>
 <span>  paired_shap_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  prev_coal_samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  prev_coal_samples_n_unique <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  prev_X <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_samps_scale <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  coal_feature_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  approach0 <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  kernelSHAP_reweighting <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>  semi_deterministic_sampling <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  dt_coal_samp_info <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dt_valid_causal_coalitions <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -88,6 +90,13 @@ If <code>TRUE</code> all <code>2^m</code> coalitions are generated, otherwise a 
 Note that if <code>exact = TRUE</code>, <code>n_coalitions</code> is ignored.</p></dd>
 
 
+<dt id="arg-n-coal-each-size">n_coal_each_size<a class="anchor" aria-label="anchor" href="#arg-n-coal-each-size"></a></dt>
+<dd><p>Vector of integers of length <code>m-1</code>. The number of valid coalitions of each coalition size
+1, 2,..., m-1. For symmetric Shapley values, this is <code>choose(m, seq(m-1))</code> (default). While for asymmetric Shapley
+values, this is the number of valid coalitions of each size in the causal ordering. Used to correctly normalize the
+Shapley weights.</p></dd>
+
+
 <dt id="arg-weight-zero-m">weight_zero_m<a class="anchor" aria-label="anchor" href="#arg-weight-zero-m"></a></dt>
 <dd><p>Numeric.
 The value to use as a replacement for infinite coalition weights when doing numerical operations.</p></dd>
@@ -98,17 +107,8 @@ The value to use as a replacement for infinite coalition weights when doing nume
 Whether to do paired sampling of coalitions.</p></dd>
 
 
-<dt id="arg-prev-coal-samples">prev_coal_samples<a class="anchor" aria-label="anchor" href="#arg-prev-coal-samples"></a></dt>
-<dd><p>Character vector.
-A vector of previously sampled coalitions as characters.
-Each string contains a coalition and the feature indices in the coalition is separated by a space.
-For example, "1 5 8" is a coalition with features 1, 5, and 8.</p></dd>
-
-
-<dt id="arg-prev-coal-samples-n-unique">prev_coal_samples_n_unique<a class="anchor" aria-label="anchor" href="#arg-prev-coal-samples-n-unique"></a></dt>
-<dd><p>Positive integer.
-The number of unique coalitions in <code>prev_coal_samples</code>.
-This is a separate argument to avoid recomputing the number unnecessarily.</p></dd>
+<dt id="arg-prev-x">prev_X<a class="anchor" aria-label="anchor" href="#arg-prev-x"></a></dt>
+<dd><p>data.table. The X data.table from the previous iteration.</p></dd>
 
 
 <dt id="arg-n-samps-scale">n_samps_scale<a class="anchor" aria-label="anchor" href="#arg-n-samps-scale"></a></dt>
@@ -127,6 +127,37 @@ A list mapping each coalition to the features it contains.</p></dd>
 <dt id="arg-approach-">approach0<a class="anchor" aria-label="anchor" href="#arg-approach-"></a></dt>
 <dd><p>Character vector.
 Contains the approach to be used for estimation of each coalition size. Same as <code>approach</code> in <code><a href="explain.html">explain()</a></code>.</p></dd>
+
+
+<dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>
+<dd><p>String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of <code>'none'</code>, <code>'on_N'</code>, <code>'on_all'</code>, <code>'on_all_cond'</code> (default).
+<code>'none'</code> means no reweighting, i.e. the sampling frequency weights are used as is.
+<code>'on_N'</code> means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+<code>'on_all'</code> means the original sampling probabilities are used for all coalitions.
+<code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+<code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see
+<a href="https://arxiv.org/pdf/2410.04883" class="external-link">Olsen &amp; Jullum (2024)</a>.</p></dd>
+
+
+<dt id="arg-semi-deterministic-sampling">semi_deterministic_sampling<a class="anchor" aria-label="anchor" href="#arg-semi-deterministic-sampling"></a></dt>
+<dd><p>Logical.
+If <code>FALSE</code> (default), then we sample from all coalitions.
+If <code>TRUE</code>, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
+coalitions that are expected to be sampled based on the number of coalitions are deterministically included such
+that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
+and corresponds to the PySHAP* strategy in the paper <a href="https://arxiv.org/pdf/2410.04883" class="external-link">Olsen &amp; Jullum (2024)</a>.</p></dd>
+
+
+<dt id="arg-dt-coal-samp-info">dt_coal_samp_info<a class="anchor" aria-label="anchor" href="#arg-dt-coal-samp-info"></a></dt>
+<dd><p>data.table. The data.table contains information about the which coalitions should be
+deterministically included and which can be sampled, in addition to the sampling probabilities of each available
+coalition size, and the weight given to the sampled and deterministically included coalitions (excluding empty and
+grand coalitions which are given the <code>weight_zero_m</code> weight).</p></dd>
 
 
 <dt id="arg-dt-valid-causal-coalitions">dt_valid_causal_coalitions<a class="anchor" aria-label="anchor" href="#arg-dt-valid-causal-coalitions"></a></dt>
