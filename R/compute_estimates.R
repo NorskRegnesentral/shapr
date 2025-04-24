@@ -191,36 +191,56 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
       }
       dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
       dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
-      result[[i]] <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_boot_samps)
+      n_coal_each_size <- choose(n_shapley_values, seq(n_shapley_values - 1))
+      result[[i]] <-
+        bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_coal_each_size, n_boot_samps)
     }
     result <- cbind(internal$parameters$output_labels, rbindlist(result, fill = TRUE))
   } else {
     X <- internal$iter_list[[iter]]$X
     n_shapley_values <- internal$parameters$n_shapley_values
     shap_names <- internal$parameters$shap_names
-    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps)
+    n_coal_each_size <- internal$parameters$n_coal_each_size
+    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_coal_each_size, n_boot_samps)
   }
   return(result)
 }
 
 #' @keywords internal
-bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, dt_vS, n_boot_samps = 100) {
+bootstrap_shapley_inner <- function(X,
+                                    n_shapley_values,
+                                    shap_names,
+                                    internal,
+                                    dt_vS,
+                                    n_coal_each_size,
+                                    n_boot_samps = 100) {
   type <- internal$parameters$type
   iter <- length(internal$iter_list)
 
   n_explain <- internal$parameters$n_explain
   paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
+  semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
+
+  if (type == "forecast") {
+    # For forecast we set it to zero as all coalitions except empty and grand can be sampled
+    max_fixed_coal_size <- 0
+  } else {
+    # For semi_deterministic_sampling = FALSE, this will be 0 and all coalitions except empty and grand are sampleable
+    max_fixed_coal_size <- internal$iter_list[[iter]]$dt_coal_samp_info$max_fixed_coal_size
+  }
 
   X_org <- copy(X)
 
   boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
 
-  X_keep <- X_org[c(1, .N), .(id_coalition, coalitions, coalition_size, N)]
+  # Split X_org into the deterministic coalitions and the sampled coalitions
+  X_keep <- X_org[is.na(sample_freq), .(id_coalition, coalitions, coalition_size, N, shapley_weight)]
   X_samp <- X_org[
-    -c(1, .N),
+    !is.na(sample_freq),
     .(id_coalition, coalitions, coalitions_str, coalition_size, N, shapley_weight, sample_freq)
   ]
+  X_keep_nrow <- X_keep[, .N]
 
   n_coalitions_boot <- X_samp[, sum(sample_freq)]
 
@@ -252,12 +272,18 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
       X_boot00_paired[, .(boot_id, id_coalition, coalitions, coalition_size, N)]
     )
 
-    X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ][, boot_id := rep(seq(n_boot_samps), times = 2)], X_boot0)
+    # Create the Shapley weight column in X_boot0 s.t. we can row bind with X_keep
+    X_boot0[, shapley_weight := NA]
+    X_boot <- rbind(X_keep[rep(seq(X_keep_nrow),
+      each = n_boot_samps
+    ), ][, boot_id := rep(seq(n_boot_samps), times = X_keep_nrow)], X_boot0)
     setkey(X_boot, boot_id, id_coalition)
-    X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
+
+    # Compute the Shapley weight for the sampled coalitions by counting their sampling frequencies
+    # Note: the deterministic coalitions have their original weight
+    X_boot[is.na(shapley_weight), sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
-    X_boot[, shapley_weight := sample_freq]
-    X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+    X_boot[is.na(shapley_weight), shapley_weight := as.numeric(sample_freq)]
   } else {
     X_boot0 <- X_samp[
       sample.int(
@@ -268,25 +294,50 @@ bootstrap_shapley_inner <- function(X, n_shapley_values, shap_names, internal, d
       ),
       .(id_coalition, coalitions, coalition_size, N)
     ]
-    X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), ], X_boot0)
+    X_boot <- rbind(X_keep[rep(1:2, each = n_boot_samps), -"shapley_weight"], X_boot0)
     X_boot[, boot_id := rep(seq(n_boot_samps), times = n_coalitions_boot + 2)]
 
     setkey(X_boot, boot_id, id_coalition)
-    X_boot[, sample_freq := .N / n_coalitions_boot, by = .(id_coalition, boot_id)]
+    X_boot[, sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
-    X_boot[, shapley_weight := sample_freq]
+    X_boot[, shapley_weight := as.numeric(sample_freq)]
     if (type == "forecast") {
       id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
       full_ids <- id_coalition_mapper_dt$id_coalition[id_coalition_mapper_dt$full]
       X_boot[coalition_size == 0 | id_coalition %in% full_ids, shapley_weight := X_org[1, shapley_weight]]
+      X_boot[coalition_size == 0 | id_coalition %in% full_ids, sample_freq := NA_integer_]
     } else {
       X_boot[coalition_size %in% c(0, n_shapley_values), shapley_weight := X_org[1, shapley_weight]]
+      X_boot[coalition_size %in% c(0, n_shapley_values), sample_freq := NA_integer_]
     }
   }
 
   for (i in seq_len(n_boot_samps)) {
     this_X <- X_boot[boot_id == i] # This is highly inefficient, but the best way to deal with the reweighting for now
-    kernelSHAP_reweighting(this_X, reweight = shapley_reweight)
+
+    # Split into the coalitions that have been deterministically included and the sampled ones
+    this_X_keep <- this_X[is.na(sample_freq)]
+    this_X_samp <- this_X[!is.na(sample_freq)]
+
+    # Reweight the sampled coalitions
+    kernelSHAP_reweighting(
+      X = this_X_samp,
+      m = n_shapley_values,
+      reweight = shapley_reweight,
+      max_fixed_coal_size = max_fixed_coal_size,
+      n_coal_each_size = n_coal_each_size
+    )
+
+    # For semi-deterministic sampling, we reweight the sampled coalitions. The deterministic once are already reweighed.
+    if (semi_deterministic_sampling) {
+      weight_sample <- internal$iter_list[[iter]]$dt_coal_samp_info$weight_sample
+      this_X_samp[, shapley_weight := weight_sample * shapley_weight / sum(shapley_weight)]
+    }
+
+    # Merge the deterministic and sampled coalitions. Use that the coalitions in this_X_keep is paired.
+    this_X <- data.table::rbindlist(list(this_X_keep[seq(1, .N / 2)], this_X_samp, this_X_keep[seq((.N / 2) + 1, .N)]),
+      use.names = TRUE
+    )
 
     W_boot <- weight_matrix(
       X = this_X,

@@ -83,11 +83,11 @@
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 8 coalitions, 3 new. 
     Output
-         explain_id  none Solar.R   Wind   Temp  Month    Day
-              <int> <num>   <num>  <num>  <num>  <num>  <num>
-      1:          1 42.44 -11.481  14.89 14.834 -2.676 -2.963
-      2:          2 42.44   5.608  -6.20 -4.597 -6.686 -2.004
-      3:          3 42.44   9.718 -32.56  7.272 -3.376  1.375
+         explain_id  none Solar.R    Wind   Temp  Month    Day
+              <int> <num>   <num>   <num>  <num>  <num>  <num>
+      1:          1 42.44 -11.354  15.015 14.544 -2.658 -2.945
+      2:          2 42.44   5.553  -6.255 -4.527 -6.666 -1.984
+      3:          3 42.44   9.720 -32.556  7.270 -3.377  1.374
 
 # output_symmetric_conditional
 
@@ -284,11 +284,11 @@
       
       i Using 6 of 6 coalitions. 
     Output
-         explain_id  none Solar.R     Wind     Temp  Month     Day
-              <int> <num>   <num>    <num>    <num>  <num>   <num>
-      1:          1 42.44  -25.73  21.4308  21.4308 -1.140 -3.3927
-      2:          2 42.44   -7.98   0.8414   0.8414 -5.149 -2.4328
-      3:          3 42.44    8.03 -12.3436 -12.3436 -1.848  0.9372
+         explain_id  none Solar.R    Wind     Temp  Month    Day
+              <int> <num>   <num>   <num>    <num>  <num>  <num>
+      1:          1 42.44   1.488   8.454   6.0255 -1.004 -2.362
+      2:          2 42.44   1.115   4.578 -13.1691 -4.993 -1.411
+      3:          3 42.44  19.410 -37.477   0.3474 -1.911  2.062
 
 # output_asym_caus_conf_mix_empirical
 
@@ -595,9 +595,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp       Day Month_factor
               <int> <num>   <num>   <num>  <num>     <num>        <num>
-      1:          1 42.44  -5.161  10.967  8.826 -1.303088       -2.745
-      2:          2 42.44   2.464  -7.409 -5.609  0.008451       -4.837
-      3:          3 42.44   2.067 -17.548 -1.729 -1.197571        7.808
+      1:          1 42.44  -5.161  10.983  8.826 -1.306957       -2.757
+      2:          2 42.44   2.459  -7.408 -5.602  0.006381       -4.838
+      3:          3 42.44   2.083 -17.540 -1.726 -1.211990        7.795
 
 # output_mixed_asym_caus_conf_mixed
 
@@ -688,9 +688,9 @@
     Output
          explain_id  none Solar.R    Wind   Temp     Day Month_factor
               <int> <num>   <num>   <num>  <num>   <num>        <num>
-      1:          1 42.44 -11.433  14.952 14.469 -2.2424       -5.162
-      2:          2 42.44   5.549  -6.258 -4.765 -1.6318       -8.277
-      3:          3 42.44   9.633 -32.766  7.540  0.8522        4.141
+      1:          1 42.44 -11.302  15.083 14.284 -2.2810       -5.200
+      2:          2 42.44   5.496  -6.311 -4.642 -1.6403       -8.286
+      3:          3 42.44   9.635 -32.764  7.453  0.8939        4.183
 
 # output_categorical_asym_causal_mixed_cat
 
@@ -760,9 +760,9 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1 42.44       -6.160              15.83        -11.038      0.8546
-      2:          2 42.44       -5.309             -13.12         17.187    -13.5937
-      3:          3 42.44       20.856             -20.67          4.627    -23.1800
+      1:          1 42.44       -6.051              15.73        -11.061      0.8778
+      2:          2 42.44       -5.280             -13.14         17.119    -13.5256
+      3:          3 42.44       20.898             -20.71          4.768    -23.3213
 
 # output_categorical_asym_causal_mixed_ctree
 

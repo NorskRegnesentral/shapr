@@ -8,14 +8,16 @@ create_coalition_table(
   m,
   exact = TRUE,
   n_coalitions = 200,
+  n_coal_each_size = choose(m, seq(m - 1)),
   weight_zero_m = 10^6,
   paired_shap_sampling = TRUE,
-  prev_coal_samples = NULL,
-  prev_coal_samples_n_unique = NULL,
+  prev_X = NULL,
   n_samps_scale = 10,
   coal_feature_list = as.list(seq_len(m)),
   approach0 = "gaussian",
   kernelSHAP_reweighting = "none",
+  semi_deterministic_sampling = FALSE,
+  dt_coal_samp_info = NULL,
   dt_valid_causal_coalitions = NULL
 )
 }
@@ -29,20 +31,18 @@ If \code{TRUE} all \code{2^m} coalitions are generated, otherwise a subsample of
 \item{n_coalitions}{Positive integer.
 Note that if \code{exact = TRUE}, \code{n_coalitions} is ignored.}
 
+\item{n_coal_each_size}{Vector of integers of length \code{m-1}. The number of valid coalitions of each coalition size
+1, 2,..., m-1. For symmetric Shapley values, this is \code{choose(m, seq(m-1))} (default). While for asymmetric Shapley
+values, this is the number of valid coalitions of each size in the causal ordering. Used to correctly normalize the
+Shapley weights.}
+
 \item{weight_zero_m}{Numeric.
 The value to use as a replacement for infinite coalition weights when doing numerical operations.}
 
 \item{paired_shap_sampling}{Logical.
 Whether to do paired sampling of coalitions.}
 
-\item{prev_coal_samples}{Character vector.
-A vector of previously sampled coalitions as characters.
-Each string contains a coalition and the feature indices in the coalition is separated by a space.
-For example, "1 5 8" is a coalition with features 1, 5, and 8.}
-
-\item{prev_coal_samples_n_unique}{Positive integer.
-The number of unique coalitions in \code{prev_coal_samples}.
-This is a separate argument to avoid recomputing the number unnecessarily.}
+\item{prev_X}{data.table. The X data.table from the previous iteration.}
 
 \item{n_samps_scale}{Positive integer.
 Integer that scales the number of coalitions \code{n_coalitions} to sample as sampling is cheap,
@@ -55,6 +55,31 @@ A list mapping each coalition to the features it contains.}
 
 \item{approach0}{Character vector.
 Contains the approach to be used for estimation of each coalition size. Same as \code{approach} in \code{\link[=explain]{explain()}}.}
+
+\item{kernelSHAP_reweighting}{String.
+How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
+The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.
+The options are one of \code{'none'}, \code{'on_N'}, \code{'on_all'}, \code{'on_all_cond'} (default).
+\code{'none'} means no reweighting, i.e. the sampling frequency weights are used as is.
+\code{'on_N'} means the sampling frequencies are averaged over all coalitions with the same original sampling
+probabilities.
+\code{'on_all'} means the original sampling probabilities are used for all coalitions.
+\code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
+probability that they are sampled at least once.
+\code{'on_all_cond'} is preferred as it performs the best in simulation studies, see
+\href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
+
+\item{semi_deterministic_sampling}{Logical.
+If \code{FALSE} (default), then we sample from all coalitions.
+If \code{TRUE}, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
+coalitions that are expected to be sampled based on the number of coalitions are deterministically included such
+that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
+and corresponds to the PySHAP* strategy in the paper \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
+
+\item{dt_coal_samp_info}{data.table. The data.table contains information about the which coalitions should be
+deterministically included and which can be sampled, in addition to the sampling probabilities of each available
+coalition size, and the weight given to the sampled and deterministically included coalitions (excluding empty and
+grand coalitions which are given the \code{weight_zero_m} weight).}
 
 \item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
 values explanations, and is \code{NULL} for symmetric Shapley values.

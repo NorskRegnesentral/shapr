@@ -421,7 +421,7 @@
 #'   - \href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
 #'   Redelmeier, A., Jullum, M., & Aas, K. (2020). Explaining predictive models with mixed features using Shapley
 #'   values and conditional inference trees. In Machine Learning and Knowledge Extraction:
-#'   International Cross-Domain Conference, CD-MAKE 2020, Dublin, Ireland, August 25–28, 2020, Proceedings 4
+#'   International Cross-Domain Conference, CD-MAKE 2020, Dublin, Ireland, August 25-28, 2020, Proceedings 4
 #'   (pp. 117-137). Springer International Publishing.}
 #'   - \href{https://www.theoj.org/joss-papers/joss.02027/10.21105.joss.02027.pdf}{
 #'   Sellereite N., & Jullum, M. (2019). shapr: An R-package for explaining machine learning models with
@@ -539,7 +539,7 @@ explain <- function(model,
     # Compute the vS
     vS_list <- compute_vS(internal, model, predict_model)
 
-    # Compute shapley value estimated and bootstrapped standard deviations
+    # Compute Shapley value estimates and bootstrapped standard deviations
     internal <- compute_estimates(internal, vS_list)
 
     # Check convergence based on estimates and standard deviations (and thresholds)
