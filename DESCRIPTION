@@ -34,7 +34,8 @@ Imports:
     Rcpp (>= 0.12.15),
     Matrix,
     future.apply,
-    methods
+    methods,
+    cli
 Suggests: 
     ranger,
     xgboost,
@@ -64,8 +65,7 @@ Suggests:
     yardstick,
     hardhat,
     rsample,
-    rlang,
-    cli
+    rlang
 LinkingTo: 
     RcppArmadillo,
     Rcpp
