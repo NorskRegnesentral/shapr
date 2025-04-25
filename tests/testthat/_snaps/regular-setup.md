@@ -1088,3 +1088,46 @@
       2:          2 42.44   2.250  -3.345 -5.232 -5.581 -1.971
       3:          3 42.44   3.708 -18.610 -1.440 -2.541  1.316
 
+# output_lm_numeric_vS_batching_method
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Message
+      Success with message:
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
+      and is therefore set to 2^n_features = 32.
+      
+      * Model class: <lm>
+      * Approach: ctree
+      * Iterative estimation: TRUE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- iterative computation started --
+      
+      -- Iteration 1 -----------------------------------------------------------------
+      i Using 6 of 32 coalitions, 6 new. 
+      
+      -- Iteration 2 -----------------------------------------------------------------
+      i Using 8 of 32 coalitions, 2 new. 
+      
+      -- Iteration 3 -----------------------------------------------------------------
+      i Using 12 of 32 coalitions, 4 new. 
+      
+      -- Iteration 4 -----------------------------------------------------------------
+      i Using 18 of 32 coalitions, 6 new. 
+      
+      -- Iteration 5 -----------------------------------------------------------------
+      i Using 24 of 32 coalitions, 6 new. 
+      
+      -- Iteration 6 -----------------------------------------------------------------
+      i Using 28 of 32 coalitions, 4 new. 
+    Output
+         explain_id  none Solar.R    Wind   Temp  Month    Day
+              <int> <num>   <num>   <num>  <num>  <num>  <num>
+      1:          1 42.44  -8.187   8.808 16.651 -1.355 -3.315
+      2:          2 42.44   5.551  -6.142 -8.670 -2.622 -1.997
+      3:          3 42.44   7.009 -21.407 -4.878  0.418  1.290
+
