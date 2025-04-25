@@ -520,8 +520,7 @@ get_extra_parameters <- function(internal, type) {
     if (is.null(names(group))) {
       if ("basic" %in% verbose) {
         cli::cli_inform(
-          "\nSuccess with message:\n
-      Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc."
+          "Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc."
         )
       }
       names(group) <- paste0("group", seq_along(group))
@@ -823,7 +822,6 @@ adjust_max_n_coalitions <- function(internal) {
       if ("basic" %in% verbose) {
         cli::cli_inform(
           paste0(
-            "Success with message:\n",
             "max_n_coalitions is NULL or larger than or number of coalitions respecting the causal\n",
             "ordering ", max_n_coalitions_causal, ", and is therefore set to ", max_n_coalitions_causal, ".\n"
           )
@@ -839,7 +837,6 @@ adjust_max_n_coalitions <- function(internal) {
         if ("basic" %in% verbose) {
           cli::cli_inform(
             paste0(
-              "Success with message:\n",
               "max_n_coalitions_causal is smaller than or equal to 10, meaning there are\n",
               "so few unique causal coalitions that we should use all to get reliable results.\n",
               "max_n_coalitions is therefore set to ", max_n_coalitions_causal, ".\n"
@@ -851,7 +848,6 @@ adjust_max_n_coalitions <- function(internal) {
         if ("basic" %in% verbose) {
           cli::cli_inform(
             paste0(
-              "Success with message:\n",
               "max_n_coalitions is smaller than max(10, n_shapley_values + 1 = ", n_shapley_values + 1,
               " max_n_coalitions_causal = ", max_n_coalitions_causal, "),",
               "which will result in unreliable results.\n",
@@ -871,7 +867,6 @@ adjust_max_n_coalitions <- function(internal) {
         if ("basic" %in% verbose) {
           cli::cli_inform(
             paste0(
-              "Success with message:\n",
               "max_n_coalitions is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
               "and is therefore set to 2^n_features = ", 2^n_features, ".\n"
             )
@@ -885,7 +880,6 @@ adjust_max_n_coalitions <- function(internal) {
           if ("basic" %in% verbose) {
             cli::cli_inform(
               paste0(
-                "Success with message:\n",
                 "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",
                 2^n_features, ") that we should use all to get reliable results.\n",
                 "max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".\n"
@@ -897,7 +891,6 @@ adjust_max_n_coalitions <- function(internal) {
           if ("basic" %in% verbose) {
             cli::cli_inform(
               paste0(
-                "Success with message:\n",
                 "max_n_coalitions is smaller than max(10, n_features + 1 = ", n_features + 1, "),",
                 "which will result in unreliable results.\n",
                 "It is therefore set to ", max(10, n_features + 1), ".\n"
@@ -913,7 +906,6 @@ adjust_max_n_coalitions <- function(internal) {
         if ("basic" %in% verbose) {
           cli::cli_inform(
             paste0(
-              "Success with message:\n",
               "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_shapley_values, ", \n",
               "and is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
             )
@@ -927,7 +919,6 @@ adjust_max_n_coalitions <- function(internal) {
           if ("basic" %in% verbose) {
             cli::cli_inform(
               paste0(
-                "Success with message:\n",
                 "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (",
                 2^n_shapley_values, ") that we should use all to get reliable results.\n",
                 "max_n_coalitions is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
@@ -939,7 +930,6 @@ adjust_max_n_coalitions <- function(internal) {
           if ("basic" %in% verbose) {
             cli::cli_inform(
               paste0(
-                "Success with message:\n",
                 "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_shapley_values + 1, "),",
                 "which will result in unreliable results.\n",
                 "It is therefore set to ", max(10, n_shapley_values + 1), ".\n"
