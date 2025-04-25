@@ -1,19 +1,21 @@
-# shapr 1.0.3 (Patch release)
+# shapr 1.0.4 (Patch release)
 
-* Fix CRAN errors of type `Expected <nn_module> but got object of type <NULL>` occurring after the recent `torch` update, causing the `approach='vaeac'` to break. 
-* Fix documentation issues detected during shapr 1.0.2 release
-* Change default seed from 1 to NULL.
-* Used skip_on_cran() to reduce check time on CRAN for snapshot tests which where not tested anyway
-* Other minor fixes.
-See NEWS.md for details.
+**Just making this file ready -- will have to dump version in DESCRIPTION and NEWS.md before submission**
+
+* Fix CRAN errors of the nosuggets type by using `testthat::skip_if_not_installed()` for all tests requiring suggested 
+packages to ensure they are skipped gracefully when dependencies are unavailable 
+* Some other new functionality and a few other bug fixes, see NEWS.md for details.
 
 ## Test environments
 
 The majority of our tests rely uses snapshots to check results reproducibility.
 These tests are run locally and remotely with GHA (see below) without errors.
 The win-builder and R-hub tests are run without snapshots tests (to replicate CRAN testing)
+Locally, tests are run both with and without suggested packages.
 
-* GHA (ubuntu-latest), R-version: devel, release, oldrel-1, oldrel-2
+* Locally (Ubuntu 20.04.6), R-version 4.4.1 (with all packages and in a .libPath without suggested packages)
+
+* GHA (ubuntu-latest), R-versions: devel, release, oldrel-1, oldrel-2
 * GHA (windows-latest), R-version: release
 * GHA (macOS-latest), R-version: release
 * devtools-win-builder, R-versions: devel, release, oldrelease 
@@ -22,6 +24,7 @@ The win-builder and R-hub tests are run without snapshots tests (to replicate CR
 * R-hub (windows-latest): R-version: devel
 * R-hub (mac-latest): R-version: devel
 * R-hub (clang-asan): R-version: devel
+
 
 ## R CMD check results
 
