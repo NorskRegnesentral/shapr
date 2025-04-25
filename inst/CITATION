@@ -1,14 +1,14 @@
 # TEST TEST
 
-citHeader("To cite shapr version >= 1.0.0 in publications, please use Jullum et al. (2024).\n
+citHeader("To cite shapr version >= 1.0.0 in publications, please use Jullum et al. (2025).\n
 To cite shapr <= 0.2.3, please use Sellereite & Jullum (2019)")
 
 bibentry(
-  bibtype  = "Unpublished",
+  bibtype  = "Article",
   title    = "shapr: Explaining Machine Learning Models with Conditional Shapley Values in R and Python",
   author   = person("Martin Jullum, Lars Henry Berge Olsen, Jon Lachmann, Annabelle Redelmeier"),
-  note  = "Manuscript in preparation",
-  year     = "2024",
+  journal  = "arXiv preprint arXiv:2504.01842",
+  year     = "2025",
 )
 
 bibentry(
