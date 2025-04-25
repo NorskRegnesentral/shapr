@@ -24,7 +24,7 @@
       i Not converged after 6 coalitions:
       Current convergence measure: 0.31 [needs 0.02]
       Estimated remaining coalitions: 24
-      (Concervatively) adding 10% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -47,7 +47,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.24 [needs 0.02]
       Estimated remaining coalitions: 20
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -70,7 +70,7 @@
       i Not converged after 12 coalitions:
       Current convergence measure: 0.16 [needs 0.02]
       Estimated remaining coalitions: 18
-      (Concervatively) adding 20% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -129,7 +129,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.15 [needs 0.1]
       Estimated remaining coalitions: 8
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -151,7 +151,7 @@
       i Not converged after 12 coalitions:
       Current convergence measure: 0.18 [needs 0.1]
       Estimated remaining coalitions: 12
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -209,7 +209,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.15 [needs 0.001]
       Estimated remaining coalitions: 20
-      (Concervatively) adding 0.001% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -231,7 +231,7 @@
       i Not converged after 12 coalitions:
       Current convergence measure: 0.18 [needs 0.001]
       Estimated remaining coalitions: 18
-      (Concervatively) adding 0.001% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -253,7 +253,7 @@
       i Not converged after 14 coalitions:
       Current convergence measure: 0.15 [needs 0.001]
       Estimated remaining coalitions: 16
-      (Concervatively) adding 0.001% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -275,7 +275,7 @@
       i Not converged after 16 coalitions:
       Current convergence measure: 0.067 [needs 0.001]
       Estimated remaining coalitions: 14
-      (Concervatively) adding 0.001% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -297,7 +297,7 @@
       i Not converged after 18 coalitions:
       Current convergence measure: 0.0015 [needs 0.001]
       Estimated remaining coalitions: 12
-      (Concervatively) adding 0.001% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -319,7 +319,7 @@
       i Not converged after 20 coalitions:
       Current convergence measure: 0.025 [needs 0.001]
       Estimated remaining coalitions: 10
-      (Concervatively) adding 0.001% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -341,7 +341,7 @@
       i Not converged after 22 coalitions:
       Current convergence measure: 0.0057 [needs 0.001]
       Estimated remaining coalitions: 8
-      (Concervatively) adding 0.001% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -395,7 +395,7 @@
       i Not converged after 6 coalitions:
       Current convergence measure: 0.31 [needs 0.02]
       Estimated remaining coalitions: 24
-      (Concervatively) adding 10% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -417,7 +417,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.24 [needs 0.02]
       Estimated remaining coalitions: 20
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -439,7 +439,7 @@
       i Not converged after 12 coalitions:
       Current convergence measure: 0.16 [needs 0.02]
       Estimated remaining coalitions: 18
-      (Concervatively) adding 20% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -528,7 +528,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.15 [needs 0.1]
       Estimated remaining coalitions: 8
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -550,7 +550,7 @@
       i Not converged after 12 coalitions:
       Current convergence measure: 0.18 [needs 0.1]
       Estimated remaining coalitions: 12
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -653,7 +653,7 @@
       i Not converged after 6 coalitions:
       Current convergence measure: 0.32 [needs 0.02]
       Estimated remaining coalitions: 24
-      (Concervatively) adding 10% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 10 of 32 coalitions, 4 new. 
@@ -662,7 +662,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.24 [needs 0.02]
       Estimated remaining coalitions: 20
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 2 new. 
@@ -671,7 +671,7 @@
       i Not converged after 12 coalitions:
       Current convergence measure: 0.11 [needs 0.02]
       Estimated remaining coalitions: 18
-      (Concervatively) adding 20% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 16 of 32 coalitions, 4 new. 
@@ -712,7 +712,7 @@
       i Not converged after 6 coalitions:
       Current convergence measure: 0.32 [needs 0.02]
       Estimated remaining coalitions: 24
-      (Concervatively) adding 10% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -735,7 +735,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.24 [needs 0.02]
       Estimated remaining coalitions: 20
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -758,7 +758,7 @@
       i Not converged after 12 coalitions:
       Current convergence measure: 0.11 [needs 0.02]
       Estimated remaining coalitions: 18
-      (Concervatively) adding 20% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -825,7 +825,7 @@
       i Not converged after 6 coalitions:
       Current convergence measure: 0.32 [needs 0.02]
       Estimated remaining coalitions: 24
-      (Concervatively) adding 10% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -848,7 +848,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.24 [needs 0.02]
       Estimated remaining coalitions: 20
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -871,7 +871,7 @@
       i Not converged after 12 coalitions:
       Current convergence measure: 0.11 [needs 0.02]
       Estimated remaining coalitions: 18
-      (Concervatively) adding 20% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output

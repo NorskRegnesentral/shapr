@@ -45,7 +45,7 @@ print_iter <- function(internal) {
           msg,
           "Current convergence measure: {conv_nice} [needs {tol_nice}]\n",
           "Estimated remaining coalitions: {est_remaining_coalitions}\n",
-          "(Concervatively) adding {n_coal_next_iter_factor_nice}% of that ({next_new_n_coalitions} coalitions) ",
+          "(Conservatively) adding about {n_coal_next_iter_factor_nice}% of that ({next_new_n_coalitions} coalitions) ",
           "in the next iteration."
         )
       }

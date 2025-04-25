@@ -24,7 +24,7 @@
       i Not converged after 6 coalitions:
       Current convergence measure: 0.31 [needs 0.02]
       Estimated remaining coalitions: 24
-      (Concervatively) adding 10% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -47,7 +47,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.24 [needs 0.02]
       Estimated remaining coalitions: 20
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -70,7 +70,7 @@
       i Not converged after 12 coalitions:
       Current convergence measure: 0.16 [needs 0.02]
       Estimated remaining coalitions: 18
-      (Concervatively) adding 20% of that (4 coalitions) in the next iteration.
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -172,7 +172,7 @@
       i Not converged after 6 coalitions:
       Current convergence measure: 0.29 [needs 0.02]
       Estimated remaining coalitions: 8
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -189,7 +189,7 @@
       i Not converged after 8 coalitions:
       Current convergence measure: 0.21 [needs 0.02]
       Estimated remaining coalitions: 6
-      (Concervatively) adding 10% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -206,7 +206,7 @@
       i Not converged after 10 coalitions:
       Current convergence measure: 0.3 [needs 0.02]
       Estimated remaining coalitions: 4
-      (Concervatively) adding 20% of that (2 coalitions) in the next iteration.
+      (Conservatively) adding about 20% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
