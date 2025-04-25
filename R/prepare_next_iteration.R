@@ -66,7 +66,7 @@ prepare_next_iteration <- function(internal) {
     if (!is.null(n_coal_next_iter_factor_vec[1])) {
       next_iter_list$n_coal_next_iter_factor <- ifelse(
         length(n_coal_next_iter_factor_vec) >= iter,
-        n_coal_next_iter_factor_vec[iter+1],
+        n_coal_next_iter_factor_vec[iter + 1],
         n_coal_next_iter_factor_vec[length(n_coal_next_iter_factor_vec)]
       )
     } else {

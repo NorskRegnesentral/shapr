@@ -223,8 +223,8 @@ get_parameters <- function(approach,
 
   # max_n_coalitions
   if (!is.null(seed) &&
-      !(length(seed) == 1 &&
-        !is.na(seed))) {
+    !(length(seed) == 1 &&
+      !is.na(seed))) {
     stop("`seed` must be NULL or a single value, interpreted as an integer.")
   }
 
