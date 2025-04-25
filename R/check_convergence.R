@@ -33,7 +33,7 @@ check_convergence <- function(internal) {
 
   dt_shapley_est0 <- copy(dt_shapley_est)
 
-  est_required_coals_per_ex_id <- est_required_coalitions <- est_remaining_coalitions <- overall_conv_measure <- NA
+  est_required_coals_per_ex_id <- est_required_coal_samp <- est_remaining_coal_samp <- overall_conv_measure <- NA
 
   if (isTRUE(exact)) {
     converged_exact <- TRUE
@@ -48,15 +48,15 @@ check_convergence <- function(internal) {
       dt_shapley_est0[, conv_measure := max_sd0 / ((maxval - minval) * sqrt(n_sampled_coalitions))]
       dt_shapley_est0[, req_samples := min(req_samples, 2^n_shapley_values - 2)]
 
-      est_required_coalitions <- ceiling(dt_shapley_est0[, median(req_samples)])
+      est_required_coal_samp <- ceiling(dt_shapley_est0[, median(req_samples)])
       if (isTRUE(paired_shap_sampling)) {
-        est_required_coalitions <- ceiling(est_required_coalitions * 0.5) * 2
+        est_required_coal_samp <- round(est_required_coal_samp * 0.5) * 2
       }
-      est_remaining_coalitions <- max(0, est_required_coalitions - (n_sampled_coalitions + 2))
+      est_remaining_coal_samp <- max(0, est_required_coal_samp - n_sampled_coalitions)
 
       overall_conv_measure <- dt_shapley_est0[, median(conv_measure)]
 
-      converged_sd <- (est_remaining_coalitions == 0)
+      converged_sd <- (est_remaining_coal_samp == 0)
 
       est_required_coals_per_ex_id <- dt_shapley_est0[, req_samples]
       names(est_required_coals_per_ex_id) <- paste0(
@@ -79,8 +79,8 @@ check_convergence <- function(internal) {
   internal$iter_list[[iter]]$converged_sd <- converged_sd
   internal$iter_list[[iter]]$converged_max_iter <- converged_max_iter
   internal$iter_list[[iter]]$converged_max_n_coalitions <- converged_max_n_coalitions
-  internal$iter_list[[iter]]$est_required_coalitions <- est_required_coalitions
-  internal$iter_list[[iter]]$est_remaining_coalitions <- est_remaining_coalitions
+  internal$iter_list[[iter]]$est_required_coal_samp <- est_required_coal_samp
+  internal$iter_list[[iter]]$est_remaining_coal_samp <- est_remaining_coal_samp
   internal$iter_list[[iter]]$est_required_coals_per_ex_id <- as.list(est_required_coals_per_ex_id)
   internal$iter_list[[iter]]$overall_conv_measure <- overall_conv_measure
 
