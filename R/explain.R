@@ -91,7 +91,7 @@
 #' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
 #' (only when `iterative = TRUE`) .
 #' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `iterative = TRUE`)
-#' + the final estimates.
+#' and the final estimates.
 #' `"vS_details"` displays information about the v_S estimates.
 #' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`).
 #' `NULL` means no printout.
