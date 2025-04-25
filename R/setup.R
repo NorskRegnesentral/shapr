@@ -411,9 +411,11 @@ check_data <- function(internal) {
   if (is.null(model_feature_specs)) {
     if ("basic" %in% verbose) {
       cli::cli_inform(
-        "Note: You passed a model to explain() which is not natively supported, and did not supply a ",
-        "'get_model_specs' function to explain().\n",
-        "Consistency checks between model and data is therefore disabled.\n"
+        paste0(
+          "You passed a model to explain() which is not natively supported, and did not supply a ",
+          "'get_model_specs' function to explain().\n",
+          "Consistency checks between model and data is therefore disabled.\n"
+        )
       )
     }
 
@@ -421,8 +423,10 @@ check_data <- function(internal) {
   } else if (NA_labels) {
     if ("basic" %in% verbose) {
       cli::cli_inform(
-        "Note: Feature names extracted from the model contains NA.\n",
-        "Consistency checks between model and data is therefore disabled.\n"
+        paste0(
+          "Note: Feature names extracted from the model contains NA.\n",
+          "Consistency checks between model and data is therefore disabled.\n"
+        )
       )
     }
 
@@ -430,8 +434,10 @@ check_data <- function(internal) {
   } else if (NA_classes) {
     if ("basic" %in% verbose) {
       cli::cli_inform(
-        "Note: Feature classes extracted from the model contains NA.\n",
-        "Assuming feature classes from the data are correct.\n"
+        paste0(
+          "Note: Feature classes extracted from the model contains NA.\n",
+          "Assuming feature classes from the data are correct.\n"
+        )
       )
     }
 
@@ -440,8 +446,10 @@ check_data <- function(internal) {
   } else if (factors_exists && NA_factor_levels) {
     if ("basic" %in% verbose) {
       cli::cli_inform(
-        "Note: Feature factor levels extracted from the model contains NA.\n",
-        "Assuming feature factor levels from the data are correct.\n"
+        paste0(
+          "Note: Feature factor levels extracted from the model contains NA.\n",
+          "Assuming feature factor levels from the data are correct.\n"
+        )
       )
     }
 
