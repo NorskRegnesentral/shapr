@@ -233,19 +233,11 @@ def explain(
       # Only actually called for approach in ["regression_surrogate", "vaeac"]
       rinternal = shapr.setup_approach(rinternal)
 
-      #print("Gaussian samples from R 1:", list(stats.rnorm(n=5)))
-
       # Compute the vS
       vS_list = compute_vS(rinternal, model, predict_model)
 
-      #print("Gaussian samples from R 2:", list(stats.rnorm(n=5)))
-
-
       # Compute Shapley value estimates and bootstrapped standard deviations
       rinternal = shapr.compute_estimates(rinternal, vS_list)
-
-      # Sample a Gaussian variable in R and print it
-      #print("Gaussian samples from R 3:", list(stats.rnorm(n=5)))
 
       # Check convergence based on estimates and standard deviations (and thresholds)
       rinternal = shapr.check_convergence(rinternal)
@@ -310,7 +302,6 @@ def compute_vS(rinternal, model, predict_model):
   
   iter = len(rinternal.rx2('iter_list'))
 
-  #  S_batch <- internal$iter_list[[iter]]$S_batch
   S_batch = rinternal.rx2('iter_list')[iter-1].rx2('S_batch')
   
   # verbose
