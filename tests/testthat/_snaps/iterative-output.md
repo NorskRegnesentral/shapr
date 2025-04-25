@@ -23,8 +23,8 @@
       -- Convergence info 
       i Not converged after 6 coalitions:
       Current convergence measure: 0.31 [needs 0.02]
-      Estimated remaining coalitions: 24
-      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
+      Estimated remaining coalitions: 26
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -41,75 +41,98 @@
     Message
       
       -- Iteration 2 -----------------------------------------------------------------
-      i Using 10 of 32 coalitions, 4 new. 
+      i Using 8 of 32 coalitions, 2 new. 
       
       -- Convergence info 
-      i Not converged after 10 coalitions:
-      Current convergence measure: 0.24 [needs 0.02]
-      Estimated remaining coalitions: 20
-      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
-      
-      -- Current estimated Shapley values (sd) 
-    Output
-                  none       Solar.R           Wind          Temp         Month
-                <char>        <char>         <char>        <char>        <char>
-      1: 42.444 (0.00) -4.411 (4.98)   8.305 (2.80) 17.463 (5.66) -5.635 (2.09)
-      2: 42.444 (0.00)  2.376 (1.96)  -3.309 (0.48) -5.286 (1.70) -5.635 (1.86)
-      3: 42.444 (0.00)  3.834 (2.10) -18.574 (4.81) -1.495 (1.17) -2.595 (1.56)
-                   Day
-                <char>
-      1: -3.121 (2.66)
-      2: -2.025 (0.30)
-      3:  1.261 (4.61)
-    Message
-      
-      -- Iteration 3 -----------------------------------------------------------------
-      i Using 12 of 32 coalitions, 2 new. 
-      
-      -- Convergence info 
-      i Not converged after 12 coalitions:
-      Current convergence measure: 0.16 [needs 0.02]
-      Estimated remaining coalitions: 18
+      i Not converged after 8 coalitions:
+      Current convergence measure: 0.25 [needs 0.02]
+      Estimated remaining coalitions: 24
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
-                  none       Solar.R           Wind          Temp         Month
-                <char>        <char>         <char>        <char>        <char>
-      1: 42.444 (0.00) -4.549 (0.93)   8.360 (2.80) 17.505 (0.03) -5.594 (0.99)
-      2: 42.444 (0.00)  2.238 (1.26)  -3.254 (0.51) -5.244 (0.03) -5.594 (1.24)
-      3: 42.444 (0.00)  3.696 (1.80) -18.519 (4.74) -1.453 (0.03) -2.554 (1.53)
+                  none       Solar.R           Wind          Temp          Month
+                <char>        <char>         <char>        <char>         <char>
+      1: 42.444 (0.00) -4.411 (4.18)   1.335 (1.01) 17.463 (5.50)   1.335 (1.01)
+      2: 42.444 (0.00)  2.376 (1.66)  -4.472 (1.09) -5.286 (1.76)  -4.472 (1.09)
+      3: 42.444 (0.00)  3.834 (3.85) -10.585 (2.44) -1.495 (1.30) -10.585 (2.44)
                    Day
                 <char>
-      1: -3.121 (2.66)
-      2: -2.025 (0.29)
-      3:  1.261 (4.60)
+      1: -3.121 (1.61)
+      2: -2.025 (0.83)
+      3:  1.261 (1.19)
+    Message
+      
+      -- Iteration 3 -----------------------------------------------------------------
+      i Using 12 of 32 coalitions, 4 new. 
+      
+      -- Convergence info 
+      i Not converged after 12 coalitions:
+      Current convergence measure: 0.16 [needs 0.02]
+      Estimated remaining coalitions: 20
+      (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
+      
+      -- Current estimated Shapley values (sd) 
+    Output
+                  none       Solar.R           Wind          Temp         Month
+                <char>        <char>         <char>        <char>        <char>
+      1: 42.444 (0.00) -4.549 (2.22)   8.311 (3.75) 17.506 (1.70) -5.587 (3.39)
+      2: 42.444 (0.00)  2.238 (1.19)  -3.303 (1.10) -5.244 (0.42) -5.587 (0.82)
+      3: 42.444 (0.00)  3.696 (3.60) -18.568 (4.75) -1.452 (1.60) -2.547 (3.75)
+                   Day
+                <char>
+      1: -3.078 (0.35)
+      2: -1.983 (0.30)
+      3:  1.304 (0.83)
     Message
       
       -- Iteration 4 -----------------------------------------------------------------
-      i Using 16 of 32 coalitions, 4 new. 
+      i Using 18 of 32 coalitions, 6 new. 
       
       -- Convergence info 
-      v Converged after 16 coalitions:
+      i Not converged after 18 coalitions:
+      Current convergence measure: 0.042 [needs 0.02]
+      Estimated remaining coalitions: 2
+      (Conservatively) adding about 40% of that (2 coalitions) in the next iteration.
+      
+      -- Current estimated Shapley values (sd) 
+    Output
+                  none       Solar.R           Wind          Temp         Month
+                <char>        <char>         <char>        <char>        <char>
+      1: 42.444 (0.00) -4.546 (0.02)   8.294 (0.98) 17.513 (0.03) -5.573 (0.98)
+      2: 42.444 (0.00)  2.241 (0.02)  -3.321 (0.16) -5.236 (0.03) -5.573 (0.16)
+      3: 42.444 (0.00)  3.699 (0.02) -18.586 (1.13) -1.445 (0.03) -2.533 (1.13)
+                   Day
+                <char>
+      1: -3.085 (0.02)
+      2: -1.990 (0.02)
+      3:  1.297 (0.02)
+    Message
+      
+      -- Iteration 5 -----------------------------------------------------------------
+      i Using 20 of 32 coalitions, 2 new. 
+      
+      -- Convergence info 
+      v Converged after 20 coalitions:
       Convergence tolerance reached!
       
       -- Final estimated Shapley values (sd) 
     Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
-      1: 42.444 (0.00) -4.532 (0.06)   8.262 (0.04) 17.522 (0.03) -5.582 (0.03)
-      2: 42.444 (0.00)  2.255 (0.06)  -3.352 (0.04) -5.227 (0.03) -5.582 (0.03)
-      3: 42.444 (0.00)  3.713 (0.06) -18.617 (0.04) -1.436 (0.03) -2.542 (0.03)
+      1: 42.444 (0.00) -4.548 (0.03)   8.258 (0.03) 17.525 (0.04) -5.557 (0.03)
+      2: 42.444 (0.00)  2.239 (0.03)  -3.356 (0.03) -5.224 (0.04) -5.557 (0.03)
+      3: 42.444 (0.00)  3.697 (0.03) -18.621 (0.03) -1.433 (0.04) -2.517 (0.03)
                    Day
                 <char>
-      1: -3.068 (0.03)
-      2: -1.972 (0.03)
-      3:  1.314 (0.03)
+      1: -3.076 (0.02)
+      2: -1.981 (0.02)
+      3:  1.306 (0.02)
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -4.532   8.262 17.522 -5.582 -3.068
-      2:          2 42.44   2.255  -3.352 -5.227 -5.582 -1.972
-      3:          3 42.44   3.713 -18.617 -1.436 -2.542  1.314
+      1:          1 42.44  -4.548   8.258 17.525 -5.557 -3.076
+      2:          2 42.44   2.239  -3.356 -5.224 -5.557 -1.981
+      3:          3 42.44   3.697 -18.621 -1.433 -2.517  1.306
 
 # output_lm_numeric_independence_converges_tol
 
@@ -128,7 +151,7 @@
       -- Convergence info 
       i Not converged after 10 coalitions:
       Current convergence measure: 0.15 [needs 0.1]
-      Estimated remaining coalitions: 8
+      Estimated remaining coalitions: 10
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
@@ -150,8 +173,8 @@
       -- Convergence info 
       i Not converged after 12 coalitions:
       Current convergence measure: 0.18 [needs 0.1]
-      Estimated remaining coalitions: 12
-      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
+      Estimated remaining coalitions: 14
+      (Conservatively) adding about 20% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -208,7 +231,7 @@
       -- Convergence info 
       i Not converged after 10 coalitions:
       Current convergence measure: 0.15 [needs 0.001]
-      Estimated remaining coalitions: 20
+      Estimated remaining coalitions: 22
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
@@ -230,7 +253,7 @@
       -- Convergence info 
       i Not converged after 12 coalitions:
       Current convergence measure: 0.18 [needs 0.001]
-      Estimated remaining coalitions: 18
+      Estimated remaining coalitions: 20
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
@@ -252,7 +275,7 @@
       -- Convergence info 
       i Not converged after 14 coalitions:
       Current convergence measure: 0.15 [needs 0.001]
-      Estimated remaining coalitions: 16
+      Estimated remaining coalitions: 18
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
@@ -274,7 +297,7 @@
       -- Convergence info 
       i Not converged after 16 coalitions:
       Current convergence measure: 0.067 [needs 0.001]
-      Estimated remaining coalitions: 14
+      Estimated remaining coalitions: 16
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
@@ -296,7 +319,7 @@
       -- Convergence info 
       i Not converged after 18 coalitions:
       Current convergence measure: 0.0015 [needs 0.001]
-      Estimated remaining coalitions: 12
+      Estimated remaining coalitions: 14
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
@@ -318,7 +341,7 @@
       -- Convergence info 
       i Not converged after 20 coalitions:
       Current convergence measure: 0.025 [needs 0.001]
-      Estimated remaining coalitions: 10
+      Estimated remaining coalitions: 12
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
@@ -340,7 +363,7 @@
       -- Convergence info 
       i Not converged after 22 coalitions:
       Current convergence measure: 0.0057 [needs 0.001]
-      Estimated remaining coalitions: 8
+      Estimated remaining coalitions: 10
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
@@ -394,8 +417,8 @@
       -- Convergence info 
       i Not converged after 6 coalitions:
       Current convergence measure: 0.31 [needs 0.02]
-      Estimated remaining coalitions: 24
-      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
+      Estimated remaining coalitions: 26
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -414,23 +437,23 @@
       -- Iteration 2 -----------------------------------------------------------------
       
       -- Convergence info 
-      i Not converged after 10 coalitions:
-      Current convergence measure: 0.24 [needs 0.02]
-      Estimated remaining coalitions: 20
-      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
+      i Not converged after 8 coalitions:
+      Current convergence measure: 0.25 [needs 0.02]
+      Estimated remaining coalitions: 24
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
-                  none       Solar.R           Wind          Temp         Month
-                <char>        <char>         <char>        <char>        <char>
-      1: 42.444 (0.00) -4.411 (4.98)   8.305 (2.80) 17.463 (5.66) -5.635 (2.09)
-      2: 42.444 (0.00)  2.376 (1.96)  -3.309 (0.48) -5.286 (1.70) -5.635 (1.86)
-      3: 42.444 (0.00)  3.834 (2.10) -18.574 (4.81) -1.495 (1.17) -2.595 (1.56)
+                  none       Solar.R           Wind          Temp          Month
+                <char>        <char>         <char>        <char>         <char>
+      1: 42.444 (0.00) -4.411 (4.18)   1.335 (1.01) 17.463 (5.50)   1.335 (1.01)
+      2: 42.444 (0.00)  2.376 (1.66)  -4.472 (1.09) -5.286 (1.76)  -4.472 (1.09)
+      3: 42.444 (0.00)  3.834 (3.85) -10.585 (2.44) -1.495 (1.30) -10.585 (2.44)
                    Day
                 <char>
-      1: -3.121 (2.66)
-      2: -2.025 (0.30)
-      3:  1.261 (4.61)
+      1: -3.121 (1.61)
+      2: -2.025 (0.83)
+      3:  1.261 (1.19)
     Message
       
       -- Iteration 3 -----------------------------------------------------------------
@@ -438,46 +461,69 @@
       -- Convergence info 
       i Not converged after 12 coalitions:
       Current convergence measure: 0.16 [needs 0.02]
-      Estimated remaining coalitions: 18
-      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
+      Estimated remaining coalitions: 20
+      (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
-      1: 42.444 (0.00) -4.549 (0.93)   8.360 (2.80) 17.505 (0.03) -5.594 (0.99)
-      2: 42.444 (0.00)  2.238 (1.26)  -3.254 (0.51) -5.244 (0.03) -5.594 (1.24)
-      3: 42.444 (0.00)  3.696 (1.80) -18.519 (4.74) -1.453 (0.03) -2.554 (1.53)
+      1: 42.444 (0.00) -4.549 (2.22)   8.311 (3.75) 17.506 (1.70) -5.587 (3.39)
+      2: 42.444 (0.00)  2.238 (1.19)  -3.303 (1.10) -5.244 (0.42) -5.587 (0.82)
+      3: 42.444 (0.00)  3.696 (3.60) -18.568 (4.75) -1.452 (1.60) -2.547 (3.75)
                    Day
                 <char>
-      1: -3.121 (2.66)
-      2: -2.025 (0.29)
-      3:  1.261 (4.60)
+      1: -3.078 (0.35)
+      2: -1.983 (0.30)
+      3:  1.304 (0.83)
     Message
       
       -- Iteration 4 -----------------------------------------------------------------
       
       -- Convergence info 
-      v Converged after 16 coalitions:
+      i Not converged after 18 coalitions:
+      Current convergence measure: 0.042 [needs 0.02]
+      Estimated remaining coalitions: 2
+      (Conservatively) adding about 40% of that (2 coalitions) in the next iteration.
+      
+      -- Current estimated Shapley values (sd) 
+    Output
+                  none       Solar.R           Wind          Temp         Month
+                <char>        <char>         <char>        <char>        <char>
+      1: 42.444 (0.00) -4.546 (0.02)   8.294 (0.98) 17.513 (0.03) -5.573 (0.98)
+      2: 42.444 (0.00)  2.241 (0.02)  -3.321 (0.16) -5.236 (0.03) -5.573 (0.16)
+      3: 42.444 (0.00)  3.699 (0.02) -18.586 (1.13) -1.445 (0.03) -2.533 (1.13)
+                   Day
+                <char>
+      1: -3.085 (0.02)
+      2: -1.990 (0.02)
+      3:  1.297 (0.02)
+    Message
+      
+      -- Iteration 5 -----------------------------------------------------------------
+      
+      -- Convergence info 
+      v Converged after 20 coalitions:
       Convergence tolerance reached!
+      Maximum number of coalitions reached!
       
       -- Final estimated Shapley values (sd) 
     Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
-      1: 42.444 (0.00) -4.532 (0.06)   8.262 (0.04) 17.522 (0.03) -5.582 (0.03)
-      2: 42.444 (0.00)  2.255 (0.06)  -3.352 (0.04) -5.227 (0.03) -5.582 (0.03)
-      3: 42.444 (0.00)  3.713 (0.06) -18.617 (0.04) -1.436 (0.03) -2.542 (0.03)
+      1: 42.444 (0.00) -4.548 (0.03)   8.258 (0.03) 17.525 (0.04) -5.557 (0.03)
+      2: 42.444 (0.00)  2.239 (0.03)  -3.356 (0.03) -5.224 (0.04) -5.557 (0.03)
+      3: 42.444 (0.00)  3.697 (0.03) -18.621 (0.03) -1.433 (0.04) -2.517 (0.03)
                    Day
                 <char>
-      1: -3.068 (0.03)
-      2: -1.972 (0.03)
-      3:  1.314 (0.03)
+      1: -3.076 (0.02)
+      2: -1.981 (0.02)
+      3:  1.306 (0.02)
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -4.532   8.262 17.522 -5.582 -3.068
-      2:          2 42.44   2.255  -3.352 -5.227 -5.582 -1.972
-      3:          3 42.44   3.713 -18.617 -1.436 -2.542  1.314
+      1:          1 42.44  -4.548   8.258 17.525 -5.557 -3.076
+      2:          2 42.44   2.239  -3.356 -5.224 -5.557 -1.981
+      3:          3 42.44   3.697 -18.621 -1.433 -2.517  1.306
 
 # output_lm_numeric_gaussian_group_converges_tol
 
@@ -494,21 +540,39 @@
       -- Iteration 1 -----------------------------------------------------------------
       
       -- Convergence info 
-      v Converged after 6 coalitions:
-      Convergence tolerance reached!
+      i Not converged after 6 coalitions:
+      Current convergence measure: 0.23 [needs 0.1]
+      Estimated remaining coalitions: 2
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
-      -- Final estimated Shapley values (sd) 
+      -- Current estimated Shapley values (sd) 
     Output
                   none              A              B             C
                 <char>         <char>         <char>        <char>
       1: 42.444 (0.00)   1.037 (2.66)  12.949 (3.32) -1.385 (3.20)
       2: 42.444 (0.00)   0.866 (3.28) -13.828 (3.47) -0.917 (2.88)
       3: 42.444 (0.00) -18.102 (3.98)  -0.261 (4.07)  0.795 (0.24)
+    Message
+      
+      -- Iteration 2 -----------------------------------------------------------------
+      
+      -- Convergence info 
+      v Converged after 8 coalitions:
+      All (8) coalitions used.
+      Maximum number of coalitions reached!
+      
+      -- Final estimated Shapley values 
+    Output
+           none       A       B      C
+         <char>  <char>  <char> <char>
+      1: 42.444   0.631  13.762 -1.791
+      2: 42.444   0.546 -13.188 -1.237
+      3: 42.444 -18.133  -0.201  0.765
          explain_id  none        A        B       C
               <int> <num>    <num>    <num>   <num>
-      1:          1 42.44   1.0372  12.9494 -1.3845
-      2:          2 42.44   0.8661 -13.8283 -0.9173
-      3:          3 42.44 -18.1023  -0.2611  0.7951
+      1:          1 42.44   0.6309  13.7619 -1.7908
+      2:          2 42.44   0.5461 -13.1883 -1.2372
+      3:          3 42.44 -18.1325  -0.2007  0.7649
 
 # output_lm_numeric_independence_converges_tol_paired
 
@@ -527,7 +591,7 @@
       -- Convergence info 
       i Not converged after 10 coalitions:
       Current convergence measure: 0.15 [needs 0.1]
-      Estimated remaining coalitions: 8
+      Estimated remaining coalitions: 10
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
@@ -549,8 +613,8 @@
       -- Convergence info 
       i Not converged after 12 coalitions:
       Current convergence measure: 0.18 [needs 0.1]
-      Estimated remaining coalitions: 12
-      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
+      Estimated remaining coalitions: 14
+      (Conservatively) adding about 20% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -613,19 +677,22 @@
       i Using 6 of 32 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
-      i Using 10 of 32 coalitions, 4 new. 
+      i Using 8 of 32 coalitions, 2 new. 
       
       -- Iteration 3 -----------------------------------------------------------------
-      i Using 12 of 32 coalitions, 2 new. 
+      i Using 12 of 32 coalitions, 4 new. 
       
       -- Iteration 4 -----------------------------------------------------------------
-      i Using 16 of 32 coalitions, 4 new. 
+      i Using 18 of 32 coalitions, 6 new. 
+      
+      -- Iteration 5 -----------------------------------------------------------------
+      i Using 22 of 32 coalitions, 4 new. 
     Output
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
-      1:          1 42.44  -8.647   7.807  14.6351  0.5387 -1.7315
-      2:          2 42.44   4.790  -4.389 -11.4811 -1.5185 -1.2806
-      3:          3 42.44   7.624 -25.458   0.1555 -0.7370  0.8471
+      1:          1 42.44  -8.821   7.635  14.4860  0.5242 -1.2222
+      2:          2 42.44   4.679  -4.875 -11.6951 -1.0583 -0.9300
+      3:          3 42.44   7.323 -25.679   0.3017 -0.4086  0.8949
 
 # output_verbose_1_3
 
@@ -652,39 +719,48 @@
       -- Convergence info 
       i Not converged after 6 coalitions:
       Current convergence measure: 0.32 [needs 0.02]
-      Estimated remaining coalitions: 24
-      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
-      
-      -- Iteration 2 -----------------------------------------------------------------
-      i Using 10 of 32 coalitions, 4 new. 
-      
-      -- Convergence info 
-      i Not converged after 10 coalitions:
-      Current convergence measure: 0.24 [needs 0.02]
-      Estimated remaining coalitions: 20
+      Estimated remaining coalitions: 26
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
+      -- Iteration 2 -----------------------------------------------------------------
+      i Using 8 of 32 coalitions, 2 new. 
+      
+      -- Convergence info 
+      i Not converged after 8 coalitions:
+      Current convergence measure: 0.24 [needs 0.02]
+      Estimated remaining coalitions: 24
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
+      
       -- Iteration 3 -----------------------------------------------------------------
-      i Using 12 of 32 coalitions, 2 new. 
+      i Using 12 of 32 coalitions, 4 new. 
       
       -- Convergence info 
       i Not converged after 12 coalitions:
-      Current convergence measure: 0.11 [needs 0.02]
-      Estimated remaining coalitions: 18
-      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
+      Current convergence measure: 0.15 [needs 0.02]
+      Estimated remaining coalitions: 20
+      (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       -- Iteration 4 -----------------------------------------------------------------
-      i Using 16 of 32 coalitions, 4 new. 
+      i Using 18 of 32 coalitions, 6 new. 
       
       -- Convergence info 
-      v Converged after 16 coalitions:
+      i Not converged after 18 coalitions:
+      Current convergence measure: 0.047 [needs 0.02]
+      Estimated remaining coalitions: 8
+      (Conservatively) adding about 40% of that (4 coalitions) in the next iteration.
+      
+      -- Iteration 5 -----------------------------------------------------------------
+      i Using 22 of 32 coalitions, 4 new. 
+      
+      -- Convergence info 
+      v Converged after 22 coalitions:
       Convergence tolerance reached!
     Output
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
-      1:          1 42.44  -8.647   7.807  14.6351  0.5387 -1.7315
-      2:          2 42.44   4.790  -4.389 -11.4811 -1.5185 -1.2806
-      3:          3 42.44   7.624 -25.458   0.1555 -0.7370  0.8471
+      1:          1 42.44  -8.821   7.635  14.4860  0.5242 -1.2222
+      2:          2 42.44   4.679  -4.875 -11.6951 -1.0583 -0.9300
+      3:          3 42.44   7.323 -25.679   0.3017 -0.4086  0.8949
 
 # output_verbose_1_3_4
 
@@ -711,8 +787,8 @@
       -- Convergence info 
       i Not converged after 6 coalitions:
       Current convergence measure: 0.32 [needs 0.02]
-      Estimated remaining coalitions: 24
-      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
+      Estimated remaining coalitions: 26
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -729,75 +805,98 @@
     Message
       
       -- Iteration 2 -----------------------------------------------------------------
-      i Using 10 of 32 coalitions, 4 new. 
+      i Using 8 of 32 coalitions, 2 new. 
       
       -- Convergence info 
-      i Not converged after 10 coalitions:
+      i Not converged after 8 coalitions:
       Current convergence measure: 0.24 [needs 0.02]
-      Estimated remaining coalitions: 20
-      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
+      Estimated remaining coalitions: 24
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
-                  none        Solar.R           Wind           Temp         Month
-                <char>         <char>         <char>         <char>        <char>
-      1: 42.444 (0.00) -10.824 (5.39)   7.703 (2.44)  15.306 (6.19)  1.688 (2.89)
-      2: 42.444 (0.00)   2.311 (2.71)  -4.360 (0.95) -10.706 (3.22) -0.321 (0.98)
-      3: 42.444 (0.00)   6.980 (2.82) -25.418 (6.48)   0.277 (1.48) -0.316 (1.84)
+                  none       Solar.R           Wind           Temp          Month
+                <char>        <char>         <char>         <char>         <char>
+      1: 42.444 (0.00) -8.754 (4.26)   3.660 (1.98)  15.306 (5.78)   3.660 (1.98)
+      2: 42.444 (0.00)  4.467 (2.66)  -3.418 (1.25) -10.706 (3.63)  -3.418 (1.25)
+      3: 42.444 (0.00)  8.163 (5.59) -13.458 (3.59)   0.277 (1.85) -13.458 (3.59)
                    Day
                 <char>
-      1: -1.271 (2.09)
-      2: -0.804 (0.83)
-      3:  0.909 (6.12)
+      1: -1.271 (1.67)
+      2: -0.804 (1.10)
+      3:  0.909 (1.85)
     Message
       
       -- Iteration 3 -----------------------------------------------------------------
-      i Using 12 of 32 coalitions, 2 new. 
+      i Using 12 of 32 coalitions, 4 new. 
       
       -- Convergence info 
       i Not converged after 12 coalitions:
-      Current convergence measure: 0.11 [needs 0.02]
-      Estimated remaining coalitions: 18
-      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
+      Current convergence measure: 0.15 [needs 0.02]
+      Estimated remaining coalitions: 20
+      (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
-      1: 42.444 (0.00) -8.635 (1.94)   6.833 (2.33)  14.647 (0.41)  1.028 (2.01)
-      2: 42.444 (0.00)  4.812 (1.77)  -5.354 (1.30) -11.459 (0.47) -1.075 (1.54)
-      3: 42.444 (0.00)  7.568 (2.65) -25.652 (6.42)   0.100 (0.11) -0.493 (2.24)
+      1: 42.444 (0.00) -8.736 (2.74)   5.304 (2.46)  15.301 (1.65)  2.010 (1.13)
+      2: 42.444 (0.00)  4.731 (2.08)  -7.016 (2.31) -10.786 (0.95)  0.077 (1.70)
+      3: 42.444 (0.00)  7.265 (5.34) -26.095 (7.43)   0.551 (2.46) -0.473 (5.99)
                    Day
                 <char>
-      1: -1.271 (1.99)
-      2: -0.804 (0.97)
-      3:  0.909 (6.15)
+      1: -1.276 (0.40)
+      2: -0.884 (0.21)
+      3:  1.183 (0.99)
     Message
       
       -- Iteration 4 -----------------------------------------------------------------
-      i Using 16 of 32 coalitions, 4 new. 
+      i Using 18 of 32 coalitions, 6 new. 
       
       -- Convergence info 
-      v Converged after 16 coalitions:
+      i Not converged after 18 coalitions:
+      Current convergence measure: 0.047 [needs 0.02]
+      Estimated remaining coalitions: 8
+      (Conservatively) adding about 40% of that (4 coalitions) in the next iteration.
+      
+      -- Current estimated Shapley values (sd) 
+    Output
+                  none       Solar.R           Wind           Temp         Month
+                <char>        <char>         <char>         <char>        <char>
+      1: 42.444 (0.00) -9.069 (0.16)   6.311 (0.60)  15.071 (0.19)  1.304 (0.56)
+      2: 42.444 (0.00)  4.602 (0.16)  -6.119 (0.75) -11.269 (0.31) -0.466 (0.71)
+      3: 42.444 (0.00)  7.295 (0.17) -26.220 (1.86)   0.501 (0.22) -0.162 (1.86)
+                   Day
+                <char>
+      1: -1.015 (0.22)
+      2: -0.628 (0.21)
+      3:  1.017 (0.13)
+    Message
+      
+      -- Iteration 5 -----------------------------------------------------------------
+      i Using 22 of 32 coalitions, 4 new. 
+      
+      -- Convergence info 
+      v Converged after 22 coalitions:
       Convergence tolerance reached!
       
       -- Final estimated Shapley values (sd) 
     Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
-      1: 42.444 (0.00) -8.647 (0.70)   7.807 (0.80)  14.635 (0.30)  0.539 (0.46)
-      2: 42.444 (0.00)  4.790 (0.79)  -4.389 (0.78) -11.481 (0.35) -1.518 (0.49)
-      3: 42.444 (0.00)  7.624 (0.19) -25.458 (0.31)   0.156 (0.07) -0.737 (0.16)
+      1: 42.444 (0.00) -8.821 (0.32)   7.635 (0.75)  14.486 (0.32)  0.524 (0.72)
+      2: 42.444 (0.00)  4.679 (0.32)  -4.875 (0.87) -11.695 (0.34) -1.058 (0.79)
+      3: 42.444 (0.00)  7.323 (0.17) -25.679 (0.37)   0.302 (0.15) -0.409 (0.30)
                    Day
                 <char>
-      1: -1.732 (0.44)
-      2: -1.281 (0.43)
-      3:  0.847 (0.18)
+      1: -1.222 (0.41)
+      2: -0.930 (0.41)
+      3:  0.895 (0.15)
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
-      1:          1 42.44  -8.647   7.807  14.6351  0.5387 -1.7315
-      2:          2 42.44   4.790  -4.389 -11.4811 -1.5185 -1.2806
-      3:          3 42.44   7.624 -25.458   0.1555 -0.7370  0.8471
+      1:          1 42.44  -8.821   7.635  14.4860  0.5242 -1.2222
+      2:          2 42.44   4.679  -4.875 -11.6951 -1.0583 -0.9300
+      3:          3 42.44   7.323 -25.679   0.3017 -0.4086  0.8949
 
 # output_verbose_1_3_4_5
 
@@ -824,8 +923,8 @@
       -- Convergence info 
       i Not converged after 6 coalitions:
       Current convergence measure: 0.32 [needs 0.02]
-      Estimated remaining coalitions: 24
-      (Conservatively) adding about 10% of that (4 coalitions) in the next iteration.
+      Estimated remaining coalitions: 26
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
@@ -842,73 +941,96 @@
     Message
       
       -- Iteration 2 -----------------------------------------------------------------
-      i Using 10 of 32 coalitions, 4 new. 
+      i Using 8 of 32 coalitions, 2 new. 
       
       -- Convergence info 
-      i Not converged after 10 coalitions:
+      i Not converged after 8 coalitions:
       Current convergence measure: 0.24 [needs 0.02]
-      Estimated remaining coalitions: 20
-      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
+      Estimated remaining coalitions: 24
+      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
-                  none        Solar.R           Wind           Temp         Month
-                <char>         <char>         <char>         <char>        <char>
-      1: 42.444 (0.00) -10.824 (5.39)   7.703 (2.44)  15.306 (6.19)  1.688 (2.89)
-      2: 42.444 (0.00)   2.311 (2.71)  -4.360 (0.95) -10.706 (3.22) -0.321 (0.98)
-      3: 42.444 (0.00)   6.980 (2.82) -25.418 (6.48)   0.277 (1.48) -0.316 (1.84)
+                  none       Solar.R           Wind           Temp          Month
+                <char>        <char>         <char>         <char>         <char>
+      1: 42.444 (0.00) -8.754 (4.26)   3.660 (1.98)  15.306 (5.78)   3.660 (1.98)
+      2: 42.444 (0.00)  4.467 (2.66)  -3.418 (1.25) -10.706 (3.63)  -3.418 (1.25)
+      3: 42.444 (0.00)  8.163 (5.59) -13.458 (3.59)   0.277 (1.85) -13.458 (3.59)
                    Day
                 <char>
-      1: -1.271 (2.09)
-      2: -0.804 (0.83)
-      3:  0.909 (6.12)
+      1: -1.271 (1.67)
+      2: -0.804 (1.10)
+      3:  0.909 (1.85)
     Message
       
       -- Iteration 3 -----------------------------------------------------------------
-      i Using 12 of 32 coalitions, 2 new. 
+      i Using 12 of 32 coalitions, 4 new. 
       
       -- Convergence info 
       i Not converged after 12 coalitions:
-      Current convergence measure: 0.11 [needs 0.02]
-      Estimated remaining coalitions: 18
-      (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
+      Current convergence measure: 0.15 [needs 0.02]
+      Estimated remaining coalitions: 20
+      (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
     Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
-      1: 42.444 (0.00) -8.635 (1.94)   6.833 (2.33)  14.647 (0.41)  1.028 (2.01)
-      2: 42.444 (0.00)  4.812 (1.77)  -5.354 (1.30) -11.459 (0.47) -1.075 (1.54)
-      3: 42.444 (0.00)  7.568 (2.65) -25.652 (6.42)   0.100 (0.11) -0.493 (2.24)
+      1: 42.444 (0.00) -8.736 (2.74)   5.304 (2.46)  15.301 (1.65)  2.010 (1.13)
+      2: 42.444 (0.00)  4.731 (2.08)  -7.016 (2.31) -10.786 (0.95)  0.077 (1.70)
+      3: 42.444 (0.00)  7.265 (5.34) -26.095 (7.43)   0.551 (2.46) -0.473 (5.99)
                    Day
                 <char>
-      1: -1.271 (1.99)
-      2: -0.804 (0.97)
-      3:  0.909 (6.15)
+      1: -1.276 (0.40)
+      2: -0.884 (0.21)
+      3:  1.183 (0.99)
     Message
       
       -- Iteration 4 -----------------------------------------------------------------
-      i Using 16 of 32 coalitions, 4 new. 
+      i Using 18 of 32 coalitions, 6 new. 
       
       -- Convergence info 
-      v Converged after 16 coalitions:
+      i Not converged after 18 coalitions:
+      Current convergence measure: 0.047 [needs 0.02]
+      Estimated remaining coalitions: 8
+      (Conservatively) adding about 40% of that (4 coalitions) in the next iteration.
+      
+      -- Current estimated Shapley values (sd) 
+    Output
+                  none       Solar.R           Wind           Temp         Month
+                <char>        <char>         <char>         <char>        <char>
+      1: 42.444 (0.00) -9.069 (0.16)   6.311 (0.60)  15.071 (0.19)  1.304 (0.56)
+      2: 42.444 (0.00)  4.602 (0.16)  -6.119 (0.75) -11.269 (0.31) -0.466 (0.71)
+      3: 42.444 (0.00)  7.295 (0.17) -26.220 (1.86)   0.501 (0.22) -0.162 (1.86)
+                   Day
+                <char>
+      1: -1.015 (0.22)
+      2: -0.628 (0.21)
+      3:  1.017 (0.13)
+    Message
+      
+      -- Iteration 5 -----------------------------------------------------------------
+      i Using 22 of 32 coalitions, 4 new. 
+      
+      -- Convergence info 
+      v Converged after 22 coalitions:
       Convergence tolerance reached!
       
       -- Final estimated Shapley values (sd) 
     Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
-      1: 42.444 (0.00) -8.647 (0.70)   7.807 (0.80)  14.635 (0.30)  0.539 (0.46)
-      2: 42.444 (0.00)  4.790 (0.79)  -4.389 (0.78) -11.481 (0.35) -1.518 (0.49)
-      3: 42.444 (0.00)  7.624 (0.19) -25.458 (0.31)   0.156 (0.07) -0.737 (0.16)
+      1: 42.444 (0.00) -8.821 (0.32)   7.635 (0.75)  14.486 (0.32)  0.524 (0.72)
+      2: 42.444 (0.00)  4.679 (0.32)  -4.875 (0.87) -11.695 (0.34) -1.058 (0.79)
+      3: 42.444 (0.00)  7.323 (0.17) -25.679 (0.37)   0.302 (0.15) -0.409 (0.30)
                    Day
                 <char>
-      1: -1.732 (0.44)
-      2: -1.281 (0.43)
-      3:  0.847 (0.18)
+      1: -1.222 (0.41)
+      2: -0.930 (0.41)
+      3:  0.895 (0.15)
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
-      1:          1 42.44  -8.647   7.807  14.6351  0.5387 -1.7315
-      2:          2 42.44   4.790  -4.389 -11.4811 -1.5185 -1.2806
-      3:          3 42.44   7.624 -25.458   0.1555 -0.7370  0.8471
+      1:          1 42.44  -8.821   7.635  14.4860  0.5242 -1.2222
+      2:          2 42.44   4.679  -4.875 -11.6951 -1.0583 -0.9300
+      3:          3 42.44   7.323 -25.679   0.3017 -0.4086  0.8949
 

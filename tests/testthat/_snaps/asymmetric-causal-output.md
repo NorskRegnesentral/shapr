@@ -510,14 +510,23 @@
       -- Iteration 1 -----------------------------------------------------------------
       
       -- Convergence info 
-      v Converged after 6 coalitions:
-      Convergence tolerance reached!
+      i Not converged after 6 coalitions:
+      Current convergence measure: 0.23 [needs 0.02]
+      Estimated remaining coalitions: 2
+      (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
+      
+      -- Iteration 2 -----------------------------------------------------------------
+      
+      -- Convergence info 
+      v Converged after 8 coalitions:
+      All (8) coalitions used.
+      Maximum number of coalitions reached!
     Output
-         explain_id  none      A      B       C
-              <int> <num>  <num>  <num>   <num>
-      1:          1 42.44 -5.082  32.51 -14.823
-      2:          2 42.44 10.059 -29.61   5.675
-      3:          3 42.44 11.355 -23.68  -5.247
+         explain_id  none       A      B       C
+              <int> <num>   <num>  <num>   <num>
+      1:          1 42.44 -6.7937  35.93 -16.534
+      2:          2 42.44  0.8771 -11.25  -3.507
+      3:          3 42.44  9.0029 -18.97  -7.599
 
 # output_mixed_sym_caus_conf_TRUE
 
@@ -573,31 +582,31 @@
       i Using 6 of 32 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
-      i Using 10 of 32 coalitions, 4 new. 
+      i Using 8 of 32 coalitions, 2 new. 
       
       -- Iteration 3 -----------------------------------------------------------------
-      i Using 12 of 32 coalitions, 2 new. 
+      i Using 12 of 32 coalitions, 4 new. 
       
       -- Iteration 4 -----------------------------------------------------------------
-      i Using 16 of 32 coalitions, 4 new. 
+      i Using 18 of 32 coalitions, 6 new. 
       
       -- Iteration 5 -----------------------------------------------------------------
-      i Using 22 of 32 coalitions, 6 new. 
+      i Using 24 of 32 coalitions, 6 new. 
       
       -- Iteration 6 -----------------------------------------------------------------
-      i Using 26 of 32 coalitions, 4 new. 
+      i Using 28 of 32 coalitions, 4 new. 
       
       -- Iteration 7 -----------------------------------------------------------------
-      i Using 28 of 32 coalitions, 2 new. 
+      i Using 30 of 32 coalitions, 2 new. 
       
       -- Iteration 8 -----------------------------------------------------------------
-      i Using 30 of 32 coalitions, 2 new. 
+      i Using 32 of 32 coalitions, 2 new. 
     Output
-         explain_id  none Solar.R    Wind   Temp       Day Month_factor
-              <int> <num>   <num>   <num>  <num>     <num>        <num>
-      1:          1 42.44  -5.161  10.983  8.826 -1.306957       -2.757
-      2:          2 42.44   2.459  -7.408 -5.602  0.006381       -4.838
-      3:          3 42.44   2.083 -17.540 -1.726 -1.211990        7.795
+         explain_id  none Solar.R    Wind   Temp    Day Month_factor
+              <int> <num>   <num>   <num>  <num>  <num>        <num>
+      1:          1 42.44  -1.185   9.662  9.097 -2.617       -4.372
+      2:          2 42.44   4.587 -10.237 -5.900 -2.779       -1.054
+      3:          3 42.44   5.672 -18.778 -2.893 -2.084        7.483
 
 # output_mixed_asym_caus_conf_mixed
 
@@ -757,12 +766,15 @@
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 14 of 16 coalitions, 2 new. 
+      
+      -- Iteration 6 -----------------------------------------------------------------
+      i Using 16 of 16 coalitions, 2 new. 
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1 42.44       -6.051              15.73        -11.061      0.8778
-      2:          2 42.44       -5.280             -13.14         17.119    -13.5256
-      3:          3 42.44       20.898             -20.71          4.768    -23.3213
+      1:          1 42.44       -9.089              15.45         -9.112       2.237
+      2:          2 42.44       -3.126             -10.25         15.463     -16.914
+      3:          3 42.44       19.458             -21.09          3.881     -20.614
 
 # output_categorical_asym_causal_mixed_ctree
 
