@@ -1196,7 +1196,7 @@ check_extra_computation_args <- function(extra_computation_args) {
 
   # vS_batching_method
   if (!(length(vS_batching_method) == 1 && vS_batching_method %in%
-        c("future", "forloop"))) {
+    c("future", "forloop"))) {
     stop("`vS_batching_method` must be one of `future`, `forloop`.\n")
   }
 

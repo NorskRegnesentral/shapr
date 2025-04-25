@@ -6,11 +6,20 @@ default, but can be set via `extra_computation_args = list(semi_deterministic_sa
 The functionality is available when paired coalition sampling (the default) is enabled. See 
 [#449](https://github.com/NorskRegnesentral/shapr/pull/449)) for details
 * Deletes the regression-surrogate parsnip object when testing to avoid future conflicts with model object changes. (Second last commit in [#447](https://github.com/NorskRegnesentral/shapr/pull/447))
+* Improves and update logic and print for setting the number of coalitions in the next iteration for `iterative = TRUE` 
+[#452](https://github.com/NorskRegnesentral/shapr/pull/452)
+* Allows passing `vS_batching_method` to `explain()/explain_forecast()` to specify the batch computation method 
+(default is `"future"` for both, `"forloop"` available mainly for dev purposes)
+[#452](https://github.com/NorskRegnesentral/shapr/pull/452)
 
-## Minor bugfixes
-  * Two bugs related to `KernelSHAP_reweighing()` [#448](https://github.com/NorskRegnesentral/shapr/pull/448))
-  * Two bugs related to weighting for asymmetric Shapley values 
-  [#449](https://github.com/NorskRegnesentral/shapr/pull/449))
+## Other minor fixes
+* Two minor bugs related to `KernelSHAP_reweighing()` [#448](https://github.com/NorskRegnesentral/shapr/pull/448)
+* Two minor bugs related to weighting for asymmetric Shapley values 
+[#449](https://github.com/NorskRegnesentral/shapr/pull/449)
+* Check `seed` argument, and only pass to `torch` if not NULL 
+[#452](https://github.com/NorskRegnesentral/shapr/pull/452)
+* Make `explain_forecast()` use `future` for batch computation as well (by default) 
+[#452](https://github.com/NorskRegnesentral/shapr/pull/452)
 
 # shapr 1.0.3
 

@@ -7,7 +7,6 @@
 #' @export
 #' @keywords internal
 compute_vS <- function(internal, model, predict_model) {
-
   vS_batching_method <- internal$parameters$extra_computation_args$vS_batching_method
   iter <- length(internal$iter_list)
 
