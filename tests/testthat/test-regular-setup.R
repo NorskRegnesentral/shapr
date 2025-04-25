@@ -1847,6 +1847,8 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
 
 # Checking that vS_batching_method works and gives same results
 test_that("output_lm_numeric_vS_batching_method", {
+  skip_if_not_installed("party")
+
   expect_snapshot_rds(
     (ex_forloop <- explain(
       testing = TRUE,
