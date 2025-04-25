@@ -203,7 +203,7 @@ explain_forecast <- function(model,
     internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
     # Compute the vS
-    vS_list <- compute_vS(internal, model, predict_model, method = "regular")
+    vS_list <- compute_vS(internal, model, predict_model)
 
     # Compute Shapley values based on conditional expectations (v(S))
     internal <- compute_estimates(
