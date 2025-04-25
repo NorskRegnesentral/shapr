@@ -221,6 +221,14 @@ get_parameters <- function(approach,
     stop("`n_MC_samples` must be a single positive integer.")
   }
 
+  # max_n_coalitions
+  if (!is.null(seed) &&
+      !(length(seed) == 1 &&
+        !is.na(seed))) {
+    stop("`seed` must be NULL or a single value, interpreted as an integer.")
+  }
+
+
   # type
   if (!(type %in% c("regular", "forecast"))) {
     stop("`type` must be either `regular` or `forecast`.\n")
