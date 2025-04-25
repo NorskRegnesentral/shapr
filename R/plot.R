@@ -1798,7 +1798,7 @@ extract_Shapley_values_dt <- function(explanation_list,
 
   # Give a small warning to the user if they have not specified the `index_explicands` and too many explicands
   if (length(index_explicands) > 12) {
-    cli::cli_inform(paste(
+    cli::cli_inform( paste0(
       "It might be too many explicands to plot together in a nice fashion! Try for instance",
       "setting `index_explicands = 1:10` to limit the number of explicands.\n"
     ))
@@ -1829,7 +1829,7 @@ update_axis_labels <- function(axis_labels_rotate_angle,
 
     # If it is long, then we alter the default values set above and give message to user
     if (length_of_longest_description > 12 && !horizontal_bars) {
-      cli::cli_inform(paste(
+      cli::cli_inform( paste0(
         "Long label names: consider specifying either `axis_labels_rotate_angle` or",
         "`axis_labels_n_dodge`, to fix any potentially overlapping axis labels.",
         "The function sets `axis_labels_rotate_angle = 45` internally.\n"

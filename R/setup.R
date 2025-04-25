@@ -180,9 +180,12 @@ get_parameters <- function(approach,
                            extra_computation_args = list(),
                            testing = FALSE,
                            ...) {
-  # Check input type for approach
 
-  # approach is checked more comprehensively later
+  # Check verbose first as it is used below
+  check_verbose(verbose)
+
+  # approach is checked comprehensively later
+
   if (!is.logical(iterative) && length(iterative) == 1) {
     cli::cli_abort("`iterative` must be a single logical.")
   }
@@ -233,9 +236,6 @@ get_parameters <- function(approach,
   if (!(type %in% c("regular", "forecast"))) {
     cli::cli_abort("`type` must be either `regular` or `forecast`.\n")
   }
-
-  # verbose
-  check_verbose(verbose)
 
   # parameters only used for type "forecast"
   if (type == "forecast") {
@@ -392,6 +392,8 @@ get_data <- function(x_train, x_explain) {
 #' @keywords internal
 check_data <- function(internal) {
   # Check model and data compatability
+  verbose <- internal$parameters$verbose
+
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
@@ -407,33 +409,41 @@ check_data <- function(internal) {
   NA_factor_levels <- any(is.na(model_feature_specs$factor_levels))
 
   if (is.null(model_feature_specs)) {
-    cli::cli_inform(
-      "Note: You passed a model to explain() which is not natively supported, and did not supply a ",
-      "'get_model_specs' function to explain().\n",
-      "Consistency checks between model and data is therefore disabled.\n"
-    )
+    if ("basic" %in% verbose) {
+      cli::cli_inform(
+        "Note: You passed a model to explain() which is not natively supported, and did not supply a ",
+        "'get_model_specs' function to explain().\n",
+        "Consistency checks between model and data is therefore disabled.\n"
+      )
+    }
 
     model_feature_specs <- x_train_feature_specs
   } else if (NA_labels) {
-    cli::cli_inform(
-      "Note: Feature names extracted from the model contains NA.\n",
-      "Consistency checks between model and data is therefore disabled.\n"
-    )
+    if ("basic" %in% verbose) {
+      cli::cli_inform(
+        "Note: Feature names extracted from the model contains NA.\n",
+        "Consistency checks between model and data is therefore disabled.\n"
+      )
+    }
 
     model_feature_specs <- x_train_feature_specs
   } else if (NA_classes) {
-    cli::cli_inform(
-      "Note: Feature classes extracted from the model contains NA.\n",
-      "Assuming feature classes from the data are correct.\n"
-    )
+    if ("basic" %in% verbose) {
+      cli::cli_inform(
+        "Note: Feature classes extracted from the model contains NA.\n",
+        "Assuming feature classes from the data are correct.\n"
+      )
+    }
 
     model_feature_specs$classes <- x_train_feature_specs$classes
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   } else if (factors_exists && NA_factor_levels) {
-    cli::cli_inform(
-      "Note: Feature factor levels extracted from the model contains NA.\n",
-      "Assuming feature factor levels from the data are correct.\n"
-    )
+    if ("basic" %in% verbose) {
+      cli::cli_inform(
+        "Note: Feature factor levels extracted from the model contains NA.\n",
+        "Assuming feature factor levels from the data are correct.\n"
+      )
+    }
 
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   }
@@ -470,6 +480,8 @@ compare_feature_specs <- function(spec1, spec2, name1 = "model", name2 = "x_trai
 #' This includes both extra parameters and other objects
 #' @keywords internal
 get_extra_parameters <- function(internal, type) {
+  verbose <- internal$parameters$verbose
+
   if (type == "forecast") {
     internal$parameters$horizon_features <- lapply(
       internal$data$horizon_group,
@@ -506,10 +518,12 @@ get_extra_parameters <- function(internal, type) {
 
     # Make group names if not existing
     if (is.null(names(group))) {
-      cli::cli_inform(
-        "\nSuccess with message:\n
+      if ("basic" %in% verbose) {
+        cli::cli_inform(
+          "\nSuccess with message:\n
       Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc."
-      )
+        )
+      }
       names(group) <- paste0("group", seq_along(group))
     }
 
@@ -788,6 +802,8 @@ check_and_set_asymmetric <- function(internal) {
 
 #' @keywords internal
 adjust_max_n_coalitions <- function(internal) {
+  verbose <- internal$parameters$verbose
+
   is_groupwise <- internal$parameters$is_groupwise
   max_n_coalitions <- internal$parameters$max_n_coalitions
   n_features <- internal$parameters$n_features
@@ -804,13 +820,15 @@ adjust_max_n_coalitions <- function(internal) {
     # Set max_n_coalitions to upper bound
     if (is.null(max_n_coalitions) || max_n_coalitions > max_n_coalitions_causal) {
       max_n_coalitions <- max_n_coalitions_causal
-      cli::cli_inform(
-        paste0(
-          "Success with message:\n",
-          "max_n_coalitions is NULL or larger than or number of coalitions respecting the causal\n",
-          "ordering ", max_n_coalitions_causal, ", and is therefore set to ", max_n_coalitions_causal, ".\n"
+      if ("basic" %in% verbose) {
+        cli::cli_inform(
+          paste0(
+            "Success with message:\n",
+            "max_n_coalitions is NULL or larger than or number of coalitions respecting the causal\n",
+            "ordering ", max_n_coalitions_causal, ", and is therefore set to ", max_n_coalitions_causal, ".\n"
+          )
         )
-      )
+      }
     }
 
     # Set max_n_coalitions to lower bound
@@ -818,25 +836,29 @@ adjust_max_n_coalitions <- function(internal) {
       max_n_coalitions < min(10, n_shapley_values + 1, max_n_coalitions_causal)) {
       if (max_n_coalitions_causal <= 10) {
         max_n_coalitions <- max_n_coalitions_causal
-        cli::cli_inform(
-          paste0(
-            "Success with message:\n",
-            "max_n_coalitions_causal is smaller than or equal to 10, meaning there are\n",
-            "so few unique causal coalitions that we should use all to get reliable results.\n",
-            "max_n_coalitions is therefore set to ", max_n_coalitions_causal, ".\n"
+        if ("basic" %in% verbose) {
+          cli::cli_inform(
+            paste0(
+              "Success with message:\n",
+              "max_n_coalitions_causal is smaller than or equal to 10, meaning there are\n",
+              "so few unique causal coalitions that we should use all to get reliable results.\n",
+              "max_n_coalitions is therefore set to ", max_n_coalitions_causal, ".\n"
+            )
           )
-        )
+        }
       } else {
         max_n_coalitions <- min(10, n_shapley_values + 1, max_n_coalitions_causal)
-        cli::cli_inform(
-          paste0(
-            "Success with message:\n",
-            "max_n_coalitions is smaller than max(10, n_shapley_values + 1 = ", n_shapley_values + 1,
-            " max_n_coalitions_causal = ", max_n_coalitions_causal, "),",
-            "which will result in unreliable results.\n",
-            "It is therefore set to ", min(10, n_shapley_values + 1, max_n_coalitions_causal), ".\n"
+        if ("basic" %in% verbose) {
+          cli::cli_inform(
+            paste0(
+              "Success with message:\n",
+              "max_n_coalitions is smaller than max(10, n_shapley_values + 1 = ", n_shapley_values + 1,
+              " max_n_coalitions_causal = ", max_n_coalitions_causal, "),",
+              "which will result in unreliable results.\n",
+              "It is therefore set to ", min(10, n_shapley_values + 1, max_n_coalitions_causal), ".\n"
+            )
           )
-        )
+        }
       }
     }
   } else {
@@ -846,72 +868,84 @@ adjust_max_n_coalitions <- function(internal) {
       # Set max_n_coalitions to upper bound
       if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_features) {
         max_n_coalitions <- 2^n_features
-        cli::cli_inform(
-          paste0(
-            "Success with message:\n",
-            "max_n_coalitions is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
-            "and is therefore set to 2^n_features = ", 2^n_features, ".\n"
+        if ("basic" %in% verbose) {
+          cli::cli_inform(
+            paste0(
+              "Success with message:\n",
+              "max_n_coalitions is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
+              "and is therefore set to 2^n_features = ", 2^n_features, ".\n"
+            )
           )
-        )
+        }
       }
       # Set max_n_coalitions to lower bound
       if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_features + 1)) {
         if (n_features <= 3) {
           max_n_coalitions <- 2^n_features
-          cli::cli_inform(
-            paste0(
-              "Success with message:\n",
-              "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",
-              2^n_features, ") that we should use all to get reliable results.\n",
-              "max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".\n"
+          if ("basic" %in% verbose) {
+            cli::cli_inform(
+              paste0(
+                "Success with message:\n",
+                "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",
+                2^n_features, ") that we should use all to get reliable results.\n",
+                "max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".\n"
+              )
             )
-          )
+          }
         } else {
           max_n_coalitions <- min(10, n_features + 1)
-          cli::cli_inform(
-            paste0(
-              "Success with message:\n",
-              "max_n_coalitions is smaller than max(10, n_features + 1 = ", n_features + 1, "),",
-              "which will result in unreliable results.\n",
-              "It is therefore set to ", max(10, n_features + 1), ".\n"
+          if ("basic" %in% verbose) {
+            cli::cli_inform(
+              paste0(
+                "Success with message:\n",
+                "max_n_coalitions is smaller than max(10, n_features + 1 = ", n_features + 1, "),",
+                "which will result in unreliable results.\n",
+                "It is therefore set to ", max(10, n_features + 1), ".\n"
+              )
             )
-          )
+          }
         }
       }
     } else { # group wise
       # Set max_n_coalitions to upper bound
       if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_shapley_values) {
         max_n_coalitions <- 2^n_shapley_values
-        cli::cli_inform(
-          paste0(
-            "Success with message:\n",
-            "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_shapley_values, ", \n",
-            "and is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
+        if ("basic" %in% verbose) {
+          cli::cli_inform(
+            paste0(
+              "Success with message:\n",
+              "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_shapley_values, ", \n",
+              "and is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
+            )
           )
-        )
+        }
       }
       # Set max_n_coalitions to lower bound
       if (isFALSE(is.null(max_n_coalitions)) && max_n_coalitions < min(10, n_shapley_values + 1)) {
         if (n_shapley_values <= 3) {
           max_n_coalitions <- 2^n_shapley_values
-          cli::cli_inform(
-            paste0(
-              "Success with message:\n",
-              "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (",
-              2^n_shapley_values, ") that we should use all to get reliable results.\n",
-              "max_n_coalitions is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
+          if ("basic" %in% verbose) {
+            cli::cli_inform(
+              paste0(
+                "Success with message:\n",
+                "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (",
+                2^n_shapley_values, ") that we should use all to get reliable results.\n",
+                "max_n_coalitions is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
+              )
             )
-          )
+          }
         } else {
           max_n_coalitions <- min(10, n_shapley_values + 1)
-          cli::cli_inform(
-            paste0(
-              "Success with message:\n",
-              "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_shapley_values + 1, "),",
-              "which will result in unreliable results.\n",
-              "It is therefore set to ", max(10, n_shapley_values + 1), ".\n"
+          if ("basic" %in% verbose) {
+            cli::cli_inform(
+              paste0(
+                "Success with message:\n",
+                "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_shapley_values + 1, "),",
+                "which will result in unreliable results.\n",
+                "It is therefore set to ", max(10, n_shapley_values + 1), ".\n"
+              )
             )
-          )
+          }
         }
       }
     }

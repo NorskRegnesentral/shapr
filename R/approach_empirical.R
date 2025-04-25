@@ -126,6 +126,8 @@ setup_approach.empirical <- function(internal,
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(internal, index_features = NULL, ...) {
+  verbose <- internal$parameters$verbose
+
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
@@ -194,9 +196,11 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 
     if (kernel_metric == "independence") {
       empirical.eta <- 1
-      cli::cli_inform(
-        "\nSuccess with message:\nempirical.eta force set to 1 for empirical.type = 'independence'"
-      )
+      if("basic" %in% verbose){
+        cli::cli_inform(
+          "empirical.eta force set to 1 for empirical.type = 'independence'"
+        )
+      }
     } else if (kernel_metric == "gaussian") {
       if (empirical.type == "fixed_sigma") {
         h_optim_mat[, ] <- empirical.fixed_sigma

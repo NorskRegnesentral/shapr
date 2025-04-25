@@ -421,7 +421,7 @@ vaeac_train_model <- function(x_train,
   do.call(vaeac_check_parameters, mget(methods::formalArgs(vaeac_train_model)))
 
   # Check if we can use cuda
-  if (cuda) cuda <- vaeac_check_cuda(cuda)
+  if (cuda) cuda <- vaeac_check_cuda(cuda, verbose)
 
   # Determine which mask generator to use
   mask_generator_name <- vaeac_get_mask_generator_name(
@@ -878,10 +878,14 @@ vaeac_train_model_continue <- function(explanation,
 
   # Check for access to a single training data set and use the data from the checkpoint if `x_train` is not provided
   if (is.null(checkpoint$normalized_data) && is.null(x_train)) {
-    cli::cli_abort("The `vaeac` model did not include data (set `vaeac.save_data = TRUE in `explain()`) and `x_train = NULL`.")
+    if("basic" %in% verbose){
+      cli::cli_abort("The `vaeac` model did not include data (set `vaeac.save_data = TRUE in `explain()`) and `x_train = NULL`.")
+    }
   }
   if (!is.null(checkpoint$x_train) && !is.null(x_train)) {
-    cli::cli_inform("The `vaeac` model includes data and `x_train` was provided to this function. We only use `x_train`.")
+    if("basic" %in% verbose){
+      cli::cli_inform("The `vaeac` model includes data and `x_train` was provided to this function. We only use `x_train`.")
+    }
   }
   if (is.null(x_train)) x_train <- checkpoint$x_train
 
@@ -938,7 +942,8 @@ vaeac_train_model_continue <- function(explanation,
       save_data = save_data,
       epochs = epochs_new,
       save_every_nth_epoch = checkpoint$save_every_nth_epoch,
-      x_train_size = format(utils::object.size(x_train), units = "auto")
+      x_train_size = format(utils::object.size(x_train), units = "auto"),
+      verbose = verbose
     )
   }
 
@@ -1312,7 +1317,8 @@ vaeac_check_which_vaeac_model <- function(which_vaeac_model, epochs, save_every_
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_early_stopping, save_every_nth_epoch) {
+vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_early_stopping, save_every_nth_epoch,
+                                     verbose) {
   if (epochs_initiation_phase >= epochs) {
     cli::cli_abort(paste0(
       "'vaeac.epochs_initiation_phase' (", epochs_initiation_phase, ") must be strictly less than ",
@@ -1321,10 +1327,12 @@ vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_ear
   }
 
   if (epochs_early_stopping > epochs) {
-    cli::cli_inform(paste0(
-      "No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
-      "`vaeac.epochs` (", epochs, ")."
-    ))
+    if("basic" %in% verbose){
+      cli::cli_inform(paste0(
+        "No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
+        "`vaeac.epochs` (", epochs, ")."
+      ))
+    }
   }
 
   # Ensure a valid value for save_every_nth_epoch.
@@ -1424,14 +1432,16 @@ vaeac_check_save_names <- function(folder_to_save_model, model_description) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_cuda <- function(cuda) {
+vaeac_check_cuda <- function(cuda, verbose) {
   # Check if cuda/GPU is available on the current system
   cuda_available <- torch::cuda_is_available()
 
   # Give message to user if asked to run on cuda, but cuda is not available.
   if (isFALSE(cuda_available) && isTRUE(cuda)) {
     cuda <- FALSE
-    cli::cli_inform("Cuda/GPU is not available (`shapr` uses CPU instead).", immediate. = TRUE)
+    if("basic" %in% verbose){
+      cli::cli_inform("Cuda/GPU is not available (`shapr` uses CPU instead).", immediate. = TRUE)
+    }
   }
 
   return(cuda)
@@ -1464,12 +1474,14 @@ vaeac_check_masking_ratio <- function(masking_ratio, n_features) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch, x_train_size) {
+vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch, x_train_size, verbose) {
   if (save_data && !is.null(save_every_nth_epoch) && epochs / save_every_nth_epoch > 5) {
-    cli::cli_inform(paste0(
-      "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might requirer ",
-      "a lot of disk storage if `x_train` (", x_train_size, ") is large."
-    ))
+    if("basic" %in% verbose){
+      cli::cli_inform( paste0(
+        "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might requirer ",
+        "a lot of disk storage if `x_train` (", x_train_size, ") is large."
+      ))
+    }
   }
 }
 
@@ -1544,8 +1556,6 @@ vaeac_check_parameters <- function(x_train,
                                    verbose,
                                    seed,
                                    ...) {
-  # Check verbose parameter
-  #  check_verbose(verbose = verbose)
 
   # Check that the activation function is valid torch::nn_module object
   vaeac_check_activation_func(activation_function = activation_function)
