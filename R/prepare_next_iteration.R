@@ -40,13 +40,11 @@ prepare_next_iteration <- function(internal) {
 
     remaining_coalitions <- max_n_coalitions - current_n_coalitions
 
-
     # Thresholding if max_n_coalitions is reached
     proposal_new_n_coalitions <- min(
       remaining_coalitions,
       proposal_new_n_coalitions
     )
-
 
     # Ensure an even number also after thresholding
     if (paired_shap_sampling) {
