@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
   fig.width = 9,
   fig.height = 5,
   fig.path = "figure_general_usage/", # Ensure that figures are saved in the right folder (this vignette will be built manually)
-  cache.path = "cache_main/", # Ensure that cached objects are saved in the right folder
+  cache.path = "cache_general_usage/", # Ensure that cached objects are saved in the right folder
   warning = FALSE,
   message = TRUE,
   tidy = "styler"
@@ -1546,7 +1546,7 @@ ex_init <- explain(
   iterative = TRUE
 )
 
-# Using the ex_init object to continue the computation with 5 more coalition samples
+# Using the ex_init object to continue the computation with 4 more coalition samples
 ex_further <- explain(
   model = model,
   x_explain = x_explain,
@@ -1554,7 +1554,7 @@ ex_further <- explain(
   approach = "gaussian",
   phi0 = p0,
   seed = 1,
-  max_n_coalitions = 25,
+  max_n_coalitions = 24,
   iterative_args = list(convergence_tol = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_init
 )
