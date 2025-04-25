@@ -1136,6 +1136,11 @@ check_and_set_sampling_info <- function(internal) {
 #' whenever sampling based kernelSHAP is applied (either iteratively or with a fixed number of coalitions).
 #' @param n_boot_samps Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
 #' coalitions used to estimate the standard deviations of the Shapley value estimates.
+#' @param vS_batching_method String. The method used to perform batch computing of vS.
+#' `"future"` (default), utilizes [future.apply::future_apply] (via the [future::future] packages),
+#' enabling parallelized computation and progress updates via [progressr::progressr].
+#' Alternatively, `"forloop"` can be used for straight forward sequential computation, which is mainly useful for
+#' package development and debugging purposes.
 #' @param max_batch_size Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
 #' A larger numbers requires more memory, but may have a slight computational advantage.
 #' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
@@ -1157,6 +1162,7 @@ get_extra_comp_args_default <- function(internal, # Only used to get the default
                                         kernelSHAP_reweighting = "on_all_cond",
                                         compute_sd = isFALSE(internal$parameters$exact),
                                         n_boot_samps = 100,
+                                        vS_batching_method = "future",
                                         max_batch_size = 10,
                                         min_n_batches = 10) {
   return(mget(methods::formalArgs(get_extra_comp_args_default)[-1])) # [-1] to exclude internal
@@ -1186,6 +1192,12 @@ check_extra_computation_args <- function(extra_computation_args) {
   if (!(is.logical(compute_sd) &&
     length(compute_sd) == 1)) {
     stop("`extra_computation_args$compute_sd` must be single logical.")
+  }
+
+  # vS_batching_method
+  if (!(length(vS_batching_method) == 1 && vS_batching_method %in%
+        c("future", "forloop"))) {
+    stop("`vS_batching_method` must be one of `future`, `forloop`.\n")
   }
 
   # n_boot_samps
