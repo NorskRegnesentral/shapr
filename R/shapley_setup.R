@@ -280,11 +280,11 @@ reweighted_shapley_weight <- function(m, max_fixed_coal_size = 0, n_coal_each_si
 
   # Checks that can be removed as this is an internal function where this should always apply
   if (length(n_coal_each_size) != m - 1) {
-    stop(paste0("n_coal_each_size must be of length ", m - 1, "."))
+    cli::cli_abort(paste0("n_coal_each_size must be of length ", m - 1, "."))
   }
 
   if (max_fixed_coal_size > ceiling((m - 1) / 2)) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "max_fixed_coal_size (", max_fixed_coal_size, ") is larger than the maximum (",
       ceiling((m - 1) / 2), ")."
     ))
@@ -353,7 +353,7 @@ exact_coalition_table <- function(m,
 
     # Checks that can be removed as this is an internal function where this should always apply
     if (max_fixed_coal_size > ceiling((m - 1) / 2)) {
-      stop(paste0(
+      cli::cli_abort(paste0(
         "max_fixed_coal_size (", max_fixed_coal_size, ") is larger than the maximum (",
         ceiling((m - 1) / 2), ")."
       ))

@@ -16,7 +16,7 @@ get_feature_specs <- function(get_model_specs, model) {
   if (!is.function(get_model_specs) &&
     !is.null(get_model_specs) &&
     !is.na(get_model_specs)) {
-    stop("`get_model_specs` must be NULL, NA or a function.")
+    cli::cli_abort("`get_model_specs` must be NULL, NA or a function.")
     # NA is used to avoid using internally defined get_model_specs where this is
     # defined and not valid for the specified model
   }
@@ -39,7 +39,7 @@ get_feature_specs <- function(get_model_specs, model) {
     # Tests the get_model_specs function
     feature_specs <- tryCatch(get_model_specs(model), error = errorfun)
     if (class(feature_specs)[1] == "error") {
-      stop(paste0(
+      cli::cli_abort(paste0(
         "The get_model_specs function of class `", model_class0, "` is invalid.\n",
         "See the 'Advanced usage' section of the vignette:\n",
         "vignette('general_usage', package = 'shapr')\n",
@@ -53,7 +53,7 @@ get_feature_specs <- function(get_model_specs, model) {
     if (!(is.list(feature_specs) &&
       length(feature_specs) == 3 &&
       all(names(feature_specs) == c("labels", "classes", "factor_levels")))) {
-      stop(
+      cli::cli_abort(
         paste0(
           "The `get_model_specs` function of class `", model_class0,
           "` does not return a list of length 3 with elements \"labels\",\"classes\",\"factor_levels\".\n",

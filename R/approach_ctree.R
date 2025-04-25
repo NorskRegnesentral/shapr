@@ -160,7 +160,7 @@ create_ctree <- function(given_ind,
           )
         )
       }, error = function(ex) {
-        warning("party::ctree ran into the error: ", ex, "Using partykit::ctree instead!")
+        cli::cli_warn("party::ctree ran into the error: ", ex, "Using partykit::ctree instead!")
         partykit::ctree(fmla,
           data = df,
           control = partykit::ctree_control(
@@ -179,7 +179,7 @@ create_ctree <- function(given_ind,
         )
       )
     } else if (use_partykit == "always") {
-      warning("Using partykit::ctree instead of party::ctree!")
+      cli::cli_warn("Using partykit::ctree instead of party::ctree!")
       datact <- partykit::ctree(fmla,
         data = df,
         control = partykit::ctree_control(
@@ -189,7 +189,7 @@ create_ctree <- function(given_ind,
         )
       )
     } else {
-      stop("use_partykit needs to be one of 'on_error', 'never', or 'always'. See ?create_ctree for details.")
+      cli::cli_abort("use_partykit needs to be one of 'on_error', 'never', or 'always'. See ?create_ctree for details.")
     }
   }
   return(list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind))

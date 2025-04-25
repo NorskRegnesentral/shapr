@@ -25,7 +25,7 @@ setup_approach.gaussian <- function(internal,
   if (any(feature_specs$classes == "factor")) {
     factor_features <- names(which(feature_specs$classes == "factor"))
     factor_approaches <- get_factor_approaches()
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The following feature(s) are factor(s): ", factor_features, ".\n",
       "approach = 'gaussian' does not support factor features.\n",
       "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."

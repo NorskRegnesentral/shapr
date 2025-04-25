@@ -2,7 +2,7 @@
 #' @export
 predict_model.lm <- function(x, newdata, ...) {
   if (!requireNamespace("stats", quietly = TRUE)) {
-    stop("The stats package is required for predicting stats models")
+    cli::cli_abort("The stats package is required for predicting stats models")
   }
 
   predict(x, as.data.frame(newdata))

@@ -74,7 +74,7 @@ setup_approach.empirical <- function(internal,
   if (any(feature_specs$classes == "factor")) {
     factor_features <- names(which(feature_specs$classes == "factor"))
     factor_approaches <- get_factor_approaches()
-    stop(
+    cli::cli_abort(
       paste0(
         "The following feature(s) are factor(s): ", factor_features, ".\n",
         "approach = 'empirical' does not support factor features.\n",
@@ -85,14 +85,14 @@ setup_approach.empirical <- function(internal,
 
 
   if (internal$parameters$empirical.type == "independence") {
-    warning(paste0(
+    cli::cli_warn(paste0(
       "Using empirical.type = 'independence' for approach = 'empirical' is deprecated.\n",
       "Please use approach = 'independence' instead."
     ))
   }
 
   if (internal$parameters$empirical.type %in% c("AICc_each_k", "AICc_full") && internal$parameters$is_python == TRUE) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "empirical.type = ", internal$parameters$empirical.type,
       " for approach = 'empirical' is not available in Python.\n",
     ))
@@ -101,7 +101,7 @@ setup_approach.empirical <- function(internal,
   if (!(length(internal$parameters$empirical.fixed_sigma) == 1 &&
     is.numeric(internal$parameters$empirical.fixed_sigma) &&
     internal$parameters$empirical.fixed_sigma > 0)) {
-    stop(
+    cli::cli_abort(
       "empirical.fixed_sigma must be a positive numeric of length 1.\n"
     )
   }
@@ -194,7 +194,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 
     if (kernel_metric == "independence") {
       empirical.eta <- 1
-      message(
+      cli::cli_inform(
         "\nSuccess with message:\nempirical.eta force set to 1 for empirical.type = 'independence'"
       )
     } else if (kernel_metric == "gaussian") {
@@ -206,7 +206,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
         } else if (empirical.type == "AICc_full") {
           h_optim_mat <- compute_AICc_full(internal, model, predict_model, index_features)
         } else {
-          stop("empirical.type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
+          cli::cli_abort("empirical.type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
         }
       }
     }

@@ -12,7 +12,7 @@ setup_approach.copula <- function(internal, ...) {
   if (any(feature_specs$classes == "factor")) {
     factor_features <- names(which(feature_specs$classes == "factor"))
     factor_approaches <- get_factor_approaches()
-    stop(
+    cli::cli_abort(
       paste0(
         "The following feature(s) are factor(s): ", factor_features, ".\n",
         "approach = 'copula' does not support factor features.\n",
@@ -162,7 +162,7 @@ gaussian_transform <- function(x) {
 #' @keywords internal
 #' @author Martin Jullum
 gaussian_transform_separate <- function(yx, n_y) {
-  if (n_y >= length(yx)) stop("n_y should be less than length(yx)")
+  if (n_y >= length(yx)) cli::cli_abort("n_y should be less than length(yx)")
   ind <- 1:n_y
   x <- yx[-ind]
   tmp <- rank(yx)[ind]

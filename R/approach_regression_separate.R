@@ -173,7 +173,7 @@ regression.train_model <- function(x,
     # that all augmentations of a single training observations are either in the training or evaluation data.
     if (!is.null(regression.surrogate_n_comb)) {
       if (!is.null(regression.vfold_cv_para) && any(names(regression.vfold_cv_para) != "v")) {
-        stop("The `regression.vfold_cv_para` parameter supports only the `v` parameter for surrogate regression.")
+        cli::cli_abort("The `regression.vfold_cv_para` parameter supports only the `v` parameter for surrogate regression.")
       }
 
       n <- nrow(x) / regression.surrogate_n_comb # Get the number of training observations (before augmentation)
@@ -207,7 +207,7 @@ regression.train_model <- function(x,
     )
     # Small printout to the user
     if ("vS_details" %in% verbose) {
-      regression.cv_message(
+      regression.cv_cli::cli_inform(
         regression.results = regression.results,
         regression.grid = regression.grid,
         current_comb = current_comb
@@ -269,7 +269,7 @@ regression.get_y_hat <- function(internal, model, predict_model) {
 regression.get_tune <- function(regression.model, regression.tune_values, x_train) {
   # Check that the regression model is a tidymodels object
   if (is.null(regression.model) || !"model_spec" %in% class(regression.model)) {
-    stop("`regression.model` must be a tidymodels object with class 'model_spec'. See documentation.")
+    cli::cli_abort("`regression.model` must be a tidymodels object with class 'model_spec'. See documentation.")
   }
 
   # Check if we are to tune some model hyperparameters
@@ -280,14 +280,14 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 
   # Check that user have provided a tuning
   if (isTRUE(regression.tune) && is.null(regression.tune_values)) {
-    stop("`regression.tune_values` must be provided when `regression.model` contains hyperparameters to tune.")
+    cli::cli_abort("`regression.tune_values` must be provided when `regression.model` contains hyperparameters to tune.")
   }
 
   # Check function or tibble
   if (!is.null(regression.tune_values) &&
     !is.data.frame(regression.tune_values) &&
     !is.function(regression.tune_values)) {
-    stop("`regression.tune_values` must be of either class `data.frame` or `function`. See documentation.")
+    cli::cli_abort("`regression.tune_values` must be of either class `data.frame` or `function`. See documentation.")
   }
 
   # Get the grid values. And if user provided a function, then check that it is a data.frame.
@@ -295,7 +295,7 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
   if (is.function(regression.tune_values)) {
     regression.tune_values_grid <- regression.tune_values(x_train)
     if (!is.data.frame(regression.tune_values_grid)) {
-      stop("The output of the user provided `regression.tune_values` function must be of class `data.frame`.")
+      cli::cli_abort("The output of the user provided `regression.tune_values` function must be of class `data.frame`.")
     }
   }
 
@@ -305,7 +305,7 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
   # Check that user have provided values for the hyperparameters to tune
   if (!(all(regression.tune_values_names %in% regression.para_tune_names) &&
     all(regression.para_tune_names %in% regression.tune_values_names))) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The tunable parameters in `regression.model` ('",
       paste(regression.para_tune_names, collapse = "', '"), "') and `regression.tune_values` ('",
       paste(regression.tune_values_names, collapse = "', '"), "') must match."
@@ -380,14 +380,14 @@ regression.check_parameters <- function(internal) {
 #' @keywords internal
 regression.check_recipe_func <- function(regression.recipe_func, x_explain) {
   if (!is.null(regression.recipe_func) && !is.function(regression.recipe_func)) {
-    stop("`regression.recipe_func` must be a function. See documentation.")
+    cli::cli_abort("`regression.recipe_func` must be a function. See documentation.")
   }
 
   if (!is.null(regression.recipe_func) && is.function(regression.recipe_func)) {
     x_temp <- copy(x_explain)[, "y_hat_temp" := 1]
     regression.recipe_func_output <- regression.recipe_func(recipes::recipe(y_hat_temp ~ ., data = x_temp))
     if (!"recipe" %in% class(regression.recipe_func_output)) {
-      stop("The output of the `regression.recipe_func` must be of class `recipe`.")
+      cli::cli_abort("The output of the `regression.recipe_func` must be of class `recipe`.")
     }
   }
 }
@@ -404,14 +404,14 @@ regression.check_vfold_cv_para <- function(regression.vfold_cv_para) {
   if (!is.null(regression.vfold_cv_para)) {
     # Check that regression.vfold_cv_para is a named list
     if (!is.list(regression.vfold_cv_para) || is.null(names(regression.vfold_cv_para))) {
-      stop("`regression.vfold_cv_para` must be a named list. See documentation using '?shapr::explain()'.")
+      cli::cli_abort("`regression.vfold_cv_para` must be a named list. See documentation using '?shapr::explain()'.")
     }
 
     # Check that all entries are parameters in the rsample::vfold_cv() function
     unknown_para_names <-
       names(regression.vfold_cv_para)[!names(regression.vfold_cv_para) %in% methods::formalArgs(rsample::vfold_cv)[-1]]
     if (length(unknown_para_names) > 0) {
-      stop(paste0(
+      cli::cli_abort(paste0(
         "The following parameters in `regression.vfold_cv_para` are not supported by `rsample::vfold_cv()`: '",
         paste0(unknown_para_names, collapse = "', '"), "'."
       ))
@@ -419,7 +419,7 @@ regression.check_vfold_cv_para <- function(regression.vfold_cv_para) {
 
     # Ensure that we have at least two folds in the cross validation procedure
     if ("v" %in% names(regression.vfold_cv_para) && regression.vfold_cv_para[["v"]] <= 1) {
-      stop("The parameter `v` in `regression.vfold_cv_para` must be strictly larger than 1.")
+      cli::cli_abort("The parameter `v` in `regression.vfold_cv_para` must be strictly larger than 1.")
     }
   }
 }
@@ -435,7 +435,7 @@ regression.check_namespaces <- function() {
   namespaces <- c("parsnip", "recipes", "workflows", "tune", "dials", "yardstick", "hardhat", "rsample", "rlang")
   for (namespace in namespaces) {
     if (!requireNamespace(namespace, quietly = TRUE)) {
-      stop(paste0(
+      cli::cli_abort(paste0(
         "`", namespace, "` is not installed. Please run `install.packages('", namespace, "')` to install ",
         "it or run `install.packages('tidymodels')` to install all relevant packages."
       ))
