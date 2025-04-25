@@ -12,6 +12,10 @@ The functionality is available when paired coalition sampling (the default) is e
 (default is `"future"` for both, `"forloop"` available mainly for dev purposes)
 [#452](https://github.com/NorskRegnesentral/shapr/pull/452)
 
+* Now using `testthat::skip_if_not_installed` for all tests requiring suggested packages to ensure they are skipped 
+gracefully when dependencies are unavailable [#451](https://github.com/NorskRegnesentral/shapr/pull/451)
+
+
 ## Other minor fixes
 * Two minor bugs related to `KernelSHAP_reweighing()` [#448](https://github.com/NorskRegnesentral/shapr/pull/448)
 * Two minor bugs related to weighting for asymmetric Shapley values 
