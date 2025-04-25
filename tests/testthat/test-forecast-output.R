@@ -61,8 +61,7 @@ test_that("forecast_output_arima_numeric_iterative", {
       group_lags = FALSE,
       max_n_coalitions = 150,
       iterative = TRUE,
-      iterative_args = list(initial_n_coalitions = 10),
-      verbose = "convergence"
+      iterative_args = list(initial_n_coalitions = 10)
     ),
     "forecast_output_arima_numeric_iterative"
   )
