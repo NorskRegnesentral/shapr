@@ -207,7 +207,7 @@ regression.train_model <- function(x,
     )
     # Small printout to the user
     if ("vS_details" %in% verbose) {
-      regression.cv_cli::cli_inform(
+      regression.cv_message(
         regression.results = regression.results,
         regression.grid = regression.grid,
         current_comb = current_comb
