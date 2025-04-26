@@ -1090,22 +1090,26 @@ plot_MSEv_eval_crit <- function(explanation_list,
   # Warnings related to the approximate confidence intervals
   if (!is.null(CI_level)) {
     if (n_explain < 20) {
-      cli::cli_inform(paste0(
+      msg <- paste0(
         "The approximate ", CI_level * 100, "% confidence intervals might be wide as they are only based on ",
         n_explain, " observations."
-      ))
+      )
+      cli::cli_inform(c("i"=msg))
     }
 
     # Check for CI with negative values
     methods_with_negative_CI <- MSEv_dt[MSEv_sd > abs(tfrac) * MSEv, Method]
     if (length(methods_with_negative_CI) > 0) {
-      cli::cli_inform(paste0(
+      msg1 <- paste0(
         "The method/methods '", paste(methods_with_negative_CI, collapse = "', '"), "' has/have ",
         "approximate ", CI_level * 100, "% confidence intervals with negative values, ",
-        "which is not possible for the MSEv criterion.\n",
+        "which is not possible for the MSEv criterion."
+      )
+      msg2 <- paste0(
         "Check the `MSEv_explicand` plots for potential observational outliers ",
         "that causes the wide confidence intervals."
-      ))
+      )
+      cli::cli_inform(c("i"=msg1, msg2))
     }
   }
 
@@ -1171,11 +1175,10 @@ MSEv_name_explanation_list <- function(explanation_list) {
   names <- make.unique(names, sep = "_")
   names(explanation_list) <- names
 
-  cli::cli_inform(paste0(
-    "User provided an `explanation_list` without named explanation objects.\n",
-    "Use the approach names of the explanation objects as the names (with integer ",
-    "suffix for duplicates).\n"
-  ))
+  msg1 <- "User provided an `explanation_list` without named explanation objects."
+  msg2 <- "Use the approach names of the explanation objects as the names (with integer suffix for duplicates)."
+
+  cli::cli_inform(c("i"=msg1,msg2))
 
   return(explanation_list)
 }
@@ -1739,11 +1742,12 @@ update_only_these_features <- function(explanation_list,
 
     # Give the user a warning if the user provided non-valid feature names
     if (length(only_these_features_not_names) > 0) {
-      cli::cli_inform(paste0(
+      msg <- paste0(
         "User provided non-valid feature names in `only_these_features` (",
         paste0("'", only_these_features_not_names, "'", collapse = ", "),
         "). The function skips non-valid feature names."
-      ))
+      )
+      cli::cli_inform(c("i"=msg))
     }
 
     # Stop if we have no valid feature names.
@@ -1798,10 +1802,10 @@ extract_Shapley_values_dt <- function(explanation_list,
 
   # Give a small warning to the user if they have not specified the `index_explicands` and too many explicands
   if (length(index_explicands) > 12) {
-    cli::cli_inform( paste0(
-      "It might be too many explicands to plot together in a nice fashion! Try for instance",
-      "setting `index_explicands = 1:10` to limit the number of explicands.\n"
-    ))
+    msg1 <- "It might be too many explicands to plot together in a nice fashion!"
+    msg2 <- "Try for instance setting `index_explicands = 1:10` to limit the number of explicands."
+    cli::cli_inform(c("i"=msg1,msg2))
+    )
   }
 
   # Keep only the needed columns, and ensure that .id, .pred, and .method are included
@@ -1829,11 +1833,11 @@ update_axis_labels <- function(axis_labels_rotate_angle,
 
     # If it is long, then we alter the default values set above and give message to user
     if (length_of_longest_description > 12 && !horizontal_bars) {
-      cli::cli_inform( paste0(
-        "Long label names: consider specifying either `axis_labels_rotate_angle` or",
-        "`axis_labels_n_dodge`, to fix any potentially overlapping axis labels.",
-        "The function sets `axis_labels_rotate_angle = 45` internally.\n"
-      ))
+      msg1 <- paste0("Long label names: consider specifying either `axis_labels_rotate_angle` or ",
+                     "`axis_labels_n_dodge`, to fix any potentially overlapping axis labels.")
+      msg2 <- "The function sets `axis_labels_rotate_angle = 45` internally."
+
+      cli::cli_inform( c("i"=msg1, msg2))
 
       # Set it to rotate 45 degrees
       axis_labels_rotate_angle <- 45
