@@ -310,8 +310,12 @@ plot.shapr <- function(x,
     dt_plot <- dt_plot[id %in% index_x_explain]
 
     if (length(dt_plot[, unique(id)]) > 10) {
-      cli::cli_abort("Too many observations to plot together! Try for instance setting index_x_explain = 1:10 so that the max.
-           is not exceeded.")
+      cli::cli_abort(
+        c(
+          "Too many observations to plot together!",
+          "Try for instance setting index_x_explain = 1:10 so that the max.is not exceeded."
+        )
+      )
     }
 
     dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, bar_plot_order, top_k_features)
@@ -435,7 +439,9 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     scatter_features <- dt_plot[scatter_features, unique(variable)]
   } else if (is.character(scatter_features)) {
     if (any(!(scatter_features %in% unique(dt_plot[, variable])))) {
-      cli::cli_abort("Some or all of the listed feature names in 'scatter_features' do not match the names in the data.")
+      cli::cli_abort(
+        "Some or all of the listed feature names in 'scatter_features' do not match the names in the data."
+      )
     }
   }
 

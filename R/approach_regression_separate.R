@@ -173,7 +173,9 @@ regression.train_model <- function(x,
     # that all augmentations of a single training observations are either in the training or evaluation data.
     if (!is.null(regression.surrogate_n_comb)) {
       if (!is.null(regression.vfold_cv_para) && any(names(regression.vfold_cv_para) != "v")) {
-        cli::cli_abort("The `regression.vfold_cv_para` parameter supports only the `v` parameter for surrogate regression.")
+        cli::cli_abort(
+          "The `regression.vfold_cv_para` parameter supports only the `v` parameter for surrogate regression."
+        )
       }
 
       n <- nrow(x) / regression.surrogate_n_comb # Get the number of training observations (before augmentation)
@@ -280,7 +282,9 @@ regression.get_tune <- function(regression.model, regression.tune_values, x_trai
 
   # Check that user have provided a tuning
   if (isTRUE(regression.tune) && is.null(regression.tune_values)) {
-    cli::cli_abort("`regression.tune_values` must be provided when `regression.model` contains hyperparameters to tune.")
+    cli::cli_abort(
+      "`regression.tune_values` must be provided when `regression.model` contains hyperparameters to tune."
+    )
   }
 
   # Check function or tibble

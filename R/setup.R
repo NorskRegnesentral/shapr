@@ -243,7 +243,9 @@ get_parameters <- function(approach,
     }
 
     if (any(horizon != output_size)) {
-      cli::cli_abort(paste0("`horizon` must match the output size of the model (", paste0(output_size, collapse = ", "), ").\n"))
+      cli::cli_abort(
+        paste0("`horizon` must match the output size of the model (", paste0(output_size, collapse = ", "), ").\n")
+      )
     }
 
     if (!(length(train_idx) > 1 && is.wholenumber(train_idx) && all(train_idx > 0) && all(is.finite(train_idx)))) {
@@ -755,8 +757,12 @@ check_and_set_causal_sampling <- function(internal) {
 
   # For the causal/step-wise sampling procedure, we do not support multiple approaches and regression is inapplicable
   if (internal$parameters$causal_sampling) {
-    if (internal$parameters$regression) cli::cli_abort("Causal Shapley values is not applicable for regression approaches.\n")
-    if (internal$parameters$n_approaches > 1) cli::cli_abort("Causal Shapley values is not applicable for combined approaches.\n")
+    if (internal$parameters$regression) {
+      cli::cli_abort("Causal Shapley values is not applicable for regression approaches.\n")
+    }
+    if (internal$parameters$n_approaches > 1) {
+      cli::cli_abort("Causal Shapley values is not applicable for combined approaches.\n")
+    }
   }
 
   return(internal)
@@ -1461,7 +1467,9 @@ check_approach <- function(internal) {
   }
 
   if (length(approach) > 1 && any(grepl("regression", approach))) {
-    cli::cli_abort("The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.")
+    cli::cli_abort(
+      "The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches."
+    )
   }
 }
 

@@ -37,7 +37,9 @@ setup_approach.vaeac <- function(internal,
   if (!requireNamespace("torch", quietly = TRUE)) {
     cli::cli_abort("`torch` is not installed. Please run `install.packages('torch')`.")
   }
-  if (!torch::torch_is_installed()) cli::cli_abort("`torch` is not properly installed. Please run `torch::install_torch()`.")
+  if (!torch::torch_is_installed()) {
+    cli::cli_abort("`torch` is not properly installed. Please run `torch::install_torch()`.")
+  }
 
   # Extract the objects we will use later
   iter <- length(internal$iter_list)
@@ -854,9 +856,13 @@ vaeac_train_model_continue <- function(explanation,
                                        seed = 1) {
   # Check the input
   if (!"shapr" %in% class(explanation)) cli::cli_abort("`explanation` must be a list of class `shapr`.")
-  if (!"vaeac" %in% explanation$internal$parameters$approach) cli::cli_abort("`vaeac` is not an approach in `explanation`.")
+  if (!"vaeac" %in% explanation$internal$parameters$approach) {
+    cli::cli_abort("`vaeac` is not an approach in `explanation`.")
+  }
   if (!is.null(lr_new)) vaeac_check_positive_numerics(list(lr_new = lr_new))
-  if (!is.null(x_train) && !data.table::is.data.table(x_train)) cli::cli_abort("`x_train` must be a `data.table` object.")
+  if (!is.null(x_train) && !data.table::is.data.table(x_train)) {
+    cli::cli_abort("`x_train` must be a `data.table` object.")
+  }
   check_verbose(verbose)
   vaeac_check_positive_integers(list(epochs_new = epochs_new, seed = seed))
   vaeac_check_logicals(list(save_data = save_data))
@@ -1340,7 +1346,9 @@ vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_ear
 
   # Ensure a valid value for save_every_nth_epoch.
   if (!is.null(save_every_nth_epoch) && save_every_nth_epoch > epochs) {
-    cli::cli_abort(paste0("Number of 'epochs' (", epochs, ") is less than 'save_every_nth_epoch' (", save_every_nth_epoch, ")."))
+    cli::cli_abort(
+      paste0("Number of 'epochs' (", epochs, ") is less than 'save_every_nth_epoch' (", save_every_nth_epoch, ").")
+    )
   }
   # Ensure a valid value for save_every_nth_epoch.
   if (!is.null(save_every_nth_epoch) && save_every_nth_epoch <= epochs_initiation_phase) {
@@ -1362,7 +1370,9 @@ vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_ear
 vaeac_check_activation_func <- function(activation_function) {
   # In future, check that it is one of the activation functions and not just a nn_module
   # Check that activation function is an nn_module
-  if (!any("nn_module" %in% class(activation_function))) cli::cli_abort("`vaeac.activation_function` is not an `nn_module`.")
+  if (!any("nn_module" %in% class(activation_function))) {
+    cli::cli_abort("`vaeac.activation_function` is not an `nn_module`.")
+  }
 }
 
 #' Function that checks the specified masking scheme
@@ -2358,13 +2368,17 @@ vaeac_update_pretrained_model <- function(parameters) {
 
   # Check that it is either a list or string
   if (!(is.list(vaeac_object) || is.character(vaeac_object))) {
-    cli::cli_abort("The `vaeac.pretrained_vaeac_model` parameter must be either a list or a string. Read the documentation.")
+    cli::cli_abort(
+      "The `vaeac.pretrained_vaeac_model` parameter must be either a list or a string. Read the documentation."
+    )
   }
 
   # Check if we are given a list
   if (is.list(vaeac_object)) {
     # Check for list of type vaeac
-    if (!("vaeac" %in% class(vaeac_object))) cli::cli_abort("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
+    if (!("vaeac" %in% class(vaeac_object))) {
+      cli::cli_abort("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
+    }
     vaeac_check_x_colnames(
       feature_names_vaeac = vaeac_object$parameters$feature_list$labels,
       feature_names_new = parameters$feature_names

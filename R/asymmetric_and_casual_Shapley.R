@@ -474,7 +474,9 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
             dt_new[, .SD[if (.N == n_samp_now) seq(.N) else sample(.N, n_samp_now, replace = TRUE, prob = w)], by = id]
 
           # Check that dt_new has the right number of rows.
-          if (nrow(dt_new) != n_explain * n_MC_samples) cli::cli_abort("`dt_new` does not have the right number of rows.\n")
+          if (nrow(dt_new) != n_explain * n_MC_samples) {
+            cli::cli_abort("`dt_new` does not have the right number of rows.\n")
+          }
         }
 
         # Insert/keep only the features in Sbar_now into dt
