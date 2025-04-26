@@ -8,17 +8,11 @@
         150, explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
       phi0 = p0_ar, seed = 1)
     Message
-      Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
-      
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
-      and is therefore set to 2^n_groups = 4.
-      
+      You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain(). Consistency checks between model and data is therefore disabled.
+      max_n_coalitions is NULL or larger than or 2^n_groups = 4, and is therefore set to 2^n_groups = 4.
     Condition
       Error in `get_predict_model()`:
-      ! You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain().
-      See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
+      ! You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain(). See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
 
 # erroneous input: `x_train/x_explain`
 
@@ -30,9 +24,7 @@
         phi0 = p0_ar, seed = 1)
     Condition
       Error in `get_data_forecast()`:
-      ! `y` has 2 columns (Temp,Wind).
-      `explain_y_lags` has length 1.
-      These two should match.
+      ! `y` has 2 columns (Temp,Wind). `explain_y_lags` has length 1. These two should match.
 
 ---
 
@@ -44,9 +36,7 @@
       phi0 = p0_ar, seed = 1)
     Condition
       Error in `get_data_forecast()`:
-      ! `xreg` has 2 columns (Temp,Wind).
-      `explain_xreg_lags` has length 1.
-      These two should match.
+      ! `xreg` has 2 columns (Temp,Wind). `explain_xreg_lags` has length 1. These two should match.
 
 ---
 
@@ -98,13 +88,8 @@
       max_n_coalitions = n_coalitions, group_lags = FALSE, iterative_args = list(
         initial_n_coalitions = 20))
     Message
-      Note: Feature names extracted from the model contains NA.
-      Consistency checks between model and data is therefore disabled.
-      
-      Success with message:
-      max_n_coalitions is smaller than max(10, n_features + 1 = 8),which will result in unreliable results.
-      It is therefore set to 10.
-      
+      Note: Feature names extracted from the model contains NA. Consistency checks between model and data is therefore disabled.
+      max_n_coalitions is smaller than max(10, n_features + 1 = 8),which will result in unreliable results. It is therefore set to 10.
     Condition
       Error in `check_iterative_args()`:
       ! `iterative_args$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.
@@ -122,13 +107,8 @@
       horizon = horizon, approach = "independence", phi0 = p0_ar, seed = 1,
       max_n_coalitions = n_coalitions, group_lags = TRUE)
     Message
-      Note: Feature names extracted from the model contains NA.
-      Consistency checks between model and data is therefore disabled.
-      
-      Success with message:
-      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (4) that we should use all to get reliable results.
-      max_n_coalitions is therefore set to 2^n_groups = 4.
-      
+      Note: Feature names extracted from the model contains NA. Consistency checks between model and data is therefore disabled.
+      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (4) that we should use all to get reliable results. max_n_coalitions is therefore set to 2^n_groups = 4.
       * Model class: <Arima>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -182,8 +162,7 @@
       approach = "independence", phi0 = p0_ar, seed = 1)
     Condition
       Error in `get_data_forecast()`:
-      ! The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data.
-      The lagged data begins at index 2 and ends at index 150.
+      ! The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data. The lagged data begins at index 2 and ends at index 150.
 
 # erroneous input: `explain_idx`
 
@@ -207,8 +186,7 @@
       phi0 = p0_ar, seed = 1)
     Condition
       Error in `get_data_forecast()`:
-      ! The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data.
-      The lagged data begins at index 2 and ends at index 150.
+      ! The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data. The lagged data begins at index 2 and ends at index 150.
 
 # erroneous input: `explain_y_lags`
 
@@ -244,9 +222,7 @@
       approach = "independence", phi0 = p0_ar, seed = 1)
     Condition
       Error in `get_data_forecast()`:
-      ! `y` has 1 columns (Temp).
-      `explain_y_lags` has length 2.
-      These two should match.
+      ! `y` has 1 columns (Temp). `explain_y_lags` has length 2. These two should match.
 
 ---
 
@@ -293,9 +269,7 @@
       approach = "independence", phi0 = p0_ar, seed = 1)
     Condition
       Error in `get_data_forecast()`:
-      ! `xreg` has 1 columns (Wind).
-      `explain_xreg_lags` has length 2.
-      These two should match.
+      ! `xreg` has 1 columns (Wind). `explain_xreg_lags` has length 2. These two should match.
 
 # erroneous input: `horizon`
 

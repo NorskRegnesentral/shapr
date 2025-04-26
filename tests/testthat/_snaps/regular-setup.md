@@ -6,17 +6,11 @@
       explain(testing = TRUE, model = model_custom_lm_mixed, x_train = x_train_mixed,
         x_explain = x_explain_mixed, approach = "independence", phi0 = p0, seed = 1)
     Message
-      Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
-      
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain(). Consistency checks between model and data is therefore disabled.
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `get_predict_model()`:
-      ! You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain().
-      See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
+      ! You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain(). See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
 
 # messages with missing detail in get_model_specs
 
@@ -25,13 +19,8 @@
         x_explain = x_explain_mixed, approach = "independence", phi0 = p0, seed = 1,
         predict_model = custom_predict_model, get_model_specs = NA)
     Message
-      Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
-      
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain(). Consistency checks between model and data is therefore disabled.
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <whatever>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -58,13 +47,8 @@
         x_explain = x_explain_mixed, approach = "independence", phi0 = p0, seed = 1,
         predict_model = custom_predict_model, get_model_specs = custom_get_model_specs_no_lab)
     Message
-      Note: Feature names extracted from the model contains NA.
-      Consistency checks between model and data is therefore disabled.
-      
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      Note: Feature names extracted from the model contains NA. Consistency checks between model and data is therefore disabled.
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <whatever>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -91,13 +75,8 @@
         x_explain = x_explain_mixed, approach = "independence", phi0 = p0, seed = 1,
         predict_model = custom_predict_model, get_model_specs = custom_gms_no_classes)
     Message
-      Note: Feature classes extracted from the model contains NA.
-      Assuming feature classes from the data are correct.
-      
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      Note: Feature classes extracted from the model contains NA. Assuming feature classes from the data are correct.
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <whatever>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -125,13 +104,8 @@
         x_explain = x_explain_mixed, approach = "independence", phi0 = p0, seed = 1,
         predict_model = custom_predict_model, get_model_specs = custom_gms_no_factor_levels)
     Message
-      Note: Feature factor levels extracted from the model contains NA.
-      Assuming feature factor levels from the data are correct.
-      
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      Note: Feature factor levels extracted from the model contains NA. Assuming feature factor levels from the data are correct.
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <whatever>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -177,8 +151,7 @@
         x_train = x_train_wrong_format, approach = "independence", phi0 = p0, seed = 1)
     Condition
       Error in `get_data()`:
-      ! x_train should be a matrix or a data.frame/data.table.
-      x_explain should be a matrix or a data.frame/data.table.
+      ! x_train should be a matrix or a data.frame/data.table. x_explain should be a matrix or a data.frame/data.table.
 
 ---
 
@@ -234,8 +207,7 @@
         seed = 1)
     Condition
       Error in `check_approach()`:
-      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
-      These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
+      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'. These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
 
 ---
 
@@ -246,8 +218,7 @@
         seed = 1)
     Condition
       Error in `check_approach()`:
-      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
-      These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
+      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'. These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
 
 ---
 
@@ -258,8 +229,7 @@
         seed = 1)
     Condition
       Error in `check_approach()`:
-      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'.
-      These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
+      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'. These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
 
 # erroneous input: `phi0`
 
@@ -378,10 +348,7 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "gaussian",
         max_n_coalitions = max_n_coalitions)
     Message
-      Success with message:
-      max_n_coalitions is smaller than max(10, n_features + 1 = 6),which will result in unreliable results.
-      It is therefore set to 10.
-      
+      max_n_coalitions is smaller than max(10, n_features + 1 = 6),which will result in unreliable results. It is therefore set to 10.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: FALSE
@@ -407,10 +374,7 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "gaussian", group = groups,
         max_n_coalitions = max_n_coalitions)
     Message
-      Success with message:
-      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
-      max_n_coalitions is therefore set to 2^n_groups = 8.
-      
+      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results. max_n_coalitions is therefore set to 2^n_groups = 8.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: FALSE
@@ -459,8 +423,7 @@
         group = group_with_non_data_features)
     Condition
       Error in `check_groups()`:
-      ! The group feature(s) not_a_data_feature are not
-      among the features in the data: Solar.R, Wind, Temp, Month, Day. Delete from group.
+      ! The group feature(s) not_a_data_feature are not among the features in the data: Solar.R, Wind, Temp, Month, Day. Delete from group.
 
 ---
 
@@ -472,8 +435,7 @@
         group = group_missing_data_features)
     Condition
       Error in `check_groups()`:
-      ! The data feature(s) Wind do not
-      belong to one of the groups. Add to a group.
+      ! The data feature(s) Wind do not belong to one of the groups. Add to a group.
 
 ---
 
@@ -485,8 +447,7 @@
         group = group_dup_data_features)
     Condition
       Error in `check_groups()`:
-      ! Feature(s) Solar.R are found in more than one group or multiple times per group.
-      Make sure each feature is only represented in one group, and only once.
+      ! Feature(s) Solar.R are found in more than one group or multiple times per group. Make sure each feature is only represented in one group, and only once.
 
 ---
 
@@ -497,8 +458,7 @@
         group = single_group)
     Condition
       Error in `check_groups()`:
-      ! You have specified only a single group named A, containing the features: Solar.R, Wind, Temp, Month, Day.
-       The predictions must be decomposed in at least two groups to be meaningful.
+      ! You have specified only a single group named A, containing the features: Solar.R, Wind, Temp, Month, Day. The predictions must be decomposed in at least two groups to be meaningful.
 
 # erroneous input: `n_MC_samples`
 
@@ -586,10 +546,7 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_1))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_output_args()`:
       ! `output_args$keep_samp_for_vS` must be single logical.
@@ -602,10 +559,7 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         output_args = list(keep_samp_for_vS = keep_samp_for_vS_non_logical_2))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_output_args()`:
       ! `output_args$keep_samp_for_vS` must be single logical.
@@ -618,10 +572,7 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         output_args = list(keep_samp_for_vS = keep_samp_for_vS_too_long))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_output_args()`:
       ! `output_args$keep_samp_for_vS` must be single logical.
@@ -634,10 +585,7 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_output_args()`:
       ! `output_args$MSEv_uniform_comb_weights` must be single logical.
@@ -650,10 +598,7 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_output_args()`:
       ! `output_args$MSEv_uniform_comb_weights` must be single logical.
@@ -666,10 +611,7 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         output_args = list(MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_output_args()`:
       ! `output_args$MSEv_uniform_comb_weights` must be single logical.
@@ -682,10 +624,7 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         predict_model = predict_model_nonfunction)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `get_predict_model()`:
       ! `predict_model` must be NULL or a function.
@@ -700,17 +639,10 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         predict_model = predict_model_non_num_output)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` does not return a numeric output of the desired length
-      for single output models or a data.table of the correct
-      dimensions for a multiple output model.
-      See the 'Advanced usage' section of the vignette:
-      vignette('general_usage', package = 'shapr')
+      ! The predict_model function of class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr')
       
       for more information on running shapr with custom models.
 
@@ -724,17 +656,10 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         predict_model = predict_model_wrong_output_len)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` does not return a numeric output of the desired length
-      for single output models or a data.table of the correct
-      dimensions for a multiple output model.
-      See the 'Advanced usage' section of the vignette:
-      vignette('general_usage', package = 'shapr')
+      ! The predict_model function of class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr')
       
       for more information on running shapr with custom models.
 
@@ -748,18 +673,10 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         predict_model = predict_model_invalid_argument)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` is invalid.
-      See the 'Advanced usage' section of the vignette:
-      vignette('general_usage', package = 'shapr')
-      for more information on running shapr with custom models.
-      A basic function test threw the following error:
-      Error in predict_model(model, x_test): unused argument (x_test)
+      ! The predict_model function of class `lm` is invalid. See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr') for more information on running shapr with custom models. A basic function test threw the following error: Error in predict_model(model, x_test): unused argument (x_test)
 
 ---
 
@@ -771,18 +688,10 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         predict_model = predict_model_error)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` is invalid.
-      See the 'Advanced usage' section of the vignette:
-      vignette('general_usage', package = 'shapr')
-      for more information on running shapr with custom models.
-      A basic function test threw the following error:
-      Error in 1 + "bla": non-numeric argument to binary operator
+      ! The predict_model function of class `lm` is invalid. See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr') for more information on running shapr with custom models. A basic function test threw the following error: Error in 1 + "bla": non-numeric argument to binary operator
 
 # erroneous input: `get_model_specs`
 
@@ -806,10 +715,7 @@
         get_model_specs = get_ms_output_not_list)
     Condition
       Error in `get_feature_specs()`:
-      ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
-      See the 'Advanced usage' section of the vignette:
-      vignette('general_usage', package = 'shapr')
-      for more information on running shapr with custom models and the required output format of get_model_specs.
+      ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels". See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr') for more information on running shapr with custom models and the required output format of get_model_specs.
 
 ---
 
@@ -822,10 +728,7 @@
         get_model_specs = get_ms_output_too_long)
     Condition
       Error in `get_feature_specs()`:
-      ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
-      See the 'Advanced usage' section of the vignette:
-      vignette('general_usage', package = 'shapr')
-      for more information on running shapr with custom models and the required output format of get_model_specs.
+      ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels". See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr') for more information on running shapr with custom models and the required output format of get_model_specs.
 
 ---
 
@@ -838,10 +741,7 @@
         get_model_specs = get_ms_output_wrong_names)
     Condition
       Error in `get_feature_specs()`:
-      ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
-      See the 'Advanced usage' section of the vignette:
-      vignette('general_usage', package = 'shapr')
-      for more information on running shapr with custom models and the required output format of get_model_specs.
+      ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels". See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr') for more information on running shapr with custom models and the required output format of get_model_specs.
 
 ---
 
@@ -854,14 +754,7 @@
         get_model_specs = get_model_specs_error)
     Condition
       Error in `get_feature_specs()`:
-      ! The get_model_specs function of class `lm` is invalid.
-      See the 'Advanced usage' section of the vignette:
-      vignette('general_usage', package = 'shapr')
-      for more information on running shapr with custom models.
-      Note that `get_model_specs` is not required (can be set to NULL)
-      unless you require consistency checks between model and data.
-      A basic function test threw the following error:
-      Error in 1 + "bla": non-numeric argument to binary operator
+      ! The get_model_specs function of class `lm` is invalid. See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr') for more information on running shapr with custom models. Note that `get_model_specs` is not required (can be set to NULL) unless you require consistency checks between model and data. A basic function test threw the following error: Error in 1 + "bla": non-numeric argument to binary operator
 
 # incompatible input: `data/approach`
 
@@ -870,15 +763,10 @@
       explain(testing = TRUE, model = model_lm_mixed, x_explain = x_explain_mixed,
         x_train = x_explain_mixed, approach = non_factor_approach_1, phi0 = p0, seed = 1)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
-      Error in `setup_approach.gaussian()`:
-      ! The following feature(s) are factor(s): Month_factor.
-      approach = 'gaussian' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
+      Error in `setup_approach()`:
+      ! The following feature(s) are factor(s): Month_factor. approach = 'gaussian' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
 
 ---
 
@@ -887,15 +775,10 @@
       explain(testing = TRUE, model = model_lm_mixed, x_explain = x_explain_mixed,
         x_train = x_explain_mixed, approach = non_factor_approach_2, phi0 = p0, seed = 1)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
-      Error in `setup_approach.empirical()`:
-      ! The following feature(s) are factor(s): Month_factor.
-      approach = 'empirical' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
+      Error in `setup_approach()`:
+      ! The following feature(s) are factor(s): Month_factor. approach = 'empirical' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
 
 ---
 
@@ -904,15 +787,10 @@
       explain(testing = TRUE, model = model_lm_mixed, x_explain = x_explain_mixed,
         x_train = x_explain_mixed, approach = non_factor_approach_3, phi0 = p0, seed = 1)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
-      Error in `setup_approach.copula()`:
-      ! The following feature(s) are factor(s): Month_factor.
-      approach = 'copula' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
+      Error in `setup_approach()`:
+      ! The following feature(s) are factor(s): Month_factor. approach = 'copula' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
 
 # Message with too low `max_n_coalitions`
 
@@ -921,10 +799,7 @@
         x_train = x_explain_numeric, phi0 = p0, seed = 1, approach = "gaussian",
         max_n_coalitions = max_n_coalitions)
     Message
-      Success with message:
-      max_n_coalitions is smaller than max(10, n_features + 1 = 6),which will result in unreliable results.
-      It is therefore set to 10.
-      
+      max_n_coalitions is smaller than max(10, n_features + 1 = 6),which will result in unreliable results. It is therefore set to 10.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: FALSE
@@ -948,10 +823,7 @@
         x_train = x_explain_numeric, phi0 = p0, seed = 1, approach = "gaussian",
         group = groups, max_n_coalitions = max_n_coalitions)
     Message
-      Success with message:
-      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
-      max_n_coalitions is therefore set to 2^n_groups = 8.
-      
+      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results. max_n_coalitions is therefore set to 2^n_groups = 8.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: FALSE
@@ -975,10 +847,7 @@
         x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "gaussian",
         phi0 = p0, n_MC_samples = 2, seed = 123, max_n_coalitions = NULL, iterative = FALSE)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: FALSE
@@ -1017,10 +886,7 @@
           compute_sd = FALSE), max_n_coalitions = 2^ncol(x_explain_numeric) + 1,
         iterative = FALSE)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: FALSE
@@ -1038,13 +904,8 @@
         out <- code
       }, digits = digits)
     Message
-      Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
-      
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain(). Consistency checks between model and data is therefore disabled.
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <whatever>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -1068,10 +929,7 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -1095,10 +953,7 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: ctree
       * Iterative estimation: TRUE

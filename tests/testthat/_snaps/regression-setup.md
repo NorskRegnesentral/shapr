@@ -26,10 +26,7 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = NULL)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
       ! `regression.model` must be a tidymodels object with class 'model_spec'. See documentation.
@@ -41,10 +38,7 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = lm)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
       ! `regression.model` must be a tidymodels object with class 'model_spec'. See documentation.
@@ -57,10 +51,7 @@
         regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
         engine = "rpart", mode = "regression"))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
       ! `regression.tune_values` must be provided when `regression.model` contains hyperparameters to tune.
@@ -74,10 +65,7 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           num_terms = c(1, 2, 3)))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
       ! The tunable parameters in `regression.model` ('tree_depth') and `regression.tune_values` ('num_terms') must match.
@@ -91,10 +79,7 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           tree_depth = c(1, 2, 3), num_terms = c(1, 2, 3)))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
       ! The tunable parameters in `regression.model` ('tree_depth') and `regression.tune_values` ('tree_depth', 'num_terms') must match.
@@ -108,10 +93,7 @@
           mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1,
           2, 3)))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
       ! The tunable parameters in `regression.model` ('') and `regression.tune_values` ('tree_depth') must match.
@@ -123,10 +105,7 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)), iterative = FALSE)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -149,10 +128,7 @@
           mode = "regression"), regression.tune_values = as.matrix(data.frame(
           tree_depth = c(1, 2, 3))))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
       ! `regression.tune_values` must be of either class `data.frame` or `function`. See documentation.
@@ -166,10 +142,7 @@
         engine = "rpart", mode = "regression"), regression.tune_values = function(x)
           c(1, 2, 3))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
       ! The output of the user provided `regression.tune_values` function must be of class `data.frame`.
@@ -183,10 +156,7 @@
         engine = "rpart", mode = "regression"), regression.tune_values = function(x)
           data.frame(wrong_name = c(1, 2, 3)))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
       ! The tunable parameters in `regression.model` ('tree_depth') and `regression.tune_values` ('wrong_name') must match.
@@ -200,10 +170,7 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           tree_depth = c(1, 2, 3)), regression.vfold_cv_para = 10)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.check_vfold_cv_para()`:
       ! `regression.vfold_cv_para` must be a named list. See documentation using '?shapr::explain()'.
@@ -217,10 +184,7 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           tree_depth = c(1, 2, 3)), regression.vfold_cv_para = list(10))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.check_vfold_cv_para()`:
       ! `regression.vfold_cv_para` must be a named list. See documentation using '?shapr::explain()'.
@@ -234,10 +198,7 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           tree_depth = c(1, 2, 3)), regression.vfold_cv_para = list(hey = 10))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.check_vfold_cv_para()`:
       ! The following parameters in `regression.vfold_cv_para` are not supported by `rsample::vfold_cv()`: 'hey'.
@@ -249,10 +210,7 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.recipe_func = 3)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.check_recipe_func()`:
       ! `regression.recipe_func` must be a function. See documentation.
@@ -266,10 +224,7 @@
           return(2)
         }, iterative = FALSE)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -290,10 +245,7 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1, iterative = FALSE)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -314,10 +266,7 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.surrogate_n_comb = 0, iterative = FALSE)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE

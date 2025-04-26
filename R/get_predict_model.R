@@ -25,9 +25,11 @@ get_predict_model <- function(predict_model, model) {
       predict_model <- get(paste0("predict_model.", model_class0))
     } else {
       cli::cli_abort(
+        paste0(
         "You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' ",
         "function to explain().\n",
         "See ?shapr::explain or the vignette for more information on how to run shapr with custom models."
+        )
       )
     }
   }

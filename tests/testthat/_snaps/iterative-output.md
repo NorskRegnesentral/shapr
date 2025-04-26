@@ -5,10 +5,7 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: TRUE
@@ -141,10 +138,6 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -221,10 +214,6 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -532,10 +521,6 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
-      and is therefore set to 2^n_groups = 8.
-      
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -581,10 +566,6 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -661,10 +642,7 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: TRUE
@@ -701,10 +679,7 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: TRUE
@@ -769,10 +744,7 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: TRUE
@@ -905,10 +877,7 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
+      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: TRUE
