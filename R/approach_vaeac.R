@@ -2466,7 +2466,7 @@ vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_state
                   best_epoch_running,
                   last_state$train_vlb[best_epoch_running]$cpu(),
                   last_state$val_iwae[best_epoch_running]$cpu(),
-                  last_state$val_iwae_running[best_epoch_running]$cpu(),
+                  last_state$val_iwae_running[best_epoch_running]$cpu()
   )
   msg4 <- sprintf("Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
                   last_state$epoch,
