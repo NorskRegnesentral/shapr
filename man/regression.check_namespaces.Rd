@@ -8,7 +8,7 @@ regression.check_namespaces()
 }
 \description{
 This function checks that the \code{parsnip}, \code{recipes}, \code{workflows}, \code{tune}, \code{dials},
-\code{yardstick}, \code{hardhat}, \code{rsample}, and \code{rlang} packages are available.
+\code{yardstick}, \code{hardhat} and \code{rsample}, packages are available.
 }
 \author{
 Lars Henry Berge Olsen

@@ -431,12 +431,12 @@ regression.check_vfold_cv_para <- function(regression.vfold_cv_para) {
 #' Check that needed libraries are installed
 #'
 #' This function checks that the `parsnip`, `recipes`, `workflows`, `tune`, `dials`,
-#' `yardstick`, `hardhat`, `rsample`, and `rlang` packages are available.
+#' `yardstick`, `hardhat` and `rsample`, packages are available.
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 regression.check_namespaces <- function() {
-  namespaces <- c("parsnip", "recipes", "workflows", "tune", "dials", "yardstick", "hardhat", "rsample", "rlang")
+  namespaces <- c("parsnip", "recipes", "workflows", "tune", "dials", "yardstick", "hardhat", "rsample")
   for (namespace in namespaces) {
     if (!requireNamespace(namespace, quietly = TRUE)) {
       cli::cli_abort(paste0(

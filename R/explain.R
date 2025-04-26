@@ -359,7 +359,7 @@
 #' print(explain_groups$shapley_values_est)
 #'
 #' # Separate and surrogate regression approaches with linear regression models.
-#' req_pkgs <- c("parsnip", "rlang", "recipes", "workflows", "rsample", "tune", "yardstick")
+#' req_pkgs <- c("parsnip", "recipes", "workflows", "rsample", "tune", "yardstick")
 #' if (requireNamespace(req_pkgs, quietly = TRUE)) {
 #'   explain_separate_lm <- explain(
 #'     model = model,

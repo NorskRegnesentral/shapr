@@ -1,5 +1,4 @@
 skip_if_not_installed("parsnip")
-skip_if_not_installed("rlang")
 skip_if_not_installed("recipes")
 skip_if_not_installed("workflows")
 skip_if_not_installed("rsample")
