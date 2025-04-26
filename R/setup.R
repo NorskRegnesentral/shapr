@@ -410,7 +410,7 @@ check_data <- function(internal) {
 
   if (is.null(model_feature_specs)) {
     if ("basic" %in% verbose) {
-      cli::cli_inform(
+      cli::cli_alert_info(
         paste0(
           "You passed a model to explain() which is not natively supported, and did not supply a ",
           "'get_model_specs' function to explain().\n",
@@ -422,7 +422,7 @@ check_data <- function(internal) {
     model_feature_specs <- x_train_feature_specs
   } else if (NA_labels) {
     if ("basic" %in% verbose) {
-      cli::cli_inform(
+      cli::cli_alert_info(
         paste0(
           "Feature names extracted from the model contains NA.\n",
           "Consistency checks between model and data is therefore disabled.\n"
@@ -433,7 +433,7 @@ check_data <- function(internal) {
     model_feature_specs <- x_train_feature_specs
   } else if (NA_classes) {
     if ("basic" %in% verbose) {
-      cli::cli_inform(
+      cli::cli_alert_info(
         c(
           "Feature classes extracted from the model contains NA.\n",
           "Assuming feature classes from the data are correct.\n"
@@ -445,7 +445,7 @@ check_data <- function(internal) {
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   } else if (factors_exists && NA_factor_levels) {
     if ("basic" %in% verbose) {
-      cli::cli_inform(
+      cli::cli_alert_info(
         paste0(
           "Feature factor levels extracted from the model contains NA.\n",
           "Assuming feature factor levels from the data are correct.\n"
@@ -527,7 +527,7 @@ get_extra_parameters <- function(internal, type) {
     # Make group names if not existing
     if (is.null(names(group))) {
       if ("basic" %in% verbose) {
-        cli::cli_inform(
+        cli::cli_alert_info(
           "Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc."
         )
       }
@@ -828,7 +828,7 @@ adjust_max_n_coalitions <- function(internal) {
     if (is.null(max_n_coalitions) || max_n_coalitions > max_n_coalitions_causal) {
       max_n_coalitions <- max_n_coalitions_causal
       if ("basic" %in% verbose) {
-        cli::cli_inform(
+        cli::cli_alert_info(
           paste0(
             "max_n_coalitions is NULL or larger than or number of coalitions respecting the causal\n",
             "ordering ", max_n_coalitions_causal, ", and is therefore set to ", max_n_coalitions_causal, ".\n"
@@ -843,7 +843,7 @@ adjust_max_n_coalitions <- function(internal) {
       if (max_n_coalitions_causal <= 10) {
         max_n_coalitions <- max_n_coalitions_causal
         if ("basic" %in% verbose) {
-          cli::cli_inform(
+          cli::cli_alert_info(
             paste0(
               "max_n_coalitions_causal is smaller than or equal to 10, meaning there are\n",
               "so few unique causal coalitions that we should use all to get reliable results.\n",
@@ -854,7 +854,7 @@ adjust_max_n_coalitions <- function(internal) {
       } else {
         max_n_coalitions <- min(10, n_shapley_values + 1, max_n_coalitions_causal)
         if ("basic" %in% verbose) {
-          cli::cli_inform(
+          cli::cli_alert_info(
             paste0(
               "max_n_coalitions is smaller than max(10, n_shapley_values + 1 = ", n_shapley_values + 1,
               " max_n_coalitions_causal = ", max_n_coalitions_causal, "),",
@@ -873,7 +873,7 @@ adjust_max_n_coalitions <- function(internal) {
       if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_features) {
         max_n_coalitions <- 2^n_features
         if ("basic" %in% verbose) {
-          cli::cli_inform(
+          cli::cli_alert_info(
             paste0(
               "max_n_coalitions is NULL or larger than or 2^n_features = ", 2^n_features, ", \n",
               "and is therefore set to 2^n_features = ", 2^n_features, ".\n"
@@ -886,7 +886,7 @@ adjust_max_n_coalitions <- function(internal) {
         if (n_features <= 3) {
           max_n_coalitions <- 2^n_features
           if ("basic" %in% verbose) {
-            cli::cli_inform(
+            cli::cli_alert_info(
               paste0(
                 "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",
                 2^n_features, ") that we should use all to get reliable results.\n",
@@ -897,7 +897,7 @@ adjust_max_n_coalitions <- function(internal) {
         } else {
           max_n_coalitions <- min(10, n_features + 1)
           if ("basic" %in% verbose) {
-            cli::cli_inform(
+            cli::cli_alert_info(
               paste0(
                 "max_n_coalitions is smaller than max(10, n_features + 1 = ", n_features + 1, "),",
                 "which will result in unreliable results.\n",
@@ -912,7 +912,7 @@ adjust_max_n_coalitions <- function(internal) {
       if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_shapley_values) {
         max_n_coalitions <- 2^n_shapley_values
         if ("basic" %in% verbose) {
-          cli::cli_inform(
+          cli::cli_alert_info(
             paste0(
               "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_shapley_values, ", \n",
               "and is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
@@ -925,7 +925,7 @@ adjust_max_n_coalitions <- function(internal) {
         if (n_shapley_values <= 3) {
           max_n_coalitions <- 2^n_shapley_values
           if ("basic" %in% verbose) {
-            cli::cli_inform(
+            cli::cli_alert_info(
               paste0(
                 "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (",
                 2^n_shapley_values, ") that we should use all to get reliable results.\n",
@@ -936,7 +936,7 @@ adjust_max_n_coalitions <- function(internal) {
         } else {
           max_n_coalitions <- min(10, n_shapley_values + 1)
           if ("basic" %in% verbose) {
-            cli::cli_inform(
+            cli::cli_alert_info(
               paste0(
                 "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_shapley_values + 1, "),",
                 "which will result in unreliable results.\n",
