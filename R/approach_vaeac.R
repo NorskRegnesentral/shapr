@@ -1544,8 +1544,6 @@ vaeac_check_parameters <- function(x_train,
                                    verbose,
                                    seed,
                                    ...) {
-  # Check verbose parameter
-  #  check_verbose(verbose = verbose)
 
   # Check that the activation function is valid torch::nn_module object
   vaeac_check_activation_func(activation_function = activation_function)

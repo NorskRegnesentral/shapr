@@ -19,7 +19,7 @@ conda install -c r r
 ```
 
 #### Install R-package
-The `shaprpy` Python wrapper requires latest version of the `shapr` R-package from CRAN.
+The `shaprpy` Python wrapper requires the latest version of the `shapr` R-package from CRAN.
 Install it by running the following terminal command from the folder of this readme file (`.../shapr/python`):
 
 ```

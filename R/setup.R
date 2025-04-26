@@ -1137,7 +1137,7 @@ check_and_set_sampling_info <- function(internal) {
 #' @param n_boot_samps Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
 #' coalitions used to estimate the standard deviations of the Shapley value estimates.
 #' @param vS_batching_method String. The method used to perform batch computing of vS.
-#' `"future"` (default), utilizes [future.apply::future_apply] (via the [future::future] packages),
+#' `"future"` (default), utilizes [future.apply::future_apply] (via the [future::future] package),
 #' enabling parallelized computation and progress updates via [progressr::progressr].
 #' Alternatively, `"forloop"` can be used for straight forward sequential computation, which is mainly useful for
 #' package development and debugging purposes.
@@ -1197,7 +1197,7 @@ check_extra_computation_args <- function(extra_computation_args) {
   # vS_batching_method
   if (!(length(vS_batching_method) == 1 && vS_batching_method %in%
     c("future", "forloop"))) {
-    stop("`vS_batching_method` must be one of `future`, `forloop`.\n")
+    stop("`vS_batching_method` must be one of `future` or `forloop`.\n")
   }
 
   # n_boot_samps

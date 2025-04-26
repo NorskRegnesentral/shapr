@@ -4,9 +4,10 @@
 and discussed as the PySHAP* strategy in [Olsen & Jullum (2024)](https://arxiv.org/abs/2410.04883). It is disabled by
 default, but can be set via `extra_computation_args = list(semi_deterministic_sampling = TRUE)` in `explain()`.
 The functionality is available when paired coalition sampling (the default) is enabled. See 
-[#449](https://github.com/NorskRegnesentral/shapr/pull/449)) for details
-* Deletes the regression-surrogate parsnip object when testing to avoid future conflicts with model object changes. (Second last commit in [#447](https://github.com/NorskRegnesentral/shapr/pull/447))
-* Improves and update logic and print for setting the number of coalitions in the next iteration for `iterative = TRUE` 
+[#449](https://github.com/NorskRegnesentral/shapr/pull/449)) for details.
+* Deletes the regression-surrogate parsnip object when testing to avoid future conflicts with model object changes. 
+(Second last commit in [#447](https://github.com/NorskRegnesentral/shapr/pull/447)).
+* Improve and update the logic and print for setting the number of coalitions in the next iteration for `iterative = TRUE` 
 [#452](https://github.com/NorskRegnesentral/shapr/pull/452)
 * Allow passing `vS_batching_method` to `explain()/explain_forecast()` to specify the batch computation method 
 (default is `"future"` for both, `"forloop"` available mainly for dev purposes)
