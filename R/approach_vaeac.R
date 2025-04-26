@@ -2455,26 +2455,26 @@ vaeac_save_state <- function(state_list, file_name, return_state = FALSE) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_state) {
-  msg1 <- "Results of the `vaeac` training process:"
-  msg2 <- sprintf("Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
-                  best_epoch,
-                  last_state$train_vlb[best_epoch]$cpu(),
-                  last_state$val_iwae[best_epoch]$cpu(),
-                  last_state$val_iwae_running[best_epoch]$cpu()
-  )
-  msg3 <- sprintf("Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
-                  best_epoch_running,
-                  last_state$train_vlb[best_epoch_running]$cpu(),
-                  last_state$val_iwae[best_epoch_running]$cpu(),
-                  last_state$val_iwae_running[best_epoch_running]$cpu()
-  )
-  msg4 <- sprintf("Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
-                  last_state$epoch,
-                  last_state$train_vlb[-1]$cpu(),
-                  last_state$val_iwae[-1]$cpu(),
-                  last_state$val_iwae_running[-1]$cpu()
-  )
-  cli::cli_inform(c("i"=msg1,msg2,msg3,msg4))
+
+  rlang::inform(sprintf(
+    "\nResults of the `vaeac` training process:
+Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
+Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
+Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
+    best_epoch,
+    last_state$train_vlb[best_epoch]$cpu(),
+    last_state$val_iwae[best_epoch]$cpu(),
+    last_state$val_iwae_running[best_epoch]$cpu(),
+    best_epoch_running,
+    last_state$train_vlb[best_epoch_running]$cpu(),
+    last_state$val_iwae[best_epoch_running]$cpu(),
+    last_state$val_iwae_running[best_epoch_running]$cpu(),
+    last_state$epoch,
+    last_state$train_vlb[-1]$cpu(),
+    last_state$val_iwae[-1]$cpu(),
+    last_state$val_iwae_running[-1]$cpu()
+  ))
+
 }
 
 
