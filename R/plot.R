@@ -1805,7 +1805,6 @@ extract_Shapley_values_dt <- function(explanation_list,
     msg1 <- "It might be too many explicands to plot together in a nice fashion!"
     msg2 <- "Try for instance setting `index_explicands = 1:10` to limit the number of explicands."
     cli::cli_inform(c("i"=msg1,msg2))
-    )
   }
 
   # Keep only the needed columns, and ensure that .id, .pred, and .method are included

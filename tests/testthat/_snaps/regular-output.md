@@ -5,7 +5,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -29,7 +29,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -53,7 +53,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: empirical
       * Iterative estimation: FALSE
@@ -123,7 +123,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Warning:
       Using empirical.type = 'independence' for approach = 'empirical' is deprecated. Please use approach = 'independence' instead.
@@ -137,16 +137,16 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
-      empirical.eta force set to 1 for empirical.type = 'independence'
-      empirical.eta force set to 1 for empirical.type = 'independence'
-      empirical.eta force set to 1 for empirical.type = 'independence'
-      empirical.eta force set to 1 for empirical.type = 'independence'
-      empirical.eta force set to 1 for empirical.type = 'independence'
-      empirical.eta force set to 1 for empirical.type = 'independence'
-      empirical.eta force set to 1 for empirical.type = 'independence'
-      empirical.eta force set to 1 for empirical.type = 'independence'
-      empirical.eta force set to 1 for empirical.type = 'independence'
-      empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
+      i empirical.eta force set to 1 for empirical.type = 'independence'
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -207,7 +207,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: FALSE
@@ -231,7 +231,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: copula
       * Iterative estimation: FALSE
@@ -255,7 +255,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: ctree
       * Iterative estimation: FALSE
@@ -279,7 +279,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: vaeac
       * Iterative estimation: FALSE
@@ -303,7 +303,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
       * Model class: <lm>
       * Approach: ctree
       * Iterative estimation: FALSE
@@ -327,7 +327,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
       * Model class: <lm>
       * Approach: vaeac
       * Iterative estimation: FALSE
@@ -351,7 +351,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
       * Model class: <lm>
       * Approach: categorical
       * Iterative estimation: FALSE
@@ -375,7 +375,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -399,7 +399,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_groups = 16, and is therefore set to 2^n_groups = 16.
+      i max_n_coalitions is NULL or larger than or 2^n_groups = 16, and is therefore set to 2^n_groups = 16.
       * Model class: <lm>
       * Approach: timeseries
       * Iterative estimation: FALSE
@@ -422,7 +422,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: gaussian, empirical, ctree, and independence
       * Iterative estimation: FALSE
@@ -446,7 +446,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: ctree, copula, independence, and copula
       * Iterative estimation: FALSE
@@ -470,7 +470,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: independence, empirical, gaussian, and empirical
       * Iterative estimation: FALSE
@@ -494,7 +494,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -518,7 +518,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: ctree
       * Iterative estimation: FALSE
@@ -542,7 +542,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: vaeac
       * Iterative estimation: FALSE
@@ -566,7 +566,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: ctree, independence, ctree, and independence
       * Iterative estimation: FALSE
@@ -590,7 +590,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -614,8 +614,9 @@
         out <- code
       }, digits = digits)
     Message
-      You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain(). Consistency checks between model and data is therefore disabled.
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
+      Consistency checks between model and data is therefore disabled.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <xgb.Booster>
       * Approach: ctree
       * Iterative estimation: FALSE
@@ -639,7 +640,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 4, and is therefore set to 2^n_features = 4.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 4, and is therefore set to 2^n_features = 4.
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -663,7 +664,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: ctree
       * Iterative estimation: FALSE
@@ -687,7 +688,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: empirical
       * Iterative estimation: FALSE

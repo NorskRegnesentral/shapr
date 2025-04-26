@@ -8,8 +8,9 @@
         150, explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
       phi0 = p0_ar, seed = 1)
     Message
-      You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain(). Consistency checks between model and data is therefore disabled.
-      max_n_coalitions is NULL or larger than or 2^n_groups = 4, and is therefore set to 2^n_groups = 4.
+      i You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
+      Consistency checks between model and data is therefore disabled.
+      i max_n_coalitions is NULL or larger than or 2^n_groups = 4, and is therefore set to 2^n_groups = 4.
     Condition
       Error in `get_predict_model()`:
       ! You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain(). See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
@@ -88,8 +89,10 @@
       max_n_coalitions = n_coalitions, group_lags = FALSE, iterative_args = list(
         initial_n_coalitions = 20))
     Message
-      Note: Feature names extracted from the model contains NA. Consistency checks between model and data is therefore disabled.
-      max_n_coalitions is smaller than max(10, n_features + 1 = 8),which will result in unreliable results. It is therefore set to 10.
+      i Feature names extracted from the model contains NA.
+      Consistency checks between model and data is therefore disabled.
+      i max_n_coalitions is smaller than max(10, n_features + 1 = 8), which will result in unreliable results.
+      It is therefore set to 10.
     Condition
       Error in `check_iterative_args()`:
       ! `iterative_args$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.
@@ -107,8 +110,10 @@
       horizon = horizon, approach = "independence", phi0 = p0_ar, seed = 1,
       max_n_coalitions = n_coalitions, group_lags = TRUE)
     Message
-      Note: Feature names extracted from the model contains NA. Consistency checks between model and data is therefore disabled.
-      n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (4) that we should use all to get reliable results. max_n_coalitions is therefore set to 2^n_groups = 4.
+      i Feature names extracted from the model contains NA.
+      Consistency checks between model and data is therefore disabled.
+      i n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (4) that we should use all to get reliable results.
+      max_n_coalitions is therefore set to 2^n_groups = 4.
       * Model class: <Arima>
       * Approach: independence
       * Iterative estimation: FALSE

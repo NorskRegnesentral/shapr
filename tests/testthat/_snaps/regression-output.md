@@ -5,7 +5,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_separate
       * Iterative estimation: TRUE
@@ -42,7 +42,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_separate
       * Iterative estimation: FALSE
@@ -89,7 +89,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
       * Model class: <lm>
       * Approach: regression_separate
       * Iterative estimation: FALSE
@@ -113,7 +113,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_separate
       * Iterative estimation: FALSE
@@ -137,7 +137,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_separate
       * Iterative estimation: FALSE
@@ -161,7 +161,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_separate
       * Iterative estimation: FALSE
@@ -185,7 +185,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_separate
       * Iterative estimation: FALSE
@@ -209,7 +209,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_separate
       * Iterative estimation: FALSE
@@ -233,7 +233,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Warning:
       Iterative estimation of Shapley values are not supported for approach = regression_surrogate. Setting iterative = FALSE.
@@ -261,7 +261,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -331,7 +331,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 16, and is therefore set to 2^n_features = 16.
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -355,7 +355,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -379,7 +379,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -403,7 +403,7 @@
         out <- code
       }, digits = digits)
     Message
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
