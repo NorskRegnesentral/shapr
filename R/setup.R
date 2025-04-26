@@ -63,6 +63,9 @@ setup <- function(x_train,
                   ...) {
   internal <- list()
 
+  # Check verbose first as it is used below
+  check_verbose(verbose)
+
   # Using parameters and iter_list from a previouys  to continue estimation from on previous shapr objects
   if (is.null(prev_shapr_object)) {
     prev_iter_list <- NULL
@@ -180,9 +183,6 @@ get_parameters <- function(approach,
                            extra_computation_args = list(),
                            testing = FALSE,
                            ...) {
-
-  # Check verbose first as it is used below
-  check_verbose(verbose)
 
   # approach is checked comprehensively later
 
@@ -424,7 +424,7 @@ check_data <- function(internal) {
     if ("basic" %in% verbose) {
       cli::cli_inform(
         paste0(
-          "Note: Feature names extracted from the model contains NA.\n",
+          "Feature names extracted from the model contains NA.\n",
           "Consistency checks between model and data is therefore disabled.\n"
         )
       )
@@ -434,8 +434,8 @@ check_data <- function(internal) {
   } else if (NA_classes) {
     if ("basic" %in% verbose) {
       cli::cli_inform(
-        paste0(
-          "Note: Feature classes extracted from the model contains NA.\n",
+        c(
+          "Feature classes extracted from the model contains NA.\n",
           "Assuming feature classes from the data are correct.\n"
         )
       )
@@ -447,7 +447,7 @@ check_data <- function(internal) {
     if ("basic" %in% verbose) {
       cli::cli_inform(
         paste0(
-          "Note: Feature factor levels extracted from the model contains NA.\n",
+          "Feature factor levels extracted from the model contains NA.\n",
           "Assuming feature factor levels from the data are correct.\n"
         )
       )
