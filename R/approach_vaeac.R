@@ -884,7 +884,7 @@ vaeac_train_model_continue <- function(explanation,
   }
   if (!is.null(checkpoint$x_train) && !is.null(x_train)) {
     if("basic" %in% verbose){
-      cli::cli_alert_info("The `vaeac` model includes data and `x_train` was provided to this function. We only use `x_train`.")
+      cli::cli_inform("The `vaeac` model includes data and `x_train` was provided to this function. We only use `x_train`.")
     }
   }
   if (is.null(x_train)) x_train <- checkpoint$x_train
@@ -1328,7 +1328,7 @@ vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_ear
 
   if (epochs_early_stopping > epochs) {
     if("basic" %in% verbose){
-      cli::cli_alert_info(paste0(
+      cli::cli_inform(paste0(
         "No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
         "`vaeac.epochs` (", epochs, ")."
       ))
@@ -1440,7 +1440,7 @@ vaeac_check_cuda <- function(cuda, verbose) {
   if (isFALSE(cuda_available) && isTRUE(cuda)) {
     cuda <- FALSE
     if("basic" %in% verbose){
-      cli::cli_alert_info("Cuda/GPU is not available (`shapr` uses CPU instead).", immediate. = TRUE)
+      cli::cli_inform("Cuda/GPU is not available (`shapr` uses CPU instead).", immediate. = TRUE)
     }
   }
 
@@ -1477,7 +1477,7 @@ vaeac_check_masking_ratio <- function(masking_ratio, n_features) {
 vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch, x_train_size, verbose) {
   if (save_data && !is.null(save_every_nth_epoch) && epochs / save_every_nth_epoch > 5) {
     if("basic" %in% verbose){
-      cli::cli_alert_info( paste0(
+      cli::cli_inform( paste0(
         "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might requirer ",
         "a lot of disk storage if `x_train` (", x_train_size, ") is large."
       ))
@@ -2450,7 +2450,7 @@ vaeac_save_state <- function(state_list, file_name, return_state = FALSE) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_state) {
-  cli::cli_alert_info(sprintf(
+  cli::cli_inform(sprintf(
     "\nResults of the `vaeac` training process:
 Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
@@ -2859,7 +2859,7 @@ plot_vaeac_imputed_ggpairs <- function(
 
   # Check if the vaeac model is expected to give a reasonable figure.
   if (!explanation$internal$parameters$exact || explanation$internal$parameters$is_groupwise) {
-    cli::cli_alert_info(
+    cli::cli_inform(
       "The vaeac model has not been trained on the empty colition, hence, the figure can be missleading. ",
       "The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in the explanation call."
     )

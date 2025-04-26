@@ -1144,7 +1144,7 @@ memory_layer <- function(id, shared_env, output = FALSE, add = FALSE, verbose = 
     forward = function(input) {
       # Check if we are going to insert input into the storage or extract data from the storage.
       if (!self$output) {
-        if (self$verbose) cli::cli_alert_info(paste0("Inserting data to memory layer `self$id = ", self$id, "`."))
+        if (self$verbose) cli::cli_inform(paste0("Inserting data to memory layer `self$id = ", self$id, "`."))
 
         # Insert the input into the storage list which is in the shared environment of the memory_layer class.
         # Note that we do not check if self$id is unique.
@@ -1153,7 +1153,7 @@ memory_layer <- function(id, shared_env, output = FALSE, add = FALSE, verbose = 
       } else {
         # We are to extract data from the storage list.
         if (self$verbose) {
-          cli::cli_alert_info(paste0(
+          cli::cli_inform(paste0(
             "Extracting data to memory layer `self$id = ", self$id, "`. Using concatination = ", !self$add, "."
           ))
         }

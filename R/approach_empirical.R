@@ -197,7 +197,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
     if (kernel_metric == "independence") {
       empirical.eta <- 1
       if("basic" %in% verbose){
-        cli::cli_alert_info(
+        cli::cli_inform(
           "empirical.eta force set to 1 for empirical.type = 'independence'"
         )
       }
