@@ -35,7 +35,8 @@ Imports:
     Matrix,
     future.apply,
     methods,
-    cli
+    cli,
+    rlang
 Suggests: 
     ranger,
     xgboost,
@@ -64,8 +65,7 @@ Suggests:
     dials,
     yardstick,
     hardhat,
-    rsample,
-    rlang
+    rsample
 LinkingTo: 
     RcppArmadillo,
     Rcpp

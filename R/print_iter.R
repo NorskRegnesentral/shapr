@@ -105,6 +105,10 @@ print_iter <- function(internal) {
 
     cli::cli_h3(msg)
     names(print_dt) <- names(dt_shapley_est)
-    print(print_dt)
+    output <- capture.output(print(print_dt))
+
+    # Send it to rlang::inform (bypassing cli-formatting) to print correctly
+    # Cannot use print as it does not obey suppressMessages()
+    rlang::inform(paste(output, collapse = "\n"))
   }
 }
