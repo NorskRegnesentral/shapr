@@ -416,31 +416,8 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
 
 test_that("output_verbose_suppressMessages", {
   # Test that the verbose argument works with suppressMessages
-  expect_silent(
-    {
-      suppressMessages(
-        {
-          ex <- explain(
-            testing = TRUE,
-            model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "gaussian",
-            phi0 = p0,
-            seed = 1,
-            iterative = TRUE,
-            verbose = c("basic", "convergence", "shapley", "vS_details")
-          )
-        }
-      )
-    }
-  )
-})
-
-test_that("output_verbose_NULL", {
-  # Test that the verbose argument works with suppressMessages
-  expect_silent(
-    {
+  expect_silent({
+    suppressMessages({
       ex <- explain(
         testing = TRUE,
         model = model_lm_numeric,
@@ -450,8 +427,25 @@ test_that("output_verbose_NULL", {
         phi0 = p0,
         seed = 1,
         iterative = TRUE,
-        verbose = NULL
+        verbose = c("basic", "convergence", "shapley", "vS_details")
       )
-    }
-  )
+    })
+  })
+})
+
+test_that("output_verbose_NULL", {
+  # Test that the verbose argument works with suppressMessages
+  expect_silent({
+    ex <- explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      phi0 = p0,
+      seed = 1,
+      iterative = TRUE,
+      verbose = NULL
+    )
+  })
 })

@@ -878,15 +878,15 @@ vaeac_train_model_continue <- function(explanation,
 
   # Check for access to a single training data set and use the data from the checkpoint if `x_train` is not provided
   if (is.null(checkpoint$normalized_data) && is.null(x_train)) {
-    if("basic" %in% verbose){
+    if ("basic" %in% verbose) {
       msg <- "The `vaeac` model did not include data (set `vaeac.save_data = TRUE in `explain()`) and `x_train = NULL`."
       cli::cli_abort(msg)
     }
   }
   if (!is.null(checkpoint$x_train) && !is.null(x_train)) {
-    if("basic" %in% verbose){
+    if ("basic" %in% verbose) {
       msg <- "The `vaeac` model includes data and `x_train` was provided to this function. We only use `x_train`."
-      cli::cli_inform(c("i"=msg))
+      cli::cli_inform(c("i" = msg))
     }
   }
   if (is.null(x_train)) x_train <- checkpoint$x_train
@@ -1329,12 +1329,12 @@ vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_ear
   }
 
   if (epochs_early_stopping > epochs) {
-    if("basic" %in% verbose){
+    if ("basic" %in% verbose) {
       msg <- paste0(
         "No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
         "`vaeac.epochs` (", epochs, ")."
       )
-      cli::cli_inform(c("i"=msg))
+      cli::cli_inform(c("i" = msg))
     }
   }
 
@@ -1442,9 +1442,9 @@ vaeac_check_cuda <- function(cuda, verbose) {
   # Give message to user if asked to run on cuda, but cuda is not available.
   if (isFALSE(cuda_available) && isTRUE(cuda)) {
     cuda <- FALSE
-    if("basic" %in% verbose){
+    if ("basic" %in% verbose) {
       msg <- "Cuda/GPU is not available (`shapr` uses CPU instead)."
-      cli::cli_inform(c("i"= msg), immediate. = TRUE)
+      cli::cli_inform(c("i" = msg), immediate. = TRUE)
     }
   }
 
@@ -1480,12 +1480,12 @@ vaeac_check_masking_ratio <- function(masking_ratio, n_features) {
 #' @author Lars Henry Berge Olsen
 vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch, x_train_size, verbose) {
   if (save_data && !is.null(save_every_nth_epoch) && epochs / save_every_nth_epoch > 5) {
-    if("basic" %in% verbose){
+    if ("basic" %in% verbose) {
       msg <- paste0(
         "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might requirer ",
         "a lot of disk storage if `x_train` (", x_train_size, ") is large."
       )
-      cli::cli_inform(c("i"= msg))
+      cli::cli_inform(c("i" = msg))
     }
   }
 }
@@ -1561,7 +1561,6 @@ vaeac_check_parameters <- function(x_train,
                                    verbose,
                                    seed,
                                    ...) {
-
   # Check that the activation function is valid torch::nn_module object
   vaeac_check_activation_func(activation_function = activation_function)
 
@@ -2455,7 +2454,6 @@ vaeac_save_state <- function(state_list, file_name, return_state = FALSE) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_state) {
-
   rlang::inform(sprintf(
     "\nResults of the `vaeac` training process:
 Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
@@ -2474,7 +2472,6 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     last_state$val_iwae[-1]$cpu(),
     last_state$val_iwae_running[-1]$cpu()
   ))
-
 }
 
 
@@ -2843,7 +2840,7 @@ plot_vaeac_imputed_ggpairs <- function(
   if (!explanation$internal$parameters$exact || explanation$internal$parameters$is_groupwise) {
     msg1 <- "The vaeac model has not been trained on the empty colition, hence, the figure can be missleading."
     msg2 <- "The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in the explanation call."
-    cli::cli_inform(c("i"=msg1,msg2))
+    cli::cli_inform(c("i" = msg1, msg2))
   }
 
   # Extract the vaeac list from the explanation list

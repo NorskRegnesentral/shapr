@@ -26,9 +26,9 @@ get_predict_model <- function(predict_model, model) {
     } else {
       cli::cli_abort(
         paste0(
-        "You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' ",
-        "function to explain().\n",
-        "See ?shapr::explain or the vignette for more information on how to run shapr with custom models."
+          "You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' ",
+          "function to explain().\n",
+          "See ?shapr::explain or the vignette for more information on how to run shapr with custom models."
         )
       )
     }

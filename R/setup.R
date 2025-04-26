@@ -183,7 +183,6 @@ get_parameters <- function(approach,
                            extra_computation_args = list(),
                            testing = FALSE,
                            ...) {
-
   # approach is checked comprehensively later
 
   if (!is.logical(iterative) && length(iterative) == 1) {
@@ -410,10 +409,12 @@ check_data <- function(internal) {
 
   if (is.null(model_feature_specs)) {
     if ("basic" %in% verbose) {
-      msg1 <- paste0("You passed a model to explain() which is not natively supported, and did not supply a ",
-                     "'get_model_specs' function to explain().")
+      msg1 <- paste0(
+        "You passed a model to explain() which is not natively supported, and did not supply a ",
+        "'get_model_specs' function to explain()."
+      )
       msg2 <- "Consistency checks between model and data is therefore disabled."
-      cli::cli_inform(c("i"=msg1,msg2))
+      cli::cli_inform(c("i" = msg1, msg2))
     }
 
     model_feature_specs <- x_train_feature_specs
@@ -422,7 +423,7 @@ check_data <- function(internal) {
       msg1 <- "Feature names extracted from the model contains NA."
       msg2 <- "Consistency checks between model and data is therefore disabled."
 
-      cli::cli_inform(c("i"=msg1,msg2))
+      cli::cli_inform(c("i" = msg1, msg2))
     }
 
     model_feature_specs <- x_train_feature_specs
@@ -430,7 +431,7 @@ check_data <- function(internal) {
     if ("basic" %in% verbose) {
       msg1 <- "Feature classes extracted from the model contains NA."
       msg2 <- "Assuming feature classes from the data are correct."
-      cli::cli_inform(c("i"=msg1,msg2))
+      cli::cli_inform(c("i" = msg1, msg2))
     }
 
     model_feature_specs$classes <- x_train_feature_specs$classes
@@ -439,7 +440,7 @@ check_data <- function(internal) {
     if ("basic" %in% verbose) {
       msg1 <- "Feature factor levels extracted from the model contains NA."
       msg2 <- "Assuming feature factor levels from the data are correct."
-      cli::cli_inform(c("i"=msg1,msg2))
+      cli::cli_inform(c("i" = msg1, msg2))
     }
 
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
@@ -517,7 +518,7 @@ get_extra_parameters <- function(internal, type) {
     if (is.null(names(group))) {
       if ("basic" %in% verbose) {
         msg <- "Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc."
-        cli::cli_inform(c("i"=msg))
+        cli::cli_inform(c("i" = msg))
       }
       names(group) <- paste0("group", seq_along(group))
     }
@@ -820,7 +821,7 @@ adjust_max_n_coalitions <- function(internal) {
           "max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ",
           "ordering ", max_n_coalitions_causal, ", and is therefore set to ", max_n_coalitions_causal, "."
         )
-        cli::cli_inform(c("i"=msg))
+        cli::cli_inform(c("i" = msg))
       }
     }
 
@@ -835,7 +836,7 @@ adjust_max_n_coalitions <- function(internal) {
             "so few unique causal coalitions that we should use all to get reliable results."
           )
           msg2 <- paste0("max_n_coalitions is therefore set to ", max_n_coalitions_causal, ".")
-          cli::cli_inform(c("i"=msg1,msg2))
+          cli::cli_inform(c("i" = msg1, msg2))
         }
       } else {
         max_n_coalitions <- min(10, n_shapley_values + 1, max_n_coalitions_causal)
@@ -846,7 +847,7 @@ adjust_max_n_coalitions <- function(internal) {
             " max_n_coalitions_causal = ", max_n_coalitions_causal, "), which will result in unreliable results."
           )
           msg2 <- paste0("It is therefore set to ", min(10, n_shapley_values + 1, max_n_coalitions_causal), ".")
-          cli::cli_inform(c("i"=msg1,msg2))
+          cli::cli_inform(c("i" = msg1, msg2))
         }
       }
     }
@@ -862,7 +863,7 @@ adjust_max_n_coalitions <- function(internal) {
             "max_n_coalitions is NULL or larger than or 2^n_features = ", 2^n_features, ", ",
             "and is therefore set to 2^n_features = ", 2^n_features, "."
           )
-          cli::cli_inform(c("i"=msg))
+          cli::cli_inform(c("i" = msg))
         }
       }
       # Set max_n_coalitions to lower bound
@@ -875,7 +876,7 @@ adjust_max_n_coalitions <- function(internal) {
               2^n_features, ") that we should use all to get reliable results."
             )
             msg2 <- paste0("max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".")
-            cli::cli_inform(c("i"=msg1,msg2))
+            cli::cli_inform(c("i" = msg1, msg2))
           }
         } else {
           max_n_coalitions <- min(10, n_features + 1)
@@ -885,7 +886,7 @@ adjust_max_n_coalitions <- function(internal) {
               "which will result in unreliable results."
             )
             msg2 <- paste0("It is therefore set to ", max(10, n_features + 1), ".")
-            cli::cli_inform(c("i"=msg1,msg2))
+            cli::cli_inform(c("i" = msg1, msg2))
           }
         }
       }
@@ -898,7 +899,7 @@ adjust_max_n_coalitions <- function(internal) {
             "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_shapley_values, ", \n",
             "and is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
           )
-          cli::cli_inform(c("i"=msg))
+          cli::cli_inform(c("i" = msg))
         }
       }
       # Set max_n_coalitions to lower bound
@@ -911,16 +912,17 @@ adjust_max_n_coalitions <- function(internal) {
               2^n_shapley_values, ") that we should use all to get reliable results."
             )
             msg2 <- paste0("max_n_coalitions is therefore set to 2^n_groups = ", 2^n_shapley_values, ".")
-            cli::cli_inform(c("i"=msg1,msg2))
+            cli::cli_inform(c("i" = msg1, msg2))
           }
         } else {
           max_n_coalitions <- min(10, n_shapley_values + 1)
           if ("basic" %in% verbose) {
             msg1 <- paste0(
               "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_shapley_values + 1, "),",
-              " which will result in unreliable results.")
+              " which will result in unreliable results."
+            )
             msg2 <- paste0("It is therefore set to ", max(10, n_shapley_values + 1), ".")
-            cli::cli_inform(c("i"=msg1,msg2))
+            cli::cli_inform(c("i" = msg1, msg2))
           }
         }
       }

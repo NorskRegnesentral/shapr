@@ -1094,7 +1094,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
         "The approximate ", CI_level * 100, "% confidence intervals might be wide as they are only based on ",
         n_explain, " observations."
       )
-      cli::cli_inform(c("i"=msg))
+      cli::cli_inform(c("i" = msg))
     }
 
     # Check for CI with negative values
@@ -1109,7 +1109,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
         "Check the `MSEv_explicand` plots for potential observational outliers ",
         "that causes the wide confidence intervals."
       )
-      cli::cli_inform(c("i"=msg1, msg2))
+      cli::cli_inform(c("i" = msg1, msg2))
     }
   }
 
@@ -1178,7 +1178,7 @@ MSEv_name_explanation_list <- function(explanation_list) {
   msg1 <- "User provided an `explanation_list` without named explanation objects."
   msg2 <- "Use the approach names of the explanation objects as the names (with integer suffix for duplicates)."
 
-  cli::cli_inform(c("i"=msg1,msg2))
+  cli::cli_inform(c("i" = msg1, msg2))
 
   return(explanation_list)
 }
@@ -1747,7 +1747,7 @@ update_only_these_features <- function(explanation_list,
         paste0("'", only_these_features_not_names, "'", collapse = ", "),
         "). The function skips non-valid feature names."
       )
-      cli::cli_inform(c("i"=msg))
+      cli::cli_inform(c("i" = msg))
     }
 
     # Stop if we have no valid feature names.
@@ -1804,7 +1804,7 @@ extract_Shapley_values_dt <- function(explanation_list,
   if (length(index_explicands) > 12) {
     msg1 <- "It might be too many explicands to plot together in a nice fashion!"
     msg2 <- "Try for instance setting `index_explicands = 1:10` to limit the number of explicands."
-    cli::cli_inform(c("i"=msg1,msg2))
+    cli::cli_inform(c("i" = msg1, msg2))
   }
 
   # Keep only the needed columns, and ensure that .id, .pred, and .method are included
@@ -1832,11 +1832,13 @@ update_axis_labels <- function(axis_labels_rotate_angle,
 
     # If it is long, then we alter the default values set above and give message to user
     if (length_of_longest_description > 12 && !horizontal_bars) {
-      msg1 <- paste0("Long label names: consider specifying either `axis_labels_rotate_angle` or ",
-                     "`axis_labels_n_dodge`, to fix any potentially overlapping axis labels.")
+      msg1 <- paste0(
+        "Long label names: consider specifying either `axis_labels_rotate_angle` or ",
+        "`axis_labels_n_dodge`, to fix any potentially overlapping axis labels."
+      )
       msg2 <- "The function sets `axis_labels_rotate_angle = 45` internally."
 
-      cli::cli_inform( c("i"=msg1, msg2))
+      cli::cli_inform(c("i" = msg1, msg2))
 
       # Set it to rotate 45 degrees
       axis_labels_rotate_angle <- 45
