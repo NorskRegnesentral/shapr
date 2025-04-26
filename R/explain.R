@@ -86,7 +86,8 @@
 #' @param verbose String vector or NULL.
 #' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
 #'  `"convergence"`, `"shapley"` and `"vS_details"`.
-#' `"basic"` (default) displays basic information about the computation which is being performed.
+#' `"basic"` (default) displays basic information about the computation which is being performed,
+#' in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 #' `"progress` displays information about where in the calculation process the function currently is.
 #' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
 #' (only when `iterative = TRUE`) .
