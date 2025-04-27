@@ -1274,12 +1274,11 @@ check_and_set_iterative <- function(internal) {
     unsupported <- approach[approach %in% c("vaeac", "regression_surrogate")]
 
     if (isTRUE(iterative)) {
-      cli::cli_warn(
-        paste0(
-          "Iterative estimation of Shapley values are not supported for approach = ",
-          paste0(unsupported, collapse = ", "), ". Setting iterative = FALSE."
-        )
+      msg <- paste0(
+        "Iterative estimation of Shapley values are not supported for approach = ",
+        paste0(unsupported, collapse = ", "), ". Setting iterative = FALSE."
       )
+      cli::cli_warn(c("!" = msg), immediate. = TRUE)
     }
 
     internal$parameters$iterative <- FALSE
@@ -1333,13 +1332,12 @@ check_computability <- function(internal) {
   if (asymmetric) {
     if (isTRUE(exact)) {
       if (max_n_coalitions_causal > 5000 && max_n_coalitions > 5000) {
-        cli::cli_warn(
-          paste0(
-            "Due to computation time, we recommend not computing asymmetric Shapley values exactly \n",
-            "with all valid causal coalitions (", max_n_coalitions_causal, ") when larger than 5000.\n",
-            "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE.\n"
-          )
+        msg1 <- paste0(
+          "Due to computation time, we recommend not computing asymmetric Shapley values exactly ",
+          "with all valid causal coalitions (", max_n_coalitions_causal, ") when larger than 5000."
         )
+        msg2 <- "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE."
+        cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
       }
     }
   }
@@ -1347,50 +1345,50 @@ check_computability <- function(internal) {
   # Force user to use a natural number for n_coalitions if m > 13
   if (isTRUE(exact)) {
     if (isFALSE(is_groupwise) && n_features > 13) {
-      cli::cli_warn(
-        paste0(
-          "Due to computation time, we recommend not computing Shapley values exactly \n",
-          "with all 2^n_features (", 2^n_features, ") coalitions for n_features > 13.\n",
-          "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE.\n"
-        )
+      msg1 <- paste0(
+        "Due to computation time, we recommend not computing Shapley values exactly ",
+        "with all 2^n_features (", 2^n_features, ") coalitions for n_features > 13."
       )
+      msg2 <- "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE."
+      cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
     }
     if (isTRUE(is_groupwise) && n_groups > 13) {
-      cli::cli_warn(
-        paste0(
-          "Due to computation time, we recommend not computing Shapley values exactly \n",
-          "with all 2^n_groups (", 2^n_groups, ") coalitions for n_groups > 13.\n",
-          "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE.\n"
-        )
+      msg1 <- paste0(
+        "Due to computation time, we recommend not computing Shapley values exactly ",
+        "with all 2^n_groups (", 2^n_groups, ") coalitions for n_groups > 13."
       )
+      msg2 <- "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE."
+      cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
     }
     if (isTRUE(causal_sampling) && !is.null(max_n_coalitions_causal) && max_n_coalitions_causal > 1000) {
-      paste0(
-        "Due to computation time, we recommend not computing causal Shapley values exactly \n",
-        "with all valid causal coalitions when there are more than 1000 due to the long causal sampling time. \n",
-        "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE.\n"
+      msg1 <- paste0(
+        "Due to computation time, we recommend not computing causal Shapley values exactly ",
+        "with all valid causal coalitions when there are more than 1000 due to the long causal sampling time."
       )
+      msg2 <- "Consider reducing max_n_coalitions and enabling iterative estimation with iterative = TRUE."
+      cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
     }
   } else {
     if (isFALSE(is_groupwise) && n_features > 30) {
-      cli::cli_warn(
-        "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE",
-        " when n_features > 30.\n"
+      msg <- paste0(
+        "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE ",
+        "when n_features > 30."
       )
+      cli::cli_warn(c("!" = msg), immediate. = TRUE)
     }
     if (isTRUE(is_groupwise) && n_groups > 30) {
-      cli::cli_warn(
-        "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE",
-        " when n_groups > 30.\n"
+      msg <- paste0(
+        "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE ",
+        "when n_groups > 30."
       )
+      cli::cli_warn(c("!" = msg), immediate. = TRUE)
     }
     if (isTRUE(causal_sampling) && !is.null(max_n_coalitions_causal) && max_n_coalitions_causal > 1000) {
-      cli::cli_warn(
-        paste0(
-          "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE ",
-          "when the number of valid causal coalitions are more than 1000 due to the long causal sampling time. \n"
-        )
+      msg <- paste0(
+        "Due to computation time, we strongly recommend enabling iterative estimation with iterative = TRUE ",
+        "when the number of valid causal coalitions are more than 1000 due to the long causal sampling time."
       )
+      cli::cli_warn(c("!" = msg), immediate. = TRUE)
     }
   }
 }

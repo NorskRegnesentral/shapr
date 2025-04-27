@@ -514,8 +514,9 @@ vaeac <- function(one_hot_max_sizes,
 
     # Forward functions are required in torch::nn_modules, but is it not needed in the way we have implemented vaeac.
     forward = function(...) {
-      cli::cli_warn("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
-      return("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
+      msg <- "No forward function implemented for vaeac!"
+      cli::cli_warn(c("!" = msg))
+      return("No forward function implemented for vaeac!")
     },
 
     # Apply Mask to Batch to Create Observed Batch

@@ -2262,14 +2262,13 @@ vaeac_update_para_locations <- function(parameters) {
   not_extra_para_in_main_para <-
     vaeac.main_para_user_names[!vaeac.main_para_user_names %in% vaeav.all_para_default_names]
   if (length(not_extra_para_in_main_para) > 0) {
-    # Give a message to the user about the unknown extra parameters
-    cli::cli_warn(paste0(
-      "The following vaeac main parameters are not recognized (`shapr` removes them): ",
-      paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+    # Give a warning to the user about the unknown extra parameters
+    msg1 <- "The following vaeac main parameters are not recognized (`shapr` removes them): "
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
+                                  ",(?=[^,]+$)",
+                                  perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
     # Delete the unknown extra parameters
     parameters[not_extra_para_in_main_para] <- NULL
@@ -2279,14 +2278,13 @@ vaeac_update_para_locations <- function(parameters) {
   not_main_para_in_extra_para <-
     vaeac.extra_para_user_names[!vaeac.extra_para_user_names %in% vaeav.all_para_default_names]
   if (length(not_main_para_in_extra_para) > 0) {
-    # Give a message to the user about the unknown extra parameters
-    cli::cli_warn(paste0(
-      "The following vaeac extra parameters are not recognized (`shapr` removes them): ",
-      paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+    # Give a warning to the user about the unknown extra parameters
+    msg1 <- "The following vaeac extra parameters are not recognized (`shapr` removes them): "
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
+                                  ",(?=[^,]+$)",
+                                  perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
     # Delete the unknown extra parameters
     parameters$vaeac.extra_parameters[not_main_para_in_extra_para] <- NULL
@@ -2295,29 +2293,32 @@ vaeac_update_para_locations <- function(parameters) {
   # Check for parameters that have been provided as both main and extra parameter
   both_main_and_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_user_names]
   if (length(both_main_and_extra_para > 0)) {
-    # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
-    cli::cli_warn(paste0(
+    # Print a warning to the user and tell them that we use those in `vaeac.extra_parameters`.
+    msg1 <- paste0(
       "The following vaeac parameters were given as both main and extra parameters (`shapr` uses the ",
-      "values at the correct location ): ",
-      paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+      "values at the correct location): "
+    )
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
+                                  ",(?=[^,]+$)",
+                                  perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
+
     # Note that we do not move it here as the moving will be fixed in the next two if-clauses
   }
 
   # Check if any any extra parameters have been given as main parameters
   extra_para_in_main_para <- vaeac.main_para_user_names[vaeac.main_para_user_names %in% vaeac.extra_para_default_names]
   if (length(extra_para_in_main_para) > 0) {
-    cli::cli_warn(paste0(
+    msg1 <- paste0(
       "The following vaeac parameters were given as main parameters but should have been extra ",
-      "parameters (`shapr` fixes this): ",
-      paste(strsplit(paste(paste0("`", extra_para_in_main_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+      "parameters (`shapr` fixes this): "
+    )
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", extra_para_in_main_para, "`"), collapse = ", "),
+                                  ",(?=[^,]+$)",
+                                  perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
     # Move extra parameter from the main parameters to extra_parameters list if they have NOT been specified already
     parameters$vaeac.extra_parameters[extra_para_in_main_para[!extra_para_in_main_para %in%
@@ -2331,15 +2332,16 @@ vaeac_update_para_locations <- function(parameters) {
   # Check if any any main parameters have been given as extra parameters
   main_para_in_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_default_names]
   if (length(main_para_in_extra_para) > 0) {
-    # Give a message to the user about the misplaced main parameters in the extra list
-    cli::cli_warn(paste0(
+    # Give a warning to the user about the misplaced main parameters in the extra list
+    msg1 <- paste0(
       "The following vaeac parameters were given as extra parameters but should have been main ",
-      "parameters (`shapr` fixes this): ",
-      paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+      "parameters (`shapr` fixes this): "
+    )
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
+                                  ",(?=[^,]+$)",
+                                  perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
     # Move main parameters from the extra_parameters list to main parameters if they have NOT been specified already
     parameters[main_para_in_extra_para[!main_para_in_extra_para %in% vaeac.main_para_user_names]] <-

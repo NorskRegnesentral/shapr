@@ -85,10 +85,9 @@ setup_approach.empirical <- function(internal,
 
 
   if (internal$parameters$empirical.type == "independence") {
-    cli::cli_warn(paste0(
-      "Using empirical.type = 'independence' for approach = 'empirical' is deprecated.\n",
-      "Please use approach = 'independence' instead."
-    ))
+    msg1 <- "Using empirical.type = 'independence' for approach = 'empirical' is deprecated."
+    msg2 <- "Please use approach = 'independence' instead."
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
   }
 
   if (internal$parameters$empirical.type %in% c("AICc_each_k", "AICc_full") && internal$parameters$is_python == TRUE) {
