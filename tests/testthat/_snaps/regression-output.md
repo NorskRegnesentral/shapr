@@ -283,7 +283,7 @@
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Warning:
-      Iterative estimation of Shapley values are not supported for approach = regression_surrogate. Setting iterative = FALSE.
+      ! Iterative estimation of Shapley values are not supported for approach = regression_surrogate. Setting iterative = FALSE.
     Message
       
       -- Explanation overview --

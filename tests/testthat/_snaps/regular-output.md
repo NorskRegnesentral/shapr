@@ -153,7 +153,8 @@
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Warning:
-      Using empirical.type = 'independence' for approach = 'empirical' is deprecated. Please use approach = 'independence' instead.
+      ! Using empirical.type = 'independence' for approach = 'empirical' is deprecated.
+        Please use approach = 'independence' instead.
     Message
       
       -- Explanation overview --
