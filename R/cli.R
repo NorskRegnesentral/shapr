@@ -1,3 +1,19 @@
+#' Create a header topline with cli
+#'
+#' @inheritParams setup
+#'
+#' @return No return value (but prints header with cli unless `verbose` is `NULL`)
+#'
+#' @keywords internal
+cli_topline <- function(verbose, testing, init_time){
+  msg0 <- "Starting {.fn shapr::explain}"
+  msg <- ifelse(testing, msg0, paste0(msg0, " at {.val {round(init_time)}}"))
+  if(!is.null(verbose)){
+    cli::cli_h1(msg)
+  }
+}
+
+
 #' Printing startup messages with cli
 #'
 #' @param model_class String.
@@ -50,9 +66,7 @@ cli_startup <- function(internal, model_class, verbose) {
   }
 
   if ("basic" %in% verbose) {
-    if (isFALSE(testing)) {
-      cli::cli_h1("Starting {.fn shapr::explain} at {round(init_time)}")
-    }
+    cli::cli_h2("Explanation overview")
     cli::cli_ul(line_vec)
   }
 

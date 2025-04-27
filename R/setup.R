@@ -63,12 +63,16 @@ setup <- function(x_train,
                   ...) {
   internal <- list()
 
-  # Check verbose first as it is used below
+  # Check verbose already here to use it below
   check_verbose(verbose)
 
-  # TODO: add check_testing (if testing is TRUE or FALSE)
+  # Check testing already here to use it below
+  if (!is.logical(testing) && length(testing) == 1) {
+    cli::cli_abort("`testing` must be a single logical.")
+  }
 
-  # TODO: add startupline with shapr-info hvis verbos!=NULL and display the time only if testing==FALSE
+  # Create a nice header
+  cli_topline(verbose,testing, init_time)
 
 
   # Using parameters and iter_list from a previouys  to continue estimation from on previous shapr objects
