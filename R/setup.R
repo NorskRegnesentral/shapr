@@ -439,7 +439,7 @@ check_data <- function(internal) {
     model_feature_specs <- x_train_feature_specs
   } else if (NA_labels) {
     if ("basic" %in% verbose) {
-      msg1 <- "Feature names extracted from the model contains {.val NA}."
+      msg1 <- "Feature names extracted from the model contains `NA`."
       msg2 <- "Consistency checks between model and data is therefore disabled."
 
       cli::cli_inform(c("i" = msg1, " " = msg2))
@@ -448,7 +448,7 @@ check_data <- function(internal) {
     model_feature_specs <- x_train_feature_specs
   } else if (NA_classes) {
     if ("basic" %in% verbose) {
-      msg1 <- "Feature classes extracted from the model contains NA."
+      msg1 <- "Feature classes extracted from the model contains `NA`."
       msg2 <- "Assuming feature classes from the data are correct."
       cli::cli_inform(c("i" = msg1, " " = msg2))
     }
@@ -457,7 +457,7 @@ check_data <- function(internal) {
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   } else if (factors_exists && NA_factor_levels) {
     if ("basic" %in% verbose) {
-      msg1 <- "Feature factor levels extracted from the model contains NA."
+      msg1 <- "Feature factor levels extracted from the model contains `NA`."
       msg2 <- "Assuming feature factor levels from the data are correct."
       cli::cli_inform(c("i" = msg1, " " = msg2))
     }
