@@ -2265,8 +2265,8 @@ vaeac_update_para_locations <- function(parameters) {
     # Give a warning to the user about the unknown extra parameters
     msg1 <- "The following vaeac main parameters are not recognized (`shapr` removes them): "
     msg2 <- paste0(paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
-                                  ",(?=[^,]+$)",
-                                  perl = TRUE
+      ",(?=[^,]+$)",
+      perl = TRUE
     )[[1]], collapse = " and"), ".")
     cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
@@ -2281,8 +2281,8 @@ vaeac_update_para_locations <- function(parameters) {
     # Give a warning to the user about the unknown extra parameters
     msg1 <- "The following vaeac extra parameters are not recognized (`shapr` removes them): "
     msg2 <- paste0(paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
-                                  ",(?=[^,]+$)",
-                                  perl = TRUE
+      ",(?=[^,]+$)",
+      perl = TRUE
     )[[1]], collapse = " and"), ".")
     cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
@@ -2299,8 +2299,8 @@ vaeac_update_para_locations <- function(parameters) {
       "values at the correct location): "
     )
     msg2 <- paste0(paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
-                                  ",(?=[^,]+$)",
-                                  perl = TRUE
+      ",(?=[^,]+$)",
+      perl = TRUE
     )[[1]], collapse = " and"), ".")
     cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
@@ -2315,8 +2315,8 @@ vaeac_update_para_locations <- function(parameters) {
       "parameters (`shapr` fixes this): "
     )
     msg2 <- paste0(paste(strsplit(paste(paste0("`", extra_para_in_main_para, "`"), collapse = ", "),
-                                  ",(?=[^,]+$)",
-                                  perl = TRUE
+      ",(?=[^,]+$)",
+      perl = TRUE
     )[[1]], collapse = " and"), ".")
     cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
@@ -2338,8 +2338,8 @@ vaeac_update_para_locations <- function(parameters) {
       "parameters (`shapr` fixes this): "
     )
     msg2 <- paste0(paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
-                                  ",(?=[^,]+$)",
-                                  perl = TRUE
+      ",(?=[^,]+$)",
+      perl = TRUE
     )[[1]], collapse = " and"), ".")
     cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 

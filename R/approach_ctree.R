@@ -162,7 +162,7 @@ create_ctree <- function(given_ind,
       }, error = function(ex) {
         msg1 <- paste0("party::ctree ran into the error: ", ex)
         msg2 <- "Using partykit::ctree instead!"
-        cli::cli_warn(c("!" = msg1," " = msg2), immediate. = TRUE)
+        cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
         partykit::ctree(fmla,
           data = df,
           control = partykit::ctree_control(

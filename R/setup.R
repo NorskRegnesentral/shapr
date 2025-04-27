@@ -72,11 +72,13 @@ setup <- function(x_train,
   }
 
   # Create a nice header
-  cli_topline(verbose = verbose,
-              testing = testing,
-              init_time = init_time,
-              type = type,
-              is_python = is_python)
+  cli_topline(
+    verbose = verbose,
+    testing = testing,
+    init_time = init_time,
+    type = type,
+    is_python = is_python
+  )
 
 
   # Using parameters and iter_list from a previouys  to continue estimation from on previous shapr objects
