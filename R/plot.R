@@ -187,7 +187,7 @@ plot.shapr <- function(x,
                        beeswarm_cex = 1 / length(index_x_explain)^(1 / 4),
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    cli::cli_abort("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}")
   }
   if (!(plot_type %in% c("bar", "waterfall", "scatter", "beeswarm"))) {
     cli::cli_abort(paste(plot_type, "is an invalid plot type. Try plot_type='bar', plot_type='waterfall',
@@ -588,7 +588,7 @@ make_beeswarm_plot <- function(dt_plot,
                                beeswarm_cex,
                                ...) {
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
-    cli::cli_abort("ggbeeswarm is not installed. Please run install.packages('ggbeeswarm')")
+    cli::cli_abort("ggbeeswarm is not installed. Please run {.run install.packages('ggbeeswarm')}.")
   }
 
   if (is.null(col)) {
@@ -1050,7 +1050,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
                                 plot_type = "overall") {
   # Setup and checks ----------------------------------------------------------------------------
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    cli::cli_abort("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}.")
   }
 
   # Check for valid plot type argument
@@ -1602,7 +1602,7 @@ plot_SV_several_approaches <- function(explanation_list,
   # Setup and checks ----------------------------------------------------------------------------
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    cli::cli_abort("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}.")
   }
 
   # Ensure that even a single explanation object is in a list

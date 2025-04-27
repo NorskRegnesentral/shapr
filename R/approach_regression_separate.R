@@ -440,8 +440,8 @@ regression.check_namespaces <- function() {
   for (namespace in namespaces) {
     if (!requireNamespace(namespace, quietly = TRUE)) {
       cli::cli_abort(paste0(
-        "`", namespace, "` is not installed. Please run `install.packages('", namespace, "')` to install ",
-        "it or run `install.packages('tidymodels')` to install all relevant packages."
+        "`", namespace, "` is not installed. Please run {.run install.packages('", namespace, "')} to install ",
+        "it or run {.run install.packages('tidymodels')} to install all relevant packages."
       ))
     }
   }

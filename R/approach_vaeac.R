@@ -35,10 +35,10 @@ setup_approach.vaeac <- function(internal,
 
   # Check that torch is installed
   if (!requireNamespace("torch", quietly = TRUE)) {
-    cli::cli_abort("`torch` is not installed. Please run `install.packages('torch')`.")
+    cli::cli_abort("`torch` is not installed. Please run {.run install.packages('torch')}.")
   }
   if (!torch::torch_is_installed()) {
-    cli::cli_abort("`torch` is not properly installed. Please run `torch::install_torch()`.")
+    cli::cli_abort("`torch` is not properly installed. Please run {.run torch::install_torch()}.")
   }
 
   # Extract the objects we will use later
@@ -2635,7 +2635,7 @@ plot_vaeac_eval_crit <- function(explanation_list,
   ## Checks
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    cli::cli_abort("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}.")
   }
 
   # Check for valid criteria argument
@@ -2831,10 +2831,10 @@ plot_vaeac_imputed_ggpairs <- function(
     cor_method = c("pearson", "kendall", "spearman")) {
   # Check that ggplot2 and GGally are installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    cli::cli_abort("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}.")
   }
   if (!requireNamespace("GGally", quietly = TRUE)) {
-    cli::cli_abort("GGally is not installed. Please run install.packages('GGally')")
+    cli::cli_abort("GGally is not installed. Please run {.run install.packages('GGally')}.")
   }
 
   # Check all input parameters except `which_vaeac_model`
