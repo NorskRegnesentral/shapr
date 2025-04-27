@@ -215,12 +215,12 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
     }
     dt_l <- list()
     for (i in seq(n_col)) {
-      D0 <- D[, i, ]
+      D0 <- matrix(D[, i, , drop = FALSE],nrow=nrow(D))
       h_optim_vec <- h_optim_mat[, i]
       h_optim_vec[is.na(h_optim_vec)] <- 1
 
       if (kernel_metric == "independence") {
-        D0 <- D0[sample.int(nrow(D)), ] + stats::runif(n = nrow(D) * ncol(D))
+        D0 <- D0[sample.int(nrow(D0)), ,drop=FALSE] + stats::runif(n = nrow(D0) * ncol(D0))
         h_optim_vec <- mean(D) * 1000
       }
 
@@ -401,7 +401,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   empirical.n_samples_aicc <- nrow(optimsamp)
   nloops <- n_explain # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = n_shapley_values, nrow = n_coalitions)
+  h_optim_mat <- matrix(NA, ncol = n_explain, nrow = n_coalitions)
 
   if (is.null(index_features)) {
     index_features <- X[, .I]
@@ -517,7 +517,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
   )
   nloops <- n_explain # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = n_shapley_values, nrow = n_coalitions)
+  h_optim_mat <- matrix(NA, ncol = n_explain, nrow = n_coalitions)
 
   if (is.null(index_features)) {
     index_features <- X[, .I]
