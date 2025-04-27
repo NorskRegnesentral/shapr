@@ -23,9 +23,9 @@
         semi_deterministic_sampling = TRUE))
     Message
       
-      -- Starting `shapr::explain()` -------------------------------------------------
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
-      Consistency checks between model and data is therefore disabled.
+        Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 4, and is therefore set to 2^n_features = 4.
     Condition
       Error in `check_and_set_sampling_info()`:

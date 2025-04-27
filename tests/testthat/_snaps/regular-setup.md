@@ -9,7 +9,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
+        Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `get_predict_model()`:
@@ -25,7 +25,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
+        Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       
       -- Explanation overview --
@@ -59,7 +59,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i Feature names extracted from the model contains NA.
-      Consistency checks between model and data is therefore disabled.
+        Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       
       -- Explanation overview --
@@ -93,7 +93,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i Feature classes extracted from the model contains NA.
-      Assuming feature classes from the data are correct.
+        Assuming feature classes from the data are correct.
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       
       -- Explanation overview --
@@ -128,7 +128,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i Feature factor levels extracted from the model contains NA.
-      Assuming feature factor levels from the data are correct.
+        Assuming feature factor levels from the data are correct.
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       
       -- Explanation overview --
@@ -435,7 +435,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is smaller than max(10, n_features + 1 = 6), which will result in unreliable results.
-      It is therefore set to 10.
+        It is therefore set to 10.
       
       -- Explanation overview --
       
@@ -467,7 +467,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
-      max_n_coalitions is therefore set to 2^n_groups = 8.
+        max_n_coalitions is therefore set to 2^n_groups = 8.
       
       -- Explanation overview --
       
@@ -962,7 +962,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is smaller than max(10, n_features + 1 = 6), which will result in unreliable results.
-      It is therefore set to 10.
+        It is therefore set to 10.
       
       -- Explanation overview --
       
@@ -992,7 +992,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (8) that we should use all to get reliable results.
-      max_n_coalitions is therefore set to 2^n_groups = 8.
+        max_n_coalitions is therefore set to 2^n_groups = 8.
       
       -- Explanation overview --
       
@@ -1094,7 +1094,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
+        Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       
       -- Explanation overview --

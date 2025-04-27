@@ -742,7 +742,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
+        Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
       
       -- Explanation overview --

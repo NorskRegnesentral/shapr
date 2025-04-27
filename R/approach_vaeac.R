@@ -2854,7 +2854,7 @@ plot_vaeac_imputed_ggpairs <- function(
   if (!explanation$internal$parameters$exact || explanation$internal$parameters$is_groupwise) {
     msg1 <- "The vaeac model has not been trained on the empty colition, hence, the figure can be missleading."
     msg2 <- "The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in the explanation call."
-    cli::cli_inform(c("i" = msg1, msg2))
+    cli::cli_inform(c("i" = msg1, " " = msg2))
   }
 
   # Extract the vaeac list from the explanation list

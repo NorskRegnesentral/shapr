@@ -1115,7 +1115,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
         "Check the `MSEv_explicand` plots for potential observational outliers ",
         "that causes the wide confidence intervals."
       )
-      cli::cli_inform(c("i" = msg1, msg2))
+      cli::cli_inform(c("i" = msg1, " " = msg2))
     }
   }
 
@@ -1184,7 +1184,7 @@ MSEv_name_explanation_list <- function(explanation_list) {
   msg1 <- "User provided an `explanation_list` without named explanation objects."
   msg2 <- "Use the approach names of the explanation objects as the names (with integer suffix for duplicates)."
 
-  cli::cli_inform(c("i" = msg1, msg2))
+  cli::cli_inform(c("i" = msg1, " " = msg2))
 
   return(explanation_list)
 }
@@ -1810,7 +1810,7 @@ extract_Shapley_values_dt <- function(explanation_list,
   if (length(index_explicands) > 12) {
     msg1 <- "It might be too many explicands to plot together in a nice fashion!"
     msg2 <- "Try for instance setting `index_explicands = 1:10` to limit the number of explicands."
-    cli::cli_inform(c("i" = msg1, msg2))
+    cli::cli_inform(c("i" = msg1, " " = msg2))
   }
 
   # Keep only the needed columns, and ensure that .id, .pred, and .method are included
@@ -1844,7 +1844,7 @@ update_axis_labels <- function(axis_labels_rotate_angle,
       )
       msg2 <- "The function sets `axis_labels_rotate_angle = 45` internally."
 
-      cli::cli_inform(c("i" = msg1, msg2))
+      cli::cli_inform(c("i" = msg1, " " = msg2))
 
       # Set it to rotate 45 degrees
       axis_labels_rotate_angle <- 45

@@ -429,7 +429,7 @@ check_data <- function(internal) {
         "'get_model_specs' function to explain()."
       )
       msg2 <- "Consistency checks between model and data is therefore disabled."
-      cli::cli_inform(c("i" = msg1, msg2))
+      cli::cli_inform(c("i" = msg1, " " = msg2))
     }
 
     model_feature_specs <- x_train_feature_specs
@@ -438,7 +438,7 @@ check_data <- function(internal) {
       msg1 <- "Feature names extracted from the model contains NA."
       msg2 <- "Consistency checks between model and data is therefore disabled."
 
-      cli::cli_inform(c("i" = msg1, msg2))
+      cli::cli_inform(c("i" = msg1, " " = msg2))
     }
 
     model_feature_specs <- x_train_feature_specs
@@ -446,7 +446,7 @@ check_data <- function(internal) {
     if ("basic" %in% verbose) {
       msg1 <- "Feature classes extracted from the model contains NA."
       msg2 <- "Assuming feature classes from the data are correct."
-      cli::cli_inform(c("i" = msg1, msg2))
+      cli::cli_inform(c("i" = msg1, " " = msg2))
     }
 
     model_feature_specs$classes <- x_train_feature_specs$classes
@@ -455,7 +455,7 @@ check_data <- function(internal) {
     if ("basic" %in% verbose) {
       msg1 <- "Feature factor levels extracted from the model contains NA."
       msg2 <- "Assuming feature factor levels from the data are correct."
-      cli::cli_inform(c("i" = msg1, msg2))
+      cli::cli_inform(c("i" = msg1, " " = msg2))
     }
 
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
@@ -855,7 +855,7 @@ adjust_max_n_coalitions <- function(internal) {
             "so few unique causal coalitions that we should use all to get reliable results."
           )
           msg2 <- paste0("max_n_coalitions is therefore set to ", max_n_coalitions_causal, ".")
-          cli::cli_inform(c("i" = msg1, msg2))
+          cli::cli_inform(c("i" = msg1, " " = msg2))
         }
       } else {
         max_n_coalitions <- min(10, n_shapley_values + 1, max_n_coalitions_causal)
@@ -866,7 +866,7 @@ adjust_max_n_coalitions <- function(internal) {
             " max_n_coalitions_causal = ", max_n_coalitions_causal, "), which will result in unreliable results."
           )
           msg2 <- paste0("It is therefore set to ", min(10, n_shapley_values + 1, max_n_coalitions_causal), ".")
-          cli::cli_inform(c("i" = msg1, msg2))
+          cli::cli_inform(c("i" = msg1, " " = msg2))
         }
       }
     }
@@ -895,7 +895,7 @@ adjust_max_n_coalitions <- function(internal) {
               2^n_features, ") that we should use all to get reliable results."
             )
             msg2 <- paste0("max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".")
-            cli::cli_inform(c("i" = msg1, msg2))
+            cli::cli_inform(c("i" = msg1, " " = msg2))
           }
         } else {
           max_n_coalitions <- min(10, n_features + 1)
@@ -905,7 +905,7 @@ adjust_max_n_coalitions <- function(internal) {
               "which will result in unreliable results."
             )
             msg2 <- paste0("It is therefore set to ", max(10, n_features + 1), ".")
-            cli::cli_inform(c("i" = msg1, msg2))
+            cli::cli_inform(c("i" = msg1, " " = msg2))
           }
         }
       }
@@ -931,7 +931,7 @@ adjust_max_n_coalitions <- function(internal) {
               2^n_shapley_values, ") that we should use all to get reliable results."
             )
             msg2 <- paste0("max_n_coalitions is therefore set to 2^n_groups = ", 2^n_shapley_values, ".")
-            cli::cli_inform(c("i" = msg1, msg2))
+            cli::cli_inform(c("i" = msg1, " " = msg2))
           }
         } else {
           max_n_coalitions <- min(10, n_shapley_values + 1)
@@ -941,7 +941,7 @@ adjust_max_n_coalitions <- function(internal) {
               " which will result in unreliable results."
             )
             msg2 <- paste0("It is therefore set to ", max(10, n_shapley_values + 1), ".")
-            cli::cli_inform(c("i" = msg1, msg2))
+            cli::cli_inform(c("i" = msg1, " " = msg2))
           }
         }
       }

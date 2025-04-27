@@ -11,7 +11,7 @@
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
+        Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_groups = 4, and is therefore set to 2^n_groups = 4.
     Condition
       Error in `get_predict_model()`:
@@ -106,9 +106,9 @@
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
-      Consistency checks between model and data is therefore disabled.
+        Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is smaller than max(10, n_features + 1 = 8), which will result in unreliable results.
-      It is therefore set to 10.
+        It is therefore set to 10.
     Condition
       Error in `check_iterative_args()`:
       ! `iterative_args$initial_n_coalitions` must be a single integer between 2 and `max_n_coalitions`.
@@ -129,9 +129,9 @@
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
-      Consistency checks between model and data is therefore disabled.
+        Consistency checks between model and data is therefore disabled.
       i n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (4) that we should use all to get reliable results.
-      max_n_coalitions is therefore set to 2^n_groups = 4.
+        max_n_coalitions is therefore set to 2^n_groups = 4.
       
       -- Explanation overview --
       
