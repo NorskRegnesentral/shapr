@@ -34,7 +34,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.get_tune()`:
       ! `regression.model` must be a tidymodels object with class 'model_spec'. See documentation.
@@ -48,7 +48,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.get_tune()`:
       ! `regression.model` must be a tidymodels object with class 'model_spec'. See documentation.
@@ -63,7 +63,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.get_tune()`:
       ! `regression.tune_values` must be provided when `regression.model` contains hyperparameters to tune.
@@ -79,7 +79,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.get_tune()`:
       ! The tunable parameters in `regression.model` ('tree_depth') and `regression.tune_values` ('num_terms') must match.
@@ -95,7 +95,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.get_tune()`:
       ! The tunable parameters in `regression.model` ('tree_depth') and `regression.tune_values` ('tree_depth', 'num_terms') must match.
@@ -111,7 +111,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.get_tune()`:
       ! The tunable parameters in `regression.model` ('') and `regression.tune_values` ('tree_depth') must match.
@@ -125,7 +125,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -153,7 +153,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.get_tune()`:
       ! `regression.tune_values` must be of either class `data.frame` or `function`. See documentation.
@@ -169,7 +169,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.get_tune()`:
       ! The output of the user provided `regression.tune_values` function must be of class `data.frame`.
@@ -185,7 +185,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.get_tune()`:
       ! The tunable parameters in `regression.model` ('tree_depth') and `regression.tune_values` ('wrong_name') must match.
@@ -201,10 +201,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.check_vfold_cv_para()`:
-      ! `regression.vfold_cv_para` must be a named list. See documentation using '?shapr::explain()'.
+      ! `regression.vfold_cv_para` must be a named list. See the documentation of `shapr::explain()`.
 
 ---
 
@@ -217,10 +217,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.check_vfold_cv_para()`:
-      ! `regression.vfold_cv_para` must be a named list. See documentation using '?shapr::explain()'.
+      ! `regression.vfold_cv_para` must be a named list. See the documentation of `shapr::explain()`.
 
 ---
 
@@ -233,7 +233,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.check_vfold_cv_para()`:
       ! The following parameters in `regression.vfold_cv_para` are not supported by `rsample::vfold_cv()`: 'hey'.
@@ -247,7 +247,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `regression.check_recipe_func()`:
       ! `regression.recipe_func` must be a function. See documentation.
@@ -263,7 +263,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -289,7 +289,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -315,7 +315,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
