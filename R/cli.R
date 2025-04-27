@@ -5,8 +5,9 @@
 #' @return No return value (but prints header with cli unless `verbose` is `NULL`)
 #'
 #' @keywords internal
-cli_topline <- function(verbose, testing, init_time){
-  msg0 <- "Starting {.fn shapr::explain}"
+cli_topline <- function(verbose, testing, init_time, type, is_python){
+  msg00 <- ifelse(type=="regular","Starting {.fn shapr::explain}","Starting {.fn shapr::explain_forecast}")
+  msg0 <- ifelse(is_python, paste0(msg00, " from Python"), msg00)
   msg <- ifelse(testing, msg0, paste0(msg0, " at {.val {round(init_time)}}"))
   if(!is.null(verbose)){
     cli::cli_h1(msg)

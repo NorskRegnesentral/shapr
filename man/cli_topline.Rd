@@ -4,7 +4,7 @@
 \alias{cli_topline}
 \title{Create a header topline with cli}
 \usage{
-cli_topline(verbose, testing, init_time)
+cli_topline(verbose, testing, init_time, type, is_python)
 }
 \arguments{
 \item{verbose}{String vector or NULL.
@@ -30,6 +30,16 @@ Defaults to \code{FALSE}.}
 \item{init_time}{POSIXct object.
 The time when the \code{explain()} function was called, as outputted by \code{Sys.time()}.
 Used to calculate the time it took to run the full \code{explain} call.}
+
+\item{type}{Character.
+Either "regular" or "forecast" corresponding to function \code{setup()} is called from,
+correspondingly the type of explanation that should be generated.}
+
+\item{is_python}{Logical.
+Indicates whether the function is called from the Python wrapper.
+Default is FALSE which is never changed when calling the function via \code{explain()} in R.
+The parameter is later used to disallow running the AICc-versions of the empirical method
+as that requires data based optimization, which is not supported in \code{shaprpy}.}
 }
 \value{
 No return value (but prints header with cli unless \code{verbose} is \code{NULL})
