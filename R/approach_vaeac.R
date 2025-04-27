@@ -1453,7 +1453,7 @@ vaeac_check_cuda <- function(cuda, verbose) {
   if (isFALSE(cuda_available) && isTRUE(cuda)) {
     cuda <- FALSE
     if ("basic" %in% verbose) {
-      msg <- "Cuda/GPU is not available (`shapr` uses CPU instead)."
+      msg <- "Cuda/GPU is not available ({.pkg shapr} uses CPU instead)."
       cli::cli_inform(c("i" = msg), immediate. = TRUE)
     }
   }
@@ -1492,7 +1492,7 @@ vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch,
   if (save_data && !is.null(save_every_nth_epoch) && epochs / save_every_nth_epoch > 5) {
     if ("basic" %in% verbose) {
       msg <- paste0(
-        "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might requirer ",
+        "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might require ",
         "a lot of disk storage if `x_train` (", x_train_size, ") is large."
       )
       cli::cli_inform(c("i" = msg))
@@ -2855,7 +2855,7 @@ plot_vaeac_imputed_ggpairs <- function(
   # Check if the vaeac model is expected to give a reasonable figure.
   if (!explanation$internal$parameters$exact || explanation$internal$parameters$is_groupwise) {
     msg1 <- "The vaeac model has not been trained on the empty colition, hence, the figure can be missleading."
-    msg2 <- "The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in the explanation call."
+    msg2 <- "The figure is only reasonable if `n_combintations = NULL` and `group = NULL` in the explanation call."
     cli::cli_inform(c("i" = msg1, " " = msg2))
   }
 

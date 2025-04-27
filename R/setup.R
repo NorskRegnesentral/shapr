@@ -429,8 +429,8 @@ check_data <- function(internal) {
   if (is.null(model_feature_specs)) {
     if ("basic" %in% verbose) {
       msg1 <- paste0(
-        "You passed a model to explain() which is not natively supported, and did not supply a ",
-        "'get_model_specs' function to explain()."
+        "You passed a model to {.fn shapr::explain} which is not natively supported, and did not supply a ",
+        "`get_model_specs` function to {.fn shapr::explain}."
       )
       msg2 <- "Consistency checks between model and data is therefore disabled."
       cli::cli_inform(c("i" = msg1, " " = msg2))
@@ -439,7 +439,7 @@ check_data <- function(internal) {
     model_feature_specs <- x_train_feature_specs
   } else if (NA_labels) {
     if ("basic" %in% verbose) {
-      msg1 <- "Feature names extracted from the model contains NA."
+      msg1 <- "Feature names extracted from the model contains {.val NA}."
       msg2 <- "Consistency checks between model and data is therefore disabled."
 
       cli::cli_inform(c("i" = msg1, " " = msg2))
@@ -841,7 +841,7 @@ adjust_max_n_coalitions <- function(internal) {
       max_n_coalitions <- max_n_coalitions_causal
       if ("basic" %in% verbose) {
         msg <- paste0(
-          "max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ",
+          "`max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ",
           "ordering ", max_n_coalitions_causal, ", and is therefore set to ", max_n_coalitions_causal, "."
         )
         cli::cli_inform(c("i" = msg))
@@ -855,19 +855,19 @@ adjust_max_n_coalitions <- function(internal) {
         max_n_coalitions <- max_n_coalitions_causal
         if ("basic" %in% verbose) {
           msg1 <- paste0(
-            "max_n_coalitions_causal is smaller than or equal to 10, meaning there are ",
+            "`max_n_coalitions_causal` is smaller than or equal to 10, meaning there are ",
             "so few unique causal coalitions that we should use all to get reliable results."
           )
-          msg2 <- paste0("max_n_coalitions is therefore set to ", max_n_coalitions_causal, ".")
+          msg2 <- paste0("`max_n_coalitions` is therefore set to ", max_n_coalitions_causal, ".")
           cli::cli_inform(c("i" = msg1, " " = msg2))
         }
       } else {
         max_n_coalitions <- min(10, n_shapley_values + 1, max_n_coalitions_causal)
         if ("basic" %in% verbose) {
           msg1 <- paste0(
-            "max_n_coalitions is smaller than max(10, n_shapley_values + 1 = ",
+            "`max_n_coalitions` is smaller than `max(10, n_shapley_values + 1 = ",
             n_shapley_values + 1,
-            " max_n_coalitions_causal = ", max_n_coalitions_causal, "), which will result in unreliable results."
+            ", max_n_coalitions_causal = ", max_n_coalitions_causal, ")`, which will result in unreliable results."
           )
           msg2 <- paste0("It is therefore set to ", min(10, n_shapley_values + 1, max_n_coalitions_causal), ".")
           cli::cli_inform(c("i" = msg1, " " = msg2))
@@ -883,8 +883,8 @@ adjust_max_n_coalitions <- function(internal) {
         max_n_coalitions <- 2^n_features
         if ("basic" %in% verbose) {
           msg <- paste0(
-            "max_n_coalitions is NULL or larger than or 2^n_features = ", 2^n_features, ", ",
-            "and is therefore set to 2^n_features = ", 2^n_features, "."
+            "`max_n_coalitions` is `NULL` or larger than or `2^n_features = ", 2^n_features, "`, ",
+            "and is therefore set to `2^n_features = ", 2^n_features, "`."
           )
           cli::cli_inform(c("i" = msg))
         }
@@ -895,17 +895,17 @@ adjust_max_n_coalitions <- function(internal) {
           max_n_coalitions <- 2^n_features
           if ("basic" %in% verbose) {
             msg1 <- paste0(
-              "n_features is smaller than or equal to 3, meaning there are so few unique coalitions (",
+              "`n_features` is smaller than or equal to 3, meaning there are so few unique coalitions (",
               2^n_features, ") that we should use all to get reliable results."
             )
-            msg2 <- paste0("max_n_coalitions is therefore set to 2^n_features = ", 2^n_features, ".")
+            msg2 <- paste0("`max_n_coalitions` is therefore set to `2^n_features = ", 2^n_features, "`.")
             cli::cli_inform(c("i" = msg1, " " = msg2))
           }
         } else {
           max_n_coalitions <- min(10, n_features + 1)
           if ("basic" %in% verbose) {
             msg1 <- paste0(
-              "max_n_coalitions is smaller than max(10, n_features + 1 = ", n_features + 1, "), ",
+              "`max_n_coalitions` is smaller than `max(10, n_features + 1 = ", n_features + 1, ")`, ",
               "which will result in unreliable results."
             )
             msg2 <- paste0("It is therefore set to ", max(10, n_features + 1), ".")
@@ -919,8 +919,8 @@ adjust_max_n_coalitions <- function(internal) {
         max_n_coalitions <- 2^n_shapley_values
         if ("basic" %in% verbose) {
           msg <- paste0(
-            "max_n_coalitions is NULL or larger than or 2^n_groups = ", 2^n_shapley_values, ", \n",
-            "and is therefore set to 2^n_groups = ", 2^n_shapley_values, ".\n"
+            "`max_n_coalitions` is `NULL` or larger than or `2^n_groups = ", 2^n_shapley_values, "`, ",
+            "and is therefore set to `2^n_groups = ", 2^n_shapley_values, "`."
           )
           cli::cli_inform(c("i" = msg))
         }
@@ -931,17 +931,17 @@ adjust_max_n_coalitions <- function(internal) {
           max_n_coalitions <- 2^n_shapley_values
           if ("basic" %in% verbose) {
             msg1 <- paste0(
-              "n_groups is smaller than or equal to 3, meaning there are so few unique coalitions (",
+              "`n_groups` is smaller than or equal to 3, meaning there are so few unique coalitions (",
               2^n_shapley_values, ") that we should use all to get reliable results."
             )
-            msg2 <- paste0("max_n_coalitions is therefore set to 2^n_groups = ", 2^n_shapley_values, ".")
+            msg2 <- paste0("`max_n_coalitions` is therefore set to `2^n_groups = ", 2^n_shapley_values, "`.")
             cli::cli_inform(c("i" = msg1, " " = msg2))
           }
         } else {
           max_n_coalitions <- min(10, n_shapley_values + 1)
           if ("basic" %in% verbose) {
             msg1 <- paste0(
-              "max_n_coalitions is smaller than max(10, n_groups + 1 = ", n_shapley_values + 1, "),",
+              "`max_n_coalitions` is smaller than `max(10, n_groups + 1 = ", n_shapley_values + 1, ")`,",
               " which will result in unreliable results."
             )
             msg2 <- paste0("It is therefore set to ", max(10, n_shapley_values + 1), ".")

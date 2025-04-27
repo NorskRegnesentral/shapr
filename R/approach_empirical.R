@@ -196,7 +196,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
     if (kernel_metric == "independence") {
       empirical.eta <- 1
       if ("basic" %in% verbose) {
-        msg <- "empirical.eta force set to 1 for empirical.type = 'independence'"
+        msg <- "`empirical.eta` force set to {.val 1} for `empirical.type` = 'independence'."
         cli::cli_inform(c("i" = msg))
       }
     } else if (kernel_metric == "gaussian") {
