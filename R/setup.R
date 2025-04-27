@@ -1550,7 +1550,7 @@ compare_vecs <- function(vec1, vec2, vec_type, name1, name2) {
     msg2 <- paste0(name1, " provided: ", text_vec1, ", ")
     msg3 <- paste0(name2, " provided: ", text_vec2, ".")
 
-    cli::cli_abort(c("!"=msg1, " " = msg2, " " = msg3))
+    cli::cli_abort(c("!" = msg1, " " = msg2, " " = msg3))
   }
 }
 
@@ -1744,7 +1744,7 @@ check_vs_prev_shapr_object <- function(internal) {
         "Maximum number of coalitions reached. Consider increasing `max_n_coalitions`."
       )
     }
-    names(message0) <- rep("!",length(message0))
+    names(message0) <- rep("!", length(message0))
     cli::cli_abort(message0)
   }
 }

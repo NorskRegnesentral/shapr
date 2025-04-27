@@ -275,7 +275,7 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
     stop_message <- c(stop_message, "xreg should be a matrix or a data.frame/data.table.")
   }
   if (!is.null(stop_message)) {
-    names(stop_message) <- rep("!",length(stop_message))
+    names(stop_message) <- rep("!", length(stop_message))
     cli::cli_abort(stop_message)
   }
 

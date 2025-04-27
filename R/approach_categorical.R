@@ -211,7 +211,6 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_single_coalition <- function(internal, index_features) {
-
   # Extract the needed objects
   x_explain <- internal$data$x_explain
   feature_names <- internal$parameters$feature_names
