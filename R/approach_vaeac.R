@@ -1471,10 +1471,10 @@ vaeac_check_cuda <- function(cuda, verbose) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_masking_ratio <- function(masking_ratio, n_features) {
-  if (length(masking_ratio) > 1 && length(masking_ratio) != ncol(x_train)) {
+  if (length(masking_ratio) > 1 && length(masking_ratio) != n_features) {
     cli::cli_abort(paste0(
       "'Masking_ratio' contains masking ratios for ',", length(masking_ratio), "' features, ",
-      "but there are '", ncol(x_train), "' features in 'x_train'."
+      "but there are '", n_features, "' features in 'x_train'."
     ))
   }
 }

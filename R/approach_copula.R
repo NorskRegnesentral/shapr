@@ -14,8 +14,8 @@ setup_approach.copula <- function(internal, ...) {
     factor_approaches <- get_factor_approaches()
     cli::cli_abort(
       paste0(
-        "The following feature(s) are factor(s): ", factor_features, ".\n",
-        "approach = 'copula' does not support factor features.\n",
+        "The following feature(s) are factor(s): ", paste0(factor_features,collapse = ", "), ". ",
+        "approach = 'copula' does not support factor features.",
         "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."
       )
     )

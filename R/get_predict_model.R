@@ -27,7 +27,7 @@ get_predict_model <- function(predict_model, model) {
       cli::cli_abort(
         paste0(
           "You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' ",
-          "function to explain().\n",
+          "function to explain(). ",
           "See ?shapr::explain or the vignette for more information on how to run shapr with custom models."
         )
       )
@@ -61,11 +61,11 @@ test_predict_model <- function(x_test, predict_model, model, internal) {
   }
   if (class(tmp)[1] == "error") {
     cli::cli_abort(paste0(
-      "The predict_model function of class `", class(model), "` is invalid.\n",
-      "See the 'Advanced usage' section of the vignette:\n",
-      "vignette('general_usage', package = 'shapr')\n",
-      "for more information on running shapr with custom models.\n",
-      "A basic function test threw the following error:\n", as.character(tmp[[1]])
+      "The predict_model function of class `", class(model), "` is invalid. ",
+      "See the 'Advanced usage' section of the vignette: ",
+      "vignette('general_usage', package = 'shapr') ",
+      "for more information on running shapr with custom models. ",
+      "A basic function test threw the following error: ", as.character(tmp[[1]])
     ))
   }
 
@@ -75,12 +75,12 @@ test_predict_model <- function(x_test, predict_model, model, internal) {
     cli::cli_abort(
       paste0(
         "The predict_model function of class `", class(model),
-        "` does not return a numeric output of the desired length\n",
-        "for single output models or a data.table of the correct\n",
-        "dimensions for a multiple output model.\n",
-        "See the 'Advanced usage' section of the vignette:\n",
-        "vignette('general_usage', package = 'shapr')\n\n",
-        "for more information on running shapr with custom models.\n"
+        "` does not return a numeric output of the desired length ",
+        "for single output models or a data.table of the correct ",
+        "dimensions for a multiple output model. ",
+        "See the 'Advanced usage' section of the vignette: ",
+        "vignette('general_usage', package = 'shapr') ",
+        "for more information on running shapr with custom models."
       )
     )
   }

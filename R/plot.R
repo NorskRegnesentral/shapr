@@ -588,7 +588,7 @@ make_beeswarm_plot <- function(dt_plot,
                                beeswarm_cex,
                                ...) {
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
-    cli::cli_abort("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
+    cli::cli_abort("ggbeeswarm is not installed. Please run install.packages('ggbeeswarm')")
   }
 
   if (is.null(col)) {

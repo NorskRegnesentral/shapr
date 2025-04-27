@@ -48,7 +48,7 @@ convert_feature_name_to_idx <- function(causal_ordering, labels, feat_group_txt)
     cli::cli_abort(paste0(
       "`causal_ordering` contains ", feat_group_txt, " names (`",
       paste0(unlist(causal_ordering)[is.na(causal_ordering_match)], collapse = "`, `"), "`) ",
-      "that are not in the data (`", paste0(labels, collapse = "`, `"), "`).\n"
+      "that are not in the data (`", paste0(labels, collapse = "`, `"), "`)."
     ))
   }
 
@@ -475,7 +475,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
           # Check that dt_new has the right number of rows.
           if (nrow(dt_new) != n_explain * n_MC_samples) {
-            cli::cli_abort("`dt_new` does not have the right number of rows.\n")
+            cli::cli_abort("`dt_new` does not have the right number of rows.")
           }
         }
 

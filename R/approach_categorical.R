@@ -211,7 +211,6 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_single_coalition <- function(internal, index_features) {
-  # if (length(index_features) != 1) cli::cli_abort("`index_features` must be single integer.")
 
   # Extract the needed objects
   x_explain <- internal$data$x_explain

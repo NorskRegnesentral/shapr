@@ -262,20 +262,20 @@ explain_forecast <- function(model,
 #' @keywords internal
 get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon) {
   # Check data object type
-  stop_message <- ""
+  stop_message <- NULL
   if (!is.vector(y) &&
     !(is.matrix(y) && ncol(y) >= 1) &&
     !(is.data.frame(y) && ncol(y) >= 1)) {
-    stop_message <- paste0(
+    stop_message <- c(
       stop_message,
-      "y should be a matrix or data.frame/data.table with one or more columns, ",
-      "or a numeric vector.\n"
+      "y should be a matrix or data.frame/data.table with one or more columns, or a numeric vector."
     )
   }
   if (!is.null(xreg) && !is.matrix(xreg) && !is.data.frame(xreg)) {
-    stop_message <- paste0(stop_message, "xreg should be a matrix or a data.frame/data.table.\n")
+    stop_message <- c(stop_message, "xreg should be a matrix or a data.frame/data.table.")
   }
-  if (stop_message != "") {
+  if (!is.null(stop_message)) {
+    names(stop_message) <- rep("!",length(stop_message))
     cli::cli_abort(stop_message)
   }
 
@@ -299,15 +299,15 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
     xreg <- as.matrix(xreg)
     # Check column names
     if (all(is.null(colnames(xreg)))) {
-      cli::cli_abort("`xreg` misses column names.\n")
+      cli::cli_abort("`xreg` misses column names.")
     }
 
     if (ncol(xreg) != length(explain_xreg_lags)) {
       cli::cli_abort(
         paste0(
-          "`xreg` has ", ncol(xreg), " columns (", paste0(colnames(xreg), collapse = ","), ").\n",
-          "`explain_xreg_lags` has length ", length(explain_xreg_lags), ".\n",
-          "These two should match.\n"
+          "`xreg` has ", ncol(xreg), " columns (", paste0(colnames(xreg), collapse = ","), "). ",
+          "`explain_xreg_lags` has length ", length(explain_xreg_lags), ". ",
+          "These two should match. "
         )
       )
     }
@@ -324,7 +324,7 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
     any(c(train_idx, explain_idx) > nrow(y))) {
     cli::cli_abort(paste0(
       "The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data.\n",
-      "The lagged data begins at index ", max_lag, " and ends at index ", nrow(y), ".\n"
+      "The lagged data begins at index ", max_lag, " and ends at index ", nrow(y), ". "
     ))
   }
 
@@ -338,7 +338,7 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
   ], horizon, data_lag$group)
 
   if (ncol(data_lag$lagged) == 0 && ncol(reg_fcast$fcast) == 0) {
-    cli::cli_abort("`explain_y_lags=0` is not allowed for models without exogeneous variables")
+    cli::cli_abort("`explain_y_lags=0` is not allowed for models without exogeneous variables.")
   }
 
   # Select the train and explain sets from the data and exogenous forecast values.

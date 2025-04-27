@@ -40,13 +40,13 @@ get_feature_specs <- function(get_model_specs, model) {
     feature_specs <- tryCatch(get_model_specs(model), error = errorfun)
     if (class(feature_specs)[1] == "error") {
       cli::cli_abort(paste0(
-        "The get_model_specs function of class `", model_class0, "` is invalid.\n",
-        "See the 'Advanced usage' section of the vignette:\n",
-        "vignette('general_usage', package = 'shapr')\n",
-        "for more information on running shapr with custom models.\n",
-        "Note that `get_model_specs` is not required (can be set to NULL)\n",
-        "unless you require consistency checks between model and data.\n",
-        "A basic function test threw the following error:\n", as.character(feature_specs[[1]])
+        "The get_model_specs function of class `", model_class0, "` is invalid. ",
+        "See the 'Advanced usage' section of the vignette: ",
+        "vignette('general_usage', package = 'shapr') ",
+        "for more information on running shapr with custom models. ",
+        "Note that `get_model_specs` is not required (can be set to NULL) ",
+        "unless you require consistency checks between model and data. ",
+        "A basic function test threw the following error: ", as.character(feature_specs[[1]])
       ))
     }
 
@@ -56,9 +56,9 @@ get_feature_specs <- function(get_model_specs, model) {
       cli::cli_abort(
         paste0(
           "The `get_model_specs` function of class `", model_class0,
-          "` does not return a list of length 3 with elements \"labels\",\"classes\",\"factor_levels\".\n",
-          "See the 'Advanced usage' section of the vignette:\n",
-          "vignette('general_usage', package = 'shapr')\n",
+          "` does not return a list of length 3 with elements \"labels\",\"classes\",\"factor_levels\". ",
+          "See the 'Advanced usage' section of the vignette: ",
+          "vignette('general_usage', package = 'shapr') ",
           "for more information on running shapr with custom models and the required output format of get_model_specs."
         )
       )

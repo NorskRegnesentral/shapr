@@ -76,7 +76,7 @@ setup_approach.empirical <- function(internal,
     factor_approaches <- get_factor_approaches()
     cli::cli_abort(
       paste0(
-        "The following feature(s) are factor(s): ", factor_features, ".\n",
+        "The following feature(s) are factor(s): ", paste0(factor_features, collapse = ", "), ".\n",
         "approach = 'empirical' does not support factor features.\n",
         "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."
       )
@@ -93,7 +93,7 @@ setup_approach.empirical <- function(internal,
   if (internal$parameters$empirical.type %in% c("AICc_each_k", "AICc_full") && internal$parameters$is_python == TRUE) {
     cli::cli_abort(paste0(
       "empirical.type = ", internal$parameters$empirical.type,
-      " for approach = 'empirical' is not available in Python.\n",
+      " for approach = 'empirical' is not available in Python."
     ))
   }
 
@@ -101,7 +101,7 @@ setup_approach.empirical <- function(internal,
     is.numeric(internal$parameters$empirical.fixed_sigma) &&
     internal$parameters$empirical.fixed_sigma > 0)) {
     cli::cli_abort(
-      "empirical.fixed_sigma must be a positive numeric of length 1.\n"
+      "empirical.fixed_sigma must be a positive numeric of length 1."
     )
   }
 

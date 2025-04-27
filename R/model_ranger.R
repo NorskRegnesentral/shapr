@@ -38,9 +38,8 @@ model_checker.ranger <- function(x) {
   if (x$treetype == "Classification") {
     cli::cli_abort(
       paste0(
-        "\n",
-        "We currently don't support standard classification, which predicts the class directly.\n",
-        "To train a ranger model predicting the class probabilities, you'll need to grow a\n",
+        "We currently don't support standard classification, which predicts the class directly. ",
+        "To train a ranger model predicting the class probabilities, you'll need to grow a ",
         "probability forest by setting probability = TRUE in ranger::ranger()."
       )
     )
@@ -49,7 +48,6 @@ model_checker.ranger <- function(x) {
   if (x$treetype == "survival") {
     cli::cli_abort(
       paste0(
-        "\n",
         "We currently don't support explanation of survival type of ranger models."
       )
     )
@@ -58,8 +56,7 @@ model_checker.ranger <- function(x) {
   if (x$treetype == "Probability estimation" && length(x$forest$levels) > 2) {
     cli::cli_abort(
       paste0(
-        "\n",
-        "We currently don't support multi-classification using ranger, i.e.\n",
+        "We currently don't support multi-classification using ranger, i.e. ",
         "where length(model$forest$levels) is greater than 2."
       )
     )
@@ -69,7 +66,7 @@ model_checker.ranger <- function(x) {
   if (is.null(x$forest)) {
     cli::cli_abort(
       paste0(
-        "\nIt looks like the model was fitted without saving the forest. Please set\n",
+        "It looks like the model was fitted without saving the forest. Please set ",
         "write.forest = TRUE when fitting a model using ranger::ranger()."
       )
     )
