@@ -54,7 +54,7 @@ whenever sampling based kernelSHAP is applied (either iteratively or with a fixe
 coalitions used to estimate the standard deviations of the Shapley value estimates.}
 
 \item{vS_batching_method}{String. The method used to perform batch computing of vS.
-\code{"future"} (default), utilizes \link[future.apply:future_apply]{future.apply::future_apply} (via the \link[future:future]{future::future} packages),
+\code{"future"} (default), utilizes \link[future.apply:future_apply]{future.apply::future_apply} (via the \link[future:future]{future::future} package),
 enabling parallelized computation and progress updates via \link[progressr:progressr]{progressr::progressr}.
 Alternatively, \code{"forloop"} can be used for straight forward sequential computation, which is mainly useful for
 package development and debugging purposes.}
