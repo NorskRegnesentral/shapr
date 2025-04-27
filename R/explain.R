@@ -462,7 +462,6 @@ explain <- function(model,
                     ...) { # ... is further arguments passed to specific approaches
 
 
-
   init_time <- Sys.time()
 
   if (!is.null(seed)) {

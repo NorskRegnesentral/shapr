@@ -408,7 +408,7 @@ regression.check_vfold_cv_para <- function(regression.vfold_cv_para) {
   if (!is.null(regression.vfold_cv_para)) {
     # Check that regression.vfold_cv_para is a named list
     if (!is.list(regression.vfold_cv_para) || is.null(names(regression.vfold_cv_para))) {
-      cli::cli_abort("`regression.vfold_cv_para` must be a named list. See documentation using '?shapr::explain()'.")
+      cli::cli_abort("`regression.vfold_cv_para` must be a named list. See the documentation of {.fn shapr::explain}.")
     }
 
     # Check that all entries are parameters in the rsample::vfold_cv() function

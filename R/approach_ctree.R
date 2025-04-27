@@ -192,7 +192,11 @@ create_ctree <- function(given_ind,
         )
       )
     } else {
-      cli::cli_abort("use_partykit needs to be one of 'on_error', 'never', or 'always'. See ?create_ctree for details.")
+      cli::cli_abort(
+        paste0(
+          "use_partykit needs to be one of 'on_error', 'never', or 'always'. ",
+          "See {.fn shapr::create_ctree} for details.")
+      )
     }
   }
   return(list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind))

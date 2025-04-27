@@ -158,7 +158,7 @@ get_prev_internal <- function(prev_shapr_object,
   } else if (cl == "shapr") {
     internal <- prev_shapr_object$internal[c("parameters", "iter_list")]
   } else {
-    cli::cli_abort("Invalid `shapr_object` passed to explain(). See ?explain for details.")
+    cli::cli_abort("Invalid `shapr_object` passed to {.fn shapr::explain}. Please see the documentation.")
   }
 
   if (length(exclude_parameters) > 0) {

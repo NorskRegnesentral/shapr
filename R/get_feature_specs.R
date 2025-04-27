@@ -41,8 +41,8 @@ get_feature_specs <- function(get_model_specs, model) {
     if (class(feature_specs)[1] == "error") {
       cli::cli_abort(paste0(
         "The get_model_specs function of class `", model_class0, "` is invalid. ",
-        "See the 'Advanced usage' section of the vignette: ",
-        "vignette('general_usage', package = 'shapr') ",
+        "See the 'Advanced usage' section of ",
+        "{.vignette shapr::general_usage} vignette ",
         "for more information on running shapr with custom models. ",
         "Note that `get_model_specs` is not required (can be set to NULL) ",
         "unless you require consistency checks between model and data. ",
@@ -56,9 +56,9 @@ get_feature_specs <- function(get_model_specs, model) {
       cli::cli_abort(
         paste0(
           "The `get_model_specs` function of class `", model_class0,
-          "` does not return a list of length 3 with elements \"labels\",\"classes\",\"factor_levels\". ",
-          "See the 'Advanced usage' section of the vignette: ",
-          "vignette('general_usage', package = 'shapr') ",
+          "` does not return a list of length 3 with elements \"labels\", \"classes\", \"factor_levels\". ",
+          "See the 'Advanced usage' section of ",
+          "{.vignette shapr::general_usage} vignette ",
           "for more information on running shapr with custom models and the required output format of get_model_specs."
         )
       )
