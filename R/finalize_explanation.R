@@ -68,9 +68,10 @@ get_iter_results <- function(iter_list) {
 
 #' @keywords internal
 iter_list_to_dt <- function(iter_list, what = c(
-                              "exact", "compute_sd", "n_coal_next_iter_factor", "n_coalitions", "n_batches",
-                              "converged", "converged_exact", "converged_sd", "converged_max_iter",
-                              "est_required_coalitions", "est_remaining_coalitions", "overall_conv_measure"
+                              "exact", "compute_sd", "n_coal_next_iter_factor", "n_coalitions", "new_n_coalitions",
+                              "n_sampled_coalitions", "n_batches", "converged",
+                              "converged_exact", "converged_sd", "converged_max_iter", "converged_max_n_coalitions",
+                              "est_required_coal_samp", "est_remaining_coal_samp", "overall_conv_measure"
                             )) {
   extracted <- lapply(iter_list, function(x) x[what])
   ret <- do.call(rbindlist, list(l = lapply(extracted, as.data.table), fill = TRUE))

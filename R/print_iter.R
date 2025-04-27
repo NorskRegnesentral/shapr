@@ -26,8 +26,8 @@ print_iter <- function(internal) {
     convergence_tol <- internal$parameters$iterative_args$convergence_tol
 
     current_n_coalitions <- internal$iter_list[[iter]]$n_sampled_coalitions + 2
-    est_remaining_coalitions <- internal$iter_list[[iter]]$est_remaining_coalitions
-    est_required_coalitions <- internal$iter_list[[iter]]$est_required_coalitions
+    est_remaining_coal_samp <- internal$iter_list[[iter]]$est_remaining_coal_samp
+    est_required_coal_samp <- internal$iter_list[[iter]]$est_required_coal_samp
 
     next_n_coalitions <- internal$iter_list[[iter + 1]]$n_sampled_coalitions + 2
     next_new_n_coalitions <- internal$iter_list[[iter + 1]]$new_n_coalitions
@@ -44,8 +44,8 @@ print_iter <- function(internal) {
         msg <- paste0(
           msg,
           "Current convergence measure: {conv_nice} [needs {tol_nice}]\n",
-          "Estimated remaining coalitions: {est_remaining_coalitions}\n",
-          "(Concervatively) adding {n_coal_next_iter_factor_nice}% of that ({next_new_n_coalitions} coalitions) ",
+          "Estimated remaining coalitions: {est_remaining_coal_samp}\n",
+          "(Conservatively) adding about {n_coal_next_iter_factor_nice}% of that ({next_new_n_coalitions} coalitions) ",
           "in the next iteration."
         )
       }

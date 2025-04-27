@@ -1824,7 +1824,6 @@ test_that("output_custom_lm_numeric_independence_2", {
   )
 })
 
-
 # Just checking that internal$output$dt_samp_for_vS  works
 test_that("output_lm_numeric_independence_keep_samp_for_vS", {
   expect_snapshot_rds(
@@ -1843,4 +1842,59 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
   )
 
   expect_false(is.null(out$internal$output$dt_samp_for_vS))
+})
+
+
+# Checking that vS_batching_method works and gives same results
+test_that("output_lm_numeric_vS_batching_method", {
+  skip_if_not_installed("party")
+
+  expect_snapshot_rds(
+    (ex_forloop <- explain(
+      testing = TRUE,
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "ctree",
+      phi0 = p0,
+      seed = 1,
+      extra_computation_args = list(vS_batching_method = "forloop"),
+      iterative = TRUE,
+      ctree.sample = FALSE
+    )),
+    "output_lm_numeric_vS_batching_method"
+  )
+
+  ex_future <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "ctree",
+    phi0 = p0,
+    seed = 1,
+    extra_computation_args = list(vS_batching_method = "future"), # default
+    iterative = TRUE,
+    ctree.sample = FALSE
+  )
+
+  # Should get identical Shapley values for every iteration since there is no randomness in the vS computation
+  expect_equal(
+    ex_forloop$iterative_results$dt_iter_shapley_est,
+    ex_future$iterative_results$dt_iter_shapley_est
+  )
+
+  # Likewise for the sd
+  expect_equal(
+    ex_forloop$iterative_results$dt_iter_shapley_sd,
+    ex_future$iterative_results$dt_iter_shapley_sd
+  )
+
+  # The two batching methods outputs vS_lists with different names, showing they are computed differently
+  expect_false(
+    identical(
+      names(ex_forloop$internal$iter_list[[1]]$vS_list),
+      names(ex_future$internal$iter_list[[1]]$vS_list)
+    )
+  )
 })

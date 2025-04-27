@@ -161,7 +161,8 @@
       "N_S",
       "paired_shap_sampling",
       "semi_deterministic_sampling",
-      "n_coal_max"
+      "n_coal_max",
+      "vS_batching_method"
     )
   )
 

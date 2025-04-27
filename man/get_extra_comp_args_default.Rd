@@ -11,6 +11,7 @@ get_extra_comp_args_default(
   kernelSHAP_reweighting = "on_all_cond",
   compute_sd = isFALSE(internal$parameters$exact),
   n_boot_samps = 100,
+  vS_batching_method = "future",
   max_batch_size = 10,
   min_n_batches = 10
 )
@@ -51,6 +52,12 @@ whenever sampling based kernelSHAP is applied (either iteratively or with a fixe
 
 \item{n_boot_samps}{Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
 coalitions used to estimate the standard deviations of the Shapley value estimates.}
+
+\item{vS_batching_method}{String. The method used to perform batch computing of vS.
+\code{"future"} (default), utilizes \link[future.apply:future_apply]{future.apply::future_apply} (via the \link[future:future]{future::future} package),
+enabling parallelized computation and progress updates via \link[progressr:progressr]{progressr::progressr}.
+Alternatively, \code{"forloop"} can be used for straight forward sequential computation, which is mainly useful for
+package development and debugging purposes.}
 
 \item{max_batch_size}{Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
 A larger numbers requires more memory, but may have a slight computational advantage.}

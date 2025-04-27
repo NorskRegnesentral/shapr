@@ -13,6 +13,7 @@ data_table = importr('data.table')
 shapr = importr('shapr')
 utils = importr('utils')
 base = importr('base')
+stats = importr('stats')
 
 
 def maybe_null(val):
@@ -301,12 +302,15 @@ def compute_vS(rinternal, model, predict_model):
   
   iter = len(rinternal.rx2('iter_list'))
 
-  #  S_batch <- internal$iter_list[[iter]]$S_batch
   S_batch = rinternal.rx2('iter_list')[iter-1].rx2('S_batch')
   
   # verbose
   shapr.cli_compute_vS(rinternal)
   
+  stats.rnorm(1) # Perform a single sample to forward the RNG state one step. This is done to ensurie consistency with 
+                # future.apply::future_lapply in R which does this to to guarantee consistency for parallellization.
+                # See ?future.apply::future_lapply for details
+
   vS_list = ro.ListVector({})
   for i, S in enumerate(S_batch):
     vS_list.rx2[i+1] = batch_compute_vS(S=S, rinternal=rinternal, model=model, predict_model=predict_model)

@@ -153,17 +153,20 @@
       i Using 6 of 32 coalitions, 6 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
-      i Using 10 of 32 coalitions, 4 new. 
+      i Using 8 of 32 coalitions, 2 new. 
       
       -- Iteration 3 -----------------------------------------------------------------
-      i Using 12 of 32 coalitions, 2 new. 
+      i Using 12 of 32 coalitions, 4 new. 
       
       -- Iteration 4 -----------------------------------------------------------------
-      i Using 16 of 32 coalitions, 4 new. 
+      i Using 18 of 32 coalitions, 6 new. 
+      
+      -- Iteration 5 -----------------------------------------------------------------
+      i Using 20 of 32 coalitions, 2 new. 
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -4.532   8.262 17.522 -5.582 -3.068
-      2:          2 42.44   2.255  -3.352 -5.227 -5.582 -1.972
-      3:          3 42.44   3.713 -18.617 -1.436 -2.542  1.314
+      1:          1 42.44  -4.548   8.258 17.525 -5.557 -3.076
+      2:          2 42.44   2.239  -3.356 -5.224 -5.557 -1.981
+      3:          3 42.44   3.697 -18.621 -1.433 -2.517  1.306
 

@@ -2,15 +2,12 @@
 #'
 #' @inheritParams default_doc_export
 #'
-#' @param method Character
-#' Indicates whether the lapply method (default) or loop method should be used.
-#' Options other than "future" is only used for testing/debugging.
-#'
 #' @return List of `v(S)` for different coalitions `S`, optionally also with the samples used to estimate `v(S)`
 #'
 #' @export
 #' @keywords internal
-compute_vS <- function(internal, model, predict_model, method = "future") {
+compute_vS <- function(internal, model, predict_model) {
+  vS_batching_method <- internal$parameters$extra_computation_args$vS_batching_method
   iter <- length(internal$iter_list)
 
   S_batch <- internal$iter_list[[iter]]$S_batch
@@ -18,7 +15,7 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
   # verbose
   cli_compute_vS(internal)
 
-  if (method == "future") {
+  if (vS_batching_method == "future") {
     vS_list <- future_compute_vS_batch(
       S_batch = S_batch,
       internal = internal,
@@ -27,6 +24,11 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
     )
   } else {
     # Doing the same as above without future without progressbar or paralellization
+
+    rnorm(1) # Perform a single sample to forward the RNG state one step. This is done to ensurie consistency with
+    # future.apply::future_lapply which does this to to guarantee consistency for parallellization.
+    # See ?future.apply::future_lapply for details
+
     vS_list <- list()
     for (i in seq_along(S_batch)) {
       S <- S_batch[[i]]

@@ -408,9 +408,11 @@ vaeac_train_model <- function(x_train,
                               verbose,
                               seed,
                               ...) {
-  # Set seed for reproducibility for both R and torch
-  set.seed(seed)
-  torch::torch_manual_seed(seed)
+  # Set seed for reproducibility if provided by the user. Both in R and torch.
+  if (!is.null(seed)) {
+    set.seed(seed)
+    torch::torch_manual_seed(seed)
+  }
 
   # Set epochs_early_stopping to epochs to ensure that early stopping never occurs
   if (is.null(epochs_early_stopping)) epochs_early_stopping <- epochs
@@ -860,7 +862,8 @@ vaeac_train_model_continue <- function(explanation,
   vaeac_check_logicals(list(save_data = save_data))
 
   # Set seed for reproducibility
-  set.seed(seed)
+  if (!is.null(seed)) set.seed(seed)
+
 
   # Extract the vaeac list and load the model at the last epoch or the best (default 'best' when path is provided)
   vaeac_model <- explanation$internal$parameters$vaeac
@@ -1541,8 +1544,6 @@ vaeac_check_parameters <- function(x_train,
                                    verbose,
                                    seed,
                                    ...) {
-  # Check verbose parameter
-  check_verbose(verbose = verbose)
 
   # Check that the activation function is valid torch::nn_module object
   vaeac_check_activation_func(activation_function = activation_function)
@@ -1588,8 +1589,7 @@ vaeac_check_parameters <- function(x_train,
     width = width,
     latent_dim = latent_dim,
     batch_size = batch_size,
-    running_avg_n_values = running_avg_n_values,
-    seed = seed
+    running_avg_n_values = running_avg_n_values
   )
   if (!is.null(save_every_nth_epoch)) unchecked_positive_integers$save_every_nth_epoch <- save_every_nth_epoch
   vaeac_check_positive_integers(unchecked_positive_integers)
@@ -1616,6 +1616,8 @@ vaeac_check_parameters <- function(x_train,
     epochs = epochs,
     save_every_nth_epoch = save_every_nth_epoch
   )
+
+  # verbose and seed are already checked
 }
 
 # Get functions ========================================================================================================
