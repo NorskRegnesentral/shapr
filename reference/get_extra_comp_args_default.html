@@ -60,6 +60,7 @@
 <span>  kernelSHAP_reweighting <span class="op">=</span> <span class="st">"on_all_cond"</span>,</span>
 <span>  compute_sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isFALSE</a></span><span class="op">(</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">exact</span><span class="op">)</span>,</span>
 <span>  n_boot_samps <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  vS_batching_method <span class="op">=</span> <span class="st">"future"</span>,</span>
 <span>  max_batch_size <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  min_n_batches <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -115,6 +116,14 @@ whenever sampling based kernelSHAP is applied (either iteratively or with a fixe
 <dt id="arg-n-boot-samps">n_boot_samps<a class="anchor" aria-label="anchor" href="#arg-n-boot-samps"></a></dt>
 <dd><p>Integer. The number of bootstrapped samples (i.e. samples with replacement) from the set of all
 coalitions used to estimate the standard deviations of the Shapley value estimates.</p></dd>
+
+
+<dt id="arg-vs-batching-method">vS_batching_method<a class="anchor" aria-label="anchor" href="#arg-vs-batching-method"></a></dt>
+<dd><p>String. The method used to perform batch computing of vS.
+<code>"future"</code> (default), utilizes <a href="https://future.apply.futureverse.org/reference/future_apply.html" class="external-link">future.apply::future_apply</a> (via the <a href="https://future.futureverse.org/reference/future.html" class="external-link">future::future</a> package),
+enabling parallelized computation and progress updates via <a href="https://progressr.futureverse.org/reference/progressr.html" class="external-link">progressr::progressr</a>.
+Alternatively, <code>"forloop"</code> can be used for straight forward sequential computation, which is mainly useful for
+package development and debugging purposes.</p></dd>
 
 
 <dt id="arg-max-batch-size">max_batch_size<a class="anchor" aria-label="anchor" href="#arg-max-batch-size"></a></dt>

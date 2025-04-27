@@ -131,6 +131,17 @@ forecasts from time series models.</td>
 <td align="left">Plots the individual prediction explanations. Uses the
 <code>ggplot</code> and <code>ggbeeswarm</code> package.</td>
 </tr>
+<tr class="even">
+<td align="left"><code>plot_SV_several_approaches</code></td>
+<td align="left">Compare the individual prediction explanations obtained
+from different approaches.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>plot_MSEv_eval_crit</code></td>
+<td align="left">Plots the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_{v}</annotation></semantics></math>
+criterion to evaluate the performance of the approach.</td>
+</tr>
 </tbody>
 </table>
 <p>The <code>shapr</code> package implements Kernel SHAP estimation of
@@ -642,13 +653,13 @@ argument. Allowed values are <code>"gaussian"</code>,
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:12 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:30:50 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93756774fb.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b23a86edd0.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -704,13 +715,13 @@ the points are colored by the feature value of that instance:</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:19 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:30:56 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 111</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c931d8811ab.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b271e96c36.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -758,13 +769,13 @@ mixed data in the following manner:</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:31 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:06 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: ctree</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c934d11d260.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b27efacd33.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -795,13 +806,13 @@ trees in the following manner. The default values are based on <span class="cita
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:32 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:07 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: ctree</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93a8d4f63.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b27a03f5c6.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -839,19 +850,19 @@ categorical approach as follows:</p>
 <span>  x_train <span class="op">=</span> <span class="va">x_train_all_cat</span>,</span>
 <span>  approach <span class="op">=</span> <span class="st">"categorical"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Success with message:</span></span>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:33 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:08 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: categorical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c9361d2d6a5.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b267d66f8e.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -921,13 +932,13 @@ necessary).</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_groups = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_groups = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:33 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:08 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: timeseries</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of group-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c933989300e.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b22a86c711.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1105,13 +1116,13 @@ combining them into lists.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:35 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:10 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: independence</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c9321f2ff20.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b2307c6bf7.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1134,13 +1145,13 @@ combining them into lists.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:36 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:11 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c9372002e18.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b25d3c75fa.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1163,13 +1174,13 @@ combining them into lists.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:43 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:16 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c9371245336.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b2446ea18c.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1192,13 +1203,13 @@ combining them into lists.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:43 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:17 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93155a4322.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b2125fef27.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1221,13 +1232,13 @@ combining them into lists.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:43 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:17 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian, empirical, and independence</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c937ba6bac.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b237121a0c.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1409,24 +1420,24 @@ estimation procedure.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 32, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 32.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:48 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:21 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
 <span><span class="co">#&gt; • Iterative estimation: TRUE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c933097162d.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b29a72f0c.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── iterative computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Iteration 1 ───────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 5 of 32 coalitions, 5 new.</span></span>
+<span><span class="co">#&gt; ── Iteration 1 ─────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 6 of 32 coalitions, 6 new.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Iteration 2 ───────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 10 of 32 coalitions, 4 new.</span></span>
+<span><span class="co">#&gt; ── Iteration 2 ─────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 8 of 32 coalitions, 2 new.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Iteration 3 ───────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 12 of 32 coalitions, 2 new.</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Iteration 3 ─────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 12 of 32 coalitions, 4 new.</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="para">Parallelization<a class="anchor" aria-label="anchor" href="#para"></a>
@@ -1494,13 +1505,13 @@ parallelization with two workers.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 32, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 32.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:51 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:24 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c9348628d8d.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b2f623ff7.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1658,13 +1669,13 @@ features.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:54 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:27 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical, copula, and gaussian</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c936a965bd5.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b240f50df5.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1692,13 +1703,13 @@ features:</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:57 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:29 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: ctree, ctree, and empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93207aeb18.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b21b7ce169.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1736,13 +1747,13 @@ easy using <code>shapr</code>:</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_groups = 4, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_groups = 4.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:44:59 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:31 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of group-wise Shapley values: 2</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93241851b9.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b25cb84256.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1869,13 +1880,13 @@ to the same airquality data set as used above.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:45:01 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:32 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;gbm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c933748f819.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b2536ad10a.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1912,13 +1923,13 @@ to the same airquality data set as used above.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:45:07 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:37 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;gbm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c9344b0ff8e.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b21d178cfa.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1985,13 +1996,13 @@ below.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:45:13 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:42 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;workflow&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93476395f2.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b29db6a2c.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2046,13 +2057,13 @@ function, while the extra parameters are included in a named list called
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:45:19 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:31:47 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: vaeac</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c932349a0b1.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b24860cde9.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2104,13 +2115,13 @@ set it so low here to make the vignette faster to build.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 16, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 16.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:45:34 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:32:01 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: vaeac</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c9361ebec61.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b211e54bec.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2189,32 +2200,32 @@ long-running computations.</p>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:45:57 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:32:25 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
 <span><span class="co">#&gt; • Iterative estimation: TRUE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93667c79.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b2afdb941.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── iterative computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Iteration 1 ───────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 5 of 32 coalitions, 5 new.</span></span>
+<span><span class="co">#&gt; ── Iteration 1 ─────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 6 of 32 coalitions, 6 new.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Iteration 2 ───────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 10 of 32 coalitions, 4 new.</span></span>
+<span><span class="co">#&gt; ── Iteration 2 ─────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 8 of 32 coalitions, 2 new.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Iteration 3 ───────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 12 of 32 coalitions, 2 new.</span></span>
+<span><span class="co">#&gt; ── Iteration 3 ─────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 12 of 32 coalitions, 4 new.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Iteration 4 ───────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 16 of 32 coalitions, 4 new.</span></span>
+<span><span class="co">#&gt; ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 18 of 32 coalitions, 6 new.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Iteration 5 ───────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 18 of 32 coalitions, 2 new.</span></span>
+<span><span class="co">#&gt; ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 20 of 32 coalitions, 2 new.</span></span>
 <span></span>
-<span><span class="co"># Using the ex_init object to continue the computation with 5 more coalition samples</span></span>
+<span><span class="co"># Using the ex_init object to continue the computation with 4 more coalition samples</span></span>
 <span><span class="va">ex_further</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -2222,27 +2233,27 @@ long-running computations.</p>
 <span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  max_n_coalitions <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>  max_n_coalitions <span class="op">=</span> <span class="fl">24</span>,</span>
 <span>  iterative_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>convergence_tol <span class="op">=</span> <span class="fl">0.005</span><span class="op">)</span>, <span class="co"># Decrease the convergence threshold</span></span>
 <span>  prev_shapr_object <span class="op">=</span> <span class="va">ex_init</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Feature classes extracted from the model contains NA.</span></span>
 <span><span class="co">#&gt; Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:46:01 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:32:30 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c937cd2ac71.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b22db2b3c1.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Using 24 of 32 coalitions.</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ex_further</span><span class="op">$</span><span class="va">saving_path</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpCcS4cy/shapr_obj_1b8c937cd2ac71.rds"</span></span>
+<span><span class="co">#&gt; [1] "/tmp/RtmpAeZ2fh/shapr_obj_362b22db2b3c1.rds"</span></span>
 <span></span>
 <span><span class="co"># Using the ex_init object to continue the computation for the remaining coalition samples</span></span>
 <span><span class="co"># but this time using the path to the saved intermediate estimation object</span></span>
@@ -2262,17 +2273,17 @@ long-running computations.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 32, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 32.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:46:02 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:32:31 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c936aa37ec8.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b220a218f3.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Using 32 of 32 coalitions.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 26 of 32 coalitions.</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -2355,13 +2366,13 @@ rather than each lag of each variable. This can be done by setting
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 4, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 4.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:46:03 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:32:32 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;Arima&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 2</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 2</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c931eee7980.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b2e079c4f.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2444,13 +2455,13 @@ possible to explain each variable separately.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 4, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 4.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:46:05 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:32:35 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;ar&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 2</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 1</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c9360892168.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b2141f3f4d.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2518,13 +2529,13 @@ during the forecasting period.</p>
 <span><span class="co">#&gt; max_n_coalitions is NULL or larger than or 2^n_features = 32, </span></span>
 <span><span class="co">#&gt; and is therefore set to 2^n_features = 32.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2024-11-21 20:46:07 ────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-25 21:32:36 ──────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • Model class: &lt;ar&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 1</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpCcS4cy/shapr_obj_1b8c93398eb42e.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpAeZ2fh/shapr_obj_362b257cd0e37.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>

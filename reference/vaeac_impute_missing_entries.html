@@ -104,13 +104,13 @@ Specifies the verbosity (printout detail level) through one or more of strings <
 <code>"progress</code> displays information about where in the calculation process the function currently is.
 #' <code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
 (only when <code>iterative = TRUE</code>) .
-<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)</p><ul><li><p>the final estimates.
+<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)
+and the final estimates.
 <code>"vS_details"</code> displays information about the v_S estimates.
 This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
 <code>NULL</code> means no printout.
 Note that any combination of four strings can be used.
-E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></li>
-</ul></dd>
+E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
