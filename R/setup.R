@@ -66,6 +66,11 @@ setup <- function(x_train,
   # Check verbose first as it is used below
   check_verbose(verbose)
 
+  # TODO: add check_testing (if testing is TRUE or FALSE)
+
+  # TODO: add startupline with shapr-info, and display the time only if testing==FALSE
+
+
   # Using parameters and iter_list from a previouys  to continue estimation from on previous shapr objects
   if (is.null(prev_shapr_object)) {
     prev_iter_list <- NULL
