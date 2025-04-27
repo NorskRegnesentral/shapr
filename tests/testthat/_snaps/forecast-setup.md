@@ -286,7 +286,7 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
     Condition
       Error in `get_data_forecast()`:
-      ! `explain_y_lags=0` is not allowed for models without exogeneous variables
+      ! `explain_y_lags=0` is not allowed for models without exogeneous variables.
 
 # erroneous input: `explain_x_lags`
 

@@ -187,7 +187,8 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `get_data()`:
-      ! x_train should be a matrix or a data.frame/data.table. x_explain should be a matrix or a data.frame/data.table.
+      ! x_train should be a matrix or a data.frame/data.table.
+      ! x_explain should be a matrix or a data.frame/data.table.
 
 ---
 
@@ -790,9 +791,7 @@
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr')
-      
-      for more information on running shapr with custom models.
+      ! The predict_model function of class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr') for more information on running shapr with custom models.
 
 ---
 
@@ -809,9 +808,7 @@
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr')
-      
-      for more information on running shapr with custom models.
+      ! The predict_model function of class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of the vignette: vignette('general_usage', package = 'shapr') for more information on running shapr with custom models.
 
 ---
 
@@ -950,7 +947,7 @@
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `setup_approach()`:
-      ! The following feature(s) are factor(s): Month_factor. approach = 'copula' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
+      ! The following feature(s) are factor(s): Month_factor. approach = 'copula' does not support factor features.Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
 
 # Message with too low `max_n_coalitions`
 
