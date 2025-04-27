@@ -5,9 +5,14 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 4, and is therefore set to 2^n_features = 4.
+      
+      -- Explanation overview --
+      
       * Model class: <ar>
       * Approach: empirical
       * Iterative estimation: FALSE
@@ -34,9 +39,14 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 128, and is therefore set to 2^n_features = 128.
+      
+      -- Explanation overview --
+      
       * Model class: <Arima>
       * Approach: empirical
       * Iterative estimation: FALSE
@@ -71,8 +81,13 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
+      
+      -- Explanation overview --
+      
       * Model class: <Arima>
       * Approach: empirical
       * Iterative estimation: TRUE
@@ -117,9 +132,14 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_groups = 16, and is therefore set to 2^n_groups = 16.
+      
+      -- Explanation overview --
+      
       * Model class: <Arima>
       * Approach: empirical
       * Iterative estimation: TRUE
@@ -156,9 +176,14 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 4, and is therefore set to 2^n_features = 4.
+      
+      -- Explanation overview --
+      
       * Model class: <Arima>
       * Approach: empirical
       * Iterative estimation: FALSE
@@ -185,9 +210,14 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_groups = 4, and is therefore set to 2^n_groups = 4.
+      
+      -- Explanation overview --
+      
       * Model class: <forecast_ARIMA/ARIMA/Arima>
       * Approach: empirical
       * Iterative estimation: FALSE
@@ -214,9 +244,14 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 8, and is therefore set to 2^n_features = 8.
+      
+      -- Explanation overview --
+      
       * Model class: <Arima>
       * Approach: independence
       * Iterative estimation: FALSE
@@ -243,9 +278,14 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_groups = 4, and is therefore set to 2^n_groups = 4.
+      
+      -- Explanation overview --
+      
       * Model class: <forecast_ARIMA/ARIMA/Arima>
       * Approach: empirical
       * Iterative estimation: FALSE
@@ -270,9 +310,14 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_groups = 4, and is therefore set to 2^n_groups = 4.
+      
+      -- Explanation overview --
+      
       * Model class: <forecast_ARIMA/ARIMA/Arima>
       * Approach: empirical
       * Iterative estimation: FALSE

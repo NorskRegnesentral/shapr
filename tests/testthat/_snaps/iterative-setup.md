@@ -6,6 +6,8 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_numeric_1))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_extra_computation_args()`:
@@ -19,6 +21,8 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_numeric_2))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_extra_computation_args()`:
@@ -32,6 +36,8 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_integer))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_extra_computation_args()`:
@@ -45,6 +51,8 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_too_long))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_extra_computation_args()`:
@@ -58,6 +66,8 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_is_NA))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_extra_computation_args()`:
@@ -71,6 +81,8 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_positive))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_extra_computation_args()`:
@@ -109,7 +121,12 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: TRUE

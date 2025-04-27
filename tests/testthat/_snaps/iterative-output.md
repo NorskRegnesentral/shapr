@@ -5,7 +5,12 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: independence
       * Iterative estimation: TRUE
@@ -131,6 +136,8 @@
       }, digits = digits)
     Message
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      
       -- Iteration 1 -----------------------------------------------------------------
       
       -- Convergence info 
@@ -202,6 +209,8 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -375,6 +384,8 @@
       }, digits = digits)
     Message
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      
       -- Iteration 1 -----------------------------------------------------------------
       
       -- Convergence info 
@@ -488,6 +499,8 @@
       }, digits = digits)
     Message
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      
       -- Iteration 1 -----------------------------------------------------------------
       
       -- Convergence info 
@@ -530,6 +543,8 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -602,7 +617,12 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: TRUE
@@ -639,7 +659,12 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: TRUE
@@ -704,7 +729,12 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: TRUE
@@ -829,7 +859,12 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: TRUE

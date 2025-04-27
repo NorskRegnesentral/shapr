@@ -5,6 +5,9 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = c(
           "regression_surrogate", "gaussian", "independence", "empirical"),
         iterative = FALSE)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_approach()`:
       ! The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.
@@ -15,6 +18,9 @@
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_explain_numeric,
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = c(
           "regression_separate", "gaussian", "independence", "empirical"), iterative = FALSE)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_approach()`:
       ! The `regression_separate` and `regression_surrogate` approaches cannot be combined with other approaches.
@@ -26,6 +32,8 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = NULL)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
@@ -38,6 +46,8 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.model = lm)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
@@ -51,6 +61,8 @@
         regression.model = parsnip::decision_tree(tree_depth = parsnip::tune(),
         engine = "rpart", mode = "regression"))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
@@ -65,6 +77,8 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           num_terms = c(1, 2, 3)))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
@@ -79,6 +93,8 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           tree_depth = c(1, 2, 3), num_terms = c(1, 2, 3)))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
@@ -93,6 +109,8 @@
           mode = "regression"), regression.tune_values = data.frame(tree_depth = c(1,
           2, 3)))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
@@ -105,7 +123,12 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.tune_values = data.frame(tree_depth = c(1, 2, 3)), iterative = FALSE)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -128,6 +151,8 @@
           mode = "regression"), regression.tune_values = as.matrix(data.frame(
           tree_depth = c(1, 2, 3))))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
@@ -142,6 +167,8 @@
         engine = "rpart", mode = "regression"), regression.tune_values = function(x)
           c(1, 2, 3))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
@@ -156,6 +183,8 @@
         engine = "rpart", mode = "regression"), regression.tune_values = function(x)
           data.frame(wrong_name = c(1, 2, 3)))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.get_tune()`:
@@ -170,6 +199,8 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           tree_depth = c(1, 2, 3)), regression.vfold_cv_para = 10)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.check_vfold_cv_para()`:
@@ -184,6 +215,8 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           tree_depth = c(1, 2, 3)), regression.vfold_cv_para = list(10))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.check_vfold_cv_para()`:
@@ -198,6 +231,8 @@
         engine = "rpart", mode = "regression"), regression.tune_values = data.frame(
           tree_depth = c(1, 2, 3)), regression.vfold_cv_para = list(hey = 10))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.check_vfold_cv_para()`:
@@ -210,6 +245,8 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_separate",
         regression.recipe_func = 3)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `regression.check_recipe_func()`:
@@ -224,7 +261,12 @@
           return(2)
         }, iterative = FALSE)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -245,7 +287,12 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.surrogate_n_comb = 2^ncol(x_explain_numeric) - 1, iterative = FALSE)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE
@@ -266,7 +313,12 @@
         x_train = x_train_numeric, phi0 = p0, seed = 1, approach = "regression_surrogate",
         regression.surrogate_n_comb = 0, iterative = FALSE)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: regression_surrogate
       * Iterative estimation: FALSE

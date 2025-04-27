@@ -6,6 +6,8 @@
         extra_computation_args = list(paired_shap_sampling = FALSE,
           semi_deterministic_sampling = TRUE))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or 2^n_features = 32, and is therefore set to 2^n_features = 32.
     Condition
       Error in `check_and_set_sampling_info()`:
@@ -20,6 +22,8 @@
       extra_computation_args = list(paired_shap_sampling = TRUE,
         semi_deterministic_sampling = TRUE))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       i max_n_coalitions is NULL or larger than or 2^n_features = 4, and is therefore set to 2^n_features = 4.
@@ -36,6 +40,8 @@
         extra_computation_args = list(paired_shap_sampling = TRUE,
           semi_deterministic_sampling = TRUE))
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
       i max_n_coalitions is NULL or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
     Condition
       Error in `set_extra_comp_params()`:
