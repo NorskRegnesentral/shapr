@@ -168,16 +168,16 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to "1" for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
