@@ -657,7 +657,8 @@ explanation_list$sep_tree_default <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:45:21 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -829,7 +830,8 @@ explanation_list$sep_tree_cv_2 <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:45:35 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -920,7 +922,8 @@ explanation_list$sep_rf_cv <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:46:03 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1187,7 +1190,8 @@ explanation_list$sep_xgboost_cv <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:46:36 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1219,7 +1223,8 @@ explanation_list$sep_xgboost_cv_par <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:46:51 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1255,7 +1260,8 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:47:03 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1398,7 +1404,8 @@ explanation_list$sur_xgboost <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:47:15 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1433,7 +1440,8 @@ explanation_list$sur_xgboost_cv <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:47:16 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1461,7 +1469,8 @@ explanation_list$sur_rf <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:47:18 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1497,7 +1506,8 @@ explanation_list$sur_rf_cv <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:47:19 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1830,7 +1840,8 @@ explanation_list$sep_ppr_cv <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:48:09 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1858,7 +1869,8 @@ explanation_list$sur_ppr <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:48:20 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1888,7 +1900,8 @@ explanation_list$sur_ppr_cv <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:48:21 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -2017,7 +2030,8 @@ explanation_list_MC$MC_gaussian <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:48:24 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -2044,7 +2058,8 @@ explanation_list_MC$MC_copula <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:48:24 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -2071,7 +2086,8 @@ explanation_list_MC$MC_ctree <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:48:25 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -2099,7 +2115,8 @@ explanation_list_MC$MC_vaeac <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:48:26 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -3056,7 +3073,8 @@ explanation_list_str$sep_pcr <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:56:27 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -3086,7 +3104,8 @@ explanation_list_str$sep_splines <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:56:28 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -3117,7 +3136,8 @@ explanation_list_str$sep_tree_cv <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:56:29 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -3152,7 +3172,8 @@ explanation_list_str$sep_rf_cv <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:56:43 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -3188,7 +3209,8 @@ explanation_list_str$sur_rf_cv <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:57:14 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
