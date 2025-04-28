@@ -1,7 +1,5 @@
 # shapr 1.0.4 (Patch release)
 
-**Just making this file ready -- will have to dump version in DESCRIPTION and NEWS.md before submission**
-
 * Fix CRAN errors of the noSuggests type by using `testthat::skip_if_not_installed()` for all tests requiring suggested 
 packages to ensure they are skipped gracefully when dependencies are unavailable.
 * Some other new functionality and a few other bug fixes, see NEWS.md for details.

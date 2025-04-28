@@ -1,30 +1,37 @@
-# shapr 1.0.3.9001 (GitHub development version)
+# shapr 1.0.4
 
 * Implement semi-deterministic sampling of coalitions similar to the default in the *shap* python library and described
 and discussed as the PySHAP* strategy in [Olsen & Jullum (2024)](https://arxiv.org/abs/2410.04883). It is disabled by
 default, but can be set via `extra_computation_args = list(semi_deterministic_sampling = TRUE)` in `explain()`.
 The functionality is available when paired coalition sampling (the default) is enabled. See 
-[#449](https://github.com/NorskRegnesentral/shapr/pull/449)) for details.
+[#449](https://github.com/NorskRegnesentral/shapr/pull/449) for details.
 * Deletes the regression-surrogate parsnip object when testing to avoid future conflicts with model object changes. 
 (Second last commit in [#447](https://github.com/NorskRegnesentral/shapr/pull/447)).
 * Improve and update the logic and print for setting the number of coalitions in the next iteration for `iterative = TRUE` 
-[#452](https://github.com/NorskRegnesentral/shapr/pull/452)
+([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
 * Allow passing `vS_batching_method` to `explain()/explain_forecast()` to specify the batch computation method 
 (default is `"future"` for both, `"forloop"` available mainly for dev purposes)
-[#452](https://github.com/NorskRegnesentral/shapr/pull/452)
+([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
+* Transform to use the `cli` and `rlang` packages to provide all messages/warnings/stops with nicer formatting and layout.
+	The messages (via `cli_inform()`) now also obey the `verbose` argument and are displayed only if `'basic' %in% verbose` is TRUE.
+	The header printout also differs between `explain()`/`explain_forecast()` and whether called from Python.
+	This also adds `cli` and `rlang` to imports. ([#453](https://github.com/NorskRegnesentral/shapr/pull/453))
 
 * Now using `testthat::skip_if_not_installed` for all tests requiring suggested packages to ensure they are skipped 
-gracefully when dependencies are unavailable [#451](https://github.com/NorskRegnesentral/shapr/pull/451)
+gracefully when dependencies are unavailable ([#451](https://github.com/NorskRegnesentral/shapr/pull/451))
 
 
 ## Other minor fixes
-* Two minor bugs related to `KernelSHAP_reweighing()` [#448](https://github.com/NorskRegnesentral/shapr/pull/448)
+* Two minor bugs related to `KernelSHAP_reweighing()` ([#448](https://github.com/NorskRegnesentral/shapr/pull/448))
 * Two minor bugs related to weighting for asymmetric Shapley values 
-[#449](https://github.com/NorskRegnesentral/shapr/pull/449)
+([#449](https://github.com/NorskRegnesentral/shapr/pull/449))
 * Check `seed` argument, and only pass to `torch` if not NULL 
-[#452](https://github.com/NorskRegnesentral/shapr/pull/452)
+([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
 * Make `explain_forecast()` use `future` for batch computation as well (by default) 
-[#452](https://github.com/NorskRegnesentral/shapr/pull/452)
+([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
+* Fix bug for the AICc + independence variants of `approach = 'empirical'` occuring when 
+`n_features < n_explain` ([#453](https://github.com/NorskRegnesentral/shapr/pull/453))
+
 
 # shapr 1.0.3
 
