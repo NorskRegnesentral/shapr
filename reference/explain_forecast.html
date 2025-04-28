@@ -256,7 +256,8 @@ Can also be used to override the default function for natively supported model c
 <dd><p>String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
 <code>"convergence"</code>, <code>"shapley"</code> and <code>"vS_details"</code>.
-<code>"basic"</code> (default) displays basic information about the computation which is being performed.
+<code>"basic"</code> (default) displays basic information about the computation which is being performed,
+in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 <code>"progress</code> displays information about where in the calculation process the function currently is.
 #' <code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
 (only when <code>iterative = TRUE</code>) .
@@ -547,19 +548,21 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p0_ar</span>,</span></span>
 <span class="r-in"><span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Feature names extracted from the model contains NA.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Consistency checks between model and data is therefore disabled.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> max_n_coalitions is NULL or larger than or 2^n_features = 4, </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> and is therefore set to 2^n_features = 4.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at 2025-04-27 06:34:35</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2025-04-28 07:21:25</span> <span style="color: #00BBBB;">─────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature names extracted from the model contains `NA`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Consistency checks between model and data is therefore disabled.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 4`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;ar&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmpl6Dca9/shapr_obj_26e92035de7c.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpcA91Mc/shapr_obj_23f84dbec5ff.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
