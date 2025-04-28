@@ -35,9 +35,11 @@ setup_approach.vaeac <- function(internal,
 
   # Check that torch is installed
   if (!requireNamespace("torch", quietly = TRUE)) {
-    stop("`torch` is not installed. Please run `install.packages('torch')`.")
+    cli::cli_abort("`torch` is not installed. Please run {.run install.packages('torch')}.")
   }
-  if (!torch::torch_is_installed()) stop("`torch` is not properly installed. Please run `torch::install_torch()`.")
+  if (!torch::torch_is_installed()) {
+    cli::cli_abort("`torch` is not properly installed. Please run {.run torch::install_torch()}.")
+  }
 
   # Extract the objects we will use later
   iter <- length(internal$iter_list)
@@ -52,7 +54,7 @@ setup_approach.vaeac <- function(internal,
 
   # Ensure that `parameters$vaeac.extra_parameters` is a named list
   if (is.null(parameters$vaeac.extra_parameters)) parameters$vaeac.extra_parameters <- list()
-  if (!is.list(parameters$vaeac.extra_parameters)) stop("`vaeac.extra_parameters` must be a list.")
+  if (!is.list(parameters$vaeac.extra_parameters)) cli::cli_abort("`vaeac.extra_parameters` must be a list.")
   if (length(parameters$vaeac.extra_parameters) > 0) vaeac_check_extra_named_list(parameters$vaeac.extra_parameters)
 
   # Ensure that all vaeac parameters are in their right location
@@ -421,7 +423,7 @@ vaeac_train_model <- function(x_train,
   do.call(vaeac_check_parameters, mget(methods::formalArgs(vaeac_train_model)))
 
   # Check if we can use cuda
-  if (cuda) cuda <- vaeac_check_cuda(cuda)
+  if (cuda) cuda <- vaeac_check_cuda(cuda, verbose)
 
   # Determine which mask generator to use
   mask_generator_name <- vaeac_get_mask_generator_name(
@@ -630,15 +632,15 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
                                         val_iwae_running = NULL) {
   # Check for valid input
   if (xor(is.null(initialization_idx), is.null(n_vaeacs_initialize))) {
-    stop("Either none or both of `initialization_idx` and `n_vaeacs_initialize` must be given.")
+    cli::cli_abort("Either none or both of `initialization_idx` and `n_vaeacs_initialize` must be given.")
   }
 
   if (is.null(state_list) && is.null(initialization_idx)) {
-    stop("`state_list` must be provide when `initialization_idx = NULL` to properly save the `vaeac` model.")
+    cli::cli_abort("`state_list` must be provide when `initialization_idx = NULL` to properly save the `vaeac` model.")
   }
 
   if (is.null(vaeac_save_file_names) && is.null(initialization_idx)) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "`vaeac_save_file_names` must be provide when `initialization_idx = NULL` ",
       "to know where to save the vaeac model."
     ))
@@ -646,7 +648,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
 
   if (!((is.null(train_vlb) && is.null(val_iwae) && is.null(val_iwae_running)) ||
     (!is.null(train_vlb) && !is.null(val_iwae) && !is.null(val_iwae_running)))) {
-    stop("Either none or all of `train_vlb`, `val_iwae`, and `val_iwae_running` must be given.")
+    cli::cli_abort("Either none or all of `train_vlb`, `val_iwae`, and `val_iwae_running` must be given.")
   }
 
   # Variable that we change to `TRUE` if early stopping is applied
@@ -853,10 +855,14 @@ vaeac_train_model_continue <- function(explanation,
                                        verbose = NULL,
                                        seed = 1) {
   # Check the input
-  if (!"shapr" %in% class(explanation)) stop("`explanation` must be a list of class `shapr`.")
-  if (!"vaeac" %in% explanation$internal$parameters$approach) stop("`vaeac` is not an approach in `explanation`.")
+  if (!"shapr" %in% class(explanation)) cli::cli_abort("`explanation` must be a list of class `shapr`.")
+  if (!"vaeac" %in% explanation$internal$parameters$approach) {
+    cli::cli_abort("`vaeac` is not an approach in `explanation`.")
+  }
   if (!is.null(lr_new)) vaeac_check_positive_numerics(list(lr_new = lr_new))
-  if (!is.null(x_train) && !data.table::is.data.table(x_train)) stop("`x_train` must be a `data.table` object.")
+  if (!is.null(x_train) && !data.table::is.data.table(x_train)) {
+    cli::cli_abort("`x_train` must be a `data.table` object.")
+  }
   check_verbose(verbose)
   vaeac_check_positive_integers(list(epochs_new = epochs_new, seed = seed))
   vaeac_check_logicals(list(save_data = save_data))
@@ -878,10 +884,16 @@ vaeac_train_model_continue <- function(explanation,
 
   # Check for access to a single training data set and use the data from the checkpoint if `x_train` is not provided
   if (is.null(checkpoint$normalized_data) && is.null(x_train)) {
-    stop("The `vaeac` model did not include data (set `vaeac.save_data = TRUE in `explain()`) and `x_train = NULL`.")
+    if ("basic" %in% verbose) {
+      msg <- "The `vaeac` model did not include data (set `vaeac.save_data = TRUE in `explain()`) and `x_train = NULL`."
+      cli::cli_abort(msg)
+    }
   }
   if (!is.null(checkpoint$x_train) && !is.null(x_train)) {
-    message("The `vaeac` model includes data and `x_train` was provided to this function. We only use `x_train`.")
+    if ("basic" %in% verbose) {
+      msg <- "The `vaeac` model includes data and `x_train` was provided to this function. We only use `x_train`."
+      cli::cli_inform(c("i" = msg))
+    }
   }
   if (is.null(x_train)) x_train <- checkpoint$x_train
 
@@ -938,7 +950,8 @@ vaeac_train_model_continue <- function(explanation,
       save_data = save_data,
       epochs = epochs_new,
       save_every_nth_epoch = checkpoint$save_every_nth_epoch,
-      x_train_size = format(utils::object.size(x_train), units = "auto")
+      x_train_size = format(utils::object.size(x_train), units = "auto"),
+      verbose = verbose
     )
   }
 
@@ -1049,7 +1062,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
                                          index_features = NULL) {
   # We only need `n_explain` when `index_features` is provided
   if (xor(is.null(index_features), is.null(n_explain))) {
-    stop("Either none or both of `index_features` and `n_explain` must be given.")
+    cli::cli_abort("Either none or both of `index_features` and `n_explain` must be given.")
   }
 
   # Set seed for reproducibility if provided by the user. Both in R and torch.
@@ -1190,8 +1203,8 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 #' @keywords internal
 vaeac_check_extra_named_list <- function(vaeac.extra_parameters) {
   names <- names(vaeac.extra_parameters)
-  if (is.null(names)) stop("The parameter `vaeac.extra_parameters` is not a named list.")
-  if (any(names == "")) stop("Not all parameters in the list `vaeac.extra_parameters` are named.")
+  if (is.null(names)) cli::cli_abort("The parameter `vaeac.extra_parameters` is not a named list.")
+  if (any(names == "")) cli::cli_abort("Not all parameters in the list `vaeac.extra_parameters` are named.")
 }
 
 #' Function that checks positive integers
@@ -1207,7 +1220,7 @@ vaeac_check_positive_integers <- function(named_list_positive_integers) {
     param_name <- param_names[idx]
     value <- named_list_positive_integers[[param_name]]
     if (!is.numeric(value) || length(value) != 1 || value <= 0 || !is.finite(value) || value %% 1 != 0) {
-      stop(paste0("'vaeac.", param_name, "' must be a positive integer."))
+      cli::cli_abort(paste0("'vaeac.", param_name, "' must be a positive integer."))
     }
   }
 }
@@ -1226,7 +1239,7 @@ vaeac_check_positive_numerics <- function(named_list_positive_numerics) {
     param_name <- param_names[idx]
     value <- named_list_positive_numerics[[param_name]]
     if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value <= 0) {
-      stop(paste0("'vaeac.", param_name, "' must be a positive numeric."))
+      cli::cli_abort(paste0("'vaeac.", param_name, "' must be a positive numeric."))
     }
   }
 }
@@ -1247,7 +1260,7 @@ vaeac_check_probabilities <- function(named_list_probabilities) {
     param_name <- param_names[idx]
     value <- named_list_probabilities_tmp[[param_name]]
     if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value < 0 || value > 1) {
-      stop(paste0("'vaeac.", param_name, "' must be a valid probability (a number between 0 and 1)."))
+      cli::cli_abort(paste0("'vaeac.", param_name, "' must be a valid probability (a number between 0 and 1)."))
     }
   }
 }
@@ -1266,7 +1279,7 @@ vaeac_check_logicals <- function(named_list_logicals) {
     param_name <- param_names[idx]
     value <- named_list_logicals[[param_name]]
     if (!is.logical(value) || length(value) != 1) {
-      stop(paste0("'vaeac.", param_name, "' must be a boolean (i.e., `TRUE` or `FALSE`)."))
+      cli::cli_abort(paste0("'vaeac.", param_name, "' must be a boolean (i.e., `TRUE` or `FALSE`)."))
     }
   }
 }
@@ -1293,11 +1306,11 @@ vaeac_check_which_vaeac_model <- function(which_vaeac_model, epochs, save_every_
   }
 
   if (!is.null(which_vaeac_model) && !is.character(which_vaeac_model)) {
-    stop("`vaeac.which_vaeac_model` must be a string.")
+    cli::cli_abort("`vaeac.which_vaeac_model` must be a string.")
   }
 
   if (!which_vaeac_model %in% valid_names) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The provided `vaeac.which_vaeac_model` ('", which_vaeac_model, "') does not match any of the valid values: '",
       paste(valid_names, collapse = "', '"), "'."
     ))
@@ -1312,28 +1325,34 @@ vaeac_check_which_vaeac_model <- function(which_vaeac_model, epochs, save_every_
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_early_stopping, save_every_nth_epoch) {
+vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_early_stopping, save_every_nth_epoch,
+                                     verbose) {
   if (epochs_initiation_phase >= epochs) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "'vaeac.epochs_initiation_phase' (", epochs_initiation_phase, ") must be strictly less than ",
       "'vaeac.epochs' (", epochs, ")."
     ))
   }
 
   if (epochs_early_stopping > epochs) {
-    message(paste0(
-      "No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
-      "`vaeac.epochs` (", epochs, ")."
-    ))
+    if ("basic" %in% verbose) {
+      msg <- paste0(
+        "No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
+        "`vaeac.epochs` (", epochs, ")."
+      )
+      cli::cli_inform(c("i" = msg))
+    }
   }
 
   # Ensure a valid value for save_every_nth_epoch.
   if (!is.null(save_every_nth_epoch) && save_every_nth_epoch > epochs) {
-    stop(paste0("Number of 'epochs' (", epochs, ") is less than 'save_every_nth_epoch' (", save_every_nth_epoch, ")."))
+    cli::cli_abort(
+      paste0("Number of 'epochs' (", epochs, ") is less than 'save_every_nth_epoch' (", save_every_nth_epoch, ").")
+    )
   }
   # Ensure a valid value for save_every_nth_epoch.
   if (!is.null(save_every_nth_epoch) && save_every_nth_epoch <= epochs_initiation_phase) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "Number of 'epochs_initiation_phase' (", epochs_initiation_phase, ") is less than ",
       "'save_every_nth_epoch' (", save_every_nth_epoch, ")."
     ))
@@ -1351,7 +1370,9 @@ vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_ear
 vaeac_check_activation_func <- function(activation_function) {
   # In future, check that it is one of the activation functions and not just a nn_module
   # Check that activation function is an nn_module
-  if (!any("nn_module" %in% class(activation_function))) stop("`vaeac.activation_function` is not an `nn_module`.")
+  if (!any("nn_module" %in% class(activation_function))) {
+    cli::cli_abort("`vaeac.activation_function` is not an `nn_module`.")
+  }
 }
 
 #' Function that checks the specified masking scheme
@@ -1368,24 +1389,24 @@ vaeac_check_mask_gen <- function(mask_gen_coalitions, mask_gen_coalitions_prob, 
 
   if (!is.null(masks) || !is.null(probs)) {
     if (xor(is.null(masks), is.null(probs))) {
-      stop(
+      cli::cli_abort(
         "Either both `vaeac.mask_gen_coalitions` and `vaeac.mask_gen_coalitions_prob` need to `NULL` ",
         "or both have to be specified."
       )
     }
 
-    if (!is.matrix(masks)) stop("`vaeac.mask_gen_coalitions` must be a matrix.")
-    if (!is.numeric(probs)) stop("`vaeac.mask_gen_coalitions_prob` must be an array.")
+    if (!is.matrix(masks)) cli::cli_abort("`vaeac.mask_gen_coalitions` must be a matrix.")
+    if (!is.numeric(probs)) cli::cli_abort("`vaeac.mask_gen_coalitions_prob` must be an array.")
 
     if (nrow(masks) != length(probs)) {
-      stop(
+      cli::cli_abort(
         "The number of rows in `vaeac.mask_gen_coalitions` must be equal to the length of ",
         "`vaeac.mask_gen_coalitions_prob`."
       )
     }
 
     if (ncol(masks) != ncol(x_train)) {
-      stop(
+      cli::cli_abort(
         "The number of columns in `vaeac.mask_gen_coalitions` must be equal to the number of ",
         "columns in the `x_train`. That is, the number of features."
       )
@@ -1403,13 +1424,13 @@ vaeac_check_mask_gen <- function(mask_gen_coalitions, mask_gen_coalitions_prob, 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_save_names <- function(folder_to_save_model, model_description) {
-  if (!is.character(folder_to_save_model)) stop("`vaeac.folder_to_save_model` must be a string.")
-  if (!is.character(model_description)) stop("`vaeac.model_description` must be a string.")
+  if (!is.character(folder_to_save_model)) cli::cli_abort("`vaeac.folder_to_save_model` must be a string.")
+  if (!is.character(model_description)) cli::cli_abort("`vaeac.model_description` must be a string.")
   if (!dir.exists(folder_to_save_model)) {
-    stop(paste0("the folder `vaeac.folder_to_save_model` ('", folder_to_save_model, "') does not exist."))
+    cli::cli_abort(paste0("the folder `vaeac.folder_to_save_model` ('", folder_to_save_model, "') does not exist."))
   }
   if (!grepl("^[A-Za-z0-9._-]+$", model_description)) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "`vaeac.model_description` can only contain uppercase and lowercase letters, ",
       "digits, dots, underscores, and hyphens."
     ))
@@ -1424,14 +1445,17 @@ vaeac_check_save_names <- function(folder_to_save_model, model_description) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_cuda <- function(cuda) {
+vaeac_check_cuda <- function(cuda, verbose) {
   # Check if cuda/GPU is available on the current system
   cuda_available <- torch::cuda_is_available()
 
   # Give message to user if asked to run on cuda, but cuda is not available.
   if (isFALSE(cuda_available) && isTRUE(cuda)) {
     cuda <- FALSE
-    message("Cuda/GPU is not available (`shapr` uses CPU instead).", immediate. = TRUE)
+    if ("basic" %in% verbose) {
+      msg <- "Cuda/GPU is not available ({.pkg shapr} uses CPU instead)."
+      cli::cli_inform(c("i" = msg), immediate. = TRUE)
+    }
   }
 
   return(cuda)
@@ -1447,10 +1471,10 @@ vaeac_check_cuda <- function(cuda) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_masking_ratio <- function(masking_ratio, n_features) {
-  if (length(masking_ratio) > 1 && length(masking_ratio) != ncol(x_train)) {
-    stop(paste0(
+  if (length(masking_ratio) > 1 && length(masking_ratio) != n_features) {
+    cli::cli_abort(paste0(
       "'Masking_ratio' contains masking ratios for ',", length(masking_ratio), "' features, ",
-      "but there are '", ncol(x_train), "' features in 'x_train'."
+      "but there are '", n_features, "' features in 'x_train'."
     ))
   }
 }
@@ -1464,12 +1488,15 @@ vaeac_check_masking_ratio <- function(masking_ratio, n_features) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch, x_train_size) {
+vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch, x_train_size, verbose) {
   if (save_data && !is.null(save_every_nth_epoch) && epochs / save_every_nth_epoch > 5) {
-    message(paste0(
-      "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might requirer ",
-      "a lot of disk storage if `x_train` (", x_train_size, ") is large."
-    ))
+    if ("basic" %in% verbose) {
+      msg <- paste0(
+        "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might require ",
+        "a lot of disk storage if `x_train` (", x_train_size, ") is large."
+      )
+      cli::cli_inform(c("i" = msg))
+    }
   }
 }
 
@@ -1488,7 +1515,7 @@ vaeac_check_x_colnames <- function(feature_names_vaeac, feature_names_new) {
 
   # Check that the feature names of x_train matches the names of the training data used to train the vaeac model
   if (!isTRUE(all.equal(feature_names_vaeac, feature_names_new))) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The current feature names (`", paste(feature_names_new, collapse = "`, `"), "`) do not match the ",
       "feature names in the provided `vaeac` model (`", paste(feature_names_vaeac, collapse = "`, `"), ")."
     ))
@@ -1496,7 +1523,7 @@ vaeac_check_x_colnames <- function(feature_names_vaeac, feature_names_new) {
 
   # Check for equal number of features (this should never occur as test above indirectly checks this too)
   if (n_features_new != n_features_vaeac) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The provided `vaeac` model is trained on a ", n_features_vaeac, "-dimensional dataset, but the current ",
       "dataset is ", n_features_new, "-dimensional."
     ))
@@ -1544,7 +1571,6 @@ vaeac_check_parameters <- function(x_train,
                                    verbose,
                                    seed,
                                    ...) {
-
   # Check that the activation function is valid torch::nn_module object
   vaeac_check_activation_func(activation_function = activation_function)
 
@@ -1863,7 +1889,7 @@ vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
       ))
     }
   } else {
-    stop("`vaeac` could not determine which masking scheme to use based on the givene parameter arguments.")
+    cli::cli_abort("`vaeac` could not determine which masking scheme to use based on the givene parameter arguments.")
   }
 
   return(mask_generator_name)
@@ -1936,7 +1962,7 @@ vaeac_get_optimizer <- function(vaeac_model, lr, optimizer_name = "adam") {
       amsgrad = FALSE
     )
   } else {
-    stop("Only the `adam` optimizer has been implemented for the `vaeac` approach.")
+    cli::cli_abort("Only the `adam` optimizer has been implemented for the `vaeac` approach.")
   }
 
   return(optimizer)
@@ -2050,7 +2076,7 @@ vaeac_get_evaluation_criteria <- function(explanation_list) {
   # Check that all explanation objects use the `vaeac` approach
   explanation_approaches <- sapply(explanation_list, function(explanation) explanation$internal$parameters$approach)
   if (any(explanation_approaches != "vaeac")) {
-    stop(sprintf(
+    cli::cli_abort(sprintf(
       "Explanation object number `%d` in the `explanation_list` does not use the `vaeac` approach.",
       seq_along(explanation_approaches)[explanation_approaches != "vaeac"][1]
     ))
@@ -2101,7 +2127,7 @@ vaeac_get_data_objects <- function(x_train,
                                    train_indices = NULL,
                                    val_indices = NULL) {
   if (xor(is.null(train_indices), is.null(val_indices))) {
-    stop("Either none or both of `train_indices` and `val_indices` must be given.")
+    cli::cli_abort("Either none or both of `train_indices` and `val_indices` must be given.")
   }
 
   # Get the dimensions of the x_train
@@ -2236,14 +2262,13 @@ vaeac_update_para_locations <- function(parameters) {
   not_extra_para_in_main_para <-
     vaeac.main_para_user_names[!vaeac.main_para_user_names %in% vaeav.all_para_default_names]
   if (length(not_extra_para_in_main_para) > 0) {
-    # Give a message to the user about the unknown extra parameters
-    warning(paste0(
-      "The following vaeac main parameters are not recognized (`shapr` removes them): ",
-      paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+    # Give a warning to the user about the unknown extra parameters
+    msg1 <- "The following vaeac main parameters are not recognized (`shapr` removes them): "
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
+      ",(?=[^,]+$)",
+      perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
     # Delete the unknown extra parameters
     parameters[not_extra_para_in_main_para] <- NULL
@@ -2253,14 +2278,13 @@ vaeac_update_para_locations <- function(parameters) {
   not_main_para_in_extra_para <-
     vaeac.extra_para_user_names[!vaeac.extra_para_user_names %in% vaeav.all_para_default_names]
   if (length(not_main_para_in_extra_para) > 0) {
-    # Give a message to the user about the unknown extra parameters
-    warning(paste0(
-      "The following vaeac extra parameters are not recognized (`shapr` removes them): ",
-      paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+    # Give a warning to the user about the unknown extra parameters
+    msg1 <- "The following vaeac extra parameters are not recognized (`shapr` removes them): "
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
+      ",(?=[^,]+$)",
+      perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
     # Delete the unknown extra parameters
     parameters$vaeac.extra_parameters[not_main_para_in_extra_para] <- NULL
@@ -2269,29 +2293,32 @@ vaeac_update_para_locations <- function(parameters) {
   # Check for parameters that have been provided as both main and extra parameter
   both_main_and_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_user_names]
   if (length(both_main_and_extra_para > 0)) {
-    # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
-    warning(paste0(
+    # Print a warning to the user and tell them that we use those in `vaeac.extra_parameters`.
+    msg1 <- paste0(
       "The following vaeac parameters were given as both main and extra parameters (`shapr` uses the ",
-      "values at the correct location ): ",
-      paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+      "values at the correct location): "
+    )
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
+      ",(?=[^,]+$)",
+      perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
+
     # Note that we do not move it here as the moving will be fixed in the next two if-clauses
   }
 
   # Check if any any extra parameters have been given as main parameters
   extra_para_in_main_para <- vaeac.main_para_user_names[vaeac.main_para_user_names %in% vaeac.extra_para_default_names]
   if (length(extra_para_in_main_para) > 0) {
-    warning(paste0(
+    msg1 <- paste0(
       "The following vaeac parameters were given as main parameters but should have been extra ",
-      "parameters (`shapr` fixes this): ",
-      paste(strsplit(paste(paste0("`", extra_para_in_main_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+      "parameters (`shapr` fixes this): "
+    )
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", extra_para_in_main_para, "`"), collapse = ", "),
+      ",(?=[^,]+$)",
+      perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
     # Move extra parameter from the main parameters to extra_parameters list if they have NOT been specified already
     parameters$vaeac.extra_parameters[extra_para_in_main_para[!extra_para_in_main_para %in%
@@ -2305,15 +2332,16 @@ vaeac_update_para_locations <- function(parameters) {
   # Check if any any main parameters have been given as extra parameters
   main_para_in_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_default_names]
   if (length(main_para_in_extra_para) > 0) {
-    # Give a message to the user about the misplaced main parameters in the extra list
-    warning(paste0(
+    # Give a warning to the user about the misplaced main parameters in the extra list
+    msg1 <- paste0(
       "The following vaeac parameters were given as extra parameters but should have been main ",
-      "parameters (`shapr` fixes this): ",
-      paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
-        ",(?=[^,]+$)",
-        perl = TRUE
-      )[[1]], collapse = " and"), ".\n"
-    ))
+      "parameters (`shapr` fixes this): "
+    )
+    msg2 <- paste0(paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
+      ",(?=[^,]+$)",
+      perl = TRUE
+    )[[1]], collapse = " and"), ".")
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
 
     # Move main parameters from the extra_parameters list to main parameters if they have NOT been specified already
     parameters[main_para_in_extra_para[!main_para_in_extra_para %in% vaeac.main_para_user_names]] <-
@@ -2342,13 +2370,17 @@ vaeac_update_pretrained_model <- function(parameters) {
 
   # Check that it is either a list or string
   if (!(is.list(vaeac_object) || is.character(vaeac_object))) {
-    stop("The `vaeac.pretrained_vaeac_model` parameter must be either a list or a string. Read the documentation.")
+    cli::cli_abort(
+      "The `vaeac.pretrained_vaeac_model` parameter must be either a list or a string. Read the documentation."
+    )
   }
 
   # Check if we are given a list
   if (is.list(vaeac_object)) {
     # Check for list of type vaeac
-    if (!("vaeac" %in% class(vaeac_object))) stop("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
+    if (!("vaeac" %in% class(vaeac_object))) {
+      cli::cli_abort("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
+    }
     vaeac_check_x_colnames(
       feature_names_vaeac = vaeac_object$parameters$feature_list$labels,
       feature_names_new = parameters$feature_names
@@ -2365,7 +2397,7 @@ vaeac_update_pretrained_model <- function(parameters) {
   if (is.character(vaeac_object)) {
     # Check that the file exists
     if (!file.exists(vaeac_object)) {
-      stop(paste0("The `vaeac.pretrained_vaeac_model` file ('", vaeac_object, "') does not exist."))
+      cli::cli_abort(paste0("The `vaeac.pretrained_vaeac_model` file ('", vaeac_object, "') does not exist."))
     }
 
     # Read in the vaeac model from the disk
@@ -2373,10 +2405,10 @@ vaeac_update_pretrained_model <- function(parameters) {
 
     # Some very small check that we have read in a vaeac model
     if (is.null(vaeac_model$model_state_dict)) {
-      stop("The provided file is not a vaeac model as it is missing, e.g., the `model_state_dict` entry.")
+      cli::cli_abort("The provided file is not a vaeac model as it is missing, e.g., the `model_state_dict` entry.")
     }
     if (is.null(vaeac_model$optimizer_state_dict)) {
-      stop("The provided file is not a vaeac model as it is missing, e.g., the `optimizer_state_dict` entry.")
+      cli::cli_abort("The provided file is not a vaeac model as it is missing, e.g., the `optimizer_state_dict` entry.")
     }
 
     # Check that the provided vaeac model is trained on a dataset with the same feature names
@@ -2438,7 +2470,7 @@ vaeac_save_state <- function(state_list, file_name, return_state = FALSE) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_state) {
-  message(sprintf(
+  rlang::inform(sprintf(
     "\nResults of the `vaeac` training process:
 Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
@@ -2456,31 +2488,6 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     last_state$val_iwae[-1]$cpu(),
     last_state$val_iwae_running[-1]$cpu()
   ))
-
-  # Trying to replace the above, but have not succeeded really.
-  # msg <- c("\nResults of the `vaeac` training process:",
-  #   sprintf("Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
-  #           best_epoch,
-  #           last_state$train_vlb[best_epoch]$cpu(),
-  #           last_state$val_iwae[best_epoch]$cpu(),
-  #           last_state$val_iwae_running[best_epoch]$cpu()
-  #   ),
-  #   sprintf("Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
-  #           best_epoch_running,
-  #           last_state$train_vlb[best_epoch_running]$cpu(),
-  #           last_state$val_iwae[best_epoch_running]$cpu(),
-  #           last_state$val_iwae_running[best_epoch_running]$cpu()
-  #   ),
-  #   sprintf("Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f",
-  #           last_state$epoch,
-  #           last_state$train_vlb[-1]$cpu(),
-  #           last_state$val_iwae[-1]$cpu(),
-  #           last_state$val_iwae_running[-1]$cpu()
-  #   )
-  # )
-  #
-  #
-  # cli::cli_text(msg)
 }
 
 
@@ -2628,13 +2635,13 @@ plot_vaeac_eval_crit <- function(explanation_list,
   ## Checks
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}.")
   }
 
   # Check for valid criteria argument
   unknown_criteria <- criteria[!(criteria %in% c("VLB", "IWAE", "IWAE_running"))]
   if (length(unknown_criteria) > 0) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The `criteria` must be one (or several) of 'VLB', 'IWAE', and 'IWAE_running'. ",
       "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
     ))
@@ -2643,7 +2650,7 @@ plot_vaeac_eval_crit <- function(explanation_list,
   # Check for valid plot type argument
   unknown_plot_type <- plot_type[!(plot_type %in% c("method", "criterion"))]
   if (length(unknown_plot_type) > 0) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The `plot_type` must be one (or several) of 'method' and 'criterion'. ",
       "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
     ))
@@ -2663,7 +2670,7 @@ plot_vaeac_eval_crit <- function(explanation_list,
   # Check for valid `plot_from_nth_epoch`
   max_epoch <- max(vaeac_VLB_IWAE_dt$Epoch)
   if (plot_from_nth_epoch > max_epoch) {
-    stop(sprintf(
+    cli::cli_abort(sprintf(
       "`plot_from_nth_epoch` (%d) is larger than the number of epochs (%d)",
       plot_from_nth_epoch, max_epoch
     ))
@@ -2824,15 +2831,15 @@ plot_vaeac_imputed_ggpairs <- function(
     cor_method = c("pearson", "kendall", "spearman")) {
   # Check that ggplot2 and GGally are installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}.")
   }
   if (!requireNamespace("GGally", quietly = TRUE)) {
-    stop("GGally is not installed. Please run install.packages('GGally')")
+    cli::cli_abort("GGally is not installed. Please run {.run install.packages('GGally')}.")
   }
 
   # Check all input parameters except `which_vaeac_model`
-  if (!"shapr" %in% class(explanation)) stop("`explanation` must be an object of type `shapr`.")
-  if (!is.null(x_true) && !is.data.table(x_true)) stop("`x_true` must be an object of type `data.table`.")
+  if (!"shapr" %in% class(explanation)) cli::cli_abort("`explanation` must be an object of type `shapr`.")
+  if (!is.null(x_true) && !is.data.table(x_true)) cli::cli_abort("`x_true` must be an object of type `data.table`.")
   vaeac_check_logicals(list(add_title = add_title))
   vaeac_check_probabilities(list(alpha = alpha))
   upper_cont <- match.arg(upper_cont)
@@ -2847,10 +2854,9 @@ plot_vaeac_imputed_ggpairs <- function(
 
   # Check if the vaeac model is expected to give a reasonable figure.
   if (!explanation$internal$parameters$exact || explanation$internal$parameters$is_groupwise) {
-    message(
-      "The vaeac model has not been trained on the empty colition, hence, the figure can be missleading. ",
-      "The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in the explanation call."
-    )
+    msg1 <- "The vaeac model has not been trained on the empty colition, hence, the figure can be missleading."
+    msg2 <- "The figure is only reasonable if `n_combintations = NULL` and `group = NULL` in the explanation call."
+    cli::cli_inform(c("i" = msg1, " " = msg2))
   }
 
   # Extract the vaeac list from the explanation list
@@ -2858,7 +2864,7 @@ plot_vaeac_imputed_ggpairs <- function(
 
   # Check that `which_vaeac_model` is a valid vaeac model name and then load the vaeac checkpoint
   if (!is.character(which_vaeac_model) || !which_vaeac_model %in% names(vaeac_list$models)) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The parameter `which_vaeac_model` ('", which_vaeac_model, "') must be one of the following: '",
       paste(names(vaeac_list$models), collapse = "', '"), "'."
     ))
@@ -2872,7 +2878,7 @@ plot_vaeac_imputed_ggpairs <- function(
 
   # Checking for valid dimension
   if (!is.null(x_true) && ncol(x_true) != n_features) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "Different number of columns in the vaeac model (", n_features, ") and `x_true` (", ncol(x_true), ")."
     ))
   }

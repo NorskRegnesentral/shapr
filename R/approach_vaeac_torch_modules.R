@@ -213,7 +213,7 @@ vaeac <- function(one_hot_max_sizes,
       } else if (mask_generator_name == "specified_masks_mask_generator") {
         # Small check that they have been provided.
         if (is.null(mask_gen_coalitions) | is.null(mask_gen_coalitions_prob)) {
-          stop(paste0(
+          cli::cli_abort(paste0(
             "Both 'mask_gen_coalitions' and 'mask_gen_coalitions_prob' ",
             "must be provided when using 'specified_masks_mask_generator'."
           ))
@@ -231,7 +231,7 @@ vaeac <- function(one_hot_max_sizes,
         self$masks_probs <- mask_gen_coalitions_prob
       } else {
         # Print error to user.
-        stop(paste0(
+        cli::cli_abort(paste0(
           "`mask_generator_name` must be one of 'mcar_mask_generator', 'specified_prob_mask_generator', or ",
           "'specified_masks_mask_generator', and not '", mask_generator_name, "'."
         ))
@@ -514,8 +514,9 @@ vaeac <- function(one_hot_max_sizes,
 
     # Forward functions are required in torch::nn_modules, but is it not needed in the way we have implemented vaeac.
     forward = function(...) {
-      warning("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
-      return("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
+      msg <- "No forward function implemented for vaeac!"
+      cli::cli_warn(c("!" = msg))
+      return("No forward function implemented for vaeac!")
     },
 
     # Apply Mask to Batch to Create Observed Batch
@@ -918,7 +919,7 @@ vaeac_preprocess_data <- function(data, log_exp_cont_feat = FALSE,
   # Check if we are to log transform all continuous features.
   if (log_exp_cont_feat) {
     if (any(data[, ..col_cont_names] <= 0, na.rm = TRUE)) { # Add na.rm as data can contain NaN values to be imputed
-      stop("The continuous features cannot be log-transformed as they are not strictly positive.")
+      cli::cli_abort("The continuous features cannot be log-transformed as they are not strictly positive.")
     }
     data[, (col_cont_names) := lapply(.SD, log), .SDcols = col_cont_names]
   }
@@ -959,7 +960,7 @@ vaeac_preprocess_data <- function(data, log_exp_cont_feat = FALSE,
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_normalize_data <- function(data_torch, one_hot_max_sizes, norm_mean = NULL, norm_std = NULL) {
-  if (xor(!is.null(norm_mean), !is.null(norm_std))) stop("Both `norm_mean` and `norm_std` must be provided.")
+  if (xor(!is.null(norm_mean), !is.null(norm_std))) cli::cli_abort("Both `norm_mean` and `norm_std` must be provided.")
 
   if (is.null(norm_mean) && is.null(norm_std)) {
     # Compute the mean and std for each continuous feature, while the categorical features will have mean 0 and std 1
@@ -1144,7 +1145,10 @@ memory_layer <- function(id, shared_env, output = FALSE, add = FALSE, verbose = 
     forward = function(input) {
       # Check if we are going to insert input into the storage or extract data from the storage.
       if (!self$output) {
-        if (self$verbose) message(paste0("Inserting data to memory layer `self$id = ", self$id, "`."))
+        if (self$verbose) {
+          msg <- paste0("Inserting data to memory layer `self$id = ", self$id, "`.")
+          cli::cli_inform(c("i" = msg))
+        }
 
         # Insert the input into the storage list which is in the shared environment of the memory_layer class.
         # Note that we do not check if self$id is unique.
@@ -1153,14 +1157,15 @@ memory_layer <- function(id, shared_env, output = FALSE, add = FALSE, verbose = 
       } else {
         # We are to extract data from the storage list.
         if (self$verbose) {
-          message(paste0(
+          msg <- paste0(
             "Extracting data to memory layer `self$id = ", self$id, "`. Using concatination = ", !self$add, "."
-          ))
+          )
+          cli::cli_inform(c("i" = msg))
         }
 
         # Check that the memory layer has data is stored in it. If not, then thorw error.
         if (!self$id %in% names(self$shared_env)) {
-          stop(paste0(
+          cli::cli_abort(paste0(
             "ValueError: Looking for memory layer `self$id = ", self$id, "`, but the only available ",
             "memory layers are: ", paste(names(self$shared_env), collapse = "`, `"), "`."
           ))

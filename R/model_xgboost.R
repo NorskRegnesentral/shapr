@@ -2,7 +2,7 @@
 #' @export
 predict_model.xgb.Booster <- function(x, newdata, ...) {
   if (!requireNamespace("xgboost", quietly = TRUE)) {
-    stop("The xgboost package is required for predicting xgboost models")
+    cli::cli_abort("The xgboost package is required for predicting xgboost models")
   }
 
   predict(x, as.matrix(newdata))
@@ -29,21 +29,19 @@ model_checker.xgb.Booster <- function(x) {
   if (!is.null(x$params$objective) &&
     (x$params$objective == "multi:softmax" || x$params$objective == "multi:softprob")
   ) {
-    stop(
+    cli::cli_abort(
       paste0(
-        "\n",
-        "We currently don't support multi-classification using xgboost, i.e.\n",
+        "We currently don't support multi-classification using xgboost, i.e. ",
         "where num_class is greater than 2."
       )
     )
   }
 
   if (!is.null(x$params$objective) && x$params$objective == "reg:logistic") {
-    stop(
+    cli::cli_abort(
       paste0(
-        "\n",
-        "We currently don't support standard classification, which predicts the class directly.\n",
-        "To train an xgboost model predicting the class probabilities, you'll need to change \n",
+        "We currently don't support standard classification, which predicts the class directly. ",
+        "To train an xgboost model predicting the class probabilities, you'll need to change ",
         "the objective to 'binary:logistic'"
       )
     )

@@ -5,9 +5,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -34,9 +36,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: regression_separate
@@ -63,9 +67,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: regression_separate
@@ -96,9 +102,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -123,9 +131,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: independence
@@ -152,9 +162,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -181,9 +193,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -211,9 +225,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -241,9 +257,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -271,6 +289,11 @@
         out <- code
       }, digits = digits)
     Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      
+      -- Explanation overview --
+      
       * Model class: <lm>
       * Approach: gaussian
       * Iterative estimation: FALSE
@@ -297,9 +320,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: empirical
@@ -327,9 +352,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: ctree
@@ -357,9 +384,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -386,9 +415,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -415,9 +446,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -444,9 +477,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
-      and is therefore set to 2^n_groups = 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -473,9 +508,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
-      and is therefore set to 2^n_groups = 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -502,10 +539,8 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
-      and is therefore set to 2^n_groups = 8.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -535,9 +570,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: ctree
@@ -564,9 +601,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: ctree
@@ -615,9 +654,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: ctree
@@ -645,9 +686,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: ctree
@@ -675,9 +718,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or number of coalitions respecting the causal
-      ordering 8, and is therefore set to 8.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: regression_separate
@@ -708,9 +753,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 16, 
-      and is therefore set to 2^n_features = 16.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: categorical
@@ -737,9 +784,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 16, 
-      and is therefore set to 2^n_features = 16.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: categorical
@@ -783,9 +832,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 16, 
-      and is therefore set to 2^n_features = 16.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: ctree

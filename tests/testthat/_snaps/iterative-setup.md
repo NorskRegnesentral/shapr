@@ -6,10 +6,9 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_numeric_1))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_extra_computation_args()`:
       ! `extra_computation_args$min_n_batches` must be NULL or a single positive integer.
@@ -22,10 +21,9 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_numeric_2))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_extra_computation_args()`:
       ! `extra_computation_args$min_n_batches` must be NULL or a single positive integer.
@@ -38,10 +36,9 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_integer))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_extra_computation_args()`:
       ! `extra_computation_args$min_n_batches` must be NULL or a single positive integer.
@@ -54,10 +51,9 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_too_long))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_extra_computation_args()`:
       ! `extra_computation_args$min_n_batches` must be NULL or a single positive integer.
@@ -70,10 +66,9 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_is_NA))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_extra_computation_args()`:
       ! `extra_computation_args$min_n_batches` must be NULL or a single positive integer.
@@ -86,10 +81,9 @@
         x_train = x_train_numeric, approach = "independence", phi0 = p0, seed = 1,
         extra_computation_args = list(min_n_batches = n_batches_non_positive))
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_extra_computation_args()`:
       ! `extra_computation_args$min_n_batches` must be NULL or a single positive integer.
@@ -100,11 +94,6 @@
       print({
         out <- code
       }, digits = digits)
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
     Output
          explain_id  none Solar.R    Wind   Temp Month    Day
               <int> <num>   <num>   <num>  <num> <num>  <num>
@@ -118,11 +107,6 @@
       print({
         out <- code
       }, digits = digits)
-    Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
-      
     Output
          explain_id  none Solar.R    Wind   Temp Month    Day
               <int> <num>   <num>   <num>  <num> <num>  <num>
@@ -137,9 +121,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: independence

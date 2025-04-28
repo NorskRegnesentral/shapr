@@ -1,6 +1,10 @@
 *.html
 *.R
-cache_main/
+cache_general_usage/
 cache_vaeac/
 cache_regression/
 cache_asymmetric_causal/
+cache_general_usage_old/
+cache_vaeac_old/
+cache_regression_old/
+cache_asymmetric_causal_old/

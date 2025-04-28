@@ -187,14 +187,14 @@ plot.shapr <- function(x,
                        beeswarm_cex = 1 / length(index_x_explain)^(1 / 4),
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}")
   }
   if (!(plot_type %in% c("bar", "waterfall", "scatter", "beeswarm"))) {
-    stop(paste(plot_type, "is an invalid plot type. Try plot_type='bar', plot_type='waterfall',
+    cli::cli_abort(paste(plot_type, "is an invalid plot type. Try plot_type='bar', plot_type='waterfall',
                plot_type='scatter', or plot_type='beeswarm'."))
   }
   if (!(bar_plot_order %in% c("largest_first", "smallest_first", "original"))) {
-    stop(paste(bar_plot_order, "is an invalid plot order. Try bar_plot_order='largest_first',
+    cli::cli_abort(paste(bar_plot_order, "is an invalid plot order. Try bar_plot_order='largest_first',
                bar_plot_order='smallest_first' or bar_plot_order='original'."))
   }
 
@@ -212,10 +212,10 @@ plot.shapr <- function(x,
     if (is.na(include_group_feature_means) ||
       !is.logical(include_group_feature_means) ||
       length(include_group_feature_means) > 1) {
-      stop("`include_group_feature_means` must be single logical.")
+      cli::cli_abort("`include_group_feature_means` must be single logical.")
     }
     if (!include_group_feature_means && plot_type %in% c("scatter", "beeswarm")) {
-      stop(paste0(
+      cli::cli_abort(paste0(
         "`shapr` cannot make a `", plot_type, "` plot for group-wise Shapley values, as the plot needs a ",
         "single feature value for the whole group.\n",
         "For numerical data, the user can set `include_group_feature_means = TRUE` to use the mean of all ",
@@ -224,7 +224,7 @@ plot.shapr <- function(x,
     }
 
     if (any(x$internal$objects$feature_specs$classes != "numeric")) {
-      stop("`include_group_feature_means` cannot be `TRUE` for datasets with non-numerical features.")
+      cli::cli_abort("`include_group_feature_means` cannot be `TRUE` for datasets with non-numerical features.")
     }
 
     # Take the mean over the grouped features and update the feature name to the group name
@@ -310,8 +310,12 @@ plot.shapr <- function(x,
     dt_plot <- dt_plot[id %in% index_x_explain]
 
     if (length(dt_plot[, unique(id)]) > 10) {
-      stop("Too many observations to plot together! Try for instance setting index_x_explain = 1:10 so that the max.
-           is not exceeded.")
+      cli::cli_abort(
+        c(
+          "Too many observations to plot together!",
+          "Try for instance setting index_x_explain = 1:10 so that the max.is not exceeded."
+        )
+      )
     }
 
     dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, bar_plot_order, top_k_features)
@@ -423,7 +427,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   if (is.null(col)) {
     col <- "#619CFF"
   } else if (length(col) != 1) {
-    stop("'col' must be of length 1 when making scatter plot.")
+    cli::cli_abort("'col' must be of length 1 when making scatter plot.")
   }
 
   dt_plot <- dt_plot[variable != "none"]
@@ -435,7 +439,9 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     scatter_features <- dt_plot[scatter_features, unique(variable)]
   } else if (is.character(scatter_features)) {
     if (any(!(scatter_features %in% unique(dt_plot[, variable])))) {
-      stop("Some or all of the listed feature names in 'scatter_features' do not match the names in the data.")
+      cli::cli_abort(
+        "Some or all of the listed feature names in 'scatter_features' do not match the names in the data."
+      )
     }
   }
 
@@ -582,14 +588,14 @@ make_beeswarm_plot <- function(dt_plot,
                                beeswarm_cex,
                                ...) {
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
-    stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
+    cli::cli_abort("ggbeeswarm is not installed. Please run {.run install.packages('ggbeeswarm')}.")
   }
 
   if (is.null(col)) {
     col <- c("#F8766D", "yellow", "#00BA38")
   }
   if (!(length(col) %in% c(2, 3))) {
-    stop("'col' must be of length 2 or 3 when making beeswarm plot.")
+    cli::cli_abort("'col' must be of length 2 or 3 when making beeswarm plot.")
   }
 
   dt_plot <- dt_plot[variable != "none"]
@@ -672,7 +678,7 @@ make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
     col <- c("#00BA38", "#F8766D")
   }
   if (length(col) != 2) {
-    stop("'col' must be of length 2 when making bar plot.")
+    cli::cli_abort("'col' must be of length 2 when making bar plot.")
   }
 
 
@@ -740,7 +746,7 @@ make_waterfall_plot <- function(dt_plot,
     col <- c("#00BA38", "#F8766D")
   }
   if (length(col) != 2) {
-    stop("'col' must be of length 2 when making waterfall plot.")
+    cli::cli_abort("'col' must be of length 2 when making waterfall plot.")
   }
 
   # waterfall plotting helpers
@@ -1044,13 +1050,13 @@ plot_MSEv_eval_crit <- function(explanation_list,
                                 plot_type = "overall") {
   # Setup and checks ----------------------------------------------------------------------------
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}.")
   }
 
   # Check for valid plot type argument
   unknown_plot_type <- plot_type[!(plot_type %in% c("overall", "comb", "explicand"))]
   if (length(unknown_plot_type) > 0) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The `plot_type` must be one (or several) of 'overall', 'comb', 'explicand'. ",
       "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
     ))
@@ -1064,7 +1070,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
 
   # Check valid CI_level value
   if (!is.null(CI_level) && (CI_level <= 0 || 1 <= CI_level)) {
-    stop("the `CI_level` parameter must be strictly between zero and one.")
+    cli::cli_abort("the `CI_level` parameter must be strictly between zero and one.")
   }
 
   # Check that the explanation objects explain the same observations
@@ -1090,22 +1096,26 @@ plot_MSEv_eval_crit <- function(explanation_list,
   # Warnings related to the approximate confidence intervals
   if (!is.null(CI_level)) {
     if (n_explain < 20) {
-      message(paste0(
+      msg <- paste0(
         "The approximate ", CI_level * 100, "% confidence intervals might be wide as they are only based on ",
         n_explain, " observations."
-      ))
+      )
+      cli::cli_inform(c("i" = msg))
     }
 
     # Check for CI with negative values
     methods_with_negative_CI <- MSEv_dt[MSEv_sd > abs(tfrac) * MSEv, Method]
     if (length(methods_with_negative_CI) > 0) {
-      message(paste0(
+      msg1 <- paste0(
         "The method/methods '", paste(methods_with_negative_CI, collapse = "', '"), "' has/have ",
         "approximate ", CI_level * 100, "% confidence intervals with negative values, ",
-        "which is not possible for the MSEv criterion.\n",
+        "which is not possible for the MSEv criterion."
+      )
+      msg2 <- paste0(
         "Check the `MSEv_explicand` plots for potential observational outliers ",
         "that causes the wide confidence intervals."
-      ))
+      )
+      cli::cli_inform(c("i" = msg1, " " = msg2))
     }
   }
 
@@ -1171,11 +1181,10 @@ MSEv_name_explanation_list <- function(explanation_list) {
   names <- make.unique(names, sep = "_")
   names(explanation_list) <- names
 
-  message(paste0(
-    "User provided an `explanation_list` without named explanation objects.\n",
-    "Use the approach names of the explanation objects as the names (with integer ",
-    "suffix for duplicates).\n"
-  ))
+  msg1 <- "User provided an `explanation_list` without named explanation objects."
+  msg2 <- "Use the approach names of the explanation objects as the names (with integer suffix for duplicates)."
+
+  cli::cli_inform(c("i" = msg1, " " = msg2))
 
   return(explanation_list)
 }
@@ -1186,11 +1195,11 @@ MSEv_check_explanation_list <- function(explanation_list) {
   # Check that the explanation list is valid for plotting the MSEv evaluation criterion
 
   # All entries must be named
-  if (any(names(explanation_list) == "")) stop("All the entries in `explanation_list` must be named.")
+  if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named.")
 
   # Check that all explanation objects use the same column names for the Shapley values
   if (length(unique(lapply(explanation_list, function(explanation) colnames(explanation$shapley_values_est)))) != 1) {
-    stop("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
+    cli::cli_abort("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
   }
 
   # Check that all explanation objects use the same test observations
@@ -1200,7 +1209,7 @@ MSEv_check_explanation_list <- function(explanation_list) {
   if (any(entries_using_diff_x_explain)) {
     methods_with_diff_comb_str <-
       paste(names(entries_using_diff_x_explain)[entries_using_diff_x_explain], collapse = "', '")
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The object/objects '", methods_with_diff_comb_str, "' in `explanation_list` has/have a different ",
       "`x_explain` than '", names(explanation_list)[1], "'. Cannot compare them."
     ))
@@ -1210,7 +1219,7 @@ MSEv_check_explanation_list <- function(explanation_list) {
   entries_missing_MSEv <- sapply(explanation_list, function(explanation) is.null(explanation$MSEv))
   if (any(entries_missing_MSEv)) {
     methods_without_MSEv_string <- paste(names(entries_missing_MSEv)[entries_missing_MSEv], collapse = "', '")
-    stop(sprintf(
+    cli::cli_abort(sprintf(
       "The object/objects '%s' in `explanation_list` is/are missing the `MSEv` list.",
       methods_without_MSEv_string
     ))
@@ -1222,7 +1231,7 @@ MSEv_check_explanation_list <- function(explanation_list) {
   })
   if (any(entries_using_diff_combs)) {
     methods_with_diff_comb_str <- paste(names(entries_using_diff_combs)[entries_using_diff_combs], collapse = "', '")
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The object/objects '", methods_with_diff_comb_str, "' in `explanation_list` uses/use different ",
       "coalitions than '", names(explanation_list)[1], "'. Cannot compare them."
     ))
@@ -1593,7 +1602,7 @@ plot_SV_several_approaches <- function(explanation_list,
   # Setup and checks ----------------------------------------------------------------------------
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+    cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}.")
   }
 
   # Ensure that even a single explanation object is in a list
@@ -1603,11 +1612,11 @@ plot_SV_several_approaches <- function(explanation_list,
   if (is.null(names(explanation_list))) explanation_list <- MSEv_name_explanation_list(explanation_list)
 
   # All entries must be named
-  if (any(names(explanation_list) == "")) stop("All the entries in `explanation_list` must be named.")
+  if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named.")
 
   # Check that the column names for the Shapley values are the same for all explanations in the `explanation_list`
   if (length(unique(lapply(explanation_list, function(explanation) colnames(explanation$shapley_values_est)))) != 1) {
-    stop("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
+    cli::cli_abort("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
   }
 
   # Check that all explanation objects use the same test observations
@@ -1617,7 +1626,7 @@ plot_SV_several_approaches <- function(explanation_list,
   if (any(entries_using_diff_x_explain)) {
     methods_with_diff_comb_str <-
       paste(names(entries_using_diff_x_explain)[entries_using_diff_x_explain], collapse = "', '")
-    stop(paste0(
+    cli::cli_abort(paste0(
       "The object/objects '", methods_with_diff_comb_str, "' in `explanation_list` has/have a different ",
       "`x_explain` than '", names(explanation_list)[1], "'. Cannot compare them."
     ))
@@ -1739,16 +1748,17 @@ update_only_these_features <- function(explanation_list,
 
     # Give the user a warning if the user provided non-valid feature names
     if (length(only_these_features_not_names) > 0) {
-      message(paste0(
+      msg <- paste0(
         "User provided non-valid feature names in `only_these_features` (",
         paste0("'", only_these_features_not_names, "'", collapse = ", "),
         "). The function skips non-valid feature names."
-      ))
+      )
+      cli::cli_inform(c("i" = msg))
     }
 
     # Stop if we have no valid feature names.
     if (length(only_these_features_in_names[only_these_features_in_names != "none"]) == 0) {
-      stop(paste0(
+      cli::cli_abort(paste0(
         "The parameter `only_these_features` must contain at least one of: ",
         paste0("'", feature_names_without_none, "'", collapse = ", "),
         "."
@@ -1798,10 +1808,9 @@ extract_Shapley_values_dt <- function(explanation_list,
 
   # Give a small warning to the user if they have not specified the `index_explicands` and too many explicands
   if (length(index_explicands) > 12) {
-    message(paste(
-      "It might be too many explicands to plot together in a nice fashion! Try for instance",
-      "setting `index_explicands = 1:10` to limit the number of explicands.\n"
-    ))
+    msg1 <- "It might be too many explicands to plot together in a nice fashion!"
+    msg2 <- "Try for instance setting `index_explicands = 1:10` to limit the number of explicands."
+    cli::cli_inform(c("i" = msg1, " " = msg2))
   }
 
   # Keep only the needed columns, and ensure that .id, .pred, and .method are included
@@ -1829,11 +1838,13 @@ update_axis_labels <- function(axis_labels_rotate_angle,
 
     # If it is long, then we alter the default values set above and give message to user
     if (length_of_longest_description > 12 && !horizontal_bars) {
-      message(paste(
-        "Long label names: consider specifying either `axis_labels_rotate_angle` or",
-        "`axis_labels_n_dodge`, to fix any potentially overlapping axis labels.",
-        "The function sets `axis_labels_rotate_angle = 45` internally.\n"
-      ))
+      msg1 <- paste0(
+        "Long label names: consider specifying either `axis_labels_rotate_angle` or ",
+        "`axis_labels_n_dodge`, to fix any potentially overlapping axis labels."
+      )
+      msg2 <- "The function sets `axis_labels_rotate_angle = 45` internally."
+
+      cli::cli_inform(c("i" = msg1, " " = msg2))
 
       # Set it to rotate 45 degrees
       axis_labels_rotate_angle <- 45
@@ -1866,7 +1877,7 @@ create_feature_descriptions_dt <- function(explanation_list,
     # Group-wise Shapley values
 
     if (include_group_feature_means && any(explanation_list[[1]]$internal$objects$feature_specs$classes != "numeric")) {
-      stop("`include_group_feature_means` cannot be `TRUE` for datasets with non-numerical features.")
+      cli::cli_abort("`include_group_feature_means` cannot be `TRUE` for datasets with non-numerical features.")
     }
 
     # Get the relevant explicands

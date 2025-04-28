@@ -61,10 +61,9 @@ predict_model <- function(x, newdata, ...) {
 predict_model.default <- function(x, newdata, ...) {
   str_error <- paste(
     "It seems that you passed a non-valid model object.",
-    "See more information about which models that are supported",
-    "by running ?predict_model."
+    "For more information about which models that are supported, see the documentation of {.fn shapr::predict_model}."
   )
-  stop(str_error)
+  cli::cli_abort(str_error)
 }
 
 
@@ -92,7 +91,7 @@ model_checker <- function(x) {
 #' @rdname model_checker
 #' @export
 model_checker.default <- function(x) {
-  stop("The model class you passed to shapr is currently not supported.")
+  cli::cli_abort("The model class you passed to shapr is currently not supported.")
 }
 
 

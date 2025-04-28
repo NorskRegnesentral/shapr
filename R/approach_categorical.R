@@ -31,7 +31,7 @@ setup_approach.categorical <- function(internal,
   x_explain <- internal$data$x_explain
 
   if (!all(feature_specs$classes == "factor")) {
-    stop("All features should be factors to use the categorical method.")
+    cli::cli_abort("All features should be factors to use the categorical method.")
   }
 
   # estimate joint_prob_dt if it is not passed to the function
@@ -62,14 +62,14 @@ setup_approach.categorical <- function(internal,
       is_error <- !(i %in% names(joint_probability_dt))
 
       if (is_error > 0) {
-        stop(paste0(i, " is in x_explain but not in joint_probability_dt."))
+        cli::cli_abort(paste0(i, " is in x_explain but not in joint_probability_dt."))
       }
 
       # Check that the feature has the same levels
       is_error <- !all(levels(x_explain[[i]]) %in% levels(joint_probability_dt[[i]]))
 
       if (is_error > 0) {
-        stop(paste0(i, " in x_explain has factor levels than in joint_probability_dt."))
+        cli::cli_abort(paste0(i, " in x_explain has factor levels than in joint_probability_dt."))
       }
     }
 
@@ -80,7 +80,7 @@ setup_approach.categorical <- function(internal,
       (round(sum(joint_probability_dt$joint_prob), 3) != 1)
 
     if (is_error > 0) {
-      stop('joint_probability_dt must include a column of joint probabilities called "joint_prob".
+      cli::cli_abort('joint_probability_dt must include a column of joint probabilities called "joint_prob".
       joint_prob must all be greater or equal to 0 and less than or equal to 1.
       sum(joint_prob) must equal to 1.')
     }
@@ -166,8 +166,11 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   cond_dt_unique <- unique(cond_dt, by = feature_conditioned)
   check <- cond_dt_unique[id_coalition != 1][, .(sum_prob = sum(marg_prob)), by = "id_coalition"][["sum_prob"]]
   if (!all(round(check) == 1)) {
-    warning("Not all marginal probabilities sum to 1. There could be a problem
-            with the joint probabilities. Consider checking.")
+    msg <- paste0(
+      "Not all marginal probabilities sum to 1. There could be a problem with the joint probabilities. ",
+      "Consider checking."
+    )
+    cli::cli_warn(c("!" = msg), immediate. = TRUE)
   }
 
   # make x_explain
@@ -184,8 +187,11 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   # check conditional probabilities
   check <- dt[id_coalition != 1][, .(sum_prob = sum(cond_prob)), by = c("id_coalition", "id")][["sum_prob"]]
   if (!all(round(check) == 1)) {
-    warning("Not all conditional probabilities sum to 1. There could be a problem
-            with the joint probabilities. Consider checking.")
+    msg <- paste0(
+      "Not all conditional probabilities sum to 1. There could be a problem with the joint probabilities. ",
+      "Consider checking."
+    )
+    cli::cli_warn(c("!" = msg), immediate. = TRUE)
   }
 
   setnames(dt, "cond_prob", "w")
@@ -205,8 +211,6 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_single_coalition <- function(internal, index_features) {
-  # if (length(index_features) != 1) stop("`index_features` must be single integer.")
-
   # Extract the needed objects
   x_explain <- internal$data$x_explain
   feature_names <- internal$parameters$feature_names

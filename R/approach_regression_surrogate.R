@@ -138,11 +138,11 @@ regression.surrogate_aug_data <- function(internal,
   if (!is.null(augment_weights)) augment_weights <- match.arg(augment_weights, c("Shapley", "uniform"))
 
   if (!is.null(augment_comb_prob) && length(augment_comb_prob) != actual_n_coalitions) {
-    stop(paste("`augment_comb_prob` must be of length", actual_n_coalitions, "."))
+    cli::cli_abort(paste("`augment_comb_prob` must be of length", actual_n_coalitions, "."))
   }
 
   if (!is.null(augment_weights) && augment_include_grand && augment_weights == "Shapley") {
-    stop(paste(
+    cli::cli_abort(paste(
       "`augment_include_grand = TRUE` and `augment_weights = 'Shapley'` cannot occure",
       "because this entails too large weight for the grand coalition."
     ))
@@ -235,7 +235,7 @@ regression.surrogate_aug_data <- function(internal,
 regression.check_sur_n_comb <- function(regression.surrogate_n_comb, n_coalitions) {
   if (!is.null(regression.surrogate_n_comb)) {
     if (regression.surrogate_n_comb < 1 || n_coalitions - 2 < regression.surrogate_n_comb) {
-      stop(paste0(
+      cli::cli_abort(paste0(
         "`regression.surrogate_n_comb` (", regression.surrogate_n_comb, ") must be a positive integer less than or ",
         "equal to `n_coalitions` minus two (", n_coalitions - 2, ")."
       ))

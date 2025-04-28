@@ -131,9 +131,6 @@ test_that("output_lm_numeric_independence_converges_tol_paired", {
   )
 })
 
-# Tests producing output, but also other aspects below here
-# These should be run on cran and are therefore placed here instead of in test-iterative-oupout.R
-
 test_that("output_verbose_1", {
   expect_snapshot_rds(
     explain(

@@ -18,7 +18,7 @@ check_categorical_valid_MCsamp <- function(dt, n_explain, n_MC_samples, joint_pr
   dt_invalid <- dt_factor[!dt_valid_coals, on = dt_factor_names] # Get non valid coalitions
   explicand_all_invalid <- dt_invalid[, .N, by = id][N == n_MC_samples] # If all samples for an explicand are invalid
   if (nrow(explicand_all_invalid) > 0) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "An explicand has no valid MC feature coalitions. Increase `n_MC_samples` or provide ",
       "`joint_prob_dt` containing the probaibilities for unlikely coalitions, too."
     ))
@@ -45,10 +45,10 @@ convert_feature_name_to_idx <- function(causal_ordering, labels, feat_group_txt)
 
   # Check that user only provided valid feature names
   if (any(is.na(causal_ordering_match))) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "`causal_ordering` contains ", feat_group_txt, " names (`",
       paste0(unlist(causal_ordering)[is.na(causal_ordering_match)], collapse = "`, `"), "`) ",
-      "that are not in the data (`", paste0(labels, collapse = "`, `"), "`).\n"
+      "that are not in the data (`", paste0(labels, collapse = "`, `"), "`)."
     ))
   }
 
@@ -474,7 +474,9 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
             dt_new[, .SD[if (.N == n_samp_now) seq(.N) else sample(.N, n_samp_now, replace = TRUE, prob = w)], by = id]
 
           # Check that dt_new has the right number of rows.
-          if (nrow(dt_new) != n_explain * n_MC_samples) stop("`dt_new` does not have the right number of rows.\n")
+          if (nrow(dt_new) != n_explain * n_MC_samples) {
+            cli::cli_abort("`dt_new` does not have the right number of rows.")
+          }
         }
 
         # Insert/keep only the features in Sbar_now into dt

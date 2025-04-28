@@ -28,7 +28,7 @@ setup_approach.timeseries <- function(internal,
   x_explain <- internal$data$x_explain
 
   if (!all(feature_specs$classes == "numeric")) {
-    stop("All features should be numeric to use the timeseries method.")
+    cli::cli_abort("All features should be numeric to use the timeseries method.")
   }
 
   return(internal)

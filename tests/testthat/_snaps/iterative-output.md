@@ -5,9 +5,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: independence
@@ -27,7 +29,6 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R          Wind          Temp         Month
                 <char>        <char>        <char>        <char>        <char>
       1: 42.444 (0.00) -0.580 (2.09) -0.580 (2.09) 17.463 (5.97) -0.580 (2.09)
@@ -38,7 +39,6 @@
       1: -3.121 (0.81)
       2: -2.025 (0.05)
       3:  1.261 (2.23)
-    Message
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 32 coalitions, 2 new. 
@@ -50,7 +50,6 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp          Month
                 <char>        <char>         <char>        <char>         <char>
       1: 42.444 (0.00) -4.411 (4.18)   1.335 (1.01) 17.463 (5.50)   1.335 (1.01)
@@ -61,7 +60,6 @@
       1: -3.121 (1.61)
       2: -2.025 (0.83)
       3:  1.261 (1.19)
-    Message
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 4 new. 
@@ -73,7 +71,6 @@
       (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.549 (2.22)   8.311 (3.75) 17.506 (1.70) -5.587 (3.39)
@@ -84,7 +81,6 @@
       1: -3.078 (0.35)
       2: -1.983 (0.30)
       3:  1.304 (0.83)
-    Message
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 18 of 32 coalitions, 6 new. 
@@ -96,7 +92,6 @@
       (Conservatively) adding about 40% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.546 (0.02)   8.294 (0.98) 17.513 (0.03) -5.573 (0.98)
@@ -107,7 +102,6 @@
       1: -3.085 (0.02)
       2: -1.990 (0.02)
       3:  1.297 (0.02)
-    Message
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 20 of 32 coalitions, 2 new. 
@@ -117,7 +111,6 @@
       Convergence tolerance reached!
       
       -- Final estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.548 (0.03)   8.258 (0.03) 17.525 (0.04) -5.557 (0.03)
@@ -128,6 +121,7 @@
       1: -3.076 (0.02)
       2: -1.981 (0.02)
       3:  1.306 (0.02)
+    Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
       1:          1 42.44  -4.548   8.258 17.525 -5.557 -3.076
@@ -141,10 +135,8 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -155,7 +147,6 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R          Wind          Temp         Month
                 <char>        <char>        <char>        <char>        <char>
       1: 42.444 (0.00)  1.919 (1.47)  1.919 (1.47) 17.492 (3.41) -5.607 (2.84)
@@ -166,7 +157,6 @@
       1: -3.121 (1.56)
       2: -2.025 (0.47)
       3:  1.261 (2.68)
-    Message
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -177,7 +167,6 @@
       (Conservatively) adding about 20% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.439 (3.27)   8.277 (3.54) 17.491 (2.27) -5.607 (1.40)
@@ -188,7 +177,6 @@
       1: -3.121 (1.25)
       2: -2.025 (0.85)
       3:  1.261 (2.16)
-    Message
       
       -- Iteration 3 -----------------------------------------------------------------
       
@@ -197,7 +185,6 @@
       Convergence tolerance reached!
       
       -- Final estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.437 (2.22)   8.279 (2.33) 17.490 (0.02) -5.609 (0.02)
@@ -208,6 +195,7 @@
       1: -3.121 (0.40)
       2: -2.025 (0.69)
       3:  1.261 (0.71)
+    Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
       1:          1 42.44  -4.437   8.279 17.490 -5.609 -3.121
@@ -221,10 +209,8 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -235,7 +221,6 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R          Wind          Temp         Month
                 <char>        <char>        <char>        <char>        <char>
       1: 42.444 (0.00)  1.919 (1.47)  1.919 (1.47) 17.492 (3.41) -5.607 (2.84)
@@ -246,7 +231,6 @@
       1: -3.121 (1.56)
       2: -2.025 (0.47)
       3:  1.261 (2.68)
-    Message
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -257,7 +241,6 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.439 (3.27)   8.277 (3.54) 17.491 (2.27) -5.607 (1.40)
@@ -268,7 +251,6 @@
       1: -3.121 (1.25)
       2: -2.025 (0.85)
       3:  1.261 (2.16)
-    Message
       
       -- Iteration 3 -----------------------------------------------------------------
       
@@ -279,7 +261,6 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.437 (2.22)   8.279 (2.33) 17.490 (0.02) -5.609 (0.02)
@@ -290,7 +271,6 @@
       1: -3.121 (0.40)
       2: -2.025 (0.69)
       3:  1.261 (0.71)
-    Message
       
       -- Iteration 4 -----------------------------------------------------------------
       
@@ -301,7 +281,6 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.539 (0.92)   8.307 (0.90) 17.500 (0.02) -5.598 (0.02)
@@ -312,7 +291,6 @@
       1: -3.068 (0.13)
       2: -1.973 (0.37)
       3:  1.314 (0.22)
-    Message
       
       -- Iteration 5 -----------------------------------------------------------------
       
@@ -323,7 +301,6 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.529 (0.03)   8.295 (0.03) 17.507 (0.02) -5.592 (0.02)
@@ -334,7 +311,6 @@
       1: -3.079 (0.03)
       2: -1.983 (0.03)
       3:  1.303 (0.03)
-    Message
       
       -- Iteration 6 -----------------------------------------------------------------
       
@@ -345,7 +321,6 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.527 (0.05)   8.262 (0.56) 17.515 (0.02) -5.584 (0.03)
@@ -356,7 +331,6 @@
       1: -3.064 (0.57)
       2: -1.969 (0.08)
       3:  1.318 (0.99)
-    Message
       
       -- Iteration 7 -----------------------------------------------------------------
       
@@ -367,7 +341,6 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.531 (0.08)   8.265 (0.03) 17.518 (0.02) -5.581 (0.02)
@@ -378,7 +351,6 @@
       1: -3.068 (0.08)
       2: -1.972 (0.22)
       3:  1.314 (0.13)
-    Message
       
       -- Iteration 8 -----------------------------------------------------------------
       
@@ -387,7 +359,6 @@
       Maximum number of iterations reached!
       
       -- Final estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.529 (0.03)   8.267 (0.03) 17.519 (0.01) -5.584 (0.01)
@@ -398,6 +369,7 @@
       1: -3.071 (0.02)
       2: -1.975 (0.02)
       3:  1.311 (0.02)
+    Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
       1:          1 42.44  -4.529   8.267 17.519 -5.584 -3.071
@@ -412,6 +384,8 @@
       }, digits = digits)
     Message
       
+      -- Starting `shapr::explain()` -------------------------------------------------
+      
       -- Iteration 1 -----------------------------------------------------------------
       
       -- Convergence info 
@@ -421,7 +395,6 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R          Wind          Temp         Month
                 <char>        <char>        <char>        <char>        <char>
       1: 42.444 (0.00) -0.580 (2.09) -0.580 (2.09) 17.463 (5.97) -0.580 (2.09)
@@ -432,7 +405,6 @@
       1: -3.121 (0.81)
       2: -2.025 (0.05)
       3:  1.261 (2.23)
-    Message
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -443,7 +415,6 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp          Month
                 <char>        <char>         <char>        <char>         <char>
       1: 42.444 (0.00) -4.411 (4.18)   1.335 (1.01) 17.463 (5.50)   1.335 (1.01)
@@ -454,7 +425,6 @@
       1: -3.121 (1.61)
       2: -2.025 (0.83)
       3:  1.261 (1.19)
-    Message
       
       -- Iteration 3 -----------------------------------------------------------------
       
@@ -465,7 +435,6 @@
       (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.549 (2.22)   8.311 (3.75) 17.506 (1.70) -5.587 (3.39)
@@ -476,7 +445,6 @@
       1: -3.078 (0.35)
       2: -1.983 (0.30)
       3:  1.304 (0.83)
-    Message
       
       -- Iteration 4 -----------------------------------------------------------------
       
@@ -487,7 +455,6 @@
       (Conservatively) adding about 40% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.546 (0.02)   8.294 (0.98) 17.513 (0.03) -5.573 (0.98)
@@ -498,7 +465,6 @@
       1: -3.085 (0.02)
       2: -1.990 (0.02)
       3:  1.297 (0.02)
-    Message
       
       -- Iteration 5 -----------------------------------------------------------------
       
@@ -508,7 +474,6 @@
       Maximum number of coalitions reached!
       
       -- Final estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.548 (0.03)   8.258 (0.03) 17.525 (0.04) -5.557 (0.03)
@@ -519,6 +484,7 @@
       1: -3.076 (0.02)
       2: -1.981 (0.02)
       3:  1.306 (0.02)
+    Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
       1:          1 42.44  -4.548   8.258 17.525 -5.557 -3.076
@@ -532,10 +498,8 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
-      and is therefore set to 2^n_groups = 8.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -546,13 +510,11 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none              A              B             C
                 <char>         <char>         <char>        <char>
       1: 42.444 (0.00)   1.037 (2.66)  12.949 (3.32) -1.385 (3.20)
       2: 42.444 (0.00)   0.866 (3.28) -13.828 (3.47) -0.917 (2.88)
       3: 42.444 (0.00) -18.102 (3.98)  -0.261 (4.07)  0.795 (0.24)
-    Message
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -562,12 +524,12 @@
       Maximum number of coalitions reached!
       
       -- Final estimated Shapley values 
-    Output
            none       A       B      C
          <char>  <char>  <char> <char>
       1: 42.444   0.631  13.762 -1.791
       2: 42.444   0.546 -13.188 -1.237
       3: 42.444 -18.133  -0.201  0.765
+    Output
          explain_id  none        A        B       C
               <int> <num>    <num>    <num>   <num>
       1:          1 42.44   0.6309  13.7619 -1.7908
@@ -581,10 +543,8 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
       
+      -- Starting `shapr::explain()` -------------------------------------------------
       
       -- Iteration 1 -----------------------------------------------------------------
       
@@ -595,7 +555,6 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R          Wind          Temp         Month
                 <char>        <char>        <char>        <char>        <char>
       1: 42.444 (0.00)  1.919 (1.47)  1.919 (1.47) 17.492 (3.41) -5.607 (2.84)
@@ -606,7 +565,6 @@
       1: -3.121 (1.56)
       2: -2.025 (0.47)
       3:  1.261 (2.68)
-    Message
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -617,7 +575,6 @@
       (Conservatively) adding about 20% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.439 (3.27)   8.277 (3.54) 17.491 (2.27) -5.607 (1.40)
@@ -628,7 +585,6 @@
       1: -3.121 (1.25)
       2: -2.025 (0.85)
       3:  1.261 (2.16)
-    Message
       
       -- Iteration 3 -----------------------------------------------------------------
       
@@ -637,7 +593,6 @@
       Convergence tolerance reached!
       
       -- Final estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
       1: 42.444 (0.00) -4.437 (2.22)   8.279 (2.33) 17.490 (0.02) -5.609 (0.02)
@@ -648,6 +603,7 @@
       1: -3.121 (0.40)
       2: -2.025 (0.69)
       3:  1.261 (0.71)
+    Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
       1:          1 42.44  -4.437   8.279 17.490 -5.609 -3.121
@@ -661,9 +617,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -701,9 +659,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -769,9 +729,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -791,7 +753,6 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R          Wind           Temp         Month
                 <char>        <char>        <char>         <char>        <char>
       1: 42.444 (0.00) -0.478 (1.77) -0.478 (1.77)  15.306 (5.22) -0.478 (1.77)
@@ -802,7 +763,6 @@
       1: -1.271 (0.25)
       2: -0.804 (0.00)
       3:  0.909 (2.27)
-    Message
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 32 coalitions, 2 new. 
@@ -814,7 +774,6 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind           Temp          Month
                 <char>        <char>         <char>         <char>         <char>
       1: 42.444 (0.00) -8.754 (4.26)   3.660 (1.98)  15.306 (5.78)   3.660 (1.98)
@@ -825,7 +784,6 @@
       1: -1.271 (1.67)
       2: -0.804 (1.10)
       3:  0.909 (1.85)
-    Message
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 4 new. 
@@ -837,7 +795,6 @@
       (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
       1: 42.444 (0.00) -8.736 (2.74)   5.304 (2.46)  15.301 (1.65)  2.010 (1.13)
@@ -848,7 +805,6 @@
       1: -1.276 (0.40)
       2: -0.884 (0.21)
       3:  1.183 (0.99)
-    Message
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 18 of 32 coalitions, 6 new. 
@@ -860,7 +816,6 @@
       (Conservatively) adding about 40% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
       1: 42.444 (0.00) -9.069 (0.16)   6.311 (0.60)  15.071 (0.19)  1.304 (0.56)
@@ -871,7 +826,6 @@
       1: -1.015 (0.22)
       2: -0.628 (0.21)
       3:  1.017 (0.13)
-    Message
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 22 of 32 coalitions, 4 new. 
@@ -881,7 +835,6 @@
       Convergence tolerance reached!
       
       -- Final estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
       1: 42.444 (0.00) -8.821 (0.32)   7.635 (0.75)  14.486 (0.32)  0.524 (0.72)
@@ -892,6 +845,7 @@
       1: -1.222 (0.41)
       2: -0.930 (0.41)
       3:  0.895 (0.15)
+    Output
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
       1:          1 42.44  -8.821   7.635  14.4860  0.5242 -1.2222
@@ -905,9 +859,11 @@
         out <- code
       }, digits = digits)
     Message
-      Success with message:
-      max_n_coalitions is NULL or larger than or 2^n_features = 32, 
-      and is therefore set to 2^n_features = 32.
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
       
       * Model class: <lm>
       * Approach: gaussian
@@ -927,7 +883,6 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R          Wind           Temp         Month
                 <char>        <char>        <char>         <char>        <char>
       1: 42.444 (0.00) -0.478 (1.77) -0.478 (1.77)  15.306 (5.22) -0.478 (1.77)
@@ -938,7 +893,6 @@
       1: -1.271 (0.25)
       2: -0.804 (0.00)
       3:  0.909 (2.27)
-    Message
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 32 coalitions, 2 new. 
@@ -950,7 +904,6 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind           Temp          Month
                 <char>        <char>         <char>         <char>         <char>
       1: 42.444 (0.00) -8.754 (4.26)   3.660 (1.98)  15.306 (5.78)   3.660 (1.98)
@@ -961,7 +914,6 @@
       1: -1.271 (1.67)
       2: -0.804 (1.10)
       3:  0.909 (1.85)
-    Message
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 4 new. 
@@ -973,7 +925,6 @@
       (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
       1: 42.444 (0.00) -8.736 (2.74)   5.304 (2.46)  15.301 (1.65)  2.010 (1.13)
@@ -984,7 +935,6 @@
       1: -1.276 (0.40)
       2: -0.884 (0.21)
       3:  1.183 (0.99)
-    Message
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 18 of 32 coalitions, 6 new. 
@@ -996,7 +946,6 @@
       (Conservatively) adding about 40% of that (4 coalitions) in the next iteration.
       
       -- Current estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
       1: 42.444 (0.00) -9.069 (0.16)   6.311 (0.60)  15.071 (0.19)  1.304 (0.56)
@@ -1007,7 +956,6 @@
       1: -1.015 (0.22)
       2: -0.628 (0.21)
       3:  1.017 (0.13)
-    Message
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 22 of 32 coalitions, 4 new. 
@@ -1017,7 +965,6 @@
       Convergence tolerance reached!
       
       -- Final estimated Shapley values (sd) 
-    Output
                   none       Solar.R           Wind           Temp         Month
                 <char>        <char>         <char>         <char>        <char>
       1: 42.444 (0.00) -8.821 (0.32)   7.635 (0.75)  14.486 (0.32)  0.524 (0.72)
@@ -1028,6 +975,7 @@
       1: -1.222 (0.41)
       2: -0.930 (0.41)
       3:  0.895 (0.15)
+    Output
          explain_id  none Solar.R    Wind     Temp   Month     Day
               <int> <num>   <num>   <num>    <num>   <num>   <num>
       1:          1 42.44  -8.821   7.635  14.4860  0.5242 -1.2222

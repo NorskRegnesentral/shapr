@@ -160,7 +160,9 @@ create_ctree <- function(given_ind,
           )
         )
       }, error = function(ex) {
-        warning("party::ctree ran into the error: ", ex, "Using partykit::ctree instead!")
+        msg1 <- paste0("party::ctree ran into the error: ", ex)
+        msg2 <- "Using partykit::ctree instead!"
+        cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
         partykit::ctree(fmla,
           data = df,
           control = partykit::ctree_control(
@@ -179,7 +181,8 @@ create_ctree <- function(given_ind,
         )
       )
     } else if (use_partykit == "always") {
-      warning("Using partykit::ctree instead of party::ctree!")
+      msg <- "Using partykit::ctree instead of party::ctree!"
+      cli::cli_warn(c("!" = msg), immediate. = TRUE)
       datact <- partykit::ctree(fmla,
         data = df,
         control = partykit::ctree_control(
@@ -189,7 +192,11 @@ create_ctree <- function(given_ind,
         )
       )
     } else {
-      stop("use_partykit needs to be one of 'on_error', 'never', or 'always'. See ?create_ctree for details.")
+      cli::cli_abort(
+        paste0(
+          "use_partykit needs to be one of 'on_error', 'never', or 'always'. ",
+          "See {.fn shapr::create_ctree} for details.")
+      )
     }
   }
   return(list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind))

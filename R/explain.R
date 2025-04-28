@@ -86,7 +86,8 @@
 #' @param verbose String vector or NULL.
 #' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
 #'  `"convergence"`, `"shapley"` and `"vS_details"`.
-#' `"basic"` (default) displays basic information about the computation which is being performed.
+#' `"basic"` (default) displays basic information about the computation which is being performed,
+#' in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 #' `"progress` displays information about where in the calculation process the function currently is.
 #' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
 #' (only when `iterative = TRUE`) .
@@ -358,7 +359,7 @@
 #' print(explain_groups$shapley_values_est)
 #'
 #' # Separate and surrogate regression approaches with linear regression models.
-#' req_pkgs <- c("parsnip", "rlang", "recipes", "workflows", "rsample", "tune", "yardstick")
+#' req_pkgs <- c("parsnip", "recipes", "workflows", "rsample", "tune", "yardstick")
 #' if (requireNamespace(req_pkgs, quietly = TRUE)) {
 #'   explain_separate_lm <- explain(
 #'     model = model,
@@ -459,7 +460,6 @@ explain <- function(model,
                     iterative_args = list(),
                     output_args = list(),
                     ...) { # ... is further arguments passed to specific approaches
-
 
 
   init_time <- Sys.time()

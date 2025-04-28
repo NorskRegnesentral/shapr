@@ -74,9 +74,9 @@ setup_approach.empirical <- function(internal,
   if (any(feature_specs$classes == "factor")) {
     factor_features <- names(which(feature_specs$classes == "factor"))
     factor_approaches <- get_factor_approaches()
-    stop(
+    cli::cli_abort(
       paste0(
-        "The following feature(s) are factor(s): ", factor_features, ".\n",
+        "The following feature(s) are factor(s): ", paste0(factor_features, collapse = ", "), ".\n",
         "approach = 'empirical' does not support factor features.\n",
         "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."
       )
@@ -85,24 +85,23 @@ setup_approach.empirical <- function(internal,
 
 
   if (internal$parameters$empirical.type == "independence") {
-    warning(paste0(
-      "Using empirical.type = 'independence' for approach = 'empirical' is deprecated.\n",
-      "Please use approach = 'independence' instead."
-    ))
+    msg1 <- "Using empirical.type = 'independence' for approach = 'empirical' is deprecated."
+    msg2 <- "Please use approach = 'independence' instead."
+    cli::cli_warn(c("!" = msg1, " " = msg2), immediate. = TRUE)
   }
 
   if (internal$parameters$empirical.type %in% c("AICc_each_k", "AICc_full") && internal$parameters$is_python == TRUE) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "empirical.type = ", internal$parameters$empirical.type,
-      " for approach = 'empirical' is not available in Python.\n",
+      " for approach = 'empirical' is not available in Python."
     ))
   }
 
   if (!(length(internal$parameters$empirical.fixed_sigma) == 1 &&
     is.numeric(internal$parameters$empirical.fixed_sigma) &&
     internal$parameters$empirical.fixed_sigma > 0)) {
-    stop(
-      "empirical.fixed_sigma must be a positive numeric of length 1.\n"
+    cli::cli_abort(
+      "empirical.fixed_sigma must be a positive numeric of length 1."
     )
   }
 
@@ -126,6 +125,8 @@ setup_approach.empirical <- function(internal,
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(internal, index_features = NULL, ...) {
+  verbose <- internal$parameters$verbose
+
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
@@ -194,9 +195,10 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 
     if (kernel_metric == "independence") {
       empirical.eta <- 1
-      message(
-        "\nSuccess with message:\nempirical.eta force set to 1 for empirical.type = 'independence'"
-      )
+      if ("basic" %in% verbose) {
+        msg <- "`empirical.eta` force set to {.val 1} for `empirical.type` = 'independence'."
+        cli::cli_inform(c("i" = msg))
+      }
     } else if (kernel_metric == "gaussian") {
       if (empirical.type == "fixed_sigma") {
         h_optim_mat[, ] <- empirical.fixed_sigma
@@ -206,18 +208,18 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
         } else if (empirical.type == "AICc_full") {
           h_optim_mat <- compute_AICc_full(internal, model, predict_model, index_features)
         } else {
-          stop("empirical.type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
+          cli::cli_abort("empirical.type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
         }
       }
     }
     dt_l <- list()
     for (i in seq(n_col)) {
-      D0 <- D[, i, ]
+      D0 <- matrix(D[, i, , drop = FALSE], nrow = nrow(D))
       h_optim_vec <- h_optim_mat[, i]
       h_optim_vec[is.na(h_optim_vec)] <- 1
 
       if (kernel_metric == "independence") {
-        D0 <- D0[sample.int(nrow(D)), ] + stats::runif(n = nrow(D) * ncol(D))
+        D0 <- D0[sample.int(nrow(D0)), , drop = FALSE] + stats::runif(n = nrow(D0) * ncol(D0))
         h_optim_vec <- mean(D) * 1000
       }
 
@@ -398,7 +400,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   empirical.n_samples_aicc <- nrow(optimsamp)
   nloops <- n_explain # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = n_shapley_values, nrow = n_coalitions)
+  h_optim_mat <- matrix(NA, ncol = n_explain, nrow = n_coalitions)
 
   if (is.null(index_features)) {
     index_features <- X[, .I]
@@ -514,7 +516,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
   )
   nloops <- n_explain # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = n_shapley_values, nrow = n_coalitions)
+  h_optim_mat <- matrix(NA, ncol = n_explain, nrow = n_coalitions)
 
   if (is.null(index_features)) {
     index_features <- X[, .I]
