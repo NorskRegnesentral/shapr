@@ -29,7 +29,7 @@ gracefully when dependencies are unavailable ([#451](https://github.com/NorskReg
 ([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
 * Make `explain_forecast()` use `future` for batch computation as well (by default) 
 ([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
-* Fix bug for the AICc + independence variants of `approach = 'empirical'` occuring when 
+* Fix bug for the AICc + independence variants of `approach = 'empirical'` occurring when 
 `n_features < n_explain` ([#453](https://github.com/NorskRegnesentral/shapr/pull/453))
 
 
