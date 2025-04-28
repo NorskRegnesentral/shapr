@@ -57,7 +57,7 @@ model_checker.ranger <- function(x) {
     cli::cli_abort(
       paste0(
         "We currently don't support multi-classification using ranger, i.e. ",
-        "where length(model$forest$levels) is greater than 2."
+        "where `length(model$forest$levels)` is greater than 2."
       )
     )
   }

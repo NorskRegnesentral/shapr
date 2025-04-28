@@ -1473,7 +1473,7 @@ vaeac_check_cuda <- function(cuda, verbose) {
 vaeac_check_masking_ratio <- function(masking_ratio, n_features) {
   if (length(masking_ratio) > 1 && length(masking_ratio) != n_features) {
     cli::cli_abort(paste0(
-      "'Masking_ratio' contains masking ratios for ',", length(masking_ratio), "' features, ",
+      "`masking_ratio` contains masking ratios for ',", length(masking_ratio), "' features, ",
       "but there are '", n_features, "' features in 'x_train'."
     ))
   }
