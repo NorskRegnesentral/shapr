@@ -26,7 +26,7 @@
 ^vignettes/vaeac\.Rmd\.orig$
 ^vignettes/regression\.Rmd\.orig$
 ^vignettes/asymmetric_causal\.Rmd\.orig$
-^vignettes/cache_main/*$
+^vignettes/cache_general_usage/*$
 ^vignettes/cache_vaeac/*$
 ^vignettes/cache_regression/*$
 ^vignettes/cache_asymmetric_causal/*$
