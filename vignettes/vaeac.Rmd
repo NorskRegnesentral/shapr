@@ -539,7 +539,8 @@ expl_paired_sampling_FALSE <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:38:22 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -707,8 +708,13 @@ progressr::with_progress({
 #> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
 #> The vaeac model contains 17032 trainable parameters.
 #> Initializing vaeac model number 1 of 2.
-#>                                                                                          Initializing vaeac model number 2 of 2.
-#> ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: …                                                                                         Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.566 after 2
+#> 
+                                                                                         
+Initializing vaeac model number 2 of 2.
+#> ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2): Epoch: 2 | VLB: …
+
+                                                                                         
+Best vaeac inititalization was number 2 (of 2) with a training VLB = -4.566 after 2
 #> epochs. Continue to train this inititalization.
 #> ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of 2): Epoch: 2 | VLB: …
 #> Results of the `vaeac` training process:
@@ -1227,7 +1233,8 @@ expl_vaeac_with <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:42:40 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1261,7 +1268,8 @@ expl_vaeac_without <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:43:58 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 

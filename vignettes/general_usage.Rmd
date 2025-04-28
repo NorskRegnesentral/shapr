@@ -456,7 +456,8 @@ explanation <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:35:59 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1005,7 +1006,8 @@ explanation_empirical <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:36:17 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1034,7 +1036,8 @@ explanation_gaussian_1e1 <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:36:20 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1063,7 +1066,8 @@ explanation_gaussian_1e2 <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:36:21 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1092,7 +1096,8 @@ explanation_combined <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:36:21 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1887,7 +1892,8 @@ explanation_custom_minimal <- explain(
 #> ── Starting `shapr::explain()` at 2025-04-28 10:36:38 ──────────────────────────────────
 #> ℹ You passed a model to `shapr::explain()` which is not natively supported, and did not
 #>   supply a `get_model_specs` function to `shapr::explain()`.
-#>   Consistency checks between model and data is therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Consistency checks between model and data is therefore disabled.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -2302,7 +2308,8 @@ ex_even_further <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-04-28 10:37:30 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
 #>   set to `2^n_features = 32`.
 #> ── Explanation overview ──
 #> 
