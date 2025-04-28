@@ -27,7 +27,7 @@ get_predict_model <- function(predict_model, model) {
       cli::cli_abort(
         paste0(
           "You passed a model to {.fn shapr::explain} which is not natively supported, ",
-          " and did not supply the 'predict_model' function to {.fn shapr::explain}. ",
+          "and did not supply the 'predict_model' function to {.fn shapr::explain}. ",
           "See the documentation of {.fn shapr::explain} or the ",
           "{.vignette shapr::general_usage} vignette for more information on how to run shapr with custom models."
         )
