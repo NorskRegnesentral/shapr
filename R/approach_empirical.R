@@ -208,7 +208,9 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
         } else if (empirical.type == "AICc_full") {
           h_optim_mat <- compute_AICc_full(internal, model, predict_model, index_features)
         } else {
-          cli::cli_abort("`empirical.type` must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
+          cli::cli_abort(
+            "`empirical.type` must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'."
+          )
         }
       }
     }

@@ -195,7 +195,8 @@ create_ctree <- function(given_ind,
       cli::cli_abort(
         paste0(
           "`use_partykit` needs to be one of 'on_error', 'never', or 'always'. ",
-          "See {.fn shapr::create_ctree} for details.")
+          "See {.fn shapr::create_ctree} for details."
+        )
       )
     }
   }
