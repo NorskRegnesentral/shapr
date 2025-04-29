@@ -454,9 +454,10 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:01 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:35:59 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -465,7 +466,7 @@ explanation <- explain(
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285427c712830.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af400bdf71.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -524,7 +525,7 @@ explanation_plot <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:05 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:03 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
@@ -545,7 +546,7 @@ explanation_plot <- explain(
 #> 
 #> • Number of observations to explain: 111
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_2854238ea9158.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3afd5fda1a.rds'
 #> 
 #> 
 #> 
@@ -602,7 +603,7 @@ explanation_lm_cat <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:13 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:11 ──────────────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> 
@@ -621,7 +622,7 @@ explanation_lm_cat <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285421bedcaa7.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af4511ce42.rds'
 #> 
 #> 
 #> 
@@ -659,7 +660,7 @@ explanation_ctree <- explain(
   ctree.minbucket = 20
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:14 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:13 ──────────────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> 
@@ -678,7 +679,7 @@ explanation_ctree <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_2854238d520ac.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af22aee5b1.rds'
 #> 
 #> 
 #> 
@@ -727,7 +728,7 @@ explanation_cat_method <- explain(
   seed = 1,
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:15 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:14 ──────────────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> 
@@ -746,7 +747,7 @@ explanation_cat_method <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_2854235f72a24.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af5d9cf27e.rds'
 #> 
 #> 
 #> 
@@ -819,9 +820,9 @@ explanation_timeseries <- explain(
   group = group_ts
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:16 ────────────────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 16`, and is therefore set
-#>   to `2^n_groups = 16`.
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:14 ──────────────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 16`, and is therefore
+#>   set to `2^n_groups = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -838,7 +839,7 @@ explanation_timeseries <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_28542446468eb.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af4bea54ca.rds'
 #> 
 #> 
 #> 
@@ -960,7 +961,7 @@ explanation_independence <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:18 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:16 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
@@ -981,7 +982,7 @@ explanation_independence <- explain(
 #> 
 #> • Number of observations to explain: 25
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285424b0b6895.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af6ef7d939.rds'
 #> 
 #> 
 #> 
@@ -1003,9 +1004,10 @@ explanation_empirical <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:19 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:17 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1014,7 +1016,7 @@ explanation_empirical <- explain(
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285425b4c6256.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af75219b30.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1032,9 +1034,10 @@ explanation_gaussian_1e1 <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:22 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:20 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1043,7 +1046,7 @@ explanation_gaussian_1e1 <- explain(
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285421566b0b0.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af59ccfbfe.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1061,9 +1064,10 @@ explanation_gaussian_1e2 <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:22 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:21 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1072,7 +1076,7 @@ explanation_gaussian_1e2 <- explain(
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285426e2f48d8.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7f6b161c.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1090,9 +1094,10 @@ explanation_combined <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:23 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:21 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1101,7 +1106,7 @@ explanation_combined <- explain(
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285423d00914e.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af3cf1c743.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1283,7 +1288,7 @@ ex <- explain(
   iterative_args = list(convergence_tol = 0.1)
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:26 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:24 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
@@ -1304,7 +1309,7 @@ ex <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_28542256e6fe9.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af670cb3d5.rds'
 #> 
 #> 
 #> 
@@ -1312,19 +1317,19 @@ ex <- explain(
 #> 
 #> 
 #> 
-#> ── Iteration 1 ───────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ─────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 6 of 32 coalitions, 6 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 2 ───────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ─────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 8 of 32 coalitions, 2 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 3 ───────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ─────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 12 of 32 coalitions, 4 new.
 ```
@@ -1388,7 +1393,7 @@ explanation_par <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:29 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:28 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
@@ -1409,7 +1414,7 @@ explanation_par <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_28542314712d6.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af6832c6fc.rds'
 #> 
 #> 
 #> 
@@ -1564,7 +1569,7 @@ explanation_combined <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:33 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:31 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
@@ -1585,7 +1590,7 @@ explanation_combined <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285424634dcd.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af18389584.rds'
 #> 
 #> 
 #> 
@@ -1616,7 +1621,7 @@ explanation_combined <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:34 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:33 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
@@ -1637,7 +1642,7 @@ explanation_combined <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_28542cb7c0f8.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af330c42b7.rds'
 #> 
 #> 
 #> 
@@ -1675,7 +1680,7 @@ explanation_group <- explain(
   group = group_list
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:36 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:34 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set
@@ -1696,7 +1701,7 @@ explanation_group <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_2854241dad1ce.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af2d800e75.rds'
 #> 
 #> 
 #> 
@@ -1826,7 +1831,7 @@ explanation_custom <- explain(
   get_model_specs = MY_get_model_specs
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:37 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:35 ──────────────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> 
@@ -1845,7 +1850,7 @@ explanation_custom <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_28542292bcc2e.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7daab1cb.rds'
 #> 
 #> 
 #> 
@@ -1884,10 +1889,11 @@ explanation_custom_minimal <- explain(
   predict_model = MY_MINIMAL_predict_model
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:40 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:38 ──────────────────────────────────
 #> ℹ You passed a model to `shapr::explain()` which is not natively supported, and did not
 #>   supply a `get_model_specs` function to `shapr::explain()`.
-#>   Consistency checks between model and data is therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
+#>   Consistency checks between model and data is therefore disabled.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1896,7 +1902,7 @@ explanation_custom_minimal <- explain(
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285422c92d267.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af52ea20a7.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1955,7 +1961,7 @@ explanation_tidymodels <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:44 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:42 ──────────────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
 #>   set to `2^n_features = 16`.
 #> 
@@ -1974,7 +1980,7 @@ explanation_tidymodels <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285425a25693b.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af254d82a1.rds'
 #> 
 #> 
 #> 
@@ -2024,7 +2030,7 @@ explanation_vaeac <- explain(
   vaeac.n_vaeacs_initialize = 2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:40:47 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:36:45 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
@@ -2045,7 +2051,7 @@ explanation_vaeac <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285421469a827.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af313c4393.rds'
 #> 
 #> 
 #> 
@@ -2094,7 +2100,7 @@ explanation_vaeac_early_stop <- explain(
   vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:41:03 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:37:02 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
@@ -2115,7 +2121,7 @@ explanation_vaeac_early_stop <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285425b8aaff.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af5d1c932c.rds'
 #> 
 #> 
 #> 
@@ -2200,7 +2206,7 @@ ex_init <- explain(
   iterative = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:41:26 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:37:24 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> 
@@ -2219,7 +2225,7 @@ ex_init <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285426af21696.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af82a3940.rds'
 #> 
 #> 
 #> 
@@ -2227,31 +2233,31 @@ ex_init <- explain(
 #> 
 #> 
 #> 
-#> ── Iteration 1 ───────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ─────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 6 of 32 coalitions, 6 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 2 ───────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ─────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 8 of 32 coalitions, 2 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 3 ───────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ─────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 12 of 32 coalitions, 4 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 4 ───────────────────────────────────────────────────────────────────────────
+#> ── Iteration 4 ─────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 18 of 32 coalitions, 6 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 5 ───────────────────────────────────────────────────────────────────────────
+#> ── Iteration 5 ─────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 20 of 32 coalitions, 2 new.
 
@@ -2268,7 +2274,7 @@ ex_further <- explain(
   prev_shapr_object = ex_init
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:41:30 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:37:29 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ── Explanation overview ──
@@ -2278,14 +2284,14 @@ ex_further <- explain(
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_285424721aba9.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7525de59.rds'
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 24 of 32 coalitions.
 
 print(ex_further$saving_path)
-#> [1] "/tmp/RtmpTcbBFO/shapr_obj_285424721aba9.rds"
+#> [1] "/tmp/RtmplHDIbs/shapr_obj_3d3af7525de59.rds"
 
 # Using the ex_init object to continue the computation for the remaining coalition samples
 # but this time using the path to the saved intermediate estimation object
@@ -2300,9 +2306,10 @@ ex_even_further <- explain(
   prev_shapr_object = ex_further$saving_path
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 07:41:31 ────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-04-28 10:37:30 ──────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
 #>   set to `2^n_features = 32`.
 #> ── Explanation overview ──
 #> 
@@ -2311,7 +2318,7 @@ ex_even_further <- explain(
 #> • Iterative estimation: FALSE
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_28542412b2487.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af1030bddf.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2391,11 +2398,11 @@ explanation_forecast <- explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2025-04-28 07:41:33 ───────────────────────────
+#> ── Starting `shapr::explain_forecast()` at 2025-04-28 10:37:31 ─────────────────────────
 #> ℹ Feature names extracted from the model contains `NA`.
 #>   Consistency checks between model and data is therefore disabled.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set
-#>   to `2^n_features = 4`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore
+#>   set to `2^n_features = 4`.
 #> Registered S3 method overwritten by 'quantmod':
 #>   method            from
 #>   as.zoo.data.frame zoo 
@@ -2416,7 +2423,7 @@ explanation_forecast <- explain_forecast(
 #> 
 #> • Number of observations to explain: 2
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_28542ac4f3dd.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af3bd90748.rds'
 #> 
 #> 
 #> 
@@ -2508,11 +2515,11 @@ explanation_forecast <- explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2025-04-28 07:41:35 ───────────────────────────
+#> ── Starting `shapr::explain_forecast()` at 2025-04-28 10:37:33 ─────────────────────────
 #> ℹ Feature names extracted from the model contains `NA`.
 #>   Consistency checks between model and data is therefore disabled.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set
-#>   to `2^n_features = 4`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore
+#>   set to `2^n_features = 4`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -2529,7 +2536,7 @@ explanation_forecast <- explain_forecast(
 #> 
 #> • Number of observations to explain: 1
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_28542214bbd8f.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af4829b33a.rds'
 #> 
 #> 
 #> 
@@ -2603,7 +2610,7 @@ explanation_forecast <- explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2025-04-28 07:41:36 ───────────────────────────
+#> ── Starting `shapr::explain_forecast()` at 2025-04-28 10:37:34 ─────────────────────────
 #> ℹ Feature names extracted from the model contains `NA`.
 #>   Consistency checks between model and data is therefore disabled.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
@@ -2624,7 +2631,7 @@ explanation_forecast <- explain_forecast(
 #> 
 #> • Number of observations to explain: 1
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpTcbBFO/shapr_obj_28542654d7780.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af43acc557.rds'
 #> 
 #> 
 #> 

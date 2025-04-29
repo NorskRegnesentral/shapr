@@ -2,7 +2,7 @@
 #' @export
 predict_model.workflow <- function(x, newdata, ...) {
   if (!requireNamespace("workflows", quietly = TRUE)) {
-    cli::cli_abort("The `workflows` package is required for predicting `workflows`")
+    cli::cli_abort("The {.pkg workflows} package is required for predicting `workflows`")
   }
   predict(x, as.data.frame(newdata))$.pred
 }

@@ -40,7 +40,7 @@ model_checker.ranger <- function(x) {
       paste0(
         "We currently don't support standard classification, which predicts the class directly. ",
         "To train a ranger model predicting the class probabilities, you'll need to grow a ",
-        "probability forest by setting probability = TRUE in ranger::ranger()."
+        "probability forest by setting probability = TRUE in {.fn ranger::ranger}."
       )
     )
   }
@@ -57,7 +57,7 @@ model_checker.ranger <- function(x) {
     cli::cli_abort(
       paste0(
         "We currently don't support multi-classification using ranger, i.e. ",
-        "where length(model$forest$levels) is greater than 2."
+        "where `length(model$forest$levels)` is greater than 2."
       )
     )
   }
@@ -67,7 +67,7 @@ model_checker.ranger <- function(x) {
     cli::cli_abort(
       paste0(
         "It looks like the model was fitted without saving the forest. Please set ",
-        "write.forest = TRUE when fitting a model using ranger::ranger()."
+        "write.forest = TRUE when fitting a model using {.fn ranger::ranger}."
       )
     )
   }

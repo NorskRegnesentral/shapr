@@ -905,7 +905,7 @@
         get_model_specs = get_model_specs_error)
     Condition
       Error in `get_feature_specs()`:
-      ! The get_model_specs function of class `lm` is invalid. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models. Note that `get_model_specs` is not required (can be set to NULL) unless you require consistency checks between model and data. A basic function test threw the following error: Error in 1 + "bla": non-numeric argument to binary operator
+      ! The `get_model_specs` function of class `lm` is invalid. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models. Note that `get_model_specs` is not required (can be set to NULL) unless you require consistency checks between model and data. A basic function test threw the following error: Error in 1 + "bla": non-numeric argument to binary operator
 
 # incompatible input: `data/approach`
 

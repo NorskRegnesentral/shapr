@@ -40,7 +40,7 @@ get_feature_specs <- function(get_model_specs, model) {
     feature_specs <- tryCatch(get_model_specs(model), error = errorfun)
     if (class(feature_specs)[1] == "error") {
       cli::cli_abort(paste0(
-        "The get_model_specs function of class `", model_class0, "` is invalid. ",
+        "The `get_model_specs` function of class `", model_class0, "` is invalid. ",
         "See the 'Advanced usage' section of ",
         "{.vignette shapr::general_usage} vignette ",
         "for more information on running shapr with custom models. ",
