@@ -64,7 +64,4 @@ def recurse_r_tree(data):
   elif type(data) == StrVector:
       return [recurse_r_tree(d) for d in data]
   else:
-      if hasattr(data, "rclass"): # An unsupported r class
-          raise KeyError(f'Could not proceed, unknown data type {type(data)}')
-      else:
-          return data  # We reached the end of recursion
+      return data  # We reached the end of recursion (if not converted below, return the object as is)

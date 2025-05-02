@@ -284,9 +284,9 @@ def explain(
     pred_explain = recurse_r_tree(routput.rx2('pred_explain'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))
     iterative_results = recurse_r_tree(routput.rx2('iterative_results'))
-    saving_path = recurse_r_tree(routput.rx2['saving_path']) 
+    saving_path = recurse_r_tree(routput.rx2('saving_path')) 
     internal = recurse_r_tree(routput.rx2('internal')) 
-    timing = recurse_r_tree(routput.rx2['timing'])
+    timing = recurse_r_tree(routput.rx2('timing'))
 
     return {
       "shapley_values_est": shapley_values_est,
