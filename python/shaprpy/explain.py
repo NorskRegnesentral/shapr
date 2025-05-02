@@ -15,23 +15,21 @@ utils = importr('utils')
 base = importr('base')
 stats = importr('stats')
 
-
 def maybe_null(val):
   return val if val is not None else NULL
-
 
 def explain(
     model,
     x_explain: pd.DataFrame,
     x_train: pd.DataFrame,
-    approach: str,
+    approach: str | list[str],
     phi0: float,
     iterative: bool | None = None,
     max_n_coalitions: int | None = None,
     group: dict | None = None,
     n_MC_samples: int = 1e3,
     seed: int | None = None,
-    verbose: str = "basic",
+    verbose: str | list[str] | None = "basic",
     predict_model: Callable = None,
     get_model_specs: Callable = None,
     asymmetric: bool = False,
@@ -82,8 +80,8 @@ def explain(
     seed: int or None, optional
       Specifies the seed before any randomness based code is being run. 
       If `None` (default) the seed will be inherited from the calling environment.
-    verbose: str or list[str], optional
-      Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
+    verbose: str or list[str] or None, optional
+      Specifies the verbosity (printout detail level) through one or more of the strings `"basic"`, `"progress"`,
       `"convergence"`, `"shapley"`  and `"vS_details"`. `None` means no printout.
     predict_model: Callable, optional
       The prediction function used when `model` is not natively supported. The function must have two arguments, `model` and `newdata` 
@@ -164,11 +162,15 @@ def explain(
     # Checks the input parameters and their compatability
     # Checks data/model compatability
 
-    if type(approach) == str:
+    if isinstance(approach, str):
       approach = [approach]
 
-    if type(verbose) == str:
+    if isinstance(verbose, str):
       verbose = [verbose]
+    if isinstance(verbose, list):
+      verbose = StrVector(verbose) 
+    else: 
+      verbose = maybe_null(verbose)
 
 
     rinternal = shapr.setup(
@@ -181,7 +183,7 @@ def explain(
       n_MC_samples = n_MC_samples,
       seed = maybe_null(seed),
       feature_specs = rfeature_specs,
-      verbose = StrVector(verbose),
+      verbose = verbose,
       iterative = maybe_null(iterative),
       iterative_args = iterative_args, 
       asymmetric = asymmetric,
@@ -283,7 +285,7 @@ def explain(
     MSEv = recurse_r_tree(routput.rx2('MSEv'))
     iterative_results = recurse_r_tree(routput.rx2('iterative_results'))
     saving_path = recurse_r_tree(routput.rx2['saving_path']) 
-    internal = recurse_r_tree(routput.rx2['internal']) 
+    internal = recurse_r_tree(routput.rx2('internal')) 
     timing = recurse_r_tree(routput.rx2['timing'])
 
     return {
