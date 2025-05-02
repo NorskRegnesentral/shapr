@@ -52,7 +52,7 @@ print(explanation["shapley_values_est"])
  """
 
 # Look at the (overall) MSEv
-explanation["MSEv"]["MSEv"]
+print(explanation["MSEv"]["MSEv"])
 
 """
 	MSEv	MSEv_sd

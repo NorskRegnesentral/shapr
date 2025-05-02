@@ -14,8 +14,10 @@ explanation = explain(
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'empirical',
-    phi0 = dfy_train.mean().item()
+    phi0 = dfy_train.mean().item(),
+    seed = 1
 )
+
 print(explanation["shapley_values_est"])
 
 """
