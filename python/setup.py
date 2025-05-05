@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="shaprpy",
-    version="0.1",
-    author="Didrik Nielsen",
-    author_email="didrik.nielsen@gmail.com",
+    version="0.2",
+    author="Martin Jullum, Lars Henry Berge Olsen, Didrik Nielsen",
+    author_email="jullum@nr.no",
     description="Wrapper for R-package shapr",
     long_description="",
     long_description_content_type="text/markdown",

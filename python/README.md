@@ -62,13 +62,10 @@ For other models, one can provide a custom `predict_model` function (and optiona
 
 See `/examples` for runnable examples, including an example of a custom PyTorch model.
 
-The `/examples/regression_paradigm.py` file demonstrates how
+Specifically, the `/examples/regression_paradigm.py` file demonstrates how
 to use the regression paradigm explained in 
 [Olsen et al. (2024)](https://link.springer.com/article/10.1007/s10618-024-01016-z).
-We describe how to specify the regression model, how to enable automatic
+We show how to specify the regression model, how to enable automatic
 cross-validation of the model's hyperparameters, and applying
-pre-processing steps to the data before fitting the regression
-models. We refer to 
-[Olsen et al. (2024)](https://link.springer.com/article/10.1007/s10618-024-01016-z)
-for when one should  use the different paradigms, method classes, and methods.
+pre-processing steps to the data before fitting the regression models.
 

@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 from rpy2.robjects.conversion import localconverter
-from rpy2.robjects import default_converter
+from rpy2.robjects import default_converter, Formula
+from rpy2.robjects.functions import SignatureTranslatedFunction
 from rpy2.robjects.numpy2ri import converter as np_converter
 from rpy2.robjects.pandas2ri import converter as pd_converter
 from rpy2.robjects.pandas2ri import _to_pandas_factor
@@ -52,6 +53,10 @@ def recurse_r_tree(data):
         warnings.simplefilter("ignore")
         tmp = r2py(data).strftime("%Y-%m-%d %H:%M:%S")[0]
       return tmp
+  elif type(data) == SignatureTranslatedFunction:
+      return str(data)
+  elif type(data) == Formula:
+      return str(data)  
   elif type(data) == ListVector:
       if type(data.names) == type(NULL):
           data.names = [f"element_{i+1}" for i in range(len(data))]
@@ -59,7 +64,4 @@ def recurse_r_tree(data):
   elif type(data) == StrVector:
       return [recurse_r_tree(d) for d in data]
   else:
-      if hasattr(data, "rclass"): # An unsupported r class
-          raise KeyError(f'Could not proceed, unknown data type {type(data)}')
-      else:
-          return data  # We reached the end of recursion
+      return data  # We reached the end of recursion (if not converted below, return the object as is)
