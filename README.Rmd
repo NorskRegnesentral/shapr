@@ -169,10 +169,11 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
-# Printing the Shapley values for the test data.
+# Printing the Shapley values for the data to explain.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values_est)
 
@@ -182,9 +183,12 @@ plot(explanation)
 
 See the [general usage vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) for further 
 basic usage examples and brief introductions to the methodology. 
-For more thorough information about the underlying methodology, see 
-@aas2019explaining, @redelmeier2020explaining, @jullum2021efficient, @olsen2022using, @olsen2024comparative .
-See also @sellereite2019shapr for a brief paper about the previous (< 1.0.0) version of the package.
+See @jullum2025shapr (preprint) for software paper with an overview of the methodology and capabilities of the 
+package (as of v1.0.4).
+For more thorough information about the underlying methodology, see methodological papers
+@aas2019explaining, @redelmeier2020explaining, @jullum2021efficient, @olsen2022using, @olsen2024comparative.
+See also @sellereite2019shapr for a very brief paper about a previous version (v0.1.1) of the package 
+(with a different structure, syntax and significantly less functionality).
 
 ## Contribution
 

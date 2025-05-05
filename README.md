@@ -180,10 +180,11 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-05-05 10:54:43 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-05-05 11:52:31 ──────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is
@@ -205,7 +206,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> '/tmp/Rtmpv4PmTq/shapr_obj_c5826f542976.rds'
+#> '/tmp/RtmpqrHcvb/shapr_obj_c8147cede04f.rds'
 #> 
 #> 
 #> 
@@ -215,7 +216,7 @@ explanation <- explain(
 #> 
 #> ℹ Using 16 of 16 coalitions.
 
-# Printing the Shapley values for the test data.
+# Printing the Shapley values for the data to explain.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values_est)
 #>    explain_id     none    Solar.R      Wind      Temp      Month
@@ -236,11 +237,14 @@ plot(explanation)
 See the [general usage
 vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html)
 for further basic usage examples and brief introductions to the
-methodology. For more thorough information about the underlying
-methodology, see Aas, Jullum, and Løland (2021), Redelmeier, Jullum, and
-Aas (2020), Jullum, Redelmeier, and Aas (2021), Olsen et al. (2022),
-Olsen et al. (2024) . See also Sellereite and Jullum (2019) for a brief
-paper about the previous (\< 1.0.0) version of the package.
+methodology. See Jullum et al. (2025) (preprint) for software paper with
+an overview of the methodology and capabilities of the package (as of
+v1.0.4). For more thorough information about the underlying methodology,
+see methodological papers Aas, Jullum, and Løland (2021), Redelmeier,
+Jullum, and Aas (2020), Jullum, Redelmeier, and Aas (2021), Olsen et al.
+(2022), Olsen et al. (2024). See also Sellereite and Jullum (2019) for a
+very brief paper about a previous version (v0.1.1) of the package (with
+a different structure, syntax and significantly less functionality).
 
 ## Contribution
 
@@ -264,6 +268,15 @@ By contributing to this project, you agree to abide by its terms.
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining
 Individual Predictions When Features Are Dependent: More Accurate
 Approximations to Shapley Values.” *Artificial Intelligence* 298.
+
+</div>
+
+<div id="ref-jullum2025shapr" class="csl-entry">
+
+Jullum, Martin, Lars Henry Berge Olsen, Jon Lachmann, and Annabelle
+Redelmeier. 2025. “Shapr: Explaining Machine Learning Models with
+Conditional Shapley Values in r and Python.” *arXiv Preprint
+arXiv:2504.01842*.
 
 </div>
 
