@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="139"/>
+# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="100"/>
 
 <!-- badges: start -->
 
@@ -13,12 +13,18 @@ status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.s
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
-[![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
+[![JOSS
+(v0.2.3)](https://img.shields.io/badge/JOSS%20(v0.2.3)-10.21105/joss.02027-brightgreen.svg)](https://doi.org/10.21105/joss.02027)
+[![arXiv
+(v1.0.4)](https://img.shields.io/badge/arXiv%20(v1.0.4)-2504.01842-b31b1b.svg)](https://arxiv.org/abs/2504.01842)
+<!-- badges: end -->
 
 See the pkgdown site at
 [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/)
 for a complete introduction with examples and documentation of the
-package. <!-- badges: end -->
+package. For an overview of the methodology and capabilities of the
+package (as of v1.0.4), see the preprint of the full length [software
+paper for `shapr` v1.0.4](https://arxiv.org/abs/2504.01842).
 
 ## NEWS
 
@@ -58,10 +64,10 @@ to view a version of this README with old syntax (v0.2.2).
 
 ### Python wrapper
 
-We provide an (experimental) Python wrapper (`shaprpy`) which allows
-explaining Python models with the methodology implemented in `shapr`,
-directly from Python. The wrapper calls `R` internally, and therefore
-requires an installation of `R`. See
+We provide a Python wrapper (`shaprpy`) which allows explaining Python
+models with the methodology implemented in `shapr`, directly from
+Python. The wrapper calls `R` internally, and therefore requires an
+installation of `R`. See
 [here](https://norskregnesentral.github.io/shapr/shaprpy.html) for
 installation instructions and examples.
 
@@ -176,22 +182,36 @@ explanation <- explain(
   approach = "empirical",
   phi0 = p0
 )
-#> Note: Feature classes extracted from the model contains NA.
-#> Assuming feature classes from the data are correct.
-#> Success with message:
-#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
-#> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2025-03-26 06:47:04 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-05-05 10:54:43 ──────────────────────────
+#> ℹ Feature classes extracted from the model contains `NA`.
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is
+#>   therefore set to `2^n_features = 16`.
+#> 
+#> 
+#> ── Explanation overview ──
+#> 
+#> 
+#> 
 #> • Model class: <xgb.Booster>
+#> 
 #> • Approach: empirical
+#> 
 #> • Iterative estimation: FALSE
+#> 
 #> • Number of feature-wise Shapley values: 4
+#> 
 #> • Number of observations to explain: 6
+#> 
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpwFUqgs/shapr_obj_150f03bfd7b8.rds'
+#> '/tmp/Rtmpv4PmTq/shapr_obj_c5826f542976.rds'
+#> 
+#> 
 #> 
 #> ── Main computation started ──
+#> 
+#> 
 #> 
 #> ℹ Using 16 of 16 coalitions.
 

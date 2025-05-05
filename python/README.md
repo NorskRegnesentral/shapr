@@ -23,7 +23,7 @@ The `shaprpy` Python wrapper requires the latest version of the `shapr` R-packag
 Install it by running the following terminal command from the folder of this readme file (`.../shapr/python`):
 
 ```
-Rscript install_r_packages.R
+Rscript -e 'install.packages("shapr", repos="https://cran.rstudio.com")'
 ```
 
 # Install python wrapper
@@ -53,6 +53,7 @@ explanation = explain(
     x_explain = dfx_test,
     approach = 'empirical',
     phi0 = dfy_train.mean().item(),
+    seed = 1
 )
 print(explanation["shapley_values_est"])
 ```

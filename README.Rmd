@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="139"/>
+# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="100"/>
 
 <!-- badges: start -->
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-last-release/shapr)](https://cran.r-project.org/package=shapr)
@@ -23,11 +23,17 @@ knitr::opts_chunk$set(
 [![R build status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
-[![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
+[![JOSS (v0.2.3)](https://img.shields.io/badge/JOSS (v0.2.3)-10.21105/joss.02027-brightgreen.svg)](https://doi.org/10.21105/joss.02027)
+[![arXiv (v1.0.4)](https://img.shields.io/badge/arXiv (v1.0.4)-2504.01842-b31b1b.svg)](https://arxiv.org/abs/2504.01842)
+<!-- badges: end -->
 
 See the pkgdown site at [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/)
 for a complete introduction with examples and documentation of the package.
-<!-- badges: end -->
+For an overview of the methodology and capabilities of the package (as of v1.0.4), see the preprint of the
+full length [software paper for `shapr` v1.0.4](https://arxiv.org/abs/2504.01842).
+
+
+
 
 
 ## NEWS
@@ -59,7 +65,7 @@ README with old syntax (v0.2.2).
 
 ### Python wrapper
 
-We provide an (experimental) Python wrapper (`shaprpy`) which allows explaining Python models with the methodology 
+We provide a Python wrapper (`shaprpy`) which allows explaining Python models with the methodology 
 implemented in `shapr`, directly from Python. 
 The wrapper calls `R` internally, and therefore requires an installation of `R`. 
 See [here](https://norskregnesentral.github.io/shapr/shaprpy.html) for installation instructions and examples.
