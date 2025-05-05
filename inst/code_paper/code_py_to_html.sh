@@ -1,5 +1,17 @@
 #!/bin/bash
 
+## This bash script requires jupytext and nbconvert to be installed. They can be installed using:
+# pip install jupytext nbconvert
+
+## The code_py.py script ends by listing session information, provided by the session_info package, which needs
+## to be installed alongside shaprpy. session_info can be installed by running:
+# pip install session_info
+
+## Run the below command in the terminal from this script's folder to generate the code_py.html from code_py.py:
+# bash code_py_to_html.sh
+
+
+
 # Define filenames
 PYFILE="code_py.py"
 NOTEBOOK="code_py.ipynb"

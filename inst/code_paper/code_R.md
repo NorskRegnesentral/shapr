@@ -10,6 +10,9 @@
 
 
 
+
+
+
 #### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
 
 library(xgboost)
@@ -52,14 +55,8 @@ exp_20_indep <- explain(model = model,
                         phi0 = mean(y_train),
                         verbose = NULL,
                         seed = 1)
-```
 
-```
-## Note: Feature classes extracted from the model contains NA.
-## Assuming feature classes from the data are correct.
-```
 
-``` r
 # 20 ctree
 exp_20_ctree <- explain(model = model,
                         x_explain = x_explain,
@@ -72,71 +69,48 @@ exp_20_ctree <- explain(model = model,
 ```
 
 ```
-## Note: Feature classes extracted from the model contains NA.
-## Assuming feature classes from the data are correct.
-```
-
-```
 ## 
 ```
 
 ```
-## ── Starting `shapr::explain()` at 2025-04-08 13:35:19 ────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain()` at 2025-05-05 11:59:21 ─────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ```
+## ℹ Feature classes extracted from the model contains `NA`.
+##   Assuming feature classes from the data are correct.
+## 
+## 
+## ── Explanation overview ──
+## 
+## 
+## 
 ## • Model class: <xgb.Booster>
-```
-
-```
+## 
 ## • Approach: ctree
-```
-
-```
+## 
 ## • Iterative estimation: TRUE
-```
-
-```
+## 
 ## • Number of feature-wise Shapley values: 7
-```
-
-```
+## 
 ## • Number of observations to explain: 146
-```
-
-```
-## • Computations (temporary) saved at: '/tmp/Rtmpv8b2OL/shapr_obj_5f5891a28d498.rds'
-```
-
-```
 ## 
-```
-
-```
+## • Computations (temporary) saved at: '/tmp/RtmpIV9jd2/shapr_obj_cb6d510ee8fa.rds'
+## 
+## 
+## 
 ## ── iterative computation started ──
-```
-
-```
 ## 
-```
-
-```
-## ── Iteration 1 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-```
-
-```
-## ℹ Using 14 of 128 coalitions, 14 new.
-```
-
-```
 ## 
-```
-
-```
-## ── Iteration 2 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-```
-
-```
+## 
+## ── Iteration 1 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## 
+## ℹ Using 14 of 128 coalitions, 14 new. 
+## 
+## 
+## 
+## ── Iteration 2 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## 
 ## ℹ Using 20 of 128 coalitions, 6 new.
 ```
 
@@ -167,17 +141,17 @@ print(exp_20_ctree)
 ```
 ##      explain_id  none   trend cosyear sinyear   temp   atemp windspeed     hum
 ##           <int> <num>   <num>   <num>   <num>  <num>   <num>     <num>   <num>
-##   1:          1  4537 -2378.2  -902.5   -54.9  236.5  -847.1    -16.86  172.33
-##   2:          2  4537 -1267.7  -801.4  -103.7  559.6 -1668.7   -208.54  426.87
-##   3:          3  4537 -1170.2  -788.4  -204.3  497.4 -1493.5   -390.98  284.54
-##   4:          4  4537 -1543.5  -689.6  -170.7  708.8 -1635.4   -207.19  -21.12
-##   5:          5  4537 -1558.3  -727.3  -197.5  590.8 -2180.7   -212.53  778.08
+##   1:          1  4537 -2372.7  -902.2  -57.92  232.0  -842.5    -18.12  170.80
+##   2:          2  4537 -1261.4  -801.0 -105.43  554.7 -1664.9   -210.32  424.73
+##   3:          3  4537 -1162.8  -786.8 -206.54  490.2 -1487.9   -392.74  281.16
+##   4:          4  4537 -1539.2  -689.9 -171.02  706.3 -1633.9   -208.69  -22.29
+##   5:          5  4537 -1555.6  -727.8 -197.49  589.6 -2180.1   -213.60  777.49
 ##  ---                                                                          
-## 142:        142  4537   557.3  -574.0   462.2  436.3 -1146.0   -145.87  591.22
-## 143:        143  4537   791.6  -803.2   332.2 1133.2  -982.3     34.75  294.41
-## 144:        144  4537  1203.0  -576.7   110.8 1352.0  -392.0     57.43  113.10
-## 145:        145  4537   258.8  -652.1   256.2 -482.5 -1470.7     30.31  345.06
-## 146:        146  4537  -994.0  -956.0   192.7 -393.7 -1148.4    812.57 -801.37
+## 142:        142  4537   558.4  -576.1  464.62  438.8 -1149.2   -147.22  592.04
+## 143:        143  4537   791.6  -804.1  334.31 1134.7  -984.6     34.16  294.67
+## 144:        144  4537  1205.3  -574.0  108.68 1346.8  -387.5     57.62  110.67
+## 145:        145  4537   257.7  -650.9  256.46 -483.3 -1470.3     30.92  344.41
+## 146:        146  4537  -986.5  -958.1  191.58 -396.3 -1146.4    809.67 -802.21
 ```
 
 ``` r
@@ -194,159 +168,35 @@ exp_iter_ctree <- explain(model = model,
 ```
 
 ```
-## Note: Feature classes extracted from the model contains NA.
-## Assuming feature classes from the data are correct.
-```
-
-```
-## Success with message:
-## max_n_coalitions is NULL or larger than or 2^n_features = 128, 
-## and is therefore set to 2^n_features = 128.
-```
-
-```
 ## 
-```
-
-```
-## ── Starting `shapr::explain()` at 2025-04-08 13:35:26 ────────────────────────────────────────────────────────────────────────────
-```
-
-```
+## ── Starting `shapr::explain()` at 2025-05-05 11:59:29 ─────────────────────────────────────────────────────────────────────────────────────────
+## ℹ Feature classes extracted from the model contains `NA`.
+##   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+## ── Explanation overview ──
+## 
 ## • Model class: <xgb.Booster>
-```
-
-```
 ## • Approach: ctree
-```
-
-```
 ## • Iterative estimation: TRUE
-```
-
-```
 ## • Number of feature-wise Shapley values: 7
-```
-
-```
 ## • Number of observations to explain: 146
-```
-
-```
-## • Computations (temporary) saved at: '/tmp/Rtmpv8b2OL/shapr_obj_5f5897a0f7b18.rds'
-```
-
-```
+## • Computations (temporary) saved at: '/tmp/RtmpIV9jd2/shapr_obj_cb6d6b1b7436.rds'
 ## 
-```
-
-```
 ## ── iterative computation started ──
-```
-
-```
 ## 
-```
-
-```
-## ── Iteration 3 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-```
-
-```
-## ℹ Using 32 of 128 coalitions, 12 new.
-```
-
-```
+## ── Iteration 3 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ℹ Using 42 of 128 coalitions, 22 new. 
 ## 
-```
-
-```
-## ── Convergence info
-```
-
-```
-## ℹ Not converged after 32 coalitions:
-## Current convergence measure: 0.17 [needs 0.02]
-## Estimated remaining coalitions: 94
-## (Concervatively) adding 20% of that (20 coalitions) in the next iteration.
-```
-
-```
+## ── Convergence info 
+## ℹ Not converged after 42 coalitions:
+## Current convergence measure: 0.086 [needs 0.02]
+## Estimated remaining coalitions: 8
+## (Conservatively) adding about 30% of that (2 coalitions) in the next iteration.
 ## 
-```
-
-```
-## ── Iteration 4 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-```
-
-```
-## ℹ Using 52 of 128 coalitions, 20 new.
-```
-
-```
+## ── Iteration 4 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ℹ Using 44 of 128 coalitions, 2 new. 
 ## 
-```
-
-```
-## ── Convergence info
-```
-
-```
-## ℹ Not converged after 52 coalitions:
-## Current convergence measure: 0.076 [needs 0.02]
-## Estimated remaining coalitions: 32
-## (Concervatively) adding 30% of that (10 coalitions) in the next iteration.
-```
-
-```
-## 
-```
-
-```
-## ── Iteration 5 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-```
-
-```
-## ℹ Using 62 of 128 coalitions, 10 new.
-```
-
-```
-## 
-```
-
-```
-## ── Convergence info
-```
-
-```
-## ℹ Not converged after 62 coalitions:
-## Current convergence measure: 0.055 [needs 0.02]
-## Estimated remaining coalitions: 6
-## (Concervatively) adding 40% of that (4 coalitions) in the next iteration.
-```
-
-```
-## 
-```
-
-```
-## ── Iteration 6 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-```
-
-```
-## ℹ Using 66 of 128 coalitions, 4 new.
-```
-
-```
-## 
-```
-
-```
-## ── Convergence info
-```
-
-```
-## ✔ Converged after 66 coalitions:
+## ── Convergence info 
+## ✔ Converged after 44 coalitions:
 ## Convergence tolerance reached!
 ```
 
@@ -382,20 +232,7 @@ exp_g_reg <- explain(model = model,
                      ),
                      verbose = NULL,
                      seed = 1)
-```
 
-```
-## Note: Feature classes extracted from the model contains NA.
-## Assuming feature classes from the data are correct.
-```
-
-```
-## Success with message:
-## max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
-## and is therefore set to 2^n_groups = 8.
-```
-
-``` r
 tree_vals <- c(10, 15, 25, 50, 100, 500)
 exp_g_reg_tuned <- explain(model = model,
                            x_explain = x_explain,
@@ -414,18 +251,8 @@ exp_g_reg_tuned <- explain(model = model,
                            regression.vfold_cv_para = list(v = 5),
                            verbose = NULL,
                            seed = 1)
-```
 
-```
-## Note: Feature classes extracted from the model contains NA.
-## Assuming feature classes from the data are correct.
-## 
-## Success with message:
-## max_n_coalitions is NULL or larger than or 2^n_groups = 8, 
-## and is therefore set to 2^n_groups = 8.
-```
 
-``` r
 exp_g_reg$MSEv$MSEv
 ```
 
@@ -523,61 +350,41 @@ exp_fc_ar <- explain_forecast(
 ```
 
 ```
-## Note: Feature names extracted from the model contains NA.
-## Consistency checks between model and data is therefore disabled.
-```
-
-```
-## Success with message:
-## max_n_coalitions is NULL or larger than or 2^n_features = 4, 
-## and is therefore set to 2^n_features = 4.
-```
-
-```
 ## 
 ```
 
 ```
-## ── Starting `shapr::explain()` at 2025-04-08 13:36:26 ────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-05-05 12:00:21 ────────────────────────────────────────────────────────────────────────────────
 ```
 
 ```
+## ℹ Feature names extracted from the model contains `NA`.
+##   Consistency checks between model and data is therefore disabled.
+## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+## 
+## 
+## ── Explanation overview ──
+## 
+## 
+## 
 ## • Model class: <ar>
-```
-
-```
+## 
 ## • Approach: empirical
-```
-
-```
+## 
 ## • Iterative estimation: FALSE
-```
-
-```
+## 
 ## • Number of feature-wise Shapley values: 2
-```
-
-```
+## 
 ## • Number of observations to explain: 2
-```
-
-```
-## • Computations (temporary) saved at: '/tmp/Rtmpv8b2OL/shapr_obj_5f58969e962a1.rds'
-```
-
-```
 ## 
-```
-
-```
+## • Computations (temporary) saved at: '/tmp/RtmpIV9jd2/shapr_obj_cb6d538d0634.rds'
+## 
+## 
+## 
 ## ── Main computation started ──
-```
-
-```
 ## 
-```
-
-```
+## 
+## 
 ## ℹ Using 4 of 4 coalitions.
 ```
 
@@ -618,68 +425,37 @@ exp_fc_arimax <- explain_forecast(
 ```
 
 ```
-## Note: Feature names extracted from the model contains NA.
-## Consistency checks between model and data is therefore disabled.
-```
-
-```
-## Success with message:
-## max_n_coalitions is NULL or larger than or 2^n_groups = 4, 
-## and is therefore set to 2^n_groups = 4.
-```
-
-```
+## 
+## ── Starting `shapr::explain_forecast()` at 2025-05-05 12:00:22 ────────────────────────────────────────────────────────────────────────────────
+## ℹ Feature names extracted from the model contains `NA`.
+##   Consistency checks between model and data is therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
+##   method            from
+##   as.zoo.data.frame zoo 
+## 
+## ── Explanation overview ──
+## 
+## • Model class: <Arima>
+## • Approach: empirical
+## • Iterative estimation: FALSE
+## • Number of group-wise Shapley values: 2
+## • Number of observations to explain: 1
+## • Computations (temporary) saved at: '/tmp/RtmpIV9jd2/shapr_obj_cb6d75e3abd.rds'
+## 
+## ── Main computation started ──
+## 
+## ℹ Using 4 of 4 coalitions. 
+## Registered S3 method overwritten by 'quantmod':
+##   method            from
+##   as.zoo.data.frame zoo 
+## Registered S3 method overwritten by 'quantmod':
+##   method            from
+##   as.zoo.data.frame zoo 
+## Registered S3 method overwritten by 'quantmod':
+##   method            from
+##   as.zoo.data.frame zoo 
 ## Registered S3 method overwritten by 'quantmod':
 ##   method            from
 ##   as.zoo.data.frame zoo
-```
-
-```
-## 
-```
-
-```
-## ── Starting `shapr::explain()` at 2025-04-08 13:36:27 ────────────────────────────────────────────────────────────────────────────
-```
-
-```
-## • Model class: <Arima>
-```
-
-```
-## • Approach: empirical
-```
-
-```
-## • Iterative estimation: FALSE
-```
-
-```
-## • Number of group-wise Shapley values: 2
-```
-
-```
-## • Number of observations to explain: 1
-```
-
-```
-## • Computations (temporary) saved at: '/tmp/Rtmpv8b2OL/shapr_obj_5f5897cb8c2e8.rds'
-```
-
-```
-## 
-```
-
-```
-## ── Main computation started ──
-```
-
-```
-## 
-```
-
-```
-## ℹ Using 4 of 4 coalitions.
 ```
 
 ``` r
@@ -712,9 +488,9 @@ sessionInfo()
 ## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3;  LAPACK version 3.9.0
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
-##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8   
+##  [6] LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## time zone: Europe/Oslo
 ## tzcode source: system (glibc)
@@ -723,7 +499,7 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggpubr_0.6.0      ggplot2_3.5.1     progressr_0.15.1  future_1.34.0     shapr_1.0.3.9000  data.table_1.17.0 xgboost_1.7.9.1  
+## [1] ggpubr_0.6.0      ggplot2_3.5.1     progressr_0.15.1  future_1.33.2     shapr_1.0.4       data.table_1.17.0 xgboost_1.7.9.1  
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] gridExtra_2.3       testthat_3.2.3      rlang_1.1.5         magrittr_2.0.3      furrr_0.3.1         tseries_0.10-58    
