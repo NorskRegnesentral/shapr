@@ -6,9 +6,16 @@
 
 
 # /*
-# Already run, and data/models are saved to ensure reproducibility
+# The lines below have already been run to save data/models for eased reproducibility:
 # source("R_prep_data_and_model.R")
 # */
+
+# /*
+# Run the below command in R from this script's folder to generate the code_R.html from code_R.R
+# knitr::spin("code_R.R")
+# */
+
+
 
 
 #### Loads packages, Reads data and models created by R_prep_data_and_model.R ####

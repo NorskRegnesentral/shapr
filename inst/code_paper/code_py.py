@@ -29,3 +29,8 @@ exp_20_ctree = explain(
 
 # Print the Shapley values
 print(exp_20_ctree['shapley_values_est'].iloc[:, 1:].round(1))
+
+
+# Print the session information 
+import session_info
+session_info.show(html=False)
