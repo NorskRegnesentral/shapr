@@ -4,7 +4,6 @@
 # Requires the following R packages (from CRAN)
 # shapr, xgboost, data.table, future, progressr, ggplot2, ggpubr
 
-
 # /*
 # The lines below have already been run to save data/models for eased reproducibility:
 # source("R_prep_data_and_model.R")
@@ -14,9 +13,6 @@
 # Run the below command in R from this script's folder to generate the code_R.html from code_R.R
 # knitr::spin("code_R.R")
 # */
-
-
-
 
 #### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
 
@@ -30,7 +26,7 @@ y_train <- unlist(fread(file.path("data_and_models", "y_train.csv")))
 model <- readRDS(file.path("data_and_models", "model.rds"))
 
 
-# We compute the SHAP values for the test data.
+# Load packages and sets up parallel processing
 library(future)
 library(progressr)
 future::plan(multisession, workers = 4)
@@ -48,33 +44,33 @@ progressr::handlers(global = TRUE)
 
 #### Example code in Section 3 ####
 
-# 20 indep
-exp_20_indep <- explain(model = model,
+# 30 indep
+exp_30_indep <- explain(model = model,
                         x_explain = x_explain,
                         x_train = x_train,
-                        max_n_coalitions = 20,
+                        max_n_coalitions = 30,
                         approach = "independence",
                         phi0 = mean(y_train),
                         verbose = NULL,
                         seed = 1)
 
 
-# 20 ctree
-exp_20_ctree <- explain(model = model,
+# 30 ctree
+exp_30_ctree <- explain(model = model,
                         x_explain = x_explain,
                         x_train = x_train,
-                        max_n_coalitions = 20,
+                        max_n_coalitions = 30,
                         approach = "ctree",
                         phi0 = mean(y_train),
+                        verbose = NULL,
                         ctree.sample = FALSE,
                         seed = 1)
 
 
+exp_30_indep$MSEv$MSEv
+exp_30_ctree$MSEv$MSEv
 
-exp_20_indep$MSEv$MSEv
-exp_20_ctree$MSEv$MSEv
-
-print(exp_20_ctree)
+print(exp_30_ctree)
 
 ### Continued estimation
 exp_iter_ctree <- explain(model = model,
@@ -82,7 +78,7 @@ exp_iter_ctree <- explain(model = model,
                           x_train = x_train,
                           approach = "ctree",
                           phi0 = mean(y_train),
-                          prev_shapr_object = exp_20_ctree,
+                          prev_shapr_object = exp_30_ctree,
                           ctree.sample = FALSE,
                           verbose = c("basic","convergence"),
                           seed = 1)
@@ -93,11 +89,11 @@ exp_iter_ctree <- explain(model = model,
 library(ggplot2)
 
 #+ fig-scatter_ctree, fig.width=7, fig.height=3
-plot(exp_iter_ctree, plot_type = "scatter",scatter_features = c("atemp","windspeed"))
+plot(exp_iter_ctree, plot_type = "scatter", scatter_features = c("atemp", "windspeed"))
 
 #+ echo=FALSE
 # Produce the pdf used in Figure 3 in the paper
-ggplot2::ggsave(file.path("paper_figures","scatter_ctree.pdf"),width = 7, height = 3)
+ggplot2::ggsave(file.path("paper_figures", "scatter_ctree.pdf"), width = 7, height = 3)
 
 #+
 ### Grouping
@@ -138,20 +134,22 @@ exp_g_reg_tuned <- explain(model = model,
                            verbose = NULL,
                            seed = 1)
 
-
 exp_g_reg$MSEv$MSEv
 exp_g_reg_tuned$MSEv$MSEv
 
-# Print Shapley value for the best one
+#+ echo=FALSE
+# Print Shapley value for the best one (not shown in the paper)
 head(exp_g_reg_tuned$shapley_values_est)
 
 #+ fig-waterfall_group, fig.width=7, fig.height=4
 # Waterfall plot for the best one
-plot(exp_g_reg_tuned,index_x_explain = 6,plot_type="waterfall")
+plot(exp_g_reg_tuned,
+     index_x_explain = 6,
+     plot_type="waterfall")
 
 #+ echo=FALSE
 # Produce the pdf used in Figure 3 in the paper
-ggplot2::ggsave(file.path("paper_figures","waterfall_group.pdf"),width = 7, height = 4) # !NOTSHOWN
+ggplot2::ggsave(file.path("paper_figures", "waterfall_group.pdf"), width = 7, height = 4)
 
 
 #+
@@ -244,7 +242,7 @@ fig = ggpubr::ggarrange(grobs[[1]], grobs[[2]], grobs[[3]], grobs[[4]],
 fig
 
 # Produce the pdf used in Figure 6 in the paper
-ggplot2::ggsave(file.path("paper_figures","beeswarm_caus_asym.pdf"),
+ggplot2::ggsave(file.path("paper_figures", "beeswarm_caus_asym.pdf"),
                 scale = 1.1,
                 width = 14,
                 height = 4)
@@ -259,7 +257,7 @@ causal_ordering <- list("trend",
 
 confounding <- c(FALSE, TRUE, FALSE)
 
-exp_asym_cau <- explain(
+explanation <- explain(
   model = model,
   x_train = x_train,
   x_explain = x_explain,
@@ -277,7 +275,7 @@ exp_asym_cau <- explain(
 #### Example code in Section 6 ####
 
 # Read additional data
-x_full <- fread(file.path("data_and_models","x_full.csv"))
+x_full <- fread(file.path("data_and_models", "x_full.csv"))
 data_fit <- x_full[seq_len(729), ]
 
 # Fit AR(2)-model
@@ -296,10 +294,14 @@ exp_fc_ar <- explain_forecast(
   group_lags = FALSE,
   seed = 1
 )
+
+# Print Shapley values
 print(exp_fc_ar)
 
 # Fit ARIMA(2,0,0)-model
-model_arimax <- arima(data_fit$temp, order = c(2, 0, 0), xreg = data_fit$windspeed)
+model_arimax <- arima(data_fit$temp,
+                      order = c(2, 0, 0),
+                      xreg = data_fit$windspeed)
 phi0_arimax <- rep(mean(data_fit$temp), 2)
 
 exp_fc_arimax <- explain_forecast(
@@ -317,6 +319,7 @@ exp_fc_arimax <- explain_forecast(
   seed = 1
 )
 
+# Print Shapley values
 print(exp_fc_arimax)
 
 #### Wrapping up ####

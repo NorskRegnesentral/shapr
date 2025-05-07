@@ -9,10 +9,6 @@
 
 
 
-
-
-
-
 #### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
 
 library(xgboost)
@@ -32,7 +28,7 @@ y_train <- unlist(fread(file.path("data_and_models", "y_train.csv")))
 model <- readRDS(file.path("data_and_models", "model.rds"))
 
 
-# We compute the SHAP values for the test data.
+# Load packages and sets up parallel processing
 library(future)
 library(progressr)
 future::plan(multisession, workers = 4)
@@ -46,112 +42,66 @@ progressr::handlers(global = TRUE)
 ``` r
 #### Example code in Section 3 ####
 
-# 20 indep
-exp_20_indep <- explain(model = model,
+# 30 indep
+exp_30_indep <- explain(model = model,
                         x_explain = x_explain,
                         x_train = x_train,
-                        max_n_coalitions = 20,
+                        max_n_coalitions = 30,
                         approach = "independence",
                         phi0 = mean(y_train),
                         verbose = NULL,
                         seed = 1)
 
 
-# 20 ctree
-exp_20_ctree <- explain(model = model,
+# 30 ctree
+exp_30_ctree <- explain(model = model,
                         x_explain = x_explain,
                         x_train = x_train,
-                        max_n_coalitions = 20,
+                        max_n_coalitions = 30,
                         approach = "ctree",
                         phi0 = mean(y_train),
+                        verbose = NULL,
                         ctree.sample = FALSE,
                         seed = 1)
-```
 
-```
-## 
-```
 
-```
-## ── Starting `shapr::explain()` at 2025-05-05 11:59:21 ─────────────────────────────────────────────────────────────────────────────────────────
-```
-
-```
-## ℹ Feature classes extracted from the model contains `NA`.
-##   Assuming feature classes from the data are correct.
-## 
-## 
-## ── Explanation overview ──
-## 
-## 
-## 
-## • Model class: <xgb.Booster>
-## 
-## • Approach: ctree
-## 
-## • Iterative estimation: TRUE
-## 
-## • Number of feature-wise Shapley values: 7
-## 
-## • Number of observations to explain: 146
-## 
-## • Computations (temporary) saved at: '/tmp/RtmpIV9jd2/shapr_obj_cb6d510ee8fa.rds'
-## 
-## 
-## 
-## ── iterative computation started ──
-## 
-## 
-## 
-## ── Iteration 1 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## 
-## ℹ Using 14 of 128 coalitions, 14 new. 
-## 
-## 
-## 
-## ── Iteration 2 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## 
-## ℹ Using 20 of 128 coalitions, 6 new.
-```
-
-``` r
-exp_20_indep$MSEv$MSEv
+exp_30_indep$MSEv$MSEv
 ```
 
 ```
 ##       MSEv  MSEv_sd
 ##      <num>    <num>
-## 1: 1695928 111719.3
+## 1: 1727591 116508.8
 ```
 
 ``` r
-exp_20_ctree$MSEv$MSEv
+exp_30_ctree$MSEv$MSEv
 ```
 
 ```
 ##       MSEv  MSEv_sd
 ##      <num>    <num>
-## 1: 1338159 88480.71
+## 1: 1302295 96701.77
 ```
 
 ``` r
-print(exp_20_ctree)
+print(exp_30_ctree)
 ```
 
 ```
-##      explain_id  none   trend cosyear sinyear   temp   atemp windspeed     hum
-##           <int> <num>   <num>   <num>   <num>  <num>   <num>     <num>   <num>
-##   1:          1  4537 -2372.7  -902.2  -57.92  232.0  -842.5    -18.12  170.80
-##   2:          2  4537 -1261.4  -801.0 -105.43  554.7 -1664.9   -210.32  424.73
-##   3:          3  4537 -1162.8  -786.8 -206.54  490.2 -1487.9   -392.74  281.16
-##   4:          4  4537 -1539.2  -689.9 -171.02  706.3 -1633.9   -208.69  -22.29
-##   5:          5  4537 -1555.6  -727.8 -197.49  589.6 -2180.1   -213.60  777.49
-##  ---                                                                          
-## 142:        142  4537   558.4  -576.1  464.62  438.8 -1149.2   -147.22  592.04
-## 143:        143  4537   791.6  -804.1  334.31 1134.7  -984.6     34.16  294.67
-## 144:        144  4537  1205.3  -574.0  108.68 1346.8  -387.5     57.62  110.67
-## 145:        145  4537   257.7  -650.9  256.46 -483.3 -1470.3     30.92  344.41
-## 146:        146  4537  -986.5  -958.1  191.58 -396.3 -1146.4    809.67 -802.21
+##      explain_id  none   trend cosyear sinyear    temp   atemp windspeed     hum
+##           <int> <num>   <num>   <num>   <num>   <num>   <num>     <num>   <num>
+##   1:          1  4537 -2413.6  -705.1  -31.06  -216.2  -262.0     53.13 -215.89
+##   2:          2  4537 -1334.2  -606.5  -56.38   275.5 -1305.0   -162.23  125.21
+##   3:          3  4537 -1273.1  -707.0  -91.21   375.4 -1188.2   -350.78  -30.53
+##   4:          4  4537 -1563.5  -462.6 -128.07   147.4 -1197.3     27.40 -382.08
+##   5:          5  4537 -1518.5  -433.8 -209.22  -221.3 -1541.6     63.14  353.85
+##  ---                                                                           
+## 142:        142  4537   659.7  -264.0  236.34  -411.1  -519.0    102.95  376.37
+## 143:        143  4537   928.2  -477.0  117.82   405.1  -437.0    149.88  113.68
+## 144:        144  4537  1162.7  -511.6  122.23   937.7   186.5    217.13 -247.12
+## 145:        145  4537   343.1  -399.4  124.86 -1175.2  -812.0    144.21   59.32
+## 146:        146  4537  -987.7  -767.0   93.28  -100.0 -1180.6    333.68 -679.97
 ```
 
 ``` r
@@ -161,7 +111,7 @@ exp_iter_ctree <- explain(model = model,
                           x_train = x_train,
                           approach = "ctree",
                           phi0 = mean(y_train),
-                          prev_shapr_object = exp_20_ctree,
+                          prev_shapr_object = exp_30_ctree,
                           ctree.sample = FALSE,
                           verbose = c("basic","convergence"),
                           seed = 1)
@@ -169,34 +119,79 @@ exp_iter_ctree <- explain(model = model,
 
 ```
 ## 
-## ── Starting `shapr::explain()` at 2025-05-05 11:59:29 ─────────────────────────────────────────────────────────────────────────────────────────
+```
+
+```
+## ── Starting `shapr::explain()` at 2025-05-05 15:07:11 ──────────────────────────────────────────────────────────────────────────
+```
+
+```
 ## ℹ Feature classes extracted from the model contains `NA`.
-##   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+##   Assuming feature classes from the data are correct.
+## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+## 
+## 
 ## ── Explanation overview ──
 ## 
+## 
+## 
 ## • Model class: <xgb.Booster>
+## 
 ## • Approach: ctree
+## 
 ## • Iterative estimation: TRUE
+## 
 ## • Number of feature-wise Shapley values: 7
+## 
 ## • Number of observations to explain: 146
-## • Computations (temporary) saved at: '/tmp/RtmpIV9jd2/shapr_obj_cb6d6b1b7436.rds'
+## 
+## • Computations (temporary) saved at: '/tmp/RtmpOWrAFJ/shapr_obj_1213824f5ac82.rds'
+## 
+## 
 ## 
 ## ── iterative computation started ──
 ## 
-## ── Iteration 3 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## ℹ Using 42 of 128 coalitions, 22 new. 
+## 
+## 
+## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## 
+## ℹ Using 32 of 128 coalitions, 2 new. 
+## 
+## 
 ## 
 ## ── Convergence info 
-## ℹ Not converged after 42 coalitions:
-## Current convergence measure: 0.086 [needs 0.02]
-## Estimated remaining coalitions: 8
-## (Conservatively) adding about 30% of that (2 coalitions) in the next iteration.
 ## 
-## ── Iteration 4 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## ℹ Using 44 of 128 coalitions, 2 new. 
+## ℹ Not converged after 32 coalitions:
+## Current convergence measure: 0.11 [needs 0.02]
+## Estimated remaining coalitions: 16
+## (Conservatively) adding about 40% of that (6 coalitions) in the next iteration.
+## 
+## 
+## 
+## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## 
+## ℹ Using 38 of 128 coalitions, 6 new. 
+## 
+## 
 ## 
 ## ── Convergence info 
-## ✔ Converged after 44 coalitions:
+## 
+## ℹ Not converged after 38 coalitions:
+## Current convergence measure: 0.12 [needs 0.02]
+## Estimated remaining coalitions: 58
+## (Conservatively) adding about 50% of that (28 coalitions) in the next iteration.
+## 
+## 
+## 
+## ── Iteration 6 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## 
+## ℹ Using 66 of 128 coalitions, 28 new. 
+## 
+## 
+## 
+## ── Convergence info 
+## 
+## ✔ Converged after 66 coalitions:
 ## Convergence tolerance reached!
 ```
 
@@ -207,7 +202,7 @@ library(ggplot2)
 ```
 
 ``` r
-plot(exp_iter_ctree, plot_type = "scatter",scatter_features = c("atemp","windspeed"))
+plot(exp_iter_ctree, plot_type = "scatter", scatter_features = c("atemp", "windspeed"))
 ```
 
 ![plot of chunk fig-scatter_ctree](figure/fig-scatter_ctree-1.png)
@@ -252,7 +247,6 @@ exp_g_reg_tuned <- explain(model = model,
                            verbose = NULL,
                            seed = 1)
 
-
 exp_g_reg$MSEv$MSEv
 ```
 
@@ -272,11 +266,6 @@ exp_g_reg_tuned$MSEv$MSEv
 ## 1: 1534033 142277.4
 ```
 
-``` r
-# Print Shapley value for the best one
-head(exp_g_reg_tuned$shapley_values_est)
-```
-
 ```
 ##    explain_id     none      temp      time   weather
 ##         <int>    <num>     <num>     <num>     <num>
@@ -290,7 +279,9 @@ head(exp_g_reg_tuned$shapley_values_est)
 
 ``` r
 # Waterfall plot for the best one
-plot(exp_g_reg_tuned,index_x_explain = 6,plot_type="waterfall")
+plot(exp_g_reg_tuned,
+     index_x_explain = 6,
+     plot_type="waterfall")
 ```
 
 ![plot of chunk fig-waterfall_group](figure/fig-waterfall_group-1.png)
@@ -311,7 +302,7 @@ causal_ordering <- list("trend",
 
 confounding <- c(FALSE, TRUE, FALSE)
 
-exp_asym_cau <- explain(
+explanation <- explain(
   model = model,
   x_train = x_train,
   x_explain = x_explain,
@@ -328,7 +319,7 @@ exp_asym_cau <- explain(
 #### Example code in Section 6 ####
 
 # Read additional data
-x_full <- fread(file.path("data_and_models","x_full.csv"))
+x_full <- fread(file.path("data_and_models", "x_full.csv"))
 data_fit <- x_full[seq_len(729), ]
 
 # Fit AR(2)-model
@@ -354,7 +345,7 @@ exp_fc_ar <- explain_forecast(
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2025-05-05 12:00:21 ────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-05-05 15:08:08 ─────────────────────────────────────────────────────────────────
 ```
 
 ```
@@ -377,7 +368,7 @@ exp_fc_ar <- explain_forecast(
 ## 
 ## • Number of observations to explain: 2
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpIV9jd2/shapr_obj_cb6d538d0634.rds'
+## • Computations (temporary) saved at: '/tmp/RtmpOWrAFJ/shapr_obj_121382beee87b.rds'
 ## 
 ## 
 ## 
@@ -389,6 +380,7 @@ exp_fc_ar <- explain_forecast(
 ```
 
 ``` r
+# Print Shapley values
 print(exp_fc_ar)
 ```
 
@@ -405,7 +397,9 @@ print(exp_fc_ar)
 
 ``` r
 # Fit ARIMA(2,0,0)-model
-model_arimax <- arima(data_fit$temp, order = c(2, 0, 0), xreg = data_fit$windspeed)
+model_arimax <- arima(data_fit$temp,
+                      order = c(2, 0, 0),
+                      xreg = data_fit$windspeed)
 phi0_arimax <- rep(mean(data_fit$temp), 2)
 
 exp_fc_arimax <- explain_forecast(
@@ -426,7 +420,7 @@ exp_fc_arimax <- explain_forecast(
 
 ```
 ## 
-## ── Starting `shapr::explain_forecast()` at 2025-05-05 12:00:22 ────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-05-05 15:08:08 ─────────────────────────────────────────────────────────────────
 ## ℹ Feature names extracted from the model contains `NA`.
 ##   Consistency checks between model and data is therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
 ##   method            from
@@ -439,7 +433,7 @@ exp_fc_arimax <- explain_forecast(
 ## • Iterative estimation: FALSE
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpIV9jd2/shapr_obj_cb6d75e3abd.rds'
+## • Computations (temporary) saved at: '/tmp/RtmpOWrAFJ/shapr_obj_12138165259f.rds'
 ## 
 ## ── Main computation started ──
 ## 
@@ -459,6 +453,7 @@ exp_fc_arimax <- explain_forecast(
 ```
 
 ``` r
+# Print Shapley values
 print(exp_fc_arimax)
 ```
 
@@ -488,9 +483,9 @@ sessionInfo()
 ## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3;  LAPACK version 3.9.0
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8   
-##  [6] LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## time zone: Europe/Oslo
 ## tzcode source: system (glibc)
@@ -499,7 +494,8 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggpubr_0.6.0      ggplot2_3.5.1     progressr_0.15.1  future_1.33.2     shapr_1.0.4       data.table_1.17.0 xgboost_1.7.9.1  
+## [1] ggpubr_0.6.0      ggplot2_3.5.1     progressr_0.15.1  future_1.33.2     shapr_1.0.4       data.table_1.17.0
+## [7] xgboost_1.7.9.1  
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] gridExtra_2.3       testthat_3.2.3      rlang_1.1.5         magrittr_2.0.3      furrr_0.3.1         tseries_0.10-58    

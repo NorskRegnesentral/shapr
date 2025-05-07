@@ -10,8 +10,6 @@
 ## Run the below command in the terminal from this script's folder to generate the code_py.html from code_py.py:
 # bash code_py_to_html.sh
 
-
-
 # Define filenames
 PYFILE="code_py.py"
 NOTEBOOK="code_py.ipynb"

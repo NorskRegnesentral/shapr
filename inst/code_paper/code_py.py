@@ -13,22 +13,20 @@ model.load_model("data_and_models/" +"xgb.model")
 model.feature_names = x_train.columns.tolist() 
 
 # Predict x_explain using the XGBoost model
-d_explain = xgb.DMatrix(x_explain)
-predictions = model.predict(d_explain)
-
-exp_20_ctree = explain(
+exp_30_ctree = explain(
     model = model,
     x_train = x_train,
     x_explain = x_explain,
     approach = 'ctree',
     phi0 = y_train.mean().item(),
-    max_n_coalitions=20,
+    verbose = None,
+    max_n_coalitions=30,
     ctree_sample = False,
     seed = 1)
 
 
 # Print the Shapley values
-print(exp_20_ctree['shapley_values_est'].iloc[:, 1:].round(1))
+print(exp_30_ctree['shapley_values_est'].iloc[:, 1:].round(1))
 
 
 # Print the session information 
