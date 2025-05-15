@@ -122,13 +122,14 @@ exp_iter_ctree <- explain(model = model,
 ```
 
 ```
-## ── Starting `shapr::explain()` at 2025-05-05 15:07:11 ──────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain()` at 2025-05-15 11:39:58 ──────────────────────────────────────────
 ```
 
 ```
 ## ℹ Feature classes extracted from the model contains `NA`.
 ##   Assuming feature classes from the data are correct.
-## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to
+##   `2^n_features = 128`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -145,7 +146,7 @@ exp_iter_ctree <- explain(model = model,
 ## 
 ## • Number of observations to explain: 146
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpOWrAFJ/shapr_obj_1213824f5ac82.rds'
+## • Computations (temporary) saved at: '/tmp/RtmpFsB2vC/shapr_obj_31328c7d8230.rds'
 ## 
 ## 
 ## 
@@ -153,7 +154,7 @@ exp_iter_ctree <- explain(model = model,
 ## 
 ## 
 ## 
-## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────
 ## 
 ## ℹ Using 32 of 128 coalitions, 2 new. 
 ## 
@@ -168,7 +169,7 @@ exp_iter_ctree <- explain(model = model,
 ## 
 ## 
 ## 
-## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────
 ## 
 ## ℹ Using 38 of 128 coalitions, 6 new. 
 ## 
@@ -183,7 +184,7 @@ exp_iter_ctree <- explain(model = model,
 ## 
 ## 
 ## 
-## ── Iteration 6 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 6 ─────────────────────────────────────────────────────────────────────────────────
 ## 
 ## ℹ Using 66 of 128 coalitions, 28 new. 
 ## 
@@ -266,17 +267,6 @@ exp_g_reg_tuned$MSEv$MSEv
 ## 1: 1534033 142277.4
 ```
 
-```
-##    explain_id     none      temp      time   weather
-##         <int>    <num>     <num>     <num>     <num>
-## 1:          1 4536.598  -371.659 -2757.175 -661.8197
-## 2:          2 4536.598 -1041.262 -1609.387 -412.9517
-## 3:          3 4536.598 -1118.937 -1560.695 -585.7902
-## 4:          4 4536.598 -1361.832 -1781.578 -415.2823
-## 5:          5 4536.598 -1887.654 -1745.006  125.1834
-## 6:          6 4536.598 -1810.055 -1927.635  478.3566
-```
-
 ``` r
 # Waterfall plot for the best one
 plot(exp_g_reg_tuned,
@@ -288,32 +278,53 @@ plot(exp_g_reg_tuned,
 
 
 ``` r
-#### Figure 6 in the paper ####
-```
-![plot of chunk fig-beeswarm_caus_asym](figure/fig-beeswarm_caus_asym-1.png)
-
-``` r
-#### Generic example code for Section 4 (not ran for paper) ####
+#### Causal and asymmetric Shapley values ####
 
 # Specify the causal ordering and confounding
-causal_ordering <- list("trend",
-                        c("cosyear", "sinyear"),
-                        c("temp", "atemp", "windspeed", "hum"))
+causal_order0 <- list("trend",
+                      c("cosyear", "sinyear"),
+                      c("temp", "atemp", "windspeed", "hum"))
 
-confounding <- c(FALSE, TRUE, FALSE)
+confounding0 <- c(FALSE, TRUE, FALSE)
 
-explanation <- explain(
-  model = model,
-  x_train = x_train,
-  x_explain = x_explain,
-  phi0 = mean(y_train),
-  approach = "gaussian",
-  asymmetric = TRUE,
-  causal_ordering = causal_ordering,
-  confounding = confounding,
-  seed = 1
-)
+# Specify the parameters of four different Shapley value variations
+exp_names <- c("Asymmetric causal", "Asymmetric conditional",
+               "Symmetric conditional", "Symmetric marginal")
+
+causal_ordering_list <- list(causal_order0, causal_order0, NULL, NULL)
+confounding_list <- list(confounding0, NULL, NULL, TRUE)
+asymmetric_list <- list(TRUE, TRUE, FALSE, FALSE)
+
+# Explain the four variations and create beeswarm plots
+plot_list <- list()
+for(i in seq_along(exp_names)){
+  exp_tmp <- explain(
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = "gaussian",
+    phi0 = mean(y_train),
+    asymmetric = asymmetric_list[[i]],
+    causal_ordering = causal_ordering_list[[i]],
+    confounding = confounding_list[[i]],
+    seed = 1,
+    verbose = NULL
+  )
+
+  plot_list[[i]] <- plot(exp_tmp, plot_type = "beeswarm") +
+    ggplot2::ggtitle(exp_names[i])+ggplot2::ylim(-3050, 4100)
+}
 ```
+
+``` r
+# Use the patchwork package to combine the plots
+library(patchwork)
+patchwork::wrap_plots(plot_list, nrow = 1) +
+  patchwork::plot_layout(guides = "collect")
+```
+
+![plot of chunk fig-beeswarm_caus_asym](figure/fig-beeswarm_caus_asym-1.png)
+
 
 ``` r
 #### Example code in Section 6 ####
@@ -324,12 +335,12 @@ data_fit <- x_full[seq_len(729), ]
 
 # Fit AR(2)-model
 model_ar <- ar(data_fit$temp, order = 2)
+
 phi0_ar <- rep(mean(data_fit$temp), 3)
 
 exp_fc_ar <- explain_forecast(
   model = model_ar,
   y = x_full[, "temp"],
-  train_idx = 2:729,
   explain_idx = 730:731,
   explain_y_lags = 2,
   horizon = 3,
@@ -345,13 +356,14 @@ exp_fc_ar <- explain_forecast(
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2025-05-05 15:08:08 ─────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-05-15 11:40:48 ─────────────────────────────────
 ```
 
 ```
 ## ℹ Feature names extracted from the model contains `NA`.
 ##   Consistency checks between model and data is therefore disabled.
-## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to
+##   `2^n_features = 4`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -368,7 +380,7 @@ exp_fc_ar <- explain_forecast(
 ## 
 ## • Number of observations to explain: 2
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpOWrAFJ/shapr_obj_121382beee87b.rds'
+## • Computations (temporary) saved at: '/tmp/RtmpFsB2vC/shapr_obj_3132829fe769d.rds'
 ## 
 ## 
 ## 
@@ -387,12 +399,12 @@ print(exp_fc_ar)
 ```
 ##    explain_idx horizon  none temp.1 temp.2
 ##          <int>   <int> <num>  <num>  <num>
-## 1:         730       1 15.32 -5.977 -4.667
-## 2:         731       1 15.32 -7.816 -4.746
-## 3:         730       2 15.32 -5.620 -4.374
-## 4:         731       2 15.32 -7.349 -4.457
-## 5:         730       3 15.32 -5.276 -4.105
-## 6:         731       3 15.32 -6.899 -4.184
+## 1:         730       1 15.32 -5.961 -4.683
+## 2:         731       1 15.32 -7.803 -4.759
+## 3:         730       2 15.32 -5.605 -4.389
+## 4:         731       2 15.32 -7.336 -4.470
+## 5:         730       3 15.32 -5.262 -4.119
+## 6:         731       3 15.32 -6.887 -4.196
 ```
 
 ``` r
@@ -420,9 +432,10 @@ exp_fc_arimax <- explain_forecast(
 
 ```
 ## 
-## ── Starting `shapr::explain_forecast()` at 2025-05-05 15:08:08 ─────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-05-15 11:40:49 ─────────────────────────────────
 ## ℹ Feature names extracted from the model contains `NA`.
-##   Consistency checks between model and data is therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
+##   Consistency checks between model and data is therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to
+##   `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
 ##   method            from
 ##   as.zoo.data.frame zoo 
 ## 
@@ -433,7 +446,7 @@ exp_fc_arimax <- explain_forecast(
 ## • Iterative estimation: FALSE
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpOWrAFJ/shapr_obj_12138165259f.rds'
+## • Computations (temporary) saved at: '/tmp/RtmpFsB2vC/shapr_obj_313281022d527.rds'
 ## 
 ## ── Main computation started ──
 ## 
@@ -483,9 +496,10 @@ sessionInfo()
 ## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3;  LAPACK version 3.9.0
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
-##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
+##  [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+## [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## time zone: Europe/Oslo
 ## tzcode source: system (glibc)
@@ -494,26 +508,31 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggpubr_0.6.0      ggplot2_3.5.1     progressr_0.15.1  future_1.33.2     shapr_1.0.4       data.table_1.17.0
-## [7] xgboost_1.7.9.1  
+## [1] patchwork_1.3.0   ggplot2_3.5.1     progressr_0.15.1  future_1.33.2     shapr_1.0.4      
+## [6] data.table_1.17.0 xgboost_1.7.9.1  
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] gridExtra_2.3       testthat_3.2.3      rlang_1.1.5         magrittr_2.0.3      furrr_0.3.1         tseries_0.10-58    
-##  [7] compiler_4.4.1      systemfonts_1.1.0   vctrs_0.6.5         lhs_1.2.0           quadprog_1.5-8      tune_1.3.0         
-## [13] pkgconfig_2.0.3     backports_1.5.0     labeling_0.4.3      prodlim_2024.06.25  ggbeeswarm_0.7.2    ragg_1.3.3         
-## [19] purrr_1.0.4         xfun_0.51           jsonlite_1.9.1      recipes_1.2.0       broom_1.0.7         parallel_4.4.1     
-## [25] R6_2.6.1            rsample_1.2.1       parallelly_1.43.0   car_3.1-3           rpart_4.1.23        brio_1.1.5         
-## [31] lmtest_0.9-40       lubridate_1.9.4     Rcpp_1.0.14         dials_1.4.0         iterators_1.0.14    knitr_1.50         
-## [37] future.apply_1.11.3 zoo_1.8-13          Matrix_1.7-0        splines_4.4.1       nnet_7.3-19         timechange_0.3.0   
-## [43] tidyselect_1.2.1    rstudioapi_0.17.1   abind_1.4-8         timeDate_4041.110   codetools_0.2-20    curl_6.2.1         
-## [49] listenv_0.9.1       lattice_0.22-6      tibble_3.2.1        quantmod_0.4.26     withr_3.0.2         urca_1.3-4         
-## [55] evaluate_1.0.3      survival_3.6-4      xts_0.14.1          pillar_1.10.1       carData_3.0-5       foreach_1.5.2      
-## [61] generics_0.1.3      TTR_0.24.4          forecast_8.23.0     munsell_0.5.1       scales_1.3.0        globals_0.16.3     
-## [67] class_7.3-22        glue_1.8.0          tools_4.4.1         gower_1.0.2         ggsignif_0.6.4      cowplot_1.1.3      
-## [73] grid_4.4.1          yardstick_1.3.2     tidyr_1.3.1         ipred_0.9-15        colorspace_2.1-1    nlme_3.1-164       
-## [79] beeswarm_0.4.0      fracdiff_1.5-3      vipor_0.4.7         Formula_1.2-5       cli_3.6.4           DiceDesign_1.10    
-## [85] textshaping_0.4.0   workflows_1.2.0     parsnip_1.3.1       lava_1.8.1          dplyr_1.1.4         gtable_0.3.6       
-## [91] GPfit_1.0-8         rstatix_0.7.2       digest_0.6.37       farver_2.1.2        lifecycle_1.0.4     hardhat_1.4.1      
-## [97] MASS_7.3-60.2
+##  [1] tidyselect_1.2.1    timeDate_4041.110   dplyr_1.1.4         vipor_0.4.7        
+##  [5] farver_2.1.2        digest_0.6.37       rpart_4.1.23        timechange_0.3.0   
+##  [9] lifecycle_1.0.4     yardstick_1.3.2     survival_3.6-4      magrittr_2.0.3     
+## [13] compiler_4.4.1      rlang_1.1.5         tools_4.4.1         knitr_1.50         
+## [17] labeling_0.4.3      curl_6.2.1          TTR_0.24.4          DiceDesign_1.10    
+## [21] parsnip_1.3.1       withr_3.0.2         purrr_1.0.4         workflows_1.2.0    
+## [25] nnet_7.3-19         grid_4.4.1          tune_1.3.0          xts_0.14.1         
+## [29] colorspace_2.1-1    globals_0.16.3      scales_1.3.0        iterators_1.0.14   
+## [33] MASS_7.3-60.2       cli_3.6.4           ragg_1.3.3          generics_0.1.3     
+## [37] rstudioapi_0.17.1   future.apply_1.11.3 ggbeeswarm_0.7.2    splines_4.4.1      
+## [41] dials_1.4.0         forecast_8.23.0     parallel_4.4.1      urca_1.3-4         
+## [45] vctrs_0.6.5         hardhat_1.4.1       Matrix_1.7-0        jsonlite_1.9.1     
+## [49] tseries_0.10-58     beeswarm_0.4.0      listenv_0.9.1       systemfonts_1.1.0  
+## [53] testthat_3.2.3      foreach_1.5.2       gower_1.0.2         tidyr_1.3.1        
+## [57] recipes_1.2.0       quantmod_0.4.26     glue_1.8.0          parallelly_1.43.0  
+## [61] codetools_0.2-20    rsample_1.2.1       lubridate_1.9.4     gtable_0.3.6       
+## [65] quadprog_1.5-8      lmtest_0.9-40       munsell_0.5.1       GPfit_1.0-8        
+## [69] tibble_3.2.1        pillar_1.10.1       furrr_0.3.1         brio_1.1.5         
+## [73] ipred_0.9-15        lava_1.8.1          R6_2.6.1            textshaping_0.4.0  
+## [77] lhs_1.2.0           evaluate_1.0.3      lattice_0.22-6      fracdiff_1.5-3     
+## [81] class_7.3-22        Rcpp_1.0.14         nlme_3.1-164        prodlim_2024.06.25 
+## [85] xfun_0.51           zoo_1.8-13          pkgconfig_2.0.3
 ```
 

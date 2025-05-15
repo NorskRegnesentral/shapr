@@ -137,10 +137,6 @@ exp_g_reg_tuned <- explain(model = model,
 exp_g_reg$MSEv$MSEv
 exp_g_reg_tuned$MSEv$MSEv
 
-#+ echo=FALSE
-# Print Shapley value for the best one (not shown in the paper)
-head(exp_g_reg_tuned$shapley_values_est)
-
 #+ fig-waterfall_group, fig.width=7, fig.height=4
 # Waterfall plot for the best one
 plot(exp_g_reg_tuned,
@@ -151,195 +147,56 @@ plot(exp_g_reg_tuned,
 # Produce the pdf used in Figure 3 in the paper
 ggplot2::ggsave(file.path("paper_figures", "waterfall_group.pdf"), width = 7, height = 4)
 
-
 #+
-#### Figure 6 in the paper ####
+#### Causal and asymmetric Shapley values ####
 
-#+ fig-beeswarm_caus_asym, echo=FALSE, message=FALSE, fig.width=14, fig.height=4, fig.scale=1.1
-library(ggplot2)
-library(ggpubr)
-
-
-### MJ EDIT STARTS ####
-
-causal_ordering0 <- list("trend",
-                        c("cosyear", "sinyear"),
-                        c("temp", "atemp", "windspeed", "hum"))
+# Specify the causal ordering and confounding
+causal_order0 <- list("trend",
+                      c("cosyear", "sinyear"),
+                      c("temp", "atemp", "windspeed", "hum"))
 
 confounding0 <- c(FALSE, TRUE, FALSE)
 
-exp_names <- c("Asymmetric causal", "Symmetric causal",
-               "Symmetric marginal (gaussian)", "Symmetric marginal (indep)")
+# Specify the parameters of four different Shapley value variations
+exp_names <- c("Asymmetric causal", "Asymmetric conditional",
+               "Symmetric conditional", "Symmetric marginal")
 
-causal_ordering_list <- list(causal_ordering0, causal_ordering0, NULL, NULL)
-approach_list <- list("gaussian", "gaussian", "gaussian", "independence")
-confounding_list <- list(confounding0, confounding0, NULL, NULL)
+causal_ordering_list <- list(causal_order0, causal_order0, NULL, NULL)
+confounding_list <- list(confounding0, NULL, NULL, TRUE)
 asymmetric_list <- list(TRUE, TRUE, FALSE, FALSE)
 
+# Explain the four variations and create beeswarm plots
 plot_list <- list()
 for(i in seq_along(exp_names)){
   exp_tmp <- explain(
     model = model,
     x_train = x_train,
     x_explain = x_explain,
+    approach = "gaussian",
     phi0 = mean(y_train),
-    approach = approach_list[[i]],
     asymmetric = asymmetric_list[[i]],
     causal_ordering = causal_ordering_list[[i]],
     confounding = confounding_list[[i]],
-    seed = 1
+    seed = 1,
+    verbose = NULL
   )
 
   plot_list[[i]] <- plot(exp_tmp, plot_type = "beeswarm") +
-    ggtitle(exp_names[i])
+    ggplot2::ggtitle(exp_names[i])+ggplot2::ylim(-3050, 4100)
 }
 
+#+ fig-beeswarm_caus_asym, fig.width=14, fig.height=4, fig.scale=0.9
+# Use the patchwork package to combine the plots
 library(patchwork)
-wrap_plots(plot_list,nrow = 1) +
-  plot_layout(guides = "collect") &
-  theme(legend.position = "right")
+patchwork::wrap_plots(plot_list, nrow = 1) +
+  patchwork::plot_layout(guides = "collect")
 
+#+ echo=FALSE
 # Produce the pdf used in Figure 6 in the paper
-ggplot2::ggsave(file.path("paper_figures", "beeswarm_caus_asym_new.pdf"),
+ggplot2::ggsave(file.path("paper_figures", "beeswarm_caus_asym.pdf"),
                 scale = 0.9,
                 width = 14,
                 height = 4)
-
-
-### MJ EDIT ENDS ####
-
-# Specify the causal ordering and confounding
-causal_ordering <- list("trend",
-                        c("cosyear", "sinyear"),
-                        c("temp", "atemp", "windspeed", "hum"))
-
-confounding0 <- c(FALSE, TRUE, FALSE)
-
-# Asymmetric causal
-exp_asym_cau <- explain(
-  model = model,
-  x_train = x_train,
-  x_explain = x_explain,
-  phi0 = mean(y_train),
-  approach = "gaussian",
-  asymmetric = TRUE,
-  causal_ordering = causal_ordering,
-  confounding = confounding,
-  seed = 1
-)
-
-
-# # Asymmetric conditional
-# exp_asym_cond <- explain(
-#   model = model,
-#   x_train = x_train,
-#   x_explain = x_explain,
-#   phi0 = mean(y_train),
-#   approach = "gaussian",
-#   asymmetric = TRUE,
-#   causal_ordering = causal_ordering,
-#   confounding = NULL,
-#   seed = 1
-# )
-
-# Symmetric causal
-exp_sym_cau <- explain(
-  model = model,
-  x_train = x_train,
-  x_explain = x_explain,
-  phi0 = mean(y_train),
-  approach = "gaussian",
-  asymmetric = FALSE,
-  causal_ordering = causal_ordering,
-  confounding = confounding,
-  seed = 1
-)
-
-# Symmetric marginal
-exp_sym_marg_gaus <- explain(
-  model = model,
-  x_train = x_train,
-  x_explain = x_explain,
-  phi0 = mean(y_train),
-  approach = "gaussian",
-  asymmetric = FALSE,
-  causal_ordering = NULL,
-  confounding = TRUE,
-  seed = 1
-)
-
-# Symmetric marginal
-exp_sym_marg_ind <- explain(
-  model = model,
-  x_train = x_train,
-  x_explain = x_explain,
-  phi0 = mean(y_train),
-  approach = "independence",
-  asymmetric = FALSE,
-  causal_ordering = NULL,
-  confounding = NULL,
-  seed = 1
-)
-
-## Plotting
-# Combine the explanations
-explanation_list = list("Asymmetric causal" = exp_asym_cau,
-                        "Asymmetric conditional" = exp_asym_cond,
-                        "Symmetric causal" = exp_sym_cau,
-                        "Symmetric marginal (gaussian)" = exp_sym_marg_gaus,
-                        "Symmetric marginal (indep)" = exp_sym_marg_ind)
-
-library(patchwork)
-wrap_plots(lapply(explanation_list,plot,plot_type="beeswarm")) +
-  plot_layout(guides = "collect") &
-  theme(legend.position = "right")
-
-
-# Make the beeswarm plots
-grobs <- lapply(seq(length(explanation_list)), function(explanation_idx) {
-  gg <- plot(explanation_list[[explanation_idx]], plot_type = "beeswarm") +
-    ggplot2::ggtitle(gsub("_", " ", names(explanation_list)[[explanation_idx]]))
-
-  # Flip the order such that the features comes in the right order
-  gg <- gg +
-    ggplot2::scale_x_discrete(limits = rev(levels(gg$data$variable)[levels(gg$data$variable) != "none"]))+
-    ggplot2::theme(axis.text.y = ggplot2::element_text(size = 12),
-                   axis.text.x = ggplot2::element_text(size = 12))
-})
-
-fig = ggpubr::ggarrange(grobs[[1]], grobs[[2]], grobs[[3]], grobs[[4]],
-                        ncol=4, nrow=1, common.legend = TRUE, legend="right")
-fig
-
-# Produce the pdf used in Figure 6 in the paper
-ggplot2::ggsave(file.path("paper_figures", "beeswarm_caus_asym.pdf"),
-                scale = 1.1,
-                width = 14,
-                height = 4)
-
-#+ eval=FALSE, echo=TRUE
-#### Generic example code for Section 4 (not ran for paper) ####
-
-# Specify the causal ordering and confounding
-causal_ordering <- list("trend",
-                        c("cosyear", "sinyear"),
-                        c("temp", "atemp", "windspeed", "hum"))
-
-confounding <- c(FALSE, TRUE, FALSE)
-
-explanation <- explain(
-  model = model,
-  x_train = x_train,
-  x_explain = x_explain,
-  phi0 = mean(y_train),
-  approach = "gaussian",
-  asymmetric = TRUE,
-  causal_ordering = causal_ordering,
-  confounding = confounding,
-  seed = 1
-)
-
-
 
 #+
 #### Example code in Section 6 ####
