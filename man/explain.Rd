@@ -383,13 +383,13 @@ Heskes et al. (2020)} and
 \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
 Frye et al. (2020)}.
 Asymmetric Shapley values were proposed by
-\href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
-Heskes et al. (2020)} as a way to incorporate causal knowledge in
+\href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+Frye et al. (2020)} as a way to incorporate causal knowledge in
 the real world by restricting the possible feature combinations/coalitions when computing the Shapley values to
 those consistent with a (partial) causal ordering.
 Causal Shapley values were proposed by
-\href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
-Frye et al. (2020)} as a way to explain the total effect of features
+\href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+Heskes et al. (2020)} as a way to explain the total effect of features
 on the prediction, taking into account their causal relationships, by adapting the sampling procedure in \code{shapr}.
 
 The package allows for parallelized computation with progress updates through the tightly connected
