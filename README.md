@@ -22,9 +22,12 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 See the pkgdown site at
 [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/)
 for a complete introduction with examples and documentation of the
-package. For an overview of the methodology and capabilities of the
-package (as of v1.0.4), see the preprint of the full length [software
-paper for `shapr` v1.0.4](https://arxiv.org/abs/2504.01842).
+package.
+
+For an overview of the methodology and capabilities of the package (per
+`shapr` v1.0.4), see the software paper Jullum et al.
+([2025](#ref-jullum2025shapr)), available in preprint
+[here](https://arxiv.org/abs/2504.01842).
 
 ## NEWS
 
@@ -46,8 +49,8 @@ functionality, including:
   Python
 
 See the
-[NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md)
-for a complete list.
+[NEWS](https://norskregnesentral.github.io/shapr/news/index.html) for a
+complete list.
 
 ### Coming from shapr \< 1.0.0?
 
@@ -184,7 +187,7 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-05-05 11:52:31 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-05-16 15:47:23 ──────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is
@@ -206,7 +209,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpqrHcvb/shapr_obj_c8147cede04f.rds'
+#> '/tmp/RtmplPXFzz/shapr_obj_3664632fbb1d1.rds'
 #> 
 #> 
 #> 
@@ -234,17 +237,22 @@ plot(explanation)
 
 <img src="man/figures/README-basic_example-1.png" width="100%" />
 
-See the [general usage
+See Jullum et al. ([2025](#ref-jullum2025shapr)) (preprint available
+[here](https://arxiv.org/abs/2504.01842)) for a software paper with an
+overview of the methodology and capabilities of the package (as of
+v1.0.4). See the [general usage
 vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html)
 for further basic usage examples and brief introductions to the
-methodology. See Jullum et al. (2025) (preprint) for software paper with
-an overview of the methodology and capabilities of the package (as of
-v1.0.4). For more thorough information about the underlying methodology,
-see methodological papers Aas, Jullum, and Løland (2021), Redelmeier,
-Jullum, and Aas (2020), Jullum, Redelmeier, and Aas (2021), Olsen et al.
-(2022), Olsen et al. (2024). See also Sellereite and Jullum (2019) for a
-very brief paper about a previous version (v0.1.1) of the package (with
-a different structure, syntax and significantly less functionality).
+methodology. For more thorough information about the underlying
+methodology, see methodological papers Aas, Jullum, and Løland
+([2021](#ref-aas2019explaining)), Redelmeier, Jullum, and Aas
+([2020](#ref-redelmeier2020explaining)), Jullum, Redelmeier, and Aas
+([2021](#ref-jullum2021efficient)), Olsen et al.
+([2022](#ref-olsen2022using)), Olsen et al.
+([2024](#ref-olsen2024comparative)). See also Sellereite and Jullum
+([2019](#ref-sellereite2019shapr)) for a very brief paper about a
+previous version (v0.1.1) of the package (with a different structure,
+syntax and significantly less functionality).
 
 ## Contribution
 
@@ -268,6 +276,7 @@ By contributing to this project, you agree to abide by its terms.
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining
 Individual Predictions When Features Are Dependent: More Accurate
 Approximations to Shapley Values.” *Artificial Intelligence* 298.
+<https://doi.org/10.1016/j.artint.2021.103502>.
 
 </div>
 
@@ -275,8 +284,8 @@ Approximations to Shapley Values.” *Artificial Intelligence* 298.
 
 Jullum, Martin, Lars Henry Berge Olsen, Jon Lachmann, and Annabelle
 Redelmeier. 2025. “Shapr: Explaining Machine Learning Models with
-Conditional Shapley Values in r and Python.” *arXiv Preprint
-arXiv:2504.01842*.
+Conditional Shapley Values in R and Python.” *arXiv Preprint
+arXiv:2504.01842*. <https://arxiv.org/abs/2504.01842>.
 
 </div>
 
