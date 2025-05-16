@@ -4,7 +4,7 @@
 
 
 ## R
-To reproduce the R examples and figure, make sure you have `R>=3.5` installed along with the `shapr` package, in addition to the following packages from CRAN: `xgboost`, `data.table`, `future`, `progressr`, `ggplot2`, `ggpubr`.
+To reproduce the R examples and figure, make sure you have `R>=3.5` installed along with the `shapr` package, in addition to the following packages from CRAN: `xgboost`, `data.table`, `future`, `progressr` and `patchwork`.
 
 Then, from the command line, run 
 ```
@@ -25,8 +25,16 @@ Then, install the `shaprpy` Python package by navigating to the `python` folder 
 pip install -e .
 ```
 
-After successfull installation of `shaprpy`, from the command line, run 
+We have created a simple bash script executing the Python code in a manner similar to how the `knitr::spin()` function operates for the the `R` code.
+The bash script requires the `jupytext` `nbconvert` and `session_info` libraries to run.
+They can installed by with `pip` as follows:
+
+```
+pip install jupytext nbconvert session_info
+```
+
+After successfull installation, from the command line, run 
 ```
 bash code_py_to_html.sh
 ```
-This will generate the file `code_py.html` containing the code from `code_py.py` accompanied with it's output.
+This will generate the file `code_py.html` containing the code from `code_py.py` accompanied with it's output and basic session information.
