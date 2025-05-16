@@ -43,10 +43,11 @@ functionality, including:
 - Parallelized computations with progress updates
 - Reweighted Kernel SHAP for faster convergence
 - New function `explain_forecast()` for explaining forecasts
+- Asymmetric and causal Shapley values
 - Several other methodological, computational and user-experience
   improvements
-- Python wrapper making the core functionality of `shapr` available in
-  Python
+- Python wrapper `shaprpy` making the core functionality of `shapr`
+  available in Python
 
 See the
 [NEWS](https://norskregnesentral.github.io/shapr/news/index.html) for a
@@ -63,7 +64,7 @@ cases was removed to simplify the code base.
 
 Click
 [here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md)
-to view a version of this README with old syntax (v0.2.2).
+to view a version of this README with the old syntax (v0.2.2).
 
 ### Python wrapper
 
@@ -187,7 +188,7 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-05-16 15:47:23 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-05-16 15:59:46 ──────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is
@@ -209,7 +210,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmplPXFzz/shapr_obj_3664632fbb1d1.rds'
+#> '/tmp/RtmprK6ied/shapr_obj_367086e7deb18.rds'
 #> 
 #> 
 #> 

@@ -49,8 +49,10 @@ and regression-based methods
 * Parallelized computations with progress updates
 * Reweighted Kernel SHAP for faster convergence
 * New function `explain_forecast()` for explaining forecasts
+* Asymmetric and causal Shapley values
 * Several other methodological, computational and user-experience improvements
-* Python wrapper making the core functionality of `shapr` available in Python
+* Python wrapper `shaprpy` making the core functionality of `shapr` available in Python
+
 
 See the [NEWS](https://norskregnesentral.github.io/shapr/news/index.html) for a complete list.
 
@@ -61,8 +63,7 @@ a single function (`explain()`).
 In addition, custom models are now explained by passing the prediction function directly to `explain()`, 
 quite a few input arguments got new names, and a few functions for edge cases was removed to simplify the code base. 
 
-Click [here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md) to view a version of this 
-README with old syntax (v0.2.2).
+Click [here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md) to view a version of this README with the old syntax (v0.2.2).
 
 ### Python wrapper
 
@@ -85,8 +86,7 @@ shapr is as a highly efficient and user-friendly tool, delivering precise estima
 which are critical for understanding how features truly contribute to predictions.
 
 A basic example is provided below. 
-Otherwise we refer to the [pkgdown website](https://norskregnesentral.github.io/shapr/) and the different vignettes 
-there for details and further examples.
+Otherwise we refer to the [pkgdown website](https://norskregnesentral.github.io/shapr/) and the different vignettes there for details and further examples.
 
 
 ## Installation
@@ -111,11 +111,9 @@ remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 
 
 ## Example
-`shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and 
-produces a numeric outcome. 
+`shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome. 
 
-The following example shows how a simple `xgboost` model is trained using the *airquality* dataset, and how `shapr` 
-explains the individual predictions. 
+The following example shows how a simple `xgboost` model is trained using the *airquality* dataset, and how `shapr` explains the individual predictions. 
 
 We first enable parallel computation and progress updates with the following code chunk. 
 These are optional, but recommended for improved performance and user friendliness, 
