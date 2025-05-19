@@ -16,7 +16,7 @@ model.feature_names = x_train.columns.tolist()
 exp_30_ctree = explain(model = model,
                        x_train = x_train,
                        x_explain = x_explain,
-                       approach = 'ctree',
+                       approach = "ctree",
                        phi0 = y_train.mean().item(),
                        verbose = None,
                        max_n_coalitions=30,
@@ -25,7 +25,7 @@ exp_30_ctree = explain(model = model,
 
 
 # Print the Shapley values
-print(exp_30_ctree['shapley_values_est'].iloc[:, 1:].round(1))
+print(exp_30_ctree["shapley_values_est"].iloc[:, 1:].round(1))
 
 
 # Print the session information 
