@@ -2,6 +2,11 @@
 # How to reproduce the code and figure examples in the paper 
 # shapr: Explaining Machine Learning Models with Conditional Shapley Values in R and Python
 
+*The following instructions assumes a Linux type environment.*
+*Modifications may be required to run them on other operating systems.*
+
+*The code has been tested on Ubuntu 20.04.6 LTS with R 4.4.1 and Python 3.12.7 installed.*
+
 
 ## R
 To reproduce the R examples and figure, make sure you have `R>=3.5` installed along with the `shapr` package, in addition to the following packages from CRAN: `xgboost`, `data.table`, `future`, `progressr` and `patchwork`.
