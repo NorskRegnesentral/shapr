@@ -252,7 +252,7 @@ print(exp_fc_arimax)
 #### Wrapping up ####
 
 #+ echo=FALSE
-# Make sure any open connections opened future::plan(multisession, workers = 4) are closed afterwards
+# Make sure any open connections opened by future::plan(multisession, workers = 4) are closed afterwards
 future::plan("sequential")
 
 #+

@@ -115,13 +115,14 @@ exp_iter_ctree <- explain(model = model,
 ```
 
 ```
-## ── Starting `shapr::explain()` at 2025-05-16 14:47:27 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain()` at 2025-05-23 09:27:39 ───────────────────────────────────────────────
 ```
 
 ```
 ## ℹ Feature classes extracted from the model contains `NA`.
 ##   Assuming feature classes from the data are correct.
-## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to
+##   `2^n_features = 128`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -138,7 +139,7 @@ exp_iter_ctree <- explain(model = model,
 ## 
 ## • Number of observations to explain: 146
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpFU9kD0/shapr_obj_35a853258e6d8.rds'
+## • Computations (temporary) saved at: '/tmp/RtmpG9sgkt/shapr_obj_4c76a2bd90b63.rds'
 ## 
 ## 
 ## 
@@ -146,7 +147,7 @@ exp_iter_ctree <- explain(model = model,
 ## 
 ## 
 ## 
-## ── Iteration 4 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────
 ## 
 ## ℹ Using 32 of 128 coalitions, 2 new. 
 ## 
@@ -161,7 +162,7 @@ exp_iter_ctree <- explain(model = model,
 ## 
 ## 
 ## 
-## ── Iteration 5 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────────────
 ## 
 ## ℹ Using 38 of 128 coalitions, 6 new. 
 ## 
@@ -176,7 +177,7 @@ exp_iter_ctree <- explain(model = model,
 ## 
 ## 
 ## 
-## ── Iteration 6 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────────────
 ## 
 ## ℹ Using 66 of 128 coalitions, 28 new. 
 ## 
@@ -348,13 +349,14 @@ exp_fc_ar <- explain_forecast(
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2025-05-16 14:48:17 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-05-23 09:28:29 ──────────────────────────────────────
 ```
 
 ```
 ## ℹ Feature names extracted from the model contains `NA`.
 ##   Consistency checks between model and data is therefore disabled.
-## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+## ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to
+##   `2^n_features = 4`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -371,7 +373,7 @@ exp_fc_ar <- explain_forecast(
 ## 
 ## • Number of observations to explain: 2
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpFU9kD0/shapr_obj_35a85354eeada.rds'
+## • Computations (temporary) saved at: '/tmp/RtmpG9sgkt/shapr_obj_4c76a4b7ff73c.rds'
 ## 
 ## 
 ## 
@@ -423,9 +425,10 @@ exp_fc_arimax <- explain_forecast(
 
 ```
 ## 
-## ── Starting `shapr::explain_forecast()` at 2025-05-16 14:48:18 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-05-23 09:28:30 ──────────────────────────────────────
 ## ℹ Feature names extracted from the model contains `NA`.
-##   Consistency checks between model and data is therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
+##   Consistency checks between model and data is therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to
+##   `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
 ##   method            from
 ##   as.zoo.data.frame zoo 
 ## 
@@ -436,7 +439,7 @@ exp_fc_arimax <- explain_forecast(
 ## • Iterative estimation: FALSE
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpFU9kD0/shapr_obj_35a8525eb2b12.rds'
+## • Computations (temporary) saved at: '/tmp/RtmpG9sgkt/shapr_obj_4c76ac21478d.rds'
 ## 
 ## ── Main computation started ──
 ## 

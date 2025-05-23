@@ -19,7 +19,7 @@ This will generate the file `code_R.html` containing the code from `code_R.R` ac
 
 **Note 1:** The html file displays the code and output of the code displayed in the paper. Additional code used to mildly customize and save the figures is provided in the `code_R.R` file and executed by `knitr::spin()`, but not shown in the html-file. 
 
-**Note 2:** The file `R_prep_data_and_model.R` generate the data and models files used by the below script. This is alreay done and the files are included in the `data_and_models` folder to ensure reproducibility across different environments.
+**Note 2:** The file `R_prep_data_and_model.R` generate the data and models files used by the below script. This is already done and the files are included in the `data_and_models` folder to ensure reproducibility across different environments.
 
 ## Python
 
