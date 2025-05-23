@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="139"/>
+# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="100"/>
 
 <!-- badges: start -->
 
@@ -13,12 +13,21 @@ status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.s
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
-[![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
+[![JOSS
+(v0.2.3)](https://img.shields.io/badge/JOSS%20(v0.2.3)-10.21105/joss.02027-brightgreen.svg)](https://doi.org/10.21105/joss.02027)
+[![arXiv
+(v1.0.4)](https://img.shields.io/badge/arXiv%20(v1.0.4)-2504.01842-b31b1b.svg)](https://arxiv.org/abs/2504.01842)
+<!-- badges: end -->
 
 See the pkgdown site at
 [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/)
 for a complete introduction with examples and documentation of the
-package. <!-- badges: end -->
+package.
+
+For an overview of the methodology and capabilities of the package (per
+`shapr` v1.0.4), see the software paper Jullum et al.
+([2025](#ref-jullum2025shapr)), available in preprint
+[here](https://arxiv.org/abs/2504.01842).
 
 ## NEWS
 
@@ -34,14 +43,15 @@ functionality, including:
 - Parallelized computations with progress updates
 - Reweighted Kernel SHAP for faster convergence
 - New function `explain_forecast()` for explaining forecasts
+- Asymmetric and causal Shapley values
 - Several other methodological, computational and user-experience
   improvements
-- Python wrapper making the core functionality of `shapr` available in
-  Python
+- Python wrapper `shaprpy` making the core functionality of `shapr`
+  available in Python
 
 See the
-[NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md)
-for a complete list.
+[NEWS](https://norskregnesentral.github.io/shapr/news/index.html) for a
+complete list.
 
 ### Coming from shapr \< 1.0.0?
 
@@ -54,14 +64,14 @@ cases was removed to simplify the code base.
 
 Click
 [here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md)
-to view a version of this README with old syntax (v0.2.2).
+to view a version of this README with the old syntax (v0.2.2).
 
 ### Python wrapper
 
-We provide an (experimental) Python wrapper (`shaprpy`) which allows
-explaining Python models with the methodology implemented in `shapr`,
-directly from Python. The wrapper calls `R` internally, and therefore
-requires an installation of `R`. See
+We provide a Python wrapper (`shaprpy`) which allows explaining Python
+models with the methodology implemented in `shapr`, directly from
+Python. The wrapper calls `R` internally, and therefore requires an
+installation of `R`. See
 [here](https://norskregnesentral.github.io/shapr/shaprpy.html) for
 installation instructions and examples.
 
@@ -174,28 +184,43 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
-#> Note: Feature classes extracted from the model contains NA.
-#> Assuming feature classes from the data are correct.
-#> Success with message:
-#> max_n_coalitions is NULL or larger than or 2^n_features = 16, 
-#> and is therefore set to 2^n_features = 16.
 #> 
-#> ── Starting `shapr::explain()` at 2025-03-26 06:47:04 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-05-16 15:59:46 ──────────────────────────
+#> ℹ Feature classes extracted from the model contains `NA`.
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is
+#>   therefore set to `2^n_features = 16`.
+#> 
+#> 
+#> ── Explanation overview ──
+#> 
+#> 
+#> 
 #> • Model class: <xgb.Booster>
+#> 
 #> • Approach: empirical
+#> 
 #> • Iterative estimation: FALSE
+#> 
 #> • Number of feature-wise Shapley values: 4
+#> 
 #> • Number of observations to explain: 6
+#> 
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpwFUqgs/shapr_obj_150f03bfd7b8.rds'
+#> '/tmp/RtmprK6ied/shapr_obj_367086e7deb18.rds'
+#> 
+#> 
 #> 
 #> ── Main computation started ──
 #> 
+#> 
+#> 
 #> ℹ Using 16 of 16 coalitions.
 
-# Printing the Shapley values for the test data.
+# Printing the Shapley values for the data to explain.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values_est)
 #>    explain_id     none    Solar.R      Wind      Temp      Month
@@ -213,14 +238,22 @@ plot(explanation)
 
 <img src="man/figures/README-basic_example-1.png" width="100%" />
 
-See the [general usage
+See Jullum et al. ([2025](#ref-jullum2025shapr)) (preprint available
+[here](https://arxiv.org/abs/2504.01842)) for a software paper with an
+overview of the methodology and capabilities of the package (as of
+v1.0.4). See the [general usage
 vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html)
 for further basic usage examples and brief introductions to the
 methodology. For more thorough information about the underlying
-methodology, see Aas, Jullum, and Løland (2021), Redelmeier, Jullum, and
-Aas (2020), Jullum, Redelmeier, and Aas (2021), Olsen et al. (2022),
-Olsen et al. (2024) . See also Sellereite and Jullum (2019) for a brief
-paper about the previous (\< 1.0.0) version of the package.
+methodology, see methodological papers Aas, Jullum, and Løland
+([2021](#ref-aas2019explaining)), Redelmeier, Jullum, and Aas
+([2020](#ref-redelmeier2020explaining)), Jullum, Redelmeier, and Aas
+([2021](#ref-jullum2021efficient)), Olsen et al.
+([2022](#ref-olsen2022using)), Olsen et al.
+([2024](#ref-olsen2024comparative)). See also Sellereite and Jullum
+([2019](#ref-sellereite2019shapr)) for a very brief paper about a
+previous version (v0.1.1) of the package (with a different structure,
+syntax and significantly less functionality).
 
 ## Contribution
 
@@ -244,6 +277,16 @@ By contributing to this project, you agree to abide by its terms.
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining
 Individual Predictions When Features Are Dependent: More Accurate
 Approximations to Shapley Values.” *Artificial Intelligence* 298.
+<https://doi.org/10.1016/j.artint.2021.103502>.
+
+</div>
+
+<div id="ref-jullum2025shapr" class="csl-entry">
+
+Jullum, Martin, Lars Henry Berge Olsen, Jon Lachmann, and Annabelle
+Redelmeier. 2025. “Shapr: Explaining Machine Learning Models with
+Conditional Shapley Values in R and Python.” *arXiv Preprint
+arXiv:2504.01842*. <https://arxiv.org/abs/2504.01842>.
 
 </div>
 

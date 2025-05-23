@@ -1,6 +1,7 @@
 ---
 output: github_document
 bibliography: ./inst/REFERENCES.bib
+link-citations: yes
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -15,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="139"/>
+# shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="100"/>
 
 <!-- badges: start -->
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-last-release/shapr)](https://cran.r-project.org/package=shapr)
@@ -23,11 +24,17 @@ knitr::opts_chunk$set(
 [![R build status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
-[![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
+[![JOSS (v0.2.3)](https://img.shields.io/badge/JOSS (v0.2.3)-10.21105/joss.02027-brightgreen.svg)](https://doi.org/10.21105/joss.02027)
+[![arXiv (v1.0.4)](https://img.shields.io/badge/arXiv (v1.0.4)-2504.01842-b31b1b.svg)](https://arxiv.org/abs/2504.01842)
+<!-- badges: end -->
 
 See the pkgdown site at [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/)
 for a complete introduction with examples and documentation of the package.
-<!-- badges: end -->
+
+For an overview of the methodology and capabilities of the package (per `shapr` v1.0.4), 
+see the software paper @jullum2025shapr, available in preprint [here](https://arxiv.org/abs/2504.01842).
+
+
 
 
 ## NEWS
@@ -42,10 +49,12 @@ and regression-based methods
 * Parallelized computations with progress updates
 * Reweighted Kernel SHAP for faster convergence
 * New function `explain_forecast()` for explaining forecasts
+* Asymmetric and causal Shapley values
 * Several other methodological, computational and user-experience improvements
-* Python wrapper making the core functionality of `shapr` available in Python
+* Python wrapper `shaprpy` making the core functionality of `shapr` available in Python
 
-See the [NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md) for a complete list.
+
+See the [NEWS](https://norskregnesentral.github.io/shapr/news/index.html) for a complete list.
 
 ### Coming from shapr < 1.0.0?
 `shapr` version >= 1.0.0 comes with a number of breaking changes. 
@@ -54,12 +63,11 @@ a single function (`explain()`).
 In addition, custom models are now explained by passing the prediction function directly to `explain()`, 
 quite a few input arguments got new names, and a few functions for edge cases was removed to simplify the code base. 
 
-Click [here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md) to view a version of this 
-README with old syntax (v0.2.2).
+Click [here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md) to view a version of this README with the old syntax (v0.2.2).
 
 ### Python wrapper
 
-We provide an (experimental) Python wrapper (`shaprpy`) which allows explaining Python models with the methodology 
+We provide a Python wrapper (`shaprpy`) which allows explaining Python models with the methodology 
 implemented in `shapr`, directly from Python. 
 The wrapper calls `R` internally, and therefore requires an installation of `R`. 
 See [here](https://norskregnesentral.github.io/shapr/shaprpy.html) for installation instructions and examples.
@@ -78,8 +86,7 @@ shapr is as a highly efficient and user-friendly tool, delivering precise estima
 which are critical for understanding how features truly contribute to predictions.
 
 A basic example is provided below. 
-Otherwise we refer to the [pkgdown website](https://norskregnesentral.github.io/shapr/) and the different vignettes 
-there for details and further examples.
+Otherwise we refer to the [pkgdown website](https://norskregnesentral.github.io/shapr/) and the different vignettes there for details and further examples.
 
 
 ## Installation
@@ -104,11 +111,9 @@ remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 
 
 ## Example
-`shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and 
-produces a numeric outcome. 
+`shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome. 
 
-The following example shows how a simple `xgboost` model is trained using the *airquality* dataset, and how `shapr` 
-explains the individual predictions. 
+The following example shows how a simple `xgboost` model is trained using the *airquality* dataset, and how `shapr` explains the individual predictions. 
 
 We first enable parallel computation and progress updates with the following code chunk. 
 These are optional, but recommended for improved performance and user friendliness, 
@@ -163,10 +168,11 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
-  phi0 = p0
+  phi0 = p0,
+  seed = 1
 )
 
-# Printing the Shapley values for the test data.
+# Printing the Shapley values for the data to explain.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values_est)
 
@@ -174,11 +180,14 @@ print(explanation$shapley_values_est)
 plot(explanation)
 ```
 
+See @jullum2025shapr (preprint available [here](https://arxiv.org/abs/2504.01842)) for a software paper with an overview of the methodology and capabilities of the 
+package (as of v1.0.4).
 See the [general usage vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) for further 
 basic usage examples and brief introductions to the methodology. 
-For more thorough information about the underlying methodology, see 
-@aas2019explaining, @redelmeier2020explaining, @jullum2021efficient, @olsen2022using, @olsen2024comparative .
-See also @sellereite2019shapr for a brief paper about the previous (< 1.0.0) version of the package.
+For more thorough information about the underlying methodology, see methodological papers
+@aas2019explaining, @redelmeier2020explaining, @jullum2021efficient, @olsen2022using, @olsen2024comparative.
+See also @sellereite2019shapr for a very brief paper about a previous version (v0.1.1) of the package 
+(with a different structure, syntax and significantly less functionality).
 
 ## Contribution
 
