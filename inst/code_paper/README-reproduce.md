@@ -31,7 +31,7 @@ The folder contains the following files:
 ## R
 To reproduce the R examples and figures, make sure you have installed the `shapr` package, its required packages, in addition to the following packages from CRAN: `xgboost`, `ctree`, `future`, `progressr` and `patchwork`.
 
-Then, from the command line, run 
+Then, from the command line, run
 ```
 Rscript -e "knitr::spin('code_R.R')"
 ```
@@ -39,7 +39,7 @@ This will generate the file `code_R.html` containing the code from `code_R.R` ac
 
 **Note 1:** The html file displays the code and output of the code displayed in the paper. Additional code used to mildly customize and save the figures is provided in the `code_R.R` file and executed by `knitr::spin()`, but not shown in the html-file. 
 
-**Note 2:** The `R_prep_data_and_model.R` script generates the data and models files used by `code_R.R`. This is already done and the files are included in the `data_and_models` folder to ensure reproducibility across a broader range of environments. I.e., it is not necessary to run this script, but it is included for complete reproducability.
+**Note 2:** The `R_prep_data_and_model.R` script generates the data and models files used by `code_R.R`. This is already done and the files are included in the `data_and_models` folder to ensure reproducibility across a broader range of environments. I.e., it is not necessary to run this script, but it is included for complete reproducibility.
 
 ## Python
 
