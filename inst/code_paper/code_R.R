@@ -2,7 +2,7 @@
 # shapr: Explaining Machine Learning Models with Conditional Shapley Values in R and Python
 
 # Requires the following R packages (from CRAN)
-# shapr, xgboost, data.table, future, progressr, ggplot2, ggpubr
+# shapr, xgboost, data.table, future, progressr, ggplot2, patchwork
 
 # /*
 # The lines below have already been run to save data/models for eased reproducibility:
@@ -13,6 +13,11 @@
 # Run the below command in R from this script's folder to generate the code_R.html from code_R.R
 # knitr::spin("code_R.R")
 # */
+
+#+ echo=FALSE
+dir.create("html_figures", showWarnings = FALSE)
+knitr::opts_chunk$set(fig.path = 'html_figures/')
+#
 
 #### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
 
