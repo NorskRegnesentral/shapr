@@ -3,11 +3,17 @@
 model by using the method specified in approach to estimate the conditional expectation.
 See
 Aas, et. al (2021)
-for a thorough introduction to dependence-aware prediction explanation with Shapley values."><meta property="og:description" content="Computes dependence-aware Shapley values for observations in explain_idx from the specified
+for a thorough introduction to dependence-aware prediction explanation with Shapley values.
+For an overview of the methodology and capabilities of the shapr package, see the software paper
+Jullum et al. (2025), or the pkgdown site at
+norskregnesentral.github.io/shapr/."><meta property="og:description" content="Computes dependence-aware Shapley values for observations in explain_idx from the specified
 model by using the method specified in approach to estimate the conditional expectation.
 See
 Aas, et. al (2021)
-for a thorough introduction to dependence-aware prediction explanation with Shapley values."></head><body>
+for a thorough introduction to dependence-aware prediction explanation with Shapley values.
+For an overview of the methodology and capabilities of the shapr package, see the software paper
+Jullum et al. (2025), or the pkgdown site at
+norskregnesentral.github.io/shapr/."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -60,7 +66,10 @@ for a thorough introduction to dependence-aware prediction explanation with Shap
 <code>model</code> by using the method specified in <code>approach</code> to estimate the conditional expectation.
 See
 <a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">Aas, et. al (2021)</a>
-for a thorough introduction to dependence-aware prediction explanation with Shapley values.</p>
+for a thorough introduction to dependence-aware prediction explanation with Shapley values.
+For an overview of the methodology and capabilities of the <code>shapr</code> package, see the software paper
+<a href="https://arxiv.org/pdf/2504.01842" class="external-link">Jullum et al. (2025)</a>, or the pkgdown site at
+<a href="https://norskregnesentral.github.io/shapr/">norskregnesentral.github.io/shapr/</a>.</p>
     </div>
 
     <div class="section level2">
@@ -482,12 +491,17 @@ arbitrary point in time, <code>explain_y_lags</code> and <code>explain_xreg_lags
 are required to "refit" the model at any given time index. This allows the different
 approaches to work in the same way they do for time-invariant models.</p>
 <p>See the <a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html#forecasting">
-forecasting section of the general usages</a> for further details.</p>
+forecasting section of the general usage vignette</a> for further details.
+See also the software paper <a href="https://arxiv.org/pdf/2504.01842" class="external-link">Jullum et al. (2025, Sec. 6)</a>
+for a more detailed introduction to the methodology, and additional examples.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
 
-<ul><li><p><a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">
+<ul><li><p><a href="https://arxiv.org/pdf/2504.01842" class="external-link">
+Jullum, M., Olsen, L. H. B., Lachmann, J., &amp; Redelmeier, A. (2025). shapr: Explaining Machine Learning Models
+with Conditional Shapley Values in R and Python. arXiv preprint arXiv:2504.01842.</a></p></li>
+<li><p><a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">
 Aas, K., Jullum, M., &amp; Løland, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502</a></p></li>
 <li><p><a href="https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf" class="external-link">
@@ -549,7 +563,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2025-05-05 08:08:29</span> <span style="color: #00BBBB;">─────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2025-05-27 09:27:10</span> <span style="color: #00BBBB;">─────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature names extracted from the model contains `NA`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   Consistency checks between model and data is therefore disabled.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is</span>
@@ -562,7 +576,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpU6I8Yn/shapr_obj_1faa263c8316.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmps0LlhM/shapr_obj_756c41c79617.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -588,7 +602,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
