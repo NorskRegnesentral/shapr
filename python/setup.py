@@ -14,7 +14,5 @@ setup(
         'pandas>=1.4.2',
         'scikit-learn>=1.0.0',
     ],
-    packages=[
-        'shaprpy'
-    ],
+    packages=find_packages()
 )

@@ -302,6 +302,9 @@ Computes dependence-aware Shapley values for observations in \code{explain_idx} 
 See
 \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas, et. al (2021)}
 for a thorough introduction to dependence-aware prediction explanation with Shapley values.
+For an overview of the methodology and capabilities of the \code{shapr} package, see the software paper
+\href{https://arxiv.org/pdf/2504.01842}{Jullum et al. (2025)}, or the pkgdown site at
+\href{https://norskregnesentral.github.io/shapr/}{norskregnesentral.github.io/shapr/}.
 }
 \details{
 This function explains a forecast of length \code{horizon}. The argument \code{train_idx}
@@ -315,7 +318,9 @@ are required to "refit" the model at any given time index. This allows the diffe
 approaches to work in the same way they do for time-invariant models.
 
 See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#forecasting}{
-forecasting section of the general usages} for further details.
+forecasting section of the general usage vignette} for further details.
+See also the software paper \href{https://arxiv.org/pdf/2504.01842}{Jullum et al. (2025, Sec. 6)}
+for a more detailed introduction to the methodology, and additional examples.
 }
 \examples{
 \donttest{
@@ -346,6 +351,9 @@ explain_forecast(
 }
 \references{
 \itemize{
+\item \href{https://arxiv.org/pdf/2504.01842}{
+Jullum, M., Olsen, L. H. B., Lachmann, J., & Redelmeier, A. (2025). shapr: Explaining Machine Learning Models
+with Conditional Shapley Values in R and Python. arXiv preprint arXiv:2504.01842.}
 \item \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}

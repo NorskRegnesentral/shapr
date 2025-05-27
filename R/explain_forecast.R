@@ -7,6 +7,9 @@
 #' \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas, et. al (2021)}
 # nolint end
 #' for a thorough introduction to dependence-aware prediction explanation with Shapley values.
+#' For an overview of the methodology and capabilities of the `shapr` package, see the software paper
+#' \href{https://arxiv.org/pdf/2504.01842}{Jullum et al. (2025)}, or the pkgdown site at
+#' [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/).
 #'
 #' @inheritParams explain
 #' @param y Matrix, data.frame/data.table or a numeric vector.
@@ -63,7 +66,9 @@
 #' approaches to work in the same way they do for time-invariant models.
 #'
 #' See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#forecasting}{
-#' forecasting section of the general usages} for further details.
+#' forecasting section of the general usage vignette} for further details.
+#' See also the software paper \href{https://arxiv.org/pdf/2504.01842}{Jullum et al. (2025, Sec. 6)}
+#' for a more detailed introduction to the methodology, and additional examples.
 #'
 #' @author Jon Lachmann, Martin Jullum
 #' @examples

@@ -4,6 +4,9 @@
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
 #' See \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 #' for a thorough introduction to dependence-aware prediction explanation with Shapley values.
+#' For an overview of the methodology and capabilities of the package, see the software paper
+#' \href{https://arxiv.org/pdf/2504.01842}{Jullum et al. (2025)}, or the pkgdown site at
+#' [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/).
 #'
 #' @param x_train Matrix or data.frame/data.table.
 #' Contains the data used to estimate the (conditional) distributions for the features
@@ -186,6 +189,8 @@
 #' These are all introduced in the
 #' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}.
 #' (From R: `vignette("general_usage", package = "shapr")`).
+#' For an overview of the methodology and capabilities of the package, please also see the software paper
+#' \href{https://arxiv.org/pdf/2504.01842}{Jullum et al. (2025)}.
 #' Moreover,
 #'  \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 #' gives a general introduction to dependence-aware Shapley values, and the three approaches `"empirical"`,
@@ -200,7 +205,7 @@
 #' as described in \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{Olsen et al. (2024)}.
 #' It is also possible to combine the different approaches, see the
 #' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{
-#' general usage} for more information.
+#' general usage} vignette for more information.
 #'
 #' The package also supports the computation of causal and asymmetric Shapley values as introduced by
 #' \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
@@ -208,13 +213,13 @@
 #' \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
 #' Frye et al. (2020)}.
 #' Asymmetric Shapley values were proposed by
-#' \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
-#' Heskes et al. (2020)} as a way to incorporate causal knowledge in
+#' \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
+#' Frye et al. (2020)} as a way to incorporate causal knowledge in
 #' the real world by restricting the possible feature combinations/coalitions when computing the Shapley values to
 #' those consistent with a (partial) causal ordering.
 #' Causal Shapley values were proposed by
-#' \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
-#' Frye et al. (2020)} as a way to explain the total effect of features
+#' \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
+#' Heskes et al. (2020)} as a way to explain the total effect of features
 #' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
 #' The package allows for parallelized computation with progress updates through the tightly connected
@@ -408,6 +413,9 @@
 #'
 # nolint start
 #' @references
+#'   - \href{https://arxiv.org/pdf/2504.01842}{
+#'   Jullum, M., Olsen, L. H. B., Lachmann, J., & Redelmeier, A. (2025). shapr: Explaining Machine Learning Models
+#'   with Conditional Shapley Values in R and Python. arXiv preprint arXiv:2504.01842.}
 #'   - \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{
 #'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 #'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502}
