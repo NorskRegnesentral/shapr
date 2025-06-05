@@ -127,6 +127,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 compute_shapley <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
   type <- internal$parameters$type
+  sage <- internal$parameters$sage
 
   iter <- length(internal$iter_list)
 
@@ -161,6 +162,11 @@ compute_shapley <- function(internal, dt_vS) {
     }
 
     dt_kshap <- cbind(internal$parameters$output_labels, rbindlist(kshap_list, fill = TRUE))
+  } else if (sage){
+    vS_SAGE <- internal$parameters$zero_loss - colMeans((t(dt_vS[,-1])-internal$parameters$response)^2)
+    kshap <- t(W %*% as.matrix(vS_SAGE))
+    dt_kshap <- data.table::as.data.table(kshap)
+    colnames(dt_kshap) <- c("none", shap_names)
   } else {
     kshap <- t(W %*% as.matrix(dt_vS[, -"id_coalition"]))
     dt_kshap <- data.table::as.data.table(kshap)
@@ -221,6 +227,7 @@ bootstrap_shapley_inner <- function(X,
   paired_shap_sampling <- internal$parameters$extra_computation_args$paired_shap_sampling
   semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
+  sage <- internal$parameters$sage
 
   if (type == "forecast") {
     # For forecast we set it to zero as all coalitions except empty and grand can be sampled
@@ -231,8 +238,11 @@ bootstrap_shapley_inner <- function(X,
   }
 
   X_org <- copy(X)
-
-  boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
+  if (sage){
+    boot_sd_array <- array(NA, dim = c(1, n_shapley_values + 1, n_boot_samps))
+  } else{
+    boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
+  }
 
   # Split X_org into the deterministic coalitions and the sampled coalitions
   X_keep <- X_org[is.na(sample_freq), .(id_coalition, coalitions, coalition_size, N, shapley_weight)]
@@ -345,15 +355,20 @@ bootstrap_shapley_inner <- function(X,
     )
 
     if (sage){
-      dt_vS <- internal$zero_loss - colMeans((t(vS_SHAP)-y_train)^2)
+      vS_SAGE <- internal$parameters$zero_loss - colMeans((t(dt_vS[,-1])- internal$parameters$response)^2)
+      ksage_boot <- t(W_boot %*% as.matrix(vS_SAGE[X_boot[boot_id == i, id_coalition]]))
+
+      boot_sd_array[, , i] <- copy(ksage_boot)
+
+    } else {
+      kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_coalition %in% X_boot[
+        boot_id == i,
+        id_coalition
+      ], -"id_coalition"]))
+
+      boot_sd_array[, , i] <- copy(kshap_boot)
     }
 
-    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_coalition %in% X_boot[
-      boot_id == i,
-      id_coalition
-    ], -"id_coalition"]))
-
-    boot_sd_array[, , i] <- copy(kshap_boot)
   }
 
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)

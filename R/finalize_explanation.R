@@ -43,15 +43,34 @@ finalize_explanation <- function(internal) {
   # Extract iterative results in a simplified format
   iterative_results <- get_iter_results(internal$iter_list)
 
-  output <- list(
-    shapley_values_est = dt_shapley_est,
-    shapley_values_sd = dt_shapley_sd,
-    pred_explain = p,
-    MSEv = MSEv,
-    iterative_results = iterative_results,
-    saving_path = internal$parameters$output_args$saving_path,
-    internal = internal
-  )
+  if (internal$parameters$sage){
+    # Compute shapley values for SAGE-output
+    W <- internal$objects$W
+    kshap <- t(W %*% as.matrix(dt_vS[, -"id_coalition"]))
+    dt_kshap <- data.table::as.data.table(kshap)
+    colnames(dt_kshap) <- c("none", internal$parameters$shap_names)
+    internal$shapley_values <- dt_kshap
+
+    output <- list(
+      sage_values_est = dt_shapley_est,
+      sage_values_sd = dt_shapley_sd,
+      pred_explain = p,
+      MSEv = MSEv,
+      iterative_results = iterative_results,
+      saving_path = internal$parameters$output_args$saving_path,
+      internal = internal
+    )
+  } else {
+    output <- list(
+      shapley_values_est = dt_shapley_est,
+      shapley_values_sd = dt_shapley_sd,
+      pred_explain = p,
+      MSEv = MSEv,
+      iterative_results = iterative_results,
+      saving_path = internal$parameters$output_args$saving_path,
+      internal = internal
+    )
+  }
   attr(output, "class") <- c("shapr", "list")
 
   return(output)
