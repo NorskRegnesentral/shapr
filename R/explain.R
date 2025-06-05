@@ -467,6 +467,8 @@ explain <- function(model,
                     extra_computation_args = list(),
                     iterative_args = list(),
                     output_args = list(),
+                    sage = FALSE,
+                    respons = NULL,
                     ...) { # ... is further arguments passed to specific approaches
 
 
@@ -501,6 +503,8 @@ explain <- function(model,
     confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
+    sage = sage,
+    response = response,
     ...
   )
 

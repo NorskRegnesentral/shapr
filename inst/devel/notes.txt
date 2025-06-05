@@ -1,0 +1,19 @@
+? HVOR FINNES:
+- Konvergens-kirterie for std: sec 2.4 shapr paper, (s.11)
+
+? SPØRSMÅL TIL MARTIN:
+
+HUSK Å SE PÅ:
+- Python pakke
+- Test-funksjoner
+
+MÅ ENDRES I KODEN:
+- Compute_estimates; linje 347-350
+- Bytte ut n_explain i dimensjon-spesifiseringer (235)
+- Utvide setup, get param (husk 307)
+  + respons (y_train) + sage =T/F
+
+Output:
+SAGE-verdiene, ikke Shapley
+
+Shapley verdier internal, regnes ut i finalize_explanation - internal$output$dt_shap

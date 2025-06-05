@@ -60,6 +60,8 @@ setup <- function(x_train,
                   confounding = NULL,
                   output_args = list(),
                   extra_computation_args = list(),
+                  sage = FALSE,
+                  response = NULL,
                   ...) {
   internal <- list()
 
@@ -120,6 +122,8 @@ setup <- function(x_train,
     confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
+    sage = sage,
+    response = response,
     ...
   )
 
@@ -197,6 +201,8 @@ get_parameters <- function(approach,
                            output_args = list(),
                            extra_computation_args = list(),
                            testing = FALSE,
+                           sage = FALSE,
+                           response = NULL,
                            ...) {
   # approach is checked comprehensively later
 
@@ -301,7 +307,15 @@ get_parameters <- function(approach,
     ))
   }
 
+  if (!is.logical(sage) && length(sage) == 1) {
+    cli::cli_abort("`sage` must be a single logical.")
+  }
 
+  if (sage){
+    if (!is.matrix(response) && !is.data.frame(response)) {
+      cli::cli_abort("response should be a matrix or a data.frame/data.table.")
+    }
+  }
 
 
   # Getting basic input parameters
@@ -323,7 +337,9 @@ get_parameters <- function(approach,
     asymmetric = asymmetric,
     causal_ordering = causal_ordering,
     confounding = confounding,
-    testing = testing
+    testing = testing,
+    sage = sage,
+    response = response
   )
 
   # Additional forecast-specific arguments, only added for type="forecast"

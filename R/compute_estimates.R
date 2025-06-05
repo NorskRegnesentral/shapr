@@ -344,6 +344,10 @@ bootstrap_shapley_inner <- function(X,
       normalize_W_weights = TRUE
     )
 
+    if (sage){
+      dt_vS <- internal$zero_loss - colMeans((t(vS_SHAP)-y_train)^2)
+    }
+
     kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_coalition %in% X_boot[
       boot_id == i,
       id_coalition
