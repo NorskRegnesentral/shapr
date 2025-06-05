@@ -307,13 +307,21 @@ get_parameters <- function(approach,
     ))
   }
 
+  #sage
   if (!is.logical(sage) && length(sage) == 1) {
     cli::cli_abort("`sage` must be a single logical.")
   }
 
-  if (sage){
-    if (!is.matrix(response) && !is.data.frame(response)) {
-      cli::cli_abort("response should be a matrix or a data.frame/data.table.")
+  #parameters used only for sage computation
+  if (sage) {
+    if (is.null(response)) {
+      cli::cli_abort("response must be provided to compute SAGE-values.")
+    }
+    if (!is.vector(response) && !is.data.frame(response)) {
+      cli::cli_abort("response should be a vector, data.frame, or data.table.")
+    }
+    if ((is.data.frame(response) || data.table::is.data.table(response)) && ncol(response) != 1) {
+      cli::cli_abort("response should have exactly one column.")
     }
   }
 
@@ -356,6 +364,10 @@ get_parameters <- function(approach,
     parameters$group_lags <- group_lags
     parameters$output_labels <- output_labels
     parameters$explain_lags <- explain_lags
+  }
+
+  if (sage) {
+    parameters$zero_loss <- mean((phi0-response)^2)
   }
 
   # Getting additional parameters from ...

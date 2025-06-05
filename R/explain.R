@@ -468,7 +468,7 @@ explain <- function(model,
                     iterative_args = list(),
                     output_args = list(),
                     sage = FALSE,
-                    respons = NULL,
+                    response = NULL,
                     ...) { # ... is further arguments passed to specific approaches
 
 
