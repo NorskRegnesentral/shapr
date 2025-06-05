@@ -4,7 +4,7 @@
   Slik koden står nå putter den inn sage verdier i variabler med shap navn, for å unngå mest mulig kluss.
 - Hvor skal shapley_verdiene lagres i output? som output$internal$shapley_value_est ?
 - Dersom det kjøres iterativ metode, som stopper før den når fullt antall koalisjoner,
-  tas dette høyde for om jeg bruker dt_vS og W i beregningen?
+  tas dette høyde for når jeg bruker dt_vS og W fra internal i beregningen av shapley verdier i finalize_explanation?
 
 
 
