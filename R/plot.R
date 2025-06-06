@@ -242,7 +242,7 @@ plot.shapr <- function(x,
   }
 
   # melting Kshap
-  shap_names <- x$internal$parameters$shap_names
+  shapley_names <- x$internal$parameters$shapley_names
   dt_shap <- signif(data.table::copy(x$shapley_values_est))
   dt_shap[, id := .I]
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
@@ -252,12 +252,12 @@ plot.shapr <- function(x,
   if (!is_groupwise || include_group_feature_means) {
     desc_mat <- trimws(format(x$internal$data$x_explain, digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
-      desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
+      desc_mat[, i] <- paste0(shapley_names[i], " = ", desc_mat[, i])
     }
   } else {
     desc_mat <- trimws(format(x$shapley_values_est[, -c("none")], digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
-      desc_mat[, i] <- paste0(shap_names[i])
+      desc_mat[, i] <- paste0(shapley_names[i])
     }
   }
 
@@ -281,8 +281,8 @@ plot.shapr <- function(x,
     dt_feature_vals[, id := .I]
 
     # Deal with numeric and factor variables separately
-    factor_features <- dt_feature_vals[, sapply(.SD, function(x) is.factor(x) | is.character(x)), .SDcols = shap_names]
-    factor_features <- shap_names[factor_features]
+    factor_features <- dt_feature_vals[, sapply(.SD, function(x) is.factor(x) | is.character(x)), .SDcols = shapley_names]
+    factor_features <- shapley_names[factor_features]
 
     dt_feature_vals_long <- suppressWarnings(data.table::melt(dt_feature_vals,
       id.vars = "id",

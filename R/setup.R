@@ -123,7 +123,6 @@ setup <- function(x_train,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
     sage = sage,
-    response = response,
     ...
   )
 
@@ -131,12 +130,16 @@ setup <- function(x_train,
   if (type == "forecast") {
     internal$data <- get_data_forecast(y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon)
   } else {
-    internal$data <- get_data(x_train, x_explain)
+    internal$data <- get_data(x_train, x_explain, response)
   }
 
   internal$objects <- list(feature_specs = feature_specs)
 
   check_data(internal)
+
+  if (sage) {
+    internal$parameters$zero_loss <- mean((phi0 - response)^2)
+  }
 
   internal <- get_extra_parameters(internal, type) # This includes both extra parameters and other objects
 
@@ -202,7 +205,6 @@ get_parameters <- function(approach,
                            extra_computation_args = list(),
                            testing = FALSE,
                            sage = FALSE,
-                           response = NULL,
                            ...) {
   # approach is checked comprehensively later
 
@@ -307,24 +309,10 @@ get_parameters <- function(approach,
     ))
   }
 
-  #sage
+  # sage
   if (!is.logical(sage) && length(sage) == 1) {
     cli::cli_abort("`sage` must be a single logical.")
   }
-
-  #parameters used only for sage computation
-  if (sage) {
-    if (is.null(response)) {
-      cli::cli_abort("response must be provided to compute SAGE-values.")
-    }
-    if (!is.vector(response) && !is.data.frame(response)) {
-      cli::cli_abort("response should be a vector, data.frame, or data.table.")
-    }
-    if ((is.data.frame(response) || data.table::is.data.table(response)) && ncol(response) != 1) {
-      cli::cli_abort("response should have exactly one column.")
-    }
-  }
-
 
   # Getting basic input parameters
   parameters <- list(
@@ -346,8 +334,7 @@ get_parameters <- function(approach,
     causal_ordering = causal_ordering,
     confounding = confounding,
     testing = testing,
-    sage = sage,
-    response = response
+    sage = sage
   )
 
   # Additional forecast-specific arguments, only added for type="forecast"
@@ -364,10 +351,6 @@ get_parameters <- function(approach,
     parameters$group_lags <- group_lags
     parameters$output_labels <- output_labels
     parameters$explain_lags <- explain_lags
-  }
-
-  if (sage) {
-    parameters$zero_loss <- mean((phi0-response)^2)
   }
 
   # Getting additional parameters from ...
@@ -401,7 +384,7 @@ check_verbose <- function(verbose) {
 }
 
 #' @keywords internal
-get_data <- function(x_train, x_explain) {
+get_data <- function(x_train, x_explain, response = NULL) {
   # Check data object type
   stop_message <- NULL
   if (!is.matrix(x_train) && !is.data.frame(x_train)) {
@@ -430,7 +413,8 @@ get_data <- function(x_train, x_explain) {
 
   data <- list(
     x_train = data.table::as.data.table(x_train),
-    x_explain = data.table::as.data.table(x_explain)
+    x_explain = data.table::as.data.table(x_explain),
+    response = response
   )
 }
 
@@ -442,6 +426,9 @@ check_data <- function(internal) {
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
+
+  sage <- internal$parameters$sage
+  response <- internal$data$response
 
   model_feature_specs <- internal$objects$feature_specs
 
@@ -493,6 +480,14 @@ check_data <- function(internal) {
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   }
 
+  if (sage) {
+    if (!(is.numeric(response) ||
+      !is.vector(response)) ||
+      is.null(response)) {
+      cli::cli_abort("`response` must be a numeric vector for computation of SAGE-values.")
+    }
+  }
+
   # Check model vs x_train (allowing different label ordering in specs from model)
   compare_feature_specs(model_feature_specs, x_train_feature_specs, "model", "x_train", sort_labels = TRUE)
 
@@ -533,11 +528,11 @@ get_extra_parameters <- function(internal, type) {
       function(x) as.character(unlist(internal$data$group[x]))
     )
     if (internal$parameters$group_lags) {
-      internal$parameters$shap_names <- internal$data$shap_names
+      internal$parameters$shapley_names <- internal$data$shapley_names
       internal$parameters$group <- internal$data$group
       internal$parameters$horizon_group <- internal$data$horizon_group
     } else if (!is.null(internal$parameters$group)) {
-      internal$parameters$shap_names <- names(internal$parameters$group)
+      internal$parameters$shapley_names <- names(internal$parameters$group)
       group_setup <- group_forecast_setup(internal$parameters$group, internal$parameters$horizon_features)
       internal$parameters$group <- group_setup$group
       internal$parameters$horizon_group <- group_setup$horizon_group
@@ -581,16 +576,16 @@ get_extra_parameters <- function(internal, type) {
 
     if (type != "forecast") {
       # For regular explain
-      internal$parameters$shap_names <- internal$parameters$group_names
+      internal$parameters$shapley_names <- internal$parameters$group_names
     }
   } else {
     internal$objects$coal_feature_list <- as.list(seq_len(internal$parameters$n_features))
 
     internal$parameters$n_groups <- NULL
     internal$parameters$group_names <- NULL
-    internal$parameters$shap_names <- internal$parameters$feature_names
+    internal$parameters$shapley_names <- internal$parameters$feature_names
   }
-  internal$parameters$n_shapley_values <- length(internal$parameters$shap_names)
+  internal$parameters$n_shapley_values <- length(internal$parameters$shapley_names)
 
 
   # Get the number of unique approaches

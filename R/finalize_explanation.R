@@ -11,6 +11,8 @@ finalize_explanation <- function(internal) {
   type <- internal$parameters$type
   dt_vS <- internal$output$dt_vS
 
+  sage <- internal$parameters$sage
+
   # Extracting iter (and deleting the last temporary empty list of iter_list)
   iter <- length(internal$iter_list) - 1
   internal$iter_list[[iter + 1]] <- NULL
@@ -43,34 +45,35 @@ finalize_explanation <- function(internal) {
   # Extract iterative results in a simplified format
   iterative_results <- get_iter_results(internal$iter_list)
 
-  if (internal$parameters$sage){
-    # Compute shapley values for SAGE-output
+  # Compute SAGE-values for internal
+  if (sage) {
+    response <- internal$data$response
+    zero_loss <- internal$parameters$zero_loss
+
+    dt_shapley_est$explain_id <- NA
+    dt_shapley_sd$explain_id <- NA
+
+    internal$output$sage_values_est <- dt_shapley_est
+
     W <- internal$objects$W
     kshap <- t(W %*% as.matrix(dt_vS[, -"id_coalition"]))
     dt_kshap <- data.table::as.data.table(kshap)
-    colnames(dt_kshap) <- c("none", internal$parameters$shap_names)
-    internal$shapley_values <- dt_kshap
-
-    output <- list(
-      sage_values_est = dt_shapley_est,
-      sage_values_sd = dt_shapley_sd,
-      pred_explain = p,
-      MSEv = MSEv,
-      iterative_results = iterative_results,
-      saving_path = internal$parameters$output_args$saving_path,
-      internal = internal
-    )
+    colnames(dt_kshap) <- c("none", internal$parameters$shapley_names)
+    internal$output$shap_values_est <- dt_kshap
   } else {
-    output <- list(
-      shapley_values_est = dt_shapley_est,
-      shapley_values_sd = dt_shapley_sd,
-      pred_explain = p,
-      MSEv = MSEv,
-      iterative_results = iterative_results,
-      saving_path = internal$parameters$output_args$saving_path,
-      internal = internal
-    )
+    internal$output$shap_values_est <- dt_shapley_est
   }
+
+  output <- list(
+    shapley_values_est = dt_shapley_est,
+    shapley_values_sd = dt_shapley_sd,
+    pred_explain = p,
+    MSEv = MSEv,
+    iterative_results = iterative_results,
+    saving_path = internal$parameters$output_args$saving_path,
+    internal = internal
+  )
+
   attr(output, "class") <- c("shapr", "list")
 
   return(output)
