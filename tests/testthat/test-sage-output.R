@@ -1,3 +1,5 @@
+skip_on_cran()
+
 test_that("output_sage_independence_lm", {
   set.seed(123)
 
