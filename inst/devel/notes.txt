@@ -1,29 +1,20 @@
 ? SPØRSMÅL TIL MARTIN:
 
-PROBLEMER MED PLOT
-
 TODO SAGE:
-
 - Lag Draft-Pull Request så er det lettere å få oversikt.
-- Dokumenter nye argumenter og se gjennom andre argumenter for om de må justeres mepri
-- Hent alltid ut argumenter fra internal på toppen av funksjonene, ala zero_loss = internal$parameters$zero_loss
-- Last opp testscript i devel som viser at det funker som det skal
-- Kjør styler::style_pkg etterfulgt av lintr::lint_package() for å sjekke kodestil.
-  (Husk å commite alt arbeid før du gjør dette da styler endrer filene for deg. Sjekk om endringene som er gjort av styler før du commiter).
+- Test-funksjoner
 
-Sjekk:
+Done:
 - Bør output fortsatt hete shapley_values_est/sd? Tror kanskje det.
 - print(explanation) gir error -- trolig fordi shapley_values_est ikke finnes
 - Kanskje explain_id bør være NA?
 - Legg til sjekker i setup() for at response er angitt dersom sage = TRUE, hvis ikke gi feilmelding. Se hvordan det er gjort andre steder.
 - Kanskje response bør ligger under internal$data ?
-
-
-HUSK Å SE PÅ:
-- Python pakke
-- Test-funksjoner
-
-MÅ ENDRES I KODEN:
+- Hent alltid ut argumenter fra internal på toppen av funksjonene, ala zero_loss = internal$parameters$zero_loss
+- Last opp testscript i devel som viser at det funker som det skal
+- Kjør styler::style_pkg etterfulgt av lintr::lint_package() for å sjekke kodestil.
+  (Husk å commite alt arbeid før du gjør dette da styler endrer filene for deg. Sjekk om endringene som er gjort av styler før du commiter).
+- Dokumenter nye argumenter og se gjennom andre argumenter for om de må justeres mepri
 
 
 Output:

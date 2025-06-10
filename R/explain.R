@@ -106,7 +106,7 @@
 #' If `NULL` (default), the argument is set to `TRUE` if there are more than 5 features/groups, and `FALSE` otherwise.
 #' If eventually `TRUE`, the Shapley values are estimated iteratively in an iterative manner.
 #' This provides sufficiently accurate Shapley value estimates faster.
-#' First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+#' First an initial number of coalitions is sampled, then bootstrapping is used to estimate the variance of the Shapley
 #' values.
 #' A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 #' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -134,7 +134,7 @@
 #' @param asymmetric Logical.
 #' Not applicable for (regular) non-causal or asymmetric explanations.
 #' If `FALSE` (default), `explain` computes regular symmetric Shapley values,
-#' If `TRUE`, then `explain` compute asymmetric Shapley values based on the (partial) causal ordering
+#' If `TRUE`, then `explain` computes asymmetric Shapley values based on the (partial) causal ordering
 #' given by `causal_ordering`. That is, `explain` only uses the feature combinations/coalitions that
 #' respect the causal ordering when computing the asymmetric Shapley values. If `asymmetric` is `TRUE` and
 #' `confounding` is `NULL` (default), then `explain` computes asymmetric conditional Shapley values as specified in
@@ -169,6 +169,20 @@
 #' specified, then `explain` computes asymmetric/symmetric causal Shapley values, depending on the value of
 #' `asymmetric`. The `approach` cannot be `regression_separate` and `regression_surrogate` as the
 #' regression-based approaches are not applicable to the causal Shapley value methodology.
+#'
+#' @param sage Logical.
+#' If `FALSE` (default), regular Shapley values are computed.
+#' If `TRUE`, SAGE values are computed and returned as `shapley_values_est` in the output. `shapley_values_sd` will then contain the standard
+#' deviation for the SAGE values (see return values for more information about `shapley_values_sd`).
+#' When iterative is `TRUE`, the convergence will be in regards to the variation in the SAGE values rather than the regular Shapley values.
+#' The computation of the SAGE values is based on
+#' \href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
+#' Covert et al. (2020)}, sampling from conditional distributions rather than the marginal sampling described by Covert et. al.
+#' Regular Shapley values can be found under `internal$output$shap_values_est` in all cases.
+#'
+#' @param response Numerical vector.
+#' Not applicable unless the `sage` parameter is set to `TRUE`.
+#' `response` is used in computations of the SAGE values.
 #'
 #' @param ... Further arguments passed to specific approaches, see below.
 #'
@@ -230,6 +244,10 @@
 #' Moreover, the intermediate results are written to disk.
 #' This combined batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 #' in a memory friendly manner.
+#'
+#' The package can also be used for computation of SAGE values as described by
+#' \href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
+#' Covert et al. (2020)}.
 #'
 #' @return Object of class `c("shapr", "list")`. Contains the following items:
 #' \describe{

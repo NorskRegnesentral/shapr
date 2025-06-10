@@ -1,3 +1,5 @@
+library(xgboost)
+
 data("airquality")
 data <- data.table::as.data.table(airquality)
 data <- data[complete.cases(data), ]
@@ -28,4 +30,4 @@ explanation <- explain(
 )
 
 print(explanation)
-plot.shapr(explanation)
+plot.shapr(explanation, index_x_explain = 1:10)
