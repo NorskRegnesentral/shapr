@@ -310,7 +310,7 @@ get_parameters <- function(approach,
   }
 
   # sage
-  if (!is.logical(sage) && length(sage) == 1) {
+  if (!is.logical(sage) || !length(sage) == 1) {
     cli::cli_abort("`sage` must be a single logical.")
   }
 
@@ -485,6 +485,9 @@ check_data <- function(internal) {
       !is.vector(response)) ||
       is.null(response)) {
       cli::cli_abort("`response` must be a numeric vector for computation of SAGE-values.")
+    }
+    if (!nrow(x_explain) == length(response)) {
+      cli::cli_abort("`response` must have same number of observations as x_explain.")
     }
   }
 

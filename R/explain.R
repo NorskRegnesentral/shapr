@@ -172,9 +172,11 @@
 #'
 #' @param sage Logical.
 #' If `FALSE` (default), regular Shapley values are computed.
-#' If `TRUE`, SAGE values are computed and returned as `shapley_values_est` in the output. `shapley_values_sd` will then contain the standard
-#' deviation for the SAGE values (see return values for more information about `shapley_values_sd`).
-#' When iterative is `TRUE`, the convergence will be in regards to the variation in the SAGE values rather than the regular Shapley values.
+#' If `TRUE`, SAGE values are computed and returned as `shapley_values_est` in the output.
+#' `shapley_values_sd` will then contain the standard deviation for the SAGE values
+#' (see return values for more information about `shapley_values_sd`).
+#' When iterative is `TRUE`, the convergence will be in regards to the variation in the
+#' SAGE values rather than the regular Shapley values.
 #' The computation of the SAGE values is based on
 #' \href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
 #' Covert et al. (2020)}, sampling from conditional distributions rather than the marginal sampling described by Covert et. al.

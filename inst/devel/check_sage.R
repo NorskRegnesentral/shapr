@@ -1,3 +1,5 @@
+library(xgboost)
+
 data("airquality")
 data <- data.table::as.data.table(airquality)
 data <- data[complete.cases(data), ]
@@ -30,8 +32,8 @@ explanation <- explain(
   iterative = TRUE
 )
 
-print(explanation)
-plot.shapr(explanation)
+# print(explanation)
+# plot.shapr(explanation)
 
 # #### SAGE ####
 #
