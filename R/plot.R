@@ -185,6 +185,7 @@ plot.shapr <- function(x,
                        scatter_hist = TRUE,
                        include_group_feature_means = FALSE,
                        beeswarm_cex = 1 / length(index_x_explain)^(1 / 4),
+                       sage = FALSE,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}")
@@ -241,6 +242,14 @@ plot.shapr <- function(x,
       )]
   }
 
+  # For SAGE values the only supported plot types are `bar` and `waterfall`.
+  if (sage && !plot_type %in% c("bar", "waterfall")) {
+    cli::cli_abort(paste0(
+      "`shapr` cannot make a `", plot_type, "` plot for SAGE values.\n",
+      "Try plot_type='bar' or plot_type='waterfall'."
+    ))
+  }
+
   # melting Kshap
   shapley_names <- x$internal$parameters$shapley_names
   dt_shap <- signif(data.table::copy(x$shapley_values_est))
@@ -249,7 +258,7 @@ plot.shapr <- function(x,
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting x_explain
-  if (!is_groupwise || include_group_feature_means) {
+  if ((!is_groupwise || include_group_feature_means) && !sage){
     desc_mat <- trimws(format(x$internal$data$x_explain, digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shapley_names[i], " = ", desc_mat[, i])
@@ -267,12 +276,17 @@ plot.shapr <- function(x,
   # Data table for plotting
   dt_plot <- merge(dt_shap_long, dt_desc_long)
 
-  # Adding the predictions
-  dt_pred <- data.table::data.table(id = dt_shap$id, pred = x$pred_explain)
-  dt_plot <- merge(dt_plot, dt_pred, by = "id")
+  if (!sage) {
+    # Adding the predictions
+    dt_pred <- data.table::data.table(id = dt_shap$id, pred = x$pred_explain)
+    dt_plot <- merge(dt_plot, dt_pred, by = "id")
 
-  # Adding header for each individual plot
-  dt_plot[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
+    # Adding header for each individual plot
+    dt_plot[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
+  } else{
+    dt_plot[, header:= ""]
+  }
+
 
   if (plot_type == "scatter" || plot_type == "beeswarm") {
     # Add feature values to data table
@@ -326,9 +340,13 @@ plot.shapr <- function(x,
     dt_plot[, end := cumsum(phi), by = id]
     expected <- x$internal$parameters$phi0
     dt_plot[, start := c(expected, head(end, -1)), by = id]
-    dt_plot[, phi_significant := format(phi, digits = digits), by = id]
+    if (sage) {
+      dt_plot[, phi_significant := formatC(phi, format = "f", digits = digits, drop0trailing = TRUE)]
+    } else {
+      dt_plot[, phi_significant := format(phi, digits = digits), by = id]
+    }
 
-    # helpers for labelling y-axis correctly
+    # helpers for labeling y-axis correctly
     if (bar_plot_order == "largest_first") {
       desc_labels <- dt_plot[variable != "none" & variable != "rest", description[order(abs(phi))]]
     } else if (bar_plot_order == "smallest_first") {
@@ -350,9 +368,9 @@ plot.shapr <- function(x,
     breaks <- levels(droplevels(dt_plot[, unique_label])) # removes -1 if no rest and 0 if no none in plot
 
     if (plot_type == "bar") {
-      gg <- make_bar_plot(dt_plot, bar_plot_phi0, col, breaks, desc_labels)
+      gg <- make_bar_plot(dt_plot, bar_plot_phi0, col, breaks, desc_labels, sage)
     } else if (plot_type == "waterfall") {
-      gg <- make_waterfall_plot(dt_plot, expected, col, digits, bar_plot_order, breaks, desc_labels)
+      gg <- make_waterfall_plot(dt_plot, expected, col, digits, bar_plot_order, breaks, desc_labels, sage)
     }
   }
   return(gg)
@@ -673,7 +691,7 @@ make_beeswarm_plot <- function(dt_plot,
   return(gg)
 }
 
-make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
+make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels, sage=FALSE) {
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")
   }
@@ -684,6 +702,12 @@ make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
 
   if (!(bar_plot_phi0)) {
     dt_plot <- dt_plot[variable != "none", ]
+  }
+
+  if (sage) {
+    plot_title <- "Shapley value model explination"
+  } else {
+    plot_title <- "Shapley value prediction explanation"
   }
 
   # bar plotting helpers
@@ -721,7 +745,7 @@ make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
       y = "Feature contribution",
       x = "Feature",
       fill = "",
-      title = "Shapley value prediction explanation"
+      title = plot_title
     ) +
     ggplot2::geom_text(
       ggplot2::aes(
@@ -741,12 +765,19 @@ make_waterfall_plot <- function(dt_plot,
                                 digits,
                                 bar_plot_order,
                                 breaks,
-                                desc_labels) {
+                                desc_labels, sage=FALSE) {
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")
   }
   if (length(col) != 2) {
     cli::cli_abort("'col' must be of length 2 when making waterfall plot.")
+  }
+
+  if (sage) {
+    plot_title <- "Shapley value model explination"
+    dt_plot[, pred := expected + sum(phi), by = id]
+  } else {
+    plot_title <- "Shapley value prediction explanation"
   }
 
   # waterfall plotting helpers
@@ -811,7 +842,7 @@ make_waterfall_plot <- function(dt_plot,
       y = "Prediction",
       x = "Feature",
       fill = "",
-      title = "Shapley value prediction explanation"
+      title = plot_title
     ) +
     ggplot2::geom_rect(ggplot2::aes(xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
       show.legend = NA

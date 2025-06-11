@@ -21,7 +21,7 @@ model <- xgboost(
 
 p0 <- mean(y_train)
 
-explanation <- explain(
+explanation_sage <- explain(
   model = model,
   x_explain = x_train,
   x_train = x_train,
@@ -32,8 +32,7 @@ explanation <- explain(
   iterative = TRUE
 )
 
-# print(explanation)
-# plot.shapr(explanation)
+plot.shapr(explanation_sage, sage=TRUE, plot_type = "waterfall")
 
 # #### SAGE ####
 #

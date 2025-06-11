@@ -21,7 +21,7 @@ model <- xgboost(
 
 p0 <- mean(y_train)
 
-explanation <- explain(
+explanation_shap <- explain(
   model = model,
   x_explain = x_train,
   x_train = x_train,
@@ -30,4 +30,4 @@ explanation <- explain(
 )
 
 print(explanation)
-plot.shapr(explanation, index_x_explain = 1:10)
+plot.shapr(explanation_shap, index_x_explain = 1:10, plot_type = "waterfall")

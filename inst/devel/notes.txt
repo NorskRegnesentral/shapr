@@ -1,8 +1,13 @@
 ? SPØRSMÅL TIL MARTIN:
+Kanksje greit å nevne max index_x_explain for bar og waterfall i dokumentasjonen?
+Hvorfor merger
 
 TODO SAGE:
-- Lag Draft-Pull Request så er det lettere å få oversikt.
-- Test-funksjoner
+- ordinære barplot og waterfall.
+
+For barplot og waterfall angis jo verdien av forklaringsvariabelen langs y-aksen, så den må jo fjernes da. Ta gjerne en titt på hvordan dette gjøres for groupwise Shapley values.
+(når group er spesifisert som en liste i explain) siden vi heller ikke da angir noen verdi langs y-aksen.
+
 
 Done:
 - Bør output fortsatt hete shapley_values_est/sd? Tror kanskje det.
@@ -15,7 +20,8 @@ Done:
 - Kjør styler::style_pkg etterfulgt av lintr::lint_package() for å sjekke kodestil.
   (Husk å commite alt arbeid før du gjør dette da styler endrer filene for deg. Sjekk om endringene som er gjort av styler før du commiter).
 - Dokumenter nye argumenter og se gjennom andre argumenter for om de må justeres mepri
-
+- Lag Draft-Pull Request så er det lettere å få oversikt.
+- Test-funksjoner
 
 Output:
 SAGE-verdiene, ikke Shapley
