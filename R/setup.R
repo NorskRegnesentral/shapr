@@ -1583,6 +1583,7 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
   # Update exact if initial_n_coalitions was set to be equal to or larger than n_shapley_values^2
   if (iterative_args$initial_n_coalitions >= internal$parameters$n_shapley_values^2) {
     internal$parameters$exact <- TRUE
+    internal$parameters$extra_computation_args$compute_sd <- FALSE
   }
 
   check_iterative_args(iterative_args)
