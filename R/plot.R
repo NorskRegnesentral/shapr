@@ -68,6 +68,10 @@
 #' features in each group.
 #' @param beeswarm_cex Numeric.
 #' The cex argument of [ggbeeswarm::geom_beeswarm()], controlling the spacing in the beeswarm plots.
+#' @param sage Logical.
+#' Must be set to `TRUE` when plotting SAGE-values.
+#' Otherwise, if `FALSE` (default), the function assumes regular Shapley values
+#' for individual predictions as input.
 #' @param ... Other arguments passed to underlying functions,
 #' like [ggbeeswarm::geom_beeswarm()] for `plot_type = "beeswarm"`.
 #'
@@ -258,7 +262,7 @@ plot.shapr <- function(x,
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting x_explain
-  if ((!is_groupwise || include_group_feature_means) && !sage){
+  if ((!is_groupwise || include_group_feature_means) && !sage) {
     desc_mat <- trimws(format(x$internal$data$x_explain, digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shapley_names[i], " = ", desc_mat[, i])
@@ -283,8 +287,8 @@ plot.shapr <- function(x,
 
     # Adding header for each individual plot
     dt_plot[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
-  } else{
-    dt_plot[, header:= ""]
+  } else {
+    dt_plot[, header := ""]
   }
 
 
@@ -691,7 +695,7 @@ make_beeswarm_plot <- function(dt_plot,
   return(gg)
 }
 
-make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels, sage=FALSE) {
+make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels, sage = FALSE) {
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")
   }
@@ -765,7 +769,7 @@ make_waterfall_plot <- function(dt_plot,
                                 digits,
                                 bar_plot_order,
                                 breaks,
-                                desc_labels, sage=FALSE) {
+                                desc_labels, sage = FALSE) {
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")
   }
