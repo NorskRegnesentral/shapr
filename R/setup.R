@@ -62,6 +62,7 @@ setup <- function(x_train,
                   extra_computation_args = list(),
                   sage = FALSE,
                   response = NULL,
+                  loss_func = NULL,
                   ...) {
   internal <- list()
 
@@ -123,6 +124,7 @@ setup <- function(x_train,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
     sage = sage,
+    loss_func = loss_func,
     ...
   )
 
@@ -139,6 +141,25 @@ setup <- function(x_train,
 
   if (sage) {
     internal$parameters$zero_loss <- mean((phi0 - response)^2)
+
+    if (is.null(loss_func) && all(response %in% c(0, 1))) {
+      cat("HEII")
+      internal$parameters$loss_func <- function(y, pred) {
+        #To avoid taking log(0)
+        eps = 1e-15
+        pred <- pmin(pmax(pred, eps), 1 - eps)
+
+        loss <- -mean(y * log(pred) + (1 - y) * log(1 - pred))
+
+        return(loss)
+      }
+    } else if (is.null(loss_func)){
+      internal$parameters$loss_func <- function(y, pred){
+        loss <- colMeans((pred - y)^2)
+
+        return(loss)
+      }
+    }
   }
 
   internal <- get_extra_parameters(internal, type) # This includes both extra parameters and other objects
@@ -205,6 +226,7 @@ get_parameters <- function(approach,
                            extra_computation_args = list(),
                            testing = FALSE,
                            sage = FALSE,
+                           loss_func = NULL,
                            ...) {
   # approach is checked comprehensively later
 

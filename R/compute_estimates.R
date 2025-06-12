@@ -373,8 +373,9 @@ bootstrap_shapley_inner <- function(X,
     if (sage) {
       response <- internal$data$response
       zero_loss <- internal$parameters$zero_loss
+      loss_func <- internal$parameters$loss_func
 
-      vS_SAGE <- zero_loss - colMeans((t(dt_vS[, -1]) - response)^2)
+      vS_SAGE <- zero_loss - loss_func(response, t(dt_vS[, -1]))
       ksage_boot <- t(W_boot %*% as.matrix(vS_SAGE[X_boot[boot_id == i, id_coalition]]))
 
       boot_sd_array[, , i] <- copy(ksage_boot)

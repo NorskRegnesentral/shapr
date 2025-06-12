@@ -1,36 +1,43 @@
 ? SPØRSMÅL TIL MARTIN:
 Kanksje greit å nevne max index_x_explain for bar og waterfall i dokumentasjonen?
-Hvorfor merger
 
-TODO SAGE:
-- ordinære barplot og waterfall.
+Todo
+- Lag en kort og enkel punktliste i PR-en på det som gjøres i den.
 
-For barplot og waterfall angis jo verdien av forklaringsvariabelen langs y-aksen, så den må jo fjernes da. Ta gjerne en titt på hvordan dette gjøres for groupwise Shapley values.
-(når group er spesifisert som en liste i explain) siden vi heller ikke da angir noen verdi langs y-aksen.
+- (Senere) Legg til et avsnitt i vignetten som forklarer forklarer hvordan SAGE brukes.
+- Vurder om alt av spesialtilfeller for sage rundt output bør samles et sted under @details
+i dokumentasjonen (x_explain, format for output, phi0, sd osv) for at det ikke skal bli for mange unntak og spesia
+- Skriv dokumentasjon for loss_func
+
+- Test loss_func for et par ulike varianter + ikke spesifisert med binær response
+- Skriv test-funksjon for loss_func
+- Skriv test-funskjon for group-wise
+
+- For waterfall-plotting bør det stå Loss(f) = NUMBER
+- Noe feil med hvor \phi0 plassers for waterfall (see eksempel i skriptet ditt check_sage.R)
+- For waterfall plott så bør \phi_0 = ... byttes ut med Loss(\emptyset) = zero_loss
 
 
-Done:
-- Bør output fortsatt hete shapley_values_est/sd? Tror kanskje det.
-- print(explanation) gir error -- trolig fordi shapley_values_est ikke finnes
-- Kanskje explain_id bør være NA?
-- Legg til sjekker i setup() for at response er angitt dersom sage = TRUE, hvis ikke gi feilmelding. Se hvordan det er gjort andre steder.
-- Kanskje response bør ligger under internal$data ?
-- Hent alltid ut argumenter fra internal på toppen av funksjonene, ala zero_loss = internal$parameters$zero_loss
-- Last opp testscript i devel som viser at det funker som det skal
+Ferdig:
+- ikke bruk library(xgboost), men bruker xgboost::xgboost() og legg heller til   skip_if_not_installed("xgboost"), se testen output_custom_xgboost_mixed_dummy_ctree i test-regular-output
+- Bare brukt x_train_numeric uten å definere den i testfilen. helper-lm kjøres alltid først. Dette gjelder alle tester. Dvs dropp       y_train_numeric <- data_train[[y_var_numeric]] o.l.
+- Enten dropp output_sage_empirical_lm_iter, eller set max_n_coalitions til 10 eller noe slikt for at testen ikke skal ta for lang tid og kjør iterative = TRUE på en raskere metode (gaussian, independence eller copula)
+- test-sage-setup:
+	- feilmelding bør spesifisere at lengden til response skal være lik antall rader i x_explain
+	- fjerne new_vector
+	- Dropp en av Single integer og Wrong lenth vector
+	- For erroneous input: `sage`", bruk samem stil som ellers ved å definere sage-argumentet på forhånd -- gjør det mer oversiktlig. y_train_numeric trengs ikke å defineres.
+		-   # List er ikke en liste
+- For barplott så er jeg enig i at for sage så bør None alltid fjernes (den er jo 0)
+- Typo i plottetittel. Foreslår Shapley value global loss explanation
+- Kjør linter og juster lengde på linjer. Start alltid nye setninger på ny linje.
+- For plotte-funksjonene forslår jeg du heller henter ut paramteren sage fra explain-objektet internal$parameters$sage, så slipper man å spesifisere dette som et eget argument.
+- Sjekk om SAGE fungerer med group. Tipper det gjør det uten noe fiksing.
+- Bør kunne spesifisere tapsfunksjonen som et argument til explain (vi flytter sikkert disse senere). Tenker loss = NULL, der man har en defaultfunksjon som
+velger logistisk loss response har kun to unike verdier (0 og 1), mens man bruker kvadratisk loss ellers. Må også kunne støtte å sende inn en funksjon function(y,pred) som gir håndterer vektorer y og pred.
+
+
 - Kjør styler::style_pkg etterfulgt av lintr::lint_package() for å sjekke kodestil.
   (Husk å commite alt arbeid før du gjør dette da styler endrer filene for deg. Sjekk om endringene som er gjort av styler før du commiter).
-- Dokumenter nye argumenter og se gjennom andre argumenter for om de må justeres mepri
-- Lag Draft-Pull Request så er det lettere å få oversikt.
-- Test-funksjoner
+- Kjør devtools::document() for å generere dokumentasjon og sjekk inn denne.
 
-Output:
-SAGE-verdiene, ikke Shapley
-
-Shapley verdier internal, regnes ut i finalize_explanation - internal$output$dt_shap
-
-GJORT:
-- Utvide setup, get param (husk 307)
-  + respons (y_train) + sage =T/F
-- Compute_estimates; linje 347-350
-- Endre output
-- Bootstrap estimates av std

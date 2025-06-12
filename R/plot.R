@@ -189,7 +189,6 @@ plot.shapr <- function(x,
                        scatter_hist = TRUE,
                        include_group_feature_means = FALSE,
                        beeswarm_cex = 1 / length(index_x_explain)^(1 / 4),
-                       sage = FALSE,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}")
@@ -247,6 +246,8 @@ plot.shapr <- function(x,
   }
 
   # For SAGE values the only supported plot types are `bar` and `waterfall`.
+  sage <- x$internal$parameters$sage
+
   if (sage && !plot_type %in% c("bar", "waterfall")) {
     cli::cli_abort(paste0(
       "`shapr` cannot make a `", plot_type, "` plot for SAGE values.\n",
@@ -289,6 +290,7 @@ plot.shapr <- function(x,
     dt_plot[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
   } else {
     dt_plot[, header := ""]
+    bar_plot_phi0 <- FALSE
   }
 
 
@@ -710,7 +712,7 @@ make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels, sage
   }
 
   if (sage) {
-    plot_title <- "Shapley value model explination"
+    plot_title <- "Shapley value global loss explanation"
   } else {
     plot_title <- "Shapley value prediction explanation"
   }
@@ -779,7 +781,7 @@ make_waterfall_plot <- function(dt_plot,
   }
 
   if (sage) {
-    plot_title <- "Shapley value model explination"
+    plot_title <- "Shapley value global loss explanation"
     dt_plot[, pred := expected + sum(phi), by = id]
   } else {
     plot_title <- "Shapley value prediction explanation"

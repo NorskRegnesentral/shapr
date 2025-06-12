@@ -495,6 +495,7 @@ explain <- function(model,
                     output_args = list(),
                     sage = FALSE,
                     response = NULL,
+                    loss_func = NULL,
                     ...) { # ... is further arguments passed to specific approaches
 
 
@@ -531,6 +532,7 @@ explain <- function(model,
     extra_computation_args = extra_computation_args,
     sage = sage,
     response = response,
+    loss_func = loss_func,
     ...
   )
 
