@@ -38,6 +38,7 @@ setup(
   extra_computation_args = list(),
   sage = FALSE,
   response = NULL,
+  loss_func = NULL,
   ...
 )
 }
@@ -248,6 +249,12 @@ See details for further information.}
 \item{response}{Numerical vector.
 Not applicable unless the \code{sage} parameter is set to \code{TRUE}.
 \code{response} is used in computations of the SAGE values.}
+
+\item{loss_func}{Function.
+Should be a loss function on the form \code{loss_func(y, pred)},
+where \code{y} is the true value and \code{pred} the models prediction.
+If \code{NULL} (default), the loss-function will be set to logistic loss for binary response vectors,
+and MSE loss otherwise.}
 
 \item{...}{Further arguments passed to specific approaches, see below.}
 }

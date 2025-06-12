@@ -180,6 +180,12 @@
 #' Not applicable unless the `sage` parameter is set to `TRUE`.
 #' `response` is used in computations of the SAGE values.
 #'
+#' @param loss_func Function.
+#' Should be a loss function on the form `loss_func(y, pred)`,
+#' where `y` is the true value and `pred` the models prediction.
+#' If `NULL` (default), the loss-function will be set to logistic loss for binary response vectors,
+#' and MSE loss otherwise.
+#'
 #' @param ... Further arguments passed to specific approaches, see below.
 #'
 #'
