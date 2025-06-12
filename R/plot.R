@@ -299,7 +299,8 @@ plot.shapr <- function(x,
     dt_feature_vals[, id := .I]
 
     # Deal with numeric and factor variables separately
-    factor_features <- dt_feature_vals[, sapply(.SD, function(x) is.factor(x) | is.character(x)), .SDcols = shapley_names]
+    factor_features <- dt_feature_vals[, sapply(.SD, function(x) is.factor(x) | is.character(x)),
+                                       .SDcols = shapley_names]
     factor_features <- shapley_names[factor_features]
 
     dt_feature_vals_long <- suppressWarnings(data.table::melt(dt_feature_vals,

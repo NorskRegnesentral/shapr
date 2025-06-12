@@ -32,7 +32,7 @@ explanation_sage <- explain(
   iterative = TRUE
 )
 
-plot.shapr(explanation_sage, sage=TRUE, plot_type = "waterfall")
+plot.shapr(explanation_sage, sage = TRUE, plot_type = "waterfall")
 
 # #### SAGE ####
 #

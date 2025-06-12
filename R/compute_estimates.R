@@ -202,7 +202,13 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
       dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
       n_coal_each_size <- choose(n_shapley_values, seq(n_shapley_values - 1))
       result[[i]] <-
-        bootstrap_shapley_inner(X, n_shapley_values, shapley_names, internal, dt_vS_this, n_coal_each_size, n_boot_samps)
+        bootstrap_shapley_inner(X,
+                                n_shapley_values,
+                                shapley_names,
+                                internal,
+                                dt_vS_this,
+                                n_coal_each_size,
+                                n_boot_samps)
     }
     result <- cbind(internal$parameters$output_labels, rbindlist(result, fill = TRUE))
   } else {
@@ -210,7 +216,13 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
     n_shapley_values <- internal$parameters$n_shapley_values
     shapley_names <- internal$parameters$shapley_names
     n_coal_each_size <- internal$parameters$n_coal_each_size
-    result <- bootstrap_shapley_inner(X, n_shapley_values, shapley_names, internal, dt_vS, n_coal_each_size, n_boot_samps)
+    result <- bootstrap_shapley_inner(X,
+                                      n_shapley_values,
+                                      shapley_names,
+                                      internal,
+                                      dt_vS,
+                                      n_coal_each_size,
+                                      n_boot_samps)
   }
   return(result)
 }
