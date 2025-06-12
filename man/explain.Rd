@@ -25,6 +25,8 @@ explain(
   extra_computation_args = list(),
   iterative_args = list(),
   output_args = list(),
+  sage = FALSE,
+  response = NULL,
   ...
 )
 }
@@ -59,7 +61,7 @@ such as the mean of the predictions in the training data are also reasonable.}
 If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
 If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+First an initial number of coalitions is sampled, then bootstrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -145,7 +147,7 @@ want to continue the iterative estimation. See the
 \item{asymmetric}{Logical.
 Not applicable for (regular) non-causal or asymmetric explanations.
 If \code{FALSE} (default), \code{explain} computes regular symmetric Shapley values,
-If \code{TRUE}, then \code{explain} compute asymmetric Shapley values based on the (partial) causal ordering
+If \code{TRUE}, then \code{explain} computes asymmetric Shapley values based on the (partial) causal ordering
 given by \code{causal_ordering}. That is, \code{explain} only uses the feature combinations/coalitions that
 respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and
 \code{confounding} is \code{NULL} (default), then \code{explain} computes asymmetric conditional Shapley values as specified in
@@ -192,6 +194,16 @@ See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for 
 \item{output_args}{Named list.
 Specifies certain arguments related to the output of the function.
 See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
+
+\item{sage}{Logical.
+If \code{FALSE} (default), Shapley value explanations for individual predictions are computed.
+If \code{TRUE}, Shapley value explanations of the global model loss (SAGE) are computed.
+A single set of Shapley values are then computed over the observations provided to \code{x_explain}.
+See details for further information.}
+
+\item{response}{Numerical vector.
+Not applicable unless the \code{sage} parameter is set to \code{TRUE}.
+\code{response} is used in computations of the SAGE values.}
 
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
@@ -331,11 +343,13 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
 \item{\code{shapley_values_est}}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
-The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
+The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0}).
+If \code{sage = TRUE} in \code{\link[=explain]{explain()}}, the column will contain a single row with the estimated SAGE values.}
 \item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
+Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}.
+If \code{sage = TRUE} in \code{\link[=explain]{explain()}}, the column will contain a single row with the estimated sd for the SAGE values.}
 \item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -359,7 +373,7 @@ For an overview of the methodology and capabilities of the package, see the soft
 \href{https://norskregnesentral.github.io/shapr/}{norskregnesentral.github.io/shapr/}.
 }
 \details{
-The \code{shapr} package implements kernelSHAP estimation of dependence-aware Shapley values with
+The \code{shapr} package implements kernelSHAP estimation of dependence-aware Shapley values explanations with
 eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.
 These are all introduced in the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}.
@@ -397,6 +411,16 @@ Causal Shapley values were proposed by
 Heskes et al. (2020)} as a way to explain the total effect of features
 on the prediction, taking into account their causal relationships, by adapting the sampling procedure in \code{shapr}.
 
+When \code{sage = TRUE}, Shapley value explanations of the global model loss (SAGE) are computed.
+A single set of Shapley values are then computed over the observations provided to \code{x_explain},
+and the output under \code{shapley_values_est} will then contain the SAGE values, while
+\code{shapley_values_sd} will contain the standard deviation for the SAGE values.
+The computation of the SAGE values is based on
+\href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
+Covert et al. (2020)}, sampling from conditional distributions rather than the marginal sampling described
+by Covert et. al.
+The SHAP values for the individual predictions can be found under \code{internal$output$shap_values_est} in all cases.
+
 The package allows for parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages.
 See the examples below.
@@ -405,6 +429,10 @@ For iterative estimation (\code{iterative=TRUE}), intermediate results may also 
 Moreover, the intermediate results are written to disk.
 This combined batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 in a memory friendly manner.
+
+The package can also be used for computation of SAGE values as described by
+\href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
+Covert et al. (2020)}.
 }
 \examples{
 \donttest{

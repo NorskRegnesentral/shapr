@@ -91,7 +91,7 @@ and group coalitions if \code{group != NULL}.
 If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
 If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+First an initial number of coalitions is sampled, then bootstrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -278,11 +278,13 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
 \item{\code{shapley_values_est}}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
-The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
+The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0}).
+If \code{sage = TRUE} in \code{\link[=explain]{explain()}}, the column will contain a single row with the estimated SAGE values.}
 \item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 definition 0 when all coalitions is used.
-Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
+Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}.
+If \code{sage = TRUE} in \code{\link[=explain]{explain()}}, the column will contain a single row with the estimated sd for the SAGE values.}
 \item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the

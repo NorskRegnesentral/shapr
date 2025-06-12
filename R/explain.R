@@ -171,16 +171,10 @@
 #' regression-based approaches are not applicable to the causal Shapley value methodology.
 #'
 #' @param sage Logical.
-#' If `FALSE` (default), regular Shapley values are computed.
-#' If `TRUE`, SAGE values are computed and returned as `shapley_values_est` in the output.
-#' `shapley_values_sd` will then contain the standard deviation for the SAGE values
-#' (see return values for more information about `shapley_values_sd`).
-#' When iterative is `TRUE`, the convergence will be in regards to the variation in the
-#' SAGE values rather than the regular Shapley values.
-#' The computation of the SAGE values is based on
-#' \href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
-#' Covert et al. (2020)}, sampling from conditional distributions rather than the marginal sampling described by Covert et. al.
-#' Regular Shapley values can be found under `internal$output$shap_values_est` in all cases.
+#' If `FALSE` (default), Shapley value explanations for individual predictions are computed.
+#' If `TRUE`, Shapley value explanations of the global model loss (SAGE) are computed.
+#' A single set of Shapley values are then computed over the observations provided to `x_explain`.
+#' See details for further information.
 #'
 #' @param response Numerical vector.
 #' Not applicable unless the `sage` parameter is set to `TRUE`.
@@ -200,7 +194,7 @@
 #' @inheritDotParams setup_approach.timeseries
 #' @inheritDotParams setup_approach.vaeac
 #'
-#' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
+#' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values explanations with
 #' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.
 #' These are all introduced in the
 #' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}.
@@ -238,6 +232,16 @@
 #' Heskes et al. (2020)} as a way to explain the total effect of features
 #' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
+#' When `sage = TRUE`, Shapley value explanations of the global model loss (SAGE) are computed.
+#' A single set of Shapley values are then computed over the observations provided to `x_explain`,
+#' and the output under `shapley_values_est` will then contain the SAGE values, while
+#' `shapley_values_sd` will contain the standard deviation for the SAGE values.
+#' The computation of the SAGE values is based on
+#' \href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
+#' Covert et al. (2020)}, sampling from conditional distributions rather than the marginal sampling described
+#' by Covert et. al.
+#' The SHAP values for the individual predictions can be found under `internal$output$shap_values_est` in all cases.
+#'
 #' The package allows for parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages.
 #' See the examples below.
@@ -255,11 +259,13 @@
 #' \describe{
 #'   \item{`shapley_values_est`}{data.table with the estimated Shapley values with explained observation in the rows and
 #'   features along the columns.
-#'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`)}
+#'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`).
+#'   If `sage = TRUE` in [explain()], the column will contain a single row with the estimated SAGE values.}
 #'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 #'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 #'   definition 0 when all coalitions is used.
-#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`}
+#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`.
+#'   If `sage = TRUE` in [explain()], the column will contain a single row with the estimated sd for the SAGE values.}
 #'   \item{`internal`}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations}
 #'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the

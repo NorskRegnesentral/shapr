@@ -36,6 +36,8 @@ setup(
   confounding = NULL,
   output_args = list(),
   extra_computation_args = list(),
+  sage = FALSE,
+  response = NULL,
   ...
 )
 }
@@ -157,7 +159,7 @@ E.g. \code{verbose = c("basic", "vS_details")} will display basic information + 
 If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
 If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
 This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+First an initial number of coalitions is sampled, then bootstrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -193,7 +195,7 @@ want to continue the iterative estimation. See the
 \item{asymmetric}{Logical.
 Not applicable for (regular) non-causal or asymmetric explanations.
 If \code{FALSE} (default), \code{explain} computes regular symmetric Shapley values,
-If \code{TRUE}, then \code{explain} compute asymmetric Shapley values based on the (partial) causal ordering
+If \code{TRUE}, then \code{explain} computes asymmetric Shapley values based on the (partial) causal ordering
 given by \code{causal_ordering}. That is, \code{explain} only uses the feature combinations/coalitions that
 respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and
 \code{confounding} is \code{NULL} (default), then \code{explain} computes asymmetric conditional Shapley values as specified in
@@ -236,6 +238,16 @@ See \code{\link[=get_output_args_default]{get_output_args_default()}} for descri
 \item{extra_computation_args}{Named list.
 Specifies extra arguments related to the computation of the Shapley values.
 See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
+
+\item{sage}{Logical.
+If \code{FALSE} (default), Shapley value explanations for individual predictions are computed.
+If \code{TRUE}, Shapley value explanations of the global model loss (SAGE) are computed.
+A single set of Shapley values are then computed over the observations provided to \code{x_explain}.
+See details for further information.}
+
+\item{response}{Numerical vector.
+Not applicable unless the \code{sage} parameter is set to \code{TRUE}.
+\code{response} is used in computations of the SAGE values.}
 
 \item{...}{Further arguments passed to specific approaches, see below.}
 }

@@ -17,6 +17,7 @@
   scatter_hist = TRUE,
   include_group_feature_means = FALSE,
   beeswarm_cex = 1/length(index_x_explain)^(1/4),
+  sage = FALSE,
   ...
 )
 }
@@ -98,6 +99,11 @@ features in each group.}
 
 \item{beeswarm_cex}{Numeric.
 The cex argument of \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beeswarm()}}, controlling the spacing in the beeswarm plots.}
+
+\item{sage}{Logical.
+Must be set to \code{TRUE} when plotting SAGE-values.
+Otherwise, if \code{FALSE} (default), the function assumes regular Shapley values
+for individual predictions as input.}
 
 \item{...}{Other arguments passed to underlying functions,
 like \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beeswarm()}} for \code{plot_type = "beeswarm"}.}
