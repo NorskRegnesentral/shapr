@@ -44,17 +44,43 @@
       * Approach: gaussian
       * Iterative estimation: FALSE
       * Number of feature-wise Shapley values: 5
-      * Number of observations to explain: 111
+      * Number of observations to explain: 108
       
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id    none Solar.R  Wind  Temp Month   Day
-             <lgcl>   <num>   <num> <num> <num> <num> <num>
-      1:         NA 3.8e-05   156.5 422.2 495.2 3.053  16.3
+         explain_id  none Solar.R  Wind  Temp Month   Day
+             <lgcl> <num>   <num> <num> <num> <num> <num>
+      1:         NA 4e-05   148.1 440.6 515.3 1.215 9.927
 
-# output_sage_empirical_lm_iter
+# output_sage_empirical_lm
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      
+      -- Explanation overview --
+      
+      * Model class: <lm>
+      * Approach: empirical
+      * Iterative estimation: FALSE
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 108
+      
+      -- Main computation started --
+      
+      i Using 10 of 32 coalitions. 
+    Output
+         explain_id     none Solar.R  Wind  Temp Month   Day
+             <lgcl>    <num>   <num> <num> <num> <num> <num>
+      1:         NA 0.000102   123.1 123.1 263.6 90.75 96.98
+
+# output_sage_copula_lm_iter
 
     Code
       print({
@@ -68,7 +94,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
-      * Approach: empirical
+      * Approach: copula
       * Iterative estimation: TRUE
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 108
@@ -89,44 +115,8 @@
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 24 of 32 coalitions, 6 new. 
-      
-      -- Iteration 6 -----------------------------------------------------------------
-      i Using 28 of 32 coalitions, 4 new. 
-      
-      -- Iteration 7 -----------------------------------------------------------------
-      i Using 30 of 32 coalitions, 2 new. 
-      
-      -- Iteration 8 -----------------------------------------------------------------
-      i Using 32 of 32 coalitions, 2 new. 
     Output
          explain_id    none Solar.R  Wind  Temp Month   Day
              <lgcl>   <num>   <num> <num> <num> <num> <num>
-      1:         NA 0.00012   106.4 194.9   205 99.23 91.95
-
-# output_sage_copula_lm
-
-    Code
-      print({
-        out <- code
-      }, digits = digits)
-    Message
-      
-      -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
-      
-      -- Explanation overview --
-      
-      * Model class: <lm>
-      * Approach: copula
-      * Iterative estimation: FALSE
-      * Number of feature-wise Shapley values: 5
-      * Number of observations to explain: 108
-      
-      -- Main computation started --
-      
-      i Using 32 of 32 coalitions. 
-    Output
-         explain_id    none Solar.R  Wind  Temp Month   Day
-             <lgcl>   <num>   <num> <num> <num> <num> <num>
-      1:         NA 4.6e-05   60.81 258.3 366.5 9.615 2.231
+      1:         NA 3.4e-05   64.84 257.2 362.6 10.57 2.339
 

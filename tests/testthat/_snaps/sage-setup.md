@@ -8,7 +8,7 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_data()`:
-      ! `response` must be a numeric vector for computation of SAGE-values.
+      ! `response` must be a numeric vector with the same number of elements as rows in `x_explain`.
 
 ---
 
@@ -22,12 +22,12 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_data()`:
-      ! `response` must be a numeric vector for computation of SAGE-values.
+      ! `response` must be a numeric vector with the same number of elements as rows in `x_explain`.
 
 ---
 
     Code
-      y_NA <- new_vector <- rep(NA, nrow(data_train))
+      y_NA <- rep(NA, nrow(data_train))
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_train_numeric,
         x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = TRUE,
         response = y_NA)
@@ -36,26 +36,12 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_data()`:
-      ! `response` must be a numeric vector for computation of SAGE-values.
+      ! `response` must be a numeric vector with the same number of elements as rows in `x_explain`.
 
 ---
 
     Code
-      y_single_int <- 2
-      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_train_numeric,
-        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = TRUE,
-        response = y_single_int)
-    Message
-      
-      -- Starting `shapr::explain()` -------------------------------------------------
-    Condition
-      Error in `check_data()`:
-      ! `response` must have same number of observations as x_explain.
-
----
-
-    Code
-      y_short <- data_train[[y_var_numeric]][-1]
+      y_short <- y_train_numeric[-1]
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_train_numeric,
         x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = TRUE,
         response = y_short)
@@ -64,13 +50,14 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_data()`:
-      ! `response` must have same number of observations as x_explain.
+      ! `response` must be a numeric vector with the same number of elements as rows in `x_explain`.
 
 # erroneous input: `sage`
 
     Code
+      sage_numeric <- 3
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_train_numeric,
-        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = 3,
+        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = sage_numeric,
         response = y_train_numeric)
     Message
       
@@ -82,9 +69,10 @@
 ---
 
     Code
+      sage_vec <- c(TRUE, TRUE)
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_train_numeric,
-        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = c(
-          TRUE, TRUE), response = y_train_numeric)
+        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = sage_vec,
+        response = y_train_numeric)
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
@@ -95,8 +83,9 @@
 ---
 
     Code
+      sage_null <- NULL
       explain(testing = TRUE, model = model_lm_numeric, x_explain = x_train_numeric,
-        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = NULL,
+        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = sage_null,
         response = y_train_numeric)
     Message
       

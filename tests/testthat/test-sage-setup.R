@@ -41,7 +41,7 @@ test_that("erroneous input: `response`", {
   # NA
   expect_snapshot(
     {
-      y_NA <- new_vector <- rep(NA, nrow(data_train))
+      y_NA <- rep(NA, nrow(data_train))
 
       explain(
         testing = TRUE,
@@ -58,30 +58,10 @@ test_that("erroneous input: `response`", {
     error = TRUE
   )
 
-  # Single integer
-  expect_snapshot(
-    {
-      y_single_int <- 2
-
-      explain(
-        testing = TRUE,
-        model = model_lm_numeric,
-        x_explain = x_train_numeric,
-        x_train = x_train_numeric,
-        approach = "gaussian",
-        phi0 = p0,
-        seed = 1,
-        sage = TRUE,
-        response = y_single_int
-      )
-    },
-    error = TRUE
-  )
-
   # Wrong length vector
   expect_snapshot(
     {
-      y_short <- data_train[[y_var_numeric]][-1]
+      y_short <- y_train_numeric[-1]
 
       explain(
         testing = TRUE,
@@ -102,11 +82,11 @@ test_that("erroneous input: `response`", {
 test_that("erroneous input: `sage`", {
   set.seed(123)
 
-  y_train_numeric <- data_train[[y_var_numeric]]
-
   # Non logical
   expect_snapshot(
     {
+      sage_numeric <- 3
+
       explain(
         testing = TRUE,
         model = model_lm_numeric,
@@ -115,16 +95,18 @@ test_that("erroneous input: `sage`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = 3,
+        sage = sage_numeric,
         response = y_train_numeric
       )
     },
     error = TRUE
   )
 
-  # List
+  # Vector
   expect_snapshot(
     {
+      sage_vec <- c(TRUE, TRUE)
+
       explain(
         testing = TRUE,
         model = model_lm_numeric,
@@ -133,7 +115,7 @@ test_that("erroneous input: `sage`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = c(TRUE, TRUE),
+        sage = sage_vec,
         response = y_train_numeric
       )
     },
@@ -143,6 +125,8 @@ test_that("erroneous input: `sage`", {
   # NULL
   expect_snapshot(
     {
+      sage_null <- NULL
+
       explain(
         testing = TRUE,
         model = model_lm_numeric,
@@ -151,7 +135,7 @@ test_that("erroneous input: `sage`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = NULL,
+        sage = sage_null,
         response = y_train_numeric
       )
     },

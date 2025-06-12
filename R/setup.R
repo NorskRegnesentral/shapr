@@ -483,11 +483,8 @@ check_data <- function(internal) {
   if (sage) {
     if (!(is.numeric(response) ||
       !is.vector(response)) ||
-      is.null(response)) {
-      cli::cli_abort("`response` must be a numeric vector for computation of SAGE-values.")
-    }
-    if (!nrow(x_explain) == length(response)) {
-      cli::cli_abort("`response` must have same number of observations as x_explain.")
+      is.null(response) || (nrow(x_explain) != length(response))) {
+      cli::cli_abort("`response` must be a numeric vector with the same number of elements as rows in `x_explain`.")
     }
   }
 
