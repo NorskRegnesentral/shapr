@@ -145,16 +145,16 @@ setup <- function(x_train,
     if (is.null(loss_func) && all(response %in% c(0, 1))) {
       cat("HEII")
       internal$parameters$loss_func <- function(y, pred) {
-        #To avoid taking log(0)
-        eps = 1e-15
+        # To avoid taking log(0)
+        eps <- 1e-15
         pred <- pmin(pmax(pred, eps), 1 - eps)
 
         loss <- -mean(y * log(pred) + (1 - y) * log(1 - pred))
 
         return(loss)
       }
-    } else if (is.null(loss_func)){
-      internal$parameters$loss_func <- function(y, pred){
+    } else if (is.null(loss_func)) {
+      internal$parameters$loss_func <- function(y, pred) {
         loss <- colMeans((pred - y)^2)
 
         return(loss)
