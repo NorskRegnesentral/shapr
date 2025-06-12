@@ -25,16 +25,17 @@ test_that("output_sage_independence_lm", {
 })
 
 test_that("output_sage_gaussian_xgboost", {
+  skip_if_not_installed("xgboost")
+
   set.seed(123)
 
   expect_snapshot_rds(
     {
-      library(xgboost)
 
       x_numeric <- data_complete[, ..x_var_numeric]
       y_numeric <- data_complete[, get(y_var_numeric)]
 
-      model_xgboost <- xgboost(
+      model_xgboost <- xgboost::xgboost(
         data = as.matrix(x_numeric),
         label = y_numeric,
         nround = 20,
