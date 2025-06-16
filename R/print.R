@@ -1,15 +1,26 @@
 #' Print method for shapr objects
 #'
 #' @param x A shapr object
-#' @param digits Scalar Integer.
-#' Number of digits to display to the console
-#' @param ... Unused
-#' @return No return value (but prints the shapley values to the console)
+#' @param what Character. Which component to print.
+#' Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition".
+#' Defaults to "shapley_est".
+#' Only one component can be printed at a time.
+#' @param digits Integer.
+#' Number of significant digits to display.
+#' Defaults to 4.
+#' @param nsmall Integer.
+#' Minimum digits to the right of the decimal point.
+#' Defaults to 2 less than `digits`.
+#' @param ... Further arguments passed to [print.data.table()] or `print()`.
+#'
+#' @return The object is returned invisibly after printing selected output.
 #' @export
-print.shapr <- function(x, digits = 4, ...) {
-  shap <- copy(x$shapley_values_est)
-  shap_names <- x$internal$parameters$shap_names
-  cols <- c("none", shap_names)
-  shap[, (cols) := lapply(.SD, round, digits = digits + 2), .SDcols = cols][]
-  print(shap, digits = digits)
+print.shapr <- function(x, what = c("shapley_est", "shapley_sd", "MSEv",
+                                    "MSEv_explicand", "MSEv_coalition"),
+                        digits = 4, nsmall = max(0, digits - 2), ...) {
+  what <- match.arg(what)
+  value <- get_results(x, what) # Always return a single data.table
+
+  print(value, digits = digits, nsmall = nsmall, ...)
+  invisible(x)
 }
