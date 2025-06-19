@@ -60,6 +60,7 @@ setup <- function(x_train,
                   confounding = NULL,
                   output_args = list(),
                   extra_computation_args = list(),
+                  model_class,
                   ...) {
   internal <- list()
 
@@ -120,6 +121,7 @@ setup <- function(x_train,
     confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
+    model_class = model_class,
     ...
   )
 
@@ -197,6 +199,7 @@ get_parameters <- function(approach,
                            output_args = list(),
                            extra_computation_args = list(),
                            testing = FALSE,
+                           model_class = model_class,
                            ...) {
   # approach is checked comprehensively later
 
@@ -249,6 +252,11 @@ get_parameters <- function(approach,
   # type
   if (!(type %in% c("regular", "forecast"))) {
     cli::cli_abort("`type` must be either `regular` or `forecast`.")
+  }
+
+  # model_class, test if single character
+  if (!(is.character(model_class) && length(model_class) == 1)) {
+    cli::cli_abort("`model_class` must be a single character string.")
   }
 
   # parameters only used for type "forecast"
