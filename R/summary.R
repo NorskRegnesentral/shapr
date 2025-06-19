@@ -1,5 +1,3 @@
-
-
 #' Summary method for shapr objects
 #'
 #' @param object A shapr object.
@@ -30,11 +28,6 @@ summary.shapr <- function(x, digits = 4, ...) {
   formatted_info_extra <- format_info_extra(internal)
 
   cli::cli_ul(formatted_info_extra)
-
-
-  # TODO notes
-  # Clean up the unused functions, and document those left
-  # update explain_forecast with the new model_class stuff
 
   # Display convergence info
   formatted_convergence_info <- format_convergence_info(internal,iter)$formatted_msg
