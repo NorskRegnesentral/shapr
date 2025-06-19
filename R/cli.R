@@ -28,7 +28,6 @@ cli_topline <- function(verbose, testing, init_time, type, is_python) {
 #' @export
 #' @keywords internal
 cli_startup <- function(internal, verbose) {
-
   approach <- internal$parameters$approach
   iterative <- internal$parameters$iterative
   regression.model <- internal$parameters$regression.model
@@ -113,8 +112,7 @@ format_info_basic <- function(internal) {
 #'
 #' @inheritParams default_doc_internal
 #' @keywords internal
-format_info_extra <- function(internal){
-
+format_info_extra <- function(internal) {
   iter <- length(internal$iter_list)
 
   n_coaltions <- internal$iter_list[[iter]]$n_coalitions
@@ -125,7 +123,6 @@ format_info_extra <- function(internal){
   formatted_msg <- cli::format_inline(msg, .envir = environment())
 
   return(formatted_msg)
-
 }
 
 #' Printing messages in compute_vS with cli
@@ -191,7 +188,7 @@ cli_iter <- function(verbose, internal, iter) {
 #' @inheritParams default_doc_internal
 #' @inheritParams default_doc_export
 #' @keywords internal
-format_convergence_info <- function(internal, iter){
+format_convergence_info <- function(internal, iter) {
   converged <- internal$iter_list[[iter]]$converged
   converged_exact <- internal$iter_list[[iter]]$converged_exact
   converged_sd <- internal$iter_list[[iter]]$converged_sd
@@ -209,7 +206,6 @@ format_convergence_info <- function(internal, iter){
   n_coal_next_iter_factor_nice <- as.numeric(format(signif(n_coal_next_iter_factor * 100, 2), scientific = FALSE))
 
   if (isFALSE(converged)) {
-
     next_new_n_coalitions <- internal$iter_list[[iter + 1]]$new_n_coalitions
 
     # No convergence
@@ -250,7 +246,6 @@ format_convergence_info <- function(internal, iter){
         "Maxium number of coalitions ({.val {current_n_coalitions}}) reached!\n"
       )
     }
-
   }
   formatted_msg <- cli::format_inline(msg, .envir = environment())
   return(formatted_msg)
@@ -263,8 +258,7 @@ format_convergence_info <- function(internal, iter){
 #' @inheritParams default_doc_internal
 #' @inheritParams default_doc_export
 #' @keywords internal
-format_shapley_info <- function(internal, iter){
-
+format_shapley_info <- function(internal, iter) {
   converged_exact <- internal$iter_list[[iter]]$converged_exact
 
   shap_names_with_none <- c("none", internal$parameters$shap_names)
@@ -306,11 +300,10 @@ print_iter <- function(internal) {
   converged_exact <- internal$iter_list[[iter]]$converged_exact
 
   if ("convergence" %in% verbose) {
-
-    formatted_convergence_info <- format_convergence_info(internal,iter)
+    formatted_convergence_info <- format_convergence_info(internal, iter)
 
     cli::cli_h3("Convergence info")
-    if(isTRUE(converged)){
+    if (isTRUE(converged)) {
       cli::cli_alert_success(formatted_convergence_info)
     } else {
       cli::cli_alert_info(formatted_convergence_info)
@@ -334,7 +327,6 @@ print_iter <- function(internal) {
 
     # Send it to rlang::inform (bypassing cli-formatting) to print correctly
     # Cannot use print as it does not obey suppressMessages()
-    rlang::inform(paste0(msg,"\n", formatted_shapley_info))
+    rlang::inform(paste0(msg, "\n", formatted_shapley_info))
   }
 }
-

@@ -15,8 +15,10 @@
 #'
 #' @return The object is returned invisibly after printing selected output.
 #' @export
-print.shapr <- function(x, what = c("shapley_est", "shapley_sd", "MSEv",
-                                    "MSEv_explicand", "MSEv_coalition"),
+print.shapr <- function(x, what = c(
+                          "shapley_est", "shapley_sd", "MSEv",
+                          "MSEv_explicand", "MSEv_coalition"
+                        ),
                         digits = 4, nsmall = max(0, digits - 2), ...) {
   what <- match.arg(what)
   value <- get_results(x, what) # Always return a single data.table

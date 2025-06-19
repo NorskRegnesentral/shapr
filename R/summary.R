@@ -30,7 +30,7 @@ summary.shapr <- function(x, ...) {
   cli::cli_ul(formatted_info_extra)
 
   # Display convergence info
-  formatted_convergence_info <- format_convergence_info(internal,iter)
+  formatted_convergence_info <- format_convergence_info(internal, iter)
 
   cli::cli_h3("Convergence info")
   cli::cli_alert_success(formatted_convergence_info)
@@ -55,7 +55,7 @@ summary.shapr <- function(x, ...) {
   MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = 4, nsmall = 2)
 
   cli::cli_h3("Estimated MSEv")
-    cli::cli_alert_info(
+  cli::cli_alert_info(
     "The estimated MSE of v(S) = {MSEv_nice} (with sd = {MSEv_sd_nice})"
   )
 
