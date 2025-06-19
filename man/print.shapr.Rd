@@ -4,18 +4,34 @@
 \alias{print.shapr}
 \title{Print method for shapr objects}
 \usage{
-\method{print}{shapr}(x, digits = 4, ...)
+\method{print}{shapr}(
+  x,
+  what = c("shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition"),
+  digits = 4,
+  nsmall = max(0, digits - 2),
+  ...
+)
 }
 \arguments{
 \item{x}{A shapr object}
 
-\item{digits}{Scalar Integer.
-Number of digits to display to the console}
+\item{what}{Character. Which component to print.
+Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition".
+Defaults to "shapley_est".
+Only one component can be printed at a time.}
 
-\item{...}{Unused}
+\item{digits}{Integer.
+Number of significant digits to display.
+Defaults to 4.}
+
+\item{nsmall}{Integer.
+Minimum digits to the right of the decimal point.
+Defaults to 2 less than \code{digits}.}
+
+\item{...}{Further arguments passed to \code{\link[=print.data.table]{print.data.table()}} or \code{print()}.}
 }
 \value{
-No return value (but prints the shapley values to the console)
+The object is returned invisibly after printing selected output.
 }
 \description{
 Print method for shapr objects

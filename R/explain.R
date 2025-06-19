@@ -501,6 +501,7 @@ explain <- function(model,
     confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
+    model_class = class(model)[1],
     ...
   )
 
@@ -533,7 +534,7 @@ explain <- function(model,
     set.seed(seed)
   }
 
-  cli_startup(internal, class(model), verbose)
+  cli_startup(internal, verbose)
 
 
   while (converged == FALSE) {

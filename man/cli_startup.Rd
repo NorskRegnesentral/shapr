@@ -4,14 +4,11 @@
 \alias{cli_startup}
 \title{Printing startup messages with cli}
 \usage{
-cli_startup(internal, model_class, verbose)
+cli_startup(internal, verbose)
 }
 \arguments{
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
-
-\item{model_class}{String.
-Class of the model as a string}
 
 \item{verbose}{String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
@@ -28,6 +25,9 @@ This is most relevant for \verb{approach \%in\% c("regression_separate", "regres
 \code{NULL} means no printout.
 Note that any combination of four strings can be used.
 E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.}
+
+\item{model_class}{String.
+Class of the model as a string}
 }
 \value{
 No return value (but prints startup messages with cli)

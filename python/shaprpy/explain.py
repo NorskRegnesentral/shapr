@@ -157,6 +157,8 @@ def explain(
       extra_computation_args = ro.ListVector({})
     else:
       extra_computation_args = ListVector(extra_computation_args)
+      
+    model_class = f"{type(model).__module__}.{type(model).__name__}"
 
     # Sets up and organizes input parameters
     # Checks the input parameters and their compatability
@@ -192,7 +194,8 @@ def explain(
       output_args = output_args, 
       extra_computation_args = extra_computation_args, 
       init_time = init_time,
-      is_python=True,
+      is_python = True,
+      model_class = model_class
       **kwargs
     )
 
@@ -219,8 +222,7 @@ def explain(
     if seed is not None:
       base.set_seed(seed)
 
-    model_class = f"{type(model).__module__}.{type(model).__name__}"
-    shapr.cli_startup(rinternal, model_class, verbose)
+    shapr.cli_startup(rinternal, verbose)
 
     rinternal.rx2['iter_timing_list'] = ro.ListVector({})
 

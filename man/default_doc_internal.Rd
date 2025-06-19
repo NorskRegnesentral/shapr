@@ -15,6 +15,7 @@ default_doc_internal(
   S,
   dt_vS,
   output_size,
+  model_class,
   ...
 )
 }
@@ -54,6 +55,9 @@ which are to be explained.}
 
 \item{output_size}{Scalar integer.
 Specifies the dimension of the output from the prediction model for every observation.}
+
+\item{model_class}{Character string.
+The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by \code{class(model)[1]}.}
 
 \item{...}{Further arguments passed to \code{approach}-specific functions.}
 }
