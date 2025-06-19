@@ -51,7 +51,7 @@ cli_startup <- function(internal, verbose) {
 
   if ("basic" %in% verbose) {
     if (isTRUE(iterative)) {
-      msg <- "iterative computation started"
+      msg <- "Iterative computation started"
     } else {
       msg <- "Main computation started"
     }
@@ -87,8 +87,8 @@ format_info_basic <- function(internal) {
   line_vec <- c(line_vec, "Model class: {.cls {model_class}}")
   line_vec <- c(line_vec, "Approach: {.emph {approach}}")
   line_vec <- c(line_vec, "Iterative estimation: {.emph {iterative_txt}}")
-  line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {n_shapley_values}")
-  line_vec <- c(line_vec, "Number of observations to explain: {n_explain}")
+  line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {.val {n_shapley_values}}")
+  line_vec <- c(line_vec, "Number of observations to explain: {.val {n_explain}}")
   if (isTRUE(asymmetric)) {
     line_vec <- c(line_vec, "Number of asymmetric coalitions: {max_n_coalitions_causal}")
   }
@@ -168,7 +168,7 @@ cli_iter <- function(verbose, internal, iter) {
   asymmetric <- internal$parameters$asymmetric
 
   if (!is.null(verbose) && isTRUE(iterative)) {
-    cli::cli_h1("Iteration {iter}")
+    cli::cli_h1("Iteration {.val {iter}}")
   }
 
   if ("basic" %in% verbose) {
@@ -176,9 +176,9 @@ cli_iter <- function(verbose, internal, iter) {
     tot_coal <- internal$iter_list[[iter]]$n_coalitions
     all_coal <- ifelse(asymmetric, internal$parameters$max_n_coalitions, 2^internal$parameters$n_shapley_values)
 
-    extra_msg <- ifelse(iterative, ", {new_coal} new", "")
+    extra_msg <- ifelse(iterative, ", {.val {new_coal}} new", "")
 
-    msg <- paste0("Using {tot_coal} of {all_coal} coalitions", extra_msg, ". ")
+    msg <- paste0("Using {.val {tot_coal}} of {.val {all_coal}} coalitions", extra_msg, ". ")
 
     cli::cli_alert_info(msg)
   }
@@ -204,32 +204,32 @@ format_convergence_info <- function(internal, iter){
   est_required_coal_samp <- internal$iter_list[[iter]]$est_required_coal_samp
 
   convergence_tol <- internal$parameters$iterative_args$convergence_tol
+  conv_nice <- signif(overall_conv_measure, 2)
+  tol_nice <- as.numeric(format(signif(convergence_tol, 2), scientific = FALSE))
+  n_coal_next_iter_factor_nice <- as.numeric(format(signif(n_coal_next_iter_factor * 100, 2), scientific = FALSE))
 
   if (isFALSE(converged)) {
 
     next_new_n_coalitions <- internal$iter_list[[iter + 1]]$new_n_coalitions
 
     # No convergence
-    msg <- "Not converged after {current_n_coalitions} coalitions:\n"
+    msg <- "Not converged after {.val {current_n_coalitions}} coalitions:\n"
 
     if (!is.null(convergence_tol)) {
-      conv_nice <- signif(overall_conv_measure, 2)
-      tol_nice <- format(signif(convergence_tol, 2), scientific = FALSE)
-      n_coal_next_iter_factor_nice <- format(signif(n_coal_next_iter_factor * 100, 2), scientific = FALSE)
       msg <- paste0(
         msg,
-        "Current convergence measure: {conv_nice} [needs {tol_nice}]\n",
-        "Estimated remaining coalitions: {est_remaining_coal_samp}\n",
-        "(Conservatively) adding about {n_coal_next_iter_factor_nice}% of that ({next_new_n_coalitions} coalitions) ",
+        "Current convergence measure: {.val {conv_nice}} [needs {.val {tol_nice}}]\n",
+        "Estimated remaining coalitions: {.val {est_remaining_coal_samp}}\n",
+        "(Conservatively) adding about {.val {n_coal_next_iter_factor_nice}}% of that ({.val {next_new_n_coalitions}} coalitions) ",
         "in the next iteration."
       )
     }
   } else {
-    msg <- "Iterative Shapley value estimation stopped after {.val {n_iterations}} iterations, due to:\n"
+    msg <- "Iterative Shapley value estimation stopped after {.val {iter}} iterations, due to:\n"
     if (isTRUE(converged_exact)) {
       msg <- paste0(
         msg,
-        "All ({current_n_coalitions}) coalitions used!\n"
+        "All ({.val {current_n_coalitions}}) coalitions used!\n"
       )
     }
     if (isTRUE(converged_sd)) {
@@ -241,13 +241,13 @@ format_convergence_info <- function(internal, iter){
     if (isTRUE(converged_max_iter)) {
       msg <- paste0(
         msg,
-        "Maxium number of iterations ({.val {n_iterations}}) reached!\n"
+        "Maxium number of iterations ({.val {iter}}) reached!\n"
       )
     }
     if (isTRUE(converged_max_n_coalitions)) {
       msg <- paste0(
         msg,
-        "Maxium number of coalitions ({.val {n_iterations}}) reached!\n"
+        "Maxium number of coalitions ({.val {current_n_coalitions}}) reached!\n"
       )
     }
 
@@ -307,7 +307,7 @@ print_iter <- function(internal) {
 
   if ("convergence" %in% verbose) {
 
-    formatted_convergence_info <- format_convergence_info(internal,iter)$formatted_msg
+    formatted_convergence_info <- format_convergence_info(internal,iter)
 
     cli::cli_h3("Convergence info")
     if(isTRUE(converged)){

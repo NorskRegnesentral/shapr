@@ -6,7 +6,7 @@
 #'
 #' @return Invisibly returns a named list of summary components.
 #' @export
-summary.shapr <- function(x, digits = 4, ...) {
+summary.shapr <- function(x, ...) {
   stopifnot(inherits(x, "shapr"))
 
   internal <- x$internal
@@ -30,7 +30,7 @@ summary.shapr <- function(x, digits = 4, ...) {
   cli::cli_ul(formatted_info_extra)
 
   # Display convergence info
-  formatted_convergence_info <- format_convergence_info(internal,iter)$formatted_msg
+  formatted_convergence_info <- format_convergence_info(internal,iter)
 
   cli::cli_h3("Convergence info")
   cli::cli_alert_success(formatted_convergence_info)
@@ -50,7 +50,14 @@ summary.shapr <- function(x, digits = 4, ...) {
   # Cannot use print as it does not obey suppressMessages()
   rlang::inform(formatted_shapley_info)
 
-  # TODO: Display MSE res???
+  # MSEv info
+  MSEv_nice <- format(results$MSEv$MSEv, digits = 4, nsmall = 2)
+  MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = 4, nsmall = 2)
+
+  cli::cli_h3("Estimated MSEv")
+    cli::cli_alert_info(
+    "The estimated MSE of v(S) = {MSEv_nice} (with sd = {MSEv_sd_nice})"
+  )
 
   invisible(results)
 }
