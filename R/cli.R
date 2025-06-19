@@ -225,29 +225,29 @@ format_convergence_info <- function(internal, iter){
       )
     }
   } else {
-    msg <- "Converged after {current_n_coalitions} coalitions:\n"
+    msg <- "Iterative Shapley value estimation stopped after {.val {n_iterations}} iterations, due to:\n"
     if (isTRUE(converged_exact)) {
       msg <- paste0(
         msg,
-        "All ({current_n_coalitions}) coalitions used.\n"
+        "All ({current_n_coalitions}) coalitions used!\n"
       )
     }
     if (isTRUE(converged_sd)) {
       msg <- paste0(
         msg,
-        "Convergence tolerance reached!\n"
+        "Standard deviation convergence threshold ({.val {tol_nice}}) reached: {.val {conv_nice}}!\n"
       )
     }
     if (isTRUE(converged_max_iter)) {
       msg <- paste0(
         msg,
-        "Maximum number of iterations reached!\n"
+        "Maxium number of iterations ({.val {n_iterations}}) reached!\n"
       )
     }
     if (isTRUE(converged_max_n_coalitions)) {
       msg <- paste0(
         msg,
-        "Maximum number of coalitions reached!\n"
+        "Maxium number of coalitions ({.val {n_iterations}}) reached!\n"
       )
     }
 

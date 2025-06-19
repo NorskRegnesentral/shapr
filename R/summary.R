@@ -1,37 +1,3 @@
-format_info_iter <- function(iterative_info){
-
-  n_iterations <- iterative_info[, .N]
-  exact <- iterative_info[.N, exact]
-  n_coalitions <- iterative_info[.N, n_coaltions]
-  converged <- iterative_info[.N, converged]
-  converged_sd <- iterative_info[.N, converged_sd]
-  converged_max_iter <- iterative_info[.N, converged_max_iter]
-  converged_max_n_coalitions  <- iterative_info[.N, converged_max_n_coalitions]
-
-  overall_conv_measure <- iterative_info[.N, overall_conv_measure]
-
-  n_coal_msg <- cli::format_inline("Number of coalitions used: {.val {n_coalitions}}", .envir = environment())
-
-  conv_msg <- NULL
-  if(isTRUE(converged)){
-    conv_msg0 <- c("Iterative Shapley value estimation stopped after {.val {n_iterations}} iterations, due to: ")
-
-    if(isTRUE(converged_sd)){
-      conv_msg0 <- c(conv_msg0, "Standard deviation convergence criterion reached: {.val {overall_conv_measure}}")
-    }
-    if(isTRUE(converged_max_iter)){
-      conv_msg0 <- c(conv_msg0, "Maxium number of iterations ({.val {n_iterations}}) reached. ")
-    }
-    if(isTRUE(converged_max_n_coalitions)){
-      conv_msg0 <- c(conv_msg0, "Maxium number of coalitions ({.val {n_iterations}}) reached.")
-    }
-
-    conv_msg <- cli::format_inline(conv_msg0, .envir = environment())
-  }
-
-  return(list(n_coal_msg = n_coal_msg,
-              conv_msg = conv_msg))
-}
 
 
 #' Summary method for shapr objects
@@ -67,7 +33,6 @@ summary.shapr <- function(x, digits = 4, ...) {
 
 
   # TODO notes
-  # make the convergence info more informative (see the format_info_iter func for inspiration)
   # Clean up the unused functions, and document those left
   # update explain_forecast with the new model_class stuff
 
