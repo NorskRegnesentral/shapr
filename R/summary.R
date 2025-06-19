@@ -61,7 +61,10 @@ summary.shapr <- function(x, digits = 4, ...) {
 
   cli::cli_ul(formatted_info_basic)
 
-  # TODO: Should also add the number of coalitions here (also the max number)
+  formatted_info_extra <- format_info_extra(internal)
+
+  cli::cli_ul(formatted_info_extra)
+
 
   # TODO notes
   # make the convergence info more informative (see the format_info_iter func for inspiration)
