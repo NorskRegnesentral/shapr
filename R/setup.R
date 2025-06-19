@@ -331,6 +331,7 @@ get_parameters <- function(approach,
     asymmetric = asymmetric,
     causal_ordering = causal_ordering,
     confounding = confounding,
+    model_class = model_class,
     testing = testing
   )
 

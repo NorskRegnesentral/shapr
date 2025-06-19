@@ -12,6 +12,7 @@ cli_topline <- function(verbose, testing, init_time, type, is_python) {
   if (!is.null(verbose)) {
     cli::cli_h1(msg)
   }
+  return(NULL)
 }
 
 
@@ -26,10 +27,47 @@ cli_topline <- function(verbose, testing, init_time, type, is_python) {
 #'
 #' @export
 #' @keywords internal
-cli_startup <- function(internal, model_class, verbose) {
-  init_time <- internal$timing_list$init_time
+cli_startup <- function(internal, verbose) {
 
+  approach <- internal$parameters$approach
+  iterative <- internal$parameters$iterative
+  regression.model <- internal$parameters$regression.model
+
+  # Get the basic shapr information to display
+  formatted_line_vec <- get_shapr_info_basic(internal)
+
+  if ("basic" %in% verbose) {
+    cli::cli_h2("Explanation overview")
+    cli::cli_ul(formatted_line_vec)
+  }
+
+  if ("vS_details" %in% verbose) {
+    if (any(c("regression_surrogate", "regression_separate") %in% approach)) {
+      reg_desc <- paste0(capture.output(regression.model), collapse = "\n")
+      cli::cli_h3("Additional details about the regression model")
+      cli::cli_text(reg_desc)
+    }
+  }
+
+  if ("basic" %in% verbose) {
+    if (isTRUE(iterative)) {
+      msg <- "iterative computation started"
+    } else {
+      msg <- "Main computation started"
+    }
+    cli::cli_h2(cli::col_blue(msg))
+  }
+}
+
+#' Internal function to extract a vector with formatted info about the shapr call
+#'
+#' To be used by both [cli_startup()] and [shapr.summary()]
+#'
+#' @inheritParams cli_startup
+#' @keywords internal
+get_shapr_info_basic <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
+  model_class <- internal$parameters$model_class
   approach <- internal$parameters$approach
   iterative <- internal$parameters$iterative
   n_shapley_values <- internal$parameters$n_shapley_values
@@ -38,19 +76,17 @@ cli_startup <- function(internal, model_class, verbose) {
   causal_ordering_names_string <- internal$parameters$causal_ordering_names_string
   max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal
   confounding_string <- internal$parameters$confounding_string
-
+  asymmetric <- internal$parameters$asymmetric
+  confounding <- internal$parameters$confounding
+  testing <- internal$parameters$testing
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
   iterative_txt <- ifelse(iterative, "iterative", "non-iterative")
 
-  testing <- internal$parameters$testing
-  asymmetric <- internal$parameters$asymmetric
-  confounding <- internal$parameters$confounding
-
-
-  line_vec <- "Model class: {.cls {model_class}}"
+  line_vec <- c()
+  line_vec <- c(line_vec, "Model class: {.cls {model_class}}")
   line_vec <- c(line_vec, "Approach: {.emph {approach}}")
-  line_vec <- c(line_vec, "Iterative estimation: {.emph {iterative}}")
+  line_vec <- c(line_vec, "Iterative estimation: {.emph {iterative_txt}}")
   line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {n_shapley_values}")
   line_vec <- c(line_vec, "Number of observations to explain: {n_explain}")
   if (isTRUE(asymmetric)) {
@@ -66,28 +102,11 @@ cli_startup <- function(internal, model_class, verbose) {
     line_vec <- c(line_vec, "Computations (temporary) saved at: {.path {saving_path}}")
   }
 
-  if ("basic" %in% verbose) {
-    cli::cli_h2("Explanation overview")
-    cli::cli_ul(line_vec)
-  }
+  formatted_line_vec <- sapply(line_vec, cli::format_inline, .envir = environment(), USE.NAMES = FALSE)
 
-  if ("vS_details" %in% verbose) {
-    if (any(c("regression_surrogate", "regression_separate") %in% approach)) {
-      reg_desc <- paste0(capture.output(internal$parameters$regression.model), collapse = "\n")
-      cli::cli_h3("Additional details about the regression model")
-      cli::cli_text(reg_desc)
-    }
-  }
-
-  if ("basic" %in% verbose) {
-    if (isTRUE(iterative)) {
-      msg <- "iterative computation started"
-    } else {
-      msg <- "Main computation started"
-    }
-    cli::cli_h2(cli::col_blue(msg))
-  }
+  return(formatted_line_vec)
 }
+
 
 #' Printing messages in compute_vS with cli
 #'
