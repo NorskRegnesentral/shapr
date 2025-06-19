@@ -7,14 +7,14 @@
 \method{summary}{shapr}(x, digits = 4, ...)
 }
 \arguments{
-\item{x}{A shapr object.}
-
-\item{digits}{Integer. Number of digits for printed numbers.}
+\item{digits}{Integer. Number of digits to round numerical outputs.}
 
 \item{...}{Currently unused.}
+
+\item{object}{A shapr object.}
 }
 \value{
-Invisibly returns a list of key summary components.
+Invisibly returns a named list of summary components.
 }
 \description{
 Summary method for shapr objects

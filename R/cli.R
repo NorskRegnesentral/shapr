@@ -34,7 +34,7 @@ cli_startup <- function(internal, verbose) {
   regression.model <- internal$parameters$regression.model
 
   # Get the basic shapr information to display
-  formatted_line_vec <- get_shapr_info_basic(internal)
+  formatted_line_vec <- format_info_basic(internal)
 
   if ("basic" %in% verbose) {
     cli::cli_h2("Explanation overview")
@@ -65,7 +65,7 @@ cli_startup <- function(internal, verbose) {
 #'
 #' @inheritParams cli_startup
 #' @keywords internal
-get_shapr_info_basic <- function(internal) {
+format_info_basic <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
   model_class <- internal$parameters$model_class
   approach <- internal$parameters$approach

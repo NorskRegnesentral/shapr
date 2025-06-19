@@ -36,6 +36,7 @@ setup(
   confounding = NULL,
   output_args = list(),
   extra_computation_args = list(),
+  model_class,
   ...
 )
 }
@@ -236,6 +237,9 @@ See \code{\link[=get_output_args_default]{get_output_args_default()}} for descri
 \item{extra_computation_args}{Named list.
 Specifies extra arguments related to the computation of the Shapley values.
 See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
+
+\item{model_class}{Character string.
+The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by \code{class(model)[1]}.}
 
 \item{...}{Further arguments passed to specific approaches, see below.}
 }

@@ -25,7 +25,8 @@ x <- explain(
   approach = "independence",
   phi0 = p0,
   seed = 1,
-  iterative = FALSE
+  iterative = TRUE,
+  verbose = c("basic","convergence", "shapley")
 )
 
 yes <- get_results(x, what=c("shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition", "sdsad"))
@@ -38,5 +39,9 @@ cli_startup(x$internal,model_class = "lm",c("basic","vS_details"))
 
 
 summary(x)
+
+
+yes <- get_results(x)
+
 
 
