@@ -216,8 +216,8 @@ format_convergence_info <- function(internal, iter) {
         msg,
         "Current convergence measure: {.val {conv_nice}} [needs {.val {tol_nice}}]\n",
         "Estimated remaining coalitions: {.val {est_remaining_coal_samp}}\n",
-        "(Conservatively) adding about {.val {n_coal_next_iter_factor_nice}}% of that ({.val {next_new_n_coalitions}} coalitions) ",
-        "in the next iteration."
+        "(Conservatively) adding about {.val {n_coal_next_iter_factor_nice}}% of that ",
+        "({.val {next_new_n_coalitions}} coalitions) in the next iteration."
       )
     }
   } else {

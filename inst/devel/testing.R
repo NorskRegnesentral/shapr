@@ -29,17 +29,14 @@ x <- explain(
   verbose = c("basic","convergence", "shapley")
 )
 
-yes <- get_results(x, what=c("shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition", "sdsad"))
+aa=summary(x)
 
+yes <- get_results(x, what=c("shapley_est", "shapley_sd"))
+
+yes2 <- get_results(x, what="shapley_sd")
 
 
 print(x,"MSEv")
-
-cli_startup(x$internal,model_class = "lm",c("basic","vS_details"))
-
-
-summary(x)
-
 
 yes <- get_results(x)
 
