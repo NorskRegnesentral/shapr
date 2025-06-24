@@ -166,7 +166,7 @@ compute_shapley <- function(internal, dt_vS) {
 
     dt_kshapley <- cbind(internal$parameters$output_labels, rbindlist(kshapley_list, fill = TRUE))
   } else if (sage) {
-    vS_SAGE <- - loss_func(response, t(dt_vS[, -1]))
+    vS_SAGE <- -loss_func(response, t(dt_vS[, -1]))
     kshapley <- t(W %*% as.matrix(vS_SAGE))
     dt_kshapley <- data.table::as.data.table(kshapley)
     colnames(dt_kshapley) <- c("none", shapley_names)
@@ -202,13 +202,15 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
       dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
       n_coal_each_size <- choose(n_shapley_values, seq(n_shapley_values - 1))
       result[[i]] <-
-        bootstrap_shapley_inner(X,
-                                n_shapley_values,
-                                shapley_names,
-                                internal,
-                                dt_vS_this,
-                                n_coal_each_size,
-                                n_boot_samps)
+        bootstrap_shapley_inner(
+          X,
+          n_shapley_values,
+          shapley_names,
+          internal,
+          dt_vS_this,
+          n_coal_each_size,
+          n_boot_samps
+        )
     }
     result <- cbind(internal$parameters$output_labels, rbindlist(result, fill = TRUE))
   } else {
@@ -216,13 +218,15 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
     n_shapley_values <- internal$parameters$n_shapley_values
     shapley_names <- internal$parameters$shapley_names
     n_coal_each_size <- internal$parameters$n_coal_each_size
-    result <- bootstrap_shapley_inner(X,
-                                      n_shapley_values,
-                                      shapley_names,
-                                      internal,
-                                      dt_vS,
-                                      n_coal_each_size,
-                                      n_boot_samps)
+    result <- bootstrap_shapley_inner(
+      X,
+      n_shapley_values,
+      shapley_names,
+      internal,
+      dt_vS,
+      n_coal_each_size,
+      n_boot_samps
+    )
   }
   return(result)
 }
@@ -375,7 +379,7 @@ bootstrap_shapley_inner <- function(X,
       response <- internal$data$response
       loss_func <- internal$parameters$loss_func
 
-      vS_SAGE <- - loss_func(response, t(dt_vS[, -1]))
+      vS_SAGE <- -loss_func(response, t(dt_vS[, -1]))
       ksage_boot <- t(W_boot %*% as.matrix(vS_SAGE[X_boot[boot_id == i, id_coalition]]))
 
       boot_sd_array[, , i] <- copy(ksage_boot)

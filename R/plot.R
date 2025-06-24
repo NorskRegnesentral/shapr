@@ -298,7 +298,8 @@ plot.shapr <- function(x,
 
     # Deal with numeric and factor variables separately
     factor_features <- dt_feature_vals[, sapply(.SD, function(x) is.factor(x) | is.character(x)),
-                                       .SDcols = shapley_names]
+      .SDcols = shapley_names
+    ]
     factor_features <- shapley_names[factor_features]
 
     dt_feature_vals_long <- suppressWarnings(data.table::melt(dt_feature_vals,
@@ -343,8 +344,7 @@ plot.shapr <- function(x,
     dt_plot[, end := cumsum(phi), by = id]
     if (!sage) {
       expected <- x$internal$parameters$phi0
-    }
-    else {
+    } else {
       expected <- x$internal$parameters$zero_loss
     }
     dt_plot[, start := c(expected, head(end, -1)), by = id]
@@ -831,7 +831,7 @@ make_waterfall_plot <- function(dt_plot,
   }
   dt_plot[, pred_x := N_features + 0.8]
   dt_plot[, phi0_x := 0]
-  if (!sage){
+  if (!sage) {
     dt_plot[, phi0_label := paste0("~phi[0]==", format(expected, digits = digits + 1))]
   } else {
     dt_plot[, phi0_label := paste0("italic(L())==", format(expected, digits = digits + 1))]

@@ -149,7 +149,8 @@ test_that("erroneous input: `loss_func`", {
 
   # Not a function
   expect_snapshot(
-    {loss_non_func <- 3
+    {
+      loss_non_func <- 3
 
       explain(
         testing = TRUE,
@@ -169,24 +170,25 @@ test_that("erroneous input: `loss_func`", {
 
   # Wrong number parameters
   expect_snapshot(
-    {loss_wrong_n_param <- function(y, pred, loss){
-      expected <- (y-pred)*loss
+    {
+      loss_wrong_n_param <- function(y, pred, loss) {
+        expected <- (y - pred) * loss
 
-      return(expected)
-    }
+        return(expected)
+      }
 
-    explain(
-      testing = TRUE,
-      model = model_lm_numeric,
-      x_explain = x_train_numeric,
-      x_train = x_train_numeric,
-      approach = "gaussian",
-      phi0 = p0,
-      seed = 1,
-      sage = TRUE,
-      response = y_train_numeric,
-      loss_func = loss_wrong_n_param
-    )
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_train_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        phi0 = p0,
+        seed = 1,
+        sage = TRUE,
+        response = y_train_numeric,
+        loss_func = loss_wrong_n_param
+      )
     },
     error = TRUE
   )

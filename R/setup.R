@@ -155,13 +155,12 @@ setup <- function(x_train,
 
         return(loss)
       }
-    }
-    else if (!(is.function(loss_func) && length(formals(loss_func)) == 2)){
+    } else if (!(is.function(loss_func) && length(formals(loss_func)) == 2)) {
       cli::cli_abort("`loss_func` must be a function of two parameters.")
     }
 
     internal$parameters$loss_func <- loss_func
-    internal$parameters$zero_loss <- - mean(loss_func(t(response), phi0))
+    internal$parameters$zero_loss <- -mean(loss_func(t(response), phi0))
   }
 
   internal <- get_extra_parameters(internal, type) # This includes both extra parameters and other objects

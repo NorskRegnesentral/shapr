@@ -32,7 +32,7 @@ model_binary <- xgboost(
 p0 <- mean(y_train)
 p0_binary <- mean(y_train_binary)
 
-loss_func_mse <- function(response, response_hat){
+loss_func_mse <- function(response, response_hat) {
   return(colMeans((response_hat - response)^2))
 }
 
