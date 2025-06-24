@@ -21,7 +21,7 @@ model <- lm(lm_formula, data = data_train)
 p <- mean(data_train[, y_var])
 
 
-group_list <- list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
+group_list <- list(A = c("Temp"), B= c("Month"), D = c("Wind"), E= c("Solar.R"))
 
 explain_groups_sage <- explain(
   model = model,
@@ -35,4 +35,29 @@ explain_groups_sage <- explain(
   response = y_train
 )
 
+explain_groups_sage <- explain(
+  model = model,
+  x_explain = x_train,
+  x_train = x_train,
+  group = group_list,
+  approach = "empirical",
+  phi0 = p,
+  n_MC_samples = 1e2,
+  sage = TRUE,
+  response = y_train
+)
+
+explain_no_groups_sage <- explain(
+  model = model,
+  x_explain = x_train,
+  x_train = x_train,
+  approach = "empirical",
+  phi0 = p,
+  n_MC_samples = 1e2,
+  sage = TRUE,
+  response = y_train
+)
+
 plot(explain_groups_sage)
+
+plot(explain_no_groups_sage)

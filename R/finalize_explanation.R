@@ -48,7 +48,6 @@ finalize_explanation <- function(internal) {
   # Compute SAGE-values for internal
   if (sage) {
     response <- internal$data$response
-    zero_loss <- internal$parameters$zero_loss
 
     dt_shapley_est$explain_id <- NA
     dt_shapley_sd$explain_id <- NA

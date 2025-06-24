@@ -7,18 +7,17 @@ Todo
 - (Senere) Legg til et avsnitt i vignetten som forklarer forklarer hvordan SAGE brukes.
 - Vurder om alt av spesialtilfeller for sage rundt output bør samles et sted under @details
 i dokumentasjonen (x_explain, format for output, phi0, sd osv) for at det ikke skal bli for mange unntak og spesia
-- Skriv dokumentasjon for loss_func
 
 - Test loss_func for et par ulike varianter + ikke spesifisert med binær response
-- Skriv test-funksjon for loss_func
-- Skriv test-funskjon for group-wise
-
-- For waterfall-plotting bør det stå Loss(f) = NUMBER
-- Noe feil med hvor \phi0 plassers for waterfall (see eksempel i skriptet ditt check_sage.R)
-- For waterfall plott så bør \phi_0 = ... byttes ut med Loss(\emptyset) = zero_loss
 
 
 Ferdig:
+- For waterfall-plotting bør det stå Loss(f) = NUMBER
+- Noe feil med hvor \phi0 plassers for waterfall (see eksempel i skriptet ditt check_sage.R)
+- For waterfall plott så bør \phi_0 = ... byttes ut med Loss(\emptyset) = zero_loss
+- Sjekk dokumentasjon for loss_func
+- Skriv test-funskjon for group-wise
+
 - ikke bruk library(xgboost), men bruker xgboost::xgboost() og legg heller til   skip_if_not_installed("xgboost"), se testen output_custom_xgboost_mixed_dummy_ctree i test-regular-output
 - Bare brukt x_train_numeric uten å definere den i testfilen. helper-lm kjøres alltid først. Dette gjelder alle tester. Dvs dropp       y_train_numeric <- data_train[[y_var_numeric]] o.l.
 - Enten dropp output_sage_empirical_lm_iter, eller set max_n_coalitions til 10 eller noe slikt for at testen ikke skal ta for lang tid og kjør iterative = TRUE på en raskere metode (gaussian, independence eller copula)

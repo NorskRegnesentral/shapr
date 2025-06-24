@@ -21,7 +21,7 @@ model <- xgboost(
 
 p0 <- mean(y_train)
 
-explanation_sage_loss <- explain(
+explanation_sage <- explain(
   model = model,
   x_explain = x_train,
   x_train = x_train,
@@ -32,26 +32,4 @@ explanation_sage_loss <- explain(
   iterative = TRUE
 )
 
-plot.shapr(explanation_sage)
-
-# #### SAGE ####
-#
-# full_loss <- mean((explanation$pred_explain-y_train)^2)
-# zero_loss <- mean((p0-y_train)^2)
-#
-# # Decompose the difference between the zero and full loss:
-# zero_loss - full_loss
-#
-# vS_SHAP <- explanation$internal$output$dt_vS[,-1]
-#
-# vS_SAGE <- zero_loss-colMeans((t(vS_SHAP)-y_train)^2)
-#
-#
-# W <- explanation$internal$objects$W
-#
-#
-# dt_SAGE <- data.table::as.data.table(t(W %*% as.matrix(vS_SAGE)))
-# colnames(dt_SAGE) <- c("none", x_var)
-#
-# # The SAGE values
-# dt_SAGE[,-1]
+plot.shapr(explanation_sage, plot_type = "waterfall")

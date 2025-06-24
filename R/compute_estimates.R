@@ -135,8 +135,8 @@ compute_shapley <- function(internal, dt_vS) {
 
   shapley_names <- internal$parameters$shapley_names
 
-  zero_loss <- internal$parameters$zero_loss
   response <- internal$data$response
+  loss_func <- internal$parameters$loss_func
 
   # If multiple horizons with explain_forecast are used, we only distribute value to those used at each horizon
   if (type == "forecast") {
@@ -166,7 +166,7 @@ compute_shapley <- function(internal, dt_vS) {
 
     dt_kshapley <- cbind(internal$parameters$output_labels, rbindlist(kshapley_list, fill = TRUE))
   } else if (sage) {
-    vS_SAGE <- zero_loss - colMeans((t(dt_vS[, -1]) - response)^2)
+    vS_SAGE <- - loss_func(response, t(dt_vS[, -1]))
     kshapley <- t(W %*% as.matrix(vS_SAGE))
     dt_kshapley <- data.table::as.data.table(kshapley)
     colnames(dt_kshapley) <- c("none", shapley_names)
@@ -244,6 +244,7 @@ bootstrap_shapley_inner <- function(X,
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
   sage <- internal$parameters$sage
+  loss_func <- internal$parameters$loss_func
 
   if (type == "forecast") {
     # For forecast we set it to zero as all coalitions except empty and grand can be sampled
@@ -372,10 +373,9 @@ bootstrap_shapley_inner <- function(X,
 
     if (sage) {
       response <- internal$data$response
-      zero_loss <- internal$parameters$zero_loss
       loss_func <- internal$parameters$loss_func
 
-      vS_SAGE <- zero_loss - loss_func(response, t(dt_vS[, -1]))
+      vS_SAGE <- - loss_func(response, t(dt_vS[, -1]))
       ksage_boot <- t(W_boot %*% as.matrix(vS_SAGE[X_boot[boot_id == i, id_coalition]]))
 
       boot_sd_array[, , i] <- copy(ksage_boot)

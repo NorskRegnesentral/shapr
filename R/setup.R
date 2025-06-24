@@ -124,7 +124,6 @@ setup <- function(x_train,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
     sage = sage,
-    loss_func = loss_func,
     ...
   )
 
@@ -140,26 +139,29 @@ setup <- function(x_train,
   check_data(internal)
 
   if (sage) {
-    internal$parameters$zero_loss <- mean((phi0 - response)^2)
-
     if (is.null(loss_func) && all(response %in% c(0, 1))) {
-      cat("HEII")
-      internal$parameters$loss_func <- function(y, pred) {
+      loss_func <- function(y, pred) {
         # To avoid taking log(0)
         eps <- 1e-15
         pred <- pmin(pmax(pred, eps), 1 - eps)
 
-        loss <- -mean(y * log(pred) + (1 - y) * log(1 - pred))
+        loss <- -colMeans(y * log(pred) + (1 - y) * log(1 - pred))
 
         return(loss)
       }
     } else if (is.null(loss_func)) {
-      internal$parameters$loss_func <- function(y, pred) {
+      loss_func <- function(y, pred) {
         loss <- colMeans((pred - y)^2)
 
         return(loss)
       }
     }
+    else if (!(is.function(loss_func) && length(formals(loss_func)) == 2)){
+      cli::cli_abort("`loss_func` must be a function of two parameters.")
+    }
+
+    internal$parameters$loss_func <- loss_func
+    internal$parameters$zero_loss <- - mean(loss_func(t(response), phi0))
   }
 
   internal <- get_extra_parameters(internal, type) # This includes both extra parameters and other objects
@@ -226,7 +228,6 @@ get_parameters <- function(approach,
                            extra_computation_args = list(),
                            testing = FALSE,
                            sage = FALSE,
-                           loss_func = NULL,
                            ...) {
   # approach is checked comprehensively later
 
@@ -335,6 +336,8 @@ get_parameters <- function(approach,
   if (!is.logical(sage) || !length(sage) == 1) {
     cli::cli_abort("`sage` must be a single logical.")
   }
+
+
 
   # Getting basic input parameters
   parameters <- list(
