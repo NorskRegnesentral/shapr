@@ -94,3 +94,34 @@
       Error in `get_parameters()`:
       ! `sage` must be a single logical.
 
+# erroneous input: `loss_func`
+
+    Code
+      loss_non_func <- 3
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_train_numeric,
+        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = TRUE,
+        response = y_train_numeric, loss_func = loss_non_func)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+    Condition
+      Error in `setup()`:
+      ! `loss_func` must be a function of two parameters.
+
+---
+
+    Code
+      loss_wrong_n_param <- (function(y, pred, loss) {
+        expected <- (y - pred) * loss
+        return(expected)
+      })
+      explain(testing = TRUE, model = model_lm_numeric, x_explain = x_train_numeric,
+        x_train = x_train_numeric, approach = "gaussian", phi0 = p0, seed = 1, sage = TRUE,
+        response = y_train_numeric, loss_func = loss_wrong_n_param)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+    Condition
+      Error in `setup()`:
+      ! `loss_func` must be a function of two parameters.
+
