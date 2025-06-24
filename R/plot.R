@@ -68,10 +68,6 @@
 #' features in each group.
 #' @param beeswarm_cex Numeric.
 #' The cex argument of [ggbeeswarm::geom_beeswarm()], controlling the spacing in the beeswarm plots.
-#' @param sage Logical.
-#' Must be set to `TRUE` when plotting SAGE-values.
-#' Otherwise, if `FALSE` (default), the function assumes regular Shapley values
-#' for individual predictions as input.
 #' @param ... Other arguments passed to underlying functions,
 #' like [ggbeeswarm::geom_beeswarm()] for `plot_type = "beeswarm"`.
 #'
@@ -345,7 +341,12 @@ plot.shapr <- function(x,
     # compute start and end values for waterfall rectangles
     data.table::setorder(dt_plot, rank_waterfall)
     dt_plot[, end := cumsum(phi), by = id]
-    expected <- x$internal$parameters$phi0
+    if (!sage) {
+      expected <- x$internal$parameters$phi0
+    }
+    else {
+      expected <- x$internal$parameters$zero_loss
+    }
     dt_plot[, start := c(expected, head(end, -1)), by = id]
     if (sage) {
       dt_plot[, phi_significant := formatC(phi, format = "f", digits = digits, drop0trailing = TRUE)]
@@ -823,10 +824,18 @@ make_waterfall_plot <- function(dt_plot,
   dt_plot[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
   N_features <- max(dt_plot[, rank_waterfall])
   n_obs <- length(dt_plot[, unique(id)])
-  dt_plot[, pred_label := paste0("italic(f(x)) == ", format(pred, digits = digits + 1))]
+  if (!sage) {
+    dt_plot[, pred_label := paste0("italic(f(x)) == ", format(pred, digits = digits + 1))]
+  } else {
+    dt_plot[, pred_label := paste0("italic(L(f)) == ", format(pred, digits = digits + 1))]
+  }
   dt_plot[, pred_x := N_features + 0.8]
-  dt_plot[, phi0_label := paste0("~phi[0]==", format(expected, digits = digits + 1))]
   dt_plot[, phi0_x := 0]
+  if (!sage){
+    dt_plot[, phi0_label := paste0("~phi[0]==", format(expected, digits = digits + 1))]
+  } else {
+    dt_plot[, phi0_label := paste0("italic(L())==", format(expected, digits = digits + 1))]
+  }
 
   gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = unique_label, fill = sign)) +
     ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol = 2) +
