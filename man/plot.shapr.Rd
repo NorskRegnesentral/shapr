@@ -101,11 +101,6 @@ The cex argument of \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beesw
 
 \item{...}{Other arguments passed to underlying functions,
 like \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beeswarm()}} for \code{plot_type = "beeswarm"}.}
-
-\item{sage}{Logical.
-Must be set to \code{TRUE} when plotting SAGE-values.
-Otherwise, if \code{FALSE} (default), the function assumes regular Shapley values
-for individual predictions as input.}
 }
 \value{
 ggplot object with plots of the Shapley value explanations

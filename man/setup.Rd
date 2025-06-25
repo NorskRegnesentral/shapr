@@ -251,10 +251,10 @@ Not applicable unless the \code{sage} parameter is set to \code{TRUE}.
 \code{response} is used in computations of the SAGE values.}
 
 \item{loss_func}{Function.
-Should be a loss function on the form \code{loss_func(y, pred)},
-where \code{y} is the true value and \code{pred} the models prediction.
-If \code{NULL} (default), the loss-function will be set to logistic loss for binary response vectors,
-and MSE loss otherwise.}
+Not applicable unless the \code{sage} parameter is set to \code{TRUE}.
+Should be a function of two parameters, whereof the first will be the true value of the response,
+and the second will be the models prediction.
+The function should handle both parameters as vectors.}
 
 \item{...}{Further arguments passed to specific approaches, see below.}
 }

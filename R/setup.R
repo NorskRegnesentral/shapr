@@ -145,13 +145,13 @@ setup <- function(x_train,
         eps <- 1e-15
         pred <- pmin(pmax(pred, eps), 1 - eps)
 
-        loss <- -colMeans(y * log(pred) + (1 - y) * log(1 - pred))
+        loss <- mean(y * log(pred) + (1 - y) * log(1 - pred))
 
         return(loss)
       }
     } else if (is.null(loss_func)) {
       loss_func <- function(y, pred) {
-        loss <- colMeans((pred - y)^2)
+        loss <- mean((pred - y)^2)
 
         return(loss)
       }
@@ -160,7 +160,7 @@ setup <- function(x_train,
     }
 
     internal$parameters$loss_func <- loss_func
-    internal$parameters$zero_loss <- -mean(loss_func(t(response), phi0))
+    internal$parameters$zero_loss <- - loss_func(t(response), phi0)
   }
 
   internal <- get_extra_parameters(internal, type) # This includes both extra parameters and other objects
