@@ -8,14 +8,11 @@
 #' @export
 print.shapr <- function(x, digits = 4, ...) {
   shap <- copy(x$shapley_values_est)
-<<<<<<< HEAD
   shapley_names <- x$internal$parameters$shapley_names
   cols <- c("none", shapley_names)
   shap[, (cols) := lapply(.SD, round, digits = digits + 2), .SDcols = cols]
-=======
   shap_names <- x$internal$parameters$shap_names
   cols <- c("none", shap_names)
   shap[, (cols) := lapply(.SD, round, digits = digits + 2), .SDcols = cols][]
->>>>>>> origin/master
   print(shap, digits = digits)
 }

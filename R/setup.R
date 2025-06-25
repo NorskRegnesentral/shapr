@@ -160,7 +160,7 @@ setup <- function(x_train,
     }
 
     internal$parameters$loss_func <- loss_func
-    internal$parameters$zero_loss <- - loss_func(t(response), phi0)
+    internal$parameters$zero_loss <- -loss_func(t(response), phi0)
   }
 
   internal <- get_extra_parameters(internal, type) # This includes both extra parameters and other objects

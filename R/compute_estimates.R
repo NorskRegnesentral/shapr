@@ -166,7 +166,7 @@ compute_shapley <- function(internal, dt_vS) {
 
     dt_kshapley <- cbind(internal$parameters$output_labels, rbindlist(kshapley_list, fill = TRUE))
   } else if (sage) {
-    vS_SAGE <- - apply(t(dt_vS[, -1]), 2, function(pred_col) loss_func(response, pred_col))
+    vS_SAGE <- -apply(t(dt_vS[, -1]), 2, function(pred_col) loss_func(response, pred_col))
     kshapley <- t(W %*% as.matrix(vS_SAGE))
     dt_kshapley <- data.table::as.data.table(kshapley)
     colnames(dt_kshapley) <- c("none", shapley_names)
@@ -379,7 +379,7 @@ bootstrap_shapley_inner <- function(X,
       response <- internal$data$response
       loss_func <- internal$parameters$loss_func
 
-      vS_SAGE <- - apply(t(dt_vS[, -1]), 2, function(pred_col) loss_func(response, pred_col))
+      vS_SAGE <- -apply(t(dt_vS[, -1]), 2, function(pred_col) loss_func(response, pred_col))
       ksage_boot <- t(W_boot %*% as.matrix(vS_SAGE[X_boot[boot_id == i, id_coalition]]))
 
       boot_sd_array[, , i] <- copy(ksage_boot)
