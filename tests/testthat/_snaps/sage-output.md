@@ -129,23 +129,23 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
       
       -- Explanation overview --
       
       * Model class: <lm>
       * Approach: copula
       * Iterative estimation: FALSE
-      * Number of feature-wise Shapley values: 5
+      * Number of group-wise Shapley values: 2
       * Number of observations to explain: 108
       
       -- Main computation started --
       
-      i Using 32 of 32 coalitions. 
+      i Using 4 of 4 coalitions. 
     Output
-         explain_id  none Solar.R  Wind  Temp Month   Day
-             <lgcl> <num>   <num> <num> <num> <num> <num>
-      1:         NA -1119   60.81 258.3 366.5 9.615 2.231
+         explain_id  none     A     B
+             <lgcl> <num> <num> <num>
+      1:         NA -1119 385.9 311.6
 
 # output_sage_loss_mae
 
