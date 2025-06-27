@@ -18,8 +18,8 @@ check_convergence <- function(internal) {
   n_sampled_coalitions <- internal$iter_list[[iter]]$n_sampled_coalitions
   exact <- internal$iter_list[[iter]]$exact
 
-  shap_names <- internal$parameters$shap_names
-  shap_names_with_none <- c("none", shap_names)
+  shapley_names <- internal$parameters$shapley_names
+  shapley_names_with_none <- c("none", shapley_names)
 
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
@@ -28,7 +28,7 @@ check_convergence <- function(internal) {
     cli::cli_abort("The column names of the dt_shapley_est and dt_shapley_df are not equal.")
   }
 
-  max_sd <- dt_shapley_sd[, max(.SD, na.rm = TRUE), .SDcols = shap_names_with_none, by = .I]$V1 # Max per prediction
+  max_sd <- dt_shapley_sd[, max(.SD, na.rm = TRUE), .SDcols = shapley_names_with_none, by = .I]$V1 # Max per prediction
   max_sd0 <- max_sd * sqrt(n_sampled_coalitions) # Scales UP the sd as it scales at this rate
 
   dt_shapley_est0 <- copy(dt_shapley_est)
@@ -41,8 +41,8 @@ check_convergence <- function(internal) {
   } else {
     converged_exact <- FALSE
     if (!is.null(convergence_tol)) {
-      dt_shapley_est0[, maxval := max(.SD, na.rm = TRUE), .SDcols = shap_names, by = .I]
-      dt_shapley_est0[, minval := min(.SD, na.rm = TRUE), .SDcols = shap_names, by = .I]
+      dt_shapley_est0[, maxval := max(.SD, na.rm = TRUE), .SDcols = shapley_names, by = .I]
+      dt_shapley_est0[, minval := min(.SD, na.rm = TRUE), .SDcols = shapley_names, by = .I]
       dt_shapley_est0[, max_sd0 := max_sd0]
       dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tol))^2]
       dt_shapley_est0[, conv_measure := max_sd0 / ((maxval - minval) * sqrt(n_sampled_coalitions))]
