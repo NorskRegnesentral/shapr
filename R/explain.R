@@ -184,7 +184,6 @@
 #' Not applicable unless the `sage` parameter is set to `TRUE`.
 #' Should be a function of two parameters, whereof the first will be true value of the response,
 #' and the second will be the models prediction.
-#' Note that if the function utilizes means, colMeans' should be used.
 #' If `NULL` (default), the loss-function will be set to logistic loss in case of
 #' binary response vectors, and MSE loss otherwise.
 #'
