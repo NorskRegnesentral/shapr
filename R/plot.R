@@ -834,8 +834,8 @@ make_waterfall_plot <- function(dt_plot,
   if (!sage) {
     dt_plot[, phi0_label := paste0("~phi[0]==", format(expected, digits = digits + 1))]
   } else {
-    dt_plot[, phi0_label := paste0("italic(L())==", format(expected, digits = digits + 1))]
   }
+  dt_plot[, phi0_label := paste0("~italic(L('{}'))==", format(expected, digits = digits + 1))]
 
   gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = unique_label, fill = sign)) +
     ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol = 2) +

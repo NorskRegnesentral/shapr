@@ -1,7 +1,7 @@
 import warnings
 import numpy as np
 import pandas as pd
-from typing import Callable
+from typing import Callable, Sequence
 from datetime import datetime
 import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
@@ -38,6 +38,9 @@ def explain(
     extra_computation_args: dict | None = None,
     iterative_args: dict | None = None,
     output_args: dict | None = None,
+    sage: bool = False,
+    response: pd.Series | Sequence[float] = None,
+    loss_func: Callable = None,
     **kwargs,
   ):
     """
@@ -102,6 +105,19 @@ def explain(
       Specifies the arguments for the iterative procedure.
     output_args: dict or None, optional
       Specifies certain arguments related to the output of the function.
+    sage: bool, optional
+      If `FALSE` (default), Shapley value explanations for individual predictions are computed.
+      If `TRUE`, Shapley value explanations of the global model loss (SAGE) are computed.
+      A single set of Shapley values are then computed over the observations provided to `x_explain`.
+    response: pd.Series or Sequence[float] or None
+      Not applicable unless the `sage` parameter is set to `True`.
+      Used in computations of the SAGE values.
+    loss_func: Callable, optional
+      Not applicable unless the `sage` parameter is set to `True`.
+      Should be a function of two parameters, whereof the first will be true value of the response,
+      and the second will be the models prediction.
+      If `None` (default), the loss-function will be set to logistic loss in case of
+      binary response vectors, and MSE loss otherwise.
     **kwargs: Further arguments passed to specific approaches.
 
     Returns
@@ -132,6 +148,10 @@ def explain(
 
     # Fixes the conversion from dict to a named list of vectors in R
     r_causal_ordering = NULL if causal_ordering is None else ListVector({key: StrVector(value) for key, value in causal_ordering.items()})
+
+    # Fixes the conversion from a series or sequence to a vector in R
+    response = ro.FloatVector(response) if response is not None else NULL
+
 
 
     # Fixes method specific argument names by replacing first occurrence of "_" with "."
@@ -192,7 +212,10 @@ def explain(
       output_args = output_args, 
       extra_computation_args = extra_computation_args, 
       init_time = init_time,
-      is_python=True,
+      is_python = True,
+      sage = sage,
+      response = response,
+      loss_func = maybe_null(loss_func),
       **kwargs
     )
 
@@ -280,6 +303,8 @@ def explain(
 
     # Convert R objects to Python objects
     shapley_values_est = recurse_r_tree(routput.rx2('shapley_values_est'))
+    if (sage):
+      shapley_values_est["explain_id"] = np.nan
     shapley_values_sd = recurse_r_tree(routput.rx2('shapley_values_sd'))
     pred_explain = recurse_r_tree(routput.rx2('pred_explain'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))

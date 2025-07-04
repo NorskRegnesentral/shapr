@@ -21,7 +21,7 @@ model <- lm(lm_formula, data = data_train)
 p <- mean(data_train[, y_var])
 
 
-group_list <- list(A = c("Temp"), B = c("Month"), D = c("Wind"), E = c("Solar.R"))
+group_list <- list(A = c("Temp", "Month", "Day"), B = c("Wind", "Solar.R"))
 
 explain_groups_sage <- explain(
   model = model,

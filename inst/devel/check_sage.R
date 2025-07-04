@@ -32,7 +32,6 @@ explanation_sage <- explain(
   phi0 = p0,
   sage = TRUE,
   response = y_train,
-  iterative = TRUE
 )
 
 plot.shapr(explanation_sage, plot_type = "waterfall")

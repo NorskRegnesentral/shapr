@@ -103,7 +103,7 @@ test_that("output_sage_groups_lm_copula", {
 
   expect_snapshot_rds(
     {
-      groups <- list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
+      groups <- list(A = c("Temp", "Month", "Day"), B = c("Wind", "Solar.R"))
 
       explain(
         testing = TRUE,
@@ -115,7 +115,7 @@ test_that("output_sage_groups_lm_copula", {
         seed = 1,
         sage = TRUE,
         response = y_train_numeric,
-        groups = groups
+        group = groups
       )
     },
     "output_sage_groups_lm_copula"
@@ -128,7 +128,7 @@ test_that("output_sage_loss_mae", {
   expect_snapshot_rds(
     {
       loss_mae <- function(y, y_hat) {
-        colMeans(abs(y - y_hat))
+        mean(abs(y - y_hat))
       }
 
       explain(
@@ -156,7 +156,7 @@ test_that("output_sage_loss_mape", {
       loss_mape <- function(y, y_hat) {
         eps <- 1e-8
         denom <- pmax(abs(y), eps)
-        colMeans(abs((y - y_hat) / denom)) * 100
+        mean(abs((y - y_hat) / denom)) * 100
       }
 
       explain(
@@ -172,7 +172,7 @@ test_that("output_sage_loss_mape", {
         loss_func = loss_mape
       )
     },
-    "output_sage_groups_loss_mape"
+    "output_sage_loss_mape"
   )
 })
 

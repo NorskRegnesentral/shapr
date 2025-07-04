@@ -140,27 +140,15 @@ setup <- function(x_train,
 
   if (sage) {
     if (is.null(loss_func) && all(response %in% c(0, 1))) {
-      loss_func <- function(y, pred) {
-        # To avoid taking log(0)
-        eps <- 1e-15
-        pred <- pmin(pmax(pred, eps), 1 - eps)
-
-        loss <- -colMeans(y * log(pred) + (1 - y) * log(1 - pred))
-
-        return(loss)
-      }
+      loss_func <- log_loss
     } else if (is.null(loss_func)) {
-      loss_func <- function(y, pred) {
-        loss <- colMeans((pred - y)^2)
-
-        return(loss)
-      }
+      loss_func <- mse_loss
     } else if (!(is.function(loss_func) && length(formals(loss_func)) == 2)) {
       cli::cli_abort("`loss_func` must be a function of two parameters.")
     }
 
     internal$parameters$loss_func <- loss_func
-    internal$parameters$zero_loss <- -mean(loss_func(t(response), phi0))
+    internal$parameters$zero_loss <- -loss_func(t(response), phi0)
   }
 
   internal <- get_extra_parameters(internal, type) # This includes both extra parameters and other objects
@@ -1630,6 +1618,7 @@ set_iterative_parameters <- function(internal, prev_iter_list = NULL) {
   # Update exact if initial_n_coalitions was set to be equal to or larger than n_shapley_values^2
   if (iterative_args$initial_n_coalitions >= internal$parameters$n_shapley_values^2) {
     internal$parameters$exact <- TRUE
+    internal$parameters$extra_computation_args$compute_sd <- FALSE
   }
 
   check_iterative_args(iterative_args)
@@ -1884,4 +1873,26 @@ additional_regression_setup <- function(internal, model, predict_model) {
   }
 
   return(internal)
+}
+
+#' Log loss
+#'
+#' @keywords internal
+log_loss <- function(y, pred) {
+  # To avoid taking log(0)
+  eps <- 1e-15
+  pred <- pmin(pmax(pred, eps), 1 - eps)
+
+  loss <- - mean(y * log(pred) + (1 - y) * log(1 - pred))
+
+  return(loss)
+}
+
+#' Mean squred error
+#'
+#' @keywords internal
+mse_loss <- function(y, pred) {
+  loss <- mean((pred - y)^2)
+
+  return(loss)
 }

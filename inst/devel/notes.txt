@@ -1,14 +1,20 @@
 ? SPØRSMÅL TIL MARTIN:
 Kanksje greit å nevne max index_x_explain for bar og waterfall i dokumentasjonen?
 
+Fikk følgende når jeg brukte pip install -e . : 
+DEPRECATION: Legacy editable install of shaprpy==0.2 from file:///nr/samba/user/jbjornstad/shapr/python (setup.py develop) is deprecated. 
+pip 25.3 will enforce this behaviour change. 
+A possible replacement is to add a pyproject.toml or enable --use-pep517, and use setuptools >= 64. 
+If the resulting installation is not behaving as expected, try using --config-settings editable_mode=compat. 
+Please consult the setuptools documentation for more information. 
+Discussion can be found at https://github.com/pypa/pip/issues/11457
+
+
 Todo
-- Lag en kort og enkel punktliste i PR-en på det som gjøres i den.
 
 - (Senere) Legg til et avsnitt i vignetten som forklarer forklarer hvordan SAGE brukes.
 - Vurder om alt av spesialtilfeller for sage rundt output bør samles et sted under @details
 i dokumentasjonen (x_explain, format for output, phi0, sd osv) for at det ikke skal bli for mange unntak og spesia
-
-- Test loss_func for et par ulike varianter + ikke spesifisert med binær response
 
 
 Ferdig:
@@ -17,6 +23,8 @@ Ferdig:
 - For waterfall plott så bør \phi_0 = ... byttes ut med Loss(\emptyset) = zero_loss
 - Sjekk dokumentasjon for loss_func
 - Skriv test-funskjon for group-wise
+- Lag en kort og enkel punktliste i PR-en på det som gjøres i den.
+- Test loss_func for et par ulike varianter + ikke spesifisert med binær response
 
 - ikke bruk library(xgboost), men bruker xgboost::xgboost() og legg heller til   skip_if_not_installed("xgboost"), se testen output_custom_xgboost_mixed_dummy_ctree i test-regular-output
 - Bare brukt x_train_numeric uten å definere den i testfilen. helper-lm kjøres alltid først. Dette gjelder alle tester. Dvs dropp       y_train_numeric <- data_train[[y_var_numeric]] o.l.
