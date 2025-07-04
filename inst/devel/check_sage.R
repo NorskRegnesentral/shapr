@@ -1,5 +1,7 @@
 library(xgboost)
 
+set.seed(42)
+
 data("airquality")
 data <- data.table::as.data.table(airquality)
 data <- data[complete.cases(data), ]
@@ -25,7 +27,8 @@ explanation_sage <- explain(
   model = model,
   x_explain = x_train,
   x_train = x_train,
-  approach = "gaussian",
+  approach = "independence",
+  seed = 1,
   phi0 = p0,
   sage = TRUE,
   response = y_train,
