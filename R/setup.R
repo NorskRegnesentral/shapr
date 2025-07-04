@@ -140,21 +140,9 @@ setup <- function(x_train,
 
   if (sage) {
     if (is.null(loss_func) && all(response %in% c(0, 1))) {
-      loss_func <- function(y, pred) {
-        # To avoid taking log(0)
-        eps <- 1e-15
-        pred <- pmin(pmax(pred, eps), 1 - eps)
-
-        loss <- mean(y * log(pred) + (1 - y) * log(1 - pred))
-
-        return(loss)
-      }
+      loss_func <- log_loss
     } else if (is.null(loss_func)) {
-      loss_func <- function(y, pred) {
-        loss <- mean((pred - y)^2)
-
-        return(loss)
-      }
+      loss_func <- mse_loss
     } else if (!(is.function(loss_func) && length(formals(loss_func)) == 2)) {
       cli::cli_abort("`loss_func` must be a function of two parameters.")
     }
@@ -1885,4 +1873,26 @@ additional_regression_setup <- function(internal, model, predict_model) {
   }
 
   return(internal)
+}
+
+#' Log loss
+#'
+#' @keywords internal
+log_loss <- function(y, pred) {
+  # To avoid taking log(0)
+  eps <- 1e-15
+  pred <- pmin(pmax(pred, eps), 1 - eps)
+
+  loss <- - mean(y * log(pred) + (1 - y) * log(1 - pred))
+
+  return(loss)
+}
+
+#' Mean squred error
+#'
+#' @keywords internal
+mse_loss <- function(y, pred) {
+  loss <- mean((pred - y)^2)
+
+  return(loss)
 }
