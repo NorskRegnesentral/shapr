@@ -354,7 +354,7 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
     xreg = xreg,
     group = reg_fcast$group,
     horizon_group = reg_fcast$horizon_group,
-    shap_names = names(data_lag$group),
+    shapley_names = names(data_lag$group),
     n_endo = ncol(data_lag$lagged),
     x_train = cbind(
       data.table::as.data.table(data_lag$lagged[train_idx, , drop = FALSE]),

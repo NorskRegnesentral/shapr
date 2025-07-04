@@ -127,22 +127,26 @@ postprocess_vS_list <- function(vS_list, internal) {
 compute_shapley <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
   type <- internal$parameters$type
+  sage <- internal$parameters$sage
 
   iter <- length(internal$iter_list)
 
   W <- internal$iter_list[[iter]]$W
 
-  shap_names <- internal$parameters$shap_names
+  shapley_names <- internal$parameters$shapley_names
+
+  response <- internal$data$response
+  loss_func <- internal$parameters$loss_func
 
   # If multiple horizons with explain_forecast are used, we only distribute value to those used at each horizon
   if (type == "forecast") {
     id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
     horizon <- internal$parameters$horizon
     cols_per_horizon <- internal$objects$cols_per_horizon
-    shap_names <- internal$parameters$shap_names
+    # shapley_names <- internal$parameters$shapley_names
     W_list <- internal$objects$W_list
 
-    kshap_list <- list()
+    kshapley_list <- list()
     for (i in seq_len(horizon)) {
       W0 <- W_list[[i]]
 
@@ -150,24 +154,29 @@ compute_shapley <- function(internal, dt_vS) {
       data.table::setorder(dt_vS0, horizon_id_coalition)
       these_vS0_cols <- grep(paste0("p_hat", i, "_"), names(dt_vS0))
 
-      kshap0 <- t(W0 %*% as.matrix(dt_vS0[, these_vS0_cols, with = FALSE]))
-      kshap_list[[i]] <- data.table::as.data.table(kshap0)
+      kshapley0 <- t(W0 %*% as.matrix(dt_vS0[, these_vS0_cols, with = FALSE]))
+      kshapley_list[[i]] <- data.table::as.data.table(kshapley0)
 
       if (!is_groupwise) {
-        names(kshap_list[[i]]) <- c("none", cols_per_horizon[[i]])
+        names(kshapley_list[[i]]) <- c("none", cols_per_horizon[[i]])
       } else {
-        names(kshap_list[[i]]) <- c("none", shap_names)
+        names(kshapley_list[[i]]) <- c("none", shapley_names)
       }
     }
 
-    dt_kshap <- cbind(internal$parameters$output_labels, rbindlist(kshap_list, fill = TRUE))
+    dt_kshapley <- cbind(internal$parameters$output_labels, rbindlist(kshapley_list, fill = TRUE))
+  } else if (sage) {
+    vS_SAGE <- -apply(t(dt_vS[, -1]), 2, function(pred_col) loss_func(response, pred_col))
+    kshapley <- t(W %*% as.matrix(vS_SAGE))
+    dt_kshapley <- data.table::as.data.table(kshapley)
+    colnames(dt_kshapley) <- c("none", shapley_names)
   } else {
-    kshap <- t(W %*% as.matrix(dt_vS[, -"id_coalition"]))
-    dt_kshap <- data.table::as.data.table(kshap)
-    colnames(dt_kshap) <- c("none", shap_names)
+    kshapley <- t(W %*% as.matrix(dt_vS[, -"id_coalition"]))
+    dt_kshapley <- data.table::as.data.table(kshapley)
+    colnames(dt_kshapley) <- c("none", shapley_names)
   }
 
-  return(dt_kshap)
+  return(dt_kshapley)
 }
 
 #' @keywords internal
@@ -184,24 +193,40 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
       X <- X_list[[i]]
       if (is_groupwise) {
         n_shapley_values <- internal$parameters$n_shapley_values
-        shap_names <- internal$parameters$shap_names
+        shapley_names <- internal$parameters$shapley_names
       } else {
         n_shapley_values <- length(internal$parameters$horizon_features[[i]])
-        shap_names <- internal$parameters$horizon_features[[i]]
+        shapley_names <- internal$parameters$horizon_features[[i]]
       }
       dt_cols <- c(1, seq_len(n_explain) + (i - 1) * n_explain + 1)
       dt_vS_this <- dt_vS[, dt_cols, with = FALSE]
       n_coal_each_size <- choose(n_shapley_values, seq(n_shapley_values - 1))
       result[[i]] <-
-        bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS_this, n_coal_each_size, n_boot_samps)
+        bootstrap_shapley_inner(
+          X,
+          n_shapley_values,
+          shapley_names,
+          internal,
+          dt_vS_this,
+          n_coal_each_size,
+          n_boot_samps
+        )
     }
     result <- cbind(internal$parameters$output_labels, rbindlist(result, fill = TRUE))
   } else {
     X <- internal$iter_list[[iter]]$X
     n_shapley_values <- internal$parameters$n_shapley_values
-    shap_names <- internal$parameters$shap_names
+    shapley_names <- internal$parameters$shapley_names
     n_coal_each_size <- internal$parameters$n_coal_each_size
-    result <- bootstrap_shapley_inner(X, n_shapley_values, shap_names, internal, dt_vS, n_coal_each_size, n_boot_samps)
+    result <- bootstrap_shapley_inner(
+      X,
+      n_shapley_values,
+      shapley_names,
+      internal,
+      dt_vS,
+      n_coal_each_size,
+      n_boot_samps
+    )
   }
   return(result)
 }
@@ -209,7 +234,7 @@ bootstrap_shapley <- function(internal, dt_vS, n_boot_samps = 100) {
 #' @keywords internal
 bootstrap_shapley_inner <- function(X,
                                     n_shapley_values,
-                                    shap_names,
+                                    shapley_names,
                                     internal,
                                     dt_vS,
                                     n_coal_each_size,
@@ -222,6 +247,9 @@ bootstrap_shapley_inner <- function(X,
   semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
+  sage <- internal$parameters$sage
+  loss_func <- internal$parameters$loss_func
+
   if (type == "forecast") {
     # For forecast we set it to zero as all coalitions except empty and grand can be sampled
     max_fixed_coal_size <- 0
@@ -231,8 +259,11 @@ bootstrap_shapley_inner <- function(X,
   }
 
   X_org <- copy(X)
-
-  boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
+  if (sage) {
+    boot_sd_array <- array(NA, dim = c(1, n_shapley_values + 1, n_boot_samps))
+  } else {
+    boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
+  }
 
   # Split X_org into the deterministic coalitions and the sampled coalitions
   X_keep <- X_org[is.na(sample_freq), .(id_coalition, coalitions, coalition_size, N, shapley_weight)]
@@ -344,18 +375,28 @@ bootstrap_shapley_inner <- function(X,
       normalize_W_weights = TRUE
     )
 
-    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_coalition %in% X_boot[
-      boot_id == i,
-      id_coalition
-    ], -"id_coalition"]))
+    if (sage) {
+      response <- internal$data$response
+      loss_func <- internal$parameters$loss_func
 
-    boot_sd_array[, , i] <- copy(kshap_boot)
+      vS_SAGE <- -apply(t(dt_vS[, -1]), 2, function(pred_col) loss_func(response, pred_col))
+      ksage_boot <- t(W_boot %*% as.matrix(vS_SAGE[X_boot[boot_id == i, id_coalition]]))
+
+      boot_sd_array[, , i] <- copy(ksage_boot)
+    } else {
+      kshapley_boot <- t(W_boot %*% as.matrix(dt_vS[id_coalition %in% X_boot[
+        boot_id == i,
+        id_coalition
+      ], -"id_coalition"]))
+
+      boot_sd_array[, , i] <- copy(kshapley_boot)
+    }
   }
 
   std_dev_mat <- apply(boot_sd_array, c(1, 2), sd)
 
-  dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
-  colnames(dt_kshap_boot_sd) <- c("none", shap_names)
+  dt_kshapley_boot_sd <- data.table::as.data.table(std_dev_mat)
+  colnames(dt_kshapley_boot_sd) <- c("none", shapley_names)
 
-  return(dt_kshap_boot_sd)
+  return(dt_kshapley_boot_sd)
 }
