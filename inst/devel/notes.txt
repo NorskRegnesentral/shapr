@@ -1,6 +1,15 @@
 ? SPØRSMÅL TIL MARTIN:
 Kanksje greit å nevne max index_x_explain for bar og waterfall i dokumentasjonen?
 
+Fikk følgende når jeg brukte pip install -e . : 
+DEPRECATION: Legacy editable install of shaprpy==0.2 from file:///nr/samba/user/jbjornstad/shapr/python (setup.py develop) is deprecated. 
+pip 25.3 will enforce this behaviour change. 
+A possible replacement is to add a pyproject.toml or enable --use-pep517, and use setuptools >= 64. 
+If the resulting installation is not behaving as expected, try using --config-settings editable_mode=compat. 
+Please consult the setuptools documentation for more information. 
+Discussion can be found at https://github.com/pypa/pip/issues/11457
+
+
 Todo
 
 - (Senere) Legg til et avsnitt i vignetten som forklarer forklarer hvordan SAGE brukes.
