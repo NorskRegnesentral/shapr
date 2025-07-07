@@ -56,14 +56,6 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", **kwargs):
             )
 
 def plot_waterfall_sage(explanation, **kwargs): 
-    def format_value(s, format_str):
-        if not issubclass(type(s), str):
-            s = format_str % s
-        s = re.sub(r"\.?0+$", "", s)
-        if s[0] == "-":
-            s = "\u2212" + s[1:]
-        return s
-
     ax = plots.waterfall(explanation, show=False, **kwargs)
     fig = matplotlib.pyplot.gcf()
 
@@ -77,6 +69,14 @@ def plot_waterfall_sage(explanation, **kwargs):
     ax.set_xlabel("SAGE values")
 
     #The rest of the function is altered from SHAP.plots.waterfall:
+    def format_value(s, format_str):
+        if not issubclass(type(s), str):
+            s = format_str % s
+        s = re.sub(r"\.?0+$", "", s)
+        if s[0] == "-":
+            s = "\u2212" + s[1:]
+        return s
+
     # draw the E[f(X)] tick mark
     xmin, xmax = ax.get_xlim()
     ax2 = ax.twiny()
@@ -123,25 +123,6 @@ def plot_waterfall_sage(explanation, **kwargs):
 
 
 def prep_data(shaprpy_obj: dict, sage: bool = False): 
-    """
-    Transform output from shaprpy into a 'shap.Explanation' object for plotting.
-
-    Note: Since this creates an object of SHAP's primary explainer interface,
-    it is intended mainly for plotting purposes and likely does not support
-    other use cases.
-
-    Parameters
-    ----------
-    shaprpy_obj : dict
-        The results from a call to 'shaprpy.explain()'.
-
-    Returns
-    -------
-    shap.Explanation
-        An object containing SHAP values, base values, feature data, and metadata,
-        suitable for plotting with `shap.plots.*`.
-    """
-
     shap_values_df = shaprpy_obj['shapley_values_est']
     feature_names = shap_values_df.columns.drop(['explain_id', 'none'])
 
