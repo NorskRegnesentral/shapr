@@ -672,5 +672,8 @@ testing_cleanup <- function(output) {
   output$internal$parameters$output_args$saving_path <- NULL
   output$saving_path <- NULL
 
+  # Delete the loss_func
+  output$internal$parameters$loss_func <- NULL
+
   return(output)
 }
