@@ -6,7 +6,6 @@ source("tests/testthat/helper-lm.R")
 
 
 x <- explain(
-  testing = TRUE,
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
@@ -14,7 +13,12 @@ x <- explain(
   phi0 = p0,
   seed = 1,
   regression.model = parsnip::linear_reg(),
-  iterative = TRUE
+  iterative = TRUE,
+  group = list(
+    c("Solar.R","Wind"),
+    c("Temp","Month"),
+    "Day"
+  ),
 )
 
 
@@ -41,4 +45,24 @@ print(x,"MSEv")
 yes <- get_results(x)
 
 
+#############
+
+
+x <- explain(
+  model = model_lm_numeric,
+  x_explain = x_explain_numeric,
+  x_train = x_train_numeric,
+  approach = "gaussian",
+  phi0 = p0,
+  seed = 1,
+  asymmetric = TRUE,
+  causal_ordering = list(1:2, 3),
+  group = list(
+    c("Solar.R","Wind"),
+    c("Temp","Month"),
+    "Day"
+  ),
+  confounding = NULL,
+  n_MC_samples = 5 # Just for speed
+)
 

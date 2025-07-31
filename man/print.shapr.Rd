@@ -18,7 +18,8 @@
 \item{what}{Character. Which component to print.
 Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition".
 Defaults to "shapley_est".
-Only one component can be printed at a time.}
+Only one component can be printed at a time.
+See the details section of \code{\link[=get_results]{get_results()}} for details about each component.}
 
 \item{digits}{Integer.
 Number of significant digits to display.
@@ -28,7 +29,7 @@ Defaults to 4.}
 Minimum digits to the right of the decimal point.
 Defaults to 2 less than \code{digits}.}
 
-\item{...}{Further arguments passed to \code{\link[=print.data.table]{print.data.table()}} or \code{print()}.}
+\item{...}{Further arguments passed to \code{\link[=print.data.table]{print.data.table()}} or \code{\link[=print]{print()}}.}
 }
 \value{
 The object is returned invisibly after printing selected output.

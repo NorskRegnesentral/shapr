@@ -6,10 +6,11 @@
 \usage{
 get_results(
   x,
-  what = c("shapley_est", "shapley_sd", "pred_explain", "MSEv", "MSEv_explicand",
-    "MSEv_coalition", "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
-    "saving_path", "timing", "parameters", "x_train", "x_explain", "model", "dt_vS",
-    "dt_samp_for_vS"),
+  what = c("calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
+    "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info",
+    "iterative_shapley_est", "iterative_shapley_sd", "saving_path", "timing",
+    "parameters", "x_train", "x_explain", "dt_vS", "dt_samp_for_vS",
+    "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"),
   ...
 )
 }
@@ -18,11 +19,14 @@ get_results(
 
 \item{what}{Character vector specifying one or more components to extract.
 Options:
-"shapley_est", "shapley_sd", "pred_explain",
+"calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
 "MSEv", "MSEv_explicand", "MSEv_coalition",
 "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
-"saving_path", "timing", "parameters",
-"x_train", "x_explain", "model", "dt_vS", "dt_samp_for_vS"}
+"saving_path", "timing",
+"parameters", "x_train", "x_explain",
+"dt_vS", "dt_samp_for_vS",
+"dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info".
+The default is to return all components. See details for what each component contains.}
 
 \item{...}{Not used}
 }
@@ -32,4 +36,44 @@ If multiple are requested, returns a named list.
 }
 \description{
 Extract components from a shapr object
+}
+\details{
+The function extracts a full suite of information related to the computation of the Shapley values from
+a \code{shapr} object.
+The allowed characters in \code{what} provides information as follows:
+\describe{
+\item{\code{calling_function}}{Function called to create the \code{shapr} object, (\code{explain()} or \code{explain_forecast()}).}
+\item{\code{approach}}{Approach used to estimate the conditional expectations.}
+\item{\code{shapley_est}}{data.table with the estimated Shapley values.}
+\item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
+in the coalition sampling part of the kernelSHAP procedure.}
+\item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations.}
+\item{\code{MSEv/MSEv_explicand/MSEv_coalition}}{Data.tables with MSEv evaluation criterion values overall/
+per explicand/per coalition. See the
+\href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
+}{MSEv evaluation section in the general usage vignette for details}.}
+\item{\code{iterative_info}}{Data.table with information about the iterative estimation procedure.}
+\item{\code{iterative_shapley_est/iterative_shapley_sd}}{Data.tables with the estimated Shapley values/their
+standard deviation for each iteration (when using the iterative estimation procedure).}
+\item{\code{saving_path}}{Character string with the path where the (temporary) results are saved.}
+\item{\code{timing}}{List containing timing information for the different parts of the computation.
+\code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
+\code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
+\code{overall_timing_secs} gives the time spent on the different parts of the explanation computation.
+\code{main_computation_timing_secs} further decompose the main computation time into the different parts of the
+computation for each iteration of the iterative estimation routine, if used.}
+\item{\code{parameters}}{List with the parameters used in the computation.}
+\item{\code{x_train/x_explain}}{Data.table with the training data used in the computation/observations to explain.}
+\item{\code{dt_vS}}{Data.table with the contribution function (\code{v(S)}) estimates for each coalition.}
+\item{\code{dt_samp_for_vS}}{Data.table with the samples used in the Monte Carlo estimation of the contribution function
+(\code{v(S)}).
+This is only available if \code{output_args_default$keep_samp_for_vS = TRUE} (defaults to FALSE) in \code{\link[=explain]{explain()}}}
+\item{\code{dt_used_coalitions}}{Data.table with an overview of the coalitions used in the computation.}
+\item{\code{dt_valid_causal_coalitions}}{Data.table with the valid causal coalitions used in the computation.}
+\item{\code{dt_coal_samp_info}}{Data.table with information related to the coalition sampling procedure being used.}
+}
+
+Note that the \code{\link[=summary.shapr]{summary.shapr()}} function provides a nicely formatted printout with the most important
+information, to then invisibly return the output of the present function.
+The \code{\link[=print.shapr]{print.shapr()}} allows direct printing of the main results.
 }

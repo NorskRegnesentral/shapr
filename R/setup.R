@@ -729,7 +729,7 @@ check_and_set_causal_ordering <- function(internal) {
   internal$parameters$causal_ordering <- causal_ordering
   internal$parameters$causal_ordering_names <- causal_ordering_names
   internal$parameters$causal_ordering_names_string <-
-    paste0("{", paste(sapply(causal_ordering_names, paste, collapse = ", "), collapse = "}, {"), "}")
+    paste0("{{", paste(sapply(causal_ordering_names, paste, collapse = ", "), collapse = "}}, {{"), "}}")
 
   return(internal)
 }
@@ -761,7 +761,7 @@ check_and_set_confounding <- function(internal) {
     internal$parameters$confounding_string <- "No component with confounding"
   } else {
     internal$parameters$confounding_string <-
-      paste0("{", paste(sapply(causal_ordering_names[confounding], paste, collapse = ", "), collapse = "}, {"), "}")
+      paste0("{{", paste(sapply(causal_ordering_names[confounding], paste, collapse = ", "), collapse = "}}, {{"), "}}")
   }
 
   return(internal)
@@ -1021,7 +1021,7 @@ set_output_parameters <- function(internal) {
 #' Gets the default values for the output arguments
 #'
 #' @param keep_samp_for_vS Logical.
-#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal$output`).
+#' Indicates whether the samples used in the Monte Carlo estimation of `v(S)` should be returned (in `internal$output`).
 #' Not used for `approach="regression_separate"` or `approach="regression_surrogate"`.
 #' @param MSEv_uniform_comb_weights Logical.
 #' If `TRUE` (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
@@ -1412,14 +1412,14 @@ check_computability <- function(internal) {
 #' @keywords internal
 check_groups <- function(feature_names, group) {
   if (!is.list(group)) {
-    cli::cli_abort("group must be a list")
+    cli::cli_abort("{.arg group} must be a list")
   }
 
   group_features <- unlist(group)
 
   # Checking that the group_features are characters
   if (!all(is.character(group_features))) {
-    cli::cli_abort("All components of group should be a character.")
+    cli::cli_abort("All components of {.arg group} should be a character.")
   }
 
   # Check that all features in group are in feature labels or used by model

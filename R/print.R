@@ -5,13 +5,14 @@
 #' Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition".
 #' Defaults to "shapley_est".
 #' Only one component can be printed at a time.
+#' See the details section of [get_results()] for details about each component.
 #' @param digits Integer.
 #' Number of significant digits to display.
 #' Defaults to 4.
 #' @param nsmall Integer.
 #' Minimum digits to the right of the decimal point.
 #' Defaults to 2 less than `digits`.
-#' @param ... Further arguments passed to [print.data.table()] or `print()`.
+#' @param ... Further arguments passed to [print.data.table()] or [shapr::print.shapr()].
 #'
 #' @return The object is returned invisibly after printing selected output.
 #' @export

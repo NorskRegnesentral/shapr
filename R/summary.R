@@ -5,6 +5,7 @@
 #' @param ... Currently unused.
 #'
 #' @return Invisibly returns a named list of summary components.
+#' See the details section of [get_results()] for details about each component.
 #' @export
 summary.shapr <- function(x, ...) {
   stopifnot(inherits(x, "shapr"))
@@ -15,10 +16,14 @@ summary.shapr <- function(x, ...) {
   iterative <- internal$parameters$iterative
   converged_exact <- internal$iter_list[[iter]]$converged_exact
 
-  cli::cli_h1("Summary of Shapley value explanation")
-
   # Retrieve all needed results
   results <- get_results(x)
+
+  func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
+  init_time <- results$timing$init_time
+
+  cli::cli_h1("Summary of Shapley value explanation")
+  cli::cli_ul(paste0("Computed with", func_txt, " at {.val {round(init_time)}}"))
 
   # Display basic shapr info
   formatted_info_basic <- format_info_basic(internal)

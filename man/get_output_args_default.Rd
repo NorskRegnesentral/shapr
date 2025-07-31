@@ -12,7 +12,7 @@ get_output_args_default(
 }
 \arguments{
 \item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in \code{internal$output}).
+Indicates whether the samples used in the Monte Carlo estimation of \code{v(S)} should be returned (in \code{internal$output}).
 Not used for \code{approach="regression_separate"} or \code{approach="regression_surrogate"}.}
 
 \item{MSEv_uniform_comb_weights}{Logical.

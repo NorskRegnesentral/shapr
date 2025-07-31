@@ -78,24 +78,34 @@ format_info_basic <- function(internal) {
   asymmetric <- internal$parameters$asymmetric
   confounding <- internal$parameters$confounding
   testing <- internal$parameters$testing
+  group <- internal$parameters$group
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
-  iterative_txt <- ifelse(iterative, "iterative", "non-iterative")
+  iterative_txt <- ifelse(iterative, "Iterative", "Non-iterative")
 
   line_vec <- c()
   line_vec <- c(line_vec, "Model class: {.cls {model_class}}")
   line_vec <- c(line_vec, "Approach: {.emph {approach}}")
-  line_vec <- c(line_vec, "Iterative estimation: {.emph {iterative_txt}}")
+  line_vec <- c(line_vec, "Procedure: {.emph {iterative_txt}}")
   line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {.val {n_shapley_values}}")
+  if (isTRUE(is_groupwise)) {
+    # format the group list with name of each component followed by the string vector in curly braces
+    string <- sapply(names(group), function(name) {
+      paste0("{.emph ",name, "}: ", paste0("{.val ",group[[name]], "}", collapse = ", "))
+    })
+
+    line_vec <- c(line_vec, paste0("Feature groups: ",paste0(string, collapse = "; ")))
+  }
   line_vec <- c(line_vec, "Number of observations to explain: {.val {n_explain}}")
+
   if (isTRUE(asymmetric)) {
-    line_vec <- c(line_vec, "Number of asymmetric coalitions: {max_n_coalitions_causal}")
+    line_vec <- c(line_vec, "Number of asymmetric coalitions: {.val {max_n_coalitions_causal}}")
   }
   if (isTRUE(asymmetric) || !is.null(confounding)) {
-    line_vec <- c(line_vec, "Causal ordering: {causal_ordering_names_string}")
+    line_vec <- c(line_vec, "Causal ordering: {.emph {causal_ordering_names_string}}")
   }
   if (!is.null(confounding)) {
-    line_vec <- c(line_vec, "Components with confounding: {confounding_string}")
+    line_vec <- c(line_vec, "Components with confounding: {.emph {confounding_string}}")
   }
   if (isFALSE(testing)) {
     line_vec <- c(line_vec, "Computations (temporary) saved at: {.path {saving_path}}")

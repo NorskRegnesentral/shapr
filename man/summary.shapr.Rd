@@ -15,6 +15,7 @@
 }
 \value{
 Invisibly returns a named list of summary components.
+See the details section of \code{\link[=get_results]{get_results()}} for details about each component.
 }
 \description{
 Summary method for shapr objects

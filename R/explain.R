@@ -236,21 +236,21 @@
 #'   \item{`shapley_values_est`}{data.table with the estimated Shapley values with explained observation in the rows and
 #'   features along the columns.
 #'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`)}
-#'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
-#'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
-#'   definition 0 when all coalitions is used.
+#'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
+#'   in the coalition sampling part of the kernelSHAP procedure.
+#'   These are therefore by definition 0 when all coalitions is used.
 #'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`}
 #'   \item{`internal`}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations}
 #'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
 #'   \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
-#'   }{MSEv evaluation section in the general usage for details}.}
+#'   }{MSEv evaluation section in the general usage vignette for details}.}
 #'   \item{`timing`}{List containing timing information for the different parts of the computation.
 #'   `init_time` and `end_time` gives the time stamps for the start and end of the computation.
 #'   `total_time_secs` gives the total time in seconds for the complete execution of `explain()`.
-#'   `main_timing_secs` gives the time in seconds for the main computations.
-#'   `iter_timing_secs` gives for each iteration of the iterative estimation, the time spent on the different parts
-#'   iterative estimation routine.}
+#'   `overall_timing_secs` gives the time spent on the different parts of the explanation computation.
+#'   `main_computation_timing_secs` further decompose the main computation time into the different parts of the
+#'   computation for each iteration of the iterative estimation routine, if used.}
 #' }
 #'
 #' @examples
