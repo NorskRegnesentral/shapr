@@ -340,6 +340,6 @@ print_iter <- function(internal) {
 
     # Send it to rlang::inform (bypassing cli-formatting) to print correctly
     # Cannot use print as it does not obey suppressMessages()
-    rlang::inform(paste0(msg, "\n", formatted_shapley_info))
+    rlang::inform(paste0("\n", msg, "\n", formatted_shapley_info))
   }
 }
