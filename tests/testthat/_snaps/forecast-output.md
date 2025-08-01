@@ -141,15 +141,6 @@
       * Approach: empirical
       * Procedure: Iterative
       * Number of group-wise Shapley values: 4
-      * Feature groups: Temp: "Temp.1", "Temp.2", "Temp.3"; Wind.1: "Wind.1",
-      "Wind.2", "Wind.3", "Wind.F1"; Wind.2: "Wind.1", "Wind.2", "Wind.3", "Wind.F1",
-      "Wind.F2"; Wind.3: "Wind.1", "Wind.2", "Wind.3", "Wind.F1", "Wind.F2",
-      "Wind.F3"; Solar.R.1: "Solar.R.1", "Solar.R.2", "Solar.R.3", "Solar.R.F1";
-      Solar.R.2: "Solar.R.1", "Solar.R.2", "Solar.R.3", "Solar.R.F1", "Solar.R.F2";
-      Solar.R.3: "Solar.R.1", "Solar.R.2", "Solar.R.3", "Solar.R.F1", "Solar.R.F2",
-      "Solar.R.F3"; Ozone.1: "Ozone.1", "Ozone.2", "Ozone.3", "Ozone.F1"; Ozone.2:
-      "Ozone.1", "Ozone.2", "Ozone.3", "Ozone.F1", "Ozone.F2"; Ozone.3: "Ozone.1",
-      "Ozone.2", "Ozone.3", "Ozone.F1", "Ozone.F2", "Ozone.F3"
       * Number of observations to explain: 2
       
       -- Iterative computation started --
@@ -228,9 +219,6 @@
       * Approach: empirical
       * Procedure: Non-iterative
       * Number of group-wise Shapley values: 2
-      * Feature groups: Temp: "Temp.1", "Temp.2"; Wind.1: "Wind.1", "Wind.2",
-      "Wind.F1"; Wind.2: "Wind.1", "Wind.2", "Wind.F1", "Wind.F2"; Wind.3: "Wind.1",
-      "Wind.2", "Wind.F1", "Wind.F2", "Wind.F3"
       * Number of observations to explain: 2
       
       -- Main computation started --

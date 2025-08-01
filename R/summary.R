@@ -1,7 +1,6 @@
 #' Summary method for shapr objects
 #'
-#' @param object A shapr object.
-#' @param digits Integer. Number of digits to round numerical outputs.
+#' @param x A shapr object.
 #' @param ... Currently unused.
 #'
 #' @return Invisibly returns a named list of summary components.
@@ -11,6 +10,7 @@ summary.shapr <- function(x, ...) {
   stopifnot(inherits(x, "shapr"))
 
   internal <- x$internal
+  testing <- internal$parameters$testing
   iter <- length(internal$iter_list)
 
   iterative <- internal$parameters$iterative
@@ -21,9 +21,14 @@ summary.shapr <- function(x, ...) {
 
   func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
   init_time <- results$timing$init_time
+  init_time <- ifelse(is.null(init_time), 0, init_time)
 
   cli::cli_h1("Summary of Shapley value explanation")
-  cli::cli_ul(paste0("Computed with", func_txt, " at {.val {round(init_time)}}"))
+  if(isFALSE(testing)){
+    cli::cli_ul(paste0("Computed with", func_txt, " at {.val {round(init_time)}}"))
+  } else {
+    cli::cli_ul(paste0("Computed with", func_txt))
+  }
 
   # Display basic shapr info
   formatted_info_basic <- format_info_basic(internal)

@@ -7,11 +7,9 @@
 \method{summary}{shapr}(x, ...)
 }
 \arguments{
+\item{x}{A shapr object.}
+
 \item{...}{Currently unused.}
-
-\item{object}{A shapr object.}
-
-\item{digits}{Integer. Number of digits to round numerical outputs.}
 }
 \value{
 Invisibly returns a named list of summary components.

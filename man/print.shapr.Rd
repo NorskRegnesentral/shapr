@@ -29,7 +29,7 @@ Defaults to 4.}
 Minimum digits to the right of the decimal point.
 Defaults to 2 less than \code{digits}.}
 
-\item{...}{Further arguments passed to \code{\link[=print.data.table]{print.data.table()}} or \code{\link[=print]{print()}}.}
+\item{...}{Further arguments passed to \code{\link[=print.data.table]{print.data.table()}} or \code{\link[=print.shapr]{print.shapr()}}.}
 }
 \value{
 The object is returned invisibly after printing selected output.

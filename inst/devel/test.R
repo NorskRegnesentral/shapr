@@ -12,7 +12,7 @@ files <- list.files(
   recursive = TRUE
 )
 
-#files = files[c(12,13)]
+files = files[14]
 
 for (file in files) {
   print(paste0("Running snapshots for: ", file))

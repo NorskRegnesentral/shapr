@@ -79,6 +79,7 @@ format_info_basic <- function(internal) {
   confounding <- internal$parameters$confounding
   testing <- internal$parameters$testing
   group <- internal$parameters$group
+  group_lags <- internal$parameters$group_lags
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
   iterative_txt <- ifelse(iterative, "Iterative", "Non-iterative")
@@ -88,7 +89,7 @@ format_info_basic <- function(internal) {
   line_vec <- c(line_vec, "Approach: {.emph {approach}}")
   line_vec <- c(line_vec, "Procedure: {.emph {iterative_txt}}")
   line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {.val {n_shapley_values}}")
-  if (isTRUE(is_groupwise)) {
+  if (isTRUE(is_groupwise) && !isTRUE(group_lags)) { # using !isTRUE since isFALSE(NULL)=FALSE
     # format the group list with name of each component followed by the string vector in curly braces
     string <- sapply(names(group), function(name) {
       paste0("{.emph ",name, "}: ", paste0("{.val ",group[[name]], "}", collapse = ", "))
@@ -211,8 +212,8 @@ format_convergence_info <- function(internal, iter) {
   est_required_coal_samp <- internal$iter_list[[iter]]$est_required_coal_samp
 
   convergence_tol <- internal$parameters$iterative_args$convergence_tol
+
   conv_nice <- signif(overall_conv_measure, 2)
-  tol_nice <- as.numeric(format(signif(convergence_tol, 2), scientific = FALSE))
   n_coal_next_iter_factor_nice <- as.numeric(format(signif(n_coal_next_iter_factor * 100, 2), scientific = FALSE))
 
   if (isFALSE(converged)) {
@@ -222,6 +223,8 @@ format_convergence_info <- function(internal, iter) {
     msg <- "Not converged after {.val {current_n_coalitions}} coalitions:\n"
 
     if (!is.null(convergence_tol)) {
+      tol_nice <- as.numeric(format(signif(convergence_tol, 2), scientific = FALSE))
+
       msg <- paste0(
         msg,
         "Current convergence measure: {.val {conv_nice}} [needs {.val {tol_nice}}]\n",
