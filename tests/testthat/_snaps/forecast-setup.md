@@ -137,8 +137,11 @@
       
       * Model class: <Arima>
       * Approach: independence
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of group-wise Shapley values: 2
+      * Feature groups: Temp: "Temp.1", "Temp.2"; Wind.1: "Wind.1", "Wind.2",
+      "Wind.F1"; Wind.2: "Wind.1", "Wind.2", "Wind.F1", "Wind.F2"; Wind.3: "Wind.1",
+      "Wind.2", "Wind.F1", "Wind.F2", "Wind.F3"
       * Number of observations to explain: 2
       
       -- Main computation started --

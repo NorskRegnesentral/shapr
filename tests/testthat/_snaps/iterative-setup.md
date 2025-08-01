@@ -129,11 +129,11 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Iterative estimation: TRUE
+      * Procedure: Iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
-      -- iterative computation started --
+      -- Iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 6 of 32 coalitions, 6 new. 
