@@ -66,3 +66,22 @@ x <- explain(
   n_MC_samples = 5 # Just for speed
 )
 
+future::plan("multisession", workers = 2)
+
+future::plan("multisession", workers = 7)
+
+future::plan("sequential")
+
+x <- explain(
+  model = model_lm_numeric,
+  x_explain = x_explain_numeric[rep(1:3,100)],
+  x_train = x_train_numeric,
+  approach = "ctree",
+  phi0 = p0,
+  seed = 1,
+  asymmetric = TRUE,
+  causal_ordering = list(1:3, 4:5),
+  confounding = NULL,
+  n_MC_samples = 1000 # Just for speed
+)
+x$timing$total_time_secs

@@ -231,7 +231,10 @@ format_convergence_info <- function(internal, iter) {
       )
     }
   } else {
-    msg <- "Iterative Shapley value estimation stopped after {.val {iter}} iterations, due to:\n"
+    msg <- paste0(
+      "Iterative Shapley value estimation stopped at {.val {current_n_coalitions}} coalitions ",
+      "after {.val {iter}} iterations, due to:\n"
+    )
     if (isTRUE(converged_exact)) {
       msg <- paste0(
         msg,
