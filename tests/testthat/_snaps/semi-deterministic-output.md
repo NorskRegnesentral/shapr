@@ -27,6 +27,7 @@
       Current convergence measure: 0.31 [needs 0.02]
       Estimated remaining coalitions: 26
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
+      
       Current estimated Shapley values (sd)
                   none       Solar.R          Wind          Temp         Month
                 <char>        <char>        <char>        <char>        <char>
@@ -47,6 +48,7 @@
       Current convergence measure: 0.25 [needs 0.02]
       Estimated remaining coalitions: 24
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
+      
       Current estimated Shapley values (sd)
                   none       Solar.R           Wind          Temp          Month
                 <char>        <char>         <char>        <char>         <char>
@@ -67,6 +69,7 @@
       Current convergence measure: 0.16 [needs 0.02]
       Estimated remaining coalitions: 20
       (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
+      
       Current estimated Shapley values (sd)
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
@@ -85,8 +88,9 @@
       -- Convergence info 
       i Not converged after 18 coalitions:
       Current convergence measure: 0.042 [needs 0.02]
-      Estimated remaining coalitions: 2
-      (Conservatively) adding about 40% of that (2 coalitions) in the next iteration.
+      Estimated remaining coalitions: 14
+      (Conservatively) adding about 40% of that (6 coalitions) in the next iteration.
+      
       Current estimated Shapley values (sd)
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
@@ -100,28 +104,29 @@
       3:  1.297 (0.02)
       
       -- Iteration 5 -----------------------------------------------------------------
-      i Using 20 of 32 coalitions, 2 new. 
+      i Using 24 of 32 coalitions, 6 new. 
       
       -- Convergence info 
-      v Iterative Shapley value estimation stopped at 22 coalitions after 5 iterations, due to:
-      Standard deviation convergence threshold (0.02) reached: 0.00016!
+      v Iterative Shapley value estimation stopped at 24 coalitions after 5 iterations, due to:
+      Standard deviation convergence threshold (0.02) reached: 0.00021!
+      
       Final estimated Shapley values (sd)
                   none       Solar.R           Wind          Temp         Month
                 <char>        <char>         <char>        <char>        <char>
-      1: 42.444 (0.00) -4.538 (0.00)   8.268 (0.00) 17.531 (0.00) -5.587 (0.00)
-      2: 42.444 (0.00)  2.249 (0.00)  -3.347 (0.00) -5.218 (0.00) -5.587 (0.00)
-      3: 42.444 (0.00)  3.707 (0.00) -18.611 (0.00) -1.427 (0.00) -2.547 (0.00)
+      1: 42.444 (0.00) -4.541 (0.00)   8.271 (0.00) 17.526 (0.00) -5.584 (0.00)
+      2: 42.444 (0.00)  2.246 (0.00)  -3.344 (0.00) -5.224 (0.00) -5.584 (0.00)
+      3: 42.444 (0.00)  3.704 (0.00) -18.609 (0.00) -1.432 (0.00) -2.544 (0.00)
                    Day
                 <char>
-      1: -3.072 (0.00)
-      2: -1.977 (0.00)
-      3:  1.310 (0.00)
+      1: -3.069 (0.00)
+      2: -1.974 (0.00)
+      3:  1.313 (0.00)
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -4.538   8.268 17.531 -5.587 -3.072
-      2:          2 42.44   2.249  -3.347 -5.218 -5.587 -1.977
-      3:          3 42.44   3.707 -18.611 -1.427 -2.547  1.310
+      1:          1 42.44  -4.541   8.271 17.526 -5.584 -3.069
+      2:          2 42.44   2.246  -3.344 -5.224 -5.584 -1.974
+      3:          3 42.44   3.704 -18.609 -1.432 -2.544  1.313
 
 # output_semi_determ_group_converges_tol
 
@@ -153,6 +158,7 @@
       Current convergence measure: 0.23 [needs 1e-05]
       Estimated remaining coalitions: 2
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
+      
       Current estimated Shapley values (sd)
                   none              A              B             C
                 <char>         <char>         <char>        <char>
@@ -167,6 +173,7 @@
       v Iterative Shapley value estimation stopped at 8 coalitions after 2 iterations, due to:
       All (8) coalitions used!
       Maxium number of coalitions (8) reached!
+      
       Final estimated Shapley values
            none       A       B      C
          <char>  <char>  <char> <char>
@@ -212,6 +219,7 @@
       Current convergence measure: 0.29 [needs 0.02]
       Estimated remaining coalitions: 10
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
+      
       Current estimated Shapley values (sd)
                  none            S1           S2            S3            S4
                <char>        <char>       <char>        <char>        <char>
@@ -226,6 +234,7 @@
       Current convergence measure: 0.21 [needs 0.02]
       Estimated remaining coalitions: 8
       (Conservatively) adding about 20% of that (2 coalitions) in the next iteration.
+      
       Current estimated Shapley values (sd)
                  none            S1           S2           S3            S4
                <char>        <char>       <char>       <char>        <char>
@@ -240,6 +249,7 @@
       Current convergence measure: 0.3 [needs 0.02]
       Estimated remaining coalitions: 6
       (Conservatively) adding about 30% of that (2 coalitions) in the next iteration.
+      
       Current estimated Shapley values (sd)
                  none            S1           S2           S3            S4
                <char>        <char>       <char>       <char>        <char>
@@ -252,6 +262,7 @@
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 12 coalitions after 4 iterations, due to:
       Maxium number of coalitions (12) reached!
+      
       Final estimated Shapley values (sd)
                  none            S1           S2           S3            S4
                <char>        <char>       <char>       <char>        <char>
