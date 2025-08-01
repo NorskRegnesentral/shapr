@@ -92,10 +92,10 @@ format_info_basic <- function(internal) {
   if (isTRUE(is_groupwise) && !isTRUE(group_lags)) { # using !isTRUE since isFALSE(NULL)=FALSE
     # format the group list with name of each component followed by the string vector in curly braces
     string <- sapply(names(group), function(name) {
-      paste0("{.emph ",name, "}: ", paste0("{.val ",group[[name]], "}", collapse = ", "))
+      paste0("{.emph ", name, "}: ", paste0("{.val ", group[[name]], "}", collapse = ", "))
     })
 
-    line_vec <- c(line_vec, paste0("Feature groups: ",paste0(string, collapse = "; ")))
+    line_vec <- c(line_vec, paste0("Feature groups: ", paste0(string, collapse = "; ")))
   }
   line_vec <- c(line_vec, "Number of observations to explain: {.val {n_explain}}")
 

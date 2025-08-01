@@ -1,4 +1,3 @@
-
 skip_if_not_installed("forecast")
 
 set.seed(123)

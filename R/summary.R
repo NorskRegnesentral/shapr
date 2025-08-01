@@ -24,7 +24,7 @@ summary.shapr <- function(x, ...) {
   init_time <- ifelse(is.null(init_time), 0, init_time)
 
   cli::cli_h1("Summary of Shapley value explanation")
-  if(isFALSE(testing)){
+  if (isFALSE(testing)) {
     cli::cli_ul(paste0("Computed with", func_txt, " at {.val {round(init_time)}}"))
   } else {
     cli::cli_ul(paste0("Computed with", func_txt))

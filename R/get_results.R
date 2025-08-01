@@ -91,7 +91,7 @@ get_results <- function(x, what = c(
 
   res <- lapply(what, function(w) {
     switch(w,
-      calling_function = ifelse(x$internal$parameters$type == "regular","explain", "explain_forecast"),
+      calling_function = ifelse(x$internal$parameters$type == "regular", "explain", "explain_forecast"),
       approach = x$internal$parameters$approach,
       shapley_est = x$shapley_values_est,
       shapley_sd = x$shapley_values_sd,
