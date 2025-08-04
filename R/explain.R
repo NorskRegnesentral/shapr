@@ -411,7 +411,6 @@
 #'   approach = "gaussian",
 #'   phi0 = p,
 #'   iterative = TRUE,
-#'   verbose = c("progress", ""),
 #'   iterative_args = list(initial_n_coalitions = 8),
 #'   max_n_coalitions = 12
 #' )
