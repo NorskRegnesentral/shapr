@@ -217,7 +217,8 @@ format_convergence_info <- function(internal, iter) {
   tol_nice <- ifelse(
     !is.null(convergence_tol),
     as.numeric(format(signif(convergence_tol, 2), scientific = FALSE)),
-    tol_nice <- NA)
+    tol_nice <- NA
+  )
 
   if (isFALSE(converged)) {
     next_new_n_coalitions <- internal$iter_list[[iter + 1]]$new_n_coalitions
@@ -226,7 +227,6 @@ format_convergence_info <- function(internal, iter) {
     msg <- "Not converged after {.val {current_n_coalitions}} coalitions:\n"
 
     if (!is.null(convergence_tol)) {
-
       msg <- paste0(
         msg,
         "Current convergence measure: {.val {conv_nice}} [needs {.val {tol_nice}}]\n",

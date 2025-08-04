@@ -13,13 +13,7 @@
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
-      * Total number of coalitions used: 32 (of max 32)
-      
-      -- Convergence info 
-      v Iterative Shapley value estimation stopped at 32 coalitions after 1 iterations, due to:
-      All (32) coalitions used!
-      Maxium number of iterations (1) reached!
-      Maxium number of coalitions (32) reached!
+      * Total number of coalitions used: 32 (of 32)
       
       -- Estimated Shapley values 
            none Solar.R    Wind   Temp    Day Month_factor
@@ -452,13 +446,7 @@
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 2
-      * Total number of coalitions used: 4 (of max 4)
-      
-      -- Convergence info 
-      v Iterative Shapley value estimation stopped at 4 coalitions after 1 iterations, due to:
-      All (4) coalitions used!
-      Maxium number of iterations (1) reached!
-      Maxium number of coalitions (4) reached!
+      * Total number of coalitions used: 4 (of 4)
       
       -- Estimated Shapley values 
            none Temp.1 Temp.2

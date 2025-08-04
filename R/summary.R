@@ -23,7 +23,7 @@ summary.shapr <- function(object, ...) {
 
   func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
   init_time <- results$timing$init_time
-  if(is.null(init_time)) init_time <- 0
+  if (is.null(init_time)) init_time <- 0
 
   cli::cli_h1("Summary of Shapley value explanation")
   if (isFALSE(testing)) {
@@ -42,7 +42,7 @@ summary.shapr <- function(object, ...) {
   cli::cli_ul(formatted_info_extra)
 
   # Display convergence info
-  if(isTRUE(iterative)){
+  if (isTRUE(iterative)) {
     formatted_convergence_info <- format_convergence_info(internal, iter)
     cli::cli_h3("Convergence info")
     cli::cli_alert_success(formatted_convergence_info)
