@@ -16,6 +16,6 @@ The list contains one or more of the elements \code{parameters}, \code{data}, \c
 The iteration number. Only used internally.}
 }
 \description{
-To be used by both \code{\link[=print_iter]{print_iter()}} and \code{\link[=shapr.summary]{shapr.summary()}}
+To be used by both \code{\link[=print_iter]{print_iter()}} and \code{\link[=summary.shapr]{summary.shapr()}}
 }
 \keyword{internal}

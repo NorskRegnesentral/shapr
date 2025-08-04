@@ -92,7 +92,7 @@
 #' `"basic"` (default) displays basic information about the computation which is being performed,
 #' in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 #' `"progress` displays information about where in the calculation process the function currently is.
-#' #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
+#' `"convergence"` displays information on how close to convergence the Shapley value estimates are
 #' (only when `iterative = TRUE`) .
 #' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `iterative = TRUE`)
 #' and the final estimates.
@@ -256,8 +256,8 @@
 #' @examples
 #' \donttest{
 #'
-#' # Load example data
-#' data("airquality")
+# Load example data
+#' #' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
 #' x_var <- c("Solar.R", "Wind", "Temp", "Month")
 #' y_var <- "Ozone"
@@ -280,7 +280,6 @@
 #' if (requireNamespace("future", quietly = TRUE)) {
 #'   future::plan("multisession", workers = 2)
 #' }
-#'
 #'
 #' # (Optionally) enable progress updates within every iteration via the progressr package
 #' if (requireNamespace("progressr", quietly = TRUE)) {
@@ -340,8 +339,23 @@
 #'   n_MC_samples = 1e2
 #' )
 #'
-#' # Print the Shapley values
-#' print(explain1$shapley_values_est)
+#' ## Printing
+#' print(explain1) # The Shapley values
+#'
+#' # The MSEv criterion (+sd). Smaller values indicates a better approach.
+#' print(explain1, what = "MSEv")
+#' print(explain2, what = "MSEv")
+#' print(explain3, what = "MSEv")
+#'
+#' ## Summary
+#' summary1 <- summary(explain1)
+#'
+#' # Various additional info stored in the summary object
+#' # Examples
+#' summary1$shapley_est # A data.table with the Shapley values
+#' summary1$timing$total_time_secs # Total computation time in seconds
+#' summary1$parameters$n_MC_samples # Number of Monte Carlo samples used for the numerical integration
+#' summary1$parameters$empirical.type # Type of empirical approach used
 #'
 #' # Plot the results
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -361,7 +375,8 @@
 #'   phi0 = p,
 #'   n_MC_samples = 1e2
 #' )
-#' print(explain_groups$shapley_values_est)
+#'
+#' print(explain_groups)
 #'
 #' # Separate and surrogate regression approaches with linear regression models.
 #' req_pkgs <- c("parsnip", "recipes", "workflows", "rsample", "tune", "yardstick")
@@ -387,26 +402,35 @@
 #'
 #' # Iterative estimation
 #' # For illustration purposes only. By default not used for such small dimensions as here
+#' # Restricting the initial and maximum number of coalitions as well
 #'
-#' # Gaussian approach
 #' explain_iterative <- explain(
 #'   model = model,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "gaussian",
 #'   phi0 = p,
-#'   n_MC_samples = 1e2,
 #'   iterative = TRUE,
-#'   iterative_args = list(initial_n_coalitions = 10)
+#'   verbose = c("progress", ""),
+#'   iterative_args = list(initial_n_coalitions = 8),
+#'   max_n_coalitions = 12
 #' )
-#' }
-#' \dontshow{
-#' if (requireNamespace("future", quietly = TRUE)) {
-#'   # R CMD check: make sure any open connections are closed afterward
-#'   if (!inherits(future::plan(), "sequential")) future::plan("sequential")
-#' }
-#' }
 #'
+#' # When not using all coalitions, we can also get the sd of the Shapley values,
+#' # reflecting the uncertainty in the coalition sampling part of the procedure
+#' print(explain_iterative, what = "shapley_sd")
+#'
+#' ## Summary
+#' # For iterative estimation, convergence info is also provided
+#' summary_iterative <- summary(explain_iterative)
+#'
+#' \dontshow{
+#'   if (requireNamespace("future", quietly = TRUE)) {
+#'     # R CMD check: make sure any open connections are closed afterward
+#'     if (!inherits(future::plan(), "sequential")) future::plan("sequential")
+#'   }
+#' }
+#' }
 #' @export
 #'
 #' @author Martin Jullum, Lars Henry Berge Olsen

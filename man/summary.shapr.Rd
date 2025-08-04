@@ -4,15 +4,16 @@
 \alias{summary.shapr}
 \title{Summary method for shapr objects}
 \usage{
-\method{summary}{shapr}(x, ...)
+\method{summary}{shapr}(object, ...)
 }
 \arguments{
-\item{x}{A shapr object.}
+\item{object}{A shapr object.}
 
 \item{...}{Currently unused.}
 }
 \value{
-Invisibly returns a named list of summary components.
+Prints a formatted summary of the shapr object,
+and invisibly returns a named list of summary components.
 See the details section of \code{\link[=get_results]{get_results()}} for details about each component.
 }
 \description{

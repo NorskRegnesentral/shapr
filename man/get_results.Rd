@@ -45,11 +45,13 @@ The allowed characters in \code{what} provides information as follows:
 \item{\code{calling_function}}{Function called to create the \code{shapr} object, (\code{explain()} or \code{explain_forecast()}).}
 \item{\code{approach}}{Approach used to estimate the conditional expectations.}
 \item{\code{shapley_est}}{data.table with the estimated Shapley values.}
-\item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
+\item{\code{shapley_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 in the coalition sampling part of the kernelSHAP procedure.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations.}
 \item{\code{MSEv/MSEv_explicand/MSEv_coalition}}{Data.tables with MSEv evaluation criterion values overall/
-per explicand/per coalition. See the
+per explicand/per coalition.
+Smaller values indicates estimates of the (\code{v(S)}).
+See the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
 }{MSEv evaluation section in the general usage vignette for details}.}
 \item{\code{iterative_info}}{Data.table with information about the iterative estimation procedure.}

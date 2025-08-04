@@ -18,8 +18,6 @@ cli_topline <- function(verbose, testing, init_time, type, is_python) {
 
 #' Printing startup messages with cli
 #'
-#' @param model_class String.
-#' Class of the model as a string
 #' @inheritParams default_doc_export
 #' @inheritParams explain
 #'
@@ -60,7 +58,7 @@ cli_startup <- function(internal, verbose) {
 
 #' Internal function to extract a vector with formatted info about the shapr call
 #'
-#' To be used by both [cli_startup()] and [shapr.summary()]
+#' To be used by both [cli_startup()] and [shapr::summary.shapr()]
 #'
 #' @inheritParams default_doc_internal
 #' @keywords internal
@@ -119,7 +117,7 @@ format_info_basic <- function(internal) {
 
 #' Internal function to extract some extra formatted info about the shapr call
 #'
-#' To be used in [shapr.summary()]
+#' To be used in [shapr::summary.shapr()]
 #'
 #' @inheritParams default_doc_internal
 #' @keywords internal
@@ -127,9 +125,9 @@ format_info_extra <- function(internal) {
   iter <- length(internal$iter_list)
 
   n_coaltions <- internal$iter_list[[iter]]$n_coalitions
-  max_n_coalitions <- internal$parameters$max_n_coalitions
+  n_shapley_values <- internal$parameters$n_shapley_values
 
-  msg <- "Total number of coalitions used: {.val {n_coaltions}} (of max {.val {max_n_coalitions}})"
+  msg <- "Total number of coalitions used: {.val {n_coaltions}} (of {.val {2^n_shapley_values}})"
 
   formatted_msg <- cli::format_inline(msg, .envir = environment())
 
@@ -194,7 +192,7 @@ cli_iter <- function(verbose, internal, iter) {
 
 #' Internal function to extract formatted info about the (current) convergence state of the shapr call
 #'
-#' To be used by both [print_iter()] and [shapr.summary()]
+#' To be used by both [print_iter()] and [shapr::summary.shapr]
 #'
 #' @inheritParams default_doc_internal
 #' @inheritParams default_doc_export
@@ -216,6 +214,11 @@ format_convergence_info <- function(internal, iter) {
   conv_nice <- signif(overall_conv_measure, 2)
   n_coal_next_iter_factor_nice <- as.numeric(format(signif(n_coal_next_iter_factor * 100, 2), scientific = FALSE))
 
+  tol_nice <- ifelse(
+    !is.null(convergence_tol),
+    as.numeric(format(signif(convergence_tol, 2), scientific = FALSE)),
+    tol_nice <- NA)
+
   if (isFALSE(converged)) {
     next_new_n_coalitions <- internal$iter_list[[iter + 1]]$new_n_coalitions
 
@@ -223,7 +226,6 @@ format_convergence_info <- function(internal, iter) {
     msg <- "Not converged after {.val {current_n_coalitions}} coalitions:\n"
 
     if (!is.null(convergence_tol)) {
-      tol_nice <- as.numeric(format(signif(convergence_tol, 2), scientific = FALSE))
 
       msg <- paste0(
         msg,
@@ -269,7 +271,7 @@ format_convergence_info <- function(internal, iter) {
 
 #' Internal function to extract the formatted Shapley value table
 #'
-#' To be used by both [print_iter()] and [shapr.summary()]
+#' To be used by both [print_iter()] and [shapr::summary.shapr()]
 #'
 #' @inheritParams default_doc_internal
 #' @inheritParams default_doc_export

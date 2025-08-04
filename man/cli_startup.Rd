@@ -16,7 +16,7 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed,
 in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 \verb{"progress} displays information about where in the calculation process the function currently is.
-#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+\code{"convergence"} displays information on how close to convergence the Shapley value estimates are
 (only when \code{iterative = TRUE}) .
 \code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 and the final estimates.
@@ -25,9 +25,6 @@ This is most relevant for \verb{approach \%in\% c("regression_separate", "regres
 \code{NULL} means no printout.
 Note that any combination of four strings can be used.
 E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.}
-
-\item{model_class}{String.
-Class of the model as a string}
 }
 \value{
 No return value (but prints startup messages with cli)

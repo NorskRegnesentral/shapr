@@ -1,15 +1,17 @@
 #' Summary method for shapr objects
 #'
-#' @param x A shapr object.
+#' @param object A shapr object.
 #' @param ... Currently unused.
 #'
-#' @return Invisibly returns a named list of summary components.
+#' @return Prints a formatted summary of the shapr object,
+#' and invisibly returns a named list of summary components.
 #' See the details section of [get_results()] for details about each component.
+#'
 #' @export
-summary.shapr <- function(x, ...) {
-  stopifnot(inherits(x, "shapr"))
+summary.shapr <- function(object, ...) {
+  stopifnot(inherits(object, "shapr"))
 
-  internal <- x$internal
+  internal <- object$internal
   testing <- internal$parameters$testing
   iter <- length(internal$iter_list)
 
@@ -17,11 +19,11 @@ summary.shapr <- function(x, ...) {
   converged_exact <- internal$iter_list[[iter]]$converged_exact
 
   # Retrieve all needed results
-  results <- get_results(x)
+  results <- get_results(object)
 
   func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
   init_time <- results$timing$init_time
-  init_time <- ifelse(is.null(init_time), 0, init_time)
+  if(is.null(init_time)) init_time <- 0
 
   cli::cli_h1("Summary of Shapley value explanation")
   if (isFALSE(testing)) {
@@ -40,10 +42,11 @@ summary.shapr <- function(x, ...) {
   cli::cli_ul(formatted_info_extra)
 
   # Display convergence info
-  formatted_convergence_info <- format_convergence_info(internal, iter)
-
-  cli::cli_h3("Convergence info")
-  cli::cli_alert_success(formatted_convergence_info)
+  if(isTRUE(iterative)){
+    formatted_convergence_info <- format_convergence_info(internal, iter)
+    cli::cli_h3("Convergence info")
+    cli::cli_alert_success(formatted_convergence_info)
+  }
 
   # Display Shapley value res
   formatted_shapley_info <- format_shapley_info(internal, iter)

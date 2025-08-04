@@ -12,7 +12,7 @@
 #' @param nsmall Integer.
 #' Minimum digits to the right of the decimal point.
 #' Defaults to 2 less than `digits`.
-#' @param ... Further arguments passed to [print.data.table()] or [shapr::print.shapr()].
+#' @param ... Further arguments passed to [data.table::print.data.table()] or [shapr::print.shapr].
 #'
 #' @return The object is returned invisibly after printing selected output.
 #' @export

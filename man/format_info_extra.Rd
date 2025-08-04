@@ -13,6 +13,6 @@ The list contains one or more of the elements \code{parameters}, \code{data}, \c
 \code{main_timing_list}, \code{output}, and \code{iter_timing_list}.}
 }
 \description{
-To be used in \code{\link[=shapr.summary]{shapr.summary()}}
+To be used in \code{\link[=summary.shapr]{summary.shapr()}}
 }
 \keyword{internal}

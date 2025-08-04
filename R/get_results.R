@@ -19,11 +19,13 @@
 #'   \item{`calling_function`}{Function called to create the `shapr` object, (`explain()` or `explain_forecast()`).}
 #'   \item{`approach`}{Approach used to estimate the conditional expectations.}
 #'   \item{`shapley_est`}{data.table with the estimated Shapley values.}
-#'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
+#'   \item{`shapley_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 #'   in the coalition sampling part of the kernelSHAP procedure.}
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations.}
 #'   \item{`MSEv/MSEv_explicand/MSEv_coalition`}{Data.tables with MSEv evaluation criterion values overall/
-#'   per explicand/per coalition. See the
+#'   per explicand/per coalition.
+#'   Smaller values indicates estimates of the (`v(S)`).
+#'   See the
 #'   \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
 #'   }{MSEv evaluation section in the general usage vignette for details}.}
 #'   \item{`iterative_info`}{Data.table with information about the iterative estimation procedure.}
