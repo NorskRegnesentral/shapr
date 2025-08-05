@@ -668,6 +668,11 @@ testing_cleanup <- function(output) {
     output$internal$objects$regression.surrogate_model <- NULL
   }
 
+  #Removing loss-function
+  if (output$internal$paramteres$sage) {
+    output$internal$parameters$loss_func <- NULL
+  }
+
   # Delete the saving_path
   output$internal$parameters$output_args$saving_path <- NULL
   output$saving_path <- NULL
