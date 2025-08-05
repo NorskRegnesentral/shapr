@@ -106,7 +106,7 @@
 #' If `NULL` (default), the argument is set to `TRUE` if there are more than 5 features/groups, and `FALSE` otherwise.
 #' If eventually `TRUE`, the Shapley values are estimated iteratively in an iterative manner.
 #' This provides sufficiently accurate Shapley value estimates faster.
-#' First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+#' First an initial number of coalitions is sampled, then bootstrapping is used to estimate the variance of the Shapley
 #' values.
 #' A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 #' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -134,7 +134,7 @@
 #' @param asymmetric Logical.
 #' Not applicable for (regular) non-causal or asymmetric explanations.
 #' If `FALSE` (default), `explain` computes regular symmetric Shapley values,
-#' If `TRUE`, then `explain` compute asymmetric Shapley values based on the (partial) causal ordering
+#' If `TRUE`, then `explain` computes asymmetric Shapley values based on the (partial) causal ordering
 #' given by `causal_ordering`. That is, `explain` only uses the feature combinations/coalitions that
 #' respect the causal ordering when computing the asymmetric Shapley values. If `asymmetric` is `TRUE` and
 #' `confounding` is `NULL` (default), then `explain` computes asymmetric conditional Shapley values as specified in
@@ -170,8 +170,24 @@
 #' `asymmetric`. The `approach` cannot be `regression_separate` and `regression_surrogate` as the
 #' regression-based approaches are not applicable to the causal Shapley value methodology.
 #'
-#' @param ... Further arguments passed to specific approaches, see below.
+#' @param sage Logical.
+#' If `FALSE` (default), Shapley value explanations for individual predictions are computed.
+#' If `TRUE`, Shapley value explanations of the global model loss (SAGE) are computed.
+#' A single set of Shapley values are then computed over the observations provided to `x_explain`.
+#' See details for further information.
 #'
+#' @param response Numerical vector.
+#' Not applicable unless the `sage` parameter is set to `TRUE`.
+#' `response` is used in computations of the SAGE values.
+#'
+#' @param loss_func Function.
+#' Not applicable unless the `sage` parameter is set to `TRUE`.
+#' Should be a function of two parameters, whereof the first will be the true value of the response,
+#' and the second will be the models prediction.
+#' If `NULL` (default), the loss-function will be set to logistic loss in case of
+#' binary response vectors, and MSE loss otherwise.
+#'
+#' @param ... Further arguments passed to specific approaches, see below.
 #'
 #' @inheritDotParams setup_approach.categorical
 #' @inheritDotParams setup_approach.copula
@@ -184,7 +200,7 @@
 #' @inheritDotParams setup_approach.timeseries
 #' @inheritDotParams setup_approach.vaeac
 #'
-#' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
+#' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values explanations with
 #' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.
 #' These are all introduced in the
 #' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}.
@@ -222,6 +238,16 @@
 #' Heskes et al. (2020)} as a way to explain the total effect of features
 #' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
+#' When `sage = TRUE`, Shapley value explanations of the global model loss (SAGE) are computed.
+#' A single set of Shapley values are then computed over the observations provided to `x_explain`,
+#' and the output under `shapley_values_est` will then contain the SAGE values, while
+#' `shapley_values_sd` will contain the standard deviation for the SAGE values.
+#' The computation of the SAGE values is based on
+#' \href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
+#' Covert et al. (2020)}, sampling from conditional distributions rather than the marginal sampling described
+#' by Covert et. al.
+#' The SHAP values for the individual predictions can be found under `internal$output$shap_values_est` in all cases.
+#'
 #' The package allows for parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages.
 #' See the examples below.
@@ -231,15 +257,21 @@
 #' This combined batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
 #' in a memory friendly manner.
 #'
+#' The package can also be used for computation of SAGE values as described by
+#' \href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
+#' Covert et al. (2020)}.
+#'
 #' @return Object of class `c("shapr", "list")`. Contains the following items:
 #' \describe{
 #'   \item{`shapley_values_est`}{data.table with the estimated Shapley values with explained observation in the rows and
 #'   features along the columns.
-#'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`)}
+#'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`).
+#'   If `sage = TRUE` in [explain()], the column will contain a single row with the estimated SAGE values.}
 #'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
 #'   Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
 #'   definition 0 when all coalitions is used.
-#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`}
+#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`.
+#'   If `sage = TRUE` in [explain()], the column will contain a single row with the estimated sd for the SAGE values.}
 #'   \item{`internal`}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations}
 #'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -467,6 +499,9 @@ explain <- function(model,
                     extra_computation_args = list(),
                     iterative_args = list(),
                     output_args = list(),
+                    sage = FALSE,
+                    response = NULL,
+                    loss_func = NULL,
                     ...) { # ... is further arguments passed to specific approaches
 
 
@@ -501,6 +536,9 @@ explain <- function(model,
     confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
+    sage = sage,
+    response = response,
+    loss_func = loss_func,
     ...
   )
 
@@ -628,6 +666,11 @@ testing_cleanup <- function(output) {
   # in both fit-times and model object structure
   if ("regression_surrogate" %in% output$internal$parameters$approach) {
     output$internal$objects$regression.surrogate_model <- NULL
+  }
+
+  #Removing loss-function
+  if (output$internal$paramteres$sage) {
+    output$internal$parameters$loss_func <- NULL
   }
 
   # Delete the saving_path

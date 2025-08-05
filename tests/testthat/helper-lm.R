@@ -27,6 +27,9 @@ x_train_numeric <- data_train[, ..x_var_numeric]
 x_train_mixed <- data_train[, ..x_var_mixed]
 x_train_categorical <- data_train[, ..x_var_categorical]
 
+y_train_numeric <- data_train[[y_var_numeric]]
+y_train_binary <- data_train[[y_var_binary]]
+
 x_explain_numeric <- data_explain[, ..x_var_numeric]
 x_explain_mixed <- data_explain[, ..x_var_mixed]
 x_explain_categorical <- data_explain[, ..x_var_categorical]
@@ -45,3 +48,4 @@ model_lm_mixed <- lm(lm_formula_mixed, data = data_complete)
 model_lm_interaction <- lm(lm_formula_interaction, data = data_complete)
 
 p0 <- data_train[, mean(get(y_var_numeric))]
+p0_binary <- data_train[, mean(get(y_var_binary))]
