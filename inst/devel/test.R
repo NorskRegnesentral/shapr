@@ -12,6 +12,8 @@ files <- list.files(
   recursive = TRUE
 )
 
+files <- files[grep("forecast",files)]
+
 #files = files[14]
 
 for (file in files) {

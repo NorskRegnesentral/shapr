@@ -337,6 +337,10 @@ get_parameters <- function(approach,
 
   # Additional forecast-specific arguments, only added for type="forecast"
   if (type == "forecast") {
+    # Transform to integer for nice printout later on
+    horizon <- as.integer(horizon)
+    explain_idx <- as.integer(explain_idx)
+
     output_labels <-
       cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
     colnames(output_labels) <- c("explain_idx", "horizon")
