@@ -48,11 +48,15 @@ documentation and see examples with `?function_name`.
 
 | Function Name      | Description                                                                               |
 |:---------------------|:-------------------------------------------------|
-| `explain`          | Computes kernel SHAP values for test data.                                                |
+| `explain`          | Computes Shapley values for a model and a set of observations to explain.                 |
 | `explain_forecast` | Analogous to `explain`, but for explaining forecasts from time series models.             |
 | `plot.shapr`       | Plots the individual prediction explanations. Uses the `ggplot` and `ggbeeswarm` package. |
 | `plot_SV_several_approaches` | Compare the individual prediction explanations obtained from different approaches. |
 | `plot_MSEv_eval_crit` | Plots the $\operatorname{MSE}_{v}$ criterion to evaluate the performance of the approach. |
+| `print.shapr`      | Prints the Shapley values (default), their standard deviation or estimates of the MSE.    |
+| `get_results`      | Extracts and returns a summary of the Shapley value computation.                          |
+| `summary.shapr`    | Prints a formatted summary of the Shapley value computation,
+                       and returns the output of `get_results()`                                                 |
 : Main functions in the `shapr` package.
 
 The `shapr` package implements Kernel SHAP estimation of dependence-aware Shapley values with
@@ -75,6 +79,9 @@ stability.
 More information about this is provided in [Iterative estimation](#iterative)
 The above, combined with batch computation of the `v(S)` values, enables fast and accurate estimation of the
 Shapley values in a memory friendly manner.
+
+The package provides functionality for printing and summarizing the Shapley value computation, as well as extracting
+objects created during computation, see [Summary, Printing, and Result Extraction](#summary).
 
 The package also provides functionality for computing Shapley values for groups of features, and custom function explanation, see [Advanced usage](#advanced).
 Finally, explanation of multiple output time series forecasting models are discussed in
@@ -415,7 +422,6 @@ library(shapr)
 ``` r
 library(xgboost)
 library(data.table)
-#> data.table 1.17.0 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -454,35 +460,47 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:35:59 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:07 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+#> 
+#> 
 #> ── Explanation overview ──
 #> 
+#> 
+#> 
 #> • Model class: <xgb.Booster>
+#> 
 #> • Approach: empirical
-#> • Iterative estimation: FALSE
+#> 
+#> • Procedure: Non-iterative
+#> 
 #> • Number of feature-wise Shapley values: 4
+#> 
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af400bdf71.rds'
+#> 
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc63fa720e.rds'
+#> 
+#> 
 #> 
 #> ── Main computation started ──
+#> 
+#> 
 #> 
 #> ℹ Using 16 of 16 coalitions.
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values_est)
-#>    explain_id   none  Solar.R    Wind    Temp    Month
-#>         <int>  <num>    <num>   <num>   <num>    <num>
-#> 1:          1 43.086 13.21173  4.7856 -25.572  -5.5992
-#> 2:          2 43.086 -9.97277  5.8307 -11.039  -7.8300
-#> 3:          3 43.086 -2.29162 -7.0534 -10.150  -4.4525
-#> 4:          4 43.086  3.32546 -3.2409 -10.225  -6.6635
-#> 5:          5 43.086  4.30396 -2.6278 -14.152 -12.2669
-#> 6:          6 43.086  0.47864 -5.2487 -12.553  -6.6457
+print(explanation)
+#>    explain_id  none Solar.R   Wind   Temp   Month
+#>         <int> <num>   <num>  <num>  <num>   <num>
+#> 1:          1 43.09 13.2117  4.786 -25.57  -5.599
+#> 2:          2 43.09 -9.9728  5.831 -11.04  -7.830
+#> 3:          3 43.09 -2.2916 -7.053 -10.15  -4.452
+#> 4:          4 43.09  3.3255 -3.241 -10.22  -6.663
+#> 5:          5 43.09  4.3040 -2.628 -14.15 -12.267
+#> 6:          6 43.09  0.4786 -5.249 -12.55  -6.646
 
 # Plot the resulting explanations for observations 1 and 6
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
@@ -525,11 +543,10 @@ explanation_plot <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:03 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:11 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -540,13 +557,13 @@ explanation_plot <- explain(
 #> 
 #> • Approach: empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 111
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3afd5fda1a.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc435a394f.rds'
 #> 
 #> 
 #> 
@@ -603,9 +620,8 @@ explanation_lm_cat <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:11 ──────────────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:18 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -616,13 +632,13 @@ explanation_lm_cat <- explain(
 #> 
 #> • Approach: ctree
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af4511ce42.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc49363c3a.rds'
 #> 
 #> 
 #> 
@@ -660,9 +676,8 @@ explanation_ctree <- explain(
   ctree.minbucket = 20
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:13 ──────────────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:21 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -673,13 +688,13 @@ explanation_ctree <- explain(
 #> 
 #> • Approach: ctree
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af22aee5b1.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc270f43be.rds'
 #> 
 #> 
 #> 
@@ -728,9 +743,8 @@ explanation_cat_method <- explain(
   seed = 1,
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:14 ──────────────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:22 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -741,13 +755,13 @@ explanation_cat_method <- explain(
 #> 
 #> • Approach: categorical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af5d9cf27e.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfce4498e.rds'
 #> 
 #> 
 #> 
@@ -820,9 +834,8 @@ explanation_timeseries <- explain(
   group = group_ts
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:14 ──────────────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 16`, and is therefore
-#>   set to `2^n_groups = 16`.
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:23 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 16`, and is therefore set to `2^n_groups = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -833,13 +846,16 @@ explanation_timeseries <- explain(
 #> 
 #> • Approach: timeseries
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of group-wise Shapley values: 4
 #> 
+#> • Feature groups: S1: "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10"; S2: "X11", "X12", "X13", "X14", "X15", "X16", "X17", "X18", "X19", "X20";
+#> S3: "X21", "X22", "X23", "X24", "X25", "X26", "X27", "X28", "X29", "X30"; S4: "X31", "X32", "X33", "X34", "X35", "X36", "X37", "X38", "X39", "X40"
+#> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af4bea54ca.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc2722e9b.rds'
 #> 
 #> 
 #> 
@@ -851,7 +867,7 @@ explanation_timeseries <- explain(
 ```
 
 
-## MSEv evaluation criterion
+## MSEv evaluation criterion {#MSEv}
 We can use the $\operatorname{MSE}_{v}$ criterion proposed by @frye2020shapley,
 and later used by, e.g., @olsen2022using and @olsen2024comparative, to evaluate
 and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
@@ -961,11 +977,10 @@ explanation_independence <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:16 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:25 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -976,13 +991,13 @@ explanation_independence <- explain(
 #> 
 #> • Approach: independence
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 25
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af6ef7d939.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc79386169.rds'
 #> 
 #> 
 #> 
@@ -1004,19 +1019,17 @@ explanation_empirical <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:17 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:26 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: empirical
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af75219b30.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc5dd4ac8.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1034,19 +1047,17 @@ explanation_gaussian_1e1 <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:20 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:29 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af59ccfbfe.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc19c0760f.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1064,19 +1075,17 @@ explanation_gaussian_1e2 <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:21 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:29 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7f6b161c.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc256c6aa6.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1094,19 +1103,17 @@ explanation_combined <- explain(
   MSEv_uniform_comb_weights = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:21 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:29 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian, empirical, and independence
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af3cf1c743.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc753043.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1135,8 +1142,7 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 
 # 5 plots are made
 names(MSEv_plots)
-#> [1] "MSEv_explicand_bar"        "MSEv_explicand_line_point" "MSEv_coalition_bar"       
-#> [4] "MSEv_coalition_line_point" "MSEv_bar"
+#> [1] "MSEv_explicand_bar"        "MSEv_explicand_line_point" "MSEv_coalition_bar"        "MSEv_coalition_line_point" "MSEv_bar"
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
 we have only averaged over the observations or the combinations (both as bar and line plots).
@@ -1231,15 +1237,22 @@ The idea behind iterative estimation is to estimate sufficiently accurate Shaple
 First, an initial number of coalitions is sampled, then, bootsrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
-If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
-coalitions.
+If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more coalitions.
 The process is repeated until the variances are below the threshold.
 Specifics related to the iterative process and convergence criterion are set through `iterative_args` argument.
 
 The convergence criterion we use is adopted from @covert2021improving, and slightly modified to work for multiple
 observations
 
-\[ \median_i\left(\frac{max_j \hat{\text{sd}}(\hat{\phi}_{ij}){\max_j \hat{\phi}_{ij} - \min_j \hat{\phi}_{ij}}\right), < t  \]
+\[
+\operatorname{median}_i \left(
+  \frac{
+    \max_j \hat{\text{sd}}(\hat{\phi}_{ij})
+  }{
+    \max_j \hat{\phi}_{ij} - \min_j \hat{\phi}_{ij}
+  }
+\right) < t
+\]
 
 where $\hat{\phi}_{ij}$ is the Shapley value of feature $j$ for observation $i$, and $\text{sd}(\phi_{ij})$
 is the its (bootstrap) estimated standard deviation. The default value of $t$ is 0.02.
@@ -1276,7 +1289,7 @@ model <- xgboost::xgboost(
 # Specifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
-# Initial explanation computation
+# Explanation with iterative computation
 ex <- explain(
   model = model,
   x_explain = x_explain,
@@ -1288,11 +1301,10 @@ ex <- explain(
   iterative_args = list(convergence_tol = 0.1)
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:24 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:42 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
-#>   set to `2^n_features = 32`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1303,35 +1315,200 @@ ex <- explain(
 #> 
 #> • Approach: gaussian
 #> 
-#> • Iterative estimation: TRUE
+#> • Procedure: Iterative
 #> 
 #> • Number of feature-wise Shapley values: 5
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af670cb3d5.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc549e6a4.rds'
 #> 
 #> 
 #> 
-#> ── iterative computation started ──
+#> ── Iterative computation started ──
 #> 
 #> 
 #> 
-#> ── Iteration 1 ─────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 6 of 32 coalitions, 6 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 2 ─────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 8 of 32 coalitions, 2 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 3 ─────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
-#> ℹ Using 12 of 32 coalitions, 4 new.
+#> ℹ Using 12 of 32 coalitions, 4 new. 
+#> 
+#> 
+#> 
+#> ── Iteration 4 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 
+#> ℹ Using 14 of 32 coalitions, 2 new. 
+#> 
+#> 
+#> 
+#> ── Iteration 5 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 
+#> ℹ Using 16 of 32 coalitions, 2 new. 
+#> 
+#> 
+#> 
+#> ── Iteration 6 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 
+#> ℹ Using 18 of 32 coalitions, 2 new.
+```
+
+
+# Summary, Printing, and Result Extraction {#summary}
+
+As shown above, `print(explain_object)` displays the estimated Shapley values from an object created using `explain()`.
+This is the default behavior of the `print()` method for `shapr` objects.
+
+However, `print.shapr` also includes a `what` argument that controls what is printed.
+This allows users to also display:
+- the standard deviations arising from coalition sampling (`what = "shapley_sd"`), and
+- variants of the [MSEv criterion](#MSEv) introduced above, using
+  `what = "MSEv"`, `"MSEv_explicand"`, or `"MSEv_coalition"`.
+
+The `summary(explain_object)` function provides a neatly formatted summary of the object and (invisibly) returns a
+complete list of summary components.
+Internally, `summary.shapr` calls `get_results()`, which produces this full set of components, including:
+the parameters used, intermediate Shapley value estimates (and their standard deviations), estimates of all \( v(S) \),
+and more.
+See `?get_results` for a full overview of the returned output.
+
+Below, we illustrate these capabilities using the iterative explanation object `ex` computed above.
+
+
+``` r
+# Uses the object ex to illustrate printing and summary functionality
+print(ex) # Prints the estimated Shapley values by default
+#>    explain_id  none Solar.R   Wind   Temp  Month     Day
+#>         <int> <num>   <num>  <num>  <num>  <num>   <num>
+#> 1:          1 43.09   1.258  6.486 -21.89 -6.464 -1.2702
+#> 2:          2 43.09  -3.717  2.282 -14.30 -4.416 -0.9483
+#> 3:          3 43.09  -1.159 -8.892 -12.86 -3.866 -0.1902
+#> 4:          4 43.09   4.163 -6.220 -16.94 -3.478 -5.1878
+#> 5:          5 43.09   3.090  1.764 -24.73 -6.004 -4.6952
+#> 6:          6 43.09  -2.602 -5.148 -12.49 -3.672 -1.9491
+print(ex, what = "shapley_sd") # Prints the estimated standard deviations of the Shapley values
+#>    explain_id      none Solar.R  Wind    Temp Month    Day
+#>         <int>     <num>   <num> <num>   <num> <num>  <num>
+#> 1:          1 3.060e-07  0.5386 2.072 0.05372 2.033 0.2709
+#> 2:          2 3.016e-07  0.7698 1.355 0.23023 1.284 0.4309
+#> 3:          3 4.259e-07  0.8536 1.367 0.33087 1.228 0.4934
+#> 4:          4 6.733e-07  1.3104 2.295 0.72485 1.931 0.3940
+#> 5:          5 5.208e-07  1.0750 1.743 0.63426 1.694 0.7498
+#> 6:          6 5.414e-07  1.2962 1.590 0.61541 1.432 0.5686
+print(ex, what = "MSEv") # Prints the MSEv evaluation criterion
+#>      MSEv MSEv_sd
+#>     <num>   <num>
+#> 1: 252.29   76.26
+
+summary_ex <- summary(ex)
+#> 
+#> ── Summary of Shapley value explanation ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Computed with`shapr::explain()` at 2025-08-05 10:29:42
+#> • Model class: <xgb.Booster>
+#> • Approach: gaussian
+#> • Procedure: Iterative
+#> • Number of feature-wise Shapley values: 5
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc549e6a4.rds'
+#> • Total number of coalitions used: 18 (of 32)
+#> 
+#> ── Convergence info
+#> ✔ Iterative Shapley value estimation stopped at 18 coalitions after 6 iterations, due to:
+#> Standard deviation convergence threshold (0.1) reached: 0.095!
+#> 
+#> ── Estimated Shapley values (sd in parantheses)
+#>             none       Solar.R          Wind           Temp         Month           Day
+#>           <char>        <char>        <char>         <char>        <char>        <char>
+#> 1: 43.086 (0.00)  1.258 (0.54)  6.486 (2.07) -21.888 (0.05) -6.464 (2.03) -1.270 (0.27)
+#> 2: 43.086 (0.00) -3.717 (0.77)  2.282 (1.36) -14.300 (0.23) -4.416 (1.28) -0.948 (0.43)
+#> 3: 43.086 (0.00) -1.159 (0.85) -8.892 (1.37) -12.857 (0.33) -3.866 (1.23) -0.190 (0.49)
+#> 4: 43.086 (0.00)  4.163 (1.31) -6.220 (2.29) -16.939 (0.72) -3.478 (1.93) -5.188 (0.39)
+#> 5: 43.086 (0.00)  3.090 (1.08)  1.764 (1.74) -24.729 (0.63) -6.004 (1.69) -4.695 (0.75)
+#> 6: 43.086 (0.00) -2.602 (1.30) -5.148 (1.59) -12.492 (0.62) -3.672 (1.43) -1.949 (0.57)
+#> 
+#> 
+#> ── Estimated MSEv 
+#> 
+#> ℹ The estimated MSE of v(S) = 252.29 (with sd = 76.26)
+
+summary_ex$shapley_est # The estimated Shapley values
+#>    explain_id   none Solar.R    Wind    Temp   Month      Day
+#>         <int>  <num>   <num>   <num>   <num>   <num>    <num>
+#> 1:          1 43.086  1.2581  6.4857 -21.888 -6.4643 -1.27021
+#> 2:          2 43.086 -3.7166  2.2818 -14.300 -4.4155 -0.94828
+#> 3:          3 43.086 -1.1594 -8.8924 -12.857 -3.8660 -0.19021
+#> 4:          4 43.086  4.1632 -6.2204 -16.939 -3.4778 -5.18784
+#> 5:          5 43.086  3.0899  1.7643 -24.729 -6.0042 -4.69524
+#> 6:          6 43.086 -2.6017 -5.1481 -12.492 -3.6724 -1.94911
+summary_ex$shapley_sd # The estimated standard deviations of the Shapley values
+#>    explain_id       none Solar.R   Wind    Temp  Month     Day
+#>         <int>      <num>   <num>  <num>   <num>  <num>   <num>
+#> 1:          1 3.0598e-07 0.53861 2.0722 0.05372 2.0327 0.27087
+#> 2:          2 3.0162e-07 0.76982 1.3551 0.23023 1.2844 0.43089
+#> 3:          3 4.2586e-07 0.85360 1.3669 0.33087 1.2281 0.49341
+#> 4:          4 6.7326e-07 1.31039 2.2946 0.72485 1.9312 0.39398
+#> 5:          5 5.2081e-07 1.07501 1.7426 0.63426 1.6942 0.74981
+#> 6:          6 5.4142e-07 1.29621 1.5901 0.61541 1.4318 0.56859
+summary_ex$timing$total_time_secs # Total computation time in seconds
+#> [1] 4.3475
+summary_ex$parameters$n_MC_samples # Number of Monte Carlo samples used
+#> [1] 1000
+
+summary_ex$parameters$gaussian.mu # Estimated mean vector (Gaussian approach)
+#> [1] 184.2381   9.9181  78.4381   7.3429  16.6190
+summary_ex$parameters$gaussian.cov_mat # Estimated covariance matrix (Gaussian approach)
+#>           Solar.R     Wind     Temp   Month      Day
+#> Solar.R 8378.0678 -41.1072 284.0966 -9.1882 -42.7738
+#> Wind     -41.1072  13.0369 -17.3205 -1.0274   1.7137
+#> Temp     284.0966 -17.3205  86.6908  4.4734 -16.0623
+#> Month     -9.1882  -1.0274   4.4734  1.9967  -1.7143
+#> Day      -42.7738   1.7137 -16.0623 -1.7143  71.3535
+
+res_ex <- get_results(ex) # Gives output equivalent to summary(ex), but without the printed summary
+
+# You may also extract individual summary components directly using get_results()
+get_results(ex, what = "shapley_sd")
+#>    explain_id       none Solar.R   Wind    Temp  Month     Day
+#>         <int>      <num>   <num>  <num>   <num>  <num>   <num>
+#> 1:          1 3.0598e-07 0.53861 2.0722 0.05372 2.0327 0.27087
+#> 2:          2 3.0162e-07 0.76982 1.3551 0.23023 1.2844 0.43089
+#> 3:          3 4.2586e-07 0.85360 1.3669 0.33087 1.2281 0.49341
+#> 4:          4 6.7326e-07 1.31039 2.2946 0.72485 1.9312 0.39398
+#> 5:          5 5.2081e-07 1.07501 1.7426 0.63426 1.6942 0.74981
+#> 6:          6 5.4142e-07 1.29621 1.5901 0.61541 1.4318 0.56859
+get_results(ex, what = "dt_vS")
+#> Index: <id_coalition>
+#>     id_coalition p_hat1_1 p_hat1_2 p_hat1_3 p_hat1_4 p_hat1_5 p_hat1_6
+#>            <num>    <num>    <num>    <num>    <num>    <num>    <num>
+#>  1:            1   43.086   43.086   43.086   43.086   43.086   43.086
+#>  2:            2   20.039   21.631   21.344   18.789   19.603   17.306
+#>  3:            3   46.041   45.072   45.052   44.502   44.910   44.222
+#>  4:            4   43.805   33.235   39.879   51.410   53.133   32.563
+#>  5:            5   40.055   37.617   23.363   25.468   36.338   21.362
+#>  6:            6   33.164   32.626   32.341   32.109   32.271   31.993
+#>  7:            7   17.311   19.722   20.930   15.424   16.352   13.905
+#>  8:            8   46.974   33.761   41.975   49.616   54.302   32.537
+#>  9:            9   54.267   36.021   25.105   34.668   53.820   22.055
+#> 10:           10   18.412   21.230   21.117   13.870   13.453   17.950
+#> 11:           11   26.620   23.578   15.561   26.318   25.754   20.190
+#> 12:           12   42.102   30.662   22.379   32.084   43.571   21.228
+#> 13:           13   24.729   23.271   16.715   20.409   23.440   17.828
+#> 14:           14   16.767   19.115   20.317   15.660   16.196   14.509
+#> 15:           15   41.791   29.288   19.374   25.790   40.506   18.723
+#> 16:           16   26.921   24.228   17.002   27.350   26.326   21.189
+#> 17:           17   19.873   18.993   15.369   15.603   18.250   13.808
+#> 18:           18   21.207   21.987   16.120   15.424   12.512   17.223
 ```
 
 # Parallelization {#para}
@@ -1393,11 +1570,10 @@ explanation_par <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:28 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:49 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
-#>   set to `2^n_features = 32`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1408,13 +1584,13 @@ explanation_par <- explain(
 #> 
 #> • Approach: empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 5
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af6832c6fc.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc62832c90.rds'
 #> 
 #> 
 #> 
@@ -1569,11 +1745,10 @@ explanation_combined <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:31 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:51 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1584,13 +1759,13 @@ explanation_combined <- explain(
 #> 
 #> • Approach: empirical, copula, and gaussian
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af18389584.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc5f5c5f8b.rds'
 #> 
 #> 
 #> 
@@ -1621,11 +1796,10 @@ explanation_combined <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:33 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:53 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1636,13 +1810,13 @@ explanation_combined <- explain(
 #> 
 #> • Approach: ctree, ctree, and empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af330c42b7.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc4a877859.rds'
 #> 
 #> 
 #> 
@@ -1680,11 +1854,10 @@ explanation_group <- explain(
   group = group_list
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:34 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:54 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set
-#>   to `2^n_groups = 4`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1695,13 +1868,15 @@ explanation_group <- explain(
 #> 
 #> • Approach: empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of group-wise Shapley values: 2
 #> 
+#> • Feature groups: A: "Temp", "Month"; B: "Wind", "Solar.R"
+#> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af2d800e75.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc15863c36.rds'
 #> 
 #> 
 #> 
@@ -1779,8 +1954,6 @@ same airquality data set as used above.
 
 ``` r
 library(gbm)
-#> Loaded gbm 2.2.2
-#> This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3
 
 formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
 # Fitting a gbm model
@@ -1831,9 +2004,8 @@ explanation_custom <- explain(
   get_model_specs = MY_get_model_specs
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:35 ──────────────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:55 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1844,13 +2016,13 @@ explanation_custom <- explain(
 #> 
 #> • Approach: empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7daab1cb.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc27ec7c1a.rds'
 #> 
 #> 
 #> 
@@ -1889,20 +2061,17 @@ explanation_custom_minimal <- explain(
   predict_model = MY_MINIMAL_predict_model
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:38 ──────────────────────────────────
-#> ℹ You passed a model to `shapr::explain()` which is not natively supported, and did not
-#>   supply a `get_model_specs` function to `shapr::explain()`.
-#>   Consistency checks between model and data is therefore disabled.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ── Starting `shapr::explain()` at 2025-08-05 10:29:58 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ You passed a model to `shapr::explain()` which is not natively supported, and did not supply a `get_model_specs` function to `shapr::explain()`.
+#>   Consistency checks between model and data is therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <gbm>
 #> • Approach: empirical
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af52ea20a7.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc63801a32.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1961,9 +2130,8 @@ explanation_tidymodels <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:42 ──────────────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ── Starting `shapr::explain()` at 2025-08-05 10:30:03 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1974,13 +2142,13 @@ explanation_tidymodels <- explain(
 #> 
 #> • Approach: empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af254d82a1.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc39a35cd2.rds'
 #> 
 #> 
 #> 
@@ -2030,11 +2198,10 @@ explanation_vaeac <- explain(
   vaeac.n_vaeacs_initialize = 2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:36:45 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:30:06 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -2045,13 +2212,13 @@ explanation_vaeac <- explain(
 #> 
 #> • Approach: vaeac
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af313c4393.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc745358b.rds'
 #> 
 #> 
 #> 
@@ -2100,11 +2267,10 @@ explanation_vaeac_early_stop <- explain(
   vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:37:02 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:30:35 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore
-#>   set to `2^n_features = 16`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -2115,13 +2281,13 @@ explanation_vaeac_early_stop <- explain(
 #> 
 #> • Approach: vaeac
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af5d1c932c.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc7c4321a.rds'
 #> 
 #> 
 #> 
@@ -2206,7 +2372,7 @@ ex_init <- explain(
   iterative = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:37:24 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:31:06 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> 
@@ -2219,45 +2385,45 @@ ex_init <- explain(
 #> 
 #> • Approach: gaussian
 #> 
-#> • Iterative estimation: TRUE
+#> • Procedure: Iterative
 #> 
 #> • Number of feature-wise Shapley values: 5
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af82a3940.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc568479a6.rds'
 #> 
 #> 
 #> 
-#> ── iterative computation started ──
+#> ── Iterative computation started ──
 #> 
 #> 
 #> 
-#> ── Iteration 1 ─────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 6 of 32 coalitions, 6 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 2 ─────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 8 of 32 coalitions, 2 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 3 ─────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 12 of 32 coalitions, 4 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 4 ─────────────────────────────────────────────────────────────────────────
+#> ── Iteration 4 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 18 of 32 coalitions, 6 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 5 ─────────────────────────────────────────────────────────────────────────
+#> ── Iteration 5 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 20 of 32 coalitions, 2 new.
 
@@ -2274,24 +2440,23 @@ ex_further <- explain(
   prev_shapr_object = ex_init
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:37:29 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:31:10 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7525de59.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc295c7d96.rds'
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 24 of 32 coalitions.
 
-print(ex_further$saving_path)
-#> [1] "/tmp/RtmplHDIbs/shapr_obj_3d3af7525de59.rds"
+ex_further_path <- get_results(ex_further, what = "saving_path") # Gets path to the saved intermediate estimation object
 
 # Using the ex_init object to continue the computation for the remaining coalition samples
 # but this time using the path to the saved intermediate estimation object
@@ -2303,22 +2468,20 @@ ex_even_further <- explain(
   phi0 = p0,
   seed = 1,
   max_n_coalitions = NULL,
-  prev_shapr_object = ex_further$saving_path
+  prev_shapr_object = ex_further_path
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-04-28 10:37:30 ──────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-05 10:31:11 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
-#>   set to `2^n_features = 32`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 5
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af1030bddf.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfcac569d5.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2398,11 +2561,10 @@ explanation_forecast <- explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2025-04-28 10:37:31 ─────────────────────────
+#> ── Starting `shapr::explain_forecast()` at 2025-08-05 10:31:13 ────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature names extracted from the model contains `NA`.
 #>   Consistency checks between model and data is therefore disabled.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore
-#>   set to `2^n_features = 4`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
 #> Registered S3 method overwritten by 'quantmod':
 #>   method            from
 #>   as.zoo.data.frame zoo 
@@ -2417,13 +2579,13 @@ explanation_forecast <- explain_forecast(
 #> 
 #> • Approach: empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 2
 #> 
 #> • Number of observations to explain: 2
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af3bd90748.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc771e46b1.rds'
 #> 
 #> 
 #> 
@@ -2515,11 +2677,10 @@ explanation_forecast <- explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2025-04-28 10:37:33 ─────────────────────────
+#> ── Starting `shapr::explain_forecast()` at 2025-08-05 10:31:17 ────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature names extracted from the model contains `NA`.
 #>   Consistency checks between model and data is therefore disabled.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore
-#>   set to `2^n_features = 4`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -2530,13 +2691,13 @@ explanation_forecast <- explain_forecast(
 #> 
 #> • Approach: empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 2
 #> 
 #> • Number of observations to explain: 1
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af4829b33a.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc208850d4.rds'
 #> 
 #> 
 #> 
@@ -2549,8 +2710,8 @@ explanation_forecast <- explain_forecast(
 print(explanation_forecast)
 #>    explain_idx horizon  none Temp.1 Temp.2
 #>          <num>   <num> <num>  <num>  <num>
-#> 1:         153       1 77.79 -6.578 -0.134
-#> 2:         153       2 77.79 -5.980 -0.288
+#> 1:      153.00    1.00 77.79 -6.578 -0.134
+#> 2:      153.00    2.00 77.79 -5.980 -0.288
 ```
 
 The results are presented per value of `explain_idx` and forecast
@@ -2610,11 +2771,10 @@ explanation_forecast <- explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2025-04-28 10:37:34 ─────────────────────────
+#> ── Starting `shapr::explain_forecast()` at 2025-08-05 10:31:19 ────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Feature names extracted from the model contains `NA`.
 #>   Consistency checks between model and data is therefore disabled.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore
-#>   set to `2^n_features = 32`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -2625,13 +2785,13 @@ explanation_forecast <- explain_forecast(
 #> 
 #> • Approach: empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
 #> 
 #> • Number of feature-wise Shapley values: 5
 #> 
 #> • Number of observations to explain: 1
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af43acc557.rds'
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc1cd42819.rds'
 #> 
 #> 
 #> 
@@ -2641,11 +2801,31 @@ explanation_forecast <- explain_forecast(
 #> 
 #> ℹ Using 32 of 32 coalitions.
 
-print(explanation_forecast$shapley_values_est)
-#>    explain_idx horizon  none   Temp.1   Temp.2  Wind.1  Wind.F1  Wind.F2
-#>          <num>   <num> <num>    <num>    <num>   <num>    <num>    <num>
-#> 1:         151       1 77.96 -0.67793 -0.67340 -1.2688 0.493408       NA
-#> 2:         151       2 77.96  0.39968 -0.50059 -1.4655 0.065913 -0.47422
+print(explanation_forecast)
+#>    explain_idx horizon  none  Temp.1  Temp.2 Wind.1 Wind.F1 Wind.F2
+#>          <num>   <num> <num>   <num>   <num>  <num>   <num>   <num>
+#> 1:      151.00    1.00 77.96 -0.6779 -0.6734 -1.269 0.49341      NA
+#> 2:      151.00    2.00 77.96  0.3997 -0.5006 -1.465 0.06591 -0.4742
+
+summary(explanation_forecast)
+#> 
+#> ── Summary of Shapley value explanation ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Computed with`shapr::explain_forecast()` at 2025-08-05 10:31:19
+#> • Model class: <ar>
+#> • Approach: empirical
+#> • Procedure: Non-iterative
+#> • Number of feature-wise Shapley values: 5
+#> • Number of observations to explain: 1
+#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\Rtmp6nFgDw\shapr_obj_bdfc1cd42819.rds'
+#> • Total number of coalitions used: 32 (of 32)
+#> 
+#> ── Estimated Shapley values 
+#>      none Temp.1 Temp.2 Wind.1 Wind.F1 Wind.F2
+#>    <char> <char> <char> <char>  <char>  <char>
+#> 1:  77.96 -0.678 -0.673 -1.269   0.493      NA
+#> 2:  77.96  0.400 -0.501 -1.465   0.066  -0.474
+#> ── Estimated MSEv 
+#> ℹ The estimated MSE of v(S) = NULL (with sd = NULL)
 ```
 
 
