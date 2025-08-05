@@ -669,16 +669,13 @@ testing_cleanup <- function(output) {
   }
   
   #Removing loss-function
-  if (output$internal$paramteres$sage) {
+  if (output$internal$parameters$sage) {
     output$internal$parameters$loss_func <- NULL
   }
 
   # Delete the saving_path
   output$internal$parameters$output_args$saving_path <- NULL
   output$saving_path <- NULL
-
-  # Delete the loss_func
-  output$internal$parameters$loss_func <- NULL
 
   return(output)
 }
