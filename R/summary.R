@@ -63,14 +63,16 @@ summary.shapr <- function(object, ...) {
   # Cannot use print as it does not obey suppressMessages()
   rlang::inform(formatted_shapley_info)
 
-  # MSEv info
-  MSEv_nice <- format(results$MSEv$MSEv, digits = 4, nsmall = 2)
-  MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = 4, nsmall = 2)
+  # MSEv info (only when using explain())
+  if(results$calling_function=="explain"){
+    MSEv_nice <- format(results$MSEv$MSEv, digits = 4, nsmall = 2)
+    MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = 4, nsmall = 2)
 
-  cli::cli_h3("Estimated MSEv")
-  cli::cli_alert_info(
-    "The estimated MSE of v(S) = {MSEv_nice} (with sd = {MSEv_sd_nice})"
-  )
+    cli::cli_h3("Estimated MSEv")
+    cli::cli_alert_info(
+      "The estimated MSE of v(S) = {MSEv_nice} (with sd = {MSEv_sd_nice})"
+    )
+  }
 
   invisible(results)
 }

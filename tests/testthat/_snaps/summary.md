@@ -457,9 +457,6 @@
       4: 77.882 -6.021 -0.337
       5: 77.882 -0.291 -1.055
       6: 77.882 -5.212 -0.255
-      
-      -- Estimated MSEv 
-      i The estimated MSE of v(S) = NULL (with sd = NULL)
     Output
       $calling_function
       [1] "explain_forecast"

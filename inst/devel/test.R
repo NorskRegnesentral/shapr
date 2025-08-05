@@ -12,7 +12,7 @@ files <- list.files(
   recursive = TRUE
 )
 
-files <- files[grep("forecast",files)]
+files <- files[grep("summary",files)]
 
 #files = files[14]
 
@@ -31,7 +31,7 @@ snap_folders <- sub("tests/testthat/test-(.*)\\.R", "\\1", files)
 
 for (folder in snap_folders) {
   print(paste0("Reviewing snapshots for: ", folder))
-  Sys.sleep(1) # To clearly see when we start reviewing a new folder
+  Sys.sleep(.5) # To clearly see when we start reviewing a new folder
   snapshot_review_man(paste0(folder,"/"))
 }
 
