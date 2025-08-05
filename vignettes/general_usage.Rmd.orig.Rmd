@@ -673,7 +673,7 @@ explanation_timeseries <- explain(
 ```
 
 
-## MSEv evaluation criterion
+## MSEv evaluation criterion {#MSEv}
 We can use the $\operatorname{MSE}_{v}$ criterion proposed by @frye2020shapley,
 and later used by, e.g., @olsen2022using and @olsen2024comparative, to evaluate
 and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
@@ -967,7 +967,7 @@ model <- xgboost::xgboost(
 # Specifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
-# Initial explanation computation
+# Explanation with iterative computation
 ex <- explain(
   model = model,
   x_explain = x_explain,
@@ -981,10 +981,95 @@ ex <- explain(
 
 ```
 
+
+## Summary, Printing, and Result Extraction {#summary}
+
+As shown above, `print(explain_object)` displays the estimated Shapley values from an object created using `explain()`.  
+This is the default behavior of the `print()` method for `shapr` objects.
+
+However, `print.shapr` also includes a `what` argument that controls what is printed.  
+This allows users to also display:
+- the standard deviations arising from coalition sampling (`what = "shapley_sd"`), and
+- variants of the [MSEv criterion](#MSEv) introduced above, using  
+  `what = "MSEv"`, `"MSEv_explicand"`, or `"MSEv_coalition"`.
+
+The `summary(explain_object)` function provides a neatly formatted summary of the object and (invisibly) returns a 
+complete list of summary components.  
+Internally, `summary.shapr` calls `get_results()`, which produces this full set of components, including:
+the parameters used, intermediate Shapley value estimates (and their standard deviations), estimates of all \( v(S) \),  
+and more.
+See `?get_results` for a full overview of the returned output.
+
+Below, we illustrate these capabilities using the iterative explanation object `ex` computed above.
+
+```r
+# Uses the object ex to illustrate printing and summary functionality
+print(ex)                        # Prints the estimated Shapley values by default
+print(ex, what = "shapley_sd")  # Prints the estimated standard deviations of the Shapley values
+print(ex, what = "MSEv")        # Prints the MSEv evaluation criterion
+
+summary_ex <- summary(ex)
+
+summary_ex$shapley_est             # The estimated Shapley values
+summary_ex$shapley_sd              # The estimated standard deviations of the Shapley values
+summary_ex$timing$total_time_secs  # Total computation time in seconds
+summary_ex$parameters$n_MC_samples  # Number of Monte Carlo samples used
+
+summary_ex$parameters$gaussian.mu       # Estimated mean vector (Gaussian approach)
+summary_ex$parameters$gaussian.cov_mat  # Estimated covariance matrix (Gaussian approach)
+
+res_ex <- get_results(ex)  # Gives output equivalent to summary(ex), but without the printed summary
+
+# You may also extract individual summary components directly using get_results()
+get_results(ex, what = "shapley_sd")
+get_results(ex, what = "dt_vS")
+```
+
+
 # Summary, printing and result extraction {#summary}
 
-[xx: Add some text here describing the summary and printing functionality, and how to extract results from the `explain()` output.
-use the ex object above as an example. 
+As shown above, `print(explain_object)` simply prints the estimated Shapley values from an object computed with 
+`explain()`. 
+This is the default behavior of the `print()` method for `shapr` objects.
+However, `print.shapr` has a `what` argument which controls what is printed, allowing
+the user to the standard deviations stemming from the coalition sampling (`what = shapley_sd`), and variants of the
+[MSEv criterion](#MSEv) introduced above via `what = "MSEv"/"MSEv_explicand"/"MSEv_coalition"`.
+
+Moreover, `summary(explain_object)` gives a nicely formatted summary of the shapr object, and invisibly returns a 
+full list of summary components. 
+In the background `summary.shapr` function calls `get_results()` which provides this full list of summary components,
+including which parameters are being used, the intermediately estimated Shapley values (and sd), estimates of all the 
+`v(S)`, and so on. 
+See `?get_results` for the full list of returned objects. 
+
+Below we illustrate some of these capabilities using the iterative explanation computation above.
+
+
+```{r summary, warning=FALSE, cache = TRUE}
+# Uses the object ex computed to illustrate printing and summary functionality
+print(ex) # Prints the estimated Shapley values by default
+
+print(ex, what = "shapley_sd") # Prints the estimated standard deviations of the Shapley values
+
+print(ex, what = "MSEv") # Prints the MSEv evaluation criterion
+
+summary_ex <- summary(ex)
+
+summary_ex$shapley_est # The estimated Shapley values
+summary_ex$shapley_sd # The estimated standard deviations of the Shapley values
+summary_ex$timing$total_time_secs # Total computation time in seconds
+summary_ex$parameters$n_MC_samples # Number of Monte Carlo samples used for the numerical integration
+
+summary_ex$parameters$gaussian.mu # The estimated mean vector used for the Gaussian approach
+summary_ex$parameters$gaussian.cov_mat # The estimated covariance matrix used for the Gaussian approach
+
+res_ex <- get_results(ex) # Same as summary(ex)
+
+# May also extract individual summary components directly from get_results() 
+get_results(ex, what = "shapley_sd")
+get_results(ex, what = "dt_vS")
+
+```
 
 
 # Parallelization {#para}
