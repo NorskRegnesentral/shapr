@@ -674,7 +674,7 @@ check_and_set_parameters <- function(internal, type) {
       internal$objects$dt_valid_causal_coalitions[, .N, by = .(coalition_size)][-c(1, .N), N]
   } else {
     # Do not set it for forecast, as it is generated on the fly as the value of changes with the horizon
-    if (type != "forecast") internal$parameters$n_coal_each_size <- as.integer(choose(m, seq(m - 1)))
+    if (type != "forecast") internal$parameters$n_coal_each_size <- choose(m, seq(m - 1))
   }
 
   # Adjust max_n_coalitions
