@@ -1,8 +1,6 @@
 library(xgboost)
 library(data.table)
 
-path_data_and_model <- "./inst/code_paper/data_and_models/"
-
 # Bike sharing data from http://archive.ics.uci.edu/dataset/275/bike+sharing+dataset
 # with license https://creativecommons.org/licenses/by/4.0/
 
@@ -55,15 +53,24 @@ model <- xgboost::xgboost(
   verbose = FALSE
 )
 
-#### Writing training and explanation data to csv files
-fwrite(x_full, file=file.path(path_data_and_model,"x_full.csv"))
-fwrite(x_train, file=file.path(path_data_and_model,"x_train.csv"))
-fwrite(as.data.table(y_train), file=file.path(path_data_and_model,"y_train.csv"))
-fwrite(x_explain, file=file.path(path_data_and_model,"x_explain.csv"))
-fwrite(as.data.table(y_explain), file=file.path(path_data_and_model,"y_explain.csv"))
+
+# Creates folders
+dir.create("data_and_models", showWarnings = FALSE) # Directory for data and model
+dir.create("R_html_figures", showWarnings = FALSE) # Directory for html figures from R
+dir.create("R_paper_figures", showWarnings = FALSE) # Directory for paper figures in R
+
+# Creating a directory to store the data and model
+
+# Writing training and explanation data to csv files
+fwrite(x_full, file=file.path("data_and_models","x_full.csv"))
+fwrite(x_train, file=file.path("data_and_models","x_train.csv"))
+fwrite(as.data.table(y_train), file=file.path("data_and_models","y_train.csv"))
+fwrite(x_explain, file=file.path("data_and_models","x_explain.csv"))
+fwrite(as.data.table(y_explain), file=file.path("data_and_models","y_explain.csv"))
 
 # We save the xgboost model object
-xgboost::xgb.save(model, file.path(path_data_and_model,"xgb.model"))
-saveRDS(model, file.path(path_data_and_model,"model.rds"))
+xgboost::xgb.save(model, file.path("data_and_models","xgb.model"))
+saveRDS(model, file.path("data_and_models","model.rds"))
+
 
 

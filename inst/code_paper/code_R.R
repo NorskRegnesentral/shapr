@@ -15,8 +15,7 @@
 # */
 
 #+ echo=FALSE
-dir.create("html_figures", showWarnings = FALSE)
-knitr::opts_chunk$set(fig.path = 'html_figures/')
+knitr::opts_chunk$set(fig.path = 'R_html_figures/')
 #
 
 #### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
@@ -150,7 +149,7 @@ plot(exp_g_reg_tuned,
 
 #+ echo=FALSE
 # Produce the pdf used in Figure 3 in the paper
-ggplot2::ggsave(file.path("paper_figures", "waterfall_group.pdf"), width = 7, height = 4)
+ggplot2::ggsave(file.path("R_paper_figures", "waterfall_group.pdf"), width = 7, height = 4)
 
 #+
 #### Causal and asymmetric Shapley values ####
@@ -198,7 +197,7 @@ patchwork::wrap_plots(plot_list, nrow = 1) +
 
 #+ echo=FALSE
 # Produce the pdf used in Figure 6 in the paper
-ggplot2::ggsave(file.path("paper_figures", "beeswarm_caus_asym.pdf"),
+ggplot2::ggsave(file.path("R_paper_figures", "beeswarm_caus_asym.pdf"),
                 scale = 0.9,
                 width = 14,
                 height = 4)
