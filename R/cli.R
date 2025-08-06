@@ -90,7 +90,7 @@ format_info_basic <- function(internal) {
   if (isTRUE(is_groupwise) && !isTRUE(group_lags)) { # using !isTRUE since isFALSE(NULL)=FALSE
     # format the group list with name of each component followed by the string vector in curly braces
     string <- sapply(names(group), function(name) {
-      paste0("{.emph ", name, "}: ", paste0("{.val ", group[[name]], "}", collapse = ", "))
+      paste0("{.emph ", name, "}: {{{{", paste0("{.val ", group[[name]], "}", collapse = ", "),"}}}}")
     })
 
     line_vec <- c(line_vec, paste0("Feature groups: ", paste0(string, collapse = "; ")))
@@ -124,10 +124,10 @@ format_info_basic <- function(internal) {
 format_info_extra <- function(internal) {
   iter <- length(internal$iter_list)
 
-  n_coaltions <- internal$iter_list[[iter]]$n_coalitions
+  n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   n_shapley_values <- internal$parameters$n_shapley_values
 
-  msg <- "Total number of coalitions used: {.val {n_coaltions}} (of {.val {2^n_shapley_values}})"
+  msg <- "Total number of coalitions used: {.val {n_coalitions}} (of {.val {2^n_shapley_values}})"
 
   formatted_msg <- cli::format_inline(msg, .envir = environment())
 
@@ -148,7 +148,7 @@ cli_compute_vS <- function(internal) {
   approach <- internal$parameters$approach
 
   if ("progress" %in% verbose) {
-    cli::cli_progress_step("Computing vS")
+    cli::cli_progress_step("Computing v(S)")
   }
   if ("vS_details" %in% verbose) {
     if ("regression_separate" %in% approach) {

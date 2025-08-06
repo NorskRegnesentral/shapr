@@ -409,7 +409,8 @@ in a memory friendly manner.
 \examples{
 \donttest{
 
-#' data("airquality")
+# Load example data
+data("airquality")
 airquality <- airquality[complete.cases(airquality), ]
 x_var <- c("Solar.R", "Wind", "Temp", "Month")
 y_var <- "Ozone"

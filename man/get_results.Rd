@@ -42,7 +42,8 @@ The function extracts a full suite of information related to the computation of 
 a \code{shapr} object.
 The allowed characters in \code{what} provides information as follows:
 \describe{
-\item{\code{calling_function}}{Function called to create the \code{shapr} object, (\code{explain()} or \code{explain_forecast()}).}
+\item{\code{calling_function}}{Name of function called to create the \code{shapr} object,
+(\code{explain()} or \code{explain_forecast()}).}
 \item{\code{approach}}{Approach used to estimate the conditional expectations.}
 \item{\code{shapley_est}}{data.table with the estimated Shapley values.}
 \item{\code{shapley_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
@@ -65,7 +66,7 @@ standard deviation for each iteration (when using the iterative estimation proce
 \code{main_computation_timing_secs} further decompose the main computation time into the different parts of the
 computation for each iteration of the iterative estimation routine, if used.}
 \item{\code{parameters}}{List with the parameters used in the computation.}
-\item{\code{x_train/x_explain}}{Data.table with the training data used in the computation/observations to explain.}
+\item{\code{x_train/x_explain}}{Data.tables with the training data used in the computation/observations to explain.}
 \item{\code{dt_vS}}{Data.table with the contribution function (\code{v(S)}) estimates for each coalition.}
 \item{\code{dt_samp_for_vS}}{Data.table with the samples used in the Monte Carlo estimation of the contribution function
 (\code{v(S)}).

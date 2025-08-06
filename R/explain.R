@@ -256,8 +256,8 @@
 #' @examples
 #' \donttest{
 #'
-# Load example data
-#' #' data("airquality")
+#' # Load example data
+#' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
 #' x_var <- c("Solar.R", "Wind", "Temp", "Month")
 #' y_var <- "Ozone"

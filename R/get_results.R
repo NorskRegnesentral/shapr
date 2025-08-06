@@ -16,7 +16,8 @@
 #' a `shapr` object.
 #' The allowed characters in `what` provides information as follows:
 #' \describe{
-#'   \item{`calling_function`}{Function called to create the `shapr` object, (`explain()` or `explain_forecast()`).}
+#'   \item{`calling_function`}{Name of function called to create the `shapr` object,
+#'   (`explain()` or `explain_forecast()`).}
 #'   \item{`approach`}{Approach used to estimate the conditional expectations.}
 #'   \item{`shapley_est`}{data.table with the estimated Shapley values.}
 #'   \item{`shapley_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
@@ -39,7 +40,7 @@
 #'   `main_computation_timing_secs` further decompose the main computation time into the different parts of the
 #'   computation for each iteration of the iterative estimation routine, if used.}
 #'   \item{`parameters`}{List with the parameters used in the computation.}
-#'   \item{`x_train/x_explain`}{Data.table with the training data used in the computation/observations to explain.}
+#'   \item{`x_train/x_explain`}{Data.tables with the training data used in the computation/observations to explain.}
 #'   \item{`dt_vS`}{Data.table with the contribution function (`v(S)`) estimates for each coalition.}
 #'   \item{`dt_samp_for_vS`}{Data.table with the samples used in the Monte Carlo estimation of the contribution function
 #'   (`v(S)`).

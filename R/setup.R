@@ -1416,14 +1416,14 @@ check_computability <- function(internal) {
 #' @keywords internal
 check_groups <- function(feature_names, group) {
   if (!is.list(group)) {
-    cli::cli_abort("{.arg group} must be a list")
+    cli::cli_abort("{.arg group} must be a list.")
   }
 
   group_features <- unlist(group)
 
   # Checking that the group_features are characters
   if (!all(is.character(group_features))) {
-    cli::cli_abort("All components of {.arg group} should be a character.")
+    cli::cli_abort("All components of {.arg group} should be of type character.")
   }
 
   # Check that all features in group are in feature labels or used by model
