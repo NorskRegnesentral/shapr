@@ -64,7 +64,7 @@ summary.shapr <- function(object, ...) {
   rlang::inform(formatted_shapley_info)
 
   # MSEv info (only when using explain())
-  if(results$calling_function=="explain"){
+  if (results$calling_function == "explain") {
     MSEv_nice <- format(results$MSEv$MSEv, digits = 4, nsmall = 2)
     MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = 4, nsmall = 2)
 
