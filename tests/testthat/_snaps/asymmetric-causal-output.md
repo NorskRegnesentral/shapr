@@ -487,7 +487,7 @@
       * Approach: gaussian
       * Procedure: Non-iterative
       * Number of group-wise Shapley values: 3
-      * Feature groups: A: "Solar.R", "Wind"; B: "Temp"; C: "Month", "Day"
+      * Feature groups: A: {"Solar.R", "Wind"}; B: {"Temp"}; C: {"Month", "Day"}
       * Number of observations to explain: 3
       * Causal ordering: {A, B}, {C}
       * Components with confounding: {A, B}, {C}
@@ -519,7 +519,7 @@
       * Approach: gaussian
       * Procedure: Non-iterative
       * Number of group-wise Shapley values: 3
-      * Feature groups: A: "Solar.R"; B: "Wind", "Temp"; C: "Month", "Day"
+      * Feature groups: A: {"Solar.R"}; B: {"Wind", "Temp"}; C: {"Month", "Day"}
       * Number of observations to explain: 3
       * Causal ordering: {A}, {B}, {C}
       * Components with confounding: {A}, {B}

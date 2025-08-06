@@ -476,7 +476,7 @@
       * Approach: gaussian
       * Procedure: Non-iterative
       * Number of group-wise Shapley values: 3
-      * Feature groups: A: "Solar.R", "Wind"; B: "Temp", "Month"; C: "Day"
+      * Feature groups: A: {"Solar.R", "Wind"}; B: {"Temp", "Month"}; C: {"Day"}
       * Number of observations to explain: 3
       
       -- Main computation started --
@@ -515,7 +515,7 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_groups()`:
-      ! All components of `group` should be a character.
+      ! All components of `group` should be of type character.
 
 ---
 
@@ -998,7 +998,7 @@
       * Approach: gaussian
       * Procedure: Non-iterative
       * Number of group-wise Shapley values: 3
-      * Feature groups: A: "Solar.R", "Wind"; B: "Temp", "Month"; C: "Day"
+      * Feature groups: A: {"Solar.R", "Wind"}; B: {"Temp", "Month"}; C: {"Day"}
       * Number of observations to explain: 3
       
       -- Main computation started --

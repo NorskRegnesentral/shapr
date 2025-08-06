@@ -287,8 +287,8 @@
       * Approach: empirical
       * Procedure: Non-iterative
       * Number of group-wise Shapley values: 2
-      * Feature groups: Temp: "Temp.1", "Temp.2"; Wind.1: "Wind.1", "Wind.2",
-      "Wind.F1"; Wind.2: "Wind.1", "Wind.2", "Wind.F1", "Wind.F2"
+      * Feature groups: Temp: {"Temp.1", "Temp.2"}; Wind.1: {"Wind.1", "Wind.2",
+      "Wind.F1"}; Wind.2: {"Wind.1", "Wind.2", "Wind.F1", "Wind.F2"}
       * Number of observations to explain: 2
       
       -- Main computation started --
@@ -321,8 +321,8 @@
       * Approach: empirical
       * Procedure: Non-iterative
       * Number of group-wise Shapley values: 2
-      * Feature groups: Group1.1: "Wind.1", "Temp.1"; Group1.2: "Wind.1", "Temp.1",
-      "Wind.F2"; Group2: "Wind.2", "Temp.2", "Wind.F1"
+      * Feature groups: Group1.1: {"Wind.1", "Temp.1"}; Group1.2: {"Wind.1",
+      "Temp.1", "Wind.F2"}; Group2: {"Wind.2", "Temp.2", "Wind.F1"}
       * Number of observations to explain: 2
       
       -- Main computation started --

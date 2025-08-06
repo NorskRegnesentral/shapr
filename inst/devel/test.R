@@ -1,8 +1,8 @@
 
+# Script used to run tests instead of using `devtools::test()` to avoid the serialization warning in snapshots
+
 library(testthat)
 library(shapr)
-
-#testthat::test_local(load_package = "none")
 
 # Run all tests in the package
 files <- list.files(
@@ -12,7 +12,7 @@ files <- list.files(
   recursive = TRUE
 )
 
-files <- files[grep("summary",files)]
+#files <- files[grep("summary",files)]
 
 #files = files[14]
 
