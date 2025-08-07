@@ -127,7 +127,10 @@
       $saving_path
       NULL
       
-      $timing
+      $timing_summary
+      NULL
+      
+      $timing_details
       NULL
       
       $parameters
@@ -536,7 +539,10 @@
       $saving_path
       NULL
       
-      $timing
+      $timing_summary
+      NULL
+      
+      $timing_details
       NULL
       
       $parameters
