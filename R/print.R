@@ -2,7 +2,7 @@
 #'
 #' @param x A shapr object
 #' @param what Character. Which component to print.
-#' Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition".
+#' Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition" & "timing_summary.
 #' Defaults to "shapley_est".
 #' Only one component can be printed at a time.
 #' See the details section of [get_results()] for details about each component.
@@ -18,7 +18,7 @@
 #' @export
 print.shapr <- function(x, what = c(
                           "shapley_est", "shapley_sd", "MSEv",
-                          "MSEv_explicand", "MSEv_coalition"
+                          "MSEv_explicand", "MSEv_coalition", "timing_summary"
                         ),
                         digits = 4, nsmall = max(0, digits - 2), ...) {
   what <- match.arg(what)

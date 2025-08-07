@@ -33,9 +33,11 @@
 #'   \item{`iterative_shapley_est/iterative_shapley_sd`}{Data.tables with the estimated Shapley values/their
 #'   standard deviation for each iteration (when using the iterative estimation procedure).}
 #'   \item{`saving_path`}{Character string with the path where the (temporary) results are saved.}
-#'   \item{`timing`}{List containing timing information for the different parts of the computation.
-#'   `init_time` and `end_time` gives the time stamps for the start and end of the computation.
-#'   `total_time_secs` gives the total time in seconds for the complete execution of `explain()`.
+#'   \item{`timing_summary`}{Data.table with one row and three columns: `init_time` and `end_time` gives the time stamps
+#'    for the start and end of the computation, while `total_time_secs` gives the total time in seconds for the
+#'    full computation.}
+#'   \item{`timing_details`}{List containing timing information for the different parts of the computation.
+#'   `summary` contains the information from `timing_summary`.
 #'   `overall_timing_secs` gives the time spent on the different parts of the explanation computation.
 #'   `main_computation_timing_secs` further decompose the main computation time into the different parts of the
 #'   computation for each iteration of the iterative estimation routine, if used.}
@@ -64,7 +66,7 @@ get_results <- function(x, what = c(
                           "MSEv", "MSEv_explicand", "MSEv_coalition",
                           "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
                           "saving_path",
-                          "timing",
+                          "timing_summary", "timing_details",
                           "parameters", "x_train", "x_explain",
                           "dt_vS", "dt_samp_for_vS",
                           "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"
@@ -78,7 +80,7 @@ get_results <- function(x, what = c(
     "MSEv", "MSEv_explicand", "MSEv_coalition",
     "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
     "saving_path",
-    "timing",
+    "timing_summary", "timing_details",
     "parameters", "x_train", "x_explain",
     "dt_vS", "dt_samp_for_vS",
     "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"
@@ -106,7 +108,8 @@ get_results <- function(x, what = c(
       iterative_shapley_est = x$iterative_results$dt_iter_shapley_est,
       iterative_shapley_sd = x$iterative_results$dt_iter_shapley_sd,
       saving_path = x$saving_path,
-      timing = x$timing,
+      timing_summary = x$timing$summary,
+      timing_details = x$timing,
       parameters = x$internal$parameters,
       x_train = x$internal$data$x_train,
       x_explain = x$internal$data$x_explain,

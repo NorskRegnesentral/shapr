@@ -289,8 +289,7 @@ Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the de
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
 }{MSEv evaluation section in the general usage vignette for details}.}
 \item{\code{timing}}{List containing timing information for the different parts of the computation.
-\code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
-\code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
+\code{summary} contains the time stamps for the start and end time in addition to the total execution time.
 \code{overall_timing_secs} gives the time spent on the different parts of the explanation computation.
 \code{main_computation_timing_secs} further decompose the main computation time into the different parts of the
 computation for each iteration of the iterative estimation routine, if used.}
