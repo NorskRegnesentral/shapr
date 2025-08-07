@@ -1024,7 +1024,7 @@ summary_ex <- summary(ex)
 
 summary_ex$shapley_est             # The estimated Shapley values
 summary_ex$shapley_sd              # The estimated standard deviations of the Shapley values
-summary_ex$timing$total_time_secs  # Total computation time in seconds
+summary_ex$timing_summary$total_time_secs  # Total computation time in seconds
 summary_ex$parameters$n_MC_samples  # Number of Monte Carlo samples used
 
 summary_ex$parameters$gaussian.mu       # Estimated mean vector (Gaussian approach)

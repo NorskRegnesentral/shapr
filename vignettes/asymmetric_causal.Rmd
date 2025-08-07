@@ -428,10 +428,11 @@ explanation_sym_con[["gaussian"]] <- explain(
   confounding = NULL # Default value
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:49:20 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:47:12 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features
+#>   = 128`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -448,7 +449,8 @@ explanation_sym_con[["gaussian"]] <- explain(
 #> 
 #> • Number of observations to explain: 144
 #> 
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435cfa17a58.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952073e85634.rds'
 #> 
 #> 
 #> 
@@ -456,25 +458,25 @@ explanation_sym_con[["gaussian"]] <- explain(
 #> 
 #> 
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 14 of 128 coalitions, 14 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 26 of 128 coalitions, 12 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 46 of 128 coalitions, 20 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 68 of 128 coalitions, 22 new.
 
@@ -491,9 +493,10 @@ explanation_sym_con[["ctree"]] <- explain(
   confounding = NULL # Default value
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:49:36 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:47:28 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features
+#>   = 128`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -501,26 +504,27 @@ explanation_sym_con[["ctree"]] <- explain(
 #> • Procedure: Iterative
 #> • Number of feature-wise Shapley values: 7
 #> • Number of observations to explain: 144
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c434a7b64.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95206009350e.rds'
 #> 
 #> ── Iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 14 of 128 coalitions, 14 new. 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 26 of 128 coalitions, 12 new. 
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 46 of 128 coalitions, 20 new. 
 #> 
-#> ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 70 of 128 coalitions, 24 new. 
 #> 
-#> ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 94 of 128 coalitions, 24 new. 
 #> 
-#> ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 110 of 128 coalitions, 16 new.
 
 explanation_sym_con[["xgboost"]] <- explain(
@@ -536,9 +540,10 @@ explanation_sym_con[["xgboost"]] <- explain(
   confounding = NULL # Default value
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:50:32 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:48:23 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features
+#>   = 128`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -546,29 +551,30 @@ explanation_sym_con[["xgboost"]] <- explain(
 #> • Procedure: Iterative
 #> • Number of feature-wise Shapley values: 7
 #> • Number of observations to explain: 144
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c4fb87c7f.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952010641963.rds'
 #> 
 #> ── Iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 14 of 128 coalitions, 14 new. 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 26 of 128 coalitions, 12 new. 
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 46 of 128 coalitions, 20 new. 
 #> 
-#> ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 70 of 128 coalitions, 24 new. 
 #> 
-#> ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 94 of 128 coalitions, 24 new. 
 #> 
-#> ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 110 of 128 coalitions, 16 new. 
 #> 
-#> ── Iteration 7 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 7 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 118 of 128 coalitions, 8 new.
 ```
 We can then look at the $\operatorname{MSE}_v$ evaluation scores to compare the approaches.
@@ -577,10 +583,7 @@ All approaches are comparable, but `xgboost` is clearly the fastest approach.
 
 ``` r
 print_MSEv_scores_and_time(explanation_sym_con)
-#>             MSEv MSEv_sd Time (secs)
-#> gaussian 1076528   75021       16.75
-#> ctree    1044396   66196       55.79
-#> xgboost  1086792   62794       12.30
+#> Error in names(x) <- value: 'names' attribute [3] must be the same length as the vector [2]
 ```
 
 We can then plot the Shapley values for the six explicands chosen above.
@@ -633,11 +636,11 @@ explanation_asym_con[["gaussian"]] <- explain(
   confounding = NULL # Default value
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:50:46 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:48:37 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and is therefore set to
-#>   20.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and
+#>   is therefore set to 20.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -658,7 +661,8 @@ explanation_asym_con[["gaussian"]] <- explain(
 #> 
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> 
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c68a357b8.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520112c1db8.rds'
 #> 
 #> 
 #> 
@@ -666,13 +670,13 @@ explanation_asym_con[["gaussian"]] <- explain(
 #> 
 #> 
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 13 of 20 coalitions, 13 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 20 of 20 coalitions, 7 new.
 
@@ -690,10 +694,10 @@ explanation_asym_con[["gaussian_non_iterative"]] <- explain(
   iterative = FALSE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:50:52 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:48:42 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and is therefore set to
-#>   20.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and
+#>   is therefore set to 20.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -703,7 +707,8 @@ explanation_asym_con[["gaussian_non_iterative"]] <- explain(
 #> • Number of observations to explain: 144
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c7cd93904.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95202f6f4967.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -722,10 +727,10 @@ explanation_asym_con[["ctree"]] <- explain(
   confounding = NULL # Default value
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:50:55 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:48:46 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and is therefore set to
-#>   20.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and
+#>   is therefore set to 20.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -735,14 +740,15 @@ explanation_asym_con[["ctree"]] <- explain(
 #> • Number of observations to explain: 144
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c39cb2fce.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95206e964471.rds'
 #> 
 #> ── Iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 13 of 20 coalitions, 13 new. 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 20 of 20 coalitions, 7 new.
 
 explanation_asym_con[["xgboost"]] <- explain(
@@ -758,10 +764,10 @@ explanation_asym_con[["xgboost"]] <- explain(
   confounding = NULL # Default value
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:51:06 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:48:56 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and is therefore set to
-#>   20.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and
+#>   is therefore set to 20.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -771,14 +777,15 @@ explanation_asym_con[["xgboost"]] <- explain(
 #> • Number of observations to explain: 144
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c5c2f57d.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520569a7928.rds'
 #> 
 #> ── Iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 13 of 20 coalitions, 13 new. 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 20 of 20 coalitions, 7 new.
 ```
 
@@ -789,11 +796,7 @@ instead of all $128$ coalitions (see code below).
 
 ``` r
 print_MSEv_scores_and_time(explanation_asym_con)
-#>                          MSEv MSEv_sd Time (secs)
-#> gaussian               306849   35460        5.03
-#> gaussian_non_iterative 306458   35412        3.61
-#> ctree                  270172   31527       10.85
-#> xgboost                304617   35310        2.42
+#> Error in names(x) <- value: 'names' attribute [3] must be the same length as the vector [2]
 
 # Look at the number of coalitions considered. Decreased from 128 to 20.
 explanation_sym_con$gaussian$internal$parameters$max_n_coalitions
@@ -932,10 +935,11 @@ explanation_sym_marg[["gaussian"]] <- explain(
   confounding = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:51:11 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:49:01 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features
+#>   = 128`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -956,7 +960,8 @@ explanation_sym_marg[["gaussian"]] <- explain(
 #> 
 #> • Components with confounding: {trend, cosyear, sinyear, temp, atemp, windspeed, hum}
 #> 
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c35d73841.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95203dcb226a.rds'
 #> 
 #> 
 #> 
@@ -964,19 +969,19 @@ explanation_sym_marg[["gaussian"]] <- explain(
 #> 
 #> 
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 14 of 128 coalitions, 14 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 26 of 128 coalitions, 12 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 46 of 128 coalitions, 20 new.
 
@@ -994,9 +999,10 @@ explanation_sym_marg[["independence_marg"]] <- explain(
   confounding = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:51:26 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:49:16 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features
+#>   = 128`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -1006,17 +1012,18 @@ explanation_sym_marg[["independence_marg"]] <- explain(
 #> • Number of observations to explain: 144
 #> • Causal ordering: {trend, cosyear, sinyear, temp, atemp, windspeed, hum}
 #> • Components with confounding: {trend, cosyear, sinyear, temp, atemp, windspeed, hum}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c4c531adf.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95203f24864.rds'
 #> 
 #> ── Iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 14 of 128 coalitions, 14 new. 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 26 of 128 coalitions, 12 new. 
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 46 of 128 coalitions, 20 new.
 
 # Here we use the conditional Shapley value framework with the `independence` approach
@@ -1030,9 +1037,10 @@ explanation_sym_marg[["independence_con"]] <- explain(
   approach = "independence"
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:51:38 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:49:27 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features
+#>   = 128`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -1040,17 +1048,18 @@ explanation_sym_marg[["independence_con"]] <- explain(
 #> • Procedure: Iterative
 #> • Number of feature-wise Shapley values: 7
 #> • Number of observations to explain: 144
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c38e6400.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952010ca43d5.rds'
 #> 
 #> ── Iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 14 of 128 coalitions, 14 new. 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 26 of 128 coalitions, 12 new. 
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 46 of 128 coalitions, 20 new.
 ```
 
@@ -1060,10 +1069,7 @@ We can look the beeswarm plots
 
 ``` r
 print_MSEv_scores_and_time(explanation_sym_marg)
-#>                      MSEv MSEv_sd Time (secs)
-#> gaussian          1376367  109262       14.89
-#> independence_marg 1377106  108898       12.30
-#> independence_con  1376651  108870       13.09
+#> Error in names(x) <- value: 'names' attribute [3] must be the same length as the vector [2]
 
 plot_beeswarms(explanation_sym_marg, title = "Symmetric marginal Shapley values")
 ```
@@ -1111,10 +1117,11 @@ explanation_sym_cau[["gaussian"]] <- explain(
   exact = TRUE
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:51:52 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:49:40 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features
+#>   = 128`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1135,7 +1142,8 @@ explanation_sym_cau[["gaussian"]] <- explain(
 #> 
 #> • Components with confounding: {cosyear, sinyear}
 #> 
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c2fe320a6.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952079f17603.rds'
 #> 
 #> 
 #> 
@@ -1163,9 +1171,10 @@ explanation_sym_cau[["copula"]] <- explain(
   confounding = c(FALSE, TRUE, FALSE)
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:52:42 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:50:20 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features
+#>   = 128`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -1175,17 +1184,18 @@ explanation_sym_cau[["copula"]] <- explain(
 #> • Number of observations to explain: 144
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c4ee921a7.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95209c1212.rds'
 #> 
 #> ── Iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 14 of 128 coalitions, 14 new. 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 26 of 128 coalitions, 12 new. 
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 46 of 128 coalitions, 20 new.
 ```
 
@@ -1193,9 +1203,7 @@ explanation_sym_cau[["copula"]] <- explain(
 
 ``` r
 print_MSEv_scores_and_time(explanation_sym_cau)
-#>             MSEv MSEv_sd Time (secs)
-#> gaussian 1112304   85462       49.33
-#> copula   1131124   87178       69.32
+#> Error in names(x) <- value: 'names' attribute [3] must be the same length as the vector [2]
 plot_beeswarms(explanation_sym_cau, title = "Symmetric causal Shapley values")
 ```
 
@@ -1226,11 +1234,11 @@ explanation_asym_cau[["gaussian"]] <- explain(
   confounding = c(FALSE, TRUE, FALSE)
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:53:53 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:50:48 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and is therefore set to
-#>   20.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and
+#>   is therefore set to 20.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1253,7 +1261,8 @@ explanation_asym_cau[["gaussian"]] <- explain(
 #> 
 #> • Components with confounding: {cosyear, sinyear}
 #> 
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435ca761031.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95201c4450f6.rds'
 #> 
 #> 
 #> 
@@ -1261,13 +1270,13 @@ explanation_asym_cau[["gaussian"]] <- explain(
 #> 
 #> 
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 13 of 20 coalitions, 13 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 20 of 20 coalitions, 7 new.
 
@@ -1285,10 +1294,10 @@ explanation_asym_cau[["copula"]] <- explain(
   confounding = c(FALSE, TRUE, FALSE)
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:54:08 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:50:53 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and is therefore set to
-#>   20.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and
+#>   is therefore set to 20.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -1299,14 +1308,15 @@ explanation_asym_cau[["copula"]] <- explain(
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c2f3c6d94.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952010c34a5c.rds'
 #> 
 #> ── Iterative computation started ──
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 13 of 20 coalitions, 13 new. 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Using 20 of 20 coalitions, 7 new.
 
 # Use the vaeac approach
@@ -1324,10 +1334,10 @@ explanation_asym_cau[["vaeac"]] <- explain(
   confounding = c(FALSE, TRUE, FALSE)
  )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 13:54:25 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:51:00 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and is therefore set to
-#>   20.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 20, and
+#>   is therefore set to 20.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
@@ -1338,7 +1348,8 @@ explanation_asym_cau[["vaeac"]] <- explain(
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c1b95642a.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95203a7e3b84.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1350,7 +1361,7 @@ See the [implementation details](#Implementation_details) for an explanation.
 ``` r
 print_time(explanation_asym_cau)
 #>      gaussian copula vaeac
-#> [1,]   14.903 17.153 476.9
+#> [1,] NULL     NULL   NULL
 ```
 We can then plot the beeswarm plots.
 
@@ -1694,7 +1705,7 @@ explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
   max_n_coalitions = 64 # Instead of 128
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 14:03:46 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:56:05 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> 
@@ -1717,7 +1728,8 @@ explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
 #> 
 #> • Components with confounding: {cosyear, sinyear}
 #> 
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c424b870.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520548f7da0.rds'
 #> 
 #> 
 #> 
@@ -1725,25 +1737,25 @@ explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
 #> 
 #> 
 #> 
-#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 14 of 128 coalitions, 14 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 26 of 128 coalitions, 12 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 46 of 128 coalitions, 20 new. 
 #> 
 #> 
 #> 
-#> ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> ℹ Using 50 of 128 coalitions, 4 new.
 
@@ -1762,7 +1774,7 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
   iterative = FALSE # Due to small number of coalitions
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 14:04:08 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:56:22 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ── Explanation overview ──
@@ -1775,7 +1787,8 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c15f782c.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95203411e0e.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1787,32 +1800,32 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
 #> Maxium number of coalitions (10) reached!
 #> 
 #> Final estimated Shapley values (sd)
-#>             none             trend            cosyear           sinyear              temp             atemp          windspeed
-#>           <char>            <char>             <char>            <char>            <char>            <char>             <char>
-#>   1: 0.00 (0.00) -2181.91 (389.03)  -825.541 (377.21) -240.377 (257.68)  -34.336 ( 63.89)    0.212 ( 55.92)   116.765 ( 70.18)
-#>   2: 0.00 (0.00) -2174.36 (384.98)  -846.615 (381.99) -187.047 (273.99)  -41.247 ( 54.60)   34.980 ( 23.07)    13.847 ( 36.81)
-#>   3: 0.00 (0.00) -2088.96 (373.84)  -793.628 (365.63) -187.854 (248.84)  -94.019 ( 50.84)  -17.900 ( 43.43)   244.641 ( 61.81)
-#>   4: 0.00 (0.00) -2103.36 (379.95)  -798.135 (377.31) -109.116 (270.58)  191.341 (105.19)   44.353 ( 61.89)  -183.831 ( 66.85)
-#>   5: 0.00 (0.00) -2003.88 (362.92)  -723.936 (346.66) -234.815 (228.12)   42.276 ( 43.88)    4.164 ( 31.93)   203.339 ( 47.27)
-#>  ---                                                                                                                          
-#> 140: 0.00 (0.00)  1575.95 (631.53) -1014.078 (569.93)  248.468 (371.16)  -41.158 (210.29)   16.011 (195.60)   361.816 (171.47)
-#> 141: 0.00 (0.00)  1588.69 (650.49) -1057.223 (573.59)   33.389 (242.37)   11.209 ( 34.71)    6.738 ( 23.45)   216.482 ( 30.02)
-#> 142: 0.00 (0.00)  1466.74 (635.17) -1109.151 (558.07)  -97.322 (243.07)  -35.612 ( 69.65)  129.072 ( 27.12)    79.352 ( 39.85)
-#> 143: 0.00 (0.00)  1003.94 (665.91) -1780.473 (623.77) -104.818 (347.18)   20.563 ( 64.24)   -4.875 ( 28.60)    47.647 ( 34.25)
-#> 144: 0.00 (0.00)   711.14 (787.04) -2635.898 (784.97) -184.269 (536.88)   47.650 (137.29)  -66.930 ( 74.15)  -469.796 ( 83.42)
-#>                     hum
-#>                  <char>
-#>   1:    13.809 ( 88.83)
-#>   2:   181.122 ( 77.88)
-#>   3:  -132.542 ( 59.19)
-#>   4:  -228.803 (108.61)
-#>   5:   -32.184 ( 55.58)
-#>  ---                   
-#> 140:   589.554 (262.98)
-#> 141:   -80.279 ( 48.53)
-#> 142:   265.536 ( 93.28)
-#> 143:  -233.045 ( 82.77)
-#> 144:   558.271 (204.47)
+#>             none             trend            cosyear           sinyear              temp             atemp
+#>           <char>            <char>             <char>            <char>            <char>            <char>
+#>   1: 0.00 (0.00) -2181.91 (389.03)  -825.541 (377.21) -240.377 (257.68)  -34.336 ( 63.89)    0.212 ( 55.92)
+#>   2: 0.00 (0.00) -2174.36 (384.98)  -846.615 (381.99) -187.047 (273.99)  -41.247 ( 54.60)   34.980 ( 23.07)
+#>   3: 0.00 (0.00) -2088.96 (373.84)  -793.628 (365.63) -187.854 (248.84)  -94.019 ( 50.84)  -17.900 ( 43.43)
+#>   4: 0.00 (0.00) -2103.36 (379.95)  -798.135 (377.31) -109.116 (270.58)  191.341 (105.19)   44.353 ( 61.89)
+#>   5: 0.00 (0.00) -2003.88 (362.92)  -723.936 (346.66) -234.815 (228.12)   42.276 ( 43.88)    4.164 ( 31.93)
+#>  ---                                                                                                       
+#> 140: 0.00 (0.00)  1575.95 (631.53) -1014.078 (569.93)  248.468 (371.16)  -41.158 (210.29)   16.011 (195.60)
+#> 141: 0.00 (0.00)  1588.69 (650.49) -1057.223 (573.59)   33.389 (242.37)   11.209 ( 34.71)    6.738 ( 23.45)
+#> 142: 0.00 (0.00)  1466.74 (635.17) -1109.151 (558.07)  -97.322 (243.07)  -35.612 ( 69.65)  129.072 ( 27.12)
+#> 143: 0.00 (0.00)  1003.94 (665.91) -1780.473 (623.77) -104.818 (347.18)   20.563 ( 64.24)   -4.875 ( 28.60)
+#> 144: 0.00 (0.00)   711.14 (787.04) -2635.898 (784.97) -184.269 (536.88)   47.650 (137.29)  -66.930 ( 74.15)
+#>               windspeed                hum
+#>                  <char>             <char>
+#>   1:   116.765 ( 70.18)    13.809 ( 88.83)
+#>   2:    13.847 ( 36.81)   181.122 ( 77.88)
+#>   3:   244.641 ( 61.81)  -132.542 ( 59.19)
+#>   4:  -183.831 ( 66.85)  -228.803 (108.61)
+#>   5:   203.339 ( 47.27)   -32.184 ( 55.58)
+#>  ---                                      
+#> 140:   361.816 (171.47)   589.554 (262.98)
+#> 141:   216.482 ( 30.02)   -80.279 ( 48.53)
+#> 142:    79.352 ( 39.85)   265.536 ( 93.28)
+#> 143:    47.647 ( 34.25)  -233.045 ( 82.77)
+#> 144:  -469.796 ( 83.42)   558.271 (204.47)
 
 # Look at the times
 explanation_n_coal[["sym_cau_gaussian_all_128"]] <- explanation_sym_cau$gaussian
@@ -1820,7 +1833,7 @@ explanation_n_coal[["asym_cau_gaussian_all_20"]] <- explanation_asym_cau$gaussia
 explanation_n_coal <- explanation_n_coal[c(1, 3, 2, 4)]
 print_time(explanation_n_coal)
 #>      sym_cau_gaussian_64 sym_cau_gaussian_all_128 asym_cau_gaussian_10 asym_cau_gaussian_all_20
-#> [1,]               21.66                   49.328               3.2467                   14.903
+#> [1,] NULL                NULL                     NULL                 NULL
 ```
 
 We can then plot the beeswarm plots and the Shapley values for the six selected explicands.
@@ -1901,10 +1914,11 @@ explanation_group_gaussian[["symmetric_marginal"]] <-
     iterative = FALSE
   )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 14:04:14 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:56:28 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 64`, and is therefore set to `2^n_groups = 64`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 64`, and is therefore set to `2^n_groups =
+#>   64`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -1919,8 +1933,8 @@ explanation_group_gaussian[["symmetric_marginal"]] <-
 #> 
 #> • Number of group-wise Shapley values: 6
 #> 
-#> • Feature groups: trend: "trend"; cosyear: "cosyear"; sinyear: "sinyear"; temp_group: "temp", "atemp"; windspeed: "windspeed";
-#> hum: "hum"
+#> • Feature groups: trend: {"trend"}; cosyear: {"cosyear"}; sinyear: {"sinyear"}; temp_group: {"temp",
+#> "atemp"}; windspeed: {"windspeed"}; hum: {"hum"}
 #> 
 #> • Number of observations to explain: 144
 #> 
@@ -1928,7 +1942,8 @@ explanation_group_gaussian[["symmetric_marginal"]] <-
 #> 
 #> • Components with confounding: {trend, cosyear, sinyear, temp_group, windspeed, hum}
 #> 
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c6626e58.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95209c2325a.rds'
 #> 
 #> 
 #> 
@@ -1954,19 +1969,21 @@ explanation_group_gaussian[["symmetric_conditional"]] <-
     iterative = FALSE
   )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 14:04:32 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:56:42 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 64`, and is therefore set to `2^n_groups = 64`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 64`, and is therefore set to `2^n_groups =
+#>   64`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Procedure: Non-iterative
 #> • Number of group-wise Shapley values: 6
-#> • Feature groups: trend: "trend"; cosyear: "cosyear"; sinyear: "sinyear"; temp_group: "temp", "atemp"; windspeed: "windspeed";
-#> hum: "hum"
+#> • Feature groups: trend: {"trend"}; cosyear: {"cosyear"}; sinyear: {"sinyear"}; temp_group: {"temp",
+#> "atemp"}; windspeed: {"windspeed"}; hum: {"hum"}
 #> • Number of observations to explain: 144
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c2cc4a26.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95202d9a74f2.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -1988,22 +2005,23 @@ explanation_group_gaussian[["asymmetric_conditional"]] <-
     iterative = FALSE
   )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 14:04:46 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:56:53 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 12, and is therefore set to
-#>   12.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 12, and
+#>   is therefore set to 12.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Procedure: Non-iterative
 #> • Number of group-wise Shapley values: 6
-#> • Feature groups: trend: "trend"; cosyear: "cosyear"; sinyear: "sinyear"; temp_group: "temp", "atemp"; windspeed: "windspeed";
-#> hum: "hum"
+#> • Feature groups: trend: {"trend"}; cosyear: {"cosyear"}; sinyear: {"sinyear"}; temp_group: {"temp",
+#> "atemp"}; windspeed: {"windspeed"}; hum: {"hum"}
 #> • Number of observations to explain: 144
 #> • Number of asymmetric coalitions: 12
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp_group, windspeed, hum}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435cf00149f.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95206b157ddb.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2025,21 +2043,23 @@ explanation_group_gaussian[["symmetric_causal"]] <-
     iterative = FALSE
   )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 14:04:48 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:56:55 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 64`, and is therefore set to `2^n_groups = 64`.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 64`, and is therefore set to `2^n_groups =
+#>   64`.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Procedure: Non-iterative
 #> • Number of group-wise Shapley values: 6
-#> • Feature groups: trend: "trend"; cosyear: "cosyear"; sinyear: "sinyear"; temp_group: "temp", "atemp"; windspeed: "windspeed";
-#> hum: "hum"
+#> • Feature groups: trend: {"trend"}; cosyear: {"cosyear"}; sinyear: {"sinyear"}; temp_group: {"temp",
+#> "atemp"}; windspeed: {"windspeed"}; hum: {"hum"}
 #> • Number of observations to explain: 144
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp_group, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c45ac3178.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952018e874d1.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2061,23 +2081,24 @@ explanation_group_gaussian[["asymmetric_causal"]] <-
     iterative = FALSE
   )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-05 14:05:12 ───────────────────────────────────────────────────────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-07 18:57:13 ───────────────────────────────────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 12, and is therefore set to
-#>   12.
+#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 12, and
+#>   is therefore set to 12.
 #> ── Explanation overview ──
 #> 
 #> • Model class: <xgb.Booster>
 #> • Approach: gaussian
 #> • Procedure: Non-iterative
 #> • Number of group-wise Shapley values: 6
-#> • Feature groups: trend: "trend"; cosyear: "cosyear"; sinyear: "sinyear"; temp_group: "temp", "atemp"; windspeed: "windspeed";
-#> hum: "hum"
+#> • Feature groups: trend: {"trend"}; cosyear: {"cosyear"}; sinyear: {"sinyear"}; temp_group: {"temp",
+#> "atemp"}; windspeed: {"windspeed"}; hum: {"hum"}
 #> • Number of observations to explain: 144
 #> • Number of asymmetric coalitions: 12
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp_group, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
-#> • Computations (temporary) saved at: 'C:\Users\jullum\AppData\Local\Temp\RtmpkhGKCo\shapr_obj_435c63295907.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952024562cb6.rds'
 #> 
 #> ── Main computation started ──
 #> 
@@ -2086,7 +2107,7 @@ explanation_group_gaussian[["asymmetric_causal"]] <-
 # Look at the elapsed times (symmetric takes the longest time)
 print_time(explanation_group_gaussian)
 #>      symmetric_marginal symmetric_conditional asymmetric_conditional symmetric_causal asymmetric_causal
-#> [1,]             17.599                 13.77                 2.6765           23.732            3.2217
+#> [1,] NULL               NULL                  NULL                   NULL             NULL
 ```
 
 We can then make the beeswarm plots and Shapley values plots for the six selected explicands.
@@ -2174,10 +2195,10 @@ S_causal_steps_freq <- S_causal_steps_freq[!sapply(S_causal_steps_freq, is.null)
 S_causal_steps_freq <- S_causal_steps_freq[sapply(S_causal_steps_freq, length) > 0] # Remove extra integer(0)
 table(sapply(S_causal_steps_freq, paste0, collapse = ","))
 #> 
-#>           1       1,2,3     1,2,3,4   1,2,3,4,5 1,2,3,4,5,6 1,2,3,4,5,7   1,2,3,4,6 1,2,3,4,6,7   1,2,3,4,7     1,2,3,5 
-#>          95           7           8           8           8           8           8           8           8           8 
-#>   1,2,3,5,6 1,2,3,5,6,7   1,2,3,5,7     1,2,3,6   1,2,3,6,7     1,2,3,7 
-#>           8           8           8           8           8           8
+#>           1       1,2,3     1,2,3,4   1,2,3,4,5 1,2,3,4,5,6 1,2,3,4,5,7   1,2,3,4,6 1,2,3,4,6,7   1,2,3,4,7 
+#>          95           7           8           8           8           8           8           8           8 
+#>     1,2,3,5   1,2,3,5,6 1,2,3,5,6,7   1,2,3,5,7     1,2,3,6   1,2,3,6,7     1,2,3,7 
+#>           8           8           8           8           8           8           8
 ```
 
 The `independence`, `empirical`, `ctree`, and `categorical` approaches produce
