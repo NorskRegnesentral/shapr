@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,6 +85,7 @@
 <span>  confounding <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  output_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  extra_computation_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">model_class</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -240,7 +241,7 @@ Specifies the verbosity (printout detail level) through one or more of strings <
 <code>"basic"</code> (default) displays basic information about the computation which is being performed,
 in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 <code>"progress</code> displays information about where in the calculation process the function currently is.
-#' <code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
+<code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
 (only when <code>iterative = TRUE</code>) .
 <code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)
 and the final estimates.
@@ -355,6 +356,11 @@ See <code><a href="get_output_args_default.html">get_output_args_default()</a></
 <dd><p>Named list.
 Specifies extra arguments related to the computation of the Shapley values.
 See <code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+
+
+<dt id="arg-model-class">model_class<a class="anchor" aria-label="anchor" href="#arg-model-class"></a></dt>
+<dd><p>Character string.
+The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by <code>class(model)[1]</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

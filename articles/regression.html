@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -308,11 +308,11 @@ last section, we include all Monte Carlo-based methods implemented in
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:45:10 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:16 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -323,13 +323,14 @@ last section, we include all Monte Carlo-based methods implemented in
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af2fae7c2d.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95202e8c45b5.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -354,11 +355,11 @@ regression model and the separate regression method class.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:45:16 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:21 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -369,13 +370,14 @@ regression model and the separate regression method class.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af398d1a86.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952036941c15.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -436,11 +438,11 @@ regression model is called principal component regression.</p>
 <span>  <span class="op">}</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:45:17 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:23 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -451,13 +453,14 @@ regression model is called principal component regression.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af1d5323a3.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95205c2f460e.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -482,11 +485,11 @@ freedom. This is similar to fitting a generalized additive model.</p>
 <span>  <span class="op">}</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:45:18 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:24 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -497,13 +500,14 @@ freedom. This is similar to fitting a generalized additive model.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af675efa27.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520573435dc.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -563,11 +567,11 @@ transformations below are reasonable.</p>
 <span>  regression.recipe_func <span class="op">=</span> <span class="va">regression.recipe_func</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:45:19 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:24 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -578,13 +582,14 @@ transformations below are reasonable.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af509b468d.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952070893ef.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -605,12 +610,8 @@ significantly outperforms the other methods.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                      MSEv Time</span></span>
-<span><span class="co">#&gt; MC_empirical       179.43 5.64</span></span>
-<span><span class="co">#&gt; sep_lm             745.21 0.74</span></span>
-<span><span class="co">#&gt; sep_pcr            784.91 0.91</span></span>
-<span><span class="co">#&gt; sep_splines        165.13 0.96</span></span>
-<span><span class="co">#&gt; sep_reicpe_example 687.45 1.29</span></span></code></pre></div>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 179.43 745.21 784.91 165.13 687.45</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="other-regression-models">Other regression models<a class="anchor" aria-label="anchor" href="#other-regression-models"></a>
@@ -646,11 +647,11 @@ model are <code>tree_depth = 30</code>, <code>min_n = 2</code>, and
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:45:21 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:26 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -661,13 +662,14 @@ model are <code>tree_depth = 30</code>, <code>min_n = 2</code>, and
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af61ff8dd7.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952034742195.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -688,19 +690,19 @@ model are <code>tree_depth = 30</code>, <code>min_n = 2</code>, and
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/decision_tree.html" class="external-link">decision_tree</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"rpart"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:45:21 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:27 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af1614b709.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95207698280c.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -720,14 +722,8 @@ obtained a worse method by using stumps, i.e., trees with depth one.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                      MSEv Time</span></span>
-<span><span class="co">#&gt; MC_empirical       179.43 5.64</span></span>
-<span><span class="co">#&gt; sep_lm             745.21 0.74</span></span>
-<span><span class="co">#&gt; sep_pcr            784.91 0.91</span></span>
-<span><span class="co">#&gt; sep_splines        165.13 0.96</span></span>
-<span><span class="co">#&gt; sep_reicpe_example 687.45 1.29</span></span>
-<span><span class="co">#&gt; sep_tree_stump     218.05 0.81</span></span>
-<span><span class="co">#&gt; sep_tree_default   177.68 0.78</span></span></code></pre></div>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 179.43 745.21 784.91 165.13 687.45 218.05 177.68</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="separate_cv">Cross-validation<a class="anchor" aria-label="anchor" href="#separate_cv"></a>
@@ -807,11 +803,11 @@ values this time.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:45:23 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:28 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -822,13 +818,14 @@ values this time.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af20f08b.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520176d27f3.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -857,19 +854,19 @@ values this time.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:45:35 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:38 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af61ef02c1.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952046a53b70.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -898,11 +895,11 @@ the coalition size.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/rand_forest.html" class="external-link">rand_forest</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"ranger"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:46:02 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:58 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -913,13 +910,14 @@ the coalition size.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af6a367b50.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95208e63cda.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -948,19 +946,19 @@ the coalition size.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:46:03 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:37:59 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af6a6a72e8.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95207c792ad8.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Additional details about the regression model </span></span>
 <span><span class="co">#&gt; Random Forest Model Specification (regression)</span></span>
@@ -1110,18 +1108,8 @@ do hyperparameter tuning, we still overfit the data.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                      MSEv  Time</span></span>
-<span><span class="co">#&gt; MC_empirical       179.43  5.64</span></span>
-<span><span class="co">#&gt; sep_lm             745.21  0.74</span></span>
-<span><span class="co">#&gt; sep_pcr            784.91  0.91</span></span>
-<span><span class="co">#&gt; sep_splines        165.13  0.96</span></span>
-<span><span class="co">#&gt; sep_reicpe_example 687.45  1.29</span></span>
-<span><span class="co">#&gt; sep_tree_stump     218.05  0.81</span></span>
-<span><span class="co">#&gt; sep_tree_default   177.68  0.78</span></span>
-<span><span class="co">#&gt; sep_tree_cv        222.71 12.93</span></span>
-<span><span class="co">#&gt; sep_tree_cv_2      219.45 26.41</span></span>
-<span><span class="co">#&gt; sep_rf             218.13  1.25</span></span>
-<span><span class="co">#&gt; sep_rf_cv          226.42 31.52</span></span></code></pre></div>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 179.43 745.21 784.91 165.13 687.45 218.05 177.68 222.71 219.45 218.13 226.42</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="separate_parallelization">Parallelization<a class="anchor" aria-label="anchor" href="#separate_parallelization"></a>
@@ -1157,11 +1145,11 @@ do this in the fourth method.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/boost_tree.html" class="external-link">boost_tree</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"xgboost"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:46:35 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:38:22 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -1172,13 +1160,14 @@ do this in the fourth method.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af525fde8.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952055e3bf0.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1202,19 +1191,19 @@ do this in the fourth method.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:46:36 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:38:23 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af17f47a70.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952072b57aa6.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1235,19 +1224,19 @@ do this in the fourth method.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:46:51 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:38:36 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af28e6fdab.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95206abe47eb.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1272,19 +1261,19 @@ do this in the fourth method.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:47:03 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:38:49 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af8d90f30.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952033aa10d5.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1307,22 +1296,8 @@ the cross-validation in parallel or sequentially.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                        MSEv  Time</span></span>
-<span><span class="co">#&gt; MC_empirical         179.43  5.64</span></span>
-<span><span class="co">#&gt; sep_lm               745.21  0.74</span></span>
-<span><span class="co">#&gt; sep_pcr              784.91  0.91</span></span>
-<span><span class="co">#&gt; sep_splines          165.13  0.96</span></span>
-<span><span class="co">#&gt; sep_reicpe_example   687.45  1.29</span></span>
-<span><span class="co">#&gt; sep_tree_stump       218.05  0.81</span></span>
-<span><span class="co">#&gt; sep_tree_default     177.68  0.78</span></span>
-<span><span class="co">#&gt; sep_tree_cv          222.71 12.93</span></span>
-<span><span class="co">#&gt; sep_tree_cv_2        219.45 26.41</span></span>
-<span><span class="co">#&gt; sep_rf               218.13  1.25</span></span>
-<span><span class="co">#&gt; sep_rf_cv            226.42 31.52</span></span>
-<span><span class="co">#&gt; sep_xgboost          197.72  0.89</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv       168.45 15.08</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv_par   168.45 10.76</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv_2_par 155.02 12.04</span></span></code></pre></div>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 179.43 745.21 784.91 165.13 687.45 218.05 177.68 222.71 219.45 218.13 226.42 197.72 168.45 168.45 155.02</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -1372,11 +1347,11 @@ models below. More specifically, we use linear regression, random forest
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:47:15 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:38:56 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -1387,13 +1362,14 @@ models below. More specifically, we use linear regression, random forest
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7023d3c.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95201a3b62ca.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1414,19 +1390,19 @@ models below. More specifically, we use linear regression, random forest
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/boost_tree.html" class="external-link">boost_tree</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"xgboost"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:47:15 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:38:57 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af3e1a8f2.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520105c2395.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1450,19 +1426,19 @@ models below. More specifically, we use linear regression, random forest
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:47:16 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:38:57 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3afda6f077.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95204111225a.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1479,19 +1455,19 @@ models below. More specifically, we use linear regression, random forest
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/rand_forest.html" class="external-link">rand_forest</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"ranger"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:47:18 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:38:59 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af4faed512.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952053b578b1.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1516,19 +1492,19 @@ models below. More specifically, we use linear regression, random forest
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:47:19 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:39:00 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af4946c543.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952074873ed6.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1570,11 +1546,11 @@ slower than running the code sequentially for smaller problems.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:47:47 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:39:18 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -1585,13 +1561,14 @@ slower than running the code sequentially for smaller problems.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af5c24fb22.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952027b6ba0.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1622,28 +1599,10 @@ parallel.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                        MSEv  Time</span></span>
-<span><span class="co">#&gt; MC_empirical         179.43  5.64</span></span>
-<span><span class="co">#&gt; sep_lm               745.21  0.74</span></span>
-<span><span class="co">#&gt; sep_pcr              784.91  0.91</span></span>
-<span><span class="co">#&gt; sep_splines          165.13  0.96</span></span>
-<span><span class="co">#&gt; sep_reicpe_example   687.45  1.29</span></span>
-<span><span class="co">#&gt; sep_tree_stump       218.05  0.81</span></span>
-<span><span class="co">#&gt; sep_tree_default     177.68  0.78</span></span>
-<span><span class="co">#&gt; sep_tree_cv          222.71 12.93</span></span>
-<span><span class="co">#&gt; sep_tree_cv_2        219.45 26.41</span></span>
-<span><span class="co">#&gt; sep_rf               218.13  1.25</span></span>
-<span><span class="co">#&gt; sep_rf_cv            226.42 31.52</span></span>
-<span><span class="co">#&gt; sep_xgboost          197.72  0.89</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv       168.45 15.08</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv_par   168.45 10.76</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv_2_par 155.02 12.04</span></span>
-<span><span class="co">#&gt; sur_lm               649.61  0.44</span></span>
-<span><span class="co">#&gt; sur_xgboost          169.92  0.47</span></span>
-<span><span class="co">#&gt; sur_xgboost_cv       169.87  2.14</span></span>
-<span><span class="co">#&gt; sur_rf               192.12  0.71</span></span>
-<span><span class="co">#&gt; sur_rf_cv            183.39 27.40</span></span>
-<span><span class="co">#&gt; sur_rf_cv_par        183.39 20.98</span></span>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 179.43 745.21 784.91 165.13 687.45 218.05 177.68 222.71 219.45 218.13 226.42 197.72 168.45 168.45 155.02</span></span>
+<span><span class="co">#&gt;     &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 649.61 169.92 169.87 192.12 183.39 183.39</span></span>
 <span></span>
 <span><span class="co"># Compare the MSEv criterion of the different explanation methods.</span></span>
 <span><span class="co"># Include vertical line corresponding to the MSEv of the empirical method.</span></span>
@@ -1791,11 +1750,11 @@ We do all four combinations below.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">ppr_reg</span><span class="op">(</span>num_terms <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:48:08 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:39:53 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -1806,13 +1765,14 @@ We do all four combinations below.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af51276785.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952053571a9b.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1835,19 +1795,19 @@ We do all four combinations below.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:48:09 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:39:53 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af405c9c54.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520383453ee.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1864,19 +1824,19 @@ We do all four combinations below.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">ppr_reg</span><span class="op">(</span>num_terms <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:48:20 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:40:01 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af580ebf4b.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952077216e8f.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1895,19 +1855,19 @@ We do all four combinations below.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:48:21 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:40:02 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af531ebf72.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952058a4efa.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1920,32 +1880,10 @@ the running time.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                        MSEv  Time</span></span>
-<span><span class="co">#&gt; MC_empirical         179.43  5.64</span></span>
-<span><span class="co">#&gt; sep_lm               745.21  0.74</span></span>
-<span><span class="co">#&gt; sep_pcr              784.91  0.91</span></span>
-<span><span class="co">#&gt; sep_splines          165.13  0.96</span></span>
-<span><span class="co">#&gt; sep_reicpe_example   687.45  1.29</span></span>
-<span><span class="co">#&gt; sep_tree_stump       218.05  0.81</span></span>
-<span><span class="co">#&gt; sep_tree_default     177.68  0.78</span></span>
-<span><span class="co">#&gt; sep_tree_cv          222.71 12.93</span></span>
-<span><span class="co">#&gt; sep_tree_cv_2        219.45 26.41</span></span>
-<span><span class="co">#&gt; sep_rf               218.13  1.25</span></span>
-<span><span class="co">#&gt; sep_rf_cv            226.42 31.52</span></span>
-<span><span class="co">#&gt; sep_xgboost          197.72  0.89</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv       168.45 15.08</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv_par   168.45 10.76</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv_2_par 155.02 12.04</span></span>
-<span><span class="co">#&gt; sur_lm               649.61  0.44</span></span>
-<span><span class="co">#&gt; sur_xgboost          169.92  0.47</span></span>
-<span><span class="co">#&gt; sur_xgboost_cv       169.87  2.14</span></span>
-<span><span class="co">#&gt; sur_rf               192.12  0.71</span></span>
-<span><span class="co">#&gt; sur_rf_cv            183.39 27.40</span></span>
-<span><span class="co">#&gt; sur_rf_cv_par        183.39 20.98</span></span>
-<span><span class="co">#&gt; sep_ppr              327.23  0.81</span></span>
-<span><span class="co">#&gt; sep_ppr_cv           246.28 10.87</span></span>
-<span><span class="co">#&gt; sur_ppr              395.42  0.42</span></span>
-<span><span class="co">#&gt; sur_ppr_cv           415.62  2.15</span></span>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 179.43 745.21 784.91 165.13 687.45 218.05 177.68 222.71 219.45 218.13 226.42 197.72 168.45 168.45 155.02</span></span>
+<span><span class="co">#&gt;     &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 649.61 169.92 169.87 192.12 183.39 183.39 327.23 246.28 395.42 415.62</span></span>
 <span></span>
 <span><span class="co"># Compare the MSEv criterion of the different explanation methods</span></span>
 <span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span></code></pre></div>
@@ -1975,11 +1913,11 @@ using the different Monte Carlo-based methods.</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:48:23 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:40:04 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -1990,13 +1928,14 @@ using the different Monte Carlo-based methods.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: independence</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7c0ae4cd.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520c4c4532.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2019,19 +1958,19 @@ using the different Monte Carlo-based methods.</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:48:24 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:40:05 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af473cdd91.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952059112c6d.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2047,19 +1986,19 @@ using the different Monte Carlo-based methods.</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:48:24 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:40:06 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: copula</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af68d84c69.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952065644190.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2075,19 +2014,19 @@ using the different Monte Carlo-based methods.</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:48:25 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:40:06 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: ctree</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af35148a29.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95207748191a.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2104,19 +2043,19 @@ using the different Monte Carlo-based methods.</p>
 <span>  vaeac.epochs <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:48:26 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:40:08 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: vaeac</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af49aa1edd.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952045a73929.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2136,37 +2075,10 @@ easier.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                        MSEv   Time</span></span>
-<span><span class="co">#&gt; MC_independence      206.92   0.64</span></span>
-<span><span class="co">#&gt; MC_empirical         179.43   5.64</span></span>
-<span><span class="co">#&gt; MC_gaussian          235.15   0.48</span></span>
-<span><span class="co">#&gt; MC_copula            237.35   0.51</span></span>
-<span><span class="co">#&gt; MC_ctree             190.82   1.50</span></span>
-<span><span class="co">#&gt; MC_vaeac             145.06 132.21</span></span>
-<span><span class="co">#&gt; sep_lm               745.21   0.74</span></span>
-<span><span class="co">#&gt; sep_pcr              784.91   0.91</span></span>
-<span><span class="co">#&gt; sep_splines          165.13   0.96</span></span>
-<span><span class="co">#&gt; sep_reicpe_example   687.45   1.29</span></span>
-<span><span class="co">#&gt; sep_tree_stump       218.05   0.81</span></span>
-<span><span class="co">#&gt; sep_tree_default     177.68   0.78</span></span>
-<span><span class="co">#&gt; sep_tree_cv          222.71  12.93</span></span>
-<span><span class="co">#&gt; sep_tree_cv_2        219.45  26.41</span></span>
-<span><span class="co">#&gt; sep_rf               218.13   1.25</span></span>
-<span><span class="co">#&gt; sep_rf_cv            226.42  31.52</span></span>
-<span><span class="co">#&gt; sep_xgboost          197.72   0.89</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv       168.45  15.08</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv_par   168.45  10.76</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv_2_par 155.02  12.04</span></span>
-<span><span class="co">#&gt; sur_lm               649.61   0.44</span></span>
-<span><span class="co">#&gt; sur_xgboost          169.92   0.47</span></span>
-<span><span class="co">#&gt; sur_xgboost_cv       169.87   2.14</span></span>
-<span><span class="co">#&gt; sur_rf               192.12   0.71</span></span>
-<span><span class="co">#&gt; sur_rf_cv            183.39  27.40</span></span>
-<span><span class="co">#&gt; sur_rf_cv_par        183.39  20.98</span></span>
-<span><span class="co">#&gt; sep_ppr              327.23   0.81</span></span>
-<span><span class="co">#&gt; sep_ppr_cv           246.28  10.87</span></span>
-<span><span class="co">#&gt; sur_ppr              395.42   0.42</span></span>
-<span><span class="co">#&gt; sur_ppr_cv           415.62   2.15</span></span>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 206.92 179.43 235.15 237.35 190.82 145.06 745.21 784.91 165.13 687.45 218.05 177.68 222.71 219.45 218.13</span></span>
+<span><span class="co">#&gt;     &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 226.42 197.72 168.45 168.45 155.02 649.61 169.92 169.87 192.12 183.39 183.39 327.23 246.28 395.42 415.62</span></span>
 <span></span>
 <span><span class="co"># Compare the MSEv criterion of the different explanation methods</span></span>
 <span><span class="co"># Include vertical line corresponding to the MSEv of the MC_empirical method</span></span>
@@ -2187,8 +2099,8 @@ methods according to the
 criterion.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">order</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list</span>, k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/MSEv-sum-2-1.png"></p>
+<span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named."): missing value where TRUE/FALSE needed</span></span></code></pre></div>
 <p>We can also examine the different Shapley value explanations for the
 first six explicands (two at a time), and we still sort the methods from
 best to worst. Most methods agree in the general directions, especially
@@ -2199,24 +2111,22 @@ methods with poor/larger
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 values.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/SV-sum-1.png"></p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/SV-sum-2.png"></p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/SV-sum-3.png"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named."): missing value where TRUE/FALSE needed</span></span>
+<span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named."): missing value where TRUE/FALSE needed</span></span>
+<span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named."): missing value where TRUE/FALSE needed</span></span></code></pre></div>
 <p>Here, we focus on the five best methods (and
 <code>MC_empricial</code>) to make it easier to analyze the individual
 Shapley value explanations, and we see a quite strong agreement between
 the different methods.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Extract the 5 best methods (and empirical)</span></span>
 <span><span class="va">best_methods</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"MC_empirical"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">best_methods</span><span class="op">)</span> <span class="va">best_methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">best_methods</span>, <span class="st">"MC_empirical"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">best_methods</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/SV-sum-2-1.png"></p>
+<span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">best_methods</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named."): missing value where TRUE/FALSE needed</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="mixed">Mixed data<a class="anchor" aria-label="anchor" href="#mixed"></a>
@@ -2236,7 +2146,7 @@ example, dummy features. We demonstrate this below using the
 <h3 id="mixed-data-setup">Mixed data: setup<a class="anchor" aria-label="anchor" href="#mixed-data-setup"></a>
 </h3>
 <p>First, we copy the setup from the general usage.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># convert the month variable to a factor</span></span>
 <span><span class="va">data_cat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">[</span>, <span class="va">Month_factor</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">Month</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
@@ -2265,7 +2175,7 @@ example, dummy features. We demonstrate this below using the
 </h3>
 <p>Second, we compute the explanations using the Monte Carlo-based
 methods.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_list_mixed</span><span class="op">$</span><span class="va">MC_independence</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model_cat</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain_cat</span>,</span>
@@ -2275,9 +2185,9 @@ methods.</p>
 <span>  approach <span class="op">=</span> <span class="st">"independence"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:50:42 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:41:48 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -2288,13 +2198,14 @@ methods.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: independence</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af705d7bbd.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520e70566d.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2313,17 +2224,18 @@ methods.</p>
 <span>  approach <span class="op">=</span> <span class="st">"ctree"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:50:43 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:41:49 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: ctree</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af3ea1861f.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95201b0e4f90.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2338,17 +2250,18 @@ methods.</p>
 <span>  approach <span class="op">=</span> <span class="st">"vaeac"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:50:45 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:41:50 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: vaeac</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7970cd56.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952062463324.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2360,7 +2273,7 @@ methods.</p>
 <p>Third, we compute the Shapley value explanations using separate
 regression methods. We use many of the same regression models as we did
 above for the continuous data examples.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Standard linear regression</span></span>
 <span><span class="va">explanation_list_mixed</span><span class="op">$</span><span class="va">sep_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model_cat</span>,</span>
@@ -2372,9 +2285,9 @@ above for the continuous data examples.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:54:25 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:44:14 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -2385,13 +2298,14 @@ above for the continuous data examples.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af1bd8d83.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95206e601efd.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2415,17 +2329,18 @@ above for the continuous data examples.</p>
 <span>  <span class="op">}</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:54:25 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:44:15 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af556cf5f6.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95208583260.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2442,17 +2357,18 @@ above for the continuous data examples.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/decision_tree.html" class="external-link">decision_tree</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"rpart"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:54:27 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:44:15 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af7193f892.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95203aed228a.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2477,17 +2393,18 @@ above for the continuous data examples.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:54:27 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:44:16 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af3b032ec7.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952068535fc8.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2504,17 +2421,18 @@ above for the continuous data examples.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/rand_forest.html" class="external-link">rand_forest</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"ranger"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:54:57 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:44:38 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af1dd42854.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952022e91139.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2538,17 +2456,18 @@ above for the continuous data examples.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:54:59 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:44:39 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af780af8a5.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952042a2f09.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2568,17 +2487,18 @@ above for the continuous data examples.</p>
 <span>  <span class="op">}</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:55:42 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:04 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af61019b14.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952046dc4b7d.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2605,17 +2525,18 @@ above for the continuous data examples.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:55:43 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:05 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af366b0794.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95206fb9958.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2627,7 +2548,7 @@ above for the continuous data examples.</p>
 <p>Fourth, we compute the Shapley value explanations using surrogate
 regression methods. We use the same regression models as we did above
 for separate regression method class.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Standard linear regression</span></span>
 <span><span class="va">explanation_list_mixed</span><span class="op">$</span><span class="va">sur_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model_cat</span>,</span>
@@ -2639,9 +2560,9 @@ for separate regression method class.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/linear_reg.html" class="external-link">linear_reg</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:03 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:38 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -2652,13 +2573,14 @@ for separate regression method class.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af3a90a7eb.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520712d687e.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2683,17 +2605,18 @@ for separate regression method class.</p>
 <span>  <span class="op">}</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:03 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:39 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af21d167e9.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95207d5b908.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2710,17 +2633,18 @@ for separate regression method class.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/decision_tree.html" class="external-link">decision_tree</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"rpart"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:04 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:39 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af4bafe4e2.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952017286984.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2745,17 +2669,18 @@ for separate regression method class.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:04 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:40 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af280b86ee.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520ba96b3f.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2772,17 +2697,18 @@ for separate regression method class.</p>
 <span>  regression.model <span class="op">=</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/rand_forest.html" class="external-link">rand_forest</a></span><span class="op">(</span>engine <span class="op">=</span> <span class="st">"ranger"</span>, mode <span class="op">=</span> <span class="st">"regression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:07 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:42 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af1e1ab6ba.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952055c2b9b.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2803,17 +2729,18 @@ for separate regression method class.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:07 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:43 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af3e63bad3.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95203d8d125a.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2833,17 +2760,18 @@ for separate regression method class.</p>
 <span>  <span class="op">}</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:21 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:51 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af655a862.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952069f53f50.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2870,17 +2798,18 @@ for separate regression method class.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:22 ──────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:45:52 ───────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af6e1755.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520502e3a73.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2895,29 +2824,13 @@ but note the wide confidence interval. We see that several of the
 regression-based methods outperform the Monte Carlo-based methods. More
 specifically, three separate regression methods and three surrogate
 regression methods.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                   MSEv   Time</span></span>
-<span><span class="co">#&gt; MC_independence 641.82   0.74</span></span>
-<span><span class="co">#&gt; MC_ctree        555.58   1.80</span></span>
-<span><span class="co">#&gt; MC_vaeac        629.56 219.14</span></span>
-<span><span class="co">#&gt; sep_lm          550.06   0.81</span></span>
-<span><span class="co">#&gt; sep_splines     541.36   1.08</span></span>
-<span><span class="co">#&gt; sep_tree        753.84   0.83</span></span>
-<span><span class="co">#&gt; sep_tree_cv     756.27  29.96</span></span>
-<span><span class="co">#&gt; sep_rf          523.61   1.30</span></span>
-<span><span class="co">#&gt; sep_rf_cv       626.30  42.94</span></span>
-<span><span class="co">#&gt; sep_xgboost     792.17   1.09</span></span>
-<span><span class="co">#&gt; sep_xgboost_cv  595.64  19.15</span></span>
-<span><span class="co">#&gt; sur_lm          610.61   0.43</span></span>
-<span><span class="co">#&gt; sur_splines     596.86   0.48</span></span>
-<span><span class="co">#&gt; sur_tree        677.04   0.43</span></span>
-<span><span class="co">#&gt; sur_tree_cv     789.37   2.59</span></span>
-<span><span class="co">#&gt; sur_rf          406.09   0.70</span></span>
-<span><span class="co">#&gt; sur_rf_cv       520.70  13.75</span></span>
-<span><span class="co">#&gt; sur_xgboost     742.54   0.52</span></span>
-<span><span class="co">#&gt; sur_xgboost_cv  541.19   2.26</span></span>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 641.82 555.58 629.56 550.06 541.36 753.84 756.27 523.61 636.46 792.17 595.64 610.61 596.86 677.04 789.37</span></span>
+<span><span class="co">#&gt;     &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 406.17 521.25 742.54 541.19</span></span>
 <span></span>
 <span><span class="co"># Compare the MSEv criterion of the different explanation methods</span></span>
 <span><span class="co"># Include vertical line corresponding to the MSEv of the empirical method.</span></span>
@@ -2931,25 +2844,25 @@ seventh-place overall ranking.</p>
 methods according to the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 criterion.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">order</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list_mixed</span>, k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, method_line <span class="op">=</span> <span class="st">"MC_ctree"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/mixed-plot-2-1.png"></p>
+<span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, method_line <span class="op">=</span> <span class="st">"MC_ctree"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named."): missing value where TRUE/FALSE needed</span></span></code></pre></div>
 <p>We also look at some of the Shapley value explanations and see that
 many methods produce similar explanations.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/mixed-plot-3-1.png"></p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named."): missing value where TRUE/FALSE needed</span></span></code></pre></div>
 <p>We can also focus on the Shapley value explanations for the best five
 methods according to the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 criterion. We also include the <code>ctree</code> method, the
 best-performing Monte Carlo-based method.</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">best_methods</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list_mixed</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"MC_ctree"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">best_methods</span><span class="op">)</span> <span class="va">best_methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">best_methods</span>, <span class="st">"MC_ctree"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">[</span><span class="va">best_methods</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/mixed-plot-4-1.png"></p>
+<span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">[</span><span class="va">best_methods</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in if (any(names(explanation_list) == "")) cli::cli_abort("All the entries in `explanation_list` must be named."): missing value where TRUE/FALSE needed</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -2966,7 +2879,7 @@ creating the R objects in Python. In the code chunk below, we see that
 we obtain identical
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 scores for the string and non-string versions.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_list_str</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">explanation_list_str</span><span class="op">$</span><span class="va">sep_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -2978,11 +2891,11 @@ scores for the string and non-string versions.</p>
 <span>  regression.model <span class="op">=</span> <span class="st">"parsnip::linear_reg()"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:26 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:46:15 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -2993,13 +2906,14 @@ scores for the string and non-string versions.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af2aa09e01.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95204f784e13.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3022,19 +2936,19 @@ scores for the string and non-string versions.</p>
 <span><span class="st">  }"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:27 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:46:16 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af75681d64.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_9520577a3552.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3053,19 +2967,19 @@ scores for the string and non-string versions.</p>
 <span><span class="st">  }"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:28 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:46:17 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3afa358cfe.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952050963794.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3085,19 +2999,19 @@ scores for the string and non-string versions.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:29 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:46:18 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af6e2b09bd.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952012a761f9.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3121,19 +3035,19 @@ scores for the string and non-string versions.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:56:43 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:46:27 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_separate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af602318d1.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_952060523688.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3158,19 +3072,19 @@ scores for the string and non-string versions.</p>
 <span>  regression.vfold_cv_para <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-04-28 10:57:14 ──────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-07 18:46:47 ───────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore</span></span>
-<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features</span></span>
+<span><span class="co">#&gt;   = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • Approach: regression_surrogate</span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 20</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplHDIbs/shapr_obj_3d3af16f4ab28.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpwByae7\shapr_obj_95203d935318.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3178,21 +3092,11 @@ scores for the string and non-string versions.</p>
 <span></span>
 <span><span class="co"># See that the evaluation scores match the non-string versions.</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list_str</span><span class="op">)</span></span>
-<span><span class="co">#&gt;               MSEv  Time</span></span>
-<span><span class="co">#&gt; sep_lm      745.21  0.74</span></span>
-<span><span class="co">#&gt; sep_pcr     784.91  0.97</span></span>
-<span><span class="co">#&gt; sep_splines 165.13  1.00</span></span>
-<span><span class="co">#&gt; sep_tree_cv 222.71 13.95</span></span>
-<span><span class="co">#&gt; sep_rf_cv   226.42 30.90</span></span>
-<span><span class="co">#&gt; sur_rf_cv   183.39 27.15</span></span>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 745.21 784.91 165.13 222.71 226.42 183.39</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">explanation_list_str</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;               MSEv  Time</span></span>
-<span><span class="co">#&gt; sep_lm      745.21  0.74</span></span>
-<span><span class="co">#&gt; sep_pcr     784.91  0.91</span></span>
-<span><span class="co">#&gt; sep_splines 165.13  0.96</span></span>
-<span><span class="co">#&gt; sep_tree_cv 222.71 12.93</span></span>
-<span><span class="co">#&gt; sep_rf_cv   226.42 31.52</span></span>
-<span><span class="co">#&gt; sur_rf_cv   183.39 27.40</span></span></code></pre></div>
+<span><span class="co">#&gt;     MSEv   Time   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 1 745.21 784.91 165.13 222.71 226.42 183.39</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>

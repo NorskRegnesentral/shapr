@@ -21,7 +21,7 @@ norskregnesentral.github.io/shapr/."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -268,7 +268,7 @@ Specifies the verbosity (printout detail level) through one or more of strings <
 <code>"basic"</code> (default) displays basic information about the computation which is being performed,
 in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 <code>"progress</code> displays information about where in the calculation process the function currently is.
-#' <code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
+<code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
 (only when <code>iterative = TRUE</code>) .
 <code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)
 and the final estimates.
@@ -455,9 +455,9 @@ features along the columns.
 The column <code>none</code> is the prediction not devoted to any of the features (given by the argument <code>phi0</code>)</p></dd>
 
 <dt><code>shapley_values_sd</code></dt>
-<dd><p>data.table with the standard deviation of the Shapley values reflecting the uncertainty.
-Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
-definition 0 when all coalitions is used.
+<dd><p>data.table with the standard deviation of the Shapley values reflecting the uncertainty
+in the coalition sampling part of the kernelSHAP procedure.
+These are therefore by definition 0 when all coalitions is used.
 Only present when <code>extra_computation_args$compute_sd=TRUE</code>, which is the default when <code>iterative = TRUE</code></p></dd>
 
 <dt><code>internal</code></dt>
@@ -468,15 +468,14 @@ Only present when <code>extra_computation_args$compute_sd=TRUE</code>, which is 
 
 <dt><code>MSEv</code></dt>
 <dd><p>List with the values of the MSEv evaluation criterion for the approach. See the
-<a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion%0A">MSEv evaluation section in the general usage for details</a>.</p></dd>
+<a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion%0A">MSEv evaluation section in the general usage vignette for details</a>.</p></dd>
 
 <dt><code>timing</code></dt>
 <dd><p>List containing timing information for the different parts of the computation.
-<code>init_time</code> and <code>end_time</code> gives the time stamps for the start and end of the computation.
-<code>total_time_secs</code> gives the total time in seconds for the complete execution of <code><a href="explain.html">explain()</a></code>.
-<code>main_timing_secs</code> gives the time in seconds for the main computations.
-<code>iter_timing_secs</code> gives for each iteration of the iterative estimation, the time spent on the different parts
-iterative estimation routine.</p></dd>
+<code>summary</code> contains the time stamps for the start and end time in addition to the total execution time.
+<code>overall_timing_secs</code> gives the time spent on the different parts of the explanation computation.
+<code>main_computation_timing_secs</code> further decompose the main computation time into the different parts of the
+computation for each iteration of the iterative estimation routine, if used.</p></dd>
 
 
 </dl></div>
@@ -563,7 +562,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2025-08-04 16:36:30</span> <span style="color: #00BBBB;">─────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2025-08-08 11:55:51</span> <span style="color: #00BBBB;">─────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature names extracted from the model contains `NA`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   Consistency checks between model and data is therefore disabled.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is</span>
@@ -573,14 +572,14 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;ar&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Iterative estimation: <span style="font-style: italic;">FALSE</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp0qhMwT/shapr_obj_73003c68491.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="font-style: italic;">Non-iterative</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpXnmh1r/shapr_obj_24772ecdb86f.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using 4 of 4 coalitions. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">4</span> of <span style="color: #0000BB;">4</span> coalitions. </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    explain_idx horizon  none  Temp.1  Temp.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;int&gt;   &lt;int&gt; &lt;num&gt;   &lt;num&gt;   &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         152       1 77.88 -0.3972 -1.3912</span>
