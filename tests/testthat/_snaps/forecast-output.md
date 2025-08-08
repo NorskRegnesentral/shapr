@@ -15,7 +15,7 @@
       
       * Model class: <ar>
       * Approach: empirical
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -49,7 +49,7 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 7
       * Number of observations to explain: 2
       
@@ -90,40 +90,37 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * Iterative estimation: TRUE
+      * Procedure: Iterative
       * Number of feature-wise Shapley values: 9
       * Number of observations to explain: 2
       
-      -- iterative computation started --
+      -- Iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 10 of 512 coalitions, 10 new. 
       
       -- Iteration 2 -----------------------------------------------------------------
-      i Using 46 of 512 coalitions, 36 new. 
+      i Using 60 of 512 coalitions, 50 new. 
       
       -- Iteration 3 -----------------------------------------------------------------
-      i Using 140 of 512 coalitions, 94 new. 
-      
-      -- Iteration 4 -----------------------------------------------------------------
-      i Using 150 of 512 coalitions, 10 new. 
+      i Using 150 of 512 coalitions, 90 new. 
     Output
          explain_idx horizon  none Temp.1  Temp.2 Temp.3 Wind.1  Wind.2   Wind.3
                <int>   <int> <num>  <num>   <num>  <num>  <num>   <num>    <num>
-      1:         149       1 77.88 -3.323 -4.2395 -1.485  1.701 -1.5930  0.30677
-      2:         150       1 77.88  3.788 -0.4755 -4.723 -2.058  0.7345 -2.44627
-      3:         149       2 77.88 -3.523 -3.2878 -1.729  1.193 -1.7220 -0.01723
-      4:         150       2 77.88  3.640 -1.0120 -5.431 -2.265  0.9635 -1.01114
-      5:         149       3 77.88 -4.582 -3.9153 -1.782  1.538 -0.5771  0.36957
-      6:         150       3 77.88  3.364 -1.5522 -5.396 -0.977  0.4458 -0.64450
+      1:         149       1 77.88 -3.331 -4.2562 -1.515  1.748 -1.6239  0.32386
+      2:         150       1 77.88  3.773 -0.4796 -4.731 -2.059  0.7812 -2.47505
+      3:         149       2 77.88 -3.220 -4.1919 -1.392  1.506 -2.4946  1.00722
+      4:         150       2 77.88  3.822 -0.9555 -5.185 -2.452  0.7095 -1.73152
+      5:         149       3 77.88 -3.788 -4.1981 -1.995  2.084 -1.1141  0.07542
+      6:         150       3 77.88  3.261 -0.5533 -5.712 -1.802  0.9030 -1.47742
          Wind.F1 Wind.F2 Wind.F3
            <num>   <num>   <num>
-      1: -1.8743      NA      NA
-      2: -0.4556      NA      NA
-      3: -1.3708 -0.4275      NA
-      4:  0.5539  1.0857      NA
-      5: -1.1117  0.4598  0.8754
-      6:  0.2497  0.2212 -0.3865
+      1: -1.8530      NA      NA
+      2: -0.4456      NA      NA
+      3: -1.9276 -0.1705      NA
+      4:  0.7845  1.5313      NA
+      5: -1.7927  0.3282  1.6758
+      6: -0.1910  0.1644  0.7316
 
 # forecast_output_arima_numeric_iterative_groups
 
@@ -142,11 +139,11 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * Iterative estimation: TRUE
+      * Procedure: Iterative
       * Number of group-wise Shapley values: 4
       * Number of observations to explain: 2
       
-      -- iterative computation started --
+      -- Iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 10 of 16 coalitions, 10 new. 
@@ -186,7 +183,7 @@
       
       * Model class: <Arima>
       * Approach: empirical
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -218,9 +215,9 @@
       
       -- Explanation overview --
       
-      * Model class: <forecast_ARIMA/ARIMA/Arima>
+      * Model class: <forecast_ARIMA>
       * Approach: empirical
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of group-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -254,7 +251,7 @@
       
       * Model class: <Arima>
       * Approach: independence
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 3
       * Number of observations to explain: 2
       
@@ -286,10 +283,12 @@
       
       -- Explanation overview --
       
-      * Model class: <forecast_ARIMA/ARIMA/Arima>
+      * Model class: <forecast_ARIMA>
       * Approach: empirical
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of group-wise Shapley values: 2
+      * Feature groups: Temp: {"Temp.1", "Temp.2"}; Wind.1: {"Wind.1", "Wind.2",
+      "Wind.F1"}; Wind.2: {"Wind.1", "Wind.2", "Wind.F1", "Wind.F2"}
       * Number of observations to explain: 2
       
       -- Main computation started --
@@ -318,10 +317,12 @@
       
       -- Explanation overview --
       
-      * Model class: <forecast_ARIMA/ARIMA/Arima>
+      * Model class: <forecast_ARIMA>
       * Approach: empirical
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of group-wise Shapley values: 2
+      * Feature groups: Group1.1: {"Wind.1", "Temp.1"}; Group1.2: {"Wind.1",
+      "Temp.1", "Wind.F2"}; Group2: {"Wind.2", "Temp.2", "Wind.F1"}
       * Number of observations to explain: 2
       
       -- Main computation started --

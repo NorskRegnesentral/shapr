@@ -46,7 +46,7 @@ check_convergence <- function(internal) {
       dt_shapley_est0[, max_sd0 := max_sd0]
       dt_shapley_est0[, req_samples := (max_sd0 / ((maxval - minval) * convergence_tol))^2]
       dt_shapley_est0[, conv_measure := max_sd0 / ((maxval - minval) * sqrt(n_sampled_coalitions))]
-      dt_shapley_est0[, req_samples := min(req_samples, 2^n_shapley_values - 2)]
+      dt_shapley_est0[, req_samples := pmin(req_samples, 2^n_shapley_values - 2)]
 
       est_required_coal_samp <- ceiling(dt_shapley_est0[, median(req_samples)])
       if (isTRUE(paired_shap_sampling)) {

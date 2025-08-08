@@ -36,6 +36,7 @@ setup(
   confounding = NULL,
   output_args = list(),
   extra_computation_args = list(),
+  model_class,
   ...
 )
 }
@@ -143,7 +144,7 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed,
 in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 \verb{"progress} displays information about where in the calculation process the function currently is.
-#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+\code{"convergence"} displays information on how close to convergence the Shapley value estimates are
 (only when \code{iterative = TRUE}) .
 \code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 and the final estimates.
@@ -236,6 +237,9 @@ See \code{\link[=get_output_args_default]{get_output_args_default()}} for descri
 \item{extra_computation_args}{Named list.
 Specifies extra arguments related to the computation of the Shapley values.
 See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
+
+\item{model_class}{Character string.
+The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by \code{class(model)[1]}.}
 
 \item{...}{Further arguments passed to specific approaches, see below.}
 }

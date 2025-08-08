@@ -4,14 +4,11 @@
 \alias{cli_startup}
 \title{Printing startup messages with cli}
 \usage{
-cli_startup(internal, model_class, verbose)
+cli_startup(internal, verbose)
 }
 \arguments{
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
-
-\item{model_class}{String.
-Class of the model as a string}
 
 \item{verbose}{String vector or NULL.
 Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
@@ -19,7 +16,7 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed,
 in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 \verb{"progress} displays information about where in the calculation process the function currently is.
-#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+\code{"convergence"} displays information on how close to convergence the Shapley value estimates are
 (only when \code{iterative = TRUE}) .
 \code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 and the final estimates.

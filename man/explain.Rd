@@ -103,7 +103,7 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed,
 in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 \verb{"progress} displays information about where in the calculation process the function currently is.
-#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+\code{"convergence"} displays information on how close to convergence the Shapley value estimates are
 (only when \code{iterative = TRUE}) .
 \code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 and the final estimates.
@@ -332,21 +332,20 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \item{\code{shapley_values_est}}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
 The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
-\item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
-Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
-definition 0 when all coalitions is used.
+\item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
+in the coalition sampling part of the kernelSHAP procedure.
+These are therefore by definition 0 when all coalitions is used.
 Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
 \item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
-}{MSEv evaluation section in the general usage for details}.}
+}{MSEv evaluation section in the general usage vignette for details}.}
 \item{\code{timing}}{List containing timing information for the different parts of the computation.
-\code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
-\code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
-\code{main_timing_secs} gives the time in seconds for the main computations.
-\code{iter_timing_secs} gives for each iteration of the iterative estimation, the time spent on the different parts
-iterative estimation routine.}
+\code{summary} contains the time stamps for the start and end time in addition to the total execution time.
+\code{overall_timing_secs} gives the time spent on the different parts of the explanation computation.
+\code{main_computation_timing_secs} further decompose the main computation time into the different parts of the
+computation for each iteration of the iterative estimation routine, if used.}
 }
 }
 \description{
@@ -434,7 +433,6 @@ if (requireNamespace("future", quietly = TRUE)) {
   future::plan("multisession", workers = 2)
 }
 
-
 # (Optionally) enable progress updates within every iteration via the progressr package
 if (requireNamespace("progressr", quietly = TRUE)) {
   progressr::handlers(global = TRUE)
@@ -493,8 +491,24 @@ explain5 <- explain(
   n_MC_samples = 1e2
 )
 
-# Print the Shapley values
-print(explain1$shapley_values_est)
+## Printing
+print(explain1) # The Shapley values
+print(explain1) # The Shapley values
+
+# The MSEv criterion (+sd). Smaller values indicates a better approach.
+print(explain1, what = "MSEv")
+print(explain2, what = "MSEv")
+print(explain3, what = "MSEv")
+
+## Summary
+summary1 <- summary(explain1)
+
+# Various additional info stored in the summary object
+# Examples
+summary1$shapley_est # A data.table with the Shapley values
+summary1$timing$total_time_secs # Total computation time in seconds
+summary1$parameters$n_MC_samples # Number of Monte Carlo samples used for the numerical integration
+summary1$parameters$empirical.type # Type of empirical approach used
 
 # Plot the results
 if (requireNamespace("ggplot2", quietly = TRUE)) {
@@ -514,7 +528,8 @@ explain_groups <- explain(
   phi0 = p,
   n_MC_samples = 1e2
 )
-print(explain_groups$shapley_values_est)
+
+print(explain_groups)
 
 # Separate and surrogate regression approaches with linear regression models.
 req_pkgs <- c("parsnip", "recipes", "workflows", "rsample", "tune", "yardstick")
@@ -540,26 +555,34 @@ if (requireNamespace(req_pkgs, quietly = TRUE)) {
 
 # Iterative estimation
 # For illustration purposes only. By default not used for such small dimensions as here
+# Restricting the initial and maximum number of coalitions as well
 
-# Gaussian approach
 explain_iterative <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
   approach = "gaussian",
   phi0 = p,
-  n_MC_samples = 1e2,
   iterative = TRUE,
-  iterative_args = list(initial_n_coalitions = 10)
+  iterative_args = list(initial_n_coalitions = 8),
+  max_n_coalitions = 12
 )
-}
-\dontshow{
-if (requireNamespace("future", quietly = TRUE)) {
-  # R CMD check: make sure any open connections are closed afterward
-  if (!inherits(future::plan(), "sequential")) future::plan("sequential")
-}
-}
 
+# When not using all coalitions, we can also get the sd of the Shapley values,
+# reflecting the uncertainty in the coalition sampling part of the procedure
+print(explain_iterative, what = "shapley_sd")
+
+## Summary
+# For iterative estimation, convergence info is also provided
+summary_iterative <- summary(explain_iterative)
+
+\dontshow{
+  if (requireNamespace("future", quietly = TRUE)) {
+    # R CMD check: make sure any open connections are closed afterward
+    if (!inherits(future::plan(), "sequential")) future::plan("sequential")
+  }
+}
+}
 }
 \references{
 \itemize{

@@ -32,7 +32,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -66,7 +66,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -100,7 +100,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -135,7 +135,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -442,7 +442,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -474,8 +474,9 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of group-wise Shapley values: 3
+      * Feature groups: A: {"Solar.R", "Wind"}; B: {"Temp", "Month"}; C: {"Day"}
       * Number of observations to explain: 3
       
       -- Main computation started --
@@ -514,7 +515,7 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_groups()`:
-      ! All components of group should be a character.
+      ! All components of `group` should be of type character.
 
 ---
 
@@ -965,7 +966,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -995,8 +996,9 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of group-wise Shapley values: 3
+      * Feature groups: A: {"Solar.R", "Wind"}; B: {"Temp", "Month"}; C: {"Day"}
       * Number of observations to explain: 3
       
       -- Main computation started --
@@ -1024,7 +1026,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -1048,7 +1050,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -1073,7 +1075,7 @@
       
       * Model class: <lm>
       * Approach: gaussian
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -1098,7 +1100,7 @@
       
       * Model class: <whatever>
       * Approach: independence
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -1127,7 +1129,7 @@
       
       * Model class: <lm>
       * Approach: independence
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -1156,11 +1158,11 @@
       
       * Model class: <lm>
       * Approach: ctree
-      * Iterative estimation: TRUE
+      * Procedure: Iterative
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
-      -- iterative computation started --
+      -- Iterative computation started --
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 6 of 32 coalitions, 6 new. 
@@ -1179,10 +1181,16 @@
       
       -- Iteration 6 -----------------------------------------------------------------
       i Using 28 of 32 coalitions, 4 new. 
+      
+      -- Iteration 7 -----------------------------------------------------------------
+      i Using 30 of 32 coalitions, 2 new. 
+      
+      -- Iteration 8 -----------------------------------------------------------------
+      i Using 32 of 32 coalitions, 2 new. 
     Output
-         explain_id  none Solar.R    Wind   Temp  Month    Day
-              <int> <num>   <num>   <num>  <num>  <num>  <num>
-      1:          1 42.44  -8.187   8.808 16.651 -1.355 -3.315
-      2:          2 42.44   5.551  -6.142 -8.670 -2.622 -1.997
-      3:          3 42.44   7.009 -21.407 -4.878  0.418  1.290
+         explain_id  none Solar.R    Wind   Temp   Month    Day
+              <int> <num>   <num>   <num>  <num>   <num>  <num>
+      1:          1 42.44  -9.154   9.483 17.111 -1.4862 -3.351
+      2:          2 42.44   5.312  -5.892 -8.356 -2.8356 -2.108
+      3:          3 42.44   6.770 -21.157 -4.564  0.2044  1.178
 
