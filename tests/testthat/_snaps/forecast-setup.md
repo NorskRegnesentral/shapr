@@ -137,7 +137,7 @@
       
       * Model class: <Arima>
       * Approach: independence
-      * Iterative estimation: FALSE
+      * Procedure: Non-iterative
       * Number of group-wise Shapley values: 2
       * Number of observations to explain: 2
       

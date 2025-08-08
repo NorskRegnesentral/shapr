@@ -6,6 +6,7 @@ linters: linters_with_defaults(
         indentation_linter = NULL,
         return_linter = NULL)
 exclusions: list(
+        "inst/devel",
         "inst/scripts",
         "inst/code_paper",
         "vignettes",

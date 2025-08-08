@@ -1,0 +1,78 @@
+#' Summary method for shapr objects
+#'
+#' @param object A shapr object.
+#' @param ... Currently unused.
+#'
+#' @return Prints a formatted summary of the shapr object,
+#' and invisibly returns a named list of summary components.
+#' See the details section of [get_results()] for details about each component.
+#'
+#' @export
+summary.shapr <- function(object, ...) {
+  stopifnot(inherits(object, "shapr"))
+
+  internal <- object$internal
+  testing <- internal$parameters$testing
+  iter <- length(internal$iter_list)
+
+  iterative <- internal$parameters$iterative
+  converged_exact <- internal$iter_list[[iter]]$converged_exact
+
+  # Retrieve all needed results
+  results <- get_results(object)
+
+  func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
+  init_time <- results$timing_summary$init_time
+  if (is.null(init_time)) init_time <- 0
+
+  cli::cli_h1("Summary of Shapley value explanation")
+  if (isFALSE(testing)) {
+    cli::cli_ul(paste0("Computed with", func_txt, " at {.val {round(init_time)}}"))
+  } else {
+    cli::cli_ul(paste0("Computed with", func_txt))
+  }
+
+  # Display basic shapr info
+  formatted_info_basic <- format_info_basic(internal)
+
+  cli::cli_ul(formatted_info_basic)
+
+  formatted_info_extra <- format_info_extra(internal)
+
+  cli::cli_ul(formatted_info_extra)
+
+  # Display convergence info
+  if (isTRUE(iterative)) {
+    formatted_convergence_info <- format_convergence_info(internal, iter)
+    cli::cli_h3("Convergence info")
+    cli::cli_alert_success(formatted_convergence_info)
+  }
+
+  # Display Shapley value res
+  formatted_shapley_info <- format_shapley_info(internal, iter)
+
+  if (converged_exact) {
+    msg <- "Estimated Shapley values"
+  } else {
+    msg <- "Estimated Shapley values (sd in parantheses)"
+  }
+
+  cli::cli_h3(msg)
+
+  # Using rlang::inform (bypassing cli-formatting) to print correctly
+  # Cannot use print as it does not obey suppressMessages()
+  rlang::inform(formatted_shapley_info)
+
+  # MSEv info (only when using explain())
+  if (results$calling_function == "explain") {
+    MSEv_nice <- format(results$MSEv$MSEv, digits = 4, nsmall = 2)
+    MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = 4, nsmall = 2)
+
+    cli::cli_h3("Estimated MSEv")
+    cli::cli_alert_info(
+      "The estimated MSE of v(S) = {MSEv_nice} (with sd = {MSEv_sd_nice})"
+    )
+  }
+
+  invisible(results)
+}

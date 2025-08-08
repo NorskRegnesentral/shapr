@@ -153,7 +153,7 @@ Specifies the verbosity (printout detail level) through one or more of strings \
 \code{"basic"} (default) displays basic information about the computation which is being performed,
 in addition to some messages about parameters being sets or checks being unavailable due to specific input.
 \verb{"progress} displays information about where in the calculation process the function currently is.
-#' \code{"convergence"} displays information on how close to convergence the Shapley value estimates are
+\code{"convergence"} displays information on how close to convergence the Shapley value estimates are
 (only when \code{iterative = TRUE}) .
 \code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
 and the final estimates.
@@ -279,21 +279,20 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \item{\code{shapley_values_est}}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
 The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
-\item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty.
-Note that this only reflects the coalition sampling part of the kernelSHAP procedure, and is therefore by
-definition 0 when all coalitions is used.
+\item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
+in the coalition sampling part of the kernelSHAP procedure.
+These are therefore by definition 0 when all coalitions is used.
 Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
 \item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
-}{MSEv evaluation section in the general usage for details}.}
+}{MSEv evaluation section in the general usage vignette for details}.}
 \item{\code{timing}}{List containing timing information for the different parts of the computation.
-\code{init_time} and \code{end_time} gives the time stamps for the start and end of the computation.
-\code{total_time_secs} gives the total time in seconds for the complete execution of \code{explain()}.
-\code{main_timing_secs} gives the time in seconds for the main computations.
-\code{iter_timing_secs} gives for each iteration of the iterative estimation, the time spent on the different parts
-iterative estimation routine.}
+\code{summary} contains the time stamps for the start and end time in addition to the total execution time.
+\code{overall_timing_secs} gives the time spent on the different parts of the explanation computation.
+\code{main_computation_timing_secs} further decompose the main computation time into the different parts of the
+computation for each iteration of the iterative estimation routine, if used.}
 }
 }
 \description{

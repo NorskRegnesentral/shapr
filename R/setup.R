@@ -60,6 +60,7 @@ setup <- function(x_train,
                   confounding = NULL,
                   output_args = list(),
                   extra_computation_args = list(),
+                  model_class,
                   ...) {
   internal <- list()
 
@@ -120,6 +121,7 @@ setup <- function(x_train,
     confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
+    model_class = model_class,
     ...
   )
 
@@ -197,6 +199,7 @@ get_parameters <- function(approach,
                            output_args = list(),
                            extra_computation_args = list(),
                            testing = FALSE,
+                           model_class = model_class,
                            ...) {
   # approach is checked comprehensively later
 
@@ -249,6 +252,11 @@ get_parameters <- function(approach,
   # type
   if (!(type %in% c("regular", "forecast"))) {
     cli::cli_abort("`type` must be either `regular` or `forecast`.")
+  }
+
+  # model_class, test if single character
+  if (!(is.character(model_class) && length(model_class) == 1)) {
+    cli::cli_abort("`model_class` must be a single character string.")
   }
 
   # parameters only used for type "forecast"
@@ -323,11 +331,16 @@ get_parameters <- function(approach,
     asymmetric = asymmetric,
     causal_ordering = causal_ordering,
     confounding = confounding,
+    model_class = model_class,
     testing = testing
   )
 
   # Additional forecast-specific arguments, only added for type="forecast"
   if (type == "forecast") {
+    # Transform to integer for nice printout later on
+    horizon <- as.integer(horizon)
+    explain_idx <- as.integer(explain_idx)
+
     output_labels <-
       cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
     colnames(output_labels) <- c("explain_idx", "horizon")
@@ -720,7 +733,7 @@ check_and_set_causal_ordering <- function(internal) {
   internal$parameters$causal_ordering <- causal_ordering
   internal$parameters$causal_ordering_names <- causal_ordering_names
   internal$parameters$causal_ordering_names_string <-
-    paste0("{", paste(sapply(causal_ordering_names, paste, collapse = ", "), collapse = "}, {"), "}")
+    paste0("{{", paste(sapply(causal_ordering_names, paste, collapse = ", "), collapse = "}}, {{"), "}}")
 
   return(internal)
 }
@@ -752,7 +765,7 @@ check_and_set_confounding <- function(internal) {
     internal$parameters$confounding_string <- "No component with confounding"
   } else {
     internal$parameters$confounding_string <-
-      paste0("{", paste(sapply(causal_ordering_names[confounding], paste, collapse = ", "), collapse = "}, {"), "}")
+      paste0("{{", paste(sapply(causal_ordering_names[confounding], paste, collapse = ", "), collapse = "}}, {{"), "}}")
   }
 
   return(internal)
@@ -1012,7 +1025,7 @@ set_output_parameters <- function(internal) {
 #' Gets the default values for the output arguments
 #'
 #' @param keep_samp_for_vS Logical.
-#' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal$output`).
+#' Indicates whether the samples used in the Monte Carlo estimation of `v(S)` should be returned (in `internal$output`).
 #' Not used for `approach="regression_separate"` or `approach="regression_surrogate"`.
 #' @param MSEv_uniform_comb_weights Logical.
 #' If `TRUE` (default), then the function weights the coalitions uniformly when computing the MSEv criterion.
@@ -1403,14 +1416,14 @@ check_computability <- function(internal) {
 #' @keywords internal
 check_groups <- function(feature_names, group) {
   if (!is.list(group)) {
-    cli::cli_abort("group must be a list")
+    cli::cli_abort("{.arg group} must be a list.")
   }
 
   group_features <- unlist(group)
 
   # Checking that the group_features are characters
   if (!all(is.character(group_features))) {
-    cli::cli_abort("All components of group should be a character.")
+    cli::cli_abort("All components of {.arg group} should be of type character.")
   }
 
   # Check that all features in group are in feature labels or used by model
