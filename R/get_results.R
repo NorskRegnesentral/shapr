@@ -33,7 +33,7 @@
 #'   \item{`iterative_shapley_est/iterative_shapley_sd`}{Data.tables with the estimated Shapley values/their
 #'   standard deviation for each iteration (when using the iterative estimation procedure).}
 #'   \item{`saving_path`}{Character string with the path where the (temporary) results are saved.}
-#'   \item{`timing_summary`}{Data.table with one row and three columns: `init_time` and `end_time` gives the time stamps
+#'   \item{`timing_summary`}{Data.table with one row and three columns: `init_time` and `end_time` give the time stamps
 #'    for the start and end of the computation, while `total_time_secs` gives the total time in seconds for the
 #'    full computation.}
 #'   \item{`timing_details`}{List containing timing information for the different parts of the computation.
