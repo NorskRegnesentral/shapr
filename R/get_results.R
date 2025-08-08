@@ -39,7 +39,7 @@
 #'   \item{`timing_details`}{List containing timing information for the different parts of the computation.
 #'   `summary` contains the information from `timing_summary`.
 #'   `overall_timing_secs` gives the time spent on the different parts of the explanation computation.
-#'   `main_computation_timing_secs` further decompose the main computation time into the different parts of the
+#'   `main_computation_timing_secs` further decomposes the main computation time into the different parts of the
 #'   computation for each iteration of the iterative estimation routine, if used.}
 #'   \item{`parameters`}{List with the parameters used in the computation.}
 #'   \item{`x_train/x_explain`}{Data.tables with the training data used in the computation/observations to explain.}
