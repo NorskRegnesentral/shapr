@@ -34,8 +34,8 @@
 #'   standard deviation for each iteration (when using the iterative estimation procedure).}
 #'   \item{`saving_path`}{Character string with the path where the (temporary) results are saved.}
 #'   \item{`timing_summary`}{Data.table with one row and three columns: `init_time` and `end_time` give the time stamps
-#'    for the start and end of the computation, respectively, while `total_time_secs` gives the total time in seconds for the
-#'    full computation.}
+#'    for the start and end of the computation, respectively, while `total_time_secs` gives the total time in seconds
+#'    for the full computation.}
 #'   \item{`timing_details`}{List containing timing information for the different parts of the computation.
 #'   `summary` contains the information from `timing_summary`.
 #'   `overall_timing_secs` gives the time spent on the different parts of the explanation computation.

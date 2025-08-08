@@ -59,13 +59,13 @@ See the
 \item{\code{iterative_shapley_est/iterative_shapley_sd}}{Data.tables with the estimated Shapley values/their
 standard deviation for each iteration (when using the iterative estimation procedure).}
 \item{\code{saving_path}}{Character string with the path where the (temporary) results are saved.}
-\item{\code{timing_summary}}{Data.table with one row and three columns: \code{init_time} and \code{end_time} gives the time stamps
-for the start and end of the computation, while \code{total_time_secs} gives the total time in seconds for the
-full computation.}
+\item{\code{timing_summary}}{Data.table with one row and three columns: \code{init_time} and \code{end_time} give the time stamps
+for the start and end of the computation, respectively, while \code{total_time_secs} gives the total time in seconds
+for the full computation.}
 \item{\code{timing_details}}{List containing timing information for the different parts of the computation.
 \code{summary} contains the information from \code{timing_summary}.
 \code{overall_timing_secs} gives the time spent on the different parts of the explanation computation.
-\code{main_computation_timing_secs} further decompose the main computation time into the different parts of the
+\code{main_computation_timing_secs} further decomposes the main computation time into the different parts of the
 computation for each iteration of the iterative estimation routine, if used.}
 \item{\code{parameters}}{List with the parameters used in the computation.}
 \item{\code{x_train/x_explain}}{Data.tables with the training data used in the computation/observations to explain.}

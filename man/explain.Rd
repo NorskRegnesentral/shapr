@@ -493,6 +493,7 @@ explain5 <- explain(
 
 ## Printing
 print(explain1) # The Shapley values
+print(explain1) # The Shapley values
 
 # The MSEv criterion (+sd). Smaller values indicates a better approach.
 print(explain1, what = "MSEv")
