@@ -1,9 +1,9 @@
 from shap import plots, Explanation
-import logging
 import matplotlib
 import re
+import warnings
 
-def plot(shaprpy_obj: dict, plot_type: str = "bar", **kwargs): 
+def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, indexing: slice | int = None, **kwargs): 
     """
     Generate a plot from a SHAPR explanation object based on the specified plot type.
 
@@ -24,36 +24,67 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", **kwargs):
     --------
     None
 
-    Logs an error if the plot type is not supported for the given SHAPR explanation.
+    Raises an error if the plot type is not supported for the given SHAPR explanation.
     """
+
     sage = bool(shaprpy_obj['internal']['parameters']['sage'])
+
+    if sage and not (plot_type in ("bar", "waterfall")): 
+        raise TypeError(
+            "ERROR in shaprpy.plot: Unknown or unsupported plot type.\n"
+            "For SAGE values the only supported plot types are 'bar' and 'waterfall'.")
+    elif plot_type not in ("bar", "beeswarm", "heatmap", "scatter", "violin", "waterfall"):
+        raise TypeError(
+            "ERROR in shaprpy.plot: Unknown or unsupported plot type.\n"
+            "See the documentation for supported types.")
+
     explanation = prep_data(shaprpy_obj, sage=sage)
 
-    logger = logging.getLogger(__name__)
+    #Fungerer ikke enda, blir stygge små ulesbare plots
+    if indexing: 
+        explanation = explanation[indexing]
+    
+    n_explain = explanation.shape[0] 
 
-    if (sage): 
-        match plot_type:
-            case "bar": 
-                ax = plots.bar(explanation, show = False, **kwargs)
-                ax.set_xlabel("SAGE values")
-                matplotlib.pyplot.show()
-            case "waterfall": 
-                plot_waterfall_sage(explanation, **kwargs)
-            case _: 
-                logger.error(
-                    "ERROR in shaprpy.plot: Unknown or unsupported plot type.\n"
-                    "For SAGE values the only supported plot types are 'bar' and 'waterfall'."
-                )
-    else:
-        supported_plots = ("bar", "beeswarm", "heatmap", "scatter", "violin", "waterfall")
+    if not plot_mean and n_explain > 10: 
+        plot_mean = True
+        warnings.warn("Too many observations to plot together; 10 or less oberservations is required to plot single observations.\n"
+          "Plotting mean.", UserWarning)
 
-        if plot_type in supported_plots:
-            ax = getattr(plots, plot_type)(explanation, **kwargs)
+    if plot_mean or n_explain==1: 
+        if (sage): 
+            match plot_type:
+                case "bar": 
+                    ax = plots.bar(explanation, show = False, **kwargs)
+                    ax.set_xlabel("SAGE values")
+                    matplotlib.pyplot.show()
+                case "waterfall": 
+                    plot_waterfall_sage(explanation, **kwargs)
+                    matplotlib.pyplot.show()
         else:
-            logger.error(
-                "ERROR in shaprpy.plot: Unknown or unsupported plot type.\n"
-                "See the documentation for supported types."
-            )
+            ax = getattr(plots, plot_type)(explanation, **kwargs)
+    else: 
+        n_rows = n_explain // 2 + n_explain % 2
+
+        matplotlib.pyplot.figure(figsize=(10, 20))
+        for i in range(n_explain): 
+            matplotlib.pyplot.subplot(n_rows, 2, i+1)
+            if (sage): 
+                match plot_type:
+                    case "bar": 
+                        ax = plots.bar(explanation[i], show = False, **kwargs)
+                        ax.set_xlabel("SAGE values")
+                    case "waterfall": 
+                        plot_waterfall_sage(explanation[i], **kwargs)
+            else:
+                ax = getattr(plots, plot_type)(explanation[i], show = False, **kwargs)
+        
+        matplotlib.pyplot.tight_layout()
+        matplotlib.pyplot.show()
+
+            
+
+
 
 def plot_waterfall_sage(explanation, **kwargs): 
     ax = plots.waterfall(explanation, show=False, **kwargs)
@@ -118,8 +149,6 @@ def plot_waterfall_sage(explanation, **kwargs):
         tick_labels[1].get_transform()
         + matplotlib.transforms.ScaledTranslation(16 / 72.0, -1 / 72.0, fig.dpi_scale_trans)
     )
-
-    matplotlib.pyplot.show()
 
 
 def prep_data(shaprpy_obj: dict, sage: bool = False): 
