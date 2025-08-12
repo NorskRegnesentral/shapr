@@ -61,14 +61,6 @@ The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by \c
 \item{output_size}{Scalar integer.
 Specifies the dimension of the output from the prediction model for every observation.}
 
-\item{digits}{Integer.
-Number of significant digits to display.
-Defaults to 2.}
-
-\item{nsmall}{Integer.
-Minimum digits to the right of the decimal point.
-Defaults to 2 less than \code{digits}.}
-
 \item{...}{Further arguments passed to \code{approach}-specific functions.}
 }
 \value{

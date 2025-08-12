@@ -39,14 +39,6 @@
 #' @param output_size Scalar integer.
 #' Specifies the dimension of the output from the prediction model for every observation.
 #'
-#' @param digits Integer.
-#' Number of significant digits to display.
-#' Defaults to 2.
-#'
-#' @param nsmall Integer.
-#' Minimum digits to the right of the decimal point.
-#' Defaults to 2 less than `digits`.
-#'
 #' @param ... Further arguments passed to `approach`-specific functions.
 #'
 #' @return The `internal` list.
@@ -82,6 +74,14 @@ default_doc_internal <- function(internal,
 #'
 #' @param index_features Positive integer vector. Specifies the id_coalition to
 #' apply to the present method. `NULL` means all coalitions. Only used internally.
+#'
+#' @param digits Integer.
+#' Number of significant digits to display.
+#' Defaults to 2.
+#'
+#' @param nsmall Integer.
+#' Minimum digits to the right of the decimal point.
+#' Defaults to 0.
 #'
 #' @keywords internal
 default_doc_export <- function(internal, iter, index_features) {

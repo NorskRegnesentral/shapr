@@ -276,24 +276,32 @@ format_convergence_info <- function(internal, iter) {
 #' @inheritParams default_doc_internal
 #' @inheritParams default_doc_export
 #' @keywords internal
-format_shapley_info <- function(internal, iter, digits = 2, nsmall = max(0, digits - 2)) {
+format_shapley_info <- function(internal, iter, digits = 2L, nsmall = 0L) {
   converged_exact <- internal$iter_list[[iter]]$converged_exact
 
+  dt_shapley_est0 <- internal$iter_list[[iter]]$dt_shapley_est
+  dt_shapley_sd0 <- internal$iter_list[[iter]]$dt_shapley_sd
+
   shap_names_with_none <- c("none", internal$parameters$shap_names)
-  dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, shap_names_with_none, with = FALSE]
-  dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, shap_names_with_none, with = FALSE]
+  other_cols <- setdiff(names(dt_shapley_est0), shap_names_with_none)
+
+  dt_shapley_est <- dt_shapley_est0[, shap_names_with_none, with = FALSE]
+  dt_shapley_sd <- dt_shapley_sd0[, shap_names_with_none, with = FALSE]
 
   # Printing the current Shapley values
-  matrix1 <- format(round(dt_shapley_est, digits = digits), nsmall = nsmall, justify = "right")
-  matrix2 <- format(round(dt_shapley_sd, digits = digits), nsmall = nsmall, justify = "right")
+  matrix1 <- format(round(dt_shapley_est, digits), digits = digits, nsmall = nsmall, justify = "right", scientific = FALSE)
+  matrix2 <- format(round(dt_shapley_sd, digits), digits = digits, nsmall = nsmall, justify = "right", scientific = FALSE)
 
   if (converged_exact) {
-    print_dt <- as.data.table(matrix1)
+    print_dt0 <- as.data.table(matrix1)
   } else {
-    print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ")", sep = ""), nrow = nrow(matrix1)))
+    print_dt0 <- as.data.table(matrix(paste(matrix1, " (", matrix2, ")", sep = ""), nrow = nrow(matrix1)))
   }
 
-  names(print_dt) <- names(dt_shapley_est)
+  print_dt <- cbind(dt_shapley_est0[, other_cols, with = FALSE],
+                    print_dt0)
+
+  names(print_dt) <- names(dt_shapley_est0)
 
   output <- capture.output(print(print_dt[]))
 

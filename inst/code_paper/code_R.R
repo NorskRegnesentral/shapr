@@ -66,7 +66,7 @@ exp_30_ctree <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  max_n_coalitions = 30,
+  max_n_coalitions = 40,
   approach = "ctree",
   phi0 = mean(y_train),
   verbose = NULL,
@@ -78,7 +78,7 @@ exp_30_ctree <- explain(
 print(exp_30_indep, what = "MSEv")
 print(exp_30_ctree, what = "MSEv")
 
-print(exp_30_ctree, nsmall = 0)
+print(exp_30_ctree)
 
 summary(exp_30_ctree)
 
@@ -275,8 +275,8 @@ exp_fc_arimax <- explain_forecast(
   seed = 1
 )
 
-# Summary of Shapley value computation
-summary(exp_fc_arimax)
+# Print the Shapley values
+print(exp_fc_arimax)
 
 #### Wrapping up ####
 

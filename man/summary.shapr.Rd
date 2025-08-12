@@ -4,10 +4,18 @@
 \alias{summary.shapr}
 \title{Summary method for shapr objects}
 \usage{
-\method{summary}{shapr}(object, digits = 2, nsmall = max(0, digits - 2), ...)
+\method{summary}{shapr}(object, digits = 2L, nsmall = 0L, ...)
 }
 \arguments{
 \item{object}{A shapr object.}
+
+\item{digits}{Integer.
+Number of significant digits to display.
+Defaults to 2.}
+
+\item{nsmall}{Integer.
+Minimum digits to the right of the decimal point.
+Defaults to 0.}
 
 \item{...}{Currently unused.}
 }

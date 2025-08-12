@@ -9,7 +9,7 @@
 #' See the details section of [get_results()] for details about each component.
 #'
 #' @export
-summary.shapr <- function(object, digits = 2, nsmall = max(0, digits - 2), ...) {
+summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
   stopifnot(inherits(object, "shapr"))
 
   internal <- object$internal
