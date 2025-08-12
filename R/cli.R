@@ -276,7 +276,7 @@ format_convergence_info <- function(internal, iter) {
 #' @inheritParams default_doc_internal
 #' @inheritParams default_doc_export
 #' @keywords internal
-format_shapley_info <- function(internal, iter) {
+format_shapley_info <- function(internal, iter, digits = 2, nsmall = max(0, digits - 2)) {
   converged_exact <- internal$iter_list[[iter]]$converged_exact
 
   shap_names_with_none <- c("none", internal$parameters$shap_names)
@@ -284,8 +284,8 @@ format_shapley_info <- function(internal, iter) {
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, shap_names_with_none, with = FALSE]
 
   # Printing the current Shapley values
-  matrix1 <- format(round(dt_shapley_est, 3), nsmall = 2, justify = "right")
-  matrix2 <- format(round(dt_shapley_sd, 2), nsmall = 2, justify = "right")
+  matrix1 <- format(round(dt_shapley_est, digits = digits), nsmall = nsmall, justify = "right")
+  matrix2 <- format(round(dt_shapley_sd, digits = digits), nsmall = nsmall, justify = "right")
 
   if (converged_exact) {
     print_dt <- as.data.table(matrix1)
@@ -295,7 +295,7 @@ format_shapley_info <- function(internal, iter) {
 
   names(print_dt) <- names(dt_shapley_est)
 
-  output <- capture.output(print(print_dt))
+  output <- capture.output(print(print_dt[]))
 
   ret <- paste(output, collapse = "\n")
 

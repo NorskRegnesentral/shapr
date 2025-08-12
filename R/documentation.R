@@ -39,6 +39,14 @@
 #' @param output_size Scalar integer.
 #' Specifies the dimension of the output from the prediction model for every observation.
 #'
+#' @param digits Integer.
+#' Number of significant digits to display.
+#' Defaults to 2.
+#'
+#' @param nsmall Integer.
+#' Minimum digits to the right of the decimal point.
+#' Defaults to 2 less than `digits`.
+#'
 #' @param ... Further arguments passed to `approach`-specific functions.
 #'
 #' @return The `internal` list.
@@ -55,8 +63,10 @@ default_doc_internal <- function(internal,
                                  W_kernel,
                                  S,
                                  dt_vS,
-                                 output_size,
                                  model_class,
+                                 output_size,
+                                 digits,
+                                 nsmall,
                                  ...) {
   NULL
 }

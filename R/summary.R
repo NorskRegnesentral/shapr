@@ -2,13 +2,14 @@
 #'
 #' @param object A shapr object.
 #' @param ... Currently unused.
+#' @inheritParams default_doc_export
 #'
 #' @return Prints a formatted summary of the shapr object,
 #' and invisibly returns a named list of summary components.
 #' See the details section of [get_results()] for details about each component.
 #'
 #' @export
-summary.shapr <- function(object, ...) {
+summary.shapr <- function(object, digits = 2, nsmall = max(0, digits - 2), ...) {
   stopifnot(inherits(object, "shapr"))
 
   internal <- object$internal
@@ -49,7 +50,7 @@ summary.shapr <- function(object, ...) {
   }
 
   # Display Shapley value res
-  formatted_shapley_info <- format_shapley_info(internal, iter)
+  formatted_shapley_info <- format_shapley_info(internal, iter, digits = digits, nsmall = nsmall)
 
   if (converged_exact) {
     msg <- "Estimated Shapley values"
@@ -65,8 +66,8 @@ summary.shapr <- function(object, ...) {
 
   # MSEv info (only when using explain())
   if (results$calling_function == "explain") {
-    MSEv_nice <- format(results$MSEv$MSEv, digits = 4, nsmall = 2)
-    MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = 4, nsmall = 2)
+    MSEv_nice <- format(results$MSEv$MSEv, digits = digits, nsmall = nsmall)
+    MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = digits, nsmall = nsmall)
 
     cli::cli_h3("Estimated MSEv")
     cli::cli_alert_info(

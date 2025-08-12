@@ -4,7 +4,7 @@
 \alias{summary.shapr}
 \title{Summary method for shapr objects}
 \usage{
-\method{summary}{shapr}(object, ...)
+\method{summary}{shapr}(object, digits = 2, nsmall = max(0, digits - 2), ...)
 }
 \arguments{
 \item{object}{A shapr object.}

@@ -173,8 +173,10 @@ explanation <- explain(
 )
 
 # Printing the Shapley values for the data to explain.
-# For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values_est)
+print(explanation)
+
+# Provide a formatted summary of the shapr object 
+summary(explanation)
 
 # Finally we plot the resulting explanations
 plot(explanation)
