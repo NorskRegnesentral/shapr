@@ -16,14 +16,14 @@
       * Total number of coalitions used: 32 (of 32)
       
       -- Estimated Shapley values 
-           none Solar.R    Wind   Temp    Day Month_factor
-         <char>  <char>  <char> <char> <char>       <char>
-      1: 42.444  -4.730   7.750 17.753 -2.601       -7.588
-      2: 42.444   2.338  -3.147 -5.310 -1.676       -7.588
-      3: 42.444   3.857 -17.469 -1.466  1.099        3.379
+         explain_id   none Solar.R   Wind   Temp    Day Month_factor
+              <int> <char>  <char> <char> <char> <char>       <char>
+      1:          1     42    -4.7    7.8   17.8   -2.6         -7.6
+      2:          2     42     2.3   -3.1   -5.3   -1.7         -7.6
+      3:          3     42     3.9  -17.5   -1.5    1.1          3.4
       
       -- Estimated MSEv 
-      i The estimated MSE of v(S) = 115.31 (with sd = 20.08)
+      i The estimated MSE of v(S) = 115 (with sd = 20)
     Output
       $calling_function
       [1] "explain"
@@ -452,14 +452,14 @@
       * Total number of coalitions used: 4 (of 4)
       
       -- Estimated Shapley values 
-           none Temp.1 Temp.2
-         <char> <char> <char>
-      1: 77.882 -0.397 -1.391
-      2: 77.882 -6.618 -0.184
-      3: 77.882 -0.329 -1.203
-      4: 77.882 -6.021 -0.337
-      5: 77.882 -0.291 -1.055
-      6: 77.882 -5.212 -0.255
+         explain_idx horizon   none Temp.1 Temp.2
+               <int>   <int> <char> <char> <char>
+      1:         152       1     78  -0.40  -1.39
+      2:         153       1     78  -6.62  -0.18
+      3:         152       2     78  -0.33  -1.20
+      4:         153       2     78  -6.02  -0.34
+      5:         152       3     78  -0.29  -1.06
+      6:         153       3     78  -5.21  -0.26
     Output
       $calling_function
       [1] "explain_forecast"

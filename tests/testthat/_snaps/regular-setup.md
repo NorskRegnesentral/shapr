@@ -40,11 +40,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp    Day Month_factor
-              <int> <num>   <num>   <num>  <num>  <num>        <num>
-      1:          1 42.44  -4.730   7.750 17.753 -2.601       -7.588
-      2:          2 42.44   2.338  -3.147 -5.310 -1.676       -7.588
-      3:          3 42.44   3.857 -17.469 -1.466  1.099        3.379
+         explain_id  none Solar.R   Wind  Temp   Day Month_factor
+              <int> <num>   <num>  <num> <num> <num>        <num>
+      1:          1  42.4   -4.73   7.75 17.75 -2.60        -7.59
+      2:          2  42.4    2.34  -3.15 -5.31 -1.68        -7.59
+      3:          3  42.4    3.86 -17.47 -1.47  1.10         3.38
 
 ---
 
@@ -74,11 +74,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp    Day Month_factor
-              <int> <num>   <num>   <num>  <num>  <num>        <num>
-      1:          1 42.44  -4.730   7.750 17.753 -2.601       -7.588
-      2:          2 42.44   2.338  -3.147 -5.310 -1.676       -7.588
-      3:          3 42.44   3.857 -17.469 -1.466  1.099        3.379
+         explain_id  none Solar.R   Wind  Temp   Day Month_factor
+              <int> <num>   <num>  <num> <num> <num>        <num>
+      1:          1  42.4   -4.73   7.75 17.75 -2.60        -7.59
+      2:          2  42.4    2.34  -3.15 -5.31 -1.68        -7.59
+      3:          3  42.4    3.86 -17.47 -1.47  1.10         3.38
 
 ---
 
@@ -108,11 +108,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp    Day Month_factor
-              <int> <num>   <num>   <num>  <num>  <num>        <num>
-      1:          1 42.44  -4.730   7.750 17.753 -2.601       -7.588
-      2:          2 42.44   2.338  -3.147 -5.310 -1.676       -7.588
-      3:          3 42.44   3.857 -17.469 -1.466  1.099        3.379
+         explain_id  none Solar.R   Wind  Temp   Day Month_factor
+              <int> <num>   <num>  <num> <num> <num>        <num>
+      1:          1  42.4   -4.73   7.75 17.75 -2.60        -7.59
+      2:          2  42.4    2.34  -3.15 -5.31 -1.68        -7.59
+      3:          3  42.4    3.86 -17.47 -1.47  1.10         3.38
 
 ---
 
@@ -143,11 +143,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp    Day Month_factor
-              <int> <num>   <num>   <num>  <num>  <num>        <num>
-      1:          1 42.44  -4.730   7.750 17.753 -2.601       -7.588
-      2:          2 42.44   2.338  -3.147 -5.310 -1.676       -7.588
-      3:          3 42.44   3.857 -17.469 -1.466  1.099        3.379
+         explain_id  none Solar.R   Wind  Temp   Day Month_factor
+              <int> <num>   <num>  <num> <num> <num>        <num>
+      1:          1  42.4   -4.73   7.75 17.75 -2.60        -7.59
+      2:          2  42.4    2.34  -3.15 -5.31 -1.68        -7.59
+      3:          3  42.4    3.86 -17.47 -1.47  1.10         3.38
 
 # erroneous input: `x_train/x_explain`
 
@@ -450,11 +450,11 @@
       
       i Using 6 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind     Temp   Month     Day
-              <int> <num>   <num>   <num>    <num>   <num>   <num>
-      1:          1 42.44 -0.4778 -0.4778  15.3062 -0.4778 -1.2708
-      2:          2 42.44 -0.7900 -0.7900 -10.7058 -0.7900 -0.8036
-      3:          3 42.44 -6.2514 -6.2514   0.2771 -6.2514  0.9088
+         explain_id  none Solar.R   Wind    Temp  Month    Day
+              <int> <num>   <num>  <num>   <num>  <num>  <num>
+      1:          1  42.4  -0.478 -0.478  15.306 -0.478 -1.271
+      2:          2  42.4  -0.790 -0.790 -10.706 -0.790 -0.804
+      3:          3  42.4  -6.251 -6.251   0.277 -6.251  0.909
 
 ---
 
@@ -483,11 +483,11 @@
       
       i Using 8 of 8 coalitions. 
     Output
-         explain_id  none        A        B       C
-              <int> <num>    <num>    <num>   <num>
-      1:          1 42.44   0.2636  13.7991 -1.4606
-      2:          2 42.44   0.1788 -13.1512 -0.9071
-      3:          3 42.44 -18.4998  -0.1635  1.0951
+         explain_id  none       A       B      C
+              <int> <num>   <num>   <num>  <num>
+      1:          1  42.4   0.264  13.799 -1.461
+      2:          2  42.4   0.179 -13.151 -0.907
+      3:          3  42.4 -18.500  -0.164  1.095
 
 # erroneous input: `group`
 
@@ -974,11 +974,11 @@
       
       i Using 6 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind   Temp   Month     Day
-              <int> <num>   <num>   <num>  <num>   <num>   <num>
-      1:          1 42.44  1.6821  1.6821  5.891  1.6821   1.665
-      2:          2 42.44 -1.1944 -1.1944 -8.918 -1.1944  -1.378
-      3:          3 42.44 -0.2038 -0.2038 -6.450 -0.2038 -10.507
+         explain_id  none Solar.R   Wind  Temp  Month    Day
+              <int> <num>   <num>  <num> <num>  <num>  <num>
+      1:          1  42.4   1.682  1.682  5.89  1.682   1.66
+      2:          2  42.4  -1.194 -1.194 -8.92 -1.194  -1.38
+      3:          3  42.4  -0.204 -0.204 -6.45 -0.204 -10.51
 
 ---
 
@@ -1005,11 +1005,11 @@
       
       i Using 8 of 8 coalitions. 
     Output
-         explain_id  none      A      B       C
-              <int> <num>  <num>  <num>   <num>
-      1:          1 42.44  5.589  5.591  1.4213
-      2:          2 42.44 -6.637 -6.636 -0.6071
-      3:          3 42.44 -5.439 -5.436 -6.6932
+         explain_id  none     A     B      C
+              <int> <num> <num> <num>  <num>
+      1:          1  42.4  5.59  5.59  1.421
+      2:          2  42.4 -6.64 -6.64 -0.607
+      3:          3  42.4 -5.44 -5.44 -6.693
 
 # Shapr with `max_n_coalitions` >= 2^m uses exact Shapley kernel weights
 
