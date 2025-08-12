@@ -17,3 +17,12 @@ def _check_r_env():
         ) from e
 
 # Call on first use (recommended) rather than at import if import speed matters.
+
+_check_r_env()
+
+from .explain import explain
+from . import datasets
+
+__all__ = ["explain", "datasets"]
+
+__version__ = "0.2.0"
