@@ -4,7 +4,7 @@
 \alias{default_doc_export}
 \title{Exported documentation helper function.}
 \usage{
-default_doc_export(internal, iter, index_features)
+default_doc_export(internal, iter, index_features, digits, nsmall)
 }
 \arguments{
 \item{internal}{List.

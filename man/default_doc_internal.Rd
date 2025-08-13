@@ -16,8 +16,6 @@ default_doc_internal(
   dt_vS,
   model_class,
   output_size,
-  digits,
-  nsmall,
   ...
 )
 }

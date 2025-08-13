@@ -43,13 +43,11 @@ summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
   len_format0 <- length(formatted_info_basic0)
 
   # Append extra info second last (keep the temp path last)
-  formatted_info_basic <- c(
-    formatted_info_basic0[-len_format0],
-    formatted_info_extra,
-    formatted_info_basic[len_format0]
-  )
+  formatted_info_basic <- c(formatted_info_basic0[-len_format0],
+                            formatted_info_extra,
+                            formatted_info_basic0[len_format0])
 
-  cli::cli_ul(formatted_info_basic) # Display updated basic info
+  cli::cli_ul(formatted_info_basic)   # Display updated basic info
 
 
   # Display convergence info

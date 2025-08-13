@@ -9,11 +9,13 @@
       -- Summary of Shapley value explanation ----------------------------------------
       * Computed with`shapr::explain()`
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
+      * Number of coalitions used: 32 (of total 32)
       * Number of observations to explain: 3
-      * Total number of coalitions used: 32 (of 32)
       
       -- Estimated Shapley values 
          explain_id   none Solar.R   Wind   Temp    Day Month_factor
@@ -23,7 +25,7 @@
       3:          3     42     3.9  -17.5   -1.5    1.1          3.4
       
       -- Estimated MSEv 
-      i The estimated MSE of v(S) = 115 (with sd = 20)
+      Estimated MSE of v(S) = 115 (with sd = 20)
     Output
       $calling_function
       [1] "explain"
@@ -445,11 +447,13 @@
       -- Summary of Shapley value explanation ----------------------------------------
       * Computed with`shapr::explain_forecast()`
       * Model class: <ar>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 2
+      * Number of coalitions used: 4 (of total 4)
       * Number of observations to explain: 2
-      * Total number of coalitions used: 4 (of 4)
       
       -- Estimated Shapley values 
          explain_idx horizon   none Temp.1 Temp.2

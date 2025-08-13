@@ -57,8 +57,6 @@ default_doc_internal <- function(internal,
                                  dt_vS,
                                  model_class,
                                  output_size,
-                                 digits,
-                                 nsmall,
                                  ...) {
   NULL
 }
@@ -84,6 +82,10 @@ default_doc_internal <- function(internal,
 #' Defaults to 0.
 #'
 #' @keywords internal
-default_doc_export <- function(internal, iter, index_features) {
+default_doc_export <- function(internal,
+                               iter,
+                               index_features,
+                               digits,
+                               nsmall) {
   NULL
 }

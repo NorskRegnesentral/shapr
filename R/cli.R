@@ -380,7 +380,7 @@ print_iter <- function(internal) {
 #' To be used in cli calls like `cli_text({.val {num_str("12.10")}})` to format a character strings
 #' that typically represent a number like it was a number. May also be used with strings not representing a number.
 #'
-#' @param Character. A character that represents a number, or a vector of characters.
+#' @param x Character. A single character that represents a number, or a vector of characters.
 #'
 #' @return A numeric class object with the value of the string.
 #'
