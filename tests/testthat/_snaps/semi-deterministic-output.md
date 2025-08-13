@@ -12,8 +12,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -127,8 +129,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of group-wise Shapley values: 3
       * Feature groups: A: {"Solar.R", "Wind"}; B: {"Temp", "Month"}; C: {"Day"}
       * Number of observations to explain: 3
@@ -185,8 +189,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: timeseries
       * Procedure: Iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of group-wise Shapley values: 4
       * Feature groups: S1: {"X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9",
       "X10"}; S2: {"X11", "X12", "X13", "X14", "X15", "X16", "X17", "X18", "X19",

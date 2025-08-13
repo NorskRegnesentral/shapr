@@ -136,8 +136,10 @@
       -- Explanation overview --
       
       * Model class: <Arima>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of group-wise Shapley values: 2
       * Number of observations to explain: 2
       

@@ -91,7 +91,7 @@ format_info_basic <- function(internal) {
   line_vec <- c(line_vec, "Approach: {.val {num_str(approach)}}")
   line_vec <- c(line_vec, "Procedure: {.val {num_str(iterative_txt)}}")
 
-  if (isTRUE(regression)) {
+  if (isFALSE(regression)) {
     line_vec <- c(line_vec, "Number of Monte Carlo integration samples: {.val {n_MC_samples}}")
   }
 
@@ -380,12 +380,11 @@ print_iter <- function(internal) {
 #' To be used in cli calls like `cli_text({.val {num_str("12.10")}})` to format a character strings
 #' that typically represent a number like it was a number. May also be used with strings not representing a number.
 #'
-#' @param String. A single character string that represents a number.
+#' @param Character. A character that represents a number, or a vector of characters.
 #'
 #' @return A numeric class object with the value of the string.
 #'
 #' @keywords internal
 num_str <- function(x) {
-  stopifnot(is.character(x), length(x) == 1)
   structure(x, class = "numeric")
 }

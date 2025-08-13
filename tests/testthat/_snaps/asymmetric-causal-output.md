@@ -12,8 +12,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -43,6 +45,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -74,6 +77,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Iterative
       * Number of feature-wise Shapley values: 5
@@ -109,8 +113,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -138,8 +144,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind, Temp, Month, Day}
@@ -169,8 +177,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind, Temp, Month, Day}
@@ -200,8 +210,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -232,8 +244,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -264,8 +278,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -295,8 +311,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -327,8 +345,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -359,8 +379,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -391,8 +413,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
@@ -422,8 +446,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
@@ -453,8 +479,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
@@ -484,8 +512,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of group-wise Shapley values: 3
       * Feature groups: A: {"Solar.R", "Wind"}; B: {"Temp"}; C: {"Month", "Day"}
       * Number of observations to explain: 3
@@ -516,8 +546,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of group-wise Shapley values: 3
       * Feature groups: A: {"Solar.R"}; B: {"Wind", "Temp"}; C: {"Month", "Day"}
       * Number of observations to explain: 3
@@ -579,8 +611,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Day, Month_factor}
@@ -610,8 +644,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R, Wind}, {Temp}, {Day, Month_factor}
@@ -663,8 +699,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -695,8 +733,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       * Number of asymmetric coalitions: 8
@@ -727,6 +767,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Iterative
       * Number of feature-wise Shapley values: 5
@@ -762,8 +803,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: categorical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 2
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},
@@ -793,8 +836,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: categorical
       * Procedure: Iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},
@@ -841,8 +886,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       * Causal ordering: {Solar.R_factor, Wind_factor}, {Ozone_sub30_factor},

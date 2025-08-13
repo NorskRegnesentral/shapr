@@ -7,7 +7,7 @@
 num_str(x)
 }
 \arguments{
-\item{String.}{A single character string that represents a number.}
+\item{Character.}{A character that represents a number, or a vector of characters.}
 }
 \value{
 A numeric class object with the value of the string.

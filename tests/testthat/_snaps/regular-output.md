@@ -12,8 +12,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -41,8 +43,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -70,8 +74,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -98,8 +104,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -126,8 +134,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -160,8 +170,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -198,8 +210,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -226,8 +240,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -255,8 +271,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -284,8 +302,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: copula
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -313,8 +333,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -342,8 +364,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: vaeac
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 10
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -371,8 +395,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -400,8 +426,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: vaeac
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 10
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -429,8 +457,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: categorical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -458,8 +488,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 4
       * Number of observations to explain: 3
       
@@ -487,8 +519,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: timeseries
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of group-wise Shapley values: 4
       * Feature groups: S1: {"X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9",
       "X10"}; S2: {"X11", "X12", "X13", "X14", "X15", "X16", "X17", "X18", "X19",
@@ -520,8 +554,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: gaussian, empirical, ctree, and independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -549,8 +585,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree, copula, independence, and copula
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -578,8 +616,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence, empirical, gaussian, and empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -607,8 +647,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -636,8 +678,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -665,8 +709,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: vaeac
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 10
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -694,8 +740,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree, independence, ctree, and independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -723,8 +771,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -754,8 +804,10 @@
       -- Explanation overview --
       
       * Model class: <xgb.Booster>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -783,8 +835,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 3
       
@@ -812,8 +866,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
@@ -841,8 +897,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       
