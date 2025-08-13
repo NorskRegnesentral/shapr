@@ -37,13 +37,18 @@ summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
   }
 
   # Display basic shapr info
-  formatted_info_basic <- format_info_basic(internal)
-
-  cli::cli_ul(formatted_info_basic)
-
+  formatted_info_basic0 <- format_info_basic(internal)
   formatted_info_extra <- format_info_extra(internal)
 
-  cli::cli_ul(formatted_info_extra)
+  len_format0 <- length(formatted_info_basic0)
+
+  # Append extra info second last (keep the temp path last)
+  formatted_info_basic <- c(formatted_info_basic0[-len_format0],
+                            formatted_info_extra,
+                            formatted_info_basic[len_format0])
+
+  cli::cli_ul(formatted_info_basic)   # Display updated basic info
+
 
   # Display convergence info
   if (isTRUE(iterative)) {
@@ -73,8 +78,8 @@ summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
     MSEv_sd_nice <- num_str(format(results$MSEv$MSEv_sd, digits = digits, nsmall = nsmall))
 
     cli::cli_h3("Estimated MSEv")
-    cli::cli_alert_success(
-      "The estimated MSE of v(S) = {.val {MSEv_nice}} (with sd = {.val {MSEv_sd_nice}})"
+    cli::cli_text(
+      "Estimated MSE of v(S) = {.val {MSEv_nice}} (with sd = {.val {MSEv_sd_nice}})"
     )
   }
 

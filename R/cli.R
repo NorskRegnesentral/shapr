@@ -68,6 +68,7 @@ format_info_basic <- function(internal) {
   approach <- internal$parameters$approach
   iterative <- internal$parameters$iterative
   n_MC_samples <- internal$parameters$n_MC_samples
+  regression <- internal$parameters$regression
   n_shapley_values <- internal$parameters$n_shapley_values
   n_explain <- internal$parameters$n_explain
   saving_path <- internal$parameters$output_args$saving_path
@@ -82,13 +83,19 @@ format_info_basic <- function(internal) {
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
   iterative_txt <- ifelse(iterative, "Iterative", "Non-iterative")
+  vS_est_class <- ifelse(regression,"Regression-based", "Monte Carlo-based")
 
   line_vec <- c()
   line_vec <- c(line_vec, "Model class: {.cls {model_class}}")
+  line_vec <- c(line_vec, "v(S) estimation class: {.val {num_str(vS_est_class)}}")
   line_vec <- c(line_vec, "Approach: {.val {num_str(approach)}}")
   line_vec <- c(line_vec, "Procedure: {.val {num_str(iterative_txt)}}")
-  line_vec <- c(line_vec, "# Monte Carlo integration samples: {.val {n_MC_samples}}")
-  line_vec <- c(line_vec, "# {.emph {feat_group_txt}} Shapley values: {.val {n_shapley_values}}")
+
+  if(isTRUE(regression)) {
+    line_vec <- c(line_vec, "Number of Monte Carlo integration samples: {.val {n_MC_samples}}")
+  }
+
+  line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {.val {n_shapley_values}}")
   if (isTRUE(is_groupwise) && !isTRUE(group_lags)) { # using !isTRUE since isFALSE(NULL)=FALSE
     # format the group list with name of each component followed by the string vector in curly braces
     string <- sapply(names(group), function(name) {
@@ -97,10 +104,10 @@ format_info_basic <- function(internal) {
 
     line_vec <- c(line_vec, paste0("Feature groups: ", paste0(string, collapse = "; ")))
   }
-  line_vec <- c(line_vec, "# observations to explain: {.val {n_explain}}")
+  line_vec <- c(line_vec, "Number of observations to explain: {.val {n_explain}}")
 
   if (isTRUE(asymmetric)) {
-    line_vec <- c(line_vec, "# asymmetric coalitions: {.val {max_n_coalitions_causal}}")
+    line_vec <- c(line_vec, "Number of asymmetric coalitions: {.val {max_n_coalitions_causal}}")
   }
   if (isTRUE(asymmetric) || !is.null(confounding)) {
     line_vec <- c(line_vec, "Causal ordering: {.emph {causal_ordering_names_string}}")
@@ -129,7 +136,7 @@ format_info_extra <- function(internal) {
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   n_shapley_values <- internal$parameters$n_shapley_values
 
-  msg <- "# coalitions used: {.val {n_coalitions}} (of total {.val {2^n_shapley_values}})"
+  msg <- "Number of coalitions used: {.val {n_coalitions}} (of total {.val {2^n_shapley_values}})"
 
   formatted_msg <- cli::format_inline(msg, .envir = environment())
 
