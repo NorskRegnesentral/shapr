@@ -298,11 +298,11 @@ format_shapley_info <- function(internal, iter, digits = 2L, nsmall = 0L) {
   dt_shapley_sd <- dt_shapley_sd0[, shap_names_with_none, with = FALSE]
 
   # Printing the current Shapley values
-  matrix1 <- format(round(dt_shapley_est, digits),
+  matrix1 <- format(zapsmall(dt_shapley_est, digits = digits + 1), # Avoids small number-issues and is OS-consistent
     digits = digits, nsmall = nsmall,
     justify = "right", scientific = FALSE
   )
-  matrix2 <- format(round(dt_shapley_sd, digits),
+  matrix2 <- format(zapsmall(dt_shapley_sd, digits = digits + 1), # Avoids small number-issues and is OS-consistent
     digits = digits, nsmall = nsmall,
     justify = "right", scientific = FALSE
   )
