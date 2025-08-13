@@ -62,7 +62,7 @@ compute_time <- function(internal) {
 #'
 #' @keywords internal
 get_nice_time <- function(secs) {
-  hours   <- floor(secs / 3600)
+  hours <- floor(secs / 3600)
   minutes <- floor((secs %% 3600) / 60)
   seconds <- round(secs %% 60, 1)
 
@@ -79,4 +79,3 @@ get_nice_time <- function(secs) {
   nice_time <- paste(parts, collapse = ", ")
   return(nice_time)
 }
-

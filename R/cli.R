@@ -83,7 +83,7 @@ format_info_basic <- function(internal) {
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
   iterative_txt <- ifelse(iterative, "Iterative", "Non-iterative")
-  vS_est_class <- ifelse(regression,"Regression-based", "Monte Carlo-based")
+  vS_est_class <- ifelse(regression, "Regression", "Monte Carlo integration")
 
   line_vec <- c()
   line_vec <- c(line_vec, "Model class: {.cls {model_class}}")
@@ -91,7 +91,7 @@ format_info_basic <- function(internal) {
   line_vec <- c(line_vec, "Approach: {.val {num_str(approach)}}")
   line_vec <- c(line_vec, "Procedure: {.val {num_str(iterative_txt)}}")
 
-  if(isTRUE(regression)) {
+  if (isTRUE(regression)) {
     line_vec <- c(line_vec, "Number of Monte Carlo integration samples: {.val {n_MC_samples}}")
   }
 
@@ -298,8 +298,14 @@ format_shapley_info <- function(internal, iter, digits = 2L, nsmall = 0L) {
   dt_shapley_sd <- dt_shapley_sd0[, shap_names_with_none, with = FALSE]
 
   # Printing the current Shapley values
-  matrix1 <- format(round(dt_shapley_est, digits), digits = digits, nsmall = nsmall, justify = "right", scientific = FALSE)
-  matrix2 <- format(round(dt_shapley_sd, digits), digits = digits, nsmall = nsmall, justify = "right", scientific = FALSE)
+  matrix1 <- format(round(dt_shapley_est, digits),
+    digits = digits, nsmall = nsmall,
+    justify = "right", scientific = FALSE
+  )
+  matrix2 <- format(round(dt_shapley_sd, digits),
+    digits = digits, nsmall = nsmall,
+    justify = "right", scientific = FALSE
+  )
 
   if (converged_exact) {
     print_dt0 <- as.data.table(matrix1)
@@ -307,8 +313,10 @@ format_shapley_info <- function(internal, iter, digits = 2L, nsmall = 0L) {
     print_dt0 <- as.data.table(matrix(paste(matrix1, " (", matrix2, ")", sep = ""), nrow = nrow(matrix1)))
   }
 
-  print_dt <- cbind(dt_shapley_est0[, other_cols, with = FALSE],
-                    print_dt0)
+  print_dt <- cbind(
+    dt_shapley_est0[, other_cols, with = FALSE],
+    print_dt0
+  )
 
   names(print_dt) <- names(dt_shapley_est0)
 

@@ -175,7 +175,7 @@ explanation <- explain(
 # Printing the Shapley values for the data to explain.
 print(explanation)
 
-# Provide a formatted summary of the shapr object 
+# Provide a formatted summary of the shapr object
 summary(explanation)
 
 # Finally we plot the resulting explanations
