@@ -22,7 +22,9 @@ _check_r_env()
 
 from .explain import explain
 from . import datasets
+from importlib.metadata import version
 
 __all__ = ["explain", "datasets"]
 
-__version__ = "0.2.0"
+__version__ = version("shaprpy")
+
