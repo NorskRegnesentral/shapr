@@ -24,11 +24,14 @@ summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
 
   func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
   init_time <- results$timing_summary$init_time
+  nice_total_time <- results$timing_summary$nice_total_time
   if (is.null(init_time)) init_time <- 0
+  if (is.null(nice_total_time)) nice_total_time <- ""
+
 
   cli::cli_h1("Summary of Shapley value explanation")
   if (isFALSE(testing)) {
-    cli::cli_ul(paste0("Computed with", func_txt, " at {.val {round(init_time)}}"))
+    cli::cli_ul(paste0("Computed with", func_txt, " in {.field {nice_total_time}}, started {.val {round(init_time)}}"))
   } else {
     cli::cli_ul(paste0("Computed with", func_txt))
   }
@@ -66,12 +69,12 @@ summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
 
   # MSEv info (only when using explain())
   if (results$calling_function == "explain") {
-    MSEv_nice <- format(results$MSEv$MSEv, digits = digits, nsmall = nsmall)
-    MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = digits, nsmall = nsmall)
+    MSEv_nice <- num_str(format(results$MSEv$MSEv, digits = digits, nsmall = nsmall))
+    MSEv_sd_nice <- num_str(format(results$MSEv$MSEv_sd, digits = digits, nsmall = nsmall))
 
     cli::cli_h3("Estimated MSEv")
-    cli::cli_alert_info(
-      "The estimated MSE of v(S) = {MSEv_nice} (with sd = {MSEv_sd_nice})"
+    cli::cli_alert_success(
+      "The estimated MSE of v(S) = {.val {MSEv_nice}} (with sd = {.val {MSEv_sd_nice}})"
     )
   }
 

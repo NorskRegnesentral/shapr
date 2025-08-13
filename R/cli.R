@@ -67,6 +67,7 @@ format_info_basic <- function(internal) {
   model_class <- internal$parameters$model_class
   approach <- internal$parameters$approach
   iterative <- internal$parameters$iterative
+  n_MC_samples <- internal$parameters$n_MC_samples
   n_shapley_values <- internal$parameters$n_shapley_values
   n_explain <- internal$parameters$n_explain
   saving_path <- internal$parameters$output_args$saving_path
@@ -84,9 +85,10 @@ format_info_basic <- function(internal) {
 
   line_vec <- c()
   line_vec <- c(line_vec, "Model class: {.cls {model_class}}")
-  line_vec <- c(line_vec, "Approach: {.emph {approach}}")
-  line_vec <- c(line_vec, "Procedure: {.emph {iterative_txt}}")
-  line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {.val {n_shapley_values}}")
+  line_vec <- c(line_vec, "Approach: {.val {num_str(approach)}}")
+  line_vec <- c(line_vec, "Procedure: {.val {num_str(iterative_txt)}}")
+  line_vec <- c(line_vec, "# Monte Carlo integration samples: {.val {n_MC_samples}}")
+  line_vec <- c(line_vec, "# {.emph {feat_group_txt}} Shapley values: {.val {n_shapley_values}}")
   if (isTRUE(is_groupwise) && !isTRUE(group_lags)) { # using !isTRUE since isFALSE(NULL)=FALSE
     # format the group list with name of each component followed by the string vector in curly braces
     string <- sapply(names(group), function(name) {
@@ -95,10 +97,10 @@ format_info_basic <- function(internal) {
 
     line_vec <- c(line_vec, paste0("Feature groups: ", paste0(string, collapse = "; ")))
   }
-  line_vec <- c(line_vec, "Number of observations to explain: {.val {n_explain}}")
+  line_vec <- c(line_vec, "# observations to explain: {.val {n_explain}}")
 
   if (isTRUE(asymmetric)) {
-    line_vec <- c(line_vec, "Number of asymmetric coalitions: {.val {max_n_coalitions_causal}}")
+    line_vec <- c(line_vec, "# asymmetric coalitions: {.val {max_n_coalitions_causal}}")
   }
   if (isTRUE(asymmetric) || !is.null(confounding)) {
     line_vec <- c(line_vec, "Causal ordering: {.emph {causal_ordering_names_string}}")
@@ -127,7 +129,7 @@ format_info_extra <- function(internal) {
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   n_shapley_values <- internal$parameters$n_shapley_values
 
-  msg <- "Total number of coalitions used: {.val {n_coalitions}} (of {.val {2^n_shapley_values}})"
+  msg <- "# coalitions used: {.val {n_coalitions}} (of total {.val {2^n_shapley_values}})"
 
   formatted_msg <- cli::format_inline(msg, .envir = environment())
 
@@ -355,4 +357,20 @@ print_iter <- function(internal) {
     # Cannot use print as it does not obey suppressMessages()
     rlang::inform(paste0("\n", msg, "\n", formatted_shapley_info))
   }
+}
+
+
+#' Convert a character to a numeric class
+#'
+#' To be used in cli calls like `cli_text({.val {num_str("12.10")}})` to format a character strings
+#' that typically represent a number like it was a number. May also be used with strings not representing a number.
+#'
+#' @param String. A single character string that represents a number.
+#'
+#' @return A numeric class object with the value of the string.
+#'
+#' @keywords internal
+num_str <- function(x) {
+  stopifnot(is.character(x), length(x) == 1)
+  structure(x, class = "numeric")
 }
