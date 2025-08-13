@@ -1,3 +1,5 @@
+import pprint
+
 import pytest
 from shaprpy.explain import explain
 import numpy as np
@@ -17,11 +19,13 @@ def test_output_xgb_gaussian(house_data, model_xgb, snapshot):
         x_train=xtrain,
         x_explain=xtest,
         approach="gaussian",
-        phi0=phi0, 
+        phi0=phi0,
         seed = 42
     )
 
-    snapshot.assert_match(explanation, 'test_output_xgb_gaussian')
+    snapshot.assert_match(pprint.pformat(explanation["shapley_values_est"]), 'test_output_xgb_gaussian_est')
+    snapshot.assert_match(pprint.pformat(explanation["shapley_values_sd"]), 'test_output_xgb_gaussian_sd')
+
 
 def test_output_lm_empirical(iris_data, model_lm, snapshot):
     xtrain, xtest, ytrain, _ = iris_data
@@ -35,11 +39,12 @@ def test_output_lm_empirical(iris_data, model_lm, snapshot):
         x_train=xtrain,
         x_explain=xtest,
         approach="empirical",
-        phi0=phi0, 
+        phi0=phi0,
         seed = 42
     )
 
-    snapshot.assert_match(explanation, 'test_output_xgb_gaussian')
+    snapshot.assert_match(pprint.pformat(explanation["shapley_values_est"]), 'test_output_lm_empirical_est')
+    snapshot.assert_match(pprint.pformat(explanation["shapley_values_sd"]), 'test_output_lm_empirical_sd')
 
 
 def test_output_sage_xgb_gaussian(house_data, model_xgb, snapshot):
@@ -54,12 +59,11 @@ def test_output_sage_xgb_gaussian(house_data, model_xgb, snapshot):
         x_train=xtrain,
         x_explain=xtrain,
         approach="gaussian",
-        phi0=phi0, 
-        seed = 42, 
-        sage = True, 
+        phi0=phi0,
+        seed = 42,
+        sage = True,
         response = ytrain.squeeze()
     )
-    
-    snapshot.assert_match(explanation, 'test_output_sage_xgb_gaussian')
 
-
+    snapshot.assert_match(pprint.pformat(explanation["shapley_values_est"]), 'test_output_sage_xgb_gaussian_est')
+    snapshot.assert_match(pprint.pformat(explanation["shapley_values_sd"]), 'test_output_sage_xgb_gaussian_sd')
