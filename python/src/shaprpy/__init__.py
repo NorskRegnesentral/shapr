@@ -22,9 +22,12 @@ _check_r_env()
 
 from .explain import explain
 from . import datasets
-from importlib.metadata import version
+from importlib.metadata import version, PackageNotFoundError
 
 __all__ = ["explain", "datasets"]
 
-__version__ = version("shaprpy")
+try:  # Prefer installed package metadata
+    __version__ = version("shaprpy")
+except PackageNotFoundError:  # Fallback for editable/source tree before build/install
+    __version__ = "0.0.0+local"
 
