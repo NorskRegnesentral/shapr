@@ -2,8 +2,9 @@ from shap import plots, Explanation
 import matplotlib
 import re
 import warnings
+import pandas as pd
 
-def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, indexing: slice | int = None, **kwargs): 
+def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, idx: slice | int = None, indirect_values: bool = False, **kwargs): 
     """
     Generate a plot from a SHAPR explanation object based on the specified plot type.
 
@@ -17,6 +18,16 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, ind
         Supported plot types depend on the 'sage' paramter within 'shaprpy_obj':
           - If 'sage' is True: "bar", "waterfall"
           - If 'sage' is False: "bar", "beeswarm", "heatmap", "scatter", "violin", "waterfall"
+    plot_mean : bool, optional
+        Wether the plot should SHAP values for the individual predictions or plot the mean.
+        Defaults to False. 
+        Only applicaple for the plot_types '', when 'sage' is False and the number of explanations is 10 or less. 
+    idx: slice or int, optional
+        The indices of which observations to be plotted.
+        When providing a range the slice format should be used, f.ex. 'slice(10)' for the first 10 observations.
+    indirect_values: bool, optional
+        When False (default), plots the given object as ordinary. 
+        When True, shapley_values are collected from 'shaprpy_obj["internal"]["output"]["shap_values_est"]'.
     **kwargs:
         Additional keyword arguments passed to the underlying plot function from `shap.plots`.
 
@@ -29,6 +40,11 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, ind
 
     sage = bool(shaprpy_obj['internal']['parameters']['sage'])
 
+    if indirect_values: 
+        sage = False
+    
+
+    # Checking for a valid plot_type
     if sage and not (plot_type in ("bar", "waterfall")): 
         raise TypeError(
             "ERROR in shaprpy.plot: Unknown or unsupported plot type.\n"
@@ -38,54 +54,108 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, ind
             "ERROR in shaprpy.plot: Unknown or unsupported plot type.\n"
             "See the documentation for supported types.")
 
-    explanation = prep_data(shaprpy_obj, sage=sage)
+    # Checking for SAGE indexing
+    if sage and idx:
+        warnings.warn("SAGE values are assumed singular and does not allow for indexing. Ignoring idx.", UserWarning)
+        idx = None
 
-    #Fungerer ikke enda, blir stygge små ulesbare plots
-    if indexing: 
-        explanation = explanation[indexing]
+    explanation = prep_data(shaprpy_obj, sage=sage, idx=idx, indirect_values=indirect_values)
     
     n_explain = explanation.shape[0] 
 
+    print(n_explain)
+
+    if plot_type == "waterfall" and n_explain > 1: 
+        raise ValueError(
+            "The waterfall plot can currently only plot a single explanation, but"
+            f"{n_explain} explanations was passed! Perhaps try "
+            "indexing with 'idx'."
+        )
+
     if not plot_mean and n_explain > 10: 
-        plot_mean = True
         warnings.warn("Too many observations to plot together; 10 or less oberservations is required to plot single observations.\n"
           "Plotting mean.", UserWarning)
+        plot_mean = True
 
-    if plot_mean or n_explain==1: 
-        if (sage): 
-            match plot_type:
-                case "bar": 
-                    ax = plots.bar(explanation, show = False, **kwargs)
-                    ax.set_xlabel("SAGE values")
-                    matplotlib.pyplot.show()
-                case "waterfall": 
-                    plot_waterfall_sage(explanation, **kwargs)
-                    matplotlib.pyplot.show()
-        else:
-            ax = getattr(plots, plot_type)(explanation, **kwargs)
+    if (sage): 
+        match plot_type:
+            case "bar": 
+                ax = plots.bar(explanation, show = False, show_data = False, **kwargs)
+                ax.set_xlabel("SAGE values")
+                matplotlib.pyplot.show()
+            case "waterfall": 
+                plot_waterfall_sage(explanation[0], **kwargs)
+                matplotlib.pyplot.show()
+    elif (plot_mean or n_explain==1): 
+        if plot_type == "waterfall": 
+            explanation = explanation[0]
+        ax = getattr(plots, plot_type)(explanation, **kwargs)
     else: 
-        n_rows = n_explain // 2 + n_explain % 2
+        n_rows = (n_explain + 1) // 2  # ceil division
+        fig_height = n_rows * 2        # 4 inches per row
+        fig, axes = matplotlib.pyplot.subplots(n_rows, 2, figsize=(12, fig_height))
+        axes = axes.flatten()  
 
-        matplotlib.pyplot.figure(figsize=(10, 20))
         for i in range(n_explain): 
-            matplotlib.pyplot.subplot(n_rows, 2, i+1)
-            if (sage): 
-                match plot_type:
-                    case "bar": 
-                        ax = plots.bar(explanation[i], show = False, **kwargs)
-                        ax.set_xlabel("SAGE values")
-                    case "waterfall": 
-                        plot_waterfall_sage(explanation[i], **kwargs)
-            else:
-                ax = getattr(plots, plot_type)(explanation[i], show = False, **kwargs)
+            ax = axes[i]
+
+            getattr(plots, plot_type)(explanation[i], show = False, ax = ax, **kwargs)
+
+            ax.yaxis.set_tick_params(pad=20)
+
+        if(n_explain % 2 == 1): 
+            fig.delaxes(axes[n_explain])
         
         matplotlib.pyplot.tight_layout()
         matplotlib.pyplot.show()
 
-            
+
+# Helper function to convert data from a shapr object to a SHAP object
+def prep_data(shaprpy_obj: dict, sage: bool = False, idx = None, includeTestData: bool = True, indirect_values: bool = False): 
+    if indirect_values: 
+        shap_values_df = shaprpy_obj["internal"]["output"]["shap_values_est"]
+        feature_names = shap_values_df.columns.drop(['none'])
+    else: 
+        shap_values_df = shaprpy_obj['shapley_values_est']
+        feature_names = shap_values_df.columns.drop(['explain_id', 'none'])
+    data = shaprpy_obj["internal"]["data"]["x_explain"]
+
+    if sage: 
+        idx = 0
+
+    if isinstance(idx, int):
+        shap_values_df = shap_values_df.iloc[[idx]] 
+        data = data.iloc[[idx]]
+        base_values = shap_values_df["none"]
+    elif isinstance(idx, slice):
+        shap_values_df = shap_values_df.iloc[idx]
+        data = data.iloc[idx]
+        base_values = shap_values_df["none"].values
+    elif not idx:
+        base_values = shap_values_df["none"].values
+    else:
+        raise TypeError("'idx' must be an int or slice.")
+
+    shap_vals = shap_values_df[feature_names].values
+    data = data[feature_names].values
+
+    if sage:
+        explanation = Explanation(
+            values=shap_vals,
+            base_values=base_values,
+            feature_names=feature_names.tolist()
+        ) 
+    else:
+        explanation = Explanation(
+            values=shap_vals,
+            base_values=base_values,
+            data=data,
+            feature_names=feature_names.tolist()
+        )
+    return explanation
 
 
-
+# Helper function for waterfall plotting of SAGE-values
 def plot_waterfall_sage(explanation, **kwargs): 
     ax = plots.waterfall(explanation, show=False, **kwargs)
     fig = matplotlib.pyplot.gcf()
@@ -97,7 +167,7 @@ def plot_waterfall_sage(explanation, **kwargs):
     values = explanation.values
     fx = base_values + values.sum()
 
-    ax.set_xlabel("SAGE values")
+    ax.set_xlabel("SAGE value")
 
     #The rest of the function is altered from SHAP.plots.waterfall:
     def format_value(s, format_str):
@@ -149,28 +219,3 @@ def plot_waterfall_sage(explanation, **kwargs):
         tick_labels[1].get_transform()
         + matplotlib.transforms.ScaledTranslation(16 / 72.0, -1 / 72.0, fig.dpi_scale_trans)
     )
-
-
-def prep_data(shaprpy_obj: dict, sage: bool = False): 
-    shap_values_df = shaprpy_obj['shapley_values_est']
-    feature_names = shap_values_df.columns.drop(['explain_id', 'none'])
-
-    if sage:
-        # Select the first row for sage case
-        shap_values_row = shap_values_df.iloc[0]
-        shap_vals = shap_values_row[feature_names].values
-        base_values = shap_values_row["none"]
-        data = shap_values_row[feature_names].values  # or X_display.iloc[0].values
-    else:
-        # Use all rows
-        shap_vals = shap_values_df[feature_names].values
-        base_values = shap_values_df["none"].values
-        data = shap_values_df[feature_names].values
-
-    explanation = Explanation(
-        values=shap_vals,
-        base_values=base_values,
-        data=data,
-        feature_names=feature_names.tolist()
-    )
-    return explanation
