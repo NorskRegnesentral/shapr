@@ -4,7 +4,7 @@
 \alias{round_manual}
 \title{Round numbers to the specified number of decimal places}
 \usage{
-round_manual(x, digits = 0)
+round_manual(x, digits = 0L)
 }
 \arguments{
 \item{x}{Numeric vector. The numbers to round.}

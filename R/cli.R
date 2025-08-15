@@ -410,11 +410,11 @@ format_round <- function(x, digits = 2L) {
 #' @return Numeric vector. The rounded numbers.
 #'
 #' @keywords internal
-round_manual <- function(x, digits = 0) {
+round_manual <- function(x, digits = 0L) {
   posneg <- sign(x)
-  z <- abs(x) * 10^dec
+  z <- abs(x) * 10^digits
   z <- z + 0.5 + sqrt(.Machine$double.eps)
   z <- trunc(z)
-  z <- z / 10^dec
+  z <- z / 10^digits
   z * posneg
 }
