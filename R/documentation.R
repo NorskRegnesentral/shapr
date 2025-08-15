@@ -55,8 +55,8 @@ default_doc_internal <- function(internal,
                                  W_kernel,
                                  S,
                                  dt_vS,
-                                 output_size,
                                  model_class,
+                                 output_size,
                                  ...) {
   NULL
 }
@@ -73,7 +73,14 @@ default_doc_internal <- function(internal,
 #' @param index_features Positive integer vector. Specifies the id_coalition to
 #' apply to the present method. `NULL` means all coalitions. Only used internally.
 #'
+#' @param digits Integer.
+#' (Maximum) number of digits to be displayed after the decimal point.
+#' Defaults to 2.
+#'
 #' @keywords internal
-default_doc_export <- function(internal, iter, index_features) {
+default_doc_export <- function(internal,
+                               iter,
+                               index_features,
+                               digits) {
   NULL
 }

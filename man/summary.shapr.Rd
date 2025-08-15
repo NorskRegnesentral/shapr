@@ -4,10 +4,14 @@
 \alias{summary.shapr}
 \title{Summary method for shapr objects}
 \usage{
-\method{summary}{shapr}(object, ...)
+\method{summary}{shapr}(object, digits = 2L, ...)
 }
 \arguments{
 \item{object}{A shapr object.}
+
+\item{digits}{Integer.
+(Maximum) number of digits to be displayed after the decimal point.
+Defaults to 2.}
 
 \item{...}{Currently unused.}
 }

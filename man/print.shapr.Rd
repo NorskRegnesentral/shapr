@@ -8,8 +8,7 @@
   x,
   what = c("shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition",
     "timing_summary"),
-  digits = 4,
-  nsmall = max(0, digits - 2),
+  digits = 3L,
   ...
 )
 }
@@ -24,11 +23,7 @@ See the details section of \code{\link[=get_results]{get_results()}} for details
 
 \item{digits}{Integer.
 Number of significant digits to display.
-Defaults to 4.}
-
-\item{nsmall}{Integer.
-Minimum digits to the right of the decimal point.
-Defaults to 2 less than \code{digits}.}
+Defaults to 3.}
 
 \item{...}{Further arguments passed to \code{\link[data.table:print.data.table]{data.table::print.data.table()}}.}
 }

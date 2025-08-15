@@ -14,8 +14,8 @@ default_doc_internal(
   W_kernel,
   S,
   dt_vS,
-  output_size,
   model_class,
+  output_size,
   ...
 )
 }
@@ -53,11 +53,11 @@ estimates. The first column is assumed to be named \code{id_coalition} and conta
 The last row is assumed to be the full coalition, i.e., it contains the predicted responses for the observations
 which are to be explained.}
 
-\item{output_size}{Scalar integer.
-Specifies the dimension of the output from the prediction model for every observation.}
-
 \item{model_class}{Character string.
 The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by \code{class(model)[1]}.}
+
+\item{output_size}{Scalar integer.
+Specifies the dimension of the output from the prediction model for every observation.}
 
 \item{...}{Further arguments passed to \code{approach}-specific functions.}
 }
