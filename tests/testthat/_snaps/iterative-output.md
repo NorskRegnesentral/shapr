@@ -31,16 +31,16 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none      Solar.R         Wind       Temp        Month
-              <int> <char>       <char>       <char>     <char>       <char>
-      1:          1 42 (0) -0.58 (2.09) -0.58 (2.09) 17.5 (6.0) -0.58 (2.09)
-      2:          2 42 (0) -2.19 (0.35) -2.19 (0.35) -5.3 (1.0) -2.19 (0.35)
-      3:          3 42 (0) -5.78 (0.74) -5.78 (0.74) -1.5 (1.4) -5.78 (0.74)
-                 Day
-              <char>
-      1: -3.1 (0.81)
-      2: -2.0 (0.05)
-      3:  1.3 (2.23)
+         explain_id      none      Solar.R         Wind         Temp        Month
+              <int>    <char>       <char>       <char>       <char>       <char>
+      1:          1 42.44 (0) -0.58 (2.09) -0.58 (2.09) 17.46 (5.97) -0.58 (2.09)
+      2:          2 42.44 (0) -2.19 (0.35) -2.19 (0.35) -5.29 (1.02) -2.19 (0.35)
+      3:          3 42.44 (0) -5.78 (0.74) -5.78 (0.74) -1.49 (1.42) -5.78 (0.74)
+                  Day
+               <char>
+      1: -3.12 (0.81)
+      2: -2.03 (0.05)
+      3:  1.26 (2.23)
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 32 coalitions, 2 new. 
@@ -52,11 +52,16 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind       Temp       Month         Day
-              <int> <char>     <char>      <char>     <char>      <char>      <char>
-      1:          1 42 (0) -4.4 (4.2)   1.3 (1.0) 17.5 (5.5)   1.3 (1.0) -3.1 (1.61)
-      2:          2 42 (0)  2.4 (1.7)  -4.5 (1.1) -5.3 (1.8)  -4.5 (1.1) -2.0 (0.83)
-      3:          3 42 (0)  3.8 (3.8) -10.6 (2.4) -1.5 (1.3) -10.6 (2.4)  1.3 (1.19)
+         explain_id      none      Solar.R          Wind         Temp         Month
+              <int>    <char>       <char>        <char>       <char>        <char>
+      1:          1 42.44 (0) -4.41 (4.18)   1.34 (1.01) 17.46 (5.50)   1.34 (1.01)
+      2:          2 42.44 (0)  2.38 (1.66)  -4.47 (1.09) -5.29 (1.76)  -4.47 (1.09)
+      3:          3 42.44 (0)  3.83 (3.85) -10.58 (2.44) -1.49 (1.30) -10.58 (2.44)
+                  Day
+               <char>
+      1: -3.12 (1.61)
+      2: -2.03 (0.83)
+      3:  1.26 (1.19)
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 4 new. 
@@ -68,11 +73,16 @@
       (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind        Temp       Month         Day
-              <int> <char>     <char>      <char>      <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (2.2)   8.3 (3.8) 17.5 (1.70) -5.6 (3.39) -3.1 (0.35)
-      2:          2 42 (0)  2.2 (1.2)  -3.3 (1.1) -5.2 (0.42) -5.6 (0.82) -2.0 (0.30)
-      3:          3 42 (0)  3.7 (3.6) -18.6 (4.8) -1.4 (1.60) -2.5 (3.75)  1.3 (0.83)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.55 (2.22)   8.31 (3.75) 17.51 (1.70) -5.59 (3.39)
+      2:          2 42.44 (0)  2.24 (1.19)  -3.30 (1.10) -5.24 (0.42) -5.59 (0.82)
+      3:          3 42.44 (0)  3.70 (3.60) -18.57 (4.75) -1.45 (1.60) -2.55 (3.75)
+                  Day
+               <char>
+      1: -3.08 (0.35)
+      2: -1.98 (0.30)
+      3:  1.30 (0.83)
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 18 of 32 coalitions, 6 new. 
@@ -84,16 +94,16 @@
       (Conservatively) adding about 40% of that (6 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.02)   8.3 (0.98) 17.5 (0.03) -5.6 (0.98)
-      2:          2 42 (0)  2.2 (0.02)  -3.3 (0.16) -5.2 (0.03) -5.6 (0.16)
-      3:          3 42 (0)  3.7 (0.02) -18.6 (1.13) -1.4 (0.03) -2.5 (1.13)
-                 Day
-              <char>
-      1: -3.1 (0.02)
-      2: -2.0 (0.02)
-      3:  1.3 (0.02)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.55 (0.02)   8.29 (0.98) 17.51 (0.03) -5.57 (0.98)
+      2:          2 42.44 (0)  2.24 (0.02)  -3.32 (0.16) -5.24 (0.03) -5.57 (0.16)
+      3:          3 42.44 (0)  3.70 (0.02) -18.59 (1.13) -1.44 (0.03) -2.53 (1.13)
+                  Day
+               <char>
+      1: -3.09 (0.02)
+      2: -1.99 (0.02)
+      3:  1.30 (0.02)
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 24 of 32 coalitions, 6 new. 
@@ -103,16 +113,16 @@
       Standard deviation convergence threshold (0.02) reached: 0.001!
       
       Final estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.01)   8.3 (0.02) 17.5 (0.01) -5.6 (0.02)
-      2:          2 42 (0)  2.2 (0.01)  -3.3 (0.02) -5.2 (0.01) -5.6 (0.02)
-      3:          3 42 (0)  3.7 (0.01) -18.6 (0.02) -1.4 (0.01) -2.5 (0.02)
-                 Day
-              <char>
-      1: -3.1 (0.02)
-      2: -2.0 (0.02)
-      3:  1.3 (0.02)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.54 (0.01)   8.30 (0.02) 17.50 (0.01) -5.59 (0.02)
+      2:          2 42.44 (0)  2.25 (0.01)  -3.31 (0.02) -5.24 (0.01) -5.59 (0.02)
+      3:          3 42.44 (0)  3.71 (0.01) -18.58 (0.02) -1.45 (0.01) -2.55 (0.02)
+                  Day
+               <char>
+      1: -3.08 (0.02)
+      2: -1.98 (0.02)
+      3:  1.30 (0.02)
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -139,16 +149,16 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R        Wind        Temp       Month
-              <int> <char>      <char>      <char>      <char>      <char>
-      1:          1 42 (0)  1.9 (1.47)  1.9 (1.47) 17.5 (3.41) -5.6 (2.84)
-      2:          2 42 (0) -0.5 (0.53) -0.5 (0.53) -5.3 (0.67) -5.6 (0.79)
-      3:          3 42 (0) -7.4 (1.34) -7.4 (1.34) -1.5 (0.84) -2.6 (0.75)
-                 Day
-              <char>
-      1: -3.1 (1.56)
-      2: -2.0 (0.47)
-      3:  1.3 (2.68)
+         explain_id      none      Solar.R         Wind         Temp        Month
+              <int>    <char>       <char>       <char>       <char>       <char>
+      1:          1 42.44 (0)  1.92 (1.47)  1.92 (1.47) 17.49 (3.41) -5.61 (2.84)
+      2:          2 42.44 (0) -0.50 (0.53) -0.50 (0.53) -5.26 (0.67) -5.61 (0.79)
+      3:          3 42.44 (0) -7.40 (1.34) -7.40 (1.34) -1.47 (0.84) -2.57 (0.75)
+                  Day
+               <char>
+      1: -3.12 (1.56)
+      2: -2.03 (0.47)
+      3:  1.26 (2.68)
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -159,11 +169,16 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind        Temp      Month         Day
-              <int> <char>     <char>      <char>      <char>     <char>      <char>
-      1:          1 42 (0) -4.4 (3.3)   8.3 (3.5) 17.5 (2.27) -5.6 (1.4) -3.1 (1.25)
-      2:          2 42 (0)  2.4 (1.5)  -3.3 (1.3) -5.3 (0.70) -5.6 (0.4) -2.0 (0.85)
-      3:          3 42 (0)  3.8 (4.8) -18.6 (6.1) -1.5 (0.86) -2.6 (1.3)  1.3 (2.16)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.44 (3.27)   8.28 (3.54) 17.49 (2.27) -5.61 (1.40)
+      2:          2 42.44 (0)  2.35 (1.47)  -3.34 (1.31) -5.26 (0.70) -5.61 (0.40)
+      3:          3 42.44 (0)  3.81 (4.83) -18.60 (6.10) -1.47 (0.86) -2.57 (1.27)
+                  Day
+               <char>
+      1: -3.12 (1.25)
+      2: -2.03 (0.85)
+      3:  1.26 (2.16)
       
       -- Iteration 3 -----------------------------------------------------------------
       
@@ -174,16 +189,16 @@
       (Conservatively) adding about 30% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R        Wind        Temp       Month
-              <int> <char>      <char>      <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (1.22)   8.3 (1.5) 17.5 (1.49) -5.6 (0.02)
-      2:          2 42 (0)  2.3 (0.85)  -3.4 (0.3) -5.2 (0.42) -5.6 (0.02)
-      3:          3 42 (0)  3.7 (0.93) -18.6 (2.8) -1.4 (0.30) -2.5 (0.02)
-                 Day
-              <char>
-      1: -3.1 (1.76)
-      2: -2.0 (0.81)
-      3:  1.3 (2.51)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.53 (1.22)   8.27 (1.54) 17.52 (1.49) -5.59 (0.02)
+      2:          2 42.44 (0)  2.26 (0.85)  -3.35 (0.30) -5.23 (0.42) -5.59 (0.02)
+      3:          3 42.44 (0)  3.71 (0.93) -18.61 (2.75) -1.44 (0.30) -2.55 (0.02)
+                  Day
+               <char>
+      1: -3.06 (1.76)
+      2: -1.97 (0.81)
+      3:  1.32 (2.51)
       
       -- Iteration 4 -----------------------------------------------------------------
       
@@ -192,16 +207,16 @@
       Standard deviation convergence threshold (0.1) reached: 0.0016!
       
       Final estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.04)   8.3 (0.02) 17.5 (0.01) -5.6 (0.01)
-      2:          2 42 (0)  2.3 (0.04)  -3.3 (0.02) -5.2 (0.01) -5.6 (0.01)
-      3:          3 42 (0)  3.7 (0.04) -18.6 (0.02) -1.4 (0.01) -2.5 (0.01)
-                 Day
-              <char>
-      1: -3.1 (0.02)
-      2: -2.0 (0.02)
-      3:  1.3 (0.02)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.53 (0.04)   8.27 (0.02) 17.51 (0.01) -5.59 (0.01)
+      2:          2 42.44 (0)  2.26 (0.04)  -3.34 (0.02) -5.24 (0.01) -5.59 (0.01)
+      3:          3 42.44 (0)  3.72 (0.04) -18.61 (0.02) -1.44 (0.01) -2.55 (0.01)
+                  Day
+               <char>
+      1: -3.07 (0.02)
+      2: -1.97 (0.02)
+      3:  1.32 (0.02)
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -228,16 +243,16 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R        Wind        Temp       Month
-              <int> <char>      <char>      <char>      <char>      <char>
-      1:          1 42 (0)  1.9 (1.47)  1.9 (1.47) 17.5 (3.41) -5.6 (2.84)
-      2:          2 42 (0) -0.5 (0.53) -0.5 (0.53) -5.3 (0.67) -5.6 (0.79)
-      3:          3 42 (0) -7.4 (1.34) -7.4 (1.34) -1.5 (0.84) -2.6 (0.75)
-                 Day
-              <char>
-      1: -3.1 (1.56)
-      2: -2.0 (0.47)
-      3:  1.3 (2.68)
+         explain_id      none      Solar.R         Wind         Temp        Month
+              <int>    <char>       <char>       <char>       <char>       <char>
+      1:          1 42.44 (0)  1.92 (1.47)  1.92 (1.47) 17.49 (3.41) -5.61 (2.84)
+      2:          2 42.44 (0) -0.50 (0.53) -0.50 (0.53) -5.26 (0.67) -5.61 (0.79)
+      3:          3 42.44 (0) -7.40 (1.34) -7.40 (1.34) -1.47 (0.84) -2.57 (0.75)
+                  Day
+               <char>
+      1: -3.12 (1.56)
+      2: -2.03 (0.47)
+      3:  1.26 (2.68)
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -248,11 +263,16 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind        Temp      Month         Day
-              <int> <char>     <char>      <char>      <char>     <char>      <char>
-      1:          1 42 (0) -4.4 (3.3)   8.3 (3.5) 17.5 (2.27) -5.6 (1.4) -3.1 (1.25)
-      2:          2 42 (0)  2.4 (1.5)  -3.3 (1.3) -5.3 (0.70) -5.6 (0.4) -2.0 (0.85)
-      3:          3 42 (0)  3.8 (4.8) -18.6 (6.1) -1.5 (0.86) -2.6 (1.3)  1.3 (2.16)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.44 (3.27)   8.28 (3.54) 17.49 (2.27) -5.61 (1.40)
+      2:          2 42.44 (0)  2.35 (1.47)  -3.34 (1.31) -5.26 (0.70) -5.61 (0.40)
+      3:          3 42.44 (0)  3.81 (4.83) -18.60 (6.10) -1.47 (0.86) -2.57 (1.27)
+                  Day
+               <char>
+      1: -3.12 (1.25)
+      2: -2.03 (0.85)
+      3:  1.26 (2.16)
       
       -- Iteration 3 -----------------------------------------------------------------
       
@@ -263,11 +283,16 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind        Temp       Month         Day
-              <int> <char>     <char>      <char>      <char>      <char>      <char>
-      1:          1 42 (0) -4.4 (2.2)   8.3 (2.3) 17.5 (0.02) -5.6 (0.02) -3.1 (0.40)
-      2:          2 42 (0)  2.4 (1.2)  -3.3 (1.0) -5.3 (0.02) -5.6 (0.02) -2.0 (0.69)
-      3:          3 42 (0)  3.8 (3.9) -18.6 (4.1) -1.5 (0.02) -2.6 (0.02)  1.3 (0.71)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.44 (2.22)   8.28 (2.33) 17.49 (0.02) -5.61 (0.02)
+      2:          2 42.44 (0)  2.35 (1.16)  -3.34 (1.01) -5.26 (0.02) -5.61 (0.02)
+      3:          3 42.44 (0)  3.81 (3.92) -18.60 (4.10) -1.47 (0.02) -2.57 (0.02)
+                  Day
+               <char>
+      1: -3.12 (0.40)
+      2: -2.03 (0.69)
+      3:  1.26 (0.71)
       
       -- Iteration 4 -----------------------------------------------------------------
       
@@ -278,16 +303,16 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R        Wind        Temp       Month
-              <int> <char>      <char>      <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.92)   8.3 (0.9) 17.5 (0.02) -5.6 (0.02)
-      2:          2 42 (0)  2.2 (0.52)  -3.3 (0.4) -5.2 (0.02) -5.6 (0.02)
-      3:          3 42 (0)  3.7 (1.57) -18.6 (1.6) -1.5 (0.02) -2.6 (0.02)
-                 Day
-              <char>
-      1: -3.1 (0.13)
-      2: -2.0 (0.37)
-      3:  1.3 (0.22)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.54 (0.92)   8.31 (0.90) 17.50 (0.02) -5.60 (0.02)
+      2:          2 42.44 (0)  2.25 (0.52)  -3.31 (0.40) -5.25 (0.02) -5.60 (0.02)
+      3:          3 42.44 (0)  3.71 (1.57) -18.57 (1.57) -1.46 (0.02) -2.56 (0.02)
+                  Day
+               <char>
+      1: -3.07 (0.13)
+      2: -1.97 (0.37)
+      3:  1.31 (0.22)
       
       -- Iteration 5 -----------------------------------------------------------------
       
@@ -298,16 +323,16 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.03)   8.3 (0.03) 17.5 (0.02) -5.6 (0.02)
-      2:          2 42 (0)  2.3 (0.03)  -3.3 (0.03) -5.2 (0.02) -5.6 (0.02)
-      3:          3 42 (0)  3.7 (0.03) -18.6 (0.03) -1.4 (0.02) -2.5 (0.02)
-                 Day
-              <char>
-      1: -3.1 (0.03)
-      2: -2.0 (0.03)
-      3:  1.3 (0.03)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.53 (0.03)   8.30 (0.03) 17.51 (0.02) -5.59 (0.02)
+      2:          2 42.44 (0)  2.26 (0.03)  -3.32 (0.03) -5.24 (0.02) -5.59 (0.02)
+      3:          3 42.44 (0)  3.72 (0.03) -18.58 (0.03) -1.45 (0.02) -2.55 (0.02)
+                  Day
+               <char>
+      1: -3.08 (0.03)
+      2: -1.98 (0.03)
+      3:  1.30 (0.03)
       
       -- Iteration 6 -----------------------------------------------------------------
       
@@ -318,16 +343,16 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.05)   8.3 (0.56) 17.5 (0.02) -5.6 (0.03)
-      2:          2 42 (0)  2.3 (0.05)  -3.4 (0.08) -5.2 (0.02) -5.6 (0.03)
-      3:          3 42 (0)  3.7 (0.05) -18.6 (1.00) -1.4 (0.02) -2.5 (0.03)
-                 Day
-              <char>
-      1: -3.1 (0.57)
-      2: -2.0 (0.08)
-      3:  1.3 (0.99)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.53 (0.05)   8.26 (0.56) 17.51 (0.02) -5.58 (0.03)
+      2:          2 42.44 (0)  2.26 (0.05)  -3.35 (0.08) -5.23 (0.02) -5.58 (0.03)
+      3:          3 42.44 (0)  3.72 (0.05) -18.62 (1.00) -1.44 (0.02) -2.54 (0.03)
+                  Day
+               <char>
+      1: -3.06 (0.57)
+      2: -1.97 (0.08)
+      3:  1.32 (0.99)
       
       -- Iteration 7 -----------------------------------------------------------------
       
@@ -338,16 +363,16 @@
       (Conservatively) adding about 0.001% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.08)   8.3 (0.03) 17.5 (0.02) -5.6 (0.02)
-      2:          2 42 (0)  2.3 (0.21)  -3.4 (0.03) -5.2 (0.02) -5.6 (0.02)
-      3:          3 42 (0)  3.7 (0.12) -18.6 (0.03) -1.4 (0.02) -2.5 (0.02)
-                 Day
-              <char>
-      1: -3.1 (0.08)
-      2: -2.0 (0.22)
-      3:  1.3 (0.13)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.53 (0.08)   8.26 (0.03) 17.52 (0.02) -5.58 (0.02)
+      2:          2 42.44 (0)  2.26 (0.21)  -3.35 (0.03) -5.23 (0.02) -5.58 (0.02)
+      3:          3 42.44 (0)  3.71 (0.12) -18.61 (0.03) -1.44 (0.02) -2.54 (0.02)
+                  Day
+               <char>
+      1: -3.07 (0.08)
+      2: -1.97 (0.22)
+      3:  1.31 (0.13)
       
       -- Iteration 8 -----------------------------------------------------------------
       
@@ -356,16 +381,16 @@
       Maxium number of iterations (8) reached!
       
       Final estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.03)   8.3 (0.03) 17.5 (0.01) -5.6 (0.01)
-      2:          2 42 (0)  2.3 (0.03)  -3.4 (0.03) -5.2 (0.01) -5.6 (0.01)
-      3:          3 42 (0)  3.7 (0.03) -18.6 (0.03) -1.4 (0.01) -2.5 (0.01)
-                 Day
-              <char>
-      1: -3.1 (0.02)
-      2: -2.0 (0.02)
-      3:  1.3 (0.02)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.53 (0.03)   8.27 (0.03) 17.52 (0.01) -5.58 (0.01)
+      2:          2 42.44 (0)  2.26 (0.03)  -3.35 (0.03) -5.23 (0.01) -5.58 (0.01)
+      3:          3 42.44 (0)  3.72 (0.03) -18.61 (0.03) -1.44 (0.01) -2.54 (0.01)
+                  Day
+               <char>
+      1: -3.07 (0.02)
+      2: -1.98 (0.02)
+      3:  1.31 (0.02)
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -392,16 +417,16 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none      Solar.R         Wind       Temp        Month
-              <int> <char>       <char>       <char>     <char>       <char>
-      1:          1 42 (0) -0.58 (2.09) -0.58 (2.09) 17.5 (6.0) -0.58 (2.09)
-      2:          2 42 (0) -2.19 (0.35) -2.19 (0.35) -5.3 (1.0) -2.19 (0.35)
-      3:          3 42 (0) -5.78 (0.74) -5.78 (0.74) -1.5 (1.4) -5.78 (0.74)
-                 Day
-              <char>
-      1: -3.1 (0.81)
-      2: -2.0 (0.05)
-      3:  1.3 (2.23)
+         explain_id      none      Solar.R         Wind         Temp        Month
+              <int>    <char>       <char>       <char>       <char>       <char>
+      1:          1 42.44 (0) -0.58 (2.09) -0.58 (2.09) 17.46 (5.97) -0.58 (2.09)
+      2:          2 42.44 (0) -2.19 (0.35) -2.19 (0.35) -5.29 (1.02) -2.19 (0.35)
+      3:          3 42.44 (0) -5.78 (0.74) -5.78 (0.74) -1.49 (1.42) -5.78 (0.74)
+                  Day
+               <char>
+      1: -3.12 (0.81)
+      2: -2.03 (0.05)
+      3:  1.26 (2.23)
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -412,11 +437,16 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind       Temp       Month         Day
-              <int> <char>     <char>      <char>     <char>      <char>      <char>
-      1:          1 42 (0) -4.4 (4.2)   1.3 (1.0) 17.5 (5.5)   1.3 (1.0) -3.1 (1.61)
-      2:          2 42 (0)  2.4 (1.7)  -4.5 (1.1) -5.3 (1.8)  -4.5 (1.1) -2.0 (0.83)
-      3:          3 42 (0)  3.8 (3.8) -10.6 (2.4) -1.5 (1.3) -10.6 (2.4)  1.3 (1.19)
+         explain_id      none      Solar.R          Wind         Temp         Month
+              <int>    <char>       <char>        <char>       <char>        <char>
+      1:          1 42.44 (0) -4.41 (4.18)   1.34 (1.01) 17.46 (5.50)   1.34 (1.01)
+      2:          2 42.44 (0)  2.38 (1.66)  -4.47 (1.09) -5.29 (1.76)  -4.47 (1.09)
+      3:          3 42.44 (0)  3.83 (3.85) -10.58 (2.44) -1.49 (1.30) -10.58 (2.44)
+                  Day
+               <char>
+      1: -3.12 (1.61)
+      2: -2.03 (0.83)
+      3:  1.26 (1.19)
       
       -- Iteration 3 -----------------------------------------------------------------
       
@@ -427,11 +457,16 @@
       (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind        Temp       Month         Day
-              <int> <char>     <char>      <char>      <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (2.2)   8.3 (3.8) 17.5 (1.70) -5.6 (3.39) -3.1 (0.35)
-      2:          2 42 (0)  2.2 (1.2)  -3.3 (1.1) -5.2 (0.42) -5.6 (0.82) -2.0 (0.30)
-      3:          3 42 (0)  3.7 (3.6) -18.6 (4.8) -1.4 (1.60) -2.5 (3.75)  1.3 (0.83)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.55 (2.22)   8.31 (3.75) 17.51 (1.70) -5.59 (3.39)
+      2:          2 42.44 (0)  2.24 (1.19)  -3.30 (1.10) -5.24 (0.42) -5.59 (0.82)
+      3:          3 42.44 (0)  3.70 (3.60) -18.57 (4.75) -1.45 (1.60) -2.55 (3.75)
+                  Day
+               <char>
+      1: -3.08 (0.35)
+      2: -1.98 (0.30)
+      3:  1.30 (0.83)
       
       -- Iteration 4 -----------------------------------------------------------------
       
@@ -442,16 +477,16 @@
       (Conservatively) adding about 40% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.02)   8.3 (0.98) 17.5 (0.03) -5.6 (0.98)
-      2:          2 42 (0)  2.2 (0.02)  -3.3 (0.16) -5.2 (0.03) -5.6 (0.16)
-      3:          3 42 (0)  3.7 (0.02) -18.6 (1.13) -1.4 (0.03) -2.5 (1.13)
-                 Day
-              <char>
-      1: -3.1 (0.02)
-      2: -2.0 (0.02)
-      3:  1.3 (0.02)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.55 (0.02)   8.29 (0.98) 17.51 (0.03) -5.57 (0.98)
+      2:          2 42.44 (0)  2.24 (0.02)  -3.32 (0.16) -5.24 (0.03) -5.57 (0.16)
+      3:          3 42.44 (0)  3.70 (0.02) -18.59 (1.13) -1.44 (0.03) -2.53 (1.13)
+                  Day
+               <char>
+      1: -3.09 (0.02)
+      2: -1.99 (0.02)
+      3:  1.30 (0.02)
       
       -- Iteration 5 -----------------------------------------------------------------
       
@@ -461,16 +496,16 @@
       Maxium number of coalitions (20) reached!
       
       Final estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.03)   8.3 (0.03) 17.5 (0.04) -5.6 (0.03)
-      2:          2 42 (0)  2.2 (0.03)  -3.4 (0.03) -5.2 (0.04) -5.6 (0.03)
-      3:          3 42 (0)  3.7 (0.03) -18.6 (0.03) -1.4 (0.04) -2.5 (0.03)
-                 Day
-              <char>
-      1: -3.1 (0.02)
-      2: -2.0 (0.02)
-      3:  1.3 (0.02)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.55 (0.03)   8.26 (0.03) 17.53 (0.04) -5.56 (0.03)
+      2:          2 42.44 (0)  2.24 (0.03)  -3.36 (0.03) -5.22 (0.04) -5.56 (0.03)
+      3:          3 42.44 (0)  3.70 (0.03) -18.62 (0.03) -1.43 (0.04) -2.52 (0.03)
+                  Day
+               <char>
+      1: -3.08 (0.02)
+      2: -1.98 (0.02)
+      3:  1.31 (0.02)
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -497,11 +532,11 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none            A            B            C
-              <int> <char>       <char>       <char>       <char>
-      1:          1 42 (0)   1.04 (2.7)  12.95 (3.3) -1.38 (3.20)
-      2:          2 42 (0)   0.87 (3.3) -13.83 (3.5) -0.92 (2.88)
-      3:          3 42 (0) -18.10 (4.0)  -0.26 (4.1)  0.80 (0.24)
+         explain_id      none             A             B            C
+              <int>    <char>        <char>        <char>       <char>
+      1:          1 42.44 (0)   1.04 (2.66)  12.95 (3.32) -1.38 (3.20)
+      2:          2 42.44 (0)   0.87 (3.28) -13.83 (3.47) -0.92 (2.88)
+      3:          3 42.44 (0) -18.10 (3.98)  -0.26 (4.07)  0.80 (0.24)
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -513,9 +548,9 @@
       Final estimated Shapley values
          explain_id   none      A      B      C
               <int> <char> <char> <char> <char>
-      1:          1     42   0.63   13.8  -1.79
-      2:          2     42   0.55  -13.2  -1.24
-      3:          3     42 -18.13   -0.2   0.76
+      1:          1  42.44   0.63  13.76  -1.79
+      2:          2  42.44   0.55 -13.19  -1.24
+      3:          3  42.44 -18.13  -0.20   0.76
     Output
          explain_id  none        A        B       C
               <int> <num>    <num>    <num>   <num>
@@ -542,16 +577,16 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R        Wind        Temp       Month
-              <int> <char>      <char>      <char>      <char>      <char>
-      1:          1 42 (0)  1.9 (1.47)  1.9 (1.47) 17.5 (3.41) -5.6 (2.84)
-      2:          2 42 (0) -0.5 (0.53) -0.5 (0.53) -5.3 (0.67) -5.6 (0.79)
-      3:          3 42 (0) -7.4 (1.34) -7.4 (1.34) -1.5 (0.84) -2.6 (0.75)
-                 Day
-              <char>
-      1: -3.1 (1.56)
-      2: -2.0 (0.47)
-      3:  1.3 (2.68)
+         explain_id      none      Solar.R         Wind         Temp        Month
+              <int>    <char>       <char>       <char>       <char>       <char>
+      1:          1 42.44 (0)  1.92 (1.47)  1.92 (1.47) 17.49 (3.41) -5.61 (2.84)
+      2:          2 42.44 (0) -0.50 (0.53) -0.50 (0.53) -5.26 (0.67) -5.61 (0.79)
+      3:          3 42.44 (0) -7.40 (1.34) -7.40 (1.34) -1.47 (0.84) -2.57 (0.75)
+                  Day
+               <char>
+      1: -3.12 (1.56)
+      2: -2.03 (0.47)
+      3:  1.26 (2.68)
       
       -- Iteration 2 -----------------------------------------------------------------
       
@@ -562,11 +597,16 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind        Temp      Month         Day
-              <int> <char>     <char>      <char>      <char>     <char>      <char>
-      1:          1 42 (0) -4.4 (3.3)   8.3 (3.5) 17.5 (2.27) -5.6 (1.4) -3.1 (1.25)
-      2:          2 42 (0)  2.4 (1.5)  -3.3 (1.3) -5.3 (0.70) -5.6 (0.4) -2.0 (0.85)
-      3:          3 42 (0)  3.8 (4.8) -18.6 (6.1) -1.5 (0.86) -2.6 (1.3)  1.3 (2.16)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.44 (3.27)   8.28 (3.54) 17.49 (2.27) -5.61 (1.40)
+      2:          2 42.44 (0)  2.35 (1.47)  -3.34 (1.31) -5.26 (0.70) -5.61 (0.40)
+      3:          3 42.44 (0)  3.81 (4.83) -18.60 (6.10) -1.47 (0.86) -2.57 (1.27)
+                  Day
+               <char>
+      1: -3.12 (1.25)
+      2: -2.03 (0.85)
+      3:  1.26 (2.16)
       
       -- Iteration 3 -----------------------------------------------------------------
       
@@ -577,16 +617,16 @@
       (Conservatively) adding about 30% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R        Wind        Temp       Month
-              <int> <char>      <char>      <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (1.22)   8.3 (1.5) 17.5 (1.49) -5.6 (0.02)
-      2:          2 42 (0)  2.3 (0.85)  -3.4 (0.3) -5.2 (0.42) -5.6 (0.02)
-      3:          3 42 (0)  3.7 (0.93) -18.6 (2.8) -1.4 (0.30) -2.5 (0.02)
-                 Day
-              <char>
-      1: -3.1 (1.76)
-      2: -2.0 (0.81)
-      3:  1.3 (2.51)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.53 (1.22)   8.27 (1.54) 17.52 (1.49) -5.59 (0.02)
+      2:          2 42.44 (0)  2.26 (0.85)  -3.35 (0.30) -5.23 (0.42) -5.59 (0.02)
+      3:          3 42.44 (0)  3.71 (0.93) -18.61 (2.75) -1.44 (0.30) -2.55 (0.02)
+                  Day
+               <char>
+      1: -3.06 (1.76)
+      2: -1.97 (0.81)
+      3:  1.32 (2.51)
       
       -- Iteration 4 -----------------------------------------------------------------
       
@@ -595,16 +635,16 @@
       Standard deviation convergence threshold (0.1) reached: 0.0016!
       
       Final estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind        Temp       Month
-              <int> <char>      <char>       <char>      <char>      <char>
-      1:          1 42 (0) -4.5 (0.04)   8.3 (0.02) 17.5 (0.01) -5.6 (0.01)
-      2:          2 42 (0)  2.3 (0.04)  -3.3 (0.02) -5.2 (0.01) -5.6 (0.01)
-      3:          3 42 (0)  3.7 (0.04) -18.6 (0.02) -1.4 (0.01) -2.5 (0.01)
-                 Day
-              <char>
-      1: -3.1 (0.02)
-      2: -2.0 (0.02)
-      3:  1.3 (0.02)
+         explain_id      none      Solar.R          Wind         Temp        Month
+              <int>    <char>       <char>        <char>       <char>       <char>
+      1:          1 42.44 (0) -4.53 (0.04)   8.27 (0.02) 17.51 (0.01) -5.59 (0.01)
+      2:          2 42.44 (0)  2.26 (0.04)  -3.34 (0.02) -5.24 (0.01) -5.59 (0.01)
+      3:          3 42.44 (0)  3.72 (0.04) -18.61 (0.02) -1.44 (0.01) -2.55 (0.01)
+                  Day
+               <char>
+      1: -3.07 (0.02)
+      2: -1.97 (0.02)
+      3:  1.32 (0.02)
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -761,11 +801,11 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none      Solar.R         Wind         Temp        Month
-              <int> <char>       <char>       <char>       <char>       <char>
-      1:          1 42 (0) -0.48 (1.77) -0.48 (1.77)  15.31 (5.2) -0.48 (1.77)
-      2:          2 42 (0) -0.79 (1.09) -0.79 (1.09) -10.71 (3.3) -0.79 (1.09)
-      3:          3 42 (0) -6.25 (0.86) -6.25 (0.86)   0.28 (2.2) -6.25 (0.86)
+         explain_id      none      Solar.R         Wind          Temp        Month
+              <int>    <char>       <char>       <char>        <char>       <char>
+      1:          1 42.44 (0) -0.48 (1.77) -0.48 (1.77)  15.31 (5.22) -0.48 (1.77)
+      2:          2 42.44 (0) -0.79 (1.09) -0.79 (1.09) -10.71 (3.28) -0.79 (1.09)
+      3:          3 42.44 (0) -6.25 (0.86) -6.25 (0.86)   0.28 (2.16) -6.25 (0.86)
                   Day
                <char>
       1: -1.27 (0.25)
@@ -782,16 +822,16 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind         Temp       Month
-              <int> <char>     <char>      <char>       <char>      <char>
-      1:          1 42 (0) -8.8 (4.3)   3.7 (2.0)  15.31 (5.8)   3.7 (2.0)
-      2:          2 42 (0)  4.5 (2.7)  -3.4 (1.2) -10.71 (3.6)  -3.4 (1.2)
-      3:          3 42 (0)  8.2 (5.6) -13.5 (3.6)   0.28 (1.8) -13.5 (3.6)
-                 Day
-              <char>
-      1: -1.27 (1.7)
-      2: -0.80 (1.1)
-      3:  0.91 (1.8)
+         explain_id      none      Solar.R          Wind          Temp         Month
+              <int>    <char>       <char>        <char>        <char>        <char>
+      1:          1 42.44 (0) -8.75 (4.26)   3.66 (1.98)  15.31 (5.78)   3.66 (1.98)
+      2:          2 42.44 (0)  4.47 (2.66)  -3.42 (1.25) -10.71 (3.63)  -3.42 (1.25)
+      3:          3 42.44 (0)  8.16 (5.59) -13.46 (3.59)   0.28 (1.85) -13.46 (3.59)
+                  Day
+               <char>
+      1: -1.27 (1.67)
+      2: -0.80 (1.10)
+      3:  0.91 (1.85)
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 4 new. 
@@ -803,11 +843,11 @@
       (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind          Temp       Month
-              <int> <char>     <char>      <char>        <char>      <char>
-      1:          1 42 (0) -8.7 (2.7)   5.3 (2.5)  15.30 (1.65)  2.01 (1.1)
-      2:          2 42 (0)  4.7 (2.1)  -7.0 (2.3) -10.79 (0.95)  0.08 (1.7)
-      3:          3 42 (0)  7.3 (5.3) -26.1 (7.4)   0.55 (2.46) -0.47 (6.0)
+         explain_id      none      Solar.R          Wind          Temp        Month
+              <int>    <char>       <char>        <char>        <char>       <char>
+      1:          1 42.44 (0) -8.74 (2.74)   5.30 (2.46)  15.30 (1.65)  2.01 (1.13)
+      2:          2 42.44 (0)  4.73 (2.08)  -7.02 (2.31) -10.79 (0.95)  0.08 (1.70)
+      3:          3 42.44 (0)  7.27 (5.34) -26.09 (7.43)   0.55 (2.46) -0.47 (5.99)
                   Day
                <char>
       1: -1.28 (0.40)
@@ -824,11 +864,11 @@
       (Conservatively) adding about 40% of that (6 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind         Temp        Month
-              <int> <char>      <char>       <char>       <char>       <char>
-      1:          1 42 (0) -9.1 (0.16)   6.3 (0.60)  15.1 (0.19)  1.30 (0.56)
-      2:          2 42 (0)  4.6 (0.16)  -6.1 (0.75) -11.3 (0.31) -0.47 (0.71)
-      3:          3 42 (0)  7.3 (0.17) -26.2 (1.86)   0.5 (0.22) -0.16 (1.86)
+         explain_id      none      Solar.R          Wind          Temp        Month
+              <int>    <char>       <char>        <char>        <char>       <char>
+      1:          1 42.44 (0) -9.07 (0.16)   6.31 (0.60)  15.07 (0.19)  1.30 (0.56)
+      2:          2 42.44 (0)  4.60 (0.16)  -6.12 (0.75) -11.27 (0.31) -0.47 (0.71)
+      3:          3 42.44 (0)  7.30 (0.17) -26.22 (1.86)   0.50 (0.22) -0.16 (1.86)
                   Day
                <char>
       1: -1.01 (0.22)
@@ -843,11 +883,11 @@
       Standard deviation convergence threshold (0.02) reached: 0.017!
       
       Final estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind          Temp        Month
-              <int> <char>      <char>       <char>        <char>       <char>
-      1:          1 42 (0) -9.2 (0.14)   6.1 (0.35)  15.26 (0.16)  1.62 (0.41)
-      2:          2 42 (0)  4.6 (0.13)  -6.4 (0.41) -11.17 (0.25) -0.13 (0.37)
-      3:          3 42 (0)  7.2 (0.11) -26.4 (0.18)   0.53 (0.10)  0.05 (0.19)
+         explain_id      none      Solar.R          Wind          Temp        Month
+              <int>    <char>       <char>        <char>        <char>       <char>
+      1:          1 42.44 (0) -9.15 (0.14)   6.10 (0.35)  15.26 (0.16)  1.62 (0.41)
+      2:          2 42.44 (0)  4.56 (0.13)  -6.42 (0.41) -11.17 (0.25) -0.13 (0.37)
+      3:          3 42.44 (0)  7.25 (0.11) -26.37 (0.18)   0.53 (0.10)  0.05 (0.19)
                   Day
                <char>
       1: -1.22 (0.18)
@@ -893,11 +933,11 @@
       (Conservatively) adding about 10% of that (2 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none      Solar.R         Wind         Temp        Month
-              <int> <char>       <char>       <char>       <char>       <char>
-      1:          1 42 (0) -0.48 (1.77) -0.48 (1.77)  15.31 (5.2) -0.48 (1.77)
-      2:          2 42 (0) -0.79 (1.09) -0.79 (1.09) -10.71 (3.3) -0.79 (1.09)
-      3:          3 42 (0) -6.25 (0.86) -6.25 (0.86)   0.28 (2.2) -6.25 (0.86)
+         explain_id      none      Solar.R         Wind          Temp        Month
+              <int>    <char>       <char>       <char>        <char>       <char>
+      1:          1 42.44 (0) -0.48 (1.77) -0.48 (1.77)  15.31 (5.22) -0.48 (1.77)
+      2:          2 42.44 (0) -0.79 (1.09) -0.79 (1.09) -10.71 (3.28) -0.79 (1.09)
+      3:          3 42.44 (0) -6.25 (0.86) -6.25 (0.86)   0.28 (2.16) -6.25 (0.86)
                   Day
                <char>
       1: -1.27 (0.25)
@@ -914,16 +954,16 @@
       (Conservatively) adding about 20% of that (4 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind         Temp       Month
-              <int> <char>     <char>      <char>       <char>      <char>
-      1:          1 42 (0) -8.8 (4.3)   3.7 (2.0)  15.31 (5.8)   3.7 (2.0)
-      2:          2 42 (0)  4.5 (2.7)  -3.4 (1.2) -10.71 (3.6)  -3.4 (1.2)
-      3:          3 42 (0)  8.2 (5.6) -13.5 (3.6)   0.28 (1.8) -13.5 (3.6)
-                 Day
-              <char>
-      1: -1.27 (1.7)
-      2: -0.80 (1.1)
-      3:  0.91 (1.8)
+         explain_id      none      Solar.R          Wind          Temp         Month
+              <int>    <char>       <char>        <char>        <char>        <char>
+      1:          1 42.44 (0) -8.75 (4.26)   3.66 (1.98)  15.31 (5.78)   3.66 (1.98)
+      2:          2 42.44 (0)  4.47 (2.66)  -3.42 (1.25) -10.71 (3.63)  -3.42 (1.25)
+      3:          3 42.44 (0)  8.16 (5.59) -13.46 (3.59)   0.28 (1.85) -13.46 (3.59)
+                  Day
+               <char>
+      1: -1.27 (1.67)
+      2: -0.80 (1.10)
+      3:  0.91 (1.85)
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 4 new. 
@@ -935,11 +975,11 @@
       (Conservatively) adding about 30% of that (6 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none    Solar.R        Wind          Temp       Month
-              <int> <char>     <char>      <char>        <char>      <char>
-      1:          1 42 (0) -8.7 (2.7)   5.3 (2.5)  15.30 (1.65)  2.01 (1.1)
-      2:          2 42 (0)  4.7 (2.1)  -7.0 (2.3) -10.79 (0.95)  0.08 (1.7)
-      3:          3 42 (0)  7.3 (5.3) -26.1 (7.4)   0.55 (2.46) -0.47 (6.0)
+         explain_id      none      Solar.R          Wind          Temp        Month
+              <int>    <char>       <char>        <char>        <char>       <char>
+      1:          1 42.44 (0) -8.74 (2.74)   5.30 (2.46)  15.30 (1.65)  2.01 (1.13)
+      2:          2 42.44 (0)  4.73 (2.08)  -7.02 (2.31) -10.79 (0.95)  0.08 (1.70)
+      3:          3 42.44 (0)  7.27 (5.34) -26.09 (7.43)   0.55 (2.46) -0.47 (5.99)
                   Day
                <char>
       1: -1.28 (0.40)
@@ -956,11 +996,11 @@
       (Conservatively) adding about 40% of that (6 coalitions) in the next iteration.
       
       Current estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind         Temp        Month
-              <int> <char>      <char>       <char>       <char>       <char>
-      1:          1 42 (0) -9.1 (0.16)   6.3 (0.60)  15.1 (0.19)  1.30 (0.56)
-      2:          2 42 (0)  4.6 (0.16)  -6.1 (0.75) -11.3 (0.31) -0.47 (0.71)
-      3:          3 42 (0)  7.3 (0.17) -26.2 (1.86)   0.5 (0.22) -0.16 (1.86)
+         explain_id      none      Solar.R          Wind          Temp        Month
+              <int>    <char>       <char>        <char>        <char>       <char>
+      1:          1 42.44 (0) -9.07 (0.16)   6.31 (0.60)  15.07 (0.19)  1.30 (0.56)
+      2:          2 42.44 (0)  4.60 (0.16)  -6.12 (0.75) -11.27 (0.31) -0.47 (0.71)
+      3:          3 42.44 (0)  7.30 (0.17) -26.22 (1.86)   0.50 (0.22) -0.16 (1.86)
                   Day
                <char>
       1: -1.01 (0.22)
@@ -975,11 +1015,11 @@
       Standard deviation convergence threshold (0.02) reached: 0.017!
       
       Final estimated Shapley values (sd)
-         explain_id   none     Solar.R         Wind          Temp        Month
-              <int> <char>      <char>       <char>        <char>       <char>
-      1:          1 42 (0) -9.2 (0.14)   6.1 (0.35)  15.26 (0.16)  1.62 (0.41)
-      2:          2 42 (0)  4.6 (0.13)  -6.4 (0.41) -11.17 (0.25) -0.13 (0.37)
-      3:          3 42 (0)  7.2 (0.11) -26.4 (0.18)   0.53 (0.10)  0.05 (0.19)
+         explain_id      none      Solar.R          Wind          Temp        Month
+              <int>    <char>       <char>        <char>        <char>       <char>
+      1:          1 42.44 (0) -9.15 (0.14)   6.10 (0.35)  15.26 (0.16)  1.62 (0.41)
+      2:          2 42.44 (0)  4.56 (0.13)  -6.42 (0.41) -11.17 (0.25) -0.13 (0.37)
+      3:          3 42.44 (0)  7.25 (0.11) -26.37 (0.18)   0.53 (0.10)  0.05 (0.19)
                   Day
                <char>
       1: -1.22 (0.18)

@@ -20,9 +20,9 @@
       -- Estimated Shapley values 
          explain_id   none Solar.R   Wind   Temp    Day Month_factor
               <int> <char>  <char> <char> <char> <char>       <char>
-      1:          1     42    -4.7    7.8   17.8   -2.6         -7.6
-      2:          2     42     2.3   -3.1   -5.3   -1.7         -7.6
-      3:          3     42     3.9  -17.5   -1.5    1.1          3.4
+      1:          1  42.44   -4.73   7.75  17.75  -2.60        -7.59
+      2:          2  42.44    2.34  -3.15  -5.31  -1.68        -7.59
+      3:          3  42.44    3.86 -17.47  -1.47   1.10         3.38
       
       -- Estimated MSEv 
       Estimated MSE of v(S) = 115 (with sd = 20)
@@ -458,12 +458,12 @@
       -- Estimated Shapley values 
          explain_idx horizon   none Temp.1 Temp.2
                <int>   <int> <char> <char> <char>
-      1:         152       1     78  -0.40  -1.39
-      2:         153       1     78  -6.62  -0.18
-      3:         152       2     78  -0.33  -1.20
-      4:         153       2     78  -6.02  -0.34
-      5:         152       3     78  -0.29  -1.06
-      6:         153       3     78  -5.21  -0.26
+      1:         152       1  77.88  -0.40  -1.39
+      2:         153       1  77.88  -6.62  -0.18
+      3:         152       2  77.88  -0.33  -1.20
+      4:         153       2  77.88  -6.02  -0.34
+      5:         152       3  77.88  -0.29  -1.06
+      6:         153       3  77.88  -5.21  -0.26
     Output
       $calling_function
       [1] "explain_forecast"

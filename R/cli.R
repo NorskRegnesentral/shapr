@@ -301,8 +301,10 @@ format_shapley_info <- function(internal, iter, digits = 2L) {
 
   # Formatting with stable_format to avoids small number-issues and ensuring OS-consistency
 
-  dt_est_formatted <- dt_shapley_est[, lapply(.SD, stable_format, digits = digits)]
-  dt_sd_formatted <- dt_shapley_sd[, lapply(.SD, stable_format, digits = digits)]
+  #dt_est_formatted <- dt_shapley_est[, lapply(.SD, stable_format, digits = digits)]
+  #dt_sd_formatted <- dt_shapley_sd[, lapply(.SD, stable_format, digits = digits)]
+  dt_est_formatted <- dt_shapley_est[, lapply(.SD, format_round, digits = digits)]
+  dt_sd_formatted <- dt_shapley_sd[, lapply(.SD, format_round, digits = digits)]
 
   if (converged_exact) {
     print_dt0 <- dt_est_formatted
@@ -433,6 +435,39 @@ stable_format <- function(x, digits = 2L, justify = "right",
   # Deterministic numeric rounding at the display precision
   y <- round_half_even(x, digits = digits)
 
+  z <- signif(y, digits = digits) # OS-independent round-off to the number of significant digits
+
   # Format with fixed fractional digits (no further rounding surprises)
-  format(y, format = "f", digits = digits, justify = justify)
+  format(z, format = "f", digits = digits, justify = justify)
 }
+
+
+#' Format numbers with rounding
+#'
+#' @param x Numeric vector. The numbers to format.
+#' @param digits Integer. The number of digits to round to.
+#'
+#' @return Character vector. The formatted numbers.
+#'
+#' @keywords internal
+format_round <- function(x,digits){
+  format(round2(x,digits),justify = "right")
+}
+
+
+#' Round numbers to the specified number of decimal places
+#' @param x Numeric vector. The numbers to round.
+#' @param decimal_places Integer. The number of decimal places to round to. Defaults to 0.
+#'
+#' @return Numeric vector. The rounded numbers.
+#'
+#' @keywords internal
+round2 = function(x, decimal_places = 0) {
+  posneg = sign(x)
+  z = abs(x)*10^decimal_places
+  z = z + 0.5 + sqrt(.Machine$double.eps)
+  z = trunc(z)
+  z = z/10^decimal_places
+  z*posneg
+}
+
