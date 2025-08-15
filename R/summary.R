@@ -9,7 +9,7 @@
 #' See the details section of [get_results()] for details about each component.
 #'
 #' @export
-summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
+summary.shapr <- function(object, digits = 2L, ...) {
   stopifnot(inherits(object, "shapr"))
 
   internal <- object$internal
@@ -43,11 +43,13 @@ summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
   len_format0 <- length(formatted_info_basic0)
 
   # Append extra info second last (keep the temp path last)
-  formatted_info_basic <- c(formatted_info_basic0[-len_format0],
-                            formatted_info_extra,
-                            formatted_info_basic0[len_format0])
+  formatted_info_basic <- c(
+    formatted_info_basic0[-len_format0],
+    formatted_info_extra,
+    formatted_info_basic0[len_format0]
+  )
 
-  cli::cli_ul(formatted_info_basic)   # Display updated basic info
+  cli::cli_ul(formatted_info_basic) # Display updated basic info
 
 
   # Display convergence info
@@ -58,7 +60,7 @@ summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
   }
 
   # Display Shapley value res
-  formatted_shapley_info <- format_shapley_info(internal, iter, digits = digits, nsmall = nsmall)
+  formatted_shapley_info <- format_shapley_info(internal, iter, digits = digits)
 
   if (converged_exact) {
     msg <- "Estimated Shapley values"
@@ -74,8 +76,8 @@ summary.shapr <- function(object, digits = 2L, nsmall = 0L, ...) {
 
   # MSEv info (only when using explain())
   if (results$calling_function == "explain") {
-    MSEv_nice <- num_str(format(results$MSEv$MSEv, digits = digits, nsmall = nsmall))
-    MSEv_sd_nice <- num_str(format(results$MSEv$MSEv_sd, digits = digits, nsmall = nsmall))
+    MSEv_nice <- num_str(format(results$MSEv$MSEv, digits = digits))
+    MSEv_sd_nice <- num_str(format(results$MSEv$MSEv_sd, digits = digits))
 
     cli::cli_h3("Estimated MSEv")
     cli::cli_text(

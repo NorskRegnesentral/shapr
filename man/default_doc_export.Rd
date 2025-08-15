@@ -4,7 +4,7 @@
 \alias{default_doc_export}
 \title{Exported documentation helper function.}
 \usage{
-default_doc_export(internal, iter, index_features, digits, nsmall)
+default_doc_export(internal, iter, index_features, digits)
 }
 \arguments{
 \item{internal}{List.
@@ -19,10 +19,6 @@ apply to the present method. \code{NULL} means all coalitions. Only used interna
 \item{digits}{Integer.
 Number of significant digits to display.
 Defaults to 2.}
-
-\item{nsmall}{Integer.
-Minimum digits to the right of the decimal point.
-Defaults to 0.}
 }
 \description{
 Exported documentation helper function.

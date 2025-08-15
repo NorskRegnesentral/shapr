@@ -285,7 +285,7 @@ format_convergence_info <- function(internal, iter) {
 #' @inheritParams default_doc_internal
 #' @inheritParams default_doc_export
 #' @keywords internal
-format_shapley_info <- function(internal, iter, digits = 2L, nsmall = 0L) {
+format_shapley_info <- function(internal, iter, digits = 2L) {
   converged_exact <- internal$iter_list[[iter]]$converged_exact
 
   dt_shapley_est0 <- internal$iter_list[[iter]]$dt_shapley_est
@@ -298,19 +298,16 @@ format_shapley_info <- function(internal, iter, digits = 2L, nsmall = 0L) {
   dt_shapley_sd <- dt_shapley_sd0[, shap_names_with_none, with = FALSE]
 
   # Printing the current Shapley values
-  matrix1 <- format(zapsmall(dt_shapley_est, digits = digits + 1), # Avoids small number-issues and is OS-consistent
-    digits = digits, nsmall = nsmall,
-    justify = "right", scientific = FALSE
-  )
-  matrix2 <- format(zapsmall(dt_shapley_sd, digits = digits + 1), # Avoids small number-issues and is OS-consistent
-    digits = digits, nsmall = nsmall,
-    justify = "right", scientific = FALSE
-  )
+
+  # Formatting with stable_format to avoids small number-issues and ensuring OS-consistency
+
+  dt_est_formatted <- dt_shapley_est[, lapply(.SD, stable_format, digits = digits)]
+  dt_sd_formatted <- dt_shapley_sd[, lapply(.SD, stable_format, digits = digits)]
 
   if (converged_exact) {
-    print_dt0 <- as.data.table(matrix1)
+    print_dt0 <- dt_est_formatted
   } else {
-    print_dt0 <- as.data.table(matrix(paste(matrix1, " (", matrix2, ")", sep = ""), nrow = nrow(matrix1)))
+    print_dt0 <- dt_est_formatted[, Map(function(x, y) paste0(x, " (", y, ")"), .SD, dt_sd_formatted)]
   }
 
   print_dt <- cbind(
@@ -387,4 +384,55 @@ print_iter <- function(internal) {
 #' @keywords internal
 num_str <- function(x) {
   structure(x, class = "numeric")
+}
+
+
+#' Round numbers to the nearest even number at the specified number of digits
+#' @param x Numeric vector. The numbers to round.
+#' @param tol Numeric. The tolerance for rounding. Defaults to 10 * .Machine$double.eps.
+#' @inheritParams default_doc_export
+#'
+#' @return Numeric vector. The rounded numbers.
+#'
+#' @keywords internal
+round_half_even <- function(x, digits = 2, tol = 10 * .Machine$double.eps) {
+  s <- 10^digits
+  z <- x * s
+  i <- trunc(z)
+  frac <- abs(z - i)
+  t <- tol * pmax(1, abs(z))
+  is_half <- abs(frac - 0.5) <= t
+  res <- trunc(z + 0.5 * sign(z))
+  res[is_half] <- ifelse((abs(i[is_half]) %% 2L) == 0L, i[is_half], i[is_half] + sign(z[is_half]))
+  res / s
+}
+
+#' Format numbers in a stable, OS-independent way, avoiding rounding surprises
+#'
+#' @param x Numeric vector. The numbers to format.
+#' @param justify Character. The justification of the formatted numbers. Defaults to "right".
+#' @param guard Integer. How many extra decimals below the print precision to consider "noise". Defaults to 2.
+#' @param zero_scale_aware Logical. If TRUE, the function is aware of the scale of the numbers and adjusts the
+#' epsilon accordingly. Defaults to TRUE.
+#' @inheritParams default_doc_export
+#'
+#' @return Character vector. The formatted numbers.
+#'
+#' @keywords internal
+stable_format <- function(x, digits = 2L, justify = "right",
+                          guard = 2L,
+                          zero_scale_aware = TRUE) {
+  # Zap tiny numbers explicitly (mimics zapsmall but with a guard you control)
+  if (zero_scale_aware) {
+    eps <- 10^-(digits + guard) * pmax(1, abs(x))
+  } else {
+    eps <- rep(10^-(digits + guard), length(x)) # absolute cutoff
+  }
+  x[abs(x) < eps] <- 0
+
+  # Deterministic numeric rounding at the display precision
+  y <- round_half_even(x, digits = digits)
+
+  # Format with fixed fractional digits (no further rounding surprises)
+  format(y, format = "f", digits = digits, justify = justify)
 }

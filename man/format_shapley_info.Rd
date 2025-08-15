@@ -4,7 +4,7 @@
 \alias{format_shapley_info}
 \title{Internal function to extract the formatted Shapley value table}
 \usage{
-format_shapley_info(internal, iter, digits = 2L, nsmall = 0L)
+format_shapley_info(internal, iter, digits = 2L)
 }
 \arguments{
 \item{internal}{List.
@@ -18,10 +18,6 @@ The iteration number. Only used internally.}
 \item{digits}{Integer.
 Number of significant digits to display.
 Defaults to 2.}
-
-\item{nsmall}{Integer.
-Minimum digits to the right of the decimal point.
-Defaults to 0.}
 }
 \description{
 To be used by both \code{\link[=print_iter]{print_iter()}} and \code{\link[=summary.shapr]{summary.shapr()}}

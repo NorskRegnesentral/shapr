@@ -77,15 +77,10 @@ default_doc_internal <- function(internal,
 #' Number of significant digits to display.
 #' Defaults to 2.
 #'
-#' @param nsmall Integer.
-#' Minimum digits to the right of the decimal point.
-#' Defaults to 0.
-#'
 #' @keywords internal
 default_doc_export <- function(internal,
                                iter,
                                index_features,
-                               digits,
-                               nsmall) {
+                               digits) {
   NULL
 }

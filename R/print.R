@@ -9,7 +9,6 @@
 #' @param digits Integer.
 #' Number of significant digits to display.
 #' Defaults to 3.
-#' @inheritParams default_doc_export
 #' @param ... Further arguments passed to [data.table::print.data.table()].
 #'
 #' @return The object is returned invisibly after printing selected output.
@@ -18,10 +17,10 @@ print.shapr <- function(x, what = c(
                           "shapley_est", "shapley_sd", "MSEv",
                           "MSEv_explicand", "MSEv_coalition", "timing_summary"
                         ),
-                        digits = 3L, nsmall = 0L, ...) {
+                        digits = 3L, ...) {
   what <- match.arg(what)
   value <- get_results(x, what) # Always return a single data.table
 
-  print(value, digits = digits, nsmall = nsmall, ...)
+  print(value, digits = digits, ...)
   invisible(x)
 }
