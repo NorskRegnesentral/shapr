@@ -17,7 +17,7 @@ The iteration number. Only used internally.}
 apply to the present method. \code{NULL} means all coalitions. Only used internally.}
 
 \item{digits}{Integer.
-Number of significant digits to display.
+(Maximum) number of digits to be displayed after the decimal point.
 Defaults to 2.}
 }
 \description{

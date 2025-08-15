@@ -74,7 +74,7 @@ default_doc_internal <- function(internal,
 #' apply to the present method. `NULL` means all coalitions. Only used internally.
 #'
 #' @param digits Integer.
-#' Number of significant digits to display.
+#' (Maximum) number of digits to be displayed after the decimal point.
 #' Defaults to 2.
 #'
 #' @keywords internal

@@ -4,12 +4,14 @@
 \alias{format_round}
 \title{Format numbers with rounding}
 \usage{
-format_round(x, digits)
+format_round(x, digits = 2L)
 }
 \arguments{
 \item{x}{Numeric vector. The numbers to format.}
 
-\item{digits}{Integer. The number of digits to round to.}
+\item{digits}{Integer.
+(Maximum) number of digits to be displayed after the decimal point.
+Defaults to 2.}
 }
 \value{
 Character vector. The formatted numbers.

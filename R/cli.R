@@ -299,10 +299,7 @@ format_shapley_info <- function(internal, iter, digits = 2L) {
 
   # Printing the current Shapley values
 
-  # Formatting with stable_format to avoids small number-issues and ensuring OS-consistency
-
-  #dt_est_formatted <- dt_shapley_est[, lapply(.SD, stable_format, digits = digits)]
-  #dt_sd_formatted <- dt_shapley_sd[, lapply(.SD, stable_format, digits = digits)]
+  # Formatting with the custom format_round to avoid small number-issues and ensure OS-consistency
   dt_est_formatted <- dt_shapley_est[, lapply(.SD, format_round, digits = digits)]
   dt_sd_formatted <- dt_shapley_sd[, lapply(.SD, format_round, digits = digits)]
 
@@ -389,85 +386,35 @@ num_str <- function(x) {
 }
 
 
-#' Round numbers to the nearest even number at the specified number of digits
-#' @param x Numeric vector. The numbers to round.
-#' @param tol Numeric. The tolerance for rounding. Defaults to 10 * .Machine$double.eps.
-#' @inheritParams default_doc_export
-#'
-#' @return Numeric vector. The rounded numbers.
-#'
-#' @keywords internal
-round_half_even <- function(x, digits = 2, tol = 10 * .Machine$double.eps) {
-  s <- 10^digits
-  z <- x * s
-  i <- trunc(z)
-  frac <- abs(z - i)
-  t <- tol * pmax(1, abs(z))
-  is_half <- abs(frac - 0.5) <= t
-  res <- trunc(z + 0.5 * sign(z))
-  res[is_half] <- ifelse((abs(i[is_half]) %% 2L) == 0L, i[is_half], i[is_half] + sign(z[is_half]))
-  res / s
-}
-
-#' Format numbers in a stable, OS-independent way, avoiding rounding surprises
-#'
-#' @param x Numeric vector. The numbers to format.
-#' @param justify Character. The justification of the formatted numbers. Defaults to "right".
-#' @param guard Integer. How many extra decimals below the print precision to consider "noise". Defaults to 2.
-#' @param zero_scale_aware Logical. If TRUE, the function is aware of the scale of the numbers and adjusts the
-#' epsilon accordingly. Defaults to TRUE.
-#' @inheritParams default_doc_export
-#'
-#' @return Character vector. The formatted numbers.
-#'
-#' @keywords internal
-stable_format <- function(x, digits = 2L, justify = "right",
-                          guard = 2L,
-                          zero_scale_aware = TRUE) {
-  # Zap tiny numbers explicitly (mimics zapsmall but with a guard you control)
-  if (zero_scale_aware) {
-    eps <- 10^-(digits + guard) * pmax(1, abs(x))
-  } else {
-    eps <- rep(10^-(digits + guard), length(x)) # absolute cutoff
-  }
-  x[abs(x) < eps] <- 0
-
-  # Deterministic numeric rounding at the display precision
-  y <- round_half_even(x, digits = digits)
-
-  z <- signif(y, digits = digits) # OS-independent round-off to the number of significant digits
-
-  # Format with fixed fractional digits (no further rounding surprises)
-  format(z, format = "f", digits = digits, justify = justify)
-}
-
-
 #' Format numbers with rounding
 #'
 #' @param x Numeric vector. The numbers to format.
-#' @param digits Integer. The number of digits to round to.
+#' @inheritParams default_doc_export
 #'
 #' @return Character vector. The formatted numbers.
 #'
 #' @keywords internal
-format_round <- function(x,digits){
-  format(round2(x,digits),justify = "right")
+format_round <- function(x, digits = 2L) {
+  format(round_manual(x, digits = digits), justify = "right")
 }
 
 
 #' Round numbers to the specified number of decimal places
+#'
+#' This function rounds numbers to the specified number of decimal places
+#' using a manual method that avoids the typical rounding issues in R which may vary
+#' across different OS.
 #' @param x Numeric vector. The numbers to round.
-#' @param decimal_places Integer. The number of decimal places to round to. Defaults to 0.
+#' @param digits Integer. The number of digits to round to. Defaults 0.
 #'
 #' @return Numeric vector. The rounded numbers.
 #'
 #' @keywords internal
-round2 = function(x, decimal_places = 0) {
-  posneg = sign(x)
-  z = abs(x)*10^decimal_places
-  z = z + 0.5 + sqrt(.Machine$double.eps)
-  z = trunc(z)
-  z = z/10^decimal_places
-  z*posneg
+round_manual <- function(x, digits = 0) {
+  posneg <- sign(x)
+  z <- abs(x) * 10^dec
+  z <- z + 0.5 + sqrt(.Machine$double.eps)
+  z <- trunc(z)
+  z <- z / 10^dec
+  z * posneg
 }
-

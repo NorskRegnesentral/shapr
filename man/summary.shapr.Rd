@@ -10,7 +10,7 @@
 \item{object}{A shapr object.}
 
 \item{digits}{Integer.
-Number of significant digits to display.
+(Maximum) number of digits to be displayed after the decimal point.
 Defaults to 2.}
 
 \item{...}{Currently unused.}

@@ -16,7 +16,7 @@ The list contains one or more of the elements \code{parameters}, \code{data}, \c
 The iteration number. Only used internally.}
 
 \item{digits}{Integer.
-Number of significant digits to display.
+(Maximum) number of digits to be displayed after the decimal point.
 Defaults to 2.}
 }
 \description{

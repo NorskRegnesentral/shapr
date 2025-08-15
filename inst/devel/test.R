@@ -11,7 +11,10 @@ files <- list.files(
   recursive = TRUE
 )
 
- files <- files[grep("semi",files)]
+files <- files[grep("semi",files)]
+files <- files[grep("iterative",files)]
+files <- files[grep("summary",files)]
+
 
 # files = files[14]
 
