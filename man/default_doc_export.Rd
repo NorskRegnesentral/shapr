@@ -4,7 +4,7 @@
 \alias{default_doc_export}
 \title{Exported documentation helper function.}
 \usage{
-default_doc_export(internal, iter, index_features)
+default_doc_export(internal, iter, index_features, digits)
 }
 \arguments{
 \item{internal}{List.
@@ -15,6 +15,10 @@ The iteration number. Only used internally.}
 
 \item{index_features}{Positive integer vector. Specifies the id_coalition to
 apply to the present method. \code{NULL} means all coalitions. Only used internally.}
+
+\item{digits}{Integer.
+(Maximum) number of digits to be displayed after the decimal point.
+Defaults to 2.}
 }
 \description{
 Exported documentation helper function.

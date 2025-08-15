@@ -356,6 +356,7 @@ bootstrap_shapley_inner <- function(X,
 
   dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
   colnames(dt_kshap_boot_sd) <- c("none", shap_names)
+  dt_kshap_boot_sd[, none := 0] # Hard set to 0 as it is zero by definition
 
   return(dt_kshap_boot_sd)
 }

@@ -136,8 +136,10 @@
       -- Explanation overview --
       
       * Model class: <Arima>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of group-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -145,14 +147,14 @@
       
       i Using 4 of 4 coalitions. 
     Output
-         explain_idx horizon  none   Temp    Wind
-               <int>   <int> <num>  <num>   <num>
-      1:         149       1 77.88 -8.252 -2.2557
-      2:         150       1 77.88 -2.977 -2.6587
-      3:         149       2 77.88 -8.252 -2.6320
-      4:         150       2 77.88 -2.977 -0.4990
-      5:         149       3 77.88 -8.256 -0.4697
-      6:         150       3 77.88 -2.981 -1.6952
+         explain_idx horizon  none  Temp   Wind
+               <int>   <int> <num> <num>  <num>
+      1:         149       1  77.9 -8.25 -2.256
+      2:         150       1  77.9 -2.98 -2.659
+      3:         149       2  77.9 -8.25 -2.632
+      4:         150       2  77.9 -2.98 -0.499
+      5:         149       3  77.9 -8.26 -0.470
+      6:         150       3  77.9 -2.98 -1.695
 
 # erroneous input: `train_idx`
 

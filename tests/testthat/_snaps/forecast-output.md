@@ -14,8 +14,10 @@
       -- Explanation overview --
       
       * Model class: <ar>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -48,8 +50,10 @@
       -- Explanation overview --
       
       * Model class: <Arima>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 7
       * Number of observations to explain: 2
       
@@ -89,8 +93,10 @@
       -- Explanation overview --
       
       * Model class: <Arima>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 9
       * Number of observations to explain: 2
       
@@ -138,8 +144,10 @@
       -- Explanation overview --
       
       * Model class: <Arima>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of group-wise Shapley values: 4
       * Number of observations to explain: 2
       
@@ -182,8 +190,10 @@
       -- Explanation overview --
       
       * Model class: <Arima>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -216,8 +226,10 @@
       -- Explanation overview --
       
       * Model class: <forecast_ARIMA>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of group-wise Shapley values: 2
       * Number of observations to explain: 2
       
@@ -250,8 +262,10 @@
       -- Explanation overview --
       
       * Model class: <Arima>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 3
       * Number of observations to explain: 2
       
@@ -284,8 +298,10 @@
       -- Explanation overview --
       
       * Model class: <forecast_ARIMA>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of group-wise Shapley values: 2
       * Feature groups: Temp: {"Temp.1", "Temp.2"}; Wind.1: {"Wind.1", "Wind.2",
       "Wind.F1"}; Wind.2: {"Wind.1", "Wind.2", "Wind.F1", "Wind.F2"}
@@ -318,8 +334,10 @@
       -- Explanation overview --
       
       * Model class: <forecast_ARIMA>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of group-wise Shapley values: 2
       * Feature groups: Group1.1: {"Wind.1", "Temp.1"}; Group1.2: {"Wind.1",
       "Temp.1", "Wind.F2"}; Group2: {"Wind.2", "Temp.2", "Wind.F1"}

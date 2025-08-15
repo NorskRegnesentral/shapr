@@ -128,8 +128,10 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
       * Number of observations to explain: 3
       

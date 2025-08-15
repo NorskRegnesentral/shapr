@@ -8,10 +8,7 @@
 #' See the details section of [get_results()] for details about each component.
 #' @param digits Integer.
 #' Number of significant digits to display.
-#' Defaults to 4.
-#' @param nsmall Integer.
-#' Minimum digits to the right of the decimal point.
-#' Defaults to 2 less than `digits`.
+#' Defaults to 3.
 #' @param ... Further arguments passed to [data.table::print.data.table()].
 #'
 #' @return The object is returned invisibly after printing selected output.
@@ -20,10 +17,10 @@ print.shapr <- function(x, what = c(
                           "shapley_est", "shapley_sd", "MSEv",
                           "MSEv_explicand", "MSEv_coalition", "timing_summary"
                         ),
-                        digits = 4, nsmall = max(0, digits - 2), ...) {
+                        digits = 3L, ...) {
   what <- match.arg(what)
   value <- get_results(x, what) # Always return a single data.table
 
-  print(value, digits = digits, nsmall = nsmall, ...)
+  print(value, digits = digits, ...)
   invisible(x)
 }
