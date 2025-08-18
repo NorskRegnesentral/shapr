@@ -24,14 +24,14 @@ summary.shapr <- function(object, digits = 2L, ...) {
 
   func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
   init_time <- results$timing_summary$init_time
-  nice_total_time <- results$timing_summary$nice_total_time
+  total_time_str <- results$timing_summary$total_time_str
   if (is.null(init_time)) init_time <- 0
-  if (is.null(nice_total_time)) nice_total_time <- ""
+  if (is.null(total_time_str)) total_time_str <- ""
 
 
   cli::cli_h1("Summary of Shapley value explanation")
   if (isFALSE(testing)) {
-    cli::cli_ul(paste0("Computed with", func_txt, " in {.field {nice_total_time}}, started {.val {round(init_time)}}"))
+    cli::cli_ul(paste0("Computed with", func_txt, " in {.field {total_time_str}}, started {.val {round(init_time)}}"))
   } else {
     cli::cli_ul(paste0("Computed with", func_txt))
   }

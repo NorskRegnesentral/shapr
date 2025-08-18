@@ -27,7 +27,7 @@ compute_time <- function(internal) {
     end_time = main_timing_list[[length(main_timing_list)]],
     total_time_secs = total_time_secs
   )
-  timing_summary[, nice_total_time := get_nice_time(total_time_secs)]
+  timing_summary[, total_time_str := get_nice_time(total_time_secs)]
 
   iter_timing_secs_list <- list()
   for (i in seq_along(iter_timing_list)) {
