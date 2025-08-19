@@ -63,8 +63,8 @@
 <span>  <span class="va">W_kernel</span>,</span>
 <span>  <span class="va">S</span>,</span>
 <span>  <span class="va">dt_vS</span>,</span>
-<span>  <span class="va">output_size</span>,</span>
 <span>  <span class="va">model_class</span>,</span>
+<span>  <span class="va">output_size</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -124,14 +124,14 @@ The last row is assumed to be the full coalition, i.e., it contains the predicte
 which are to be explained.</p></dd>
 
 
-<dt id="arg-output-size">output_size<a class="anchor" aria-label="anchor" href="#arg-output-size"></a></dt>
-<dd><p>Scalar integer.
-Specifies the dimension of the output from the prediction model for every observation.</p></dd>
-
-
 <dt id="arg-model-class">model_class<a class="anchor" aria-label="anchor" href="#arg-model-class"></a></dt>
 <dd><p>Character string.
 The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by <code>class(model)[1]</code>.</p></dd>
+
+
+<dt id="arg-output-size">output_size<a class="anchor" aria-label="anchor" href="#arg-output-size"></a></dt>
+<dd><p>Scalar integer.
+Specifies the dimension of the output from the prediction model for every observation.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

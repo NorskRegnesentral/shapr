@@ -562,7 +562,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2025-08-08 11:55:51</span> <span style="color: #00BBBB;">─────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2025-08-19 08:36:47</span> <span style="color: #00BBBB;">─────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature names extracted from the model contains `NA`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   Consistency checks between model and data is therefore disabled.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is</span>
@@ -571,23 +571,25 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;ar&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="font-style: italic;">empirical</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="font-style: italic;">Non-iterative</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • v(S) estimation class: <span style="color: #0000BB;">Monte Carlo integration</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="color: #0000BB;">empirical</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">1000</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">2</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpXnmh1r/shapr_obj_24772ecdb86f.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp0pURj7/shapr_obj_250e15e90fca.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">4</span> of <span style="color: #0000BB;">4</span> coalitions. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    explain_idx horizon  none  Temp.1  Temp.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;int&gt;   &lt;int&gt; &lt;num&gt;   &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         152       1 77.88 -0.3972 -1.3912</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         153       1 77.88 -6.6177 -0.1835</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         152       2 77.88 -0.3285 -1.2034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:         153       2 77.88 -6.0208 -0.3371</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         152       3 77.88 -0.2915 -1.0552</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         153       3 77.88 -5.2122 -0.2553</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    explain_idx horizon  none Temp.1 Temp.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;int&gt;   &lt;int&gt; &lt;num&gt;  &lt;num&gt;  &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         152       1  77.9 -0.397 -1.391</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         153       1  77.9 -6.618 -0.184</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         152       2  77.9 -0.329 -1.203</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:         153       2  77.9 -6.021 -0.337</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         152       3  77.9 -0.291 -1.055</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         153       3  77.9 -5.212 -0.255</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

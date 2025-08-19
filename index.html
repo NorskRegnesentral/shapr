@@ -179,7 +179,7 @@
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-05-16 15:59:46 ──────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-18 08:51:00 ──────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is</span></span>
@@ -192,16 +192,20 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Iterative estimation: FALSE</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/RtmprK6ied/shapr_obj_367086e7deb18.rds'</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpKiUgyZ\shapr_obj_637c66cd4e91.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -212,16 +216,43 @@
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
 <span><span class="co"># Printing the Shapley values for the data to explain.</span></span>
-<span><span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values_est</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    explain_id     none    Solar.R      Wind      Temp      Month</span></span>
-<span><span class="co">#&gt;         &lt;int&gt;    &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:          1 43.08571 13.2117337  4.785645 -25.57222  -5.599230</span></span>
-<span><span class="co">#&gt; 2:          2 43.08571 -9.9727747  5.830694 -11.03873  -7.829954</span></span>
-<span><span class="co">#&gt; 3:          3 43.08571 -2.2916185 -7.053393 -10.15035  -4.452481</span></span>
-<span><span class="co">#&gt; 4:          4 43.08571  3.3254595 -3.240879 -10.22492  -6.663488</span></span>
-<span><span class="co">#&gt; 5:          5 43.08571  4.3039571 -2.627764 -14.15166 -12.266855</span></span>
-<span><span class="co">#&gt; 6:          6 43.08571  0.4786417 -5.248686 -12.55344  -6.645738</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    explain_id  none Solar.R  Wind  Temp  Month</span></span>
+<span><span class="co">#&gt;         &lt;int&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt;  &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:          1  43.1  13.212  4.79 -25.6  -5.60</span></span>
+<span><span class="co">#&gt; 2:          2  43.1  -9.973  5.83 -11.0  -7.83</span></span>
+<span><span class="co">#&gt; 3:          3  43.1  -2.292 -7.05 -10.2  -4.45</span></span>
+<span><span class="co">#&gt; 4:          4  43.1   3.325 -3.24 -10.2  -6.66</span></span>
+<span><span class="co">#&gt; 5:          5  43.1   4.304 -2.63 -14.2 -12.27</span></span>
+<span><span class="co">#&gt; 6:          6  43.1   0.479 -5.25 -12.6  -6.65</span></span>
+<span></span>
+<span><span class="co"># Provide a formatted summary of the shapr object</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Summary of Shapley value explanation ────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Computed with`shapr::explain()` in 3.7 seconds, started 2025-08-18 08:51:00</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
+<span><span class="co">#&gt; • Approach: empirical</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
+<span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; • Number of coalitions used: 16 (of total 16)</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpKiUgyZ\shapr_obj_637c66cd4e91.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Estimated Shapley values </span></span>
+<span><span class="co">#&gt;    explain_id   none Solar.R   Wind   Temp  Month</span></span>
+<span><span class="co">#&gt;         &lt;int&gt; &lt;char&gt;  &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:          1  43.09   13.21   4.79 -25.57  -5.60</span></span>
+<span><span class="co">#&gt; 2:          2  43.09   -9.97   5.83 -11.04  -7.83</span></span>
+<span><span class="co">#&gt; 3:          3  43.09   -2.29  -7.05 -10.15  -4.45</span></span>
+<span><span class="co">#&gt; 4:          4  43.09    3.33  -3.24 -10.22  -6.66</span></span>
+<span><span class="co">#&gt; 5:          5  43.09    4.30  -2.63 -14.15 -12.27</span></span>
+<span><span class="co">#&gt; 6:          6  43.09    0.48  -5.25 -12.55  -6.65</span></span>
+<span><span class="co">#&gt; ── Estimated MSEv </span></span>
+<span><span class="co">#&gt; Estimated MSE of v(S) = 144 (with sd = 64)</span></span>
 <span></span>
 <span><span class="co"># Finally we plot the resulting explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
@@ -237,7 +268,7 @@
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-aas2019explaining" class="csl-entry">
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298. <a href="https://doi.org/10.1016/j.artint.2021.103502" class="external-link uri">https://doi.org/10.1016/j.artint.2021.103502</a>.
 </div>

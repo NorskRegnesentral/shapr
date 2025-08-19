@@ -48,6 +48,7 @@
 <url><loc>https://norskregnesentral.github.io/shapr/reference/format_convergence_info.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/format_info_basic.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/format_info_extra.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/reference/format_round.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/format_shapley_info.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/gauss_cat_loss.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/gauss_cat_parameters.html</loc></url>
@@ -66,6 +67,7 @@
 <url><loc>https://norskregnesentral.github.io/shapr/reference/get_max_n_coalitions_causal.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/get_model_specs.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/get_mu_vec.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/reference/get_nice_time.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/get_output_args_default.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/get_predict_model.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/get_results.html</loc></url>
@@ -81,6 +83,7 @@
 <url><loc>https://norskregnesentral.github.io/shapr/reference/mcar_mask_generator.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/memory_layer.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/model_checker.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/reference/num_str.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/observation_impute.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/observation_impute_cpp.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/paired_sampler.html</loc></url>
@@ -115,6 +118,7 @@
 <url><loc>https://norskregnesentral.github.io/shapr/reference/regression.surrogate_aug_data.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/regression.train_model.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/release_questions.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/reference/round_manual.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/rss_cpp.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/sample_coalition_table.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/sample_coalitions_cpp_str_paired.html</loc></url>
