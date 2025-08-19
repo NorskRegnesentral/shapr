@@ -28,6 +28,7 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, idx
     indirect_values: bool, optional
         When False (default), plots the given object as ordinary. 
         When True, shapley_values are collected from 'shaprpy_obj["internal"]["output"]["shap_values_est"]'.
+        Mainly useful when the given object is from a SAGE-computation. 
     **kwargs:
         Additional keyword arguments passed to the underlying plot function from `shap.plots`.
 
@@ -43,7 +44,6 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, idx
     if indirect_values: 
         sage = False
     
-
     # Checking for a valid plot_type
     if sage and not (plot_type in ("bar", "waterfall")): 
         raise TypeError(
@@ -62,8 +62,6 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, idx
     explanation = prep_data(shaprpy_obj, sage=sage, idx=idx, indirect_values=indirect_values)
     
     n_explain = explanation.shape[0] 
-
-    print(n_explain)
 
     if plot_type == "waterfall" and n_explain > 1: 
         raise ValueError(
