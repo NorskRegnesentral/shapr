@@ -12,6 +12,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Iterative
       * Number of feature-wise Shapley values: 5
@@ -54,6 +55,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -82,6 +84,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -111,6 +114,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 4
@@ -140,6 +144,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -169,6 +174,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -198,6 +204,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -227,6 +234,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -256,6 +264,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_separate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -289,6 +298,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_surrogate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -318,6 +328,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_surrogate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -346,6 +357,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_surrogate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -374,6 +386,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_surrogate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -403,6 +416,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_surrogate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 4
@@ -432,6 +446,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_surrogate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -461,6 +476,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_surrogate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5
@@ -490,6 +506,7 @@
       -- Explanation overview --
       
       * Model class: <lm>
+      * v(S) estimation class: Regression
       * Approach: regression_surrogate
       * Procedure: Non-iterative
       * Number of feature-wise Shapley values: 5

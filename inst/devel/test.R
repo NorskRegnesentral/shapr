@@ -1,4 +1,3 @@
-
 # Script used to run tests instead of using `devtools::test()` to avoid the serialization warning in snapshots
 
 library(testthat)
@@ -12,14 +11,14 @@ files <- list.files(
   recursive = TRUE
 )
 
-#files <- files[grep("summary",files)]
+# files <- files[grep("semi",files)]
 
-#files = files[14]
+# files = files[14]
 
 for (file in files) {
   print(paste0("Running snapshots for: ", file))
   Sys.sleep(1)
-  testthat::test_file(file,package="shapr")
+  testthat::test_file(file, package = "shapr")
 }
 
 
@@ -32,8 +31,5 @@ snap_folders <- sub("tests/testthat/test-(.*)\\.R", "\\1", files)
 for (folder in snap_folders) {
   print(paste0("Reviewing snapshots for: ", folder))
   Sys.sleep(.5) # To clearly see when we start reviewing a new folder
-  snapshot_review_man(paste0(folder,"/"))
+  snapshot_review_man(paste0(folder, "/"))
 }
-
-
-

@@ -2,13 +2,14 @@
 #'
 #' @param object A shapr object.
 #' @param ... Currently unused.
+#' @inheritParams default_doc_export
 #'
 #' @return Prints a formatted summary of the shapr object,
 #' and invisibly returns a named list of summary components.
 #' See the details section of [get_results()] for details about each component.
 #'
 #' @export
-summary.shapr <- function(object, ...) {
+summary.shapr <- function(object, digits = 2L, ...) {
   stopifnot(inherits(object, "shapr"))
 
   internal <- object$internal
@@ -23,23 +24,33 @@ summary.shapr <- function(object, ...) {
 
   func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
   init_time <- results$timing_summary$init_time
+  total_time_str <- results$timing_summary$total_time_str
   if (is.null(init_time)) init_time <- 0
+  if (is.null(total_time_str)) total_time_str <- ""
+
 
   cli::cli_h1("Summary of Shapley value explanation")
   if (isFALSE(testing)) {
-    cli::cli_ul(paste0("Computed with", func_txt, " at {.val {round(init_time)}}"))
+    cli::cli_ul(paste0("Computed with", func_txt, " in {.field {total_time_str}}, started {.val {round(init_time)}}"))
   } else {
     cli::cli_ul(paste0("Computed with", func_txt))
   }
 
   # Display basic shapr info
-  formatted_info_basic <- format_info_basic(internal)
-
-  cli::cli_ul(formatted_info_basic)
-
+  formatted_info_basic0 <- format_info_basic(internal)
   formatted_info_extra <- format_info_extra(internal)
 
-  cli::cli_ul(formatted_info_extra)
+  len_format0 <- length(formatted_info_basic0)
+
+  # Append extra info second last (keep the temp path last)
+  formatted_info_basic <- c(
+    formatted_info_basic0[-len_format0],
+    formatted_info_extra,
+    formatted_info_basic0[len_format0]
+  )
+
+  cli::cli_ul(formatted_info_basic) # Display updated basic info
+
 
   # Display convergence info
   if (isTRUE(iterative)) {
@@ -49,7 +60,7 @@ summary.shapr <- function(object, ...) {
   }
 
   # Display Shapley value res
-  formatted_shapley_info <- format_shapley_info(internal, iter)
+  formatted_shapley_info <- format_shapley_info(internal, iter, digits = digits)
 
   if (converged_exact) {
     msg <- "Estimated Shapley values"
@@ -65,12 +76,12 @@ summary.shapr <- function(object, ...) {
 
   # MSEv info (only when using explain())
   if (results$calling_function == "explain") {
-    MSEv_nice <- format(results$MSEv$MSEv, digits = 4, nsmall = 2)
-    MSEv_sd_nice <- format(results$MSEv$MSEv_sd, digits = 4, nsmall = 2)
+    MSEv_nice <- num_str(format(results$MSEv$MSEv, digits = digits))
+    MSEv_sd_nice <- num_str(format(results$MSEv$MSEv_sd, digits = digits))
 
     cli::cli_h3("Estimated MSEv")
-    cli::cli_alert_info(
-      "The estimated MSE of v(S) = {MSEv_nice} (with sd = {MSEv_sd_nice})"
+    cli::cli_text(
+      "Estimated MSE of v(S) = {.val {MSEv_nice}} (with sd = {.val {MSEv_sd_nice}})"
     )
   }
 

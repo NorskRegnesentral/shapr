@@ -67,6 +67,8 @@ format_info_basic <- function(internal) {
   model_class <- internal$parameters$model_class
   approach <- internal$parameters$approach
   iterative <- internal$parameters$iterative
+  n_MC_samples <- internal$parameters$n_MC_samples
+  regression <- internal$parameters$regression
   n_shapley_values <- internal$parameters$n_shapley_values
   n_explain <- internal$parameters$n_explain
   saving_path <- internal$parameters$output_args$saving_path
@@ -81,11 +83,18 @@ format_info_basic <- function(internal) {
 
   feat_group_txt <- ifelse(is_groupwise, "group-wise", "feature-wise")
   iterative_txt <- ifelse(iterative, "Iterative", "Non-iterative")
+  vS_est_class <- ifelse(regression, "Regression", "Monte Carlo integration")
 
   line_vec <- c()
   line_vec <- c(line_vec, "Model class: {.cls {model_class}}")
-  line_vec <- c(line_vec, "Approach: {.emph {approach}}")
-  line_vec <- c(line_vec, "Procedure: {.emph {iterative_txt}}")
+  line_vec <- c(line_vec, "v(S) estimation class: {.val {num_str(vS_est_class)}}")
+  line_vec <- c(line_vec, "Approach: {.val {num_str(approach)}}")
+  line_vec <- c(line_vec, "Procedure: {.val {num_str(iterative_txt)}}")
+
+  if (isFALSE(regression)) {
+    line_vec <- c(line_vec, "Number of Monte Carlo integration samples: {.val {n_MC_samples}}")
+  }
+
   line_vec <- c(line_vec, "Number of {.emph {feat_group_txt}} Shapley values: {.val {n_shapley_values}}")
   if (isTRUE(is_groupwise) && !isTRUE(group_lags)) { # using !isTRUE since isFALSE(NULL)=FALSE
     # format the group list with name of each component followed by the string vector in curly braces
@@ -127,7 +136,7 @@ format_info_extra <- function(internal) {
   n_coalitions <- internal$iter_list[[iter]]$n_coalitions
   n_shapley_values <- internal$parameters$n_shapley_values
 
-  msg <- "Total number of coalitions used: {.val {n_coalitions}} (of {.val {2^n_shapley_values}})"
+  msg <- "Number of coalitions used: {.val {n_coalitions}} (of total {.val {2^n_shapley_values}})"
 
   formatted_msg <- cli::format_inline(msg, .envir = environment())
 
@@ -276,26 +285,38 @@ format_convergence_info <- function(internal, iter) {
 #' @inheritParams default_doc_internal
 #' @inheritParams default_doc_export
 #' @keywords internal
-format_shapley_info <- function(internal, iter) {
+format_shapley_info <- function(internal, iter, digits = 2L) {
   converged_exact <- internal$iter_list[[iter]]$converged_exact
 
+  dt_shapley_est0 <- internal$iter_list[[iter]]$dt_shapley_est
+  dt_shapley_sd0 <- internal$iter_list[[iter]]$dt_shapley_sd
+
   shap_names_with_none <- c("none", internal$parameters$shap_names)
-  dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est[, shap_names_with_none, with = FALSE]
-  dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd[, shap_names_with_none, with = FALSE]
+  other_cols <- setdiff(names(dt_shapley_est0), shap_names_with_none)
+
+  dt_shapley_est <- dt_shapley_est0[, shap_names_with_none, with = FALSE]
+  dt_shapley_sd <- dt_shapley_sd0[, shap_names_with_none, with = FALSE]
 
   # Printing the current Shapley values
-  matrix1 <- format(round(dt_shapley_est, 3), nsmall = 2, justify = "right")
-  matrix2 <- format(round(dt_shapley_sd, 2), nsmall = 2, justify = "right")
+
+  # Formatting with the custom format_round to avoid small number-issues and ensure OS-consistency
+  dt_est_formatted <- dt_shapley_est[, lapply(.SD, format_round, digits = digits)]
+  dt_sd_formatted <- dt_shapley_sd[, lapply(.SD, format_round, digits = digits)]
 
   if (converged_exact) {
-    print_dt <- as.data.table(matrix1)
+    print_dt0 <- dt_est_formatted
   } else {
-    print_dt <- as.data.table(matrix(paste(matrix1, " (", matrix2, ")", sep = ""), nrow = nrow(matrix1)))
+    print_dt0 <- dt_est_formatted[, Map(function(x, y) paste0(x, " (", y, ")"), .SD, dt_sd_formatted)]
   }
 
-  names(print_dt) <- names(dt_shapley_est)
+  print_dt <- cbind(
+    dt_shapley_est0[, other_cols, with = FALSE],
+    print_dt0
+  )
 
-  output <- capture.output(print(print_dt))
+  names(print_dt) <- names(dt_shapley_est0)
+
+  output <- capture.output(print(print_dt[]))
 
   ret <- paste(output, collapse = "\n")
 
@@ -347,4 +368,53 @@ print_iter <- function(internal) {
     # Cannot use print as it does not obey suppressMessages()
     rlang::inform(paste0("\n", msg, "\n", formatted_shapley_info))
   }
+}
+
+
+#' Convert a character to a numeric class
+#'
+#' To be used in cli calls like `cli::cli_text("{.val {shapr:::num_str('12.10')}}")` to format a character strings
+#' that typically represent a number like it was a number. May also be used with strings not representing a number.
+#'
+#' @param x Character. A single character that represents a number, or a vector of characters.
+#'
+#' @return A numeric class object with the value of the string.
+#'
+#' @keywords internal
+num_str <- function(x) {
+  structure(x, class = "numeric")
+}
+
+
+#' Format numbers with rounding
+#'
+#' @param x Numeric vector. The numbers to format.
+#' @inheritParams default_doc_export
+#'
+#' @return Character vector. The formatted numbers.
+#'
+#' @keywords internal
+format_round <- function(x, digits = 2L) {
+  format(round_manual(x, digits = digits), justify = "right")
+}
+
+
+#' Round numbers to the specified number of decimal places
+#'
+#' This function rounds numbers to the specified number of decimal places
+#' using a manual method that avoids the typical rounding issues in R which may vary
+#' across different OS.
+#' @param x Numeric vector. The numbers to round.
+#' @param digits Integer. The number of digits to round to. Defaults 0.
+#'
+#' @return Numeric vector. The rounded numbers.
+#'
+#' @keywords internal
+round_manual <- function(x, digits = 0L) {
+  posneg <- sign(x)
+  z <- abs(x) * 10^digits
+  z <- z + 0.5 + sqrt(.Machine$double.eps)
+  z <- trunc(z)
+  z <- z / 10^digits
+  z * posneg
 }

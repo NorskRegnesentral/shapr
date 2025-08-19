@@ -188,7 +188,7 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-05-16 15:59:46 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-18 08:51:00 ──────────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is
@@ -201,16 +201,20 @@ explanation <- explain(
 #> 
 #> • Model class: <xgb.Booster>
 #> 
+#> • v(S) estimation class: Monte Carlo integration
+#> 
 #> • Approach: empirical
 #> 
-#> • Iterative estimation: FALSE
+#> • Procedure: Non-iterative
+#> 
+#> • Number of Monte Carlo integration samples: 1000
 #> 
 #> • Number of feature-wise Shapley values: 4
 #> 
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmprK6ied/shapr_obj_367086e7deb18.rds'
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpKiUgyZ\shapr_obj_637c66cd4e91.rds'
 #> 
 #> 
 #> 
@@ -221,16 +225,43 @@ explanation <- explain(
 #> ℹ Using 16 of 16 coalitions.
 
 # Printing the Shapley values for the data to explain.
-# For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values_est)
-#>    explain_id     none    Solar.R      Wind      Temp      Month
-#>         <int>    <num>      <num>     <num>     <num>      <num>
-#> 1:          1 43.08571 13.2117337  4.785645 -25.57222  -5.599230
-#> 2:          2 43.08571 -9.9727747  5.830694 -11.03873  -7.829954
-#> 3:          3 43.08571 -2.2916185 -7.053393 -10.15035  -4.452481
-#> 4:          4 43.08571  3.3254595 -3.240879 -10.22492  -6.663488
-#> 5:          5 43.08571  4.3039571 -2.627764 -14.15166 -12.266855
-#> 6:          6 43.08571  0.4786417 -5.248686 -12.55344  -6.645738
+print(explanation)
+#>    explain_id  none Solar.R  Wind  Temp  Month
+#>         <int> <num>   <num> <num> <num>  <num>
+#> 1:          1  43.1  13.212  4.79 -25.6  -5.60
+#> 2:          2  43.1  -9.973  5.83 -11.0  -7.83
+#> 3:          3  43.1  -2.292 -7.05 -10.2  -4.45
+#> 4:          4  43.1   3.325 -3.24 -10.2  -6.66
+#> 5:          5  43.1   4.304 -2.63 -14.2 -12.27
+#> 6:          6  43.1   0.479 -5.25 -12.6  -6.65
+
+# Provide a formatted summary of the shapr object
+summary(explanation)
+#> 
+#> ── Summary of Shapley value explanation ────────────────────────────────────────
+#> • Computed with`shapr::explain()` in 3.7 seconds, started 2025-08-18 08:51:00
+#> • Model class: <xgb.Booster>
+#> • v(S) estimation class: Monte Carlo integration
+#> • Approach: empirical
+#> • Procedure: Non-iterative
+#> • Number of Monte Carlo integration samples: 1000
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Number of coalitions used: 16 (of total 16)
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpKiUgyZ\shapr_obj_637c66cd4e91.rds'
+#> 
+#> ── Estimated Shapley values 
+#>    explain_id   none Solar.R   Wind   Temp  Month
+#>         <int> <char>  <char> <char> <char> <char>
+#> 1:          1  43.09   13.21   4.79 -25.57  -5.60
+#> 2:          2  43.09   -9.97   5.83 -11.04  -7.83
+#> 3:          3  43.09   -2.29  -7.05 -10.15  -4.45
+#> 4:          4  43.09    3.33  -3.24 -10.22  -6.66
+#> 5:          5  43.09    4.30  -2.63 -14.15 -12.27
+#> 6:          6  43.09    0.48  -5.25 -12.55  -6.65
+#> ── Estimated MSEv 
+#> Estimated MSE of v(S) = 144 (with sd = 64)
 
 # Finally we plot the resulting explanations
 plot(explanation)
@@ -270,7 +301,8 @@ By contributing to this project, you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-aas2019explaining" class="csl-entry">
 

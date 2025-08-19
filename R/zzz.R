@@ -162,7 +162,9 @@
       "paired_shap_sampling",
       "semi_deterministic_sampling",
       "n_coal_max",
-      "vS_batching_method"
+      "vS_batching_method",
+      "none",
+      "total_time_str"
     )
   )
 

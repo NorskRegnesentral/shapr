@@ -76,7 +76,11 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
   # Initialize empty data table with specific column names and id_coalition (transformed to integer later). The data
   # table will contain the contribution function values for the coalitions given by `index_features` and all explicands.
   dt_res_column_names <- c("id_coalition", paste0("p_hat1_", seq_len(internal$parameters$n_explain)))
-  dt_res <- data.table(matrix(ncol = length(dt_res_column_names), nrow = 0, dimnames = list(NULL, dt_res_column_names)))
+  dt_res <- data.table(matrix(
+    ncol = length(dt_res_column_names),
+    nrow = 0L,
+    dimnames = list(NULL, dt_res_column_names)
+  ))
 
   # Iterate over the coalitions provided by index_features.
   # Note that index_features will never be NULL and never contain the empty or grand coalitions.

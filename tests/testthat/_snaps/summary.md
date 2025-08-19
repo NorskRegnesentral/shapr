@@ -9,21 +9,23 @@
       -- Summary of Shapley value explanation ----------------------------------------
       * Computed with`shapr::explain()`
       * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: independence
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 5
+      * Number of coalitions used: 32 (of total 32)
       * Number of observations to explain: 3
-      * Total number of coalitions used: 32 (of 32)
       
       -- Estimated Shapley values 
-           none Solar.R    Wind   Temp    Day Month_factor
-         <char>  <char>  <char> <char> <char>       <char>
-      1: 42.444  -4.730   7.750 17.753 -2.601       -7.588
-      2: 42.444   2.338  -3.147 -5.310 -1.676       -7.588
-      3: 42.444   3.857 -17.469 -1.466  1.099        3.379
+         explain_id   none Solar.R   Wind   Temp    Day Month_factor
+              <int> <char>  <char> <char> <char> <char>       <char>
+      1:          1  42.44   -4.73   7.75  17.75  -2.60        -7.59
+      2:          2  42.44    2.34  -3.15  -5.31  -1.68        -7.59
+      3:          3  42.44    3.86 -17.47  -1.47   1.10         3.38
       
       -- Estimated MSEv 
-      i The estimated MSE of v(S) = 115.31 (with sd = 20.08)
+      Estimated MSE of v(S) = 115 (with sd = 20)
     Output
       $calling_function
       [1] "explain"
@@ -445,21 +447,23 @@
       -- Summary of Shapley value explanation ----------------------------------------
       * Computed with`shapr::explain_forecast()`
       * Model class: <ar>
+      * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
       * Number of feature-wise Shapley values: 2
+      * Number of coalitions used: 4 (of total 4)
       * Number of observations to explain: 2
-      * Total number of coalitions used: 4 (of 4)
       
       -- Estimated Shapley values 
-           none Temp.1 Temp.2
-         <char> <char> <char>
-      1: 77.882 -0.397 -1.391
-      2: 77.882 -6.618 -0.184
-      3: 77.882 -0.329 -1.203
-      4: 77.882 -6.021 -0.337
-      5: 77.882 -0.291 -1.055
-      6: 77.882 -5.212 -0.255
+         explain_idx horizon   none Temp.1 Temp.2
+               <int>   <int> <char> <char> <char>
+      1:         152       1  77.88  -0.40  -1.39
+      2:         153       1  77.88  -6.62  -0.18
+      3:         152       2  77.88  -0.33  -1.20
+      4:         153       2  77.88  -6.02  -0.34
+      5:         152       3  77.88  -0.29  -1.06
+      6:         153       3  77.88  -5.21  -0.26
     Output
       $calling_function
       [1] "explain_forecast"

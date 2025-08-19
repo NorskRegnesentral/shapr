@@ -4,7 +4,7 @@
 \alias{format_shapley_info}
 \title{Internal function to extract the formatted Shapley value table}
 \usage{
-format_shapley_info(internal, iter)
+format_shapley_info(internal, iter, digits = 2L)
 }
 \arguments{
 \item{internal}{List.
@@ -14,6 +14,10 @@ The list contains one or more of the elements \code{parameters}, \code{data}, \c
 
 \item{iter}{Integer.
 The iteration number. Only used internally.}
+
+\item{digits}{Integer.
+(Maximum) number of digits to be displayed after the decimal point.
+Defaults to 2.}
 }
 \description{
 To be used by both \code{\link[=print_iter]{print_iter()}} and \code{\link[=summary.shapr]{summary.shapr()}}
