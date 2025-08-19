@@ -44,11 +44,12 @@ Rscript -e "knitr::spin('code_R.R')"
 ```
 This will generate the file `code_R.html` containing the code from `code_R.R` accompanied with its output, as well as the figures in the `R_paper_figures` and `R_html_figures` folders.
 
-**Note:** The html file displays the code and output of the code displayed in the paper. Additional code used to mildly customize and save the figures is provided in the `code_R.R` file and executed by `knitr::spin()`, but not shown in the html-file.
+**Note:** 
+The html file shows the code used in the paper together with its output. Additional code used to mildly customize and save the figures is provided in the `code_R.R` file and executed by `knitr::spin()`, but not shown in the html-file.
 
 ## Python
 
-To reproduce the Python examples, make sure you installed the `shaprpy` Python library and its required packages (in addition to the `shapr` R package).
+To reproduce the Python examples, make sure you have installed the `shaprpy` Python library and its required packages (in addition to the `shapr` R package).
 
 To simplify the reproducability, we have created a simple bash script executing the Python code in a manner similar to how the `knitr::spin()` function operates for the `R` code.
 The bash script requires the `jupytext` `nbconvert` and `session_info` libraries to run.

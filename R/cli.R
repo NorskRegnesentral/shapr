@@ -373,7 +373,7 @@ print_iter <- function(internal) {
 
 #' Convert a character to a numeric class
 #'
-#' To be used in cli calls like `cli_text({.val {num_str("12.10")}})` to format a character strings
+#' To be used in cli calls like `cli::cli_text("{.val {shapr:::num_str('12.10')}}")` to format a character strings
 #' that typically represent a number like it was a number. May also be used with strings not representing a number.
 #'
 #' @param x Character. A single character that represents a number, or a vector of characters.

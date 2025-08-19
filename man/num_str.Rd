@@ -13,7 +13,7 @@ num_str(x)
 A numeric class object with the value of the string.
 }
 \description{
-To be used in cli calls like \verb{cli_text(\{.val \{num_str("12.10")\}\})} to format a character strings
+To be used in cli calls like \code{cli::cli_text("{.val {shapr:::num_str('12.10')}}")} to format a character strings
 that typically represent a number like it was a number. May also be used with strings not representing a number.
 }
 \keyword{internal}
