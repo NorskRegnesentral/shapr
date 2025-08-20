@@ -305,7 +305,7 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
     xreg <- as.matrix(xreg)
     # Check column names
     if (all(is.null(colnames(xreg)))) {
-      cli::cli_abort("`xreg` misses column names.")
+      cli::cli_abort("`xreg` is missing column names.")
     }
 
     if (ncol(xreg) != length(explain_xreg_lags)) {

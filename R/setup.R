@@ -537,7 +537,7 @@ get_extra_parameters <- function(internal, type) {
   # Names of features (already checked to be OK)
   internal$parameters$feature_names <- names(internal$data$x_explain)
 
-  # Update feature_specss (in case model based spec included NAs)
+  # Update feature_specs (in case model-based specs included NAs)
   internal$objects$feature_specs <- get_data_specs(internal$data$x_explain)
 
   internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
@@ -854,8 +854,8 @@ adjust_max_n_coalitions <- function(internal) {
       max_n_coalitions <- max_n_coalitions_causal
       if ("basic" %in% verbose) {
         msg <- paste0(
-          "`max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ",
-          "ordering ", max_n_coalitions_causal, ", and is therefore set to ", max_n_coalitions_causal, "."
+          "`max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ",
+          "ordering (", max_n_coalitions_causal, "), and is therefore set to ", max_n_coalitions_causal, "."
         )
         cli::cli_inform(c("i" = msg))
       }
@@ -896,7 +896,7 @@ adjust_max_n_coalitions <- function(internal) {
         max_n_coalitions <- 2^n_features
         if ("basic" %in% verbose) {
           msg <- paste0(
-            "`max_n_coalitions` is `NULL` or larger than or `2^n_features = ", 2^n_features, "`, ",
+            "`max_n_coalitions` is `NULL` or larger than `2^n_features = ", 2^n_features, "`, ",
             "and is therefore set to `2^n_features = ", 2^n_features, "`."
           )
           cli::cli_inform(c("i" = msg))
@@ -921,7 +921,7 @@ adjust_max_n_coalitions <- function(internal) {
               "`max_n_coalitions` is smaller than `max(10, n_features + 1 = ", n_features + 1, ")`, ",
               "which will result in unreliable results."
             )
-            msg2 <- paste0("It is therefore set to ", max(10, n_features + 1), ".")
+            msg2 <- paste0("It is therefore set to ", min(10, n_features + 1), ".")
             cli::cli_inform(c("i" = msg1, " " = msg2))
           }
         }
@@ -932,7 +932,7 @@ adjust_max_n_coalitions <- function(internal) {
         max_n_coalitions <- 2^n_shapley_values
         if ("basic" %in% verbose) {
           msg <- paste0(
-            "`max_n_coalitions` is `NULL` or larger than or `2^n_groups = ", 2^n_shapley_values, "`, ",
+            "`max_n_coalitions` is `NULL` or larger than `2^n_groups = ", 2^n_shapley_values, "`, ",
             "and is therefore set to `2^n_groups = ", 2^n_shapley_values, "`."
           )
           cli::cli_inform(c("i" = msg))
@@ -957,7 +957,7 @@ adjust_max_n_coalitions <- function(internal) {
               "`max_n_coalitions` is smaller than `max(10, n_groups + 1 = ", n_shapley_values + 1, ")`,",
               " which will result in unreliable results."
             )
-            msg2 <- paste0("It is therefore set to ", max(10, n_shapley_values + 1), ".")
+            msg2 <- paste0("It is therefore set to ", min(10, n_shapley_values + 1), ".")
             cli::cli_inform(c("i" = msg1, " " = msg2))
           }
         }
@@ -1054,12 +1054,12 @@ check_output_args <- function(output_args) {
   # keep_samp_for_vS
   if (!(is.logical(keep_samp_for_vS) &&
     length(keep_samp_for_vS) == 1)) {
-    cli::cli_abort("`output_args$keep_samp_for_vS` must be single logical.")
+    cli::cli_abort("`output_args$keep_samp_for_vS` must be a single logical.")
   }
 
   # Parameter used in the MSEv evaluation criterion
   if (!(is.logical(MSEv_uniform_comb_weights) && length(MSEv_uniform_comb_weights) == 1)) {
-    cli::cli_abort("`output_args$MSEv_uniform_comb_weights` must be single logical.")
+    cli::cli_abort("`output_args$MSEv_uniform_comb_weights` must be a single logical.")
   }
 
   # saving_path
@@ -1072,7 +1072,7 @@ check_output_args <- function(output_args) {
   if (!dir.exists(dirname(saving_path))) {
     cli::cli_abort(
       paste0(
-        "Directory ", dirname(saving_path), " in the output_args$saving_path does not exists.\n",
+        "Directory ", dirname(saving_path), " in `output_args$saving_path` does not exist.\n",
         "Please create the directory with `dir.create('", dirname(saving_path), "')` or use another directory."
       )
     )
@@ -1128,7 +1128,7 @@ check_and_set_sampling_info <- function(internal) {
     }
 
     if (type != "regular") {
-      cli::cli_abort("`semi_deterministic_sampling` is not suppored for explain_forecast().")
+      cli::cli_abort("`semi_deterministic_sampling` is not supported for explain_forecast().")
     }
 
     if (asymmetric) {
@@ -1182,12 +1182,12 @@ check_and_set_sampling_info <- function(internal) {
 #' @param vS_batching_method String. The method used to perform batch computing of vS.
 #' `"future"` (default), utilizes [future.apply::future_apply] (via the [future::future] package),
 #' enabling parallelized computation and progress updates via [progressr::progressr].
-#' Alternatively, `"forloop"` can be used for straight forward sequential computation, which is mainly useful for
+#' Alternatively, `"forloop"` can be used for straightforward sequential computation, which is mainly useful for
 #' package development and debugging purposes.
 #' @param max_batch_size Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
-#' A larger numbers requires more memory, but may have a slight computational advantage.
+#' A larger number requires more memory, but may have a slight computational advantage.
 #' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
-#' Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
+#' Larger numbers give more frequent progress updates. If parallelization is applied, this should be set no smaller
 #' than the number of parallel workers.
 #' @inheritParams default_doc_export
 #' @export
@@ -1234,7 +1234,7 @@ check_extra_computation_args <- function(extra_computation_args) {
   # compute_sd
   if (!(is.logical(compute_sd) &&
     length(compute_sd) == 1)) {
-    cli::cli_abort("`extra_computation_args$compute_sd` must be single logical.")
+    cli::cli_abort("`extra_computation_args$compute_sd` must be a single logical.")
   }
 
   # vS_batching_method
@@ -1556,7 +1556,7 @@ compare_vecs <- function(vec1, vec2, vec_type, name1, name2) {
     if (is.null(names(vec2))) {
       text_vec2 <- paste(vec2, collapse = ", ")
     } else {
-      text_vec2 <- paste(names(vec2), vec1, sep = ": ", collapse = ", ")
+      text_vec2 <- paste(names(vec2), vec2, sep = ": ", collapse = ", ")
     }
 
     msg1 <- paste0("Feature ", vec_type, " are not identical for ", name1, " and ", name2, ". ")
@@ -1691,7 +1691,7 @@ check_iterative_args <- function(iterative_args) {
     !(all(!is.na(n_coal_next_iter_factor_vec)) &&
       all(n_coal_next_iter_factor_vec <= 1) &&
       all(n_coal_next_iter_factor_vec >= 0))) {
-    cli::cli_abort("`iterative_args$n_coal_next_iter_factor_vec` must be NULL or a vector or numerics between 0 and 1.")
+  cli::cli_abort("`iterative_args$n_coal_next_iter_factor_vec` must be NULL or a vector of numerics between 0 and 1.")
   }
 }
 
