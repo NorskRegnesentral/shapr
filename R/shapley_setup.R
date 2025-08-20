@@ -554,9 +554,9 @@ coal_feature_mapper <- function(x, coal_feature_list) {
 #'
 #' @param X data.table.
 #' Output from [create_coalition_table()].
-#' @param normalize_W_weights Logical. Whether to normalize the weights for the coalitions to sum to 1 for
+#' @param normalize_W_weights Logical. Whether to normalize the coalition weights to sum to 1 for
 #' increased numerical stability before solving the WLS (weighted least squares). Applies to all coalitions
-#' except coalition `1` and `2^m`.
+#' except coalitions `1` and `2^m`.
 #'
 #' @return Numeric matrix. See [weight_matrix_cpp()] for more information.
 #' @keywords internal

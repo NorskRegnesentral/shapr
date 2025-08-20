@@ -1,8 +1,8 @@
-#' Gathers and computes the timing of the different parts of the explain function.
+#' Gather and compute the timing of the different parts of the explain function.
 #'
 #' @inheritParams default_doc_export
 #'
-#' @return List of reformatted timing information
+#' @return A list with reformatted timing information.
 #'
 #' @export
 #' @keywords internal
@@ -54,9 +54,9 @@ compute_time <- function(internal) {
 }
 
 
-#' Reformat seconds into a human-readable format
+#' Reformat seconds into a human-readable format.
 #'
-#' @param secs Numeric vector of seconds to reformat
+#' @param secs Numeric vector of seconds to reformat.
 #'
 #' @return A character string representing the time in a human-readable format.
 #'

@@ -3,9 +3,9 @@
 #' @inheritParams default_doc_internal
 #' @keywords internal
 get_predict_model <- function(predict_model, model) {
-  # Check that predict_model is a proper function (R + py)
-  # Extract natively supported functions for predict_model if they exist and not passed (R only)
-  # Check that predict_model provides the right output format (R and py)
+  # Check that predict_model is a proper function (R + Python)
+  # Extract natively supported functions for predict_model if they exist and are not passed (R only)
+  # Check that predict_model provides the right output format (R and Python)
   # Return the predict_model to use subsequently (R only)
 
   model_class0 <- class(model)[1]
@@ -13,7 +13,7 @@ get_predict_model <- function(predict_model, model) {
   # Check predict_model
   if (!(is.function(predict_model)) &&
     !(is.null(predict_model))) {
-    cli::cli_abort("`predict_model` must be NULL or a function.")
+  cli::cli_abort("`predict_model` must be NULL or a function.")
   }
 
   supported_models <- get_supported_models()
@@ -26,8 +26,8 @@ get_predict_model <- function(predict_model, model) {
     } else {
       cli::cli_abort(
         paste0(
-          "You passed a model to {.fn shapr::explain} that is not natively supported, ",
-          "and did not supply the 'predict_model' function to {.fn shapr::explain}. ",
+          "You passed a model to {.fn shapr::explain} that is not natively supported ",
+          "and did not supply a 'predict_model' function to {.fn shapr::explain}. ",
           "See the documentation of {.fn shapr::explain} or the ",
           "{.vignette shapr::general_usage} vignette for more information on how to run shapr with custom models."
         )
