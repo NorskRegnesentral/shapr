@@ -2,7 +2,7 @@
 #' @export
 predict_model.ar <- function(x, newdata, newreg, horizon, ...) {
   if (!requireNamespace("stats", quietly = TRUE)) {
-    cli::cli_abort("The {.pkg stats} package is required for predicting stats models")
+    cli::cli_abort("The {.pkg stats} package is required for predicting stats models.")
   }
 
   as.data.frame(t(apply(newdata, 1, function(n) predict(x, rev(n), n.ahead = horizon, se.fit = FALSE))))

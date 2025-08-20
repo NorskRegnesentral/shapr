@@ -2,7 +2,7 @@
 #' @export
 predict_model.gam <- function(x, newdata, ...) {
   if (!requireNamespace("mgcv", quietly = TRUE)) {
-    cli::cli_abort("The {.pkg mgcv} package is required for predicting `gam` models")
+    cli::cli_abort("The {.pkg mgcv} package is required for predicting `gam` models.")
   }
 
   if (x$family[[1]] == "binomial") {

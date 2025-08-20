@@ -2,7 +2,7 @@
 #' @export
 predict_model.xgb.Booster <- function(x, newdata, ...) {
   if (!requireNamespace("xgboost", quietly = TRUE)) {
-    cli::cli_abort("The {.pkg xgboost} package is required for predicting `xgboost` models")
+    cli::cli_abort("The {.pkg xgboost} package is required for predicting `xgboost` models.")
   }
 
   predict(x, as.matrix(newdata))
