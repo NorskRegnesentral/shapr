@@ -1,4 +1,4 @@
-#' Computes `v(S)` for all features subsets `S`.
+#' Computes `v(S)` for all feature subsets `S`.
 #'
 #' @inheritParams default_doc_export
 #'
@@ -23,10 +23,10 @@ compute_vS <- function(internal, model, predict_model) {
       predict_model = predict_model
     )
   } else {
-    # Doing the same as above without future without progressbar or paralellization
+  # Doing the same as above without future without progressbar or parallelization
 
-    rnorm(1) # Perform a single sample to forward the RNG state one step. This is done to ensurie consistency with
-    # future.apply::future_lapply which does this to to guarantee consistency for parallellization.
+  rnorm(1) # Perform a single sample to forward the RNG state one step. This is done to ensure consistency with
+  # future.apply::future_lapply which does this to guarantee consistency for parallelization.
     # See ?future.apply::future_lapply for details
 
     vS_list <- list()

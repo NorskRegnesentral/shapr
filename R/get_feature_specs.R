@@ -1,4 +1,4 @@
-#' Gets the feature specifications form the model
+#' Gets the feature specifications from the model
 #'
 #' @inheritParams explain
 #' @keywords internal

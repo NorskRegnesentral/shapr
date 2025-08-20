@@ -13,7 +13,7 @@
 #' needed to properly estimate the conditional expectations in the Shapley formula.
 #'
 #' @param x_explain Matrix or data.frame/data.table.
-#' Contains the the features, whose predictions ought to be explained.
+#' Contains the features, whose predictions ought to be explained.
 #'
 #' @param model Model object.
 #' Specifies the model whose predictions we want to explain.
@@ -23,9 +23,9 @@
 #' see details for more information.
 #'
 #' @param approach Character vector of length `1` or one less than the number of features.
-#' All elements should, either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
+#' All elements should either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
 #' `"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, or `"regression_surrogate"`.
-#' The two regression approaches can not be combined with any other approach.
+#' The two regression approaches cannot be combined with any other approach.
 #' See details for more information.
 #'
 #' @param phi0 Numeric.
@@ -43,8 +43,8 @@
 #' `max_n_coalitions = NULL` corresponds to `max_n_coalitions=2^n_features`.
 #'
 #' @param group List.
-#' If `NULL` regular feature wise Shapley values are computed.
-#' If provided, group wise Shapley values are computed.
+#' If `NULL` regular feature-wise Shapley values are computed.
+#' If provided, group-wise Shapley values are computed.
 #' `group` then has length equal to the number of groups.
 #' The list element contains character vectors with the features included in each of the different groups.
 #' See
@@ -56,7 +56,7 @@
 #' of every conditional expectation.
 #' For `approach="ctree"`, `n_MC_samples` corresponds to the number of samples
 #' from the leaf node (see an exception related to the `ctree.sample` argument [setup_approach.ctree()]).
-#' For `approach="empirical"`, `n_MC_samples` is  the \eqn{K} parameter in equations (14-15) of
+#' For `approach="empirical"`, `n_MC_samples` is the \eqn{K} parameter in equations (14-15) of
 #' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 #' `empirical.eta` argument [setup_approach.empirical()].
 #'
@@ -87,26 +87,26 @@
 #' Can also be used to override the default function for natively supported model classes.
 #'
 #' @param verbose String vector or NULL.
-#' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
+#' Specifies the verbosity (printout detail level) through one or more of the strings `"basic"`, `"progress"`,
 #'  `"convergence"`, `"shapley"` and `"vS_details"`.
 #' `"basic"` (default) displays basic information about the computation which is being performed,
-#' in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-#' `"progress` displays information about where in the calculation process the function currently is.
+#' in addition to some messages about parameters being set or checks being unavailable due to specific input.
+#' `"progress"` displays information about where in the calculation process the function currently is.
 #' `"convergence"` displays information on how close to convergence the Shapley value estimates are
 #' (only when `iterative = TRUE`) .
 #' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `iterative = TRUE`)
 #' and the final estimates.
-#' `"vS_details"` displays information about the v_S estimates.
+#' `"vS_details"` displays information about the v(S) estimates.
 #' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`).
 #' `NULL` means no printout.
-#' Note that any combination of four strings can be used.
+#' Note that any combination of the strings can be used.
 #' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the v(S)-estimation process.
 #'
 #' @param iterative Logical or NULL
 #' If `NULL` (default), the argument is set to `TRUE` if there are more than 5 features/groups, and `FALSE` otherwise.
-#' If eventually `TRUE`, the Shapley values are estimated iteratively in an iterative manner.
+#' If eventually `TRUE`, the Shapley values are estimated iteratively.
 #' This provides sufficiently accurate Shapley value estimates faster.
-#' First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
+#' First an initial number of coalitions is sampled, then bootstrapping is used to estimate the variance of the Shapley
 #' values.
 #' A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 #' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
@@ -228,7 +228,7 @@
 #' For iterative estimation (`iterative=TRUE`), intermediate results may also be printed to the console
 #' (according to the `verbose` argument).
 #' Moreover, the intermediate results are written to disk.
-#' This combined batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
+#' This combined batch computing of the v(S) values enables fast and accurate estimation of the Shapley values
 #' in a memory friendly manner.
 #'
 #' @return Object of class `c("shapr", "list")`. Contains the following items:
@@ -238,8 +238,8 @@
 #'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`)}
 #'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 #'   in the coalition sampling part of the kernelSHAP procedure.
-#'   These are therefore by definition 0 when all coalitions is used.
-#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`}
+#'   These are, by definition, 0 when all coalitions are used.
+#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`.}
 #'   \item{`internal`}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations}
 #'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -248,7 +248,7 @@
 #'   \item{`timing`}{List containing timing information for the different parts of the computation.
 #'   `summary` contains the time stamps for the start and end time in addition to the total execution time.
 #'   `overall_timing_secs` gives the time spent on the different parts of the explanation computation.
-#'   `main_computation_timing_secs` further decompose the main computation time into the different parts of the
+#'   `main_computation_timing_secs` further decomposes the main computation time into the different parts of the
 #'   computation for each iteration of the iterative estimation routine, if used.}
 #'   }
 #'
@@ -342,7 +342,7 @@
 #' print(explain1) # The Shapley values
 #' print(explain1) # The Shapley values
 #'
-#' # The MSEv criterion (+sd). Smaller values indicates a better approach.
+#' # The MSEv criterion (+sd). Smaller values indicate a better approach.
 #' print(explain1, what = "MSEv")
 #' print(explain2, what = "MSEv")
 #' print(explain3, what = "MSEv")

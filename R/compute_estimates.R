@@ -1,8 +1,8 @@
-#' Computes the the Shapley values and their standard deviation given the `v(S)`
+#' Computes the Shapley values and their standard deviation given the `v(S)`
 #'
 #' @inheritParams default_doc_export
 #' @param vS_list List
-#' Output from [compute_vS()]
+#' Output from [compute_vS()].
 #'
 #' @return The (updated) internal list
 #'
@@ -39,7 +39,7 @@ compute_estimates <- function(internal, vS_list) {
 
   if (compute_sd) {
     if ("progress" %in% verbose) {
-      cli::cli_progress_step("Boostrapping Shapley value standard deviations")
+      cli::cli_progress_step("Bootstrapping Shapley value standard deviations")
     }
 
     dt_shapley_sd <- bootstrap_shapley(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
