@@ -23,11 +23,11 @@ compute_vS <- function(internal, model, predict_model) {
       predict_model = predict_model
     )
   } else {
-  # Same as above, but without future, progress bar, or parallelization
+    # Same as above, but without future, progress bar, or parallelization
 
-  rnorm(1) # Advance the RNG state by one step. This ensures consistency with
+    rnorm(1) # Advance the RNG state by one step. This ensures consistency with
     # future.apply::future_lapply, which does this to guarantee consistent parallelization.
-  # See ?future.apply::future_lapply for details.
+    # See ?future.apply::future_lapply for details.
 
     vS_list <- list()
     for (i in seq_along(S_batch)) {

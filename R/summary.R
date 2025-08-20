@@ -65,7 +65,7 @@ summary.shapr <- function(object, digits = 2L, ...) {
   if (converged_exact) {
     msg <- "Estimated Shapley values"
   } else {
-  msg <- "Estimated Shapley values (sd in parentheses)"
+    msg <- "Estimated Shapley values (sd in parentheses)"
   }
 
   cli::cli_h3(msg)

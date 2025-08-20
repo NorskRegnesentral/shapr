@@ -16,7 +16,7 @@ get_feature_specs <- function(get_model_specs, model) {
   if (!is.function(get_model_specs) &&
     !is.null(get_model_specs) &&
     !is.na(get_model_specs)) {
-  cli::cli_abort("`get_model_specs` must be NULL, NA, or a function.")
+    cli::cli_abort("`get_model_specs` must be NULL, NA, or a function.")
     # NA is used to avoid using internally defined get_model_specs where this is
     # defined and not valid for the specified model
   }

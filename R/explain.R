@@ -416,12 +416,12 @@
 #' ## Summary
 #' # For iterative estimation, convergence info is also provided
 #' summary_iterative <- summary(explain_iterative)
+#' }
 #'
 #' \dontshow{
-#'   if (requireNamespace("future", quietly = TRUE)) {
-#'     # R CMD check: make sure any open connections are closed afterward
-#'     if (!inherits(future::plan(), "sequential")) future::plan("sequential")
-#'   }
+#' if (requireNamespace("future", quietly = TRUE)) {
+#'   # R CMD check: make sure any open connections are closed afterward
+#'   if (!inherits(future::plan(), "sequential")) future::plan("sequential")
 #' }
 #' }
 #' @export

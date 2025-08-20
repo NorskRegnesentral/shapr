@@ -13,7 +13,7 @@ get_predict_model <- function(predict_model, model) {
   # Check predict_model
   if (!(is.function(predict_model)) &&
     !(is.null(predict_model))) {
-  cli::cli_abort("`predict_model` must be NULL or a function.")
+    cli::cli_abort("`predict_model` must be NULL or a function.")
   }
 
   supported_models <- get_supported_models()
@@ -75,7 +75,7 @@ test_predict_model <- function(x_test, predict_model, model, internal) {
     (length(tmp) == 2 || (!is.null(dim(tmp)) && nrow(tmp) == 2 && ncol(tmp) == internal$parameters$output_size)))) {
     cli::cli_abort(
       paste0(
-  "The predict_model function for class `", class(model),
+        "The predict_model function for class `", class(model),
         "` does not return a numeric output of the desired length ",
         "for single output models or a data.table of the correct ",
         "dimensions for a multiple output model. ",

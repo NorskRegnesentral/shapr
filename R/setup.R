@@ -1691,7 +1691,7 @@ check_iterative_args <- function(iterative_args) {
     !(all(!is.na(n_coal_next_iter_factor_vec)) &&
       all(n_coal_next_iter_factor_vec <= 1) &&
       all(n_coal_next_iter_factor_vec >= 0))) {
-  cli::cli_abort("`iterative_args$n_coal_next_iter_factor_vec` must be NULL or a vector of numerics between 0 and 1.")
+    cli::cli_abort("`iterative_args$n_coal_next_iter_factor_vec` must be NULL or a vector of numerics between 0 and 1.")
   }
 }
 

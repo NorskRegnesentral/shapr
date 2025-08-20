@@ -264,13 +264,13 @@ format_convergence_info <- function(internal, iter) {
     if (isTRUE(converged_max_iter)) {
       msg <- paste0(
         msg,
-  "Maximum number of iterations ({.val {iter}}) reached!\n"
+        "Maximum number of iterations ({.val {iter}}) reached!\n"
       )
     }
     if (isTRUE(converged_max_n_coalitions)) {
       msg <- paste0(
         msg,
-  "Maximum number of coalitions ({.val {current_n_coalitions}}) reached!\n"
+        "Maximum number of coalitions ({.val {current_n_coalitions}}) reached!\n"
       )
     }
   }

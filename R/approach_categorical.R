@@ -73,7 +73,8 @@ setup_approach.categorical <- function(internal,
       }
     }
 
-    # Check that dt contains a `joint_prob` column; all entries are probabilities between 0 and 1 (inclusive) and sum to 1.
+    # Check that dt contains a `joint_prob` column; all entries are probabilities between
+    # 0 and 1 (inclusive) and sum to 1.
     is_error <- !("joint_prob" %in% names(joint_probability_dt)) |
       !all(joint_probability_dt$joint_prob <= 1) |
       !all(joint_probability_dt$joint_prob >= 0) |
