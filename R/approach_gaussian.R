@@ -67,7 +67,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   S <- internal$iter_list[[iter]]$S[index_features, , drop = FALSE]
 
   if (causal_sampling) {
-    # Casual Shapley values (either symmetric or asymmetric)
+    # Causal Shapley values (either symmetric or asymmetric)
 
     # Get if this is the first causal sampling step
     causal_first_step <- isTRUE(internal$parameters$causal_first_step) # Only set when called from prepare_data_causal
