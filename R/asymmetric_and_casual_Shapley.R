@@ -467,8 +467,8 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         dt_new <- prepare_data(internal_copy, index_features = 1, ...)
 
         if (approach %in% c("independence", "empirical", "ctree", "categorical")) {
-          # These approaches produce weighted MC samples, i.e., the do not necessarily generate n_MC_samples MC samples.
-          # We ensure n_MC_samples by weighted sampling (with replacements) those ids with not n_MC_samples MC samples.
+          # These approaches produce weighted MC samples; they do not necessarily generate n_MC_samples samples.
+          # Ensure n_MC_samples by weighted resampling (with replacement) those ids that do not have n_MC_samples.
           n_samp_now <- internal_copy$parameters$n_MC_samples
           dt_new <-
             dt_new[, .SD[if (.N == n_samp_now) seq(.N) else sample(.N, n_samp_now, replace = TRUE, prob = w)], by = id]

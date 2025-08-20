@@ -79,7 +79,7 @@ setup_approach.vaeac <- function(internal,
   if (isTRUE(causal_sampling)) {
     # We are doing causal Shapley values. Then we do not want to train on the full
     # coalitions, but rather the coalitions in the chain of sampling steps used
-    # to generate the full MC sample. Casual Shapley does not support combined
+  # to generate the full MC sample. Causal Shapley does not support combined
     # approaches, so we do not have to check for that. All coalitions are
     # done by vaeac, and we give them equal importance. Skip the empty and grand coalitions.
     # Note that some steps occur more often (when features in Sbar are late in the causal ordering),
@@ -1952,7 +1952,7 @@ vaeac_get_save_file_names <- function(model_description,
 #' @author Lars Henry Berge Olsen
 vaeac_get_optimizer <- function(vaeac_model, lr, optimizer_name = "adam") {
   if (optimizer_name == "adam") {
-    # Create the adam optimizer with defualt parameters except from the provided learning rate
+  # Create the adam optimizer with default parameters except for the provided learning rate
     optimizer <- torch::optim_adam(
       params = vaeac_model$parameters,
       lr = lr,

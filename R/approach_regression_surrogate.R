@@ -95,7 +95,7 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 #' which coalition was applied.
 #' @param augment_include_grand Logical (default is `FALSE`). If `TRUE`, then the grand coalition is included.
 #' If `index_features` are provided, then `augment_include_grand` has no effect. Note that if we sample the
-#' coalitions then the grand coalition is equally likely to be samples as the other coalitions (or weighted if
+#' coalitions then the grand coalition is equally likely to be sampled as the other coalitions (or weighted if
 #' `augment_comb_prob` is provided).
 #' @param augment_masks_as_factor Logical (default is `FALSE`). If `TRUE`, then the binary masks are converted
 #' to factors. If `FALSE`, then the binary masks are numerics.
@@ -105,7 +105,7 @@ prepare_data.regression_surrogate <- function(internal, index_features = NULL, .
 #' `augment_comb_prob = if (use_Shapley_weights) internal$objects$X$shapley_weight[2:actual_n_coalitions] else NULL`.
 #' @param augment_weights String (optional). Specifying which type of weights to add to the observations.
 #' If `NULL` (default), then no weights are added. If `"Shapley"`, then the Shapley weights for the different
-#' coalitions are added to corresponding observations where the coalitions was applied. If `uniform`, then
+#' coalitions are added to corresponding observations where the coalition was applied. If `uniform`, then
 #' all observations get an equal weight of one.
 #'
 #' @return A data.table containing the augmented data.

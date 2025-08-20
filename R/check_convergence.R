@@ -25,11 +25,11 @@ check_convergence <- function(internal) {
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
   if (!all.equal(names(dt_shapley_est), names(dt_shapley_sd))) {
-    cli::cli_abort("The column names of the dt_shapley_est and dt_shapley_df are not equal.")
+    cli::cli_abort("The column names of dt_shapley_est and dt_shapley_sd are not equal.")
   }
 
   max_sd <- dt_shapley_sd[, max(.SD, na.rm = TRUE), .SDcols = shap_names_with_none, by = .I]$V1 # Max per prediction
-  max_sd0 <- max_sd * sqrt(n_sampled_coalitions) # Scales UP the sd as it scales at this rate
+  max_sd0 <- max_sd * sqrt(n_sampled_coalitions) # Scale up the SD; it increases at this rate
 
   dt_shapley_est0 <- copy(dt_shapley_est)
 
