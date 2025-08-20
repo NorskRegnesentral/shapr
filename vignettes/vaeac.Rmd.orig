@@ -32,9 +32,9 @@ knitr::opts_chunk$set(
 
 <a id="intro"></a>
 
-In this vignette, we elaborate and illustrate the `vaeac` approach in more depth than in the general usage.
-In the general usage, only a few basic examples of using `vaeac` is included, while we here showcase more
-advanced usage. See the overview above for what topics that are covered in this vignette.
+In this vignette, we elaborate and illustrate the `vaeac` approach in more depth than in the general usage vignette.
+In the general usage vignette, only a few basic examples of using `vaeac` are included, while we showcase more
+advanced usage here. See the overview above for which topics are covered in this vignette.
 
 
 
@@ -54,9 +54,9 @@ model is needed to model all conditional distributions.
 The `vaeac` consists of three neural networks: a *full encoder*, a *masked encoder*,
 and a *decoder*. The encoders map the full and masked/conditional input representations,
 i.e., $\boldsymbol{x}$ and $\boldsymbol{x}_{\mathcal{S}}$, respectively,
-to latent probabilistic representations. Sampled instances from this latent probabilistic
+to latent probabilistic representations. Sampled instances from these latent probabilistic
 representations are sent to the decoder, which maps them back to the feature space
-and provides a samplable probabilistic representation for the unconditioned features
+and provides a sampleable probabilistic representation for the unconditioned features
 $\boldsymbol{x}_{\bar{\mathcal{S}}}$. The full encoder is only used during the
 training phase of the `vaeac` model to guide the training process of the masked encoder,
 as the former relies on the full input sample $\boldsymbol{x}$, which is not accessible
@@ -67,7 +67,7 @@ lower bound, and see Section 3 in @olsen2022using for an in-depth introduction t
 validation IWAE score to generate the Monte Carlo samples used in the Shapley value computations.
 
 We fit the `vaeac` model using the *torch* package in $\textsf{R}$ (@torch). The main
-parameters are the the number of layers in the networks (`vaeac.depth`), the width of the layers
+parameters are the number of layers in the networks (`vaeac.depth`), the width of the layers
 (`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
 the activation function between the layers in the networks (`vaeac.activation_function`),
 the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
@@ -76,10 +76,10 @@ the number of learning epochs (`vaeac.epochs`). Call `?shapr::setup_approach.vae
 a more detailed description of the parameters.
 
 There are additional extra parameters which can be set by including a named list in the call to
-the `explain()` function. For example, we can the change the batch size to 32 by including
-`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function.
+the `explain()` function. For example, we can change the batch size to 32 by including
+`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call to the `explain()` function.
 See `?shapr::vaeac_get_extra_para_default` for a description of the possible extra parameters to the `vaeac` approach.
-The main parameters are directly entered to the `explain()` function,
+The main parameters are entered directly into the `explain()` function,
 while the extra parameters are included in a named list called `vaeac.extra_parameters`.
 
 # Code Examples {#code}
@@ -153,7 +153,7 @@ explanation <- explain(
 We can look at the Shapley values.
 
 ```{r first-vaeac-plots, cache = TRUE}
-# Printing and ploting the Shapley values.
+# Printing and plotting the Shapley values.
 # See ?shapr::explain for interpretation of the values.
 print(explanation$shapley_values_est)
 plot(explanation)
@@ -166,7 +166,7 @@ if we want to explain new predictions using the same combinations/coalitions as 
 `x_explain`. Note that the new `x_explain` must have the same features as before.
 
 The `vaeac` model is accessible via `explanation$internal$parameters$vaeac`.
-Note that if we let `'vS_detail' %in% verbose` in `explain()`, then `shapr` will give a message
+Note that if we let `'vS_details' %in% verbose` in `explain()`, then `shapr` will give a message
 that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 In this example, we extract the trained `vaeac` model from the previous example and send it to `explain()`.
@@ -193,12 +193,12 @@ all.equal(explanation$shapley_values_est, expl_pretrained_vaeac$shapley_values_e
 ## Pre-trained vaeac (path) {#pretrained_vaeac_path}
 We can also just provide a path to the stored `vaeac` model. This is beneficial if we have only stored the `vaeac`
 model on the computer but not the whole `explanation` object. The possible save paths are stored in
-`explanation$internal$parameters$vaeac$model`. Note that if we let `'vS_detail' %in% verbose` in `explain()`, then `shapr` will give
+`explanation$internal$parameters$vaeac$model`. Note that if we let `'vS_details' %in% verbose` in `explain()`, then `shapr` will give
 a message that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 ```{r pretrained-vaeac-path, cache = TRUE}
 # Call `explanation$internal$parameters$vaeac$model` to see possible vaeac models. We use `best` below.
-# send the pre-trained vaeac path
+# Send the pre-trained vaeac path
 expl_pretrained_vaeac_path <- explain(
   model = model,
   x_explain = x_explain,
@@ -230,7 +230,7 @@ all `16` coalitions as we are now only using a subset of them. This is not appli
 way around.
 
 ```{r check-n_coalitions, cache = TRUE}
-# send the pre-trained vaeac path
+# Send the pre-trained vaeac path
 expl_batches_combinations <- explain(
   model = model,
   x_explain = x_explain,
@@ -245,7 +245,7 @@ expl_batches_combinations <- explain(
   )
 )
 
-# Gives different Shapley values as the latter one are only based on a subset of coalitions
+# Gives different Shapley values as the latter are based only on a subset of coalitions
 plot_SV_several_approaches(list("Original" = explanation, "Other combi." = expl_batches_combinations))
 
 # Can compare that to the situation where we have exact computations (i.e., include all coalitions)
@@ -253,7 +253,7 @@ explanation$internal$objects$X
 ```
 
 Note that if we train a `vaeac` model from scratch with the setup above, then the `vaeac` model will not use
-a missing completely as random (MCAR) mask generator, but rather a mask generator that ensures that the `vaeac`
+an MCAR (missing completely at random) mask generator, but rather a mask generator that ensures that the `vaeac`
 model is only trained on the specified set of coalitions. In this case, it will be the set of the sampled coalitions.
 
 ```{r check-n_coalitions-2, cache = TRUE}
@@ -278,11 +278,11 @@ expl_batches_combinations_2 <- explain(
 
 The `vaeac` approach can use paired sampling to improve the stability of the vaeac training procedure.
 When using paired sampling, each observation in the training batches will be duplicated, but the first version will
-be masked by $S$ and the second version will be masked by the complement $\bar{S}$. The mask are taken from the
+be masked by $S$ and the second version will be masked by the complement $\bar{S}$. The masks are taken from the
 `explanation$internal$objects$S` matrix. Note that `vaeac` does not check if the complement is also in said matrix.
 This means that if the Shapley value explanations are computed based on a subset of coalitions, then the `vaeac` model might be trained on coalitions which are not used when
 computing the Shapley values. This should not be considered as redundant training as it increases the stability and
-performance of the `vaeac` model as a whole, hence, we recommend to use paired sampling (default). Furthermore, the masks
+performance of the `vaeac` model as a whole; hence, we recommend using paired sampling (default). Furthermore, the masks
 are randomly selected for each observation in the batch. The training time when using paired sampling is higher in
 comparison to random sampling due to more complex implementation.
 
@@ -339,12 +339,12 @@ rbind(
 As discussed in the general usage, the `shapr` package provides two ways for receiving information about the progress
 of the approach. First, the `shapr` package provides progress updates of the computation of the Shapley values through
 the `progressr` package. Second, the user can also get various form of information through `verbose` in `explain()`.
-By letting `'vS_detail' %in% verbose`, we get extra information related to the `vaeac` approach.
+By letting `'vS_details' %in% verbose`, we get extra information related to the `vaeac` approach.
 The `verbose` parameter works independently of the `progressr` package.
 Meaning that the user can chose to use none, either, or both options simultaneously.
 We give two examples here, and refer the reader to the general usage for more detailed information.
 
-By setting `c("basic", vS_details")`, we get both basic messages about the explanation case, and
+By setting `c("basic", "vS_details")`, we get both basic messages about the explanation case and
 messages about the estimation of the `vaeac` approach.
 ```{r progressr-false-verbose-2, cache = TRUE}
 expl_with_messages <- explain(
@@ -362,7 +362,7 @@ expl_with_messages <- explain(
 ```
 For more visual information we can use the `progressr` package.
 This can help us see detailed progress of the training step for the final `vaeac` model.
-Note that by default `vS_details` is not part of `verbose`, meaning that we do not get any messages from the `vaeac`,
+Note that by default `vS_details` is not part of `verbose`, meaning that we do not get any messages from the `vaeac`
 approach and only get the progress bars. See the general usage for examples for how to change the progress bar.
 
 ```{r progressr-true-verbose-2, cache = TRUE}
@@ -389,11 +389,11 @@ all.equal(expl_with_messages$shapley_values_est, expl_with_progressr$shapley_val
 
 In the case the user has set a too low number of training epochs and sees that the network is still learning,
 then the user can continue to train the network from where it stopped. Thus, a good workflow can therefore
-be to call the `explain()` function with a `n_MC_samples = 1` (to not waste to much time to generate MC samples),
+be to call the `explain()` function with `n_MC_samples = 1` (to avoid spending too much time generating MC samples),
 then look at the training and evaluation plots of the `vaeac`. If not satisfied, then train more. If satisfied,
-then call the `explain()` function again but this time by using the extra parameter `vaeac.pretrained_vaeac_model`,
+then call the `explain()` function again, but this time using the extra parameter `vaeac.pretrained_vaeac_model`,
 as illustrated above. Note that we have set the number of `vaeac.epochs` to be very low in this example and we
-recommend to use many more epochs.
+recommend using many more epochs.
 
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
 We do this by using the `plot_vaeac_eval_crit()` and `plot_MSEv_eval_crit()` functions in the `shapr` package,
@@ -508,7 +508,7 @@ plot_SV_several_approaches(list(
 
 
 
-## Vaeac with early stopping {#early_stopping}
+## VAEAC with early stopping {#early_stopping}
 If we do not want to specify the number of `epochs`, as we are uncertain how many `epochs` it will take before the
 `vaeac` model is properly trained, a good choice is to rather use early stopping. This means that we can set
 `vaeac.epochs` to a large number and let `vaeac.epochs_early_stopping` be for example `5`. This means that the `vaeac`
@@ -607,9 +607,9 @@ plot_SV_several_approaches(list(
 
 ## Grouping of features {#grouping_of_features}
 When we train a `vaeac` model to explain groups of features, then the `vaeac` model will use
-the "Specified_masks_mask_generator" which ensures that the `vaeac` model only train on a specified set of coalitions.
+the "Specified_masks_mask_generator", which ensures that the `vaeac` model only trains on a specified set of coalitions.
 In this case, it will ensure that all features in group A will always either be conditioned on or be unconditioned.
-The same goes for group B. Note that in this setup, there are only `4` possible coalitions, but `vaeac` only train on
+The same goes for group B. Note that in this setup, there are only `4` possible coalitions, but `vaeac` only trains on
 `2` coalitions as the empty and grand coalitions as they are not needed in the Shapley value computations.
 
 ```{r vaeac-grouping-of-features, cache = TRUE}
@@ -641,7 +641,7 @@ library(ranger)
 data <- data.table::as.data.table(airquality)
 data <- data[complete.cases(data), ]
 
-# convert the month variable to a factor
+# Convert the month variable to a factor
 data[, Month_factor := as.factor(Month)]
 
 x_var_cat <- c("Solar.R", "Wind", "Temp", "Month_factor")
@@ -707,7 +707,7 @@ expl_vaeac_without <- explain(
   )
 )
 
-# We see that the `vaeac` model without the skip connections perform worse
+# We see that the `vaeac` model without the skip connections performs worse
 plot_vaeac_eval_crit(
   list(
     "Vaeac w.o. skip-con." = expl_vaeac_without,
@@ -715,7 +715,7 @@ plot_vaeac_eval_crit(
   ),
   plot_type = "criterion"
 )
-# The vaeac model with skip connections have the lowest/best MSE_Frye evaluation criterion score
+# The `vaeac` model with skip connections has the lowest/best MSE_Frye evaluation criterion score
 plot_MSEv_eval_crit(list(
   "Vaeac w.o. skip-con." = expl_vaeac_without,
   "Vaeac w. skip-con." = expl_vaeac_with,
