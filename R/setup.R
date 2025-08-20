@@ -422,7 +422,7 @@ get_data <- function(x_train, x_explain) {
 
 #' @keywords internal
 check_data <- function(internal) {
-  # Check model and data compatability
+  # Check model and data compatibility
   verbose <- internal$parameters$verbose
 
   x_train <- internal$data$x_train
@@ -890,7 +890,7 @@ adjust_max_n_coalitions <- function(internal) {
   } else {
     # Symmetric/regular Shapley values
 
-    if (isFALSE(is_groupwise)) { # feature wise
+    if (isFALSE(is_groupwise)) { # feature-wise
       # Set max_n_coalitions to upper bound
       if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_features) {
         max_n_coalitions <- 2^n_features
@@ -926,7 +926,7 @@ adjust_max_n_coalitions <- function(internal) {
           }
         }
       }
-    } else { # group wise
+    } else { # group-wise
       # Set max_n_coalitions to upper bound
       if (is.null(max_n_coalitions) || max_n_coalitions > 2^n_shapley_values) {
         max_n_coalitions <- 2^n_shapley_values

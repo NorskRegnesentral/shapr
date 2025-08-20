@@ -41,7 +41,7 @@ compute_vS <- function(internal, model, predict_model) {
     }
   }
 
-  #### Adds v_S output above to any vS_list already computed ####
+  #### Adds v(S) output above to any vS_list already computed ####
   vS_list <- append_vS_list(vS_list, internal)
 
 
@@ -236,7 +236,7 @@ append_vS_list <- function(vS_list, internal) {
   iter <- length(internal$iter_list)
   keep_samp_for_vS <- internal$parameters$output_args$keep_samp_for_vS
 
-  # Adds v_S output above to any vS_list already computed
+  # Adds v(S) output above to any vS_list already computed
   if (iter > 1) {
     prev_coalition_map <- internal$iter_list[[iter - 1]]$coalition_map
     prev_vS_list <- internal$iter_list[[iter - 1]]$vS_list

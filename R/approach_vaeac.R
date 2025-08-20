@@ -94,7 +94,7 @@ setup_approach.vaeac <- function(internal,
     # 3) using a combination of approaches where vaeac is only used on a subset of the coalitions.
     # Here, objects$S contains the coalitions while objects$X contains the information about the approach.
 
-    # Extract the the coalitions / masks which are estimated using vaeac as a matrix
+    # Extract the coalitions / masks which are estimated using vaeac as a matrix
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions <-
       S[X[approach == "vaeac"]$id_coalition, , drop = FALSE]
 

@@ -120,7 +120,7 @@ create_marginal_data_training <- function(x_train,
 #' P(X1 = 1, X2 = 2, X = 3) = P(X1 = 2, X2 = 2, X = 3) = 1/2. Then there is no point
 #' generating X1 = 3, as we then cannot generate X3.
 #' The solution is only to generate the values which can proceed through the whole
-#' chain of sampling steps. To do that, we have to ensure the the marginal sampling
+#' chain of sampling steps. To do that, we have to ensure the marginal sampling
 #' respects the valid feature coalitions for all sets of conditional features, i.e.,
 #' the features in `features_steps_cond_on`.
 #' We sample from the valid coalitions using the MARGINAL probabilities.
@@ -252,7 +252,7 @@ get_valid_causal_coalitions <- function(causal_ordering, sort_features_in_coalit
 #' @details The function computes the number of coalitions that respects the causal ordering by computing the number
 #' of coalitions in each partial causal component and then summing these. We compute
 #' the number of coalitions in the \eqn{i}th a partial causal component by \eqn{2^n - 1},
-#' where \eqn{n} is the number of features in the the \eqn{i}th partial causal component
+#' where \eqn{n} is the number of features in the \eqn{i}th partial causal component
 #' and we subtract one as we do not want to include the situation where no features in
 #' the \eqn{i}th partial causal component are present. In the end, we add 1 for the
 #' empty coalition.
@@ -408,7 +408,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
     # Loop over the steps in the iterative sampling process to generate MC samples for the unconditional features
     sampling_step_idx <- 2
     for (sampling_step_idx in seq_along(S_causal_steps_now)) {
-      # Set flag indicating whether or not we are in the first sampling step, as the the gaussian and copula
+      # Set flag indicating whether or not we are in the first sampling step, as the gaussian and copula
       # approaches need to know this to change their sampling procedure to ensure correctly generated MC samples
       internal_copy$parameters$causal_first_step <- sampling_step_idx == 1
 

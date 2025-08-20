@@ -136,8 +136,8 @@ explain_forecast <- function(model,
   }
 
   # Sets up and organizes input parameters
-  # Checks the input parameters and their compatability
-  # Checks data/model compatability
+  # Checks the input parameters and their compatibility
+  # Checks data/model compatibility
   internal <- setup(
     approach = approach,
     phi0 = phi0,

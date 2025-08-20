@@ -49,7 +49,7 @@
 #' The list element contains character vectors with the features included in each of the different groups.
 #' See
 #' \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}
-#' for more information on group wise Shapley values.
+#' for more information on group-wise Shapley values.
 #'
 #' @param n_MC_samples Positive integer.
 #' For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
@@ -124,7 +124,7 @@
 #' Specifies extra arguments related to the computation of the Shapley values.
 #' See [get_extra_comp_args_default()] for description of the arguments and their default values.
 #'
-#' @param prev_shapr_object `shapr` object or string.
+#' @param prev_shapr_object `shapr` object or a string.
 #' If an object of class `shapr` is provided, or string with a path to where intermediate results are stored,
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
@@ -502,8 +502,8 @@ explain <- function(model,
   feature_specs <- get_feature_specs(get_model_specs, model)
 
   # Sets up and organizes input parameters
-  # Checks the input parameters and their compatability
-  # Checks data/model compatability
+  # Checks the input parameters and their compatibility
+  # Checks data/model compatibility
   internal <- setup(
     x_train = x_train,
     x_explain = x_explain,
@@ -639,7 +639,7 @@ testing_cleanup <- function(output) {
   output$internal$iter_timing_list <- NULL
   output$internal$timing_list <- NULL
 
-  # Removing paths to non-reproducable vaeac model objects
+  # Removing paths to non-reproducible vaeac model objects
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters[c(
       "vaeac", "vaeac.sampler", "vaeac.model", "vaeac.activation_function", "vaeac.checkpoint"
@@ -648,7 +648,7 @@ testing_cleanup <- function(output) {
       NULL
   }
 
-  # Removing the the model object for regression surrogate models to avoid non-reproducibility
+  # Removing the model object for regression surrogate models to avoid non-reproducibility
   # in both fit-times and model object structure
   if ("regression_surrogate" %in% output$internal$parameters$approach) {
     output$internal$objects$regression.surrogate_model <- NULL

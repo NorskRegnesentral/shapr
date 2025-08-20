@@ -1652,7 +1652,7 @@ gauss_cat_loss <- function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4)
         log_prob <- append(log_prob, col_log_prob)
       }
 
-      # Concatenate the list into a tensor of dim batch x features. Then sum along the the rows.
+      # Concatenate the list into a tensor of dim batch x features. Then sum along the rows.
       # That is, for each observation in the batch to get a tensor of length batch size.
       return(torch::torch_cat(log_prob, 2)$sum(-1))
     }
