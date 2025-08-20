@@ -3,29 +3,29 @@
 #' @inheritParams explain_forecast
 #' @inheritParams default_doc_internal
 #' @param type Character.
-#' Either "regular" or "forecast" corresponding to function `setup()` is called from,
-#' correspondingly the type of explanation that should be generated.
+#' Either "regular" or "forecast", matching the function the call originated from,
+#' and thus the type of explanation to generate.
 #'
 #' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].
-#' Contains the 3 elements:
+#' Contains the three elements:
 #' \describe{
 #'   \item{labels}{Character vector with the names of each feature.}
-#'   \item{classes}{Character vector with the classes of each features.}
+#'   \item{classes}{Character vector with the classes of each feature.}
 #'   \item{factor_levels}{Character vector with the levels for any categorical features.}
 #'   }
 #' @param is_python Logical.
 #' Indicates whether the function is called from the Python wrapper.
-#' Default is FALSE which is never changed when calling the function via `explain()` in R.
-#' The parameter is later used to disallow running the AICc-versions of the empirical method
-#' as that requires data based optimization, which is not supported in `shaprpy`.
+#' Default is FALSE, which is never changed when calling the function via `explain()` in R.
+#' The parameter is later used to disallow running the AICc versions of the empirical method,
+#' as that requires data-based optimization, which is not supported in `shaprpy`.
 #' @param testing Logical.
-#' Only use to remove random components like timing from the object output when comparing output with testthat.
+#' Only used to remove random components, like timing, from the output when comparing with testthat.
 #' Defaults to `FALSE`.
-#' @param init_time POSIXct object.
-#' The time when the `explain()` function was called, as outputted by `Sys.time()`.
-#' Used to calculate the time it took to run the full `explain` call.
+#' @param init_time POSIXct.
+#' The time when the `explain()` function was called, as returned by `Sys.time()`.
+#' Used to calculate the total time of the `explain()` call.
 #'
-#' @return A internal list, containing parameters, info, data and computations needed for the later computations.
+#' @return An internal list containing parameters, info, data, and computations needed for later steps.
 #'  The list is expanded and modified in other functions.
 #' @export
 #' @keywords internal
@@ -82,11 +82,11 @@ setup <- function(x_train,
   )
 
 
-  # Using parameters and iter_list from a previouys  to continue estimation from on previous shapr objects
+  # Use parameters and iter_list from a previous shapr object to continue estimation
   if (is.null(prev_shapr_object)) {
     prev_iter_list <- NULL
   } else {
-    # Overwrite the input arguments set in explain() with those from in prev_shapr_object
+    # Overwrite selected input arguments set in explain() with those from prev_shapr_object
     # except model, x_explain, x_train, max_n_coalitions, iterative_args, seed
     prev_internal <- get_prev_internal(prev_shapr_object)
 
@@ -402,10 +402,10 @@ get_data <- function(x_train, x_explain) {
 
   # Check column names
   if (all(is.null(colnames(x_train)))) {
-    stop_message <- c(stop_message, "x_train misses column names.\n")
+    stop_message <- c(stop_message, "x_train is missing column names.\n")
   }
   if (all(is.null(colnames(x_explain)))) {
-    stop_message <- c(stop_message, "x_explain misses column names.\n")
+    stop_message <- c(stop_message, "x_explain is missing column names.\n")
   }
   if (!is.null(stop_message)) {
     names(stop_message) <- rep("!", length(stop_message))
@@ -445,15 +445,15 @@ check_data <- function(internal) {
         "You passed a model to {.fn shapr::explain} which is not natively supported, and did not supply a ",
         "`get_model_specs` function to {.fn shapr::explain}."
       )
-      msg2 <- "Consistency checks between model and data is therefore disabled."
+      msg2 <- "Consistency checks between model and data are therefore disabled."
       cli::cli_inform(c("i" = msg1, " " = msg2))
     }
 
     model_feature_specs <- x_train_feature_specs
   } else if (NA_labels) {
     if ("basic" %in% verbose) {
-      msg1 <- "Feature names extracted from the model contains `NA`."
-      msg2 <- "Consistency checks between model and data is therefore disabled."
+      msg1 <- "Feature names extracted from the model contain `NA`."
+      msg2 <- "Consistency checks between model and data are therefore disabled."
 
       cli::cli_inform(c("i" = msg1, " " = msg2))
     }
@@ -461,7 +461,7 @@ check_data <- function(internal) {
     model_feature_specs <- x_train_feature_specs
   } else if (NA_classes) {
     if ("basic" %in% verbose) {
-      msg1 <- "Feature classes extracted from the model contains `NA`."
+      msg1 <- "Feature classes extracted from the model contain `NA`."
       msg2 <- "Assuming feature classes from the data are correct."
       cli::cli_inform(c("i" = msg1, " " = msg2))
     }
@@ -470,7 +470,7 @@ check_data <- function(internal) {
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   } else if (factors_exists && NA_factor_levels) {
     if ("basic" %in% verbose) {
-      msg1 <- "Feature factor levels extracted from the model contains `NA`."
+      msg1 <- "Feature factor levels extracted from the model contain `NA`."
       msg2 <- "Assuming feature factor levels from the data are correct."
       cli::cli_inform(c("i" = msg1, " " = msg2))
     }

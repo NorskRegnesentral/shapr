@@ -2,7 +2,7 @@
 #'
 #' @inheritParams default_doc_export
 #'
-#' @return List of `v(S)` for different coalitions `S`, optionally also with the samples used to estimate `v(S)`
+#' @return List of `v(S)` for different coalitions `S`, optionally including the samples used to estimate `v(S)`.
 #'
 #' @export
 #' @keywords internal
@@ -23,10 +23,10 @@ compute_vS <- function(internal, model, predict_model) {
       predict_model = predict_model
     )
   } else {
-  # Doing the same as above without future without progressbar or parallelization
+    # Same as above, but without future, progress bar, or parallelization
 
-  rnorm(1) # Perform a single sample to forward the RNG state one step. This is done to ensure consistency with
-  # future.apply::future_lapply which does this to guarantee consistency for parallelization.
+    rnorm(1) # Advance the RNG state by one step. This ensures consistency with
+    # future.apply::future_lapply, which does this to guarantee consistent parallelization.
     # See ?future.apply::future_lapply for details
 
     vS_list <- list()
@@ -41,7 +41,7 @@ compute_vS <- function(internal, model, predict_model) {
     }
   }
 
-  #### Adds v(S) output above to any vS_list already computed ####
+  #### Append the v(S) output above to any vS_list already computed ####
   vS_list <- append_vS_list(vS_list, internal)
 
 
