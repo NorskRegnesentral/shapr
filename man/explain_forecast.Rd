@@ -32,7 +32,7 @@ explain_forecast(
 }
 \arguments{
 \item{model}{Model object.
-Specifies the model whose predictions we want to explain.
+The model whose predictions you want to explain.
 Run \code{\link[=get_supported_models]{get_supported_models()}}
 for a table of which models \code{explain} supports natively. Unsupported models
 can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
@@ -68,68 +68,64 @@ If \code{xreg != NULL}, denotes the number of lags that should be used for each 
 The forecast horizon to explain. Passed to the \code{predict_model} function.}
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
-All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
+All elements should either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
-The two regression approaches can not be combined with any other approach.
+The two regression approaches cannot be combined with any other approach.
 See details for more information.}
 
 \item{phi0}{Numeric.
-The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
+The prediction value for unseen data, i.e., an estimate of the expected prediction without conditioning on any
 features.
-Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable.}
+Typically set this equal to the mean of the response in the training data, but alternatives such as the mean
+of the training predictions are also reasonable.}
 
 \item{max_n_coalitions}{Integer.
-The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+Upper limit on the number of unique feature/group coalitions to use in the iterative procedure
 (if \code{iterative = TRUE}).
-If \code{iterative = FALSE} it represents the number of feature/group coalitions to use directly.
+If \code{iterative = FALSE}, it represents the number of feature/group coalitions to use directly.
 The quantity refers to the number of unique feature coalitions if \code{group = NULL},
 and group coalitions if \code{group != NULL}.
-\code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
+\code{max_n_coalitions = NULL} corresponds to \code{2^n_features}.}
 
-\item{iterative}{Logical or NULL
-If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
-If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
-This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
-values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
-If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
-coalitions.
-The process is repeated until the variances are below the threshold.
-Specifics related to the iterative process and convergence criterion are set through \code{iterative_args}.}
+\item{iterative}{Logical or NULL.
+If \code{NULL} (default), set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
+If \code{TRUE}, Shapley values are estimated iteratively for faster, sufficiently accurate results.
+First an initial number of coalitions is sampled, then bootstrapping estimates the variance of the Shapley values.
+A convergence criterion determines if the variances are sufficiently small. If not, additional samples are added.
+The process repeats until the variances are below the threshold.
+Specifics for the iterative process and convergence criterion are set via \code{iterative_args}.}
 
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
 If \code{FALSE} all lags of each variable are explained individually.}
 
 \item{group}{List.
-If \code{NULL} regular feature wise Shapley values are computed.
-If provided, group wise Shapley values are computed.
+If \code{NULL}, regular feature-wise Shapley values are computed.
+If provided, group-wise Shapley values are computed.
 \code{group} then has length equal to the number of groups.
-The list element contains character vectors with the features included in each of the different groups.
+Each list element contains the character vectors with the features included in the corresponding group.
 See
 \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}
-for more information on group wise Shapley values.}
+for more information on group-wise Shapley values.}
 
 \item{n_MC_samples}{Positive integer.
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
 of every conditional expectation.
 For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
-from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
-For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
+from the leaf node (see an exception related to the \code{ctree.sample} argument in \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
+For \code{approach="empirical"}, \code{n_MC_samples} is the \eqn{K} parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{seed}{Positive integer.
-Specifies the seed before any randomness based code is being run.
-If \code{NULL} (default) no seed is set in the calling environment.}
+Specifies the seed before any code involving randomness is run.
+If \code{NULL} (default), no seed is set in the calling environment.}
 
 \item{predict_model}{Function.
-The prediction function used when \code{model} is not natively supported.
+Prediction function to use when \code{model} is not natively supported.
 (Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported models.)
-The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
-and a data.frame/data.table to compute predictions for.
+The function must have two arguments, \code{model} and \code{newdata}, which specify the model
+and a data.frame/data.table to compute predictions for, respectively.
 The function must give the prediction as a numeric vector.
 \code{NULL} (the default) uses functions specified internally.
 Can also be used to override the default function for natively supported model classes.}
@@ -137,31 +133,29 @@ Can also be used to override the default function for natively supported model c
 \item{get_model_specs}{Function.
 An optional function for checking model/data consistency when \code{model} is not natively supported.
 (Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported models.)
-The function takes \code{model} as argument and provides a list with 3 elements:
+The function takes \code{model} as an argument and provides a list with 3 elements:
 \describe{
 \item{labels}{Character vector with the names of each feature.}
-\item{classes}{Character vector with the classes of each features.}
+\item{classes}{Character vector with the class of each feature.}
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }
-If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
+If \code{NULL} (the default), internal functions are used for natively supported model classes, and checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{verbose}{String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+Controls verbosity (printout detail level) via one or more of \code{"basic"}, \code{"progress"},
 \code{"convergence"}, \code{"shapley"} and \code{"vS_details"}.
-\code{"basic"} (default) displays basic information about the computation which is being performed,
-in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-\verb{"progress} displays information about where in the calculation process the function currently is.
-\code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{iterative = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
+\code{"basic"} (default) displays basic information about the computation and messages about parameters/checks.
+\code{"progress"} displays where in the calculation process the function currently is.
+\code{"convergence"} displays how close the Shapley value estimates are to convergence
+(only when \code{iterative = TRUE}).
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE}),
 and the final estimates.
-\code{"vS_details"} displays information about the v_S estimates.
-This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{"vS_details"} displays information about the v(S) estimates,
+most relevant for \code{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac")}.
 \code{NULL} means no printout.
-Note that any combination of four strings can be used.
-E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.}
+Any combination can be used, e.g., \code{verbose = c("basic", "vS_details")}.}
 
 \item{extra_computation_args}{Named list.
 Specifies extra arguments related to the computation of the Shapley values.
@@ -183,9 +177,9 @@ Containing the joint probability distribution for each combination of feature
 values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
     \item{\code{categorical.epsilon}}{Numeric value. (Optional)
-If \code{categorical.joint_probability_dt} is not supplied, probabilities/frequencies are
+If \code{categorical.joint_prob_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
-then epsilon is used as the proportion of times that these observations occurs in the training data.
+then epsilon is used as the proportion of times that these observations occur in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
     \item{\code{internal}}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
@@ -195,10 +189,10 @@ The value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level o
 If it is a vector, this indicates which value to use when conditioning on various numbers of features.
 The default value is 0.95.}
     \item{\code{ctree.minsplit}}{Numeric scalar.
-Determines minimum value that the sum of the left and right daughter nodes required for a split.
+Determines the minimum value that the sum of the left and right daughter nodes must reach for a split.
 The default value is 20.}
     \item{\code{ctree.minbucket}}{Numeric scalar.
-Determines the minimum sum of weights in a terminal node required for a split
+Determines the minimum sum of weights in a terminal node required for a split.
 The default value is 7.}
     \item{\code{ctree.sample}}{Boolean.
 If \code{TRUE} (default), then the method always samples \code{n_MC_samples} observations from the leaf nodes
@@ -210,8 +204,8 @@ the method will sample \code{n_MC_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample = FALSE} \emph{and} the number of obs in the node is less than \code{n_MC_samples}.}
     \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
-Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
-\code{"independence"} is deprecated. Use \code{approach = "independence"} instead.
+Must be one of \code{"independence"}, \code{"fixed_sigma"}, \code{"AICc_each_k"}, or \code{"AICc_full"}.
+Note: \code{"empirical.type = independence"} is deprecated; use \code{approach = "independence"} instead.
 \code{"fixed_sigma"} uses a fixed bandwidth (set through \code{empirical.fixed_sigma}) in the kernel density estimation.
 \code{"AICc_each_k"} and \code{"AICc_full"} optimize the bandwidth using the AICc criterion, with respectively
 one bandwidth per coalition size and one bandwidth for all coalition sizes.}
@@ -219,7 +213,7 @@ one bandwidth per coalition size and one bandwidth for all coalition sizes.}
 Needs to be \verb{0 < eta <= 1}.
 The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
-If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
+For example, if \code{eta = .8}, we choose the \code{K} samples with the largest weights so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of
 \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.}
@@ -230,15 +224,15 @@ Only used when \code{empirical.type = "fixed_sigma"}}
     \item{\code{empirical.n_samples_aicc}}{Positive integer.
 Number of samples to consider in AICc optimization.
 The default value is 1000.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+Only used when \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
     \item{\code{empirical.eval_max_aicc}}{Positive integer.
 Maximum number of iterations when optimizing the AICc.
 The default value is 20.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+Only used when \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
     \item{\code{empirical.start_aicc}}{Numeric.
 Start value of the \code{sigma} parameter when optimizing the AICc.
 The default value is 0.1.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+Only used when \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
     \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional)
 The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
@@ -281,17 +275,17 @@ features along the columns.
 The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
 \item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 in the coalition sampling part of the kernelSHAP procedure.
-These are therefore by definition 0 when all coalitions is used.
-Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}}
+These are, by definition, 0 when all coalitions are used.
+Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}.}
 \item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
-\item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations}
+\item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations.}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
 }{MSEv evaluation section in the general usage vignette for details}.}
 \item{\code{timing}}{List containing timing information for the different parts of the computation.
 \code{summary} contains the time stamps for the start and end time in addition to the total execution time.
-\code{overall_timing_secs} gives the time spent on the different parts of the explanation computation.
-\code{main_computation_timing_secs} further decompose the main computation time into the different parts of the
+\code{overall_timing_secs} gives the time spent on different parts of the explanation computation.
+\code{main_computation_timing_secs} further decomposes the main computation time into different parts of the
 computation for each iteration of the iterative estimation routine, if used.}
 }
 }

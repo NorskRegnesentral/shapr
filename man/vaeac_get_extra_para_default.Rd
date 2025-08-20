@@ -50,7 +50,7 @@ from an earlier call to the \code{\link[=explain]{explain()}} function. 2) A str
 model is stored on disk, for example, \code{explanation$internal$parameters$vaeac$models$best}.}
 
 \item{vaeac.cuda}{Logical (default is \code{FALSE}). If \code{TRUE}, then the \code{vaeac} model will be trained using cuda/GPU.
-If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, the we fall back to use CPU. If \code{FALSE}, we use the CPU. Using a GPU
+If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, we fall back to using the CPU. Using a GPU
 for smaller tabular dataset often do not improve the efficiency.
 See \code{vignette("installation", package = "torch")} fo help to enable running on the GPU (only Linux and Windows).}
 
@@ -169,7 +169,7 @@ representations to latent representations, respectively, where the dimension is 
 The latent representations are sent to the decoder to go back to the real feature space and
 provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
 We use the \code{vaeac} method at the epoch with the lowest validation error (IWAE) by default, but
-other possibilities are available but setting the \code{vaeac.which_vaeac_model} parameter. See
+other possibilities are available by setting the \code{vaeac.which_vaeac_model} parameter. See
 \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
 }
 \references{

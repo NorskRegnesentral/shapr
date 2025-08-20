@@ -16,7 +16,7 @@ exact_coalition_table(
 Total number of features/groups.}
 
 \item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
-values explanations, and is \code{NULL} for symmetric Shapley values.
+value explanations, and is \code{NULL} for symmetric Shapley values.
 The data.table contains information about the coalitions that respects the causal ordering.}
 
 \item{weight_zero_m}{Numeric.

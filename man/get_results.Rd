@@ -22,7 +22,8 @@ Options:
 "calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
 "MSEv", "MSEv_explicand", "MSEv_coalition",
 "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
-"saving_path", "timing",
+"saving_path",
+"timing_summary", "timing_details",
 "parameters", "x_train", "x_explain",
 "dt_vS", "dt_samp_for_vS",
 "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info".
@@ -51,7 +52,7 @@ in the coalition sampling part of the kernelSHAP procedure.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations.}
 \item{\code{MSEv/MSEv_explicand/MSEv_coalition}}{Data.tables with MSEv evaluation criterion values overall/
 per explicand/per coalition.
-Smaller values indicates estimates of the (\code{v(S)}).
+Smaller values indicate better estimates of \code{v(S)}.
 See the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
 }{MSEv evaluation section in the general usage vignette for details}.}
@@ -72,7 +73,7 @@ computation for each iteration of the iterative estimation routine, if used.}
 \item{\code{dt_vS}}{Data.table with the contribution function (\code{v(S)}) estimates for each coalition.}
 \item{\code{dt_samp_for_vS}}{Data.table with the samples used in the Monte Carlo estimation of the contribution function
 (\code{v(S)}).
-This is only available if \code{output_args_default$keep_samp_for_vS = TRUE} (defaults to FALSE) in \code{\link[=explain]{explain()}}}
+This is only available if \code{output_args_default$keep_samp_for_vS = TRUE} (defaults to FALSE) in \code{\link[=explain]{explain()}}.}
 \item{\code{dt_used_coalitions}}{Data.table with an overview of the coalitions used in the computation.}
 \item{\code{dt_valid_causal_coalitions}}{Data.table with the valid causal coalitions used in the computation.}
 \item{\code{dt_coal_samp_info}}{Data.table with information related to the coalition sampling procedure being used.}

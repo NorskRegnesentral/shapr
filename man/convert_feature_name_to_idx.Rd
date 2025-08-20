@@ -19,7 +19,7 @@ equivalent to a causal ordering with a single component that includes all featur
 Shapley values, respectively. For feature-wise Shapley values and
 \code{causal_ordering = list(c(1, 2), c(3, 4))}, the interpretation is that features 1 and 2
 are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
-Note: All features/groups must be included in the \code{causal_ordering} without any duplicates.}
+Note: All features/groups must be included in \code{causal_ordering} without duplicates.}
 
 \item{labels}{Vector of strings containing (the order of) the feature names.}
 

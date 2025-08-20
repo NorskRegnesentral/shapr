@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_estimates.R
 \name{compute_shapley}
 \alias{compute_shapley}
-\title{Compute shapley values}
+\title{Compute Shapley values}
 \usage{
 compute_shapley(internal, dt_vS)
 }
@@ -18,6 +18,6 @@ The list contains one or more of the elements \code{parameters}, \code{data}, \c
 A \code{data.table} with Shapley values for each test observation.
 }
 \description{
-Compute shapley values
+Compute Shapley values
 }
 \keyword{internal}

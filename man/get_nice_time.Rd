@@ -2,17 +2,17 @@
 % Please edit documentation in R/timing.R
 \name{get_nice_time}
 \alias{get_nice_time}
-\title{Reformat seconds into a human-readable format}
+\title{Reformat seconds into a human-readable format.}
 \usage{
 get_nice_time(secs)
 }
 \arguments{
-\item{secs}{Numeric vector of seconds to reformat}
+\item{secs}{Numeric vector of seconds to reformat.}
 }
 \value{
 A character string representing the time in a human-readable format.
 }
 \description{
-Reformat seconds into a human-readable format
+Reformat seconds into a human-readable format.
 }
 \keyword{internal}

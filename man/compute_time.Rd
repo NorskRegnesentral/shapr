@@ -2,7 +2,7 @@
 % Please edit documentation in R/timing.R
 \name{compute_time}
 \alias{compute_time}
-\title{Gathers and computes the timing of the different parts of the explain function.}
+\title{Gather and compute the timing of the different parts of the explain function.}
 \usage{
 compute_time(internal)
 }
@@ -11,9 +11,9 @@ compute_time(internal)
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
 \value{
-List of reformatted timing information
+A list with reformatted timing information.
 }
 \description{
-Gathers and computes the timing of the different parts of the explain function.
+Gather and compute the timing of the different parts of the explain function.
 }
 \keyword{internal}

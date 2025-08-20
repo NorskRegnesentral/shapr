@@ -56,14 +56,14 @@ coalitions used to estimate the standard deviations of the Shapley value estimat
 \item{vS_batching_method}{String. The method used to perform batch computing of vS.
 \code{"future"} (default), utilizes \link[future.apply:future_apply]{future.apply::future_apply} (via the \link[future:future]{future::future} package),
 enabling parallelized computation and progress updates via \link[progressr:progressr]{progressr::progressr}.
-Alternatively, \code{"forloop"} can be used for straight forward sequential computation, which is mainly useful for
+Alternatively, \code{"forloop"} can be used for straightforward sequential computation, which is mainly useful for
 package development and debugging purposes.}
 
 \item{max_batch_size}{Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
-A larger numbers requires more memory, but may have a slight computational advantage.}
+A larger number requires more memory, but may have a slight computational advantage.}
 
 \item{min_n_batches}{Integer. The minimum number of batches to split the computation into within each iteration.
-Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
+Larger numbers give more frequent progress updates. If parallelization is applied, this should be set no smaller
 than the number of parallel workers.}
 }
 \value{

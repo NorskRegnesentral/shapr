@@ -87,16 +87,16 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
     .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
 }
 
-#' Compute quantiles using type 7
+#' Compute the quantiles using quantile type seven
 #'
 #' @param x arma::vec.
-#' Numeric vector whose sample quantiles are to be computed.
+#' Numeric vector whose sample quantiles are wanted.
 #' @param probs arma::vec.
-#' Numeric vector of probabilities with values between 0 and 1.
+#' Numeric vector of probabilities with values between zero and one.
 #'
-#' @details Uses type 7 from stats::quantile in R.
+#' @details Using quantile type number seven from stats::quantile in R.
 #'
-#' @return A numeric vector of length `length(probs)` with the requested quantiles.
+#' @return A vector of length `length(probs)` with the quantiles is returned.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
@@ -104,14 +104,14 @@ quantile_type7_cpp <- function(x, probs) {
     .Call(`_shapr_quantile_type7_cpp`, x, probs)
 }
 
-#' Transform new data to a standard normal scale
+#' Transforms new data to a standardized normal distribution
 #'
 #' @param z arma::mat.
-#' Gaussian Monte Carlo samples to transform.
+#' The data are the Gaussian Monte Carlos samples to transform.
 #' @param x arma::mat.
-#' Data used to define the original Gaussian transform; used to invert the transform for `z`.
+#' The data with the original transformation. Used to conduct the transformation of `z`.
 #'
-#' @return arma::mat of the same dimension as `z`.
+#' @return arma::mat of the same dimension as `z`
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen

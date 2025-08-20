@@ -22,24 +22,22 @@ regression.train_model(
 \item{x}{Data.table containing the training data.}
 
 \item{seed}{Positive integer.
-Specifies the seed before any randomness based code is being run.
-If \code{NULL} (default) no seed is set in the calling environment.}
+Specifies the seed before any code involving randomness is run.
+If \code{NULL} (default), no seed is set in the calling environment.}
 
 \item{verbose}{String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+Controls verbosity (printout detail level) via one or more of \code{"basic"}, \code{"progress"},
 \code{"convergence"}, \code{"shapley"} and \code{"vS_details"}.
-\code{"basic"} (default) displays basic information about the computation which is being performed,
-in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-\verb{"progress} displays information about where in the calculation process the function currently is.
-\code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{iterative = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
+\code{"basic"} (default) displays basic information about the computation and messages about parameters/checks.
+\code{"progress"} displays where in the calculation process the function currently is.
+\code{"convergence"} displays how close the Shapley value estimates are to convergence
+(only when \code{iterative = TRUE}).
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE}),
 and the final estimates.
-\code{"vS_details"} displays information about the v_S estimates.
-This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{"vS_details"} displays information about the v(S) estimates,
+most relevant for \code{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac")}.
 \code{NULL} means no printout.
-Note that any combination of four strings can be used.
-E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.}
+Any combination can be used, e.g., \code{verbose = c("basic", "vS_details")}.}
 
 \item{regression.model}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
 \code{\link[parsnip:linear_reg]{parsnip::linear_reg()}}. See \href{https://www.tidymodels.org/find/parsnip/}{tidymodels} for all possible models,
