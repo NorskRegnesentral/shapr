@@ -38,7 +38,7 @@ advanced usage here. See the overview above for which topics are covered in this
 
 
 
-# vaeac {#vaeac}
+# Vaeac {#vaeac}
 
 An approach that supports mixed features is the Variational AutoEncoder
 with Arbitrary Conditioning (@olsen2022using), abbreviated to `vaeac`.
@@ -508,7 +508,7 @@ plot_SV_several_approaches(list(
 
 
 
-## VAEAC with early stopping {#early_stopping}
+## Vaeac with early stopping {#early_stopping}
 If we do not want to specify the number of `epochs`, as we are uncertain how many `epochs` it will take before the
 `vaeac` model is properly trained, a good choice is to rather use early stopping. This means that we can set
 `vaeac.epochs` to a large number and let `vaeac.epochs_early_stopping` be for example `5`. This means that the `vaeac`

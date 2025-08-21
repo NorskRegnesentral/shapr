@@ -37,9 +37,9 @@ setup_approach <- function(internal, ...) {
       if ("vaeac" %in% approach) {
         pretrained_provided <- internal$parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided
         if (isFALSE(pretrained_provided)) {
-          cli::cli_h2("Extra info about training/tuning the VAEAC model")
+          cli::cli_h2("Extra info about training/tuning the vaeac model")
         } else {
-          cli::cli_h2("Extra info about the pretrained VAEAC model")
+          cli::cli_h2("Extra info about the pretrained vaeac model")
         }
       }
     }

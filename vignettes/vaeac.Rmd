@@ -26,7 +26,7 @@ advanced usage here. See the overview above for which topics are covered in this
 
 
 
-# vaeac {#vaeac}
+# Vaeac {#vaeac}
 
 An approach that supports mixed features is the Variational AutoEncoder
 with Arbitrary Conditioning (@olsen2022using), abbreviated to `vaeac`.
@@ -465,7 +465,7 @@ expl_batches_combinations_2 <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:03:26 ─────────────────
 #> 
-#> ── Extra info about the pretrained VAEAC model ──
+#> ── Extra info about the pretrained vaeac model ──
 #> 
 #> Training the `vaeac` model with the provided parameters from scratch
 #> on CPU.
@@ -681,7 +681,7 @@ expl_with_messages <- explain(
 #> 
 #> 
 #> 
-#> ── Extra info about the pretrained VAEAC model ──
+#> ── Extra info about the pretrained vaeac model ──
 #> 
 #> 
 #> 
@@ -736,15 +736,18 @@ progressr::with_progress({
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:04:00 ─────────────────
 #> 
-#> ── Extra info about the pretrained VAEAC model ──
+#> ── Extra info about the pretrained vaeac model ──
 #> 
 #> Training the `vaeac` model with the provided parameters from scratch
 #> on CPU.
 #> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
 #> The vaeac model contains 17032 trainable parameters.
 #> Initializing vaeac model number 1 of 2.
-#> [KInitializing vaeac model number 2 of 2.
-#> ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2):…[KBest vaeac inititalization was number 2 (of 2) with a training VLB =
+#> 
+[KInitializing vaeac model number 2 of 2.
+#> ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2):…
+
+[KBest vaeac inititalization was number 2 (of 2) with a training VLB =
 #> -4.566 after 2 epochs. Continue to train this inititalization.
 #> ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of 2):…
 #> Results of the `vaeac` training process:
@@ -913,7 +916,7 @@ plot_SV_several_approaches(list(
 
 
 
-## VAEAC with early stopping {#early_stopping}
+## Vaeac with early stopping {#early_stopping}
 If we do not want to specify the number of `epochs`, as we are uncertain how many `epochs` it will take before the
 `vaeac` model is properly trained, a good choice is to rather use early stopping. This means that we can set
 `vaeac.epochs` to a large number and let `vaeac.epochs_early_stopping` be for example `5`. This means that the `vaeac`
@@ -974,7 +977,7 @@ expl_early_stopping <- explain(
 #> 
 #> 
 #> 
-#> ── Extra info about the pretrained VAEAC model ──
+#> ── Extra info about the pretrained vaeac model ──
 #> 
 #> 
 #> 
@@ -1154,7 +1157,7 @@ expl_group <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:06:40 ─────────────────
 #> 
-#> ── Extra info about the pretrained VAEAC model ──
+#> ── Extra info about the pretrained vaeac model ──
 #> 
 #> Training the `vaeac` model with the provided parameters from scratch
 #> on CPU.
