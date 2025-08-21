@@ -499,7 +499,8 @@ explanation_sym_con[["ctree"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:59:03 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
 #>   and is therefore set to `2^n_features = 128`.
 #> ── Explanation overview ──
 #> 
@@ -548,7 +549,8 @@ explanation_sym_con[["xgboost"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:59:54 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
 #>   and is therefore set to `2^n_features = 128`.
 #> ── Explanation overview ──
 #> 
@@ -711,7 +713,8 @@ explanation_asym_con[["gaussian_non_iterative"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:00:16 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
 #>   respecting the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
 #> 
@@ -747,7 +750,8 @@ explanation_asym_con[["ctree"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:00:18 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
 #>   respecting the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
 #> 
@@ -787,7 +791,8 @@ explanation_asym_con[["xgboost"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:00:28 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
 #>   respecting the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
 #> 
@@ -1034,7 +1039,8 @@ explanation_sym_marg[["independence_marg"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:00:42 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
 #>   and is therefore set to `2^n_features = 128`.
 #> ── Explanation overview ──
 #> 
@@ -1076,7 +1082,8 @@ explanation_sym_marg[["independence_con"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:00:50 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
 #>   and is therefore set to `2^n_features = 128`.
 #> ── Explanation overview ──
 #> 
@@ -1220,7 +1227,8 @@ explanation_sym_cau[["copula"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:01:24 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,
 #>   and is therefore set to `2^n_features = 128`.
 #> ── Explanation overview ──
 #> 
@@ -1353,7 +1361,8 @@ explanation_asym_cau[["copula"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:01:49 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
 #>   respecting the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
 #> 
@@ -1396,7 +1405,8 @@ explanation_asym_cau[["vaeac"]] <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:01:54 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
 #>   respecting the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
 #> 
@@ -2050,7 +2060,8 @@ explanation_group_gaussian[["symmetric_conditional"]] <-
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:08:13 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and
 #>   is therefore set to `2^n_groups = 64`.
 #> ── Explanation overview ──
 #> 
@@ -2089,7 +2100,8 @@ explanation_group_gaussian[["asymmetric_conditional"]] <-
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:08:15 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
 #>   respecting the causal ordering (12), and is therefore set to 12.
 #> ── Explanation overview ──
 #> 
@@ -2131,7 +2143,8 @@ explanation_group_gaussian[["symmetric_causal"]] <-
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:08:17 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and
 #>   is therefore set to `2^n_groups = 64`.
 #> ── Explanation overview ──
 #> 
@@ -2173,7 +2186,8 @@ explanation_group_gaussian[["asymmetric_causal"]] <-
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 10:08:28 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions
 #>   respecting the causal ordering (12), and is therefore set to 12.
 #> ── Explanation overview ──
 #> 

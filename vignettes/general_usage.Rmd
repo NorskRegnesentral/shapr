@@ -463,7 +463,8 @@ explanation <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:01:02 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
 #>   is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1051,7 +1052,8 @@ explanation_empirical <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:01:19 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
 #>   is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1083,7 +1085,8 @@ explanation_gaussian_1e1 <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:01:23 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
 #>   is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1115,7 +1118,8 @@ explanation_gaussian_1e2 <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:01:23 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
 #>   is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1147,7 +1151,8 @@ explanation_combined <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:01:24 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
 #>   is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -2163,7 +2168,8 @@ explanation_custom_minimal <- explain(
 #> ℹ You passed a model to `shapr::explain()` which is not natively
 #>   supported, and did not supply a `get_model_specs` function to
 #>   `shapr::explain()`.
-#>   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
+#>   Consistency checks between model and data are therefore disabled.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
 #>   is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -2603,7 +2609,8 @@ ex_even_further <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:02:35 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and
 #>   is therefore set to `2^n_features = 32`.
 #> ── Explanation overview ──
 #> 

@@ -565,7 +565,8 @@ expl_paired_sampling_FALSE <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:03:41 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
 #>   is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1283,7 +1284,8 @@ expl_vaeac_with <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:06:46 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
 #>   is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
@@ -1320,7 +1322,8 @@ expl_vaeac_without <- explain(
 #> 
 #> ── Starting `shapr::explain()` at 2025-08-21 09:07:38 ─────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and
 #>   is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #> 
