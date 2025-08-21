@@ -7,7 +7,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -40,7 +40,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -72,7 +72,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -108,7 +108,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -139,7 +139,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -172,7 +172,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -205,7 +205,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -239,7 +239,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -273,7 +273,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -340,7 +340,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -374,7 +374,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -408,7 +408,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -441,7 +441,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -474,7 +474,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -507,7 +507,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
       
       -- Explanation overview --
       
@@ -541,7 +541,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
       
       -- Explanation overview --
       
@@ -589,7 +589,7 @@
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 8 coalitions after 2 iterations, due to:
       All (8) coalitions used!
-      Maxium number of coalitions (8) reached!
+      Maximum number of coalitions (8) reached!
     Output
          explain_id  none       A      B       C
               <int> <num>   <num>  <num>   <num>
@@ -606,7 +606,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -639,7 +639,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -694,7 +694,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -728,7 +728,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -762,7 +762,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -798,7 +798,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -831,7 +831,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -881,7 +881,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       

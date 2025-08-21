@@ -7,7 +7,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -378,7 +378,7 @@
       
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 24 coalitions after 8 iterations, due to:
-      Maxium number of iterations (8) reached!
+      Maximum number of iterations (8) reached!
       
       Final estimated Shapley values (sd)
          explain_id      none      Solar.R          Wind         Temp        Month
@@ -493,7 +493,7 @@
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 20 coalitions after 5 iterations, due to:
       Standard deviation convergence threshold (0.02) reached: 0.0016!
-      Maxium number of coalitions (20) reached!
+      Maximum number of coalitions (20) reached!
       
       Final estimated Shapley values (sd)
          explain_id      none      Solar.R          Wind         Temp        Month
@@ -543,7 +543,7 @@
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 8 coalitions after 2 iterations, due to:
       All (8) coalitions used!
-      Maxium number of coalitions (8) reached!
+      Maximum number of coalitions (8) reached!
       
       Final estimated Shapley values
          explain_id   none      A      B      C
@@ -661,7 +661,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -705,7 +705,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -777,7 +777,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -909,7 +909,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
