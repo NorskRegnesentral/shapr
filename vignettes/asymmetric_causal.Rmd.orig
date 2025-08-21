@@ -356,7 +356,7 @@ print_MSEv_scores_and_time <- function(explanation_list) {
       round(c(
         explanation$MSEv$MSEv$MSEv,
         explanation$MSEv$MSEv$MSEv_sd,
-        difftime(explanation$timing$end_time, explanation$timing$init_time, units = "secs")
+        explanation$timing$summary$total_time_secs
       ), 2)
     }
   )))
@@ -366,7 +366,7 @@ print_MSEv_scores_and_time <- function(explanation_list) {
 
 # Print the full time information
 print_time <- function(explanation_list) {
-  t(sapply(explanation_list, function(explanation) explanation$timing$total_time_secs))
+  t(sapply(explanation_list, function(explanation) explanation$timing$summary$total_time_secs))
 }
 
 # Make beeswarm plots

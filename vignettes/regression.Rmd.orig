@@ -225,7 +225,7 @@ print_MSEv_scores_and_time <- function(explanation_list) {
   res <- as.data.frame(t(sapply(
     explanation_list,
     function(explanation) {
-      round(c(explanation$MSEv$MSEv$MSEv, explanation$timing$total_time_secs), 2)
+      round(c(explanation$MSEv$MSEv$MSEv, explanation$timing$summary$total_time_secs), 2)
     }
   )))
   colnames(res) <- c("MSEv", "Time")
