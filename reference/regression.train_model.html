@@ -81,26 +81,24 @@ This function allows for cross validating the hyperparameters of the model.</p>
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Positive integer.
-Specifies the seed before any randomness based code is being run.
-If <code>NULL</code> (default) no seed is set in the calling environment.</p></dd>
+Specifies the seed before any code involving randomness is run.
+If <code>NULL</code> (default), no seed is set in the calling environment.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
+Controls verbosity (printout detail level) via one or more of <code>"basic"</code>, <code>"progress"</code>,
 <code>"convergence"</code>, <code>"shapley"</code> and <code>"vS_details"</code>.
-<code>"basic"</code> (default) displays basic information about the computation which is being performed,
-in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-<code>"progress</code> displays information about where in the calculation process the function currently is.
-<code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
-(only when <code>iterative = TRUE</code>) .
-<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)
+<code>"basic"</code> (default) displays basic information about the computation and messages about parameters/checks.
+<code>"progress"</code> displays where in the calculation process the function currently is.
+<code>"convergence"</code> displays how close the Shapley value estimates are to convergence
+(only when <code>iterative = TRUE</code>).
+<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>),
 and the final estimates.
-<code>"vS_details"</code> displays information about the v_S estimates.
-This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
+<code>"vS_details"</code> displays information about the v(S) estimates,
+most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac")</code>.
 <code>NULL</code> means no printout.
-Note that any combination of four strings can be used.
-E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></dd>
+Any combination can be used, e.g., <code>verbose = c("basic", "vS_details")</code>.</p></dd>
 
 
 <dt id="arg-regression-model">regression.model<a class="anchor" aria-label="anchor" href="#arg-regression-model"></a></dt>

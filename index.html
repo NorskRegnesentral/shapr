@@ -70,13 +70,13 @@
 <!-- badges: start -->
 
 <p>See the pkgdown site at <a href="https://norskregnesentral.github.io/shapr/">norskregnesentral.github.io/shapr/</a> for a complete introduction with examples and documentation of the package.</p>
-<p>For an overview of the methodology and capabilities of the package (per <code>shapr</code> v1.0.4), see the software paper Jullum et al. (<a href="#ref-jullum2025shapr">2025</a>), available in preprint <a href="https://arxiv.org/abs/2504.01842" class="external-link">here</a>.</p>
+<p>For an overview of the methodology and capabilities of the package (per <code>shapr</code> v1.0.4), see the software paper Jullum et al. (<a href="#ref-jullum2025shapr">2025</a>), available as a preprint <a href="https://arxiv.org/abs/2504.01842" class="external-link">here</a>.</p>
 <div class="section level2">
 <h2 id="news">NEWS<a class="anchor" aria-label="anchor" href="#news"></a>
 </h2>
-<p>With <code>shapr</code> version 1.0.0 (GitHub only, Nov 2024) and version 1.0.1 (CRAN, Jan 2025), the package was subject to a major update, providing a full restructuring of the code based, and a full suit of new functionality, including:</p>
+<p>With <code>shapr</code> version 1.0.0 (GitHub only, Nov 2024) and version 1.0.1 (CRAN, Jan 2025), the package underwent a major update, providing a full restructuring of the code base, and a full suite of new functionality, including:</p>
 <ul>
-<li>A long list of approaches for estimating the contribution/value function <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>, including Variational Autoencoders, and regression-based methods</li>
+<li>A long list of approaches for estimating the contribution/value function <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>, including Variational Autoencoders and regression-based methods</li>
 <li>Iterative Shapley value estimation with convergence detection</li>
 <li>Parallelized computations with progress updates</li>
 <li>Reweighted Kernel SHAP for faster convergence</li>
@@ -89,20 +89,20 @@
 <div class="section level3">
 <h3 id="coming-from-shapr--100">Coming from shapr &lt; 1.0.0?<a class="anchor" aria-label="anchor" href="#coming-from-shapr--100"></a>
 </h3>
-<p><code>shapr</code> version &gt;= 1.0.0 comes with a number of breaking changes. Most notably, we moved from using two function (<code><a href="reference/shapr-package.html">shapr()</a></code> and <code><a href="reference/explain.html">explain()</a></code>) to a single function (<code><a href="reference/explain.html">explain()</a></code>). In addition, custom models are now explained by passing the prediction function directly to <code><a href="reference/explain.html">explain()</a></code>, quite a few input arguments got new names, and a few functions for edge cases was removed to simplify the code base.</p>
+<p><code>shapr</code> version &gt;= 1.0.0 comes with a number of breaking changes. Most notably, we moved from using two functions (<code><a href="reference/shapr-package.html">shapr()</a></code> and <code><a href="reference/explain.html">explain()</a></code>) to one function (<code><a href="reference/explain.html">explain()</a></code>). In addition, custom models are now explained by passing the prediction function directly to <code><a href="reference/explain.html">explain()</a></code>. Several input arguments were renamed, and a few functions for edge cases were removed to simplify the code base.</p>
 <p>Click <a href="https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md" class="external-link">here</a> to view a version of this README with the old syntax (v0.2.2).</p>
 </div>
 <div class="section level3">
 <h3 id="python-wrapper">Python wrapper<a class="anchor" aria-label="anchor" href="#python-wrapper"></a>
 </h3>
-<p>We provide a Python wrapper (<code>shaprpy</code>) which allows explaining Python models with the methodology implemented in <code>shapr</code>, directly from Python. The wrapper calls <code>R</code> internally, and therefore requires an installation of <code>R</code>. See <a href="https://norskregnesentral.github.io/shapr/shaprpy.html">here</a> for installation instructions and examples.</p>
+<p>We provide a Python wrapper (<code>shaprpy</code>) which allows explaining Python models with the methodology implemented in <code>shapr</code>, directly from Python. The wrapper calls R internally and therefore requires an installation of R. See <a href="https://norskregnesentral.github.io/shapr/shaprpy.html">here</a> for installation instructions and examples.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="the-package">The package<a class="anchor" aria-label="anchor" href="#the-package"></a>
 </h2>
-<p>The <code>shapr</code> R package implements an enhanced version of the Kernel SHAP method, for approximating Shapley values, with a strong focus on conditional Shapley values. The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, and distributions. The package also includes evaluation metrics to compare various approaches. With features like parallelized computations, convergence detection, progress updates, and extensive plotting options, shapr is as a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values, which are critical for understanding how features truly contribute to predictions.</p>
-<p>A basic example is provided below. Otherwise we refer to the <a href="https://norskregnesentral.github.io/shapr/">pkgdown website</a> and the different vignettes there for details and further examples.</p>
+<p>The <code>shapr</code> R package implements an enhanced version of the Kernel SHAP method for approximating Shapley values, with a strong focus on conditional Shapley values. The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, and distributions. The package also includes evaluation metrics to compare various approaches. With features like parallelized computations, convergence detection, progress updates, and extensive plotting options, shapr is a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values, which are critical for understanding how features truly contribute to predictions.</p>
+<p>A basic example is provided below. Otherwise, we refer to the <a href="https://norskregnesentral.github.io/shapr/">pkgdown website</a> and the vignettes there for details and further examples.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -120,19 +120,19 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
+<p><code>shapr</code> supports computation of Shapley values with any predictive model that takes a set of numeric features and produces a numeric outcome.</p>
 <p>The following example shows how a simple <code>xgboost</code> model is trained using the <em>airquality</em> dataset, and how <code>shapr</code> explains the individual predictions.</p>
-<p>We first enable parallel computation and progress updates with the following code chunk. These are optional, but recommended for improved performance and user friendliness, particularly for problems with many features.</p>
+<p>We first enable parallel computation and progress updates with the following code chunk. These are optional, but recommended for improved performance and user-friendliness, particularly for problems with many features.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Enable parallel computation</span></span>
 <span><span class="co"># Requires the future and future_lapply packages</span></span>
 <span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="st">"multisession"</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># Increase the number of workers for increased performance with many features</span></span>
 <span></span>
-<span><span class="co"># Enable progress updates of the v(S)-computations</span></span>
+<span><span class="co"># Enable progress updates of the v(S) computations</span></span>
 <span><span class="co"># Requires the progressr package</span></span>
 <span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span>global <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span><span class="st">"cli"</span><span class="op">)</span> <span class="co"># Using the cli package as backend (recommended for the estimates of the remaining time)</span></span></code></pre></div>
-<p>Here comes the actual example</p>
+<p>Here is the actual example:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://norskregnesentral.github.io/shapr/">shapr</a></span><span class="op">)</span></span>
@@ -149,7 +149,7 @@
 <span><span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain</span>, <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="va">y_var</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">ind_x_explain</span>, <span class="va">..x_var</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co"># Looking at the dependence between the features</span></span>
+<span><span class="co"># Look at the dependence between the features</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span></span>
 <span><span class="co">#&gt;            Solar.R       Wind       Temp      Month</span></span>
 <span><span class="co">#&gt; Solar.R  1.0000000 -0.1243826  0.3333554 -0.0710397</span></span>
@@ -157,7 +157,7 @@
 <span><span class="co">#&gt; Temp     0.3333554 -0.5152133  1.0000000  0.3400084</span></span>
 <span><span class="co">#&gt; Month   -0.0710397 -0.2013740  0.3400084  1.0000000</span></span>
 <span></span>
-<span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
+<span><span class="co"># Fit a basic xgboost model to the training data</span></span>
 <span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span>
 <span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
@@ -165,10 +165,10 @@
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span>
+<span><span class="co"># Specify phi_0, i.e., the expected prediction without any features</span></span>
 <span><span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Computing the Shapley values with kernelSHAP accounting for feature dependence using</span></span>
+<span><span class="co"># Compute Shapley values with Kernel SHAP, accounting for feature dependence using</span></span>
 <span><span class="co"># the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)</span></span>
 <span><span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -179,11 +179,11 @@
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-18 08:51:00 ──────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-20 15:08:39 ─────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is</span></span>
-<span><span class="co">#&gt;   therefore set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
@@ -205,7 +205,7 @@
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpKiUgyZ\shapr_obj_637c66cd4e91.rds'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpnBYv2R/shapr_obj_2aa833a1e2267.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -215,7 +215,7 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span></span>
-<span><span class="co"># Printing the Shapley values for the data to explain.</span></span>
+<span><span class="co"># Print the Shapley values for the observations to explain.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    explain_id  none Solar.R  Wind  Temp  Month</span></span>
 <span><span class="co">#&gt;         &lt;int&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt;  &lt;num&gt;</span></span>
@@ -229,8 +229,9 @@
 <span><span class="co"># Provide a formatted summary of the shapr object</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Summary of Shapley value explanation ────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; • Computed with`shapr::explain()` in 3.7 seconds, started 2025-08-18 08:51:00</span></span>
+<span><span class="co">#&gt; ── Summary of Shapley value explanation ───────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Computed with`shapr::explain()` in 2.2 seconds, started 2025-08-20</span></span>
+<span><span class="co">#&gt; 15:08:39</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
@@ -240,7 +241,7 @@
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; • Number of coalitions used: 16 (of total 16)</span></span>
 <span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\RtmpKiUgyZ\shapr_obj_637c66cd4e91.rds'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpnBYv2R/shapr_obj_2aa833a1e2267.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Estimated Shapley values </span></span>
 <span><span class="co">#&gt;    explain_id   none Solar.R   Wind   Temp  Month</span></span>
@@ -254,21 +255,21 @@
 <span><span class="co">#&gt; ── Estimated MSEv </span></span>
 <span><span class="co">#&gt; Estimated MSE of v(S) = 144 (with sd = 64)</span></span>
 <span></span>
-<span><span class="co"># Finally we plot the resulting explanations</span></span>
+<span><span class="co"># Finally, we plot the resulting explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-basic_example-1.png" width="100%"></p>
-<p>See Jullum et al. (<a href="#ref-jullum2025shapr">2025</a>) (preprint available <a href="https://arxiv.org/abs/2504.01842" class="external-link">here</a>) for a software paper with an overview of the methodology and capabilities of the package (as of v1.0.4). See the <a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html">general usage vignette</a> for further basic usage examples and brief introductions to the methodology. For more thorough information about the underlying methodology, see methodological papers Aas, Jullum, and Løland (<a href="#ref-aas2019explaining">2021</a>), Redelmeier, Jullum, and Aas (<a href="#ref-redelmeier2020explaining">2020</a>), Jullum, Redelmeier, and Aas (<a href="#ref-jullum2021efficient">2021</a>), Olsen et al. (<a href="#ref-olsen2022using">2022</a>), Olsen et al. (<a href="#ref-olsen2024comparative">2024</a>). See also Sellereite and Jullum (<a href="#ref-sellereite2019shapr">2019</a>) for a very brief paper about a previous version (v0.1.1) of the package (with a different structure, syntax and significantly less functionality).</p>
+<p>See Jullum et al. (<a href="#ref-jullum2025shapr">2025</a>) (preprint available <a href="https://arxiv.org/abs/2504.01842" class="external-link">here</a>) for a software paper with an overview of the methodology and capabilities of the package (as of v1.0.4). See the <a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html">general usage vignette</a> for further basic usage examples and brief introductions to the methodology. For more thorough information about the underlying methodology, see methodological papers Aas, Jullum, and Løland (<a href="#ref-aas2019explaining">2021</a>), Redelmeier, Jullum, and Aas (<a href="#ref-redelmeier2020explaining">2020</a>), Jullum, Redelmeier, and Aas (<a href="#ref-jullum2021efficient">2021</a>), Olsen et al. (<a href="#ref-olsen2022using">2022</a>), Olsen et al. (<a href="#ref-olsen2024comparative">2024</a>). See also Sellereite and Jullum (<a href="#ref-sellereite2019shapr">2019</a>) for a very brief paper about a previous version (v0.1.1) of the package (with a different structure, syntax, and significantly less functionality).</p>
 </div>
 <div class="section level2">
 <h2 id="contribution">Contribution<a class="anchor" aria-label="anchor" href="#contribution"></a>
 </h2>
 <p>All feedback and suggestions are very welcome. Details on how to contribute can be found <a href="https://norskregnesentral.github.io/shapr/CONTRIBUTING.html">here</a>. If you have any questions or comments, feel free to open an issue <a href="https://github.com/NorskRegnesentral/shapr/issues" class="external-link">here</a>.</p>
-<p>Please note that the ‘shapr’ project is released with a <a href="https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<p>Please note that the <code>shapr</code> project is released with a <a href="https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-aas2019explaining" class="csl-entry">
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298. <a href="https://doi.org/10.1016/j.artint.2021.103502" class="external-link uri">https://doi.org/10.1016/j.artint.2021.103502</a>.
 </div>

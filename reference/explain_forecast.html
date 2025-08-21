@@ -107,7 +107,7 @@ For an overview of the methodology and capabilities of the <code>shapr</code> pa
 
 <dl><dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
 <dd><p>Model object.
-Specifies the model whose predictions we want to explain.
+The model whose predictions you want to explain.
 Run <code><a href="get_supported_models.html">get_supported_models()</a></code>
 for a table of which models <code>explain</code> supports natively. Unsupported models
 can still be explained by passing <code>predict_model</code> and (optionally) <code>get_model_specs</code>,
@@ -159,42 +159,38 @@ The forecast horizon to explain. Passed to the <code>predict_model</code> functi
 
 <dt id="arg-approach">approach<a class="anchor" aria-label="anchor" href="#arg-approach"></a></dt>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
-All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
+All elements should either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
 <code>"categorical"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or <code>"regression_surrogate"</code>.
-The two regression approaches can not be combined with any other approach.
+The two regression approaches cannot be combined with any other approach.
 See details for more information.</p></dd>
 
 
 <dt id="arg-phi-">phi0<a class="anchor" aria-label="anchor" href="#arg-phi-"></a></dt>
 <dd><p>Numeric.
-The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
+The prediction value for unseen data, i.e., an estimate of the expected prediction without conditioning on any
 features.
-Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable.</p></dd>
+Typically set this equal to the mean of the response in the training data, but alternatives such as the mean
+of the training predictions are also reasonable.</p></dd>
 
 
 <dt id="arg-max-n-coalitions">max_n_coalitions<a class="anchor" aria-label="anchor" href="#arg-max-n-coalitions"></a></dt>
 <dd><p>Integer.
-The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+Upper limit on the number of unique feature/group coalitions to use in the iterative procedure
 (if <code>iterative = TRUE</code>).
-If <code>iterative = FALSE</code> it represents the number of feature/group coalitions to use directly.
+If <code>iterative = FALSE</code>, it represents the number of feature/group coalitions to use directly.
 The quantity refers to the number of unique feature coalitions if <code>group = NULL</code>,
 and group coalitions if <code>group != NULL</code>.
-<code>max_n_coalitions = NULL</code> corresponds to <code>max_n_coalitions=2^n_features</code>.</p></dd>
+<code>max_n_coalitions = NULL</code> corresponds to <code>2^n_features</code>.</p></dd>
 
 
 <dt id="arg-iterative">iterative<a class="anchor" aria-label="anchor" href="#arg-iterative"></a></dt>
-<dd><p>Logical or NULL
-If <code>NULL</code> (default), the argument is set to <code>TRUE</code> if there are more than 5 features/groups, and <code>FALSE</code> otherwise.
-If eventually <code>TRUE</code>, the Shapley values are estimated iteratively in an iterative manner.
-This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
-values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
-If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
-coalitions.
-The process is repeated until the variances are below the threshold.
-Specifics related to the iterative process and convergence criterion are set through <code>iterative_args</code>.</p></dd>
+<dd><p>Logical or NULL.
+If <code>NULL</code> (default), set to <code>TRUE</code> if there are more than 5 features/groups, and <code>FALSE</code> otherwise.
+If <code>TRUE</code>, Shapley values are estimated iteratively for faster, sufficiently accurate results.
+First an initial number of coalitions is sampled, then bootstrapping estimates the variance of the Shapley values.
+A convergence criterion determines if the variances are sufficiently small. If not, additional samples are added.
+The process repeats until the variances are below the threshold.
+Specifics for the iterative process and convergence criterion are set via <code>iterative_args</code>.</p></dd>
 
 
 <dt id="arg-group-lags">group_lags<a class="anchor" aria-label="anchor" href="#arg-group-lags"></a></dt>
@@ -205,13 +201,13 @@ If <code>FALSE</code> all lags of each variable are explained individually.</p><
 
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
 <dd><p>List.
-If <code>NULL</code> regular feature wise Shapley values are computed.
-If provided, group wise Shapley values are computed.
+If <code>NULL</code>, regular feature-wise Shapley values are computed.
+If provided, group-wise Shapley values are computed.
 <code>group</code> then has length equal to the number of groups.
-The list element contains character vectors with the features included in each of the different groups.
+Each list element contains the character vectors with the features included in the corresponding group.
 See
 <a href="https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf" class="external-link">Jullum et al. (2021)</a>
-for more information on group wise Shapley values.</p></dd>
+for more information on group-wise Shapley values.</p></dd>
 
 
 <dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
@@ -219,24 +215,24 @@ for more information on group wise Shapley values.</p></dd>
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
 of every conditional expectation.
 For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
-from the leaf node (see an exception related to the <code>ctree.sample</code> argument <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
-For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
+from the leaf node (see an exception related to the <code>ctree.sample</code> argument in <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
+For <code>approach="empirical"</code>, <code>n_MC_samples</code> is the \(K\) parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 <code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Positive integer.
-Specifies the seed before any randomness based code is being run.
-If <code>NULL</code> (default) no seed is set in the calling environment.</p></dd>
+Specifies the seed before any code involving randomness is run.
+If <code>NULL</code> (default), no seed is set in the calling environment.</p></dd>
 
 
 <dt id="arg-predict-model">predict_model<a class="anchor" aria-label="anchor" href="#arg-predict-model"></a></dt>
 <dd><p>Function.
-The prediction function used when <code>model</code> is not natively supported.
+Prediction function to use when <code>model</code> is not natively supported.
 (Run <code><a href="get_supported_models.html">get_supported_models()</a></code> for a list of natively supported models.)
-The function must have two arguments, <code>model</code> and <code>newdata</code> which specify, respectively, the model
-and a data.frame/data.table to compute predictions for.
+The function must have two arguments, <code>model</code> and <code>newdata</code>, which specify the model
+and a data.frame/data.table to compute predictions for, respectively.
 The function must give the prediction as a numeric vector.
 <code>NULL</code> (the default) uses functions specified internally.
 Can also be used to override the default function for natively supported model classes.</p></dd>
@@ -246,37 +242,35 @@ Can also be used to override the default function for natively supported model c
 <dd><p>Function.
 An optional function for checking model/data consistency when <code>model</code> is not natively supported.
 (Run <code><a href="get_supported_models.html">get_supported_models()</a></code> for a list of natively supported models.)
-The function takes <code>model</code> as argument and provides a list with 3 elements:</p><dl><dt>labels</dt>
+The function takes <code>model</code> as an argument and provides a list with 3 elements:</p><dl><dt>labels</dt>
 <dd><p>Character vector with the names of each feature.</p></dd>
 
 <dt>classes</dt>
-<dd><p>Character vector with the classes of each features.</p></dd>
+<dd><p>Character vector with the class of each feature.</p></dd>
 
 <dt>factor_levels</dt>
 <dd><p>Character vector with the levels for any categorical features.</p></dd>
 
 
-</dl><p>If <code>NULL</code> (the default) internal functions are used for natively supported model classes, and the checking is
+</dl><p>If <code>NULL</code> (the default), internal functions are used for natively supported model classes, and checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
+Controls verbosity (printout detail level) via one or more of <code>"basic"</code>, <code>"progress"</code>,
 <code>"convergence"</code>, <code>"shapley"</code> and <code>"vS_details"</code>.
-<code>"basic"</code> (default) displays basic information about the computation which is being performed,
-in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-<code>"progress</code> displays information about where in the calculation process the function currently is.
-<code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
-(only when <code>iterative = TRUE</code>) .
-<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)
+<code>"basic"</code> (default) displays basic information about the computation and messages about parameters/checks.
+<code>"progress"</code> displays where in the calculation process the function currently is.
+<code>"convergence"</code> displays how close the Shapley value estimates are to convergence
+(only when <code>iterative = TRUE</code>).
+<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>),
 and the final estimates.
-<code>"vS_details"</code> displays information about the v_S estimates.
-This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
+<code>"vS_details"</code> displays information about the v(S) estimates,
+most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac")</code>.
 <code>NULL</code> means no printout.
-Note that any combination of four strings can be used.
-E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></dd>
+Any combination can be used, e.g., <code>verbose = c("basic", "vS_details")</code>.</p></dd>
 
 
 <dt id="arg-extra-computation-args">extra_computation_args<a class="anchor" aria-label="anchor" href="#arg-extra-computation-args"></a></dt>
@@ -306,9 +300,9 @@ values.
 
     <dt><code>categorical.epsilon</code></dt>
 <dd><p>Numeric value. (Optional)
-If <code>categorical.joint_probability_dt</code> is not supplied, probabilities/frequencies are
+If <code>categorical.joint_prob_dt</code> is not supplied, probabilities/frequencies are
 estimated using <code>x_train</code>. If certain observations occur in <code>x_explain</code> and NOT in <code>x_train</code>,
-then epsilon is used as the proportion of times that these observations occurs in the training data.
+then epsilon is used as the proportion of times that these observations occur in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.</p></dd>
 
     <dt><code>internal</code></dt>
@@ -324,12 +318,12 @@ The default value is 0.95.</p></dd>
 
     <dt><code>ctree.minsplit</code></dt>
 <dd><p>Numeric scalar.
-Determines minimum value that the sum of the left and right daughter nodes required for a split.
+Determines the minimum value that the sum of the left and right daughter nodes must reach for a split.
 The default value is 20.</p></dd>
 
     <dt><code>ctree.minbucket</code></dt>
 <dd><p>Numeric scalar.
-Determines the minimum sum of weights in a terminal node required for a split
+Determines the minimum sum of weights in a terminal node required for a split.
 The default value is 7.</p></dd>
 
     <dt><code>ctree.sample</code></dt>
@@ -345,8 +339,8 @@ This means that there will always be sampling in the leaf unless
 
     <dt><code>empirical.type</code></dt>
 <dd><p>Character. (default = <code>"fixed_sigma"</code>)
-Should be equal to either <code>"independence"</code>,<code>"fixed_sigma"</code>, <code>"AICc_each_k"</code> <code>"AICc_full"</code>.
-<code>"independence"</code> is deprecated. Use <code>approach = "independence"</code> instead.
+Must be one of <code>"independence"</code>, <code>"fixed_sigma"</code>, <code>"AICc_each_k"</code>, or <code>"AICc_full"</code>.
+Note: <code>"empirical.type = independence"</code> is deprecated; use <code>approach = "independence"</code> instead.
 <code>"fixed_sigma"</code> uses a fixed bandwidth (set through <code>empirical.fixed_sigma</code>) in the kernel density estimation.
 <code>"AICc_each_k"</code> and <code>"AICc_full"</code> optimize the bandwidth using the AICc criterion, with respectively
 one bandwidth per coalition size and one bandwidth for all coalition sizes.</p></dd>
@@ -356,7 +350,7 @@ one bandwidth per coalition size and one bandwidth for all coalition sizes.</p><
 Needs to be <code>0 &lt; eta &lt;= 1</code>.
 The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
-If e.g. <code>eta = .8</code> we will choose the <code>K</code> samples with the largest weight so that the sum of the weights
+For example, if <code>eta = .8</code>, we choose the <code>K</code> samples with the largest weights so that the sum of the weights
 accounts for 80\<!-- % of the total weight. -->
 <code>eta</code> is the \(\eta\) parameter in equation (15) of
 <a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">Aas et al. (2021)</a>.</p></dd>
@@ -371,19 +365,19 @@ Only used when <code>empirical.type = "fixed_sigma"</code></p></dd>
 <dd><p>Positive integer.
 Number of samples to consider in AICc optimization.
 The default value is 1000.
-Only used for <code>empirical.type</code> is either <code>"AICc_each_k"</code> or <code>"AICc_full"</code>.</p></dd>
+Only used when <code>empirical.type</code> is either <code>"AICc_each_k"</code> or <code>"AICc_full"</code>.</p></dd>
 
     <dt><code>empirical.eval_max_aicc</code></dt>
 <dd><p>Positive integer.
 Maximum number of iterations when optimizing the AICc.
 The default value is 20.
-Only used for <code>empirical.type</code> is either <code>"AICc_each_k"</code> or <code>"AICc_full"</code>.</p></dd>
+Only used when <code>empirical.type</code> is either <code>"AICc_each_k"</code> or <code>"AICc_full"</code>.</p></dd>
 
     <dt><code>empirical.start_aicc</code></dt>
 <dd><p>Numeric.
 Start value of the <code>sigma</code> parameter when optimizing the AICc.
 The default value is 0.1.
-Only used for <code>empirical.type</code> is either <code>"AICc_each_k"</code> or <code>"AICc_full"</code>.</p></dd>
+Only used when <code>empirical.type</code> is either <code>"AICc_each_k"</code> or <code>"AICc_full"</code>.</p></dd>
 
     <dt><code>empirical.cov_mat</code></dt>
 <dd><p>Numeric matrix. (Optional)
@@ -457,14 +451,14 @@ The column <code>none</code> is the prediction not devoted to any of the feature
 <dt><code>shapley_values_sd</code></dt>
 <dd><p>data.table with the standard deviation of the Shapley values reflecting the uncertainty
 in the coalition sampling part of the kernelSHAP procedure.
-These are therefore by definition 0 when all coalitions is used.
-Only present when <code>extra_computation_args$compute_sd=TRUE</code>, which is the default when <code>iterative = TRUE</code></p></dd>
+These are, by definition, 0 when all coalitions are used.
+Only present when <code>extra_computation_args$compute_sd=TRUE</code>, which is the default when <code>iterative = TRUE</code>.</p></dd>
 
 <dt><code>internal</code></dt>
 <dd><p>List with the different parameters, data, functions and other output used internally.</p></dd>
 
 <dt><code>pred_explain</code></dt>
-<dd><p>Numeric vector with the predictions for the explained observations</p></dd>
+<dd><p>Numeric vector with the predictions for the explained observations.</p></dd>
 
 <dt><code>MSEv</code></dt>
 <dd><p>List with the values of the MSEv evaluation criterion for the approach. See the
@@ -473,8 +467,8 @@ Only present when <code>extra_computation_args$compute_sd=TRUE</code>, which is 
 <dt><code>timing</code></dt>
 <dd><p>List containing timing information for the different parts of the computation.
 <code>summary</code> contains the time stamps for the start and end time in addition to the total execution time.
-<code>overall_timing_secs</code> gives the time spent on the different parts of the explanation computation.
-<code>main_computation_timing_secs</code> further decompose the main computation time into the different parts of the
+<code>overall_timing_secs</code> gives the time spent on different parts of the explanation computation.
+<code>main_computation_timing_secs</code> further decomposes the main computation time into different parts of the
 computation for each iteration of the iterative estimation routine, if used.</p></dd>
 
 
@@ -562,10 +556,10 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2025-08-19 08:36:47</span> <span style="color: #00BBBB;">─────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature names extracted from the model contains `NA`.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   Consistency checks between model and data is therefore disabled.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2025-08-21 10:23:53</span> <span style="color: #00BBBB;">─────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature names extracted from the model contain `NA`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Consistency checks between model and data are therefore disabled.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 4`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
@@ -577,7 +571,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">1000</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">2</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp0pURj7/shapr_obj_250e15e90fca.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmppobnmk/shapr_obj_250d6202dfa1.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>

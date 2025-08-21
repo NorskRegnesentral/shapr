@@ -122,18 +122,18 @@ coalitions used to estimate the standard deviations of the Shapley value estimat
 <dd><p>String. The method used to perform batch computing of vS.
 <code>"future"</code> (default), utilizes <a href="https://future.apply.futureverse.org/reference/future_apply.html" class="external-link">future.apply::future_apply</a> (via the <a href="https://future.futureverse.org/reference/future.html" class="external-link">future::future</a> package),
 enabling parallelized computation and progress updates via <a href="https://progressr.futureverse.org/reference/progressr.html" class="external-link">progressr::progressr</a>.
-Alternatively, <code>"forloop"</code> can be used for straight forward sequential computation, which is mainly useful for
+Alternatively, <code>"forloop"</code> can be used for straightforward sequential computation, which is mainly useful for
 package development and debugging purposes.</p></dd>
 
 
 <dt id="arg-max-batch-size">max_batch_size<a class="anchor" aria-label="anchor" href="#arg-max-batch-size"></a></dt>
 <dd><p>Integer. The maximum number of coalitions to estimate simultaneously within each iteration.
-A larger numbers requires more memory, but may have a slight computational advantage.</p></dd>
+A larger number requires more memory, but may have a slight computational advantage.</p></dd>
 
 
 <dt id="arg-min-n-batches">min_n_batches<a class="anchor" aria-label="anchor" href="#arg-min-n-batches"></a></dt>
 <dd><p>Integer. The minimum number of batches to split the computation into within each iteration.
-Larger numbers gives more frequent progress updates. If parallelization is applied, this should be set no smaller
+Larger numbers give more frequent progress updates. If parallelization is applied, this should be set no smaller
 than the number of parallel workers.</p></dd>
 
 </dl></div>

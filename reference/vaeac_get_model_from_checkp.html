@@ -66,7 +66,7 @@
 
 <dt id="arg-cuda">cuda<a class="anchor" aria-label="anchor" href="#arg-cuda"></a></dt>
 <dd><p>Logical (default is <code>FALSE</code>). If <code>TRUE</code>, then the <code>vaeac</code> model will be trained using cuda/GPU.
-If <code><a href="https://torch.mlverse.org/docs/reference/cuda_is_available.html" class="external-link">torch::cuda_is_available()</a></code> is <code>FALSE</code>, the we fall back to use CPU. If <code>FALSE</code>, we use the CPU. Using a GPU
+If <code><a href="https://torch.mlverse.org/docs/reference/cuda_is_available.html" class="external-link">torch::cuda_is_available()</a></code> is <code>FALSE</code>, we fall back to using the CPU. Using a GPU
 for smaller tabular dataset often do not improve the efficiency.
 See <code><a href="https://torch.mlverse.org/docs/articles/installation.html" class="external-link">vignette("installation", package = "torch")</a></code> fo help to enable running on the GPU (only Linux and Windows).</p></dd>
 

@@ -113,7 +113,7 @@ model is stored on disk, for example, <code>explanation$internal$parameters$vaea
 
 <dt id="arg-vaeac-cuda">vaeac.cuda<a class="anchor" aria-label="anchor" href="#arg-vaeac-cuda"></a></dt>
 <dd><p>Logical (default is <code>FALSE</code>). If <code>TRUE</code>, then the <code>vaeac</code> model will be trained using cuda/GPU.
-If <code><a href="https://torch.mlverse.org/docs/reference/cuda_is_available.html" class="external-link">torch::cuda_is_available()</a></code> is <code>FALSE</code>, the we fall back to use CPU. If <code>FALSE</code>, we use the CPU. Using a GPU
+If <code><a href="https://torch.mlverse.org/docs/reference/cuda_is_available.html" class="external-link">torch::cuda_is_available()</a></code> is <code>FALSE</code>, we fall back to using the CPU. Using a GPU
 for smaller tabular dataset often do not improve the efficiency.
 See <code><a href="https://torch.mlverse.org/docs/articles/installation.html" class="external-link">vignette("installation", package = "torch")</a></code> fo help to enable running on the GPU (only Linux and Windows).</p></dd>
 
@@ -275,7 +275,7 @@ representations to latent representations, respectively, where the dimension is 
 The latent representations are sent to the decoder to go back to the real feature space and
 provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
 We use the <code>vaeac</code> method at the epoch with the lowest validation error (IWAE) by default, but
-other possibilities are available but setting the <code>vaeac.which_vaeac_model</code> parameter. See
+other possibilities are available by setting the <code>vaeac.which_vaeac_model</code> parameter. See
 <a href="https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf" class="external-link">Olsen et al. (2022)</a> for more details.</p>
     </div>
     <div class="section level2">

@@ -122,7 +122,7 @@ the function is to save the fitted vaeac model. Note that  the path will be remo
 
 <dt id="arg-cuda">cuda<a class="anchor" aria-label="anchor" href="#arg-cuda"></a></dt>
 <dd><p>Logical (default is <code>FALSE</code>). If <code>TRUE</code>, then the <code>vaeac</code> model will be trained using cuda/GPU.
-If <code><a href="https://torch.mlverse.org/docs/reference/cuda_is_available.html" class="external-link">torch::cuda_is_available()</a></code> is <code>FALSE</code>, the we fall back to use CPU. If <code>FALSE</code>, we use the CPU. Using a GPU
+If <code><a href="https://torch.mlverse.org/docs/reference/cuda_is_available.html" class="external-link">torch::cuda_is_available()</a></code> is <code>FALSE</code>, we fall back to using the CPU. Using a GPU
 for smaller tabular dataset often do not improve the efficiency.
 See <code><a href="https://torch.mlverse.org/docs/articles/installation.html" class="external-link">vignette("installation", package = "torch")</a></code> fo help to enable running on the GPU (only Linux and Windows).</p></dd>
 
@@ -287,20 +287,18 @@ Note that additional choices are available if <code>vaeac.save_every_nth_epoch</
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
+Controls verbosity (printout detail level) via one or more of <code>"basic"</code>, <code>"progress"</code>,
 <code>"convergence"</code>, <code>"shapley"</code> and <code>"vS_details"</code>.
-<code>"basic"</code> (default) displays basic information about the computation which is being performed,
-in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-<code>"progress</code> displays information about where in the calculation process the function currently is.
-<code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
-(only when <code>iterative = TRUE</code>) .
-<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)
+<code>"basic"</code> (default) displays basic information about the computation and messages about parameters/checks.
+<code>"progress"</code> displays where in the calculation process the function currently is.
+<code>"convergence"</code> displays how close the Shapley value estimates are to convergence
+(only when <code>iterative = TRUE</code>).
+<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>),
 and the final estimates.
-<code>"vS_details"</code> displays information about the v_S estimates.
-This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
+<code>"vS_details"</code> displays information about the v(S) estimates,
+most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac")</code>.
 <code>NULL</code> means no printout.
-Note that any combination of four strings can be used.
-E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></dd>
+Any combination can be used, e.g., <code>verbose = c("basic", "vS_details")</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>

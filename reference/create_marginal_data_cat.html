@@ -8,7 +8,7 @@ We know X2 = 2, and let causal structure be X1 -&amp;gt; X2 -&amp;gt; X3. Assume
 P(X1 = 1, X2 = 2, X = 3) = P(X1 = 2, X2 = 2, X = 3) = 1/2. Then there is no point
 generating X1 = 3, as we then cannot generate X3.
 The solution is only to generate the values which can proceed through the whole
-chain of sampling steps. To do that, we have to ensure the the marginal sampling
+chain of sampling steps. To do that, we have to ensure the marginal sampling
 respects the valid feature coalitions for all sets of conditional features, i.e.,
 the features in features_steps_cond_on.
 We sample from the valid coalitions using the MARGINAL probabilities."><meta property="og:description" content="This function is used when we generate marginal data for the categorical approach when we have several sampling
@@ -20,7 +20,7 @@ We know X2 = 2, and let causal structure be X1 -&amp;gt; X2 -&amp;gt; X3. Assume
 P(X1 = 1, X2 = 2, X = 3) = P(X1 = 2, X2 = 2, X = 3) = 1/2. Then there is no point
 generating X1 = 3, as we then cannot generate X3.
 The solution is only to generate the values which can proceed through the whole
-chain of sampling steps. To do that, we have to ensure the the marginal sampling
+chain of sampling steps. To do that, we have to ensure the marginal sampling
 respects the valid feature coalitions for all sets of conditional features, i.e.,
 the features in features_steps_cond_on.
 We sample from the valid coalitions using the MARGINAL probabilities."></head><body>
@@ -67,7 +67,7 @@ We sample from the valid coalitions using the MARGINAL probabilities."></head><b
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Create marginal categorical data for causal Shapley values</h1>
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/asymmetric_and_casual_Shapley.R" class="external-link"><code>R/asymmetric_and_casual_Shapley.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/asymmetric_and_causal_Shapley.R" class="external-link"><code>R/asymmetric_and_causal_Shapley.R</code></a></small>
       <div class="d-none name"><code>create_marginal_data_cat.Rd</code></div>
     </div>
 
@@ -81,7 +81,7 @@ We know X2 = 2, and let causal structure be X1 -&gt; X2 -&gt; X3. Assume that
 P(X1 = 1, X2 = 2, X = 3) = P(X1 = 2, X2 = 2, X = 3) = 1/2. Then there is no point
 generating X1 = 3, as we then cannot generate X3.
 The solution is only to generate the values which can proceed through the whole
-chain of sampling steps. To do that, we have to ensure the the marginal sampling
+chain of sampling steps. To do that, we have to ensure the marginal sampling
 respects the valid feature coalitions for all sets of conditional features, i.e.,
 the features in <code>features_steps_cond_on</code>.
 We sample from the valid coalitions using the MARGINAL probabilities.</p>
@@ -107,15 +107,15 @@ We sample from the valid coalitions using the MARGINAL probabilities.</p>
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
 of every conditional expectation.
 For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
-from the leaf node (see an exception related to the <code>ctree.sample</code> argument <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
-For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
+from the leaf node (see an exception related to the <code>ctree.sample</code> argument in <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
+For <code>approach="empirical"</code>, <code>n_MC_samples</code> is the \(K\) parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 <code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
 
 
 <dt id="arg-x-explain">x_explain<a class="anchor" aria-label="anchor" href="#arg-x-explain"></a></dt>
 <dd><p>Matrix or data.frame/data.table.
-Contains the the features, whose predictions ought to be explained.</p></dd>
+Features for which predictions should be explained.</p></dd>
 
 
 <dt id="arg-sbar-features">Sbar_features<a class="anchor" aria-label="anchor" href="#arg-sbar-features"></a></dt>

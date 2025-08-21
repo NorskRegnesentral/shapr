@@ -43,7 +43,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Check that all explicands has at least one valid MC sample in causal Shapley values</h1>
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/asymmetric_and_casual_Shapley.R" class="external-link"><code>R/asymmetric_and_casual_Shapley.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/asymmetric_and_causal_Shapley.R" class="external-link"><code>R/asymmetric_and_causal_Shapley.R</code></a></small>
       <div class="d-none name"><code>check_categorical_valid_MCsamp.Rd</code></div>
     </div>
 
@@ -69,8 +69,8 @@
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
 of every conditional expectation.
 For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
-from the leaf node (see an exception related to the <code>ctree.sample</code> argument <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
-For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
+from the leaf node (see an exception related to the <code>ctree.sample</code> argument in <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
+For <code>approach="empirical"</code>, <code>n_MC_samples</code> is the \(K\) parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 <code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
 

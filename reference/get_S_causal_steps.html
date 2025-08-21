@@ -43,7 +43,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get the steps for generating MC samples for coalitions following a causal ordering</h1>
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/asymmetric_and_casual_Shapley.R" class="external-link"><code>R/asymmetric_and_casual_Shapley.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/asymmetric_and_causal_Shapley.R" class="external-link"><code>R/asymmetric_and_causal_Shapley.R</code></a></small>
       <div class="d-none name"><code>get_S_causal_steps.Rd</code></div>
     </div>
 
@@ -79,21 +79,21 @@ equivalent to a causal ordering with a single component that includes all featur
 Shapley values, respectively. For feature-wise Shapley values and
 <code>causal_ordering = list(c(1, 2), c(3, 4))</code>, the interpretation is that features 1 and 2
 are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
-Note: All features/groups must be included in the <code>causal_ordering</code> without any duplicates.</p></dd>
+Note: All features/groups must be included in <code>causal_ordering</code> without duplicates.</p></dd>
 
 
 <dt id="arg-confounding">confounding<a class="anchor" aria-label="anchor" href="#arg-confounding"></a></dt>
 <dd><p>Logical vector.
 Not applicable for (regular) non-causal or asymmetric explanations.
-<code>confounding</code> is a vector of logicals specifying whether confounding is assumed or not for each component in the
-<code>causal_ordering</code>. If <code>NULL</code> (default), then no assumption about the confounding structure is made and <code>explain</code>
-computes asymmetric/symmetric conditional Shapley values, depending on the value of <code>asymmetric</code>.
-If <code>confounding</code> is a single logical, i.e., <code>FALSE</code> or <code>TRUE</code>, then this assumption is set globally
-for all components in the causal ordering. Otherwise, <code>confounding</code> must be a vector of logicals of the same
+<code>confounding</code> is a logical vector specifying whether confounding is assumed for each component in the
+<code>causal_ordering</code>. If <code>NULL</code> (default), no assumption about the confounding structure is made and <code>explain</code>
+computes asymmetric/symmetric conditional Shapley values, depending on <code>asymmetric</code>.
+If <code>confounding</code> is a single logical (<code>FALSE</code> or <code>TRUE</code>), the assumption is set globally
+for all components in the causal ordering. Otherwise, <code>confounding</code> must have the same
 length as <code>causal_ordering</code>, indicating the confounding assumption for each component. When <code>confounding</code> is
-specified, then <code>explain</code> computes asymmetric/symmetric causal Shapley values, depending on the value of
-<code>asymmetric</code>. The <code>approach</code> cannot be <code>regression_separate</code> and <code>regression_surrogate</code> as the
-regression-based approaches are not applicable to the causal Shapley value methodology.</p></dd>
+specified, <code>explain</code> computes asymmetric/symmetric causal Shapley values, depending on <code>asymmetric</code>.
+The <code>approach</code> cannot be <code>regression_separate</code> or <code>regression_surrogate</code>, as the
+regression-based approaches are not applicable to the causal Shapley methodology.</p></dd>
 
 
 <dt id="arg-as-string">as_string<a class="anchor" aria-label="anchor" href="#arg-as-string"></a></dt>

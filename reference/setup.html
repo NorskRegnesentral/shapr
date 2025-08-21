@@ -96,29 +96,29 @@
 
 <dl><dt id="arg-x-train">x_train<a class="anchor" aria-label="anchor" href="#arg-x-train"></a></dt>
 <dd><p>Matrix or data.frame/data.table.
-Contains the data used to estimate the (conditional) distributions for the features
+Data used to estimate the (conditional) feature distributions
 needed to properly estimate the conditional expectations in the Shapley formula.</p></dd>
 
 
 <dt id="arg-x-explain">x_explain<a class="anchor" aria-label="anchor" href="#arg-x-explain"></a></dt>
 <dd><p>Matrix or data.frame/data.table.
-Contains the the features, whose predictions ought to be explained.</p></dd>
+Features for which predictions should be explained.</p></dd>
 
 
 <dt id="arg-approach">approach<a class="anchor" aria-label="anchor" href="#arg-approach"></a></dt>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
-All elements should, either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
+All elements should either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
 <code>"categorical"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or <code>"regression_surrogate"</code>.
-The two regression approaches can not be combined with any other approach.
+The two regression approaches cannot be combined with any other approach.
 See details for more information.</p></dd>
 
 
 <dt id="arg-phi-">phi0<a class="anchor" aria-label="anchor" href="#arg-phi-"></a></dt>
 <dd><p>Numeric.
-The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
+The prediction value for unseen data, i.e., an estimate of the expected prediction without conditioning on any
 features.
-Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable.</p></dd>
+Typically set this equal to the mean of the response in the training data, but alternatives such as the mean
+of the training predictions are also reasonable.</p></dd>
 
 
 <dt id="arg-output-size">output_size<a class="anchor" aria-label="anchor" href="#arg-output-size"></a></dt>
@@ -128,23 +128,23 @@ Specifies the dimension of the output from the prediction model for every observ
 
 <dt id="arg-max-n-coalitions">max_n_coalitions<a class="anchor" aria-label="anchor" href="#arg-max-n-coalitions"></a></dt>
 <dd><p>Integer.
-The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+Upper limit on the number of unique feature/group coalitions to use in the iterative procedure
 (if <code>iterative = TRUE</code>).
-If <code>iterative = FALSE</code> it represents the number of feature/group coalitions to use directly.
+If <code>iterative = FALSE</code>, it represents the number of feature/group coalitions to use directly.
 The quantity refers to the number of unique feature coalitions if <code>group = NULL</code>,
 and group coalitions if <code>group != NULL</code>.
-<code>max_n_coalitions = NULL</code> corresponds to <code>max_n_coalitions=2^n_features</code>.</p></dd>
+<code>max_n_coalitions = NULL</code> corresponds to <code>2^n_features</code>.</p></dd>
 
 
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
 <dd><p>List.
-If <code>NULL</code> regular feature wise Shapley values are computed.
-If provided, group wise Shapley values are computed.
+If <code>NULL</code>, regular feature-wise Shapley values are computed.
+If provided, group-wise Shapley values are computed.
 <code>group</code> then has length equal to the number of groups.
-The list element contains character vectors with the features included in each of the different groups.
+Each list element contains the character vectors with the features included in the corresponding group.
 See
 <a href="https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf" class="external-link">Jullum et al. (2021)</a>
-for more information on group wise Shapley values.</p></dd>
+for more information on group-wise Shapley values.</p></dd>
 
 
 <dt id="arg-n-mc-samples">n_MC_samples<a class="anchor" aria-label="anchor" href="#arg-n-mc-samples"></a></dt>
@@ -152,25 +152,25 @@ for more information on group wise Shapley values.</p></dd>
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
 of every conditional expectation.
 For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
-from the leaf node (see an exception related to the <code>ctree.sample</code> argument <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
-For <code>approach="empirical"</code>, <code>n_MC_samples</code> is  the \(K\) parameter in equations (14-15) of
+from the leaf node (see an exception related to the <code>ctree.sample</code> argument in <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
+For <code>approach="empirical"</code>, <code>n_MC_samples</code> is the \(K\) parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 <code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Positive integer.
-Specifies the seed before any randomness based code is being run.
-If <code>NULL</code> (default) no seed is set in the calling environment.</p></dd>
+Specifies the seed before any code involving randomness is run.
+If <code>NULL</code> (default), no seed is set in the calling environment.</p></dd>
 
 
 <dt id="arg-feature-specs">feature_specs<a class="anchor" aria-label="anchor" href="#arg-feature-specs"></a></dt>
 <dd><p>List. The output from <code><a href="get_model_specs.html">get_model_specs()</a></code> or <code><a href="get_data_specs.html">get_data_specs()</a></code>.
-Contains the 3 elements:</p><dl><dt>labels</dt>
+Contains the three elements:</p><dl><dt>labels</dt>
 <dd><p>Character vector with the names of each feature.</p></dd>
 
 <dt>classes</dt>
-<dd><p>Character vector with the classes of each features.</p></dd>
+<dd><p>Character vector with the classes of each feature.</p></dd>
 
 <dt>factor_levels</dt>
 <dd><p>Character vector with the levels for any categorical features.</p></dd>
@@ -181,8 +181,8 @@ Contains the 3 elements:</p><dl><dt>labels</dt>
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Character.
-Either "regular" or "forecast" corresponding to function <code>setup()</code> is called from,
-correspondingly the type of explanation that should be generated.</p></dd>
+Either "regular" or "forecast", matching the function the call originated from,
+and thus the type of explanation to generate.</p></dd>
 
 
 <dt id="arg-horizon">horizon<a class="anchor" aria-label="anchor" href="#arg-horizon"></a></dt>
@@ -236,34 +236,28 @@ If <code>FALSE</code> all lags of each variable are explained individually.</p><
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
+Controls verbosity (printout detail level) via one or more of <code>"basic"</code>, <code>"progress"</code>,
 <code>"convergence"</code>, <code>"shapley"</code> and <code>"vS_details"</code>.
-<code>"basic"</code> (default) displays basic information about the computation which is being performed,
-in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-<code>"progress</code> displays information about where in the calculation process the function currently is.
-<code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
-(only when <code>iterative = TRUE</code>) .
-<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)
+<code>"basic"</code> (default) displays basic information about the computation and messages about parameters/checks.
+<code>"progress"</code> displays where in the calculation process the function currently is.
+<code>"convergence"</code> displays how close the Shapley value estimates are to convergence
+(only when <code>iterative = TRUE</code>).
+<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>),
 and the final estimates.
-<code>"vS_details"</code> displays information about the v_S estimates.
-This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
+<code>"vS_details"</code> displays information about the v(S) estimates,
+most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac")</code>.
 <code>NULL</code> means no printout.
-Note that any combination of four strings can be used.
-E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></dd>
+Any combination can be used, e.g., <code>verbose = c("basic", "vS_details")</code>.</p></dd>
 
 
 <dt id="arg-iterative">iterative<a class="anchor" aria-label="anchor" href="#arg-iterative"></a></dt>
-<dd><p>Logical or NULL
-If <code>NULL</code> (default), the argument is set to <code>TRUE</code> if there are more than 5 features/groups, and <code>FALSE</code> otherwise.
-If eventually <code>TRUE</code>, the Shapley values are estimated iteratively in an iterative manner.
-This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
-values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
-If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
-coalitions.
-The process is repeated until the variances are below the threshold.
-Specifics related to the iterative process and convergence criterion are set through <code>iterative_args</code>.</p></dd>
+<dd><p>Logical or NULL.
+If <code>NULL</code> (default), set to <code>TRUE</code> if there are more than 5 features/groups, and <code>FALSE</code> otherwise.
+If <code>TRUE</code>, Shapley values are estimated iteratively for faster, sufficiently accurate results.
+First an initial number of coalitions is sampled, then bootstrapping estimates the variance of the Shapley values.
+A convergence criterion determines if the variances are sufficiently small. If not, additional samples are added.
+The process repeats until the variances are below the threshold.
+Specifics for the iterative process and convergence criterion are set via <code>iterative_args</code>.</p></dd>
 
 
 <dt id="arg-iterative-args">iterative_args<a class="anchor" aria-label="anchor" href="#arg-iterative-args"></a></dt>
@@ -275,26 +269,26 @@ See <code><a href="get_iterative_args_default.html">get_iterative_args_default()
 <dt id="arg-is-python">is_python<a class="anchor" aria-label="anchor" href="#arg-is-python"></a></dt>
 <dd><p>Logical.
 Indicates whether the function is called from the Python wrapper.
-Default is FALSE which is never changed when calling the function via <code><a href="explain.html">explain()</a></code> in R.
-The parameter is later used to disallow running the AICc-versions of the empirical method
-as that requires data based optimization, which is not supported in <code>shaprpy</code>.</p></dd>
+Default is FALSE, which is never changed when calling the function via <code><a href="explain.html">explain()</a></code> in R.
+The parameter is later used to disallow running the AICc versions of the empirical method,
+as that requires data-based optimization, which is not supported in <code>shaprpy</code>.</p></dd>
 
 
 <dt id="arg-testing">testing<a class="anchor" aria-label="anchor" href="#arg-testing"></a></dt>
 <dd><p>Logical.
-Only use to remove random components like timing from the object output when comparing output with testthat.
+Only used to remove random components, like timing, from the output when comparing with testthat.
 Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-init-time">init_time<a class="anchor" aria-label="anchor" href="#arg-init-time"></a></dt>
-<dd><p>POSIXct object.
-The time when the <code><a href="explain.html">explain()</a></code> function was called, as outputted by <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time()</a></code>.
-Used to calculate the time it took to run the full <code>explain</code> call.</p></dd>
+<dd><p>POSIXct.
+The time when the <code><a href="explain.html">explain()</a></code> function was called, as returned by <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time()</a></code>.
+Used to calculate the total time of the <code><a href="explain.html">explain()</a></code> call.</p></dd>
 
 
 <dt id="arg-prev-shapr-object">prev_shapr_object<a class="anchor" aria-label="anchor" href="#arg-prev-shapr-object"></a></dt>
 <dd><p><code>shapr</code> object or string.
-If an object of class <code>shapr</code> is provided, or string with a path to where intermediate results are stored,
+If an object of class <code>shapr</code> is provided, or a string with a path to where intermediate results are stored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the
@@ -303,12 +297,12 @@ want to continue the iterative estimation. See the
 
 <dt id="arg-asymmetric">asymmetric<a class="anchor" aria-label="anchor" href="#arg-asymmetric"></a></dt>
 <dd><p>Logical.
-Not applicable for (regular) non-causal or asymmetric explanations.
-If <code>FALSE</code> (default), <code>explain</code> computes regular symmetric Shapley values,
-If <code>TRUE</code>, then <code>explain</code> compute asymmetric Shapley values based on the (partial) causal ordering
-given by <code>causal_ordering</code>. That is, <code>explain</code> only uses the feature combinations/coalitions that
-respect the causal ordering when computing the asymmetric Shapley values. If <code>asymmetric</code> is <code>TRUE</code> and
-<code>confounding</code> is <code>NULL</code> (default), then <code>explain</code> computes asymmetric conditional Shapley values as specified in
+Not applicable for (regular) non-causal explanations.
+If <code>FALSE</code> (default), <code>explain</code> computes regular symmetric Shapley values.
+If <code>TRUE</code>, <code>explain</code> computes asymmetric Shapley values based on the (partial) causal ordering
+given by <code>causal_ordering</code>. That is, <code>explain</code> only uses feature coalitions that
+respect the causal ordering. If <code>asymmetric</code> is <code>TRUE</code> and
+<code>confounding</code> is <code>NULL</code> (default), <code>explain</code> computes asymmetric conditional Shapley values as specified in
 <a href="https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf" class="external-link">
 Frye et al. (2020)</a>. If <code>confounding</code> is provided, i.e., not <code>NULL</code>, then <code>explain</code> computes asymmetric causal
 Shapley values as specified in
@@ -329,21 +323,21 @@ equivalent to a causal ordering with a single component that includes all featur
 Shapley values, respectively. For feature-wise Shapley values and
 <code>causal_ordering = list(c(1, 2), c(3, 4))</code>, the interpretation is that features 1 and 2
 are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
-Note: All features/groups must be included in the <code>causal_ordering</code> without any duplicates.</p></dd>
+Note: All features/groups must be included in <code>causal_ordering</code> without duplicates.</p></dd>
 
 
 <dt id="arg-confounding">confounding<a class="anchor" aria-label="anchor" href="#arg-confounding"></a></dt>
 <dd><p>Logical vector.
 Not applicable for (regular) non-causal or asymmetric explanations.
-<code>confounding</code> is a vector of logicals specifying whether confounding is assumed or not for each component in the
-<code>causal_ordering</code>. If <code>NULL</code> (default), then no assumption about the confounding structure is made and <code>explain</code>
-computes asymmetric/symmetric conditional Shapley values, depending on the value of <code>asymmetric</code>.
-If <code>confounding</code> is a single logical, i.e., <code>FALSE</code> or <code>TRUE</code>, then this assumption is set globally
-for all components in the causal ordering. Otherwise, <code>confounding</code> must be a vector of logicals of the same
+<code>confounding</code> is a logical vector specifying whether confounding is assumed for each component in the
+<code>causal_ordering</code>. If <code>NULL</code> (default), no assumption about the confounding structure is made and <code>explain</code>
+computes asymmetric/symmetric conditional Shapley values, depending on <code>asymmetric</code>.
+If <code>confounding</code> is a single logical (<code>FALSE</code> or <code>TRUE</code>), the assumption is set globally
+for all components in the causal ordering. Otherwise, <code>confounding</code> must have the same
 length as <code>causal_ordering</code>, indicating the confounding assumption for each component. When <code>confounding</code> is
-specified, then <code>explain</code> computes asymmetric/symmetric causal Shapley values, depending on the value of
-<code>asymmetric</code>. The <code>approach</code> cannot be <code>regression_separate</code> and <code>regression_surrogate</code> as the
-regression-based approaches are not applicable to the causal Shapley value methodology.</p></dd>
+specified, <code>explain</code> computes asymmetric/symmetric causal Shapley values, depending on <code>asymmetric</code>.
+The <code>approach</code> cannot be <code>regression_separate</code> or <code>regression_surrogate</code>, as the
+regression-based approaches are not applicable to the causal Shapley methodology.</p></dd>
 
 
 <dt id="arg-output-args">output_args<a class="anchor" aria-label="anchor" href="#arg-output-args"></a></dt>
@@ -369,7 +363,7 @@ The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by <c
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A internal list, containing parameters, info, data and computations needed for the later computations.
+    <p>An internal list containing parameters, info, data, and computations needed for later steps.
 The list is expanded and modified in other functions.</p>
     </div>
 

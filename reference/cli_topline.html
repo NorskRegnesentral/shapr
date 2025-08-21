@@ -62,46 +62,44 @@
 
 <dl><dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings <code>"basic"</code>, <code>"progress"</code>,
+Controls verbosity (printout detail level) via one or more of <code>"basic"</code>, <code>"progress"</code>,
 <code>"convergence"</code>, <code>"shapley"</code> and <code>"vS_details"</code>.
-<code>"basic"</code> (default) displays basic information about the computation which is being performed,
-in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-<code>"progress</code> displays information about where in the calculation process the function currently is.
-<code>"convergence"</code> displays information on how close to convergence the Shapley value estimates are
-(only when <code>iterative = TRUE</code>) .
-<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>)
+<code>"basic"</code> (default) displays basic information about the computation and messages about parameters/checks.
+<code>"progress"</code> displays where in the calculation process the function currently is.
+<code>"convergence"</code> displays how close the Shapley value estimates are to convergence
+(only when <code>iterative = TRUE</code>).
+<code>"shapley"</code> displays intermediate Shapley value estimates and standard deviations (only when <code>iterative = TRUE</code>),
 and the final estimates.
-<code>"vS_details"</code> displays information about the v_S estimates.
-This is most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac"</code>).
+<code>"vS_details"</code> displays information about the v(S) estimates,
+most relevant for <code>approach %in% c("regression_separate", "regression_surrogate", "vaeac")</code>.
 <code>NULL</code> means no printout.
-Note that any combination of four strings can be used.
-E.g. <code>verbose = c("basic", "vS_details")</code> will display basic information + details about the v(S)-estimation process.</p></dd>
+Any combination can be used, e.g., <code>verbose = c("basic", "vS_details")</code>.</p></dd>
 
 
 <dt id="arg-testing">testing<a class="anchor" aria-label="anchor" href="#arg-testing"></a></dt>
 <dd><p>Logical.
-Only use to remove random components like timing from the object output when comparing output with testthat.
+Only used to remove random components, like timing, from the output when comparing with testthat.
 Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-init-time">init_time<a class="anchor" aria-label="anchor" href="#arg-init-time"></a></dt>
-<dd><p>POSIXct object.
-The time when the <code><a href="explain.html">explain()</a></code> function was called, as outputted by <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time()</a></code>.
-Used to calculate the time it took to run the full <code>explain</code> call.</p></dd>
+<dd><p>POSIXct.
+The time when the <code><a href="explain.html">explain()</a></code> function was called, as returned by <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time()</a></code>.
+Used to calculate the total time of the <code><a href="explain.html">explain()</a></code> call.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Character.
-Either "regular" or "forecast" corresponding to function <code><a href="setup.html">setup()</a></code> is called from,
-correspondingly the type of explanation that should be generated.</p></dd>
+Either "regular" or "forecast", matching the function the call originated from,
+and thus the type of explanation to generate.</p></dd>
 
 
 <dt id="arg-is-python">is_python<a class="anchor" aria-label="anchor" href="#arg-is-python"></a></dt>
 <dd><p>Logical.
 Indicates whether the function is called from the Python wrapper.
-Default is FALSE which is never changed when calling the function via <code><a href="explain.html">explain()</a></code> in R.
-The parameter is later used to disallow running the AICc-versions of the empirical method
-as that requires data based optimization, which is not supported in <code>shaprpy</code>.</p></dd>
+Default is FALSE, which is never changed when calling the function via <code><a href="explain.html">explain()</a></code> in R.
+The parameter is later used to disallow running the AICc versions of the empirical method,
+as that requires data-based optimization, which is not supported in <code>shaprpy</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
