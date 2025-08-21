@@ -31,8 +31,8 @@ knitr::opts_chunk$set(
 See the pkgdown site at [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/)
 for a complete introduction with examples and documentation of the package.
 
-For an overview of the methodology and capabilities of the package (per `shapr` v1.0.4), 
-see the software paper @jullum2025shapr, available in preprint [here](https://arxiv.org/abs/2504.01842).
+For an overview of the methodology and capabilities of the package (per `shapr` v1.0.4),
+see the software paper @jullum2025shapr, available as a preprint [here](https://arxiv.org/abs/2504.01842).
 
 
 
@@ -40,11 +40,11 @@ see the software paper @jullum2025shapr, available in preprint [here](https://ar
 ## NEWS
 
 With `shapr` version 1.0.0 (GitHub only, Nov 2024) and version 1.0.1 (CRAN, Jan 2025),
-the package was subject to a major update, providing a full restructuring of the code based, and 
-a full suit of new functionality, including:
+the package underwent a major update, providing a full restructuring of the code base, and
+a full suite of new functionality, including:
 
-* A long list of approaches for estimating the contribution/value function $v(S)$, including Variational Autoencoders,
-and regression-based methods
+* A long list of approaches for estimating the contribution/value function $v(S)$, including Variational Autoencoders
+  and regression-based methods
 * Iterative Shapley value estimation with convergence detection
 * Parallelized computations with progress updates
 * Reweighted Kernel SHAP for faster convergence
@@ -57,36 +57,36 @@ and regression-based methods
 See the [NEWS](https://norskregnesentral.github.io/shapr/news/index.html) for a complete list.
 
 ### Coming from shapr < 1.0.0?
-`shapr` version >= 1.0.0 comes with a number of breaking changes. 
-Most notably, we moved from using two function (`shapr()` and `explain()`) to 
-a single function (`explain()`). 
-In addition, custom models are now explained by passing the prediction function directly to `explain()`, 
-quite a few input arguments got new names, and a few functions for edge cases was removed to simplify the code base. 
+`shapr` version >= 1.0.0 comes with a number of breaking changes.
+Most notably, we moved from using two functions (`shapr()` and `explain()`) to
+one function (`explain()`).
+In addition, custom models are now explained by passing the prediction function directly to `explain()`.
+Several input arguments were renamed, and a few functions for edge cases were removed to simplify the code base.
 
 Click [here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md) to view a version of this README with the old syntax (v0.2.2).
 
 ### Python wrapper
 
-We provide a Python wrapper (`shaprpy`) which allows explaining Python models with the methodology 
-implemented in `shapr`, directly from Python. 
-The wrapper calls `R` internally, and therefore requires an installation of `R`. 
+We provide a Python wrapper (`shaprpy`) which allows explaining Python models with the methodology
+implemented in `shapr`, directly from Python.
+The wrapper calls R internally and therefore requires an installation of R.
 See [here](https://norskregnesentral.github.io/shapr/shaprpy.html) for installation instructions and examples.
 
 
 ## The package
 
-The `shapr` R package implements an enhanced version of the Kernel SHAP method, for approximating Shapley values, 
-with a strong focus on conditional Shapley values. 
+The `shapr` R package implements an enhanced version of the Kernel SHAP method for approximating Shapley values,
+with a strong focus on conditional Shapley values.
 The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution 
 functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, 
 and distributions. 
 The package also includes evaluation metrics to compare various approaches. 
-With features like parallelized computations, convergence detection, progress updates, and extensive plotting options, 
-shapr is as a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values, 
+With features like parallelized computations, convergence detection, progress updates, and extensive plotting options,
+shapr is a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values,
 which are critical for understanding how features truly contribute to predictions.
 
-A basic example is provided below. 
-Otherwise we refer to the [pkgdown website](https://norskregnesentral.github.io/shapr/) and the different vignettes there for details and further examples.
+A basic example is provided below.
+Otherwise, we refer to the [pkgdown website](https://norskregnesentral.github.io/shapr/) and the vignettes there for details and further examples.
 
 
 ## Installation
@@ -111,12 +111,12 @@ remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 
 
 ## Example
-`shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome. 
+`shapr` supports computation of Shapley values with any predictive model that takes a set of numeric features and produces a numeric outcome.
 
 The following example shows how a simple `xgboost` model is trained using the *airquality* dataset, and how `shapr` explains the individual predictions. 
 
-We first enable parallel computation and progress updates with the following code chunk. 
-These are optional, but recommended for improved performance and user friendliness, 
+We first enable parallel computation and progress updates with the following code chunk.
+These are optional, but recommended for improved performance and user-friendliness,
 particularly for problems with many features.
 
 ```{r init_no_eval,eval = FALSE}
@@ -124,13 +124,13 @@ particularly for problems with many features.
 # Requires the future and future_lapply packages
 future::plan("multisession", workers = 2) # Increase the number of workers for increased performance with many features
 
-# Enable progress updates of the v(S)-computations
+# Enable progress updates of the v(S) computations
 # Requires the progressr package
 progressr::handlers(global = TRUE)
 progressr::handlers("cli") # Using the cli package as backend (recommended for the estimates of the remaining time)
 ```
 
-Here comes the actual example
+Here is the actual example:
 ```{r basic_example, warning = FALSE}
 library(xgboost)
 library(shapr)
@@ -147,10 +147,10 @@ x_train <- data[-ind_x_explain, ..x_var]
 y_train <- data[-ind_x_explain, get(y_var)]
 x_explain <- data[ind_x_explain, ..x_var]
 
-# Looking at the dependence between the features
+# Look at the dependence between the features
 cor(x_train)
 
-# Fitting a basic xgboost model to the training data
+# Fit a basic xgboost model to the training data
 model <- xgboost(
   data = as.matrix(x_train),
   label = y_train,
@@ -158,10 +158,10 @@ model <- xgboost(
   verbose = FALSE
 )
 
-# Specifying the phi_0, i.e. the expected prediction without any features
+# Specify phi_0, i.e., the expected prediction without any features
 p0 <- mean(y_train)
 
-# Computing the Shapley values with kernelSHAP accounting for feature dependence using
+# Compute Shapley values with Kernel SHAP, accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
   model = model,
@@ -172,24 +172,24 @@ explanation <- explain(
   seed = 1
 )
 
-# Printing the Shapley values for the data to explain.
+# Print the Shapley values for the observations to explain.
 print(explanation)
 
 # Provide a formatted summary of the shapr object
 summary(explanation)
 
-# Finally we plot the resulting explanations
+# Finally, we plot the resulting explanations
 plot(explanation)
 ```
 
-See @jullum2025shapr (preprint available [here](https://arxiv.org/abs/2504.01842)) for a software paper with an overview of the methodology and capabilities of the 
+See @jullum2025shapr (preprint available [here](https://arxiv.org/abs/2504.01842)) for a software paper with an overview of the methodology and capabilities of the
 package (as of v1.0.4).
 See the [general usage vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) for further 
 basic usage examples and brief introductions to the methodology. 
 For more thorough information about the underlying methodology, see methodological papers
 @aas2019explaining, @redelmeier2020explaining, @jullum2021efficient, @olsen2022using, @olsen2024comparative.
-See also @sellereite2019shapr for a very brief paper about a previous version (v0.1.1) of the package 
-(with a different structure, syntax and significantly less functionality).
+See also @sellereite2019shapr for a very brief paper about a previous version (v0.1.1) of the package
+(with a different structure, syntax, and significantly less functionality).
 
 ## Contribution
 
@@ -197,7 +197,7 @@ All feedback and suggestions are very welcome. Details on how to contribute can 
 [here](https://norskregnesentral.github.io/shapr/CONTRIBUTING.html). If you have any questions or comments, feel
 free to open an issue [here](https://github.com/NorskRegnesentral/shapr/issues). 
 
-Please note that the 'shapr' project is released with a
+Please note that the `shapr` project is released with a
 [Contributor Code of Conduct](https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms. 
 

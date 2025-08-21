@@ -2,7 +2,7 @@
 % Please edit documentation in R/finalize_explanation.R
 \name{compute_MSEv_eval_crit}
 \alias{compute_MSEv_eval_crit}
-\title{Mean Squared Error of the Contribution Function \code{v(S)}}
+\title{Mean squared error of the contribution function \code{v(S)}}
 \usage{
 compute_MSEv_eval_crit(
   internal,
@@ -28,12 +28,12 @@ If \code{FALSE}, then the function use the Shapley kernel weights to weight the 
 criterion.
 Note that the Shapley kernel weights are replaced by the sampling frequency when not all coalitions are considered.}
 
-\item{MSEv_skip_empty_full_comb}{Logical. If \code{TRUE} (default), we exclude the empty and grand
+\item{MSEv_skip_empty_full_comb}{Logical. If \code{TRUE} (default), exclude the empty and grand
 coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
-for all methods, i.e., their contribution function is independent of the used method as they are special cases not
-effected by the used method. If \code{FALSE}, we include the empty and grand coalitions. In this situation,
-we also recommend setting \code{MSEv_uniform_comb_weights = TRUE}, as otherwise the large weights for the empty and
-grand coalitions will outweigh all other coalitions and make the MSEv criterion uninformative.}
+for all methods, i.e., their contribution function is independent of the method used (special cases not
+affected by the approach). If \code{FALSE}, include the empty and grand coalitions. In that case,
+we recommend setting \code{MSEv_uniform_comb_weights = TRUE}; otherwise the large weights for the empty and
+grand coalitions will outweigh all others and make the MSEv criterion uninformative.}
 }
 \value{
 List containing:
@@ -51,19 +51,19 @@ each coalition divided by the square root of the number of explicands.}
 }
 }
 \description{
-Function that computes the Mean Squared Error (MSEv) of the contribution function
-v(s) as proposed by \href{https://arxiv.org/pdf/2006.01272}{Frye et al. (2019)} and used by
+Compute the mean squared error (MSEv) of the contribution function
+v(S) as proposed by \href{https://arxiv.org/pdf/2006.01272}{Frye et al. (2019)} and used by
 \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 }
 \details{
-The MSEv evaluation criterion does not rely on access to the true contribution functions nor the
-true Shapley values to be computed. A lower value indicates better approximations, however, the
-scale and magnitude of the MSEv criterion is not directly interpretable in regard to the precision
+The MSEv evaluation criterion does not rely on access to the true contribution functions or the
+true Shapley values. A lower value indicates better approximations; however, the
+scale and magnitude of MSEv are not directly interpretable regarding the precision
 of the final estimated Shapley values.
 \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{Olsen et al. (2024)}
-illustrates in Figure 11 a fairly strong linear relationship between the MSEv criterion and the
-MAE between the estimated and true Shapley values in a simulation study. Note that explicands
-refer to the observations whose predictions we are to explain.
+illustrates (Figure 11) a fairly strong linear relationship between MSEv and the
+MAE between the estimated and true Shapley values in a simulation study. Note: explicands
+are the observations whose predictions we explain.
 }
 \references{
 \itemize{

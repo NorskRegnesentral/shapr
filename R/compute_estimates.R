@@ -1,8 +1,8 @@
-#' Computes the the Shapley values and their standard deviation given the `v(S)`
+#' Compute the Shapley values and their standard deviation given `v(S)`
 #'
 #' @inheritParams default_doc_export
-#' @param vS_list List
-#' Output from [compute_vS()]
+#' @param vS_list List.
+#' Output from [compute_vS()].
 #'
 #' @return The (updated) internal list
 #'
@@ -39,7 +39,7 @@ compute_estimates <- function(internal, vS_list) {
 
   if (compute_sd) {
     if ("progress" %in% verbose) {
-      cli::cli_progress_step("Boostrapping Shapley value standard deviations")
+      cli::cli_progress_step("Bootstrapping Shapley value standard deviations")
     }
 
     dt_shapley_sd <- bootstrap_shapley(internal, n_boot_samps = n_boot_samps, processed_vS_list$dt_vS)
@@ -51,7 +51,7 @@ compute_estimates <- function(internal, vS_list) {
 
 
 
-  # Adding explain_id to the output dt
+  # Add explain_id to the output tables
   if (type != "forecast") {
     dt_shapley_est[, explain_id := .I]
     setcolorder(dt_shapley_est, "explain_id")
@@ -65,7 +65,7 @@ compute_estimates <- function(internal, vS_list) {
   internal$iter_list[[iter]]$vS_list <- vS_list
   internal$iter_list[[iter]]$dt_vS <- processed_vS_list$dt_vS
 
-  # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
+  # Clear the tmp list with model and predict_model (only added for AICc-types of empirical approach)
   internal$output <- processed_vS_list
 
   if ("basic" %in% verbose) {
@@ -106,7 +106,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 
   data.table::setorder(dt_vS, id_coalition)
 
-  dt_vS <- unique(dt_vS, by = "id_coalition") # To remove duplicated full pred row in the iterative procedure
+  dt_vS <- unique(dt_vS, by = "id_coalition") # Remove duplicated full pred row in the iterative procedure
 
   output <- list(
     dt_vS = dt_vS,
@@ -116,7 +116,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 }
 
 
-#' Compute shapley values
+#' Compute Shapley values
 #' @param dt_vS The contribution matrix.
 #'
 #' @inheritParams default_doc_internal
@@ -134,7 +134,7 @@ compute_shapley <- function(internal, dt_vS) {
 
   shap_names <- internal$parameters$shap_names
 
-  # If multiple horizons with explain_forecast are used, we only distribute value to those used at each horizon
+  # If multiple horizons with explain_forecast are used, distribute value only to those used at each horizon
   if (type == "forecast") {
     id_coalition_mapper_dt <- internal$iter_list[[iter]]$id_coalition_mapper_dt
     horizon <- internal$parameters$horizon
@@ -223,7 +223,7 @@ bootstrap_shapley_inner <- function(X,
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
   if (type == "forecast") {
-    # For forecast we set it to zero as all coalitions except empty and grand can be sampled
+    # For forecast set to zero, as all coalitions except empty and grand can be sampled
     max_fixed_coal_size <- 0
   } else {
     # For semi_deterministic_sampling = FALSE, this will be 0 and all coalitions except empty and grand are sampleable
@@ -234,7 +234,7 @@ bootstrap_shapley_inner <- function(X,
 
   boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
 
-  # Split X_org into the deterministic coalitions and the sampled coalitions
+  # Split X_org into the deterministic and sampled coalitions
   X_keep <- X_org[is.na(sample_freq), .(id_coalition, coalitions, coalition_size, N, shapley_weight)]
   X_samp <- X_org[
     !is.na(sample_freq),
@@ -272,15 +272,15 @@ bootstrap_shapley_inner <- function(X,
       X_boot00_paired[, .(boot_id, id_coalition, coalitions, coalition_size, N)]
     )
 
-    # Create the Shapley weight column in X_boot0 s.t. we can row bind with X_keep
+    # Create the Shapley weight column in X_boot0 so we can row-bind with X_keep
     X_boot0[, shapley_weight := NA]
     X_boot <- rbind(X_keep[rep(seq(X_keep_nrow),
       each = n_boot_samps
     ), ][, boot_id := rep(seq(n_boot_samps), times = X_keep_nrow)], X_boot0)
     setkey(X_boot, boot_id, id_coalition)
 
-    # Compute the Shapley weight for the sampled coalitions by counting their sampling frequencies
-    # Note: the deterministic coalitions have their original weight
+    # Compute the Shapley weight for sampled coalitions by counting their sampling frequencies
+    # Note: deterministic coalitions retain their original weight
     X_boot[is.na(shapley_weight), sample_freq := .N, by = .(id_coalition, boot_id)]
     X_boot <- unique(X_boot, by = c("id_coalition", "boot_id"))
     X_boot[is.na(shapley_weight), shapley_weight := as.numeric(sample_freq)]
@@ -328,13 +328,13 @@ bootstrap_shapley_inner <- function(X,
       n_coal_each_size = n_coal_each_size
     )
 
-    # For semi-deterministic sampling, we reweight the sampled coalitions. The deterministic once are already reweighed.
+    # For semi-deterministic sampling, reweight the sampled coalitions. The deterministic ones are already reweighted.
     if (semi_deterministic_sampling) {
       weight_sample <- internal$iter_list[[iter]]$dt_coal_samp_info$weight_sample
       this_X_samp[, shapley_weight := weight_sample * shapley_weight / sum(shapley_weight)]
     }
 
-    # Merge the deterministic and sampled coalitions. Use that the coalitions in this_X_keep is paired.
+    # Merge deterministic and sampled coalitions. Use that the coalitions in this_X_keep are paired.
     this_X <- data.table::rbindlist(list(this_X_keep[seq(1, .N / 2)], this_X_samp, this_X_keep[seq((.N / 2) + 1, .N)]),
       use.names = TRUE
     )
@@ -356,7 +356,7 @@ bootstrap_shapley_inner <- function(X,
 
   dt_kshap_boot_sd <- data.table::as.data.table(std_dev_mat)
   colnames(dt_kshap_boot_sd) <- c("none", shap_names)
-  dt_kshap_boot_sd[, none := 0] # Hard set to 0 as it is zero by definition
+  dt_kshap_boot_sd[, none := 0] # Hard-set to 0, as it is zero by definition
 
   return(dt_kshap_boot_sd)
 }

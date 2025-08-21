@@ -6,9 +6,9 @@
 #' `NULL` means it is estimated from the `x_train` and `x_explain`.
 #'
 #' @param categorical.epsilon Numeric value. (Optional)
-#' If `categorical.joint_probability_dt` is not supplied, probabilities/frequencies are
+#' If `categorical.joint_prob_dt` is not supplied, probabilities/frequencies are
 #' estimated using `x_train`. If certain observations occur in `x_explain` and NOT in `x_train`,
-#' then epsilon is used as the proportion of times that these observations occurs in the training data.
+#' then epsilon is used as the proportion of times that these observations occur in the training data.
 #' In theory, this proportion should be zero, but this causes an error later in the Shapley computation.
 #'
 #' @inheritParams default_doc_export
@@ -69,11 +69,12 @@ setup_approach.categorical <- function(internal,
       is_error <- !all(levels(x_explain[[i]]) %in% levels(joint_probability_dt[[i]]))
 
       if (is_error > 0) {
-        cli::cli_abort(paste0(i, " in x_explain has factor levels than in joint_probability_dt."))
+        cli::cli_abort(paste0(i, " in x_explain has different factor levels than in joint_probability_dt."))
       }
     }
 
-    # Check that dt contains a `joint_prob` col all entries are probabilities between 0 and 1 (inclusive) and add to 1.
+    # Check that dt contains a `joint_prob` column; all entries are probabilities between
+    # 0 and 1 (inclusive) and sum to 1.
     is_error <- !("joint_prob" %in% names(joint_probability_dt)) |
       !all(joint_probability_dt$joint_prob <= 1) |
       !all(joint_probability_dt$joint_prob >= 0) |
@@ -81,8 +82,8 @@ setup_approach.categorical <- function(internal,
 
     if (is_error > 0) {
       cli::cli_abort('joint_probability_dt must include a column of joint probabilities called "joint_prob".
-      joint_prob must all be greater or equal to 0 and less than or equal to 1.
-      sum(joint_prob) must equal to 1.')
+      All joint_prob values must be greater than or equal to 0 and less than or equal to 1.
+      The sum of joint_prob must equal 1.')
     }
 
     # Add an id column
@@ -103,7 +104,7 @@ setup_approach.categorical <- function(internal,
 #' @keywords internal
 #' @author Annabelle Redelmeier and Lars Henry Berge Olsen
 prepare_data.categorical <- function(internal, index_features = NULL, ...) {
-  # Use a faster function when index_feature is only a single coalition, as in causal Shapley values.
+  # Use a faster function when index_features contains only a single coalition, as in causal Shapley values.
   if (length(index_features) == 1) {
     return(prepare_data_single_coalition(internal, index_features))
   }

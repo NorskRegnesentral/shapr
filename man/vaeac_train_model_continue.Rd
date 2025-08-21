@@ -27,20 +27,18 @@ vaeac_train_model_continue(
 the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_train_model_continue]{vaeac_train_model_continue()}}.}
 
 \item{verbose}{String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+Controls verbosity (printout detail level) via one or more of \code{"basic"}, \code{"progress"},
 \code{"convergence"}, \code{"shapley"} and \code{"vS_details"}.
-\code{"basic"} (default) displays basic information about the computation which is being performed,
-in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-\verb{"progress} displays information about where in the calculation process the function currently is.
-\code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{iterative = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
+\code{"basic"} (default) displays basic information about the computation and messages about parameters/checks.
+\code{"progress"} displays where in the calculation process the function currently is.
+\code{"convergence"} displays how close the Shapley value estimates are to convergence
+(only when \code{iterative = TRUE}).
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE}),
 and the final estimates.
-\code{"vS_details"} displays information about the v_S estimates.
-This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{"vS_details"} displays information about the v(S) estimates,
+most relevant for \code{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac")}.
 \code{NULL} means no printout.
-Note that any combination of four strings can be used.
-E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.}
+Any combination can be used, e.g., \code{verbose = c("basic", "vS_details")}.}
 
 \item{seed}{Positive integer (default is \code{1}). Seed for reproducibility. Specifies the seed before any randomness
 based code is being run.}

@@ -27,12 +27,12 @@ The output from \code{\link[=explain]{explain()}}.}
 \item{plot_type}{Character.
 Specifies the type of plot to produce.
 \code{"bar"} (the default) gives a regular horizontal bar plot of the Shapley value magnitudes.
-\code{"waterfall"} gives a waterfall plot indicating the changes in the prediction score due to each features
+\code{"waterfall"} gives a waterfall plot indicating the changes in the prediction score due to each feature's
 contribution (their Shapley values).
 \code{"scatter"} plots the feature values on the x-axis and Shapley values on the y-axis, as well as
 (optionally) a background scatter_hist showing the distribution of the feature data.
 \code{"beeswarm"} summarizes the distribution of the Shapley values along the x-axis for all the features.
-Each point gives the shapley value of a given instance, where the points are colored by the feature value
+Each point gives the Shapley value of a given instance, where the points are colored by the feature value
 of that instance.}
 
 \item{digits}{Integer.
@@ -40,8 +40,8 @@ Number of significant digits to use in the feature description.
 Applicable for \code{plot_type} \code{"bar"} and \code{"waterfall"}}
 
 \item{index_x_explain}{Integer vector.
-Which of the test observations to plot. E.g. if you have
-explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first 5
+Which of the test observations to plot. For example, if you have
+explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first five
 observations by setting \code{index_x_explain = 1:5}.}
 
 \item{top_k_features}{Integer.
@@ -58,7 +58,7 @@ For \code{plot_type = "bar"} and \code{plot_type = "waterfall"}, the default is 
 For \code{plot_type = "beeswarm"}, the default is \code{c("#F8766D","yellow","#00BA38")}.
 For \code{plot_type = "scatter"}, the default is \code{"#619CFF"}.
 
-If you want to alter the colors i the plot, the length of the \code{col} vector depends on plot type.
+If you want to alter the colors in the plot, the length of the \code{col} vector depends on plot type.
 For \code{plot_type = "bar"} or \code{plot_type = "waterfall"}, two colors should be provided, first for positive and
 then for negative Shapley values.
 For \code{plot_type = "beeswarm"}, either two or three colors can be given.
@@ -75,7 +75,7 @@ scatter plot.}
 Whether to include \code{phi0} in the plot for  \code{plot_type = "bar"}.}
 
 \item{bar_plot_order}{Character.
-Specifies what order to plot the features with respect to the magnitude of the shapley values with
+Specifies what order to plot the features with respect to the magnitude of the Shapley values with
 \code{plot_type = "bar"}:
 \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
 \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
@@ -83,7 +83,7 @@ Specifies what order to plot the features with respect to the magnitude of the s
 
 \item{scatter_features}{Integer or character vector.
 Only used for \code{plot_type = "scatter"}.
-Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a
+Specifies which features to include in the scatter plot. Can be a numerical vector indicating feature index, or a
 character vector, indicating the name(s) of the feature(s) to plot.}
 
 \item{scatter_hist}{Logical.
@@ -109,8 +109,8 @@ ggplot object with plots of the Shapley value explanations
 Plots the individual prediction explanations.
 }
 \details{
-See the examples below, or \code{vignette("general_usage", package = "shapr")} for an examples of
-how you should use the function.
+See the examples below, or \code{vignette("general_usage", package = "shapr")} for examples of
+how to use the function.
 }
 \examples{
 \donttest{
@@ -151,10 +151,10 @@ if (requireNamespace("party", quietly = TRUE)) {
 
     # We can also make waterfall plots
     plot(x, plot_type = "waterfall", index_x_explain = 1:4)
-    # And only showing the 2 features with largest contribution
+    # And only showing the two features with the largest contributions
     plot(x, plot_type = "waterfall", index_x_explain = 1:4, top_k_features = 2)
 
-    # Or scatter plots showing the distribution of the shapley values and feature values
+    # Or scatter plots showing the distribution of the Shapley values and feature values
     plot(x, plot_type = "scatter")
     # And only for a specific feature
     plot(x, plot_type = "scatter", scatter_features = "Temp")

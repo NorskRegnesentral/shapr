@@ -16,7 +16,7 @@
 \item{x}{A shapr object}
 
 \item{what}{Character. Which component to print.
-Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition", and "timing_summary.
+Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition", and "timing_summary".
 Defaults to "shapley_est".
 Only one component can be printed at a time.
 See the details section of \code{\link[=get_results]{get_results()}} for details about each component.}

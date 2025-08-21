@@ -59,7 +59,7 @@ popular `tidymodels` package developed by @tidymodels. The
 collection of packages for modeling and machine learning
 using [`tidyverse`](https://www.tidyverse.org/) principles.
 Some packages included in the `tidymodels` framework are
-`parsnip`, `recipes`, `workflows` `tune`, and `rsample`;
+`parsnip`, `recipes`, `workflows`, `tune`, and `rsample`;
 see the [setup](#setup) section below for more examples.
 Furthermore, click [here](https://www.tidymodels.org/find/parsnip/)
 to access the complete list of supported regression models
@@ -71,7 +71,7 @@ steps. For instance, we can either apply the linear regression model directly to
 the data or pre-process the data to compute principal components
 (principal component regression) before fitting the linear regression to
 the first few eigenvectors (processed features), see the [pre-process](#separate_preproc) section for an example.
-In the [add new regression methods](#new) section, we demonstrate how to incorporate the  projection pursuit regression model into the `tidymodels` framework.
+In the [add new regression methods](#new) section, we demonstrate how to incorporate the projection pursuit regression model into the `tidymodels` framework.
 
 Note that our framework does not currently support model
 formulas with special terms. For example, we do not support
@@ -91,7 +91,7 @@ natively support categorical data to encode the categorical features.
 We use the same data and predictive models in this
 vignette as in the general usage.
 
-See the end of the [continious data](#summary_figures) and
+See the end of the [continuous data](#summary_figures) and
 [mixed data](#summary_mixed) sections for summary figures of all the
 methods used in this vignette to compute the Shapley value explanations.
 
@@ -99,7 +99,7 @@ methods used in this vignette to compute the Shapley value explanations.
 # The separate regression method class {#separate}
 
 In the `regression_separate` methods, we train a new regression
-model $g_S(\boldsymbol{x}s)$ to estimate the conditional expectation
+model $g_S(\boldsymbol{x}_S)$ to estimate the conditional expectation
 for each coalition of features.
 
 The idea is to estimate
@@ -121,7 +121,7 @@ training data set is
 \end{align*}
 
 For each data set $\mathcal{D}_S$, we train a regression model
-$g_S(\boldsymbol{x}s)$ with respect to the mean squared error
+$g_S(\boldsymbol{x}_S)$ with respect to the mean squared error
 loss function. That is, we fit a regression model where the
 prediction $f(\boldsymbol{x})$ is acting as the response and
 the feature subset of coalition $S$, $\boldsymbol{x}_S$, is
@@ -160,7 +160,7 @@ which package the functions originate from in the `tidymodels` framework.
 library(tidymodels)
 library(shapr)
 
-# Ensure that shapr's functions are prioritzed, otherwise we need to use the `shapr::`
+# Ensure that shapr's functions are prioritized, otherwise we need to use the `shapr::`
 # prefix when calling explain(). The `conflicted` package is imported by `tidymodels`.
 conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
 ```
@@ -225,7 +225,7 @@ print_MSEv_scores_and_time <- function(explanation_list) {
   res <- as.data.frame(t(sapply(
     explanation_list,
     function(explanation) {
-      round(c(explanation$MSEv$MSEv$MSEv, explanation$timing$total_time_secs), 2)
+      round(c(explanation$MSEv$MSEv$MSEv, explanation$timing$summary$total_time_secs), 2)
     }
   )))
   colnames(res) <- c("MSEv", "Time")
@@ -290,7 +290,7 @@ fitting the separate regression models. We demonstrate this
 for the linear regression model, but we can apply this
 pre-processing to other regression methods.
 
-The `recipe` package in the `tidymodels` framework contains
+The `recipes` package in the `tidymodels` framework contains
 many functions to pre-process the data before fitting the model,
 for example, normalization, interaction, encodings, and
 transformations (e.g., log, splines, pls, pca). Click
@@ -386,7 +386,7 @@ regression.recipe_func <- function(recipe) {
 }
 
 # Compute the Shapley values using the pre-processing steps defined above
-explanation_list$sep_reicpe_example <- explain(
+explanation_list$sep_recipe_example <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -482,7 +482,7 @@ To do this, we need to specify three things:
 
 1. In `regression.model`, we need to specify which parameters to tune
 in the model. We do this by setting the parameter equal to `hardhat::tune()`.
-For example., if we want to tune the `tree_depth` parameter in the
+For example, if we want to tune the `tree_depth` parameter in the
 `parsnip::decision_tree` model while using default parameters for the
 other parameters, then we set `parsnip::decision_tree(tree_depth = hardhat::tune())`.
 2. In `regression.tune_values`, we must provide either a data.frame (can also
@@ -531,7 +531,7 @@ both the `tree_depth` and `cost_complexity` parameters, but we
 will manually specify the possible hyperparameter values this time.
 
 ```{r dt-cv, cache=TRUE}
-# Decision tree with cross validated depth (default values other parameters)
+# Decision tree with cross-validated depth (default values for other parameters)
 explanation_list$sep_tree_cv <- explain(
   model = model,
   x_explain = x_explain,
@@ -573,7 +573,7 @@ a data.frame where the hyperparameter values for `mtry` will change
 based on the coalition size. If we do not let `regression.tune_values`
 be a function, then `tidymodels` will crash for any `mtry` higher
 than 1. Furthermore, by setting letting `"vS_details" %in% verbose`,
-we receive get messages with the results of the cross-validation procedure ran within `shapr`.
+we receive messages with the results of the cross-validation procedure run within `shapr`.
 Note that the tested hyperparameter value combinations change based on the coalition size.
 
 ```{r rf-cv, cache=TRUE}
@@ -736,7 +736,7 @@ in settings with (more) training observations with more features
 time-consuming cross-validation (i.e., more folds,
 hyperparameters to tune, or hyperparameter values to consider).
 Furthermore, we see that conducting the cross-validation has
-lowered the $\operatorname{MSE}_v$criterion drastically. Finally,
+lowered the $\operatorname{MSE}_v$ criterion drastically. Finally,
 note that we obtain the same value whether we run the
 cross-validation in parallel or sequentially.
 
@@ -751,7 +751,7 @@ print_MSEv_scores_and_time(explanation_list)
 Since the `regression_separate` methods train a new
 regression model $g_S(\boldsymbol{x}_S)$ for each coalition
 $S \subseteq \{1,2,\dots,M\}$, a total of $2^M-2$
-models has to be trained, which can be time-consuming
+models have to be trained, which can be time-consuming
 for slowly fitted models. The minus two corresponds to
 the empty and grand coalitions.
 
@@ -1183,7 +1183,7 @@ explanation_list$MC_empirical <- NULL
 explanation_list <- c(explanation_list_MC, explanation_list)
 ```
 
-We then compare the compare the regression and Monte Carlo-based methods by
+We then compare the regression and Monte Carlo-based methods by
 plotting the $\operatorname{MSE}_v$ evaluation criterion. We continue with
 include a vertical line corresponding to the $\operatorname{MSE}_v$ of
 the `MC_empirical` method to make the comparison easier.
@@ -1224,7 +1224,7 @@ plot_SV_several_approaches(explanation_list[order], index_explicands = c(3, 4), 
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(5, 6), facet_ncol = 1)
 ```
 
-Here, we focus on the five best methods (and `MC_empricial`) to make it
+Here, we focus on the five best methods (and `MC_empirical`) to make it
 easier to analyze the individual Shapley value explanations, and we see
 a quite strong agreement between the different methods.
 
@@ -1254,7 +1254,7 @@ this below using the `regression.recipe_func` function.
 First, we copy the setup from the general usage.
 
 ```{r mixed-setup, cache = TRUE}
-# convert the month variable to a factor
+# Convert the month variable to a factor
 data_cat <- copy(data)[, Month_factor := as.factor(Month)]
 
 data_train_cat <- data_cat[-ind_x_explain, ]
@@ -1386,7 +1386,7 @@ explanation_list_mixed$sep_rf <- explain(
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 
-# Random forest with cross validated hyperparameters.
+# Random forest with cross-validated hyperparameters.
 explanation_list_mixed$sep_rf_cv <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1404,7 +1404,7 @@ explanation_list_mixed$sep_rf_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 
-# Xgboost with default hyperparameters, but we have to dummy encode the factors
+# XGBoost with default hyperparameters, but we have to dummy encode the factors
 explanation_list_mixed$sep_xgboost <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1418,7 +1418,7 @@ explanation_list_mixed$sep_xgboost <- explain(
   }
 )
 
-# Xgboost with cross validated hyperparameters and we dummy encode the factors
+# XGBoost with cross-validated hyperparameters and we dummy encode the factors
 explanation_list_mixed$sep_xgboost_cv <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1460,7 +1460,7 @@ explanation_list_mixed$sur_lm <- explain(
 )
 
 # Linear regression where we have added splines to the numerical features
-# NOTE, that we remove the augmented mask variables to avoid a rank-deficient fit
+# NOTE that we remove the augmented mask variables to avoid a rank-deficient fit
 explanation_list_mixed$sur_splines <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1515,7 +1515,7 @@ explanation_list_mixed$sur_rf <- explain(
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 
-# Random forest with cross validated hyperparameters.
+# Random forest with cross-validated hyperparameters.
 explanation_list_mixed$sur_rf_cv <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1530,7 +1530,7 @@ explanation_list_mixed$sur_rf_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 
-# Xgboost with default hyperparameters, but we have to dummy encode the factors
+# XGBoost with default hyperparameters, but we have to dummy encode the factors
 explanation_list_mixed$sur_xgboost <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1544,7 +1544,7 @@ explanation_list_mixed$sur_xgboost <- explain(
   }
 )
 
-# Xgboost with cross validated hyperparameters and we dummy encode the factors
+# XGBoost with cross-validated hyperparameters and we dummy encode the factors
 explanation_list_mixed$sur_xgboost_cv <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1586,7 +1586,7 @@ plot_MSEv_scores(explanation_list_mixed, method_line = "MC_ctree")
 ```
 
 The best-performing methods are the surrogate random forest
-and xgboost with cross-validation methods. The Monte Carlo-based
+and XGBoost with cross-validation methods. The Monte Carlo-based
 methods perform worse, with `ctree` being the best, with a
 seventh-place overall ranking.
 
@@ -1621,7 +1621,7 @@ plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicand
 In this section, we demonstrate that the `regression.model`,
 `regression.tune_values`, and `regression.recipe_func`
 parameters can be provided as strings. This is a property
-which is convenient if the `explain()` function is called
+which is convenient when the `explain()` function is called
 from Python through the associated `shaprpy` Python library.
 That is, the user only has to specify strings
 containing R code instead of having to deal with creating

@@ -8,7 +8,7 @@ vaeac_get_x_explain_extended(x_explain, S, index_features)
 }
 \arguments{
 \item{x_explain}{Matrix or data.frame/data.table.
-Contains the the features, whose predictions ought to be explained.}
+Features for which predictions should be explained.}
 
 \item{S}{The \code{internal$objects$S} matrix containing the possible coalitions.}
 

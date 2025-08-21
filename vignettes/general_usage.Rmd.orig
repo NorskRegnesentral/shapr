@@ -80,19 +80,19 @@ eight different Monte Carlo-based approaches for estimating the conditional dist
 See [Estimation approaches and plotting functionality](#ex) below for examples.
 It is also possible to combine the different approaches, see the [combined approach](#combined).
 
-The package allows for parallelized computation through the `future`package, see [Parallelization](#para) for details.
+The package allows for parallelized computation through the `future` package, see [Parallelization](#para) for details.
 
 The level of detail in the output can be controlled through the `verbose` argument. In addition, progress updates
 on the process of estimating the `v(S)`'s (and training the `"vaeac"` model) is available through the
 `progressr` package, supporting progress updates also for parallelized computation.
 See [Verbosity and progress updates](#verbose) for details.
 
-Moreover, the default behavior is to estimate the Shapley values iteratively, with increasing number of
-feature coalitions being added, and to stop estimation as the estimated Shapley values has achieved a certain level of
+Moreover, the default behavior is to estimate the Shapley values iteratively, with an increasing number of
+feature coalitions being added, and to stop estimation as the estimated Shapley values have achieved a certain level of
 stability.
 More information about this is provided in [Iterative estimation](#iterative)
 The above, combined with batch computation of the `v(S)` values, enables fast and accurate estimation of the
-Shapley values in a memory friendly manner.
+Shapley values in a memory-friendly manner.
 
 The package provides functionality for printing and summarizing the Shapley value computation, as well as extracting
 objects created during computation, see [Summary, Printing, and Result Extraction](#summary).
@@ -106,10 +106,10 @@ Finally, explanation of multiple output time series forecasting models are discu
 
 Below we provide brief descriptions of the most important parts of the default behavior of the `explain` function.
 
-By default `explain` always compute feature-wise Shapley values.
+By default `explain` always computes feature-wise Shapley values.
 Groups of features can be explained by providing the feature groups through the `group` argument.
 
-When there are five or less features (or feature groups), iterative estimation is by default disabled.
+When there are five or fewer features (or feature groups), iterative estimation is by default disabled.
 The reason for this is that it is usually faster to estimate the Shapley values for all possible coalitions (`v(S)`),
 than to estimate the uncertainty of the Shapley values, and potentially stop estimation earlier.
 While iterative estimation is the default starting from six features, it is mainly when there are more than ten features,
@@ -252,7 +252,7 @@ Kernel SHAP.
 
 If both the dependence structure and the marginal distributions of
 $\boldsymbol{x}$ are very far from the Gaussian, neither of the two
-aforementioned methods will work very well. Few methods exists for the
+aforementioned methods will work very well. Few methods exist for the
 non-parametric estimation of conditional densities, and the classic
 kernel estimator (@rosenblatt1956) for non-parametric density estimation
 suffers greatly from the curse of dimensionality and does not provide a
@@ -287,7 +287,7 @@ bias does not dominate. @aas2019explaining show that a proper criterion
 for selecting $\sigma$ is a small-sample-size corrected version of the
 AIC known as AICc. As calculation of it is computationally intensive, an
 approximate version of the selection criterion is also suggested.
-Details on this is found in @aas2019explaining.
+Details on this are found in @aas2019explaining.
 
 
 ## Conditional Inference Tree Approach {#ctree}
@@ -296,11 +296,11 @@ The previous three methods can only handle numerical data. This means
 that if the data contains categorical/discrete/ordinal features, the
 features first have to be one-hot encoded. When the number of
 levels/features is large, this is not feasible. An approach that handles
-mixed (i.e numerical, categorical, discrete, ordinal) features and both
+mixed (i.e., numerical, categorical, discrete, ordinal) features and both
 univariate and multivariate responses is conditional inference trees
 (@hothorn2006unbiased).
 
-Conditional inference trees is a special tree fitting procedure that
+Conditional inference trees are a special tree-fitting procedure that
 relies on hypothesis tests to choose both the splitting feature and the
 splitting point. The tree fitting procedure is sequential: first a
 splitting feature is chosen (the feature that is least independent of
@@ -353,8 +353,8 @@ lower bound. See Section 3 in @olsen2022using for an in-depth introduction to th
 `vaeac` methodology. We use the `vaeac` model at the epoch which obtains the lowest
 validation IWAE score to generate the Monte Carlo samples used in the Shapley value computations.
 
-We fit the `vaeac` model using the R-package *torch*(@torch). The main
-parameters are the the number of layers in the networks (`vaeac.depth`), the width of the layers
+We fit the `vaeac` model using the R package *torch* (@torch). The main
+parameters are the number of layers in the networks (`vaeac.depth`), the width of the layers
 (`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
 the activation function between the layers in the networks (`vaeac.activation_function`),
 the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
@@ -363,7 +363,7 @@ the number of learning epochs (`vaeac.epochs`). See `?shapr::setup_approach.vaea
 a more detailed description of the parameters.
 
 There are additional extra parameters which can be set by including a named list in the call to
-the `explain()` function. For example, we can the change the batch size to 32 by including
+the `explain()` function. For example, we can change the batch size to 32 by including
 `vaeac.extra_parameters = list(vaeac.batch_size = 32)` as an argument in the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
 extra parameters to the `vaeac` approach.
 Note that the main parameters are entered as arguments directly in `explain()` function, while the extra parameters are specified through a named list called `vaeac.extra_parameters`.
@@ -388,7 +388,7 @@ marginal and conditional probabilities are estimated for all
 combinations of feature values, each conditional expectation can be
 calculated. For example, the expected value of $X_1$ given $X_2 = 1$ and
 $X_3 = 2$ is
-$$E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1, X_3=2)}.$$.
+$$E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1, X_3=2)}.$$
 
 
 
@@ -396,7 +396,7 @@ $$E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1
 
 Another paradigm for estimating the contribution function is the regression
 paradigm. In contrast to the methods above, which belong to the Monte Carlo
-paradigm, the regression based methods use regression models to estimate the
+paradigm, the regression-based methods use regression models to estimate the
 contribution function $v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]$ directly.
 The separate regression method class fits a separate regression model for
 each coalition $S$, while the surrogate regression method class fits a single
@@ -482,10 +482,10 @@ plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 
 There are multiple plot options specified by the `plot_type` argument in
 `plot`. The `waterfall` option shows the changes in the prediction score
-due to each features contribution (their Shapley values):
+due to each feature's contribution (their Shapley values):
 
 There are multiple plot options specified by the `plot_type` argument in `plot`.
-The `waterfall` option shows the changes in the prediction score due to each features contribution (their Shapley values):
+The `waterfall` option shows the changes in the prediction score due to each feature's contribution (their Shapley values):
 
 ```{r plot-waterfall, warning=FALSE, cache = TRUE}
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
@@ -521,7 +521,7 @@ scatter_hist showing the distribution of the feature data:
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-We can use mixed (i.e continuous, categorical, ordinal) data with `ctree` or `vaeac`.
+We can use mixed (i.e., continuous, categorical, ordinal) data with `ctree` or `vaeac`.
 Use `ctree` with mixed data in the following manner:
 
 ```{r factor, warning=FALSE, cache = TRUE}
@@ -537,7 +537,7 @@ x_train_cat <- data_train_cat[, ..x_var_cat]
 x_explain_cat <- data_explain_cat[, ..x_var_cat]
 
 # Fitting an lm model here as xgboost does not handle categorical features directly
-# (work around in example below)
+# (workaround in example below)
 lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + ")))
 
 model_lm_cat <- lm(lm_formula, data_train_cat)
@@ -563,7 +563,7 @@ in the following manner. The default values are based on
 
 ```{r ctree, warning=FALSE, cache = TRUE}
 # Use the conditional inference tree approach
-# We can specify parameters used to building trees by specifying mincriterion,
+# We can specify parameters used to build trees by specifying mincriterion,
 # minsplit, minbucket
 explanation_ctree <- explain(
   model = model_lm_cat,
@@ -612,7 +612,7 @@ explanation_cat_method <- explain(
   x_train = x_train_all_cat,
   approach = "categorical",
   phi0 = p0,
-  seed = 1,)
+  seed = 1)
 ```
 
 Shapley values can be used to explain any predictive model. For
@@ -655,7 +655,7 @@ model_lm_ts <- lm(lm_ts_formula, data_ts_train)
 x_explain_ts <- data_ts[ind_x_explain, ..x_var_ts]
 x_train_ts <- data_ts[-ind_x_explain, ..x_var_ts]
 
-# Spitting the time series into 4 segments
+# Splitting the time series into 4 segments
 group_ts <- list(
   S1 = paste0("X", 1:10),
   S2 = paste0("X", 11:20),
@@ -1054,10 +1054,10 @@ these conditional expectations is also computationally expensive,
 typically requiring estimation of a conditional probability
 distribution, followed by Monte Carlo integration. These computations
 are not only heavy for the CPU, they also require a lot of memory (RAM),
-which typically is a limited resource. By doing the most resource hungry
+which typically is a limited resource. By doing the most resource-hungry
 computations (the computation of v(S)) in sequential batches with
 different feature subsets $S$, the memory usage can be significantly
-reduces.
+reduced.
 The user can control the number of batches by setting the two arguments
 `extra_computation_args$max_batch_size` (defaults to 10) and
 `extra_computation_args$min_n_batches` (defaults to 10).
@@ -1068,8 +1068,8 @@ In addition to reducing the memory consumption, the batch computing allows the
 computations within each batch to be performed in parallel.
 The parallelization in `shapr::explain()` is handled by the
 `future_apply` package which builds on the `future` environment. These packages
-work on all OS, allows the user to decide the parallelization
-backend (multiple R processes or forking), works directly with hpc
+work on all OSes, allow the user to decide the parallelization
+backend (multiple R processes or forking), work directly with HPC
 clusters, and also supports progress updates for the parallelized task
 via the associated `progressr` package
 (see [Verbosity and progress updates](#verbose)).
@@ -1127,9 +1127,9 @@ command `progressr::handlers(local=TRUE)`, before calling
 of the progress updates is a basic ASCII-based horizontal progress bar.
 Other variants can be chosen by passing different strings to
 `progressr::handlers()`, some of which require additional packages. If
-you are using Rstudio, the progress can be displayed directly in the gui
+you are using RStudio, the progress can be displayed directly in the GUI
 with `progressr::handlers('rstudio')` (requires the `rstudioapi`
-package). If you are running Windows, you may use the pop-up gui
+package). If you are running Windows, you may use the pop-up GUI
 progress bar `progressr::handlers('handler_winprogressbar')`.
 A wrapper for progressbar of the flexible `cli` package, is also available
 `progressr::handlers('cli')`.
@@ -1262,7 +1262,7 @@ explanation_combined <- explain(
 In some cases, especially when the number of features is very large, it
 may be more appropriate to explain predictions in terms of groups of
 features instead of single features, see (@jullum2021efficient) for
-intuition and real world examples. Explaining prediction in terms of
+intuition and real-world examples. Explaining predictions in terms of
 groups of features is very easy using `shapr`:
 
 ```{r group, warning=FALSE, cache = TRUE}
@@ -1318,7 +1318,7 @@ the model as input and outputting a list with the following elements:
 elements), *factor_levels* (a named list with the labels as names and
 vectors with the factor levels as elements (NULL if the feature is not a
 factor)). The `get_model_specs` function is used to check that the
-format of the data passed to `explain` have the correct format in terms
+data passed to `explain` have the correct format in terms
 of the necessary feature columns being available and having the correct
 class/attributes. It is highly recommended to do such checks in order to
 ensure correct usage of `explain`. If, for some reason, such checking is
@@ -1421,9 +1421,9 @@ plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ## Tidymodels and workflows {#workflow_example}
 In this section, we demonstrate how to use `shapr` to explain `tidymodels` models fitted using `workflows`.
 In the example [above](#examples), we directly used the `xgboost` package to fit the `xgboost` model.
-However, we can also fit the `xgboost` model using the `tidymodels` package. These fits will be identical
-as `tidymodels` calls `xgboost` internally. which we demonstrate in the example below. Note that we can replace
-`xgboost` (i.e., `parsnip::boost_tree`) with any other fitted `tidymodels` in the `workflows` procedure outlined below.
+However, we can also fit the `xgboost` model using the `tidymodels` package. These fits will be identical,
+as `tidymodels` calls `xgboost` internally, which we demonstrate in the example below. Note that we can replace
+`xgboost` (i.e., `parsnip::boost_tree`) with any other fitted `tidymodels` model in the `workflows` procedure outlined below.
 
 ```{r workflow, cache = TRUE}
 # Fitting a basic xgboost model to the training data using tidymodels
@@ -1470,7 +1470,7 @@ all.equal(explanation$shapley_values_est, explanation_tidymodels$shapley_values_
 ## The parameters of the `vaeac` approach
 
 The `vaeac` approach is a very flexible method that supports mixed data. The main
-parameters are the the number of layers in the networks (`vaeac.depth`), the width of the layers
+parameters are the number of layers in the networks (`vaeac.depth`), the width of the layers
 (`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
 the activation function between the layers in the networks (`vaeac.activation_function`),
 the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
@@ -1479,8 +1479,8 @@ the number of learning epochs (`vaeac.epochs`). Call `?shapr::setup_approach.vae
 a more detailed description of the parameters.
 
 There are additional extra parameters which can be set by including a named list in the call to
-the `explain()` function. For example, we can the change the batch size to 32 by including
-`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
+the `explain()` function. For example, we can change the batch size to 32 by including
+`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call to the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
 extra parameters to the `vaeac` approach.
 The main parameters are directly entered to the `explain()` function, while the extra parameters are included in a
 named list called `vaeac.extra_parameters`.
@@ -1502,8 +1502,8 @@ explanation_vaeac <- explain(
 )
 ```
 
-Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 3`
-is likely to few epochs as it still seems like the `vaeac` model is learning.
+We can look at the training and validation errors for the trained `vaeac` model and see that `vaeac.epochs = 3`
+is likely too few epochs, as it still seems like the `vaeac` model is learning.
 ```{r vaeac-plot-1, cache = TRUE}
 # Look at the training and validation errors.
 plot_vaeac_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
@@ -1511,11 +1511,11 @@ plot_vaeac_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "me
 
 ### Early stopping
 If we are uncertain about the choice of `vaeac.epochs`, we can rather use `vaeac` with early stopping.
-We will then set `vaeac.epochs` to a large number which will act as a maximum number of allowed epochs
-and in the `vaeac.extra_parameters` list, we set `vaeac.epochs_early_stopping` the number of epochs we
+We will then set `vaeac.epochs` to a large number, which will act as a maximum number of allowed epochs,
+and in the `vaeac.extra_parameters` list we set `vaeac.epochs_early_stopping` to the number of epochs we
 allow the `vaeac` model to not improve its validation score. That is, if `vaeac.epochs_early_stopping = 2`,
 then `vaeac` will stop the training procedure if there has been no improvement in the validation score
-for `2` consecutive epochs, of if `vaeac.epochs` is reached. Note that if using early stopping and progress
+for `2` consecutive epochs, or if `vaeac.epochs` is reached. Note that if using early stopping and progress
 updates simultaneously, then the estimated timer remaining will obviously be incorrect if early stopping
 is applied. Furthermore, a value of `2` is too low for real world applications, but we set it so low here
 to make the vignette faster to build.
@@ -1711,12 +1711,12 @@ explanation_forecast
 
 Note that for a multivariate model such as a VAR (Vector AutoRegressive
 model), or for models also including several exogenous variables, it may
-be of more informative to explain the impact of each variable, rather
+be more informative to explain the impact of each variable, rather
 than each lag of each variable. This can be done by setting
 `group_lags = TRUE`. This does not make sense for this model, however,
 as that would result in decomposing the forecast into a single group.
 
-We now give a more hands on example of how to use the `explain_forecast`
+We now give a more hands-on example of how to use the `explain_forecast`
 function. Say that we have an AR(2) model which describes the change
 over time of the variable `Temp` in the dataset `airquality`. It seems
 reasonable to assume that the temperature today should affect the

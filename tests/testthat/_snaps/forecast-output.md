@@ -7,9 +7,9 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
       
       -- Explanation overview --
       
@@ -43,9 +43,9 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
       
       -- Explanation overview --
       
@@ -87,8 +87,8 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
       
       -- Explanation overview --
       
@@ -137,9 +137,9 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 16`, and is therefore set to `2^n_groups = 16`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 16`, and is therefore set to `2^n_groups = 16`.
       
       -- Explanation overview --
       
@@ -183,9 +183,9 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
       
       -- Explanation overview --
       
@@ -219,9 +219,9 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
       
       -- Explanation overview --
       
@@ -255,9 +255,9 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 8`, and is therefore set to `2^n_features = 8`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 8`, and is therefore set to `2^n_features = 8`.
       
       -- Explanation overview --
       
@@ -291,9 +291,9 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
       
       -- Explanation overview --
       
@@ -327,9 +327,9 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
       
       -- Explanation overview --
       

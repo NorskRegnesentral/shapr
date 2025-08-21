@@ -2,7 +2,7 @@
 % Please edit documentation in R/finalize_explanation.R
 \name{finalize_explanation}
 \alias{finalize_explanation}
-\title{Gathers the final output to create the explanation object}
+\title{Gather the final output to create the explanation object}
 \usage{
 finalize_explanation(internal)
 }
@@ -11,9 +11,9 @@ finalize_explanation(internal)
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 }
 \value{
-List of reformatted output information extracted from \code{internal}
+List of reformatted output information extracted from \code{internal}.
 }
 \description{
-Gathers the final output to create the explanation object
+Gather the final output to create the explanation object
 }
 \keyword{internal}

@@ -26,18 +26,18 @@ package.
 
 For an overview of the methodology and capabilities of the package (per
 `shapr` v1.0.4), see the software paper Jullum et al.
-([2025](#ref-jullum2025shapr)), available in preprint
+([2025](#ref-jullum2025shapr)), available as a preprint
 [here](https://arxiv.org/abs/2504.01842).
 
 ## NEWS
 
 With `shapr` version 1.0.0 (GitHub only, Nov 2024) and version 1.0.1
-(CRAN, Jan 2025), the package was subject to a major update, providing a
-full restructuring of the code based, and a full suit of new
-functionality, including:
+(CRAN, Jan 2025), the package underwent a major update, providing a full
+restructuring of the code base, and a full suite of new functionality,
+including:
 
 - A long list of approaches for estimating the contribution/value
-  function $v(S)$, including Variational Autoencoders, and
+  function $v(S)$, including Variational Autoencoders and
   regression-based methods
 - Iterative Shapley value estimation with convergence detection
 - Parallelized computations with progress updates
@@ -56,11 +56,11 @@ complete list.
 ### Coming from shapr \< 1.0.0?
 
 `shapr` version \>= 1.0.0 comes with a number of breaking changes. Most
-notably, we moved from using two function (`shapr()` and `explain()`) to
-a single function (`explain()`). In addition, custom models are now
-explained by passing the prediction function directly to `explain()`,
-quite a few input arguments got new names, and a few functions for edge
-cases was removed to simplify the code base.
+notably, we moved from using two functions (`shapr()` and `explain()`)
+to one function (`explain()`). In addition, custom models are now
+explained by passing the prediction function directly to `explain()`.
+Several input arguments were renamed, and a few functions for edge cases
+were removed to simplify the code base.
 
 Click
 [here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md)
@@ -70,15 +70,15 @@ to view a version of this README with the old syntax (v0.2.2).
 
 We provide a Python wrapper (`shaprpy`) which allows explaining Python
 models with the methodology implemented in `shapr`, directly from
-Python. The wrapper calls `R` internally, and therefore requires an
-installation of `R`. See
+Python. The wrapper calls R internally and therefore requires an
+installation of R. See
 [here](https://norskregnesentral.github.io/shapr/shaprpy.html) for
 installation instructions and examples.
 
 ## The package
 
 The `shapr` R package implements an enhanced version of the Kernel SHAP
-method, for approximating Shapley values, with a strong focus on
+method for approximating Shapley values, with a strong focus on
 conditional Shapley values. The core idea is to remain completely
 model-agnostic while offering a variety of methods for estimating
 contribution functions, enabling accurate computation of conditional
@@ -86,13 +86,13 @@ Shapley values across different feature types, dependencies, and
 distributions. The package also includes evaluation metrics to compare
 various approaches. With features like parallelized computations,
 convergence detection, progress updates, and extensive plotting options,
-shapr is as a highly efficient and user-friendly tool, delivering
-precise estimates of conditional Shapley values, which are critical for
+shapr is a highly efficient and user-friendly tool, delivering precise
+estimates of conditional Shapley values, which are critical for
 understanding how features truly contribute to predictions.
 
-A basic example is provided below. Otherwise we refer to the [pkgdown
-website](https://norskregnesentral.github.io/shapr/) and the different
-vignettes there for details and further examples.
+A basic example is provided below. Otherwise, we refer to the [pkgdown
+website](https://norskregnesentral.github.io/shapr/) and the vignettes
+there for details and further examples.
 
 ## Installation
 
@@ -118,7 +118,7 @@ remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ## Example
 
 `shapr` supports computation of Shapley values with any predictive model
-which takes a set of numeric features and produces a numeric outcome.
+that takes a set of numeric features and produces a numeric outcome.
 
 The following example shows how a simple `xgboost` model is trained
 using the *airquality* dataset, and how `shapr` explains the individual
@@ -126,7 +126,7 @@ predictions.
 
 We first enable parallel computation and progress updates with the
 following code chunk. These are optional, but recommended for improved
-performance and user friendliness, particularly for problems with many
+performance and user-friendliness, particularly for problems with many
 features.
 
 ``` r
@@ -134,13 +134,13 @@ features.
 # Requires the future and future_lapply packages
 future::plan("multisession", workers = 2) # Increase the number of workers for increased performance with many features
 
-# Enable progress updates of the v(S)-computations
+# Enable progress updates of the v(S) computations
 # Requires the progressr package
 progressr::handlers(global = TRUE)
 progressr::handlers("cli") # Using the cli package as backend (recommended for the estimates of the remaining time)
 ```
 
-Here comes the actual example
+Here is the actual example:
 
 ``` r
 library(xgboost)
@@ -158,7 +158,7 @@ x_train <- data[-ind_x_explain, ..x_var]
 y_train <- data[-ind_x_explain, get(y_var)]
 x_explain <- data[ind_x_explain, ..x_var]
 
-# Looking at the dependence between the features
+# Look at the dependence between the features
 cor(x_train)
 #>            Solar.R       Wind       Temp      Month
 #> Solar.R  1.0000000 -0.1243826  0.3333554 -0.0710397
@@ -166,7 +166,7 @@ cor(x_train)
 #> Temp     0.3333554 -0.5152133  1.0000000  0.3400084
 #> Month   -0.0710397 -0.2013740  0.3400084  1.0000000
 
-# Fitting a basic xgboost model to the training data
+# Fit a basic xgboost model to the training data
 model <- xgboost(
   data = as.matrix(x_train),
   label = y_train,
@@ -174,10 +174,10 @@ model <- xgboost(
   verbose = FALSE
 )
 
-# Specifying the phi_0, i.e. the expected prediction without any features
+# Specify phi_0, i.e., the expected prediction without any features
 p0 <- mean(y_train)
 
-# Computing the Shapley values with kernelSHAP accounting for feature dependence using
+# Compute Shapley values with Kernel SHAP, accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
   model = model,
@@ -188,11 +188,11 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-18 08:51:00 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-08-20 15:08:39 ─────────────────────
 #> ℹ Feature classes extracted from the model contains `NA`.
 #>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is
-#>   therefore set to `2^n_features = 16`.
+#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and
+#>   is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -214,7 +214,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> 'C:\Users\jullum\AppData\Local\Temp\RtmpKiUgyZ\shapr_obj_637c66cd4e91.rds'
+#> '/tmp/RtmpnBYv2R/shapr_obj_2aa833a1e2267.rds'
 #> 
 #> 
 #> 
@@ -224,7 +224,7 @@ explanation <- explain(
 #> 
 #> ℹ Using 16 of 16 coalitions.
 
-# Printing the Shapley values for the data to explain.
+# Print the Shapley values for the observations to explain.
 print(explanation)
 #>    explain_id  none Solar.R  Wind  Temp  Month
 #>         <int> <num>   <num> <num> <num>  <num>
@@ -238,8 +238,9 @@ print(explanation)
 # Provide a formatted summary of the shapr object
 summary(explanation)
 #> 
-#> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with`shapr::explain()` in 3.7 seconds, started 2025-08-18 08:51:00
+#> ── Summary of Shapley value explanation ───────────────────────────────────
+#> • Computed with`shapr::explain()` in 2.2 seconds, started 2025-08-20
+#> 15:08:39
 #> • Model class: <xgb.Booster>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -249,7 +250,7 @@ summary(explanation)
 #> • Number of observations to explain: 6
 #> • Number of coalitions used: 16 (of total 16)
 #> • Computations (temporary) saved at:
-#> 'C:\Users\jullum\AppData\Local\Temp\RtmpKiUgyZ\shapr_obj_637c66cd4e91.rds'
+#> '/tmp/RtmpnBYv2R/shapr_obj_2aa833a1e2267.rds'
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -263,7 +264,7 @@ summary(explanation)
 #> ── Estimated MSEv 
 #> Estimated MSE of v(S) = 144 (with sd = 64)
 
-# Finally we plot the resulting explanations
+# Finally, we plot the resulting explanations
 plot(explanation)
 ```
 
@@ -284,7 +285,7 @@ methodology, see methodological papers Aas, Jullum, and Løland
 ([2024](#ref-olsen2024comparative)). See also Sellereite and Jullum
 ([2019](#ref-sellereite2019shapr)) for a very brief paper about a
 previous version (v0.1.1) of the package (with a different structure,
-syntax and significantly less functionality).
+syntax, and significantly less functionality).
 
 ## Contribution
 
@@ -294,15 +295,14 @@ contribute can be found
 you have any questions or comments, feel free to open an issue
 [here](https://github.com/NorskRegnesentral/shapr/issues).
 
-Please note that the ‘shapr’ project is released with a [Contributor
+Please note that the `shapr` project is released with a [Contributor
 Code of
 Conduct](https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
 <div id="ref-aas2019explaining" class="csl-entry">
 

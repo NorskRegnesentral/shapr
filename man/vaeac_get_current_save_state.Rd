@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac.R
 \name{vaeac_get_current_save_state}
 \alias{vaeac_get_current_save_state}
-\title{Function that extracts additional objects from the environment to the state list}
+\title{Function that extracts additional objects from the environment into the state list}
 \usage{
 vaeac_get_current_save_state(environment)
 }

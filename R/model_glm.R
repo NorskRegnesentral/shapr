@@ -2,7 +2,7 @@
 #' @export
 predict_model.glm <- function(x, newdata, ...) {
   if (!requireNamespace("stats", quietly = TRUE)) {
-    cli::cli_abort("The {.pkg stats} package is required for predicting stats models")
+    cli::cli_abort("The {.pkg stats} package is required for predicting stats models.")
   }
 
   if (x$family[[1]] == "binomial") {

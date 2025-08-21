@@ -7,12 +7,12 @@
 #' @param plot_type Character.
 #'  Specifies the type of plot to produce.
 #'  `"bar"` (the default) gives a regular horizontal bar plot of the Shapley value magnitudes.
-#'  `"waterfall"` gives a waterfall plot indicating the changes in the prediction score due to each features
+#'  `"waterfall"` gives a waterfall plot indicating the changes in the prediction score due to each feature's
 #'  contribution (their Shapley values).
 #'  `"scatter"` plots the feature values on the x-axis and Shapley values on the y-axis, as well as
 #'  (optionally) a background scatter_hist showing the distribution of the feature data.
 #'  `"beeswarm"` summarizes the distribution of the Shapley values along the x-axis for all the features.
-#'  Each point gives the shapley value of a given instance, where the points are colored by the feature value
+#'  Each point gives the Shapley value of a given instance, where the points are colored by the feature value
 #'  of that instance.
 #' @param digits Integer.
 #' Number of significant digits to use in the feature description.
@@ -20,8 +20,8 @@
 #' @param bar_plot_phi0 Logical.
 #' Whether to include `phi0` in the plot for  `plot_type = "bar"`.
 #' @param index_x_explain Integer vector.
-#' Which of the test observations to plot. E.g. if you have
-#' explained 10 observations using [explain()], you can generate a plot for the first 5
+#' Which of the test observations to plot. For example, if you have
+#' explained 10 observations using [explain()], you can generate a plot for the first five
 #' observations by setting `index_x_explain = 1:5`.
 #' @param top_k_features Integer.
 #' How many features to include in the plot.
@@ -36,7 +36,7 @@
 #' For `plot_type = "beeswarm"`, the default is `c("#F8766D","yellow","#00BA38")`.
 #' For `plot_type = "scatter"`, the default is `"#619CFF"`.
 #'
-#' If you want to alter the colors i the plot, the length of the `col` vector depends on plot type.
+#' If you want to alter the colors in the plot, the length of the `col` vector depends on plot type.
 #' For `plot_type = "bar"` or `plot_type = "waterfall"`, two colors should be provided, first for positive and
 #' then for negative Shapley values.
 #' For `plot_type = "beeswarm"`, either two or three colors can be given.
@@ -49,14 +49,14 @@
 #' For `plot_type = "scatter"`, a single color is to be given, which determines the color of the points on the
 #' scatter plot.
 #' @param bar_plot_order Character.
-#' Specifies what order to plot the features with respect to the magnitude of the shapley values with
+#' Specifies what order to plot the features with respect to the magnitude of the Shapley values with
 #' `plot_type = "bar"`:
 #'  `"largest_first"` (the default) plots the features ordered from largest to smallest absolute Shapley value.
 #'  `"smallest_first"` plots the features ordered from smallest to largest absolute Shapley value.
 #'  `"original"` plots the features in the original order of the data table.
 #' @param scatter_features Integer or character vector.
 #' Only used for `plot_type = "scatter"`.
-#' Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a
+#' Specifies which features to include in the scatter plot. Can be a numerical vector indicating feature index, or a
 #' character vector, indicating the name(s) of the feature(s) to plot.
 #' @param scatter_hist Logical.
 #' Only used for `plot_type = "scatter"`.
@@ -71,8 +71,8 @@
 #' @param ... Other arguments passed to underlying functions,
 #' like [ggbeeswarm::geom_beeswarm()] for `plot_type = "beeswarm"`.
 #'
-#' @details See the examples below, or `vignette("general_usage", package = "shapr")` for an examples of
-#' how you should use the function.
+#' @details See the examples below, or `vignette("general_usage", package = "shapr")` for examples of
+#' how to use the function.
 #'
 #' @return ggplot object with plots of the Shapley value explanations
 #'
@@ -116,10 +116,10 @@
 #'
 #'     # We can also make waterfall plots
 #'     plot(x, plot_type = "waterfall", index_x_explain = 1:4)
-#'     # And only showing the 2 features with largest contribution
+#'     # And only showing the two features with the largest contributions
 #'     plot(x, plot_type = "waterfall", index_x_explain = 1:4, top_k_features = 2)
 #'
-#'     # Or scatter plots showing the distribution of the shapley values and feature values
+#'     # Or scatter plots showing the distribution of the Shapley values and feature values
 #'     plot(x, plot_type = "scatter")
 #'     # And only for a specific feature
 #'     plot(x, plot_type = "scatter", scatter_features = "Temp")

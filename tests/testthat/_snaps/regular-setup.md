@@ -9,11 +9,11 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i You passed a model to `shapr::explain()` which is not natively supported, and did not supply a `get_model_specs` function to `shapr::explain()`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `get_predict_model()`:
-      ! You passed a model to `shapr::explain()` which is not natively supported, and did not supply the 'predict_model' function to `shapr::explain()`. See the documentation of `shapr::explain()` or the `vignette(shapr::general_usage)` vignette for more information on how to run shapr with custom models.
+      ! You passed a model to `shapr::explain()` that is not natively supported and did not supply a 'predict_model' function to `shapr::explain()`. See the documentation of `shapr::explain()` or the `vignette(shapr::general_usage)` vignette for more information on how to run shapr with custom models.
 
 # messages with missing detail in get_model_specs
 
@@ -25,8 +25,8 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i You passed a model to `shapr::explain()` which is not natively supported, and did not supply a `get_model_specs` function to `shapr::explain()`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -60,9 +60,9 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -96,9 +96,9 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i Feature classes extracted from the model contains `NA`.
+      i Feature classes extracted from the model contain `NA`.
         Assuming feature classes from the data are correct.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -133,9 +133,9 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i Feature factor levels extracted from the model contains `NA`.
+      i Feature factor levels extracted from the model contain `NA`.
         Assuming feature factor levels from the data are correct.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -211,7 +211,7 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `get_data()`:
-      ! x_train misses column names.
+      ! x_train is missing column names.
 
 ---
 
@@ -225,7 +225,7 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `get_data()`:
-      ! x_explain misses column names.
+      ! x_explain is missing column names.
 
 ---
 
@@ -241,7 +241,7 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `get_data()`:
-      ! x_explain misses column names.
+      ! x_explain is missing column names.
 
 # erroneous input: `model`
 
@@ -444,7 +444,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i `max_n_coalitions` is smaller than `max(10, n_features + 1 = 6)`, which will result in unreliable results.
-        It is therefore set to 10.
+        It is therefore set to 6.
       
       -- Explanation overview --
       
@@ -694,10 +694,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_output_args()`:
-      ! `output_args$keep_samp_for_vS` must be single logical.
+      ! `output_args$keep_samp_for_vS` must be a single logical.
 
 ---
 
@@ -709,10 +709,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_output_args()`:
-      ! `output_args$keep_samp_for_vS` must be single logical.
+      ! `output_args$keep_samp_for_vS` must be a single logical.
 
 ---
 
@@ -724,10 +724,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_output_args()`:
-      ! `output_args$keep_samp_for_vS` must be single logical.
+      ! `output_args$keep_samp_for_vS` must be a single logical.
 
 # erroneous input: `MSEv_uniform_comb_weights`
 
@@ -739,10 +739,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_output_args()`:
-      ! `output_args$MSEv_uniform_comb_weights` must be single logical.
+      ! `output_args$MSEv_uniform_comb_weights` must be a single logical.
 
 ---
 
@@ -754,10 +754,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_output_args()`:
-      ! `output_args$MSEv_uniform_comb_weights` must be single logical.
+      ! `output_args$MSEv_uniform_comb_weights` must be a single logical.
 
 ---
 
@@ -769,10 +769,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_output_args()`:
-      ! `output_args$MSEv_uniform_comb_weights` must be single logical.
+      ! `output_args$MSEv_uniform_comb_weights` must be a single logical.
 
 # erroneous input: `predict_model`
 
@@ -784,7 +784,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `get_predict_model()`:
       ! `predict_model` must be NULL or a function.
@@ -801,10 +801,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models.
+      ! The predict_model function for class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models.
 
 ---
 
@@ -818,10 +818,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models.
+      ! The predict_model function for class `lm` does not return a numeric output of the desired length for single output models or a data.table of the correct dimensions for a multiple output model. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models.
 
 ---
 
@@ -835,10 +835,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` is invalid. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models. A basic function test threw the following error: Error in predict_model(model, x_test): unused argument (x_test)
+      ! The predict_model function for class `lm` is invalid. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models. A basic function test threw the following error: Error in predict_model(model, x_test): unused argument (x_test)
 
 ---
 
@@ -852,10 +852,10 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `test_predict_model()`:
-      ! The predict_model function of class `lm` is invalid. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models. A basic function test threw the following error: Error in 1 + "bla": non-numeric argument to binary operator
+      ! The predict_model function for class `lm` is invalid. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models. A basic function test threw the following error: Error in 1 + "bla": non-numeric argument to binary operator
 
 # erroneous input: `get_model_specs`
 
@@ -866,7 +866,7 @@
         get_model_specs = get_model_specs_nonfunction)
     Condition
       Error in `get_feature_specs()`:
-      ! `get_model_specs` must be NULL, NA or a function.
+      ! `get_model_specs` must be NULL, NA, or a function.
 
 ---
 
@@ -879,7 +879,7 @@
         get_model_specs = get_ms_output_not_list)
     Condition
       Error in `get_feature_specs()`:
-      ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels", "classes", "factor_levels". See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models and the required output format of get_model_specs.
+      ! The `get_model_specs` function for class `lm` does not return a list of length 3 with elements "labels", "classes", and "factor_levels". See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models and the required output format of get_model_specs.
 
 ---
 
@@ -892,7 +892,7 @@
         get_model_specs = get_ms_output_too_long)
     Condition
       Error in `get_feature_specs()`:
-      ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels", "classes", "factor_levels". See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models and the required output format of get_model_specs.
+      ! The `get_model_specs` function for class `lm` does not return a list of length 3 with elements "labels", "classes", and "factor_levels". See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models and the required output format of get_model_specs.
 
 ---
 
@@ -905,7 +905,7 @@
         get_model_specs = get_ms_output_wrong_names)
     Condition
       Error in `get_feature_specs()`:
-      ! The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels", "classes", "factor_levels". See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models and the required output format of get_model_specs.
+      ! The `get_model_specs` function for class `lm` does not return a list of length 3 with elements "labels", "classes", and "factor_levels". See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models and the required output format of get_model_specs.
 
 ---
 
@@ -918,7 +918,7 @@
         get_model_specs = get_model_specs_error)
     Condition
       Error in `get_feature_specs()`:
-      ! The `get_model_specs` function of class `lm` is invalid. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models. Note that `get_model_specs` is not required (can be set to NULL) unless you require consistency checks between model and data. A basic function test threw the following error: Error in 1 + "bla": non-numeric argument to binary operator
+      ! The `get_model_specs` function for class `lm` is invalid. See the 'Advanced usage' section of `vignette(shapr::general_usage)` vignette for more information on running shapr with custom models. Note that `get_model_specs` is not required (can be set to NULL) unless you require consistency checks between model and data. A basic function test threw the following error: Error in 1 + "bla": non-numeric argument to binary operator
 
 # incompatible input: `data/approach`
 
@@ -929,7 +929,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `setup_approach()`:
       ! The following feature(s) are factor(s): Month_factor. approach = 'gaussian' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
@@ -943,7 +943,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `setup_approach()`:
       ! The following feature(s) are factor(s): Month_factor. approach = 'empirical' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
@@ -957,7 +957,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `setup_approach()`:
       ! The following feature(s) are factor(s): Month_factor. approach = 'copula' does not support factor features.Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
@@ -972,7 +972,7 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i `max_n_coalitions` is smaller than `max(10, n_features + 1 = 6)`, which will result in unreliable results.
-        It is therefore set to 10.
+        It is therefore set to 6.
       
       -- Explanation overview --
       
@@ -1036,7 +1036,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -1089,7 +1089,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -1115,8 +1115,8 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i You passed a model to `shapr::explain()` which is not natively supported, and did not supply a `get_model_specs` function to `shapr::explain()`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -1147,7 +1147,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -1178,7 +1178,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       

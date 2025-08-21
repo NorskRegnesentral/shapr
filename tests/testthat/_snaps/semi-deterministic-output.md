@@ -7,7 +7,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -134,7 +134,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
       
       -- Explanation overview --
       
@@ -171,7 +171,7 @@
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 8 coalitions after 2 iterations, due to:
       All (8) coalitions used!
-      Maxium number of coalitions (8) reached!
+      Maximum number of coalitions (8) reached!
       
       Final estimated Shapley values
          explain_id   none      A      B      C
@@ -263,7 +263,7 @@
       
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 12 coalitions after 4 iterations, due to:
-      Maxium number of coalitions (12) reached!
+      Maximum number of coalitions (12) reached!
       
       Final estimated Shapley values (sd)
          explain_id    none           S1          S2          S3           S4

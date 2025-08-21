@@ -58,13 +58,13 @@ coalitions that are expected to be sampled based on the number of coalitions are
 that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
 and corresponds to the PySHAP* strategy in the paper \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
 
-\item{dt_coal_samp_info}{data.table. The data.table contains information about the which coalitions should be
+\item{dt_coal_samp_info}{data.table. The data.table contains information about which coalitions should be
 deterministically included and which can be sampled, in addition to the sampling probabilities of each available
 coalition size, and the weight given to the sampled and deterministically included coalitions (excluding empty and
 grand coalitions which are given the \code{weight_zero_m} weight).}
 
 \item{dt_valid_causal_coalitions}{data.table. Only applicable for asymmetric Shapley
-values explanations, and is \code{NULL} for symmetric Shapley values.
+value explanations, and is \code{NULL} for symmetric Shapley values.
 The data.table contains information about the coalitions that respects the causal ordering.}
 
 \item{n_samps_scale}{Positive integer.

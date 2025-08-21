@@ -79,7 +79,7 @@ setup_approach.vaeac <- function(internal,
   if (isTRUE(causal_sampling)) {
     # We are doing causal Shapley values. Then we do not want to train on the full
     # coalitions, but rather the coalitions in the chain of sampling steps used
-    # to generate the full MC sample. Casual Shapley does not support combined
+    # to generate the full MC sample. Causal Shapley does not support combined
     # approaches, so we do not have to check for that. All coalitions are
     # done by vaeac, and we give them equal importance. Skip the empty and grand coalitions.
     # Note that some steps occur more often (when features in Sbar are late in the causal ordering),
@@ -94,7 +94,7 @@ setup_approach.vaeac <- function(internal,
     # 3) using a combination of approaches where vaeac is only used on a subset of the coalitions.
     # Here, objects$S contains the coalitions while objects$X contains the information about the approach.
 
-    # Extract the the coalitions / masks which are estimated using vaeac as a matrix
+    # Extract the coalitions / masks which are estimated using vaeac as a matrix
     parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions <-
       S[X[approach == "vaeac"]$id_coalition, , drop = FALSE]
 
@@ -294,7 +294,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
 #' [shapr::explain()] object if `vaeac.save_model = FALSE`.
 #' @param cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
-#' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Using a GPU
+#' If [torch::cuda_is_available()] is `FALSE`, we fall back to using the CPU. Using a GPU
 #' for smaller tabular dataset often do not improve the efficiency.
 #' See \code{vignette("installation", package = "torch")} fo help to enable running on the GPU (only Linux and Windows).
 #' @param epochs_initiation_phase Positive integer (default is `2`). The number of epochs to run each of the
@@ -1659,7 +1659,7 @@ vaeac_check_parameters <- function(x_train,
 #' The latent representations are sent to the decoder to go back to the real feature space and
 #' provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
 #' We use the `vaeac` method at the epoch with the lowest validation error (IWAE) by default, but
-#' other possibilities are available but setting the `vaeac.which_vaeac_model` parameter. See
+#' other possibilities are available by setting the `vaeac.which_vaeac_model` parameter. See
 #' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
 #'
 #' @param vaeac.model_description String (default is `make.names(Sys.time())`). String containing, e.g., the name of the
@@ -1675,7 +1675,7 @@ vaeac_check_parameters <- function(x_train,
 #' from an earlier call to the [shapr::explain()] function. 2) A string containing the path to where the `vaeac`
 #' model is stored on disk, for example, `explanation$internal$parameters$vaeac$models$best`.
 #' @param vaeac.cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
-#' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Using a GPU
+#' If [torch::cuda_is_available()] is `FALSE`, we fall back to using the CPU. Using a GPU
 #' for smaller tabular dataset often do not improve the efficiency.
 #' See \code{vignette("installation", package = "torch")} fo help to enable running on the GPU (only Linux and Windows).
 #' @param vaeac.epochs_initiation_phase Positive integer (default is `2`). The number of epochs to run each of the
@@ -1952,7 +1952,7 @@ vaeac_get_save_file_names <- function(model_description,
 #' @author Lars Henry Berge Olsen
 vaeac_get_optimizer <- function(vaeac_model, lr, optimizer_name = "adam") {
   if (optimizer_name == "adam") {
-    # Create the adam optimizer with defualt parameters except from the provided learning rate
+    # Create the adam optimizer with default parameters except for the provided learning rate
     optimizer <- torch::optim_adam(
       params = vaeac_model$parameters,
       lr = lr,
@@ -1970,7 +1970,7 @@ vaeac_get_optimizer <- function(vaeac_model, lr, optimizer_name = "adam") {
 
 
 
-#' Function that extracts additional objects from the environment to the state list
+#' Function that extracts additional objects from the environment into the state list
 #'
 #' @description
 #' The function extract the objects that we are going to save together with the `vaeac` model to make it possible to

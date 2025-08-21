@@ -1,8 +1,8 @@
 #' @rdname setup_approach
 #'
 #' @param empirical.type Character. (default = `"fixed_sigma"`)
-#' Should be equal to either `"independence"`,`"fixed_sigma"`, `"AICc_each_k"` `"AICc_full"`.
-#' `"independence"` is deprecated. Use `approach = "independence"` instead.
+#' Must be one of `"independence"`, `"fixed_sigma"`, `"AICc_each_k"`, or `"AICc_full"`.
+#' Note: `"empirical.type = independence"` is deprecated; use `approach = "independence"` instead.
 #' `"fixed_sigma"` uses a fixed bandwidth (set through `empirical.fixed_sigma`) in the kernel density estimation.
 #' `"AICc_each_k"` and `"AICc_full"` optimize the bandwidth using the AICc criterion, with respectively
 #' one bandwidth per coalition size and one bandwidth for all coalition sizes.
@@ -11,7 +11,7 @@
 #' Needs to be `0 < eta <= 1`.
 #' The default value is 0.95.
 #' Represents the minimum proportion of the total empirical weight that data samples should use.
-#' If e.g. `eta = .8` we will choose the `K` samples with the largest weight so that the sum of the weights
+#' For example, if `eta = .8`, we choose the `K` samples with the largest weights so that the sum of the weights
 #' accounts for 80\% of the total weight.
 #' `eta` is the \eqn{\eta} parameter in equation (15) of
 # nolint start
@@ -26,17 +26,17 @@
 #' @param empirical.n_samples_aicc Positive integer.
 #' Number of samples to consider in AICc optimization.
 #' The default value is 1000.
-#' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
+#' Only used when `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
 #' @param empirical.eval_max_aicc Positive integer.
 #' Maximum number of iterations when optimizing the AICc.
 #' The default value is 20.
-#' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
+#' Only used when `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
 #' @param empirical.start_aicc Numeric.
 #' Start value of the `sigma` parameter when optimizing the AICc.
 #' The default value is 0.1.
-#' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
+#' Only used when `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
 #' @param empirical.cov_mat Numeric matrix. (Optional)
 #' The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
@@ -196,7 +196,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
     if (kernel_metric == "independence") {
       empirical.eta <- 1
       if ("basic" %in% verbose) {
-        msg <- "`empirical.eta` force set to 1 for `empirical.type` = 'independence'."
+        msg <- "Setting `empirical.eta` to 1 because `empirical.type = 'independence'`."
         cli::cli_inform(c("i" = msg))
       }
     } else if (kernel_metric == "gaussian") {

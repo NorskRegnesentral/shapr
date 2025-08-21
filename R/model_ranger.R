@@ -2,7 +2,7 @@
 #' @export
 predict_model.ranger <- function(x, newdata, ...) {
   if (!requireNamespace("ranger", quietly = TRUE)) {
-    cli::cli_abort("The ranger package is required for predicting ranger models")
+    cli::cli_abort("The {.pkg ranger} package is required for predicting `ranger` models.")
   }
 
   if (x$treetype == "Probability estimation") {

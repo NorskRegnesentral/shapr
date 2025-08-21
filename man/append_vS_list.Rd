@@ -7,8 +7,8 @@
 append_vS_list(vS_list, internal)
 }
 \arguments{
-\item{vS_list}{List
-Output from \code{\link[=compute_vS]{compute_vS()}}}
+\item{vS_list}{List.
+Output from \code{\link[=compute_vS]{compute_vS()}}.}
 
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}

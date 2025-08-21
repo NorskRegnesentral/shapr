@@ -264,13 +264,13 @@ format_convergence_info <- function(internal, iter) {
     if (isTRUE(converged_max_iter)) {
       msg <- paste0(
         msg,
-        "Maxium number of iterations ({.val {iter}}) reached!\n"
+        "Maximum number of iterations ({.val {iter}}) reached!\n"
       )
     }
     if (isTRUE(converged_max_n_coalitions)) {
       msg <- paste0(
         msg,
-        "Maxium number of coalitions ({.val {current_n_coalitions}}) reached!\n"
+        "Maximum number of coalitions ({.val {current_n_coalitions}}) reached!\n"
       )
     }
   }
@@ -373,8 +373,8 @@ print_iter <- function(internal) {
 
 #' Convert a character to a numeric class
 #'
-#' To be used in cli calls like `cli::cli_text("{.val {shapr:::num_str('12.10')}}")` to format a character strings
-#' that typically represent a number like it was a number. May also be used with strings not representing a number.
+#' To be used in cli calls like `cli::cli_text("{.val {shapr:::num_str('12.10')}}")` to format character strings
+#' that typically represent a number as if it were numeric. May also be used with strings not representing a number.
 #'
 #' @param x Character. A single character that represents a number, or a vector of characters.
 #'

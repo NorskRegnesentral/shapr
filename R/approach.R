@@ -1,15 +1,15 @@
 #' Set up the framework for the chosen approach
 #'
-#' The different choices of `approach` take different (optional) parameters,
+#' Different choices of `approach` take different (optional) parameters,
 #' which are forwarded from [explain()].
 #' See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}
 #' for more information about the different approaches.
 #'
-#' @param ... Arguments passed to specific classes. See below
+#' @param ... Arguments passed to specific classes. See below.
 #'
 #' @inheritParams default_doc_export
 #'
-#' @return Updated internal object with the approach set up
+#' @return Updated internal object with the approach set up.
 #'
 #' @export
 #' @keywords internal
@@ -37,7 +37,7 @@ setup_approach <- function(internal, ...) {
       if ("vaeac" %in% approach) {
         pretrained_provided <- internal$parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided
         if (isFALSE(pretrained_provided)) {
-          cli::cli_h2("Extra info about the training/tuning of the vaeac model")
+          cli::cli_h2("Extra info about training/tuning the vaeac model")
         } else {
           cli::cli_h2("Extra info about the pretrained vaeac model")
         }
@@ -94,16 +94,16 @@ prepare_data <- function(internal, index_features = NULL, ...) {
   # Extract the used approach(es)
   approach <- internal$parameters$approach
 
-  # Auxiliary object such that we can use the `UseMethod` function
+  # Auxiliary object so we can use the `UseMethod` dispatch
   this_class <- ""
 
   # Check if the user provided one or several approaches.
   if (length(approach) > 1) {
-    # Pick the relevant approach from the X table which lists the unique approach of the batch
+    # Pick the relevant approach from X, which lists the unique approach of the batch
     # matched by index_features
     class(this_class) <- X[id_coalition == index_features[1], approach]
   } else {
-    # Only one approach for all coalitions sizes
+    # Only one approach for all coalition sizes
     class(this_class) <- approach
   }
 

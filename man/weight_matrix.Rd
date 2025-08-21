@@ -10,9 +10,9 @@ weight_matrix(X, normalize_W_weights = TRUE)
 \item{X}{data.table.
 Output from \code{\link[=create_coalition_table]{create_coalition_table()}}.}
 
-\item{normalize_W_weights}{Logical. Whether to normalize the weights for the coalitions to sum to 1 for
+\item{normalize_W_weights}{Logical. Whether to normalize the coalition weights to sum to 1 for
 increased numerical stability before solving the WLS (weighted least squares). Applies to all coalitions
-except coalition \code{1} and \code{2^m}.}
+except coalitions \code{1} and \code{2^m}.}
 }
 \value{
 Numeric matrix. See \code{\link[=weight_matrix_cpp]{weight_matrix_cpp()}} for more information.

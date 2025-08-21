@@ -67,10 +67,10 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   S <- internal$iter_list[[iter]]$S[index_features, , drop = FALSE]
 
   if (causal_sampling) {
-    # Casual Shapley values (either symmetric or asymmetric)
+    # Causal Shapley values (either symmetric or asymmetric)
 
     # Get if this is the first causal sampling step
-    causal_first_step <- isTRUE(internal$parameters$causal_first_step) # Only set when called from prepdare_data_causal
+    causal_first_step <- isTRUE(internal$parameters$causal_first_step) # Only set when called from prepare_data_causal
 
     # Set which gaussian data generating function to use
     prepare_gauss <- ifelse(causal_first_step, prepare_data_gaussian_cpp, prepare_data_gaussian_cpp_caus)
@@ -78,7 +78,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
     # Set if we have to reshape the output of the prepare_gauss function
     reshape_prepare_gauss_output <- ifelse(causal_first_step, TRUE, FALSE)
 
-    # For not the first step, the number of MC samples for causal Shapley values are n_explain, see prepdare_data_causal
+    # For not the first step, the number of MC samples for causal Shapley values is n_explain; see prepare_data_causal
     n_MC_samples_updated <- ifelse(causal_first_step, n_MC_samples, n_explain)
   } else {
     # Regular Shapley values (either symmetric or asymmetric)

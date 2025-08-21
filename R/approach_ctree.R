@@ -7,11 +7,11 @@
 #' The default value is 0.95.
 #'
 #' @param ctree.minsplit Numeric scalar.
-#' Determines minimum value that the sum of the left and right daughter nodes required for a split.
+#' Determines the minimum value that the sum of the left and right daughter nodes must reach for a split.
 #' The default value is 20.
 #'
 #' @param ctree.minbucket Numeric scalar.
-#' Determines the minimum sum of weights in a terminal node required for a split
+#' Determines the minimum sum of weights in a terminal node required for a split.
 #' The default value is 7.
 #'
 #' @param ctree.sample Boolean.
