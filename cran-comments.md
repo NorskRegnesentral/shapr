@@ -1,5 +1,9 @@
 # shapr 1.0.5
 
+**Extra re-submission note**: 
+Converted all vignette images to webP format to reduce package size.
+The tarball is now within the size restriction.
+
 This release (v1.0.5) adds new helper methods (`get_results()`, `summary.shapr()`), improves printing, 
 output handling, and documentation, and fixes a bug affecting cases with many features.
 

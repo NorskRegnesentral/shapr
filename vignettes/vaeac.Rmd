@@ -195,7 +195,7 @@ print(explanation$shapley_values_est)
 plot(explanation)
 ```
 
-![](figure_vaeac/first-vaeac-plots-1.png)
+![](figure_vaeac/first-vaeac-plots-1.webp)
 
 ## Pre-trained vaeac {#pretrained_vaeac}
 If the user has a pre-trained `vaeac` model (from a previous run), the user can send that to the `explain()` function
@@ -398,7 +398,7 @@ expl_batches_combinations <- explain(
 plot_SV_several_approaches(list("Original" = explanation, "Other combi." = expl_batches_combinations))
 ```
 
-![](figure_vaeac/check-n_coalitions-1.png)
+![](figure_vaeac/check-n_coalitions-1.webp)
 
 ``` r
 
@@ -595,13 +595,13 @@ explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE,
 plot_vaeac_eval_crit(explanation_list, plot_type = "criterion")
 ```
 
-![](figure_vaeac/paired-sampling-plotting-1.png)
+![](figure_vaeac/paired-sampling-plotting-1.webp)
 
 ``` r
 plot_MSEv_eval_crit(explanation_list)
 ```
 
-![](figure_vaeac/paired-sampling-plotting-2.png)
+![](figure_vaeac/paired-sampling-plotting-2.webp)
 
 By looking at the time, we see that the paired version takes (a bit) longer time in the `setup_computation`
 phase, that is, in the training phase.
@@ -797,7 +797,7 @@ expl_little_training <- explain(
 plot_vaeac_eval_crit(list("Original" = expl_little_training), plot_type = "method")
 ```
 
-![](figure_vaeac/continue-training-1.png)
+![](figure_vaeac/continue-training-1.webp)
 
 ``` r
 # Can also see how well vaeac generates data from the full joint distribution. Quite good.
@@ -808,7 +808,7 @@ plot_vaeac_imputed_ggpairs(
 ) + ggplot2::labs(title = NULL)
 ```
 
-![](figure_vaeac/continue-training-2.png)
+![](figure_vaeac/continue-training-2.webp)
 
 ``` r
 # Make a copy of the explanation object and continue to train the vaeac model some more epochs
@@ -841,7 +841,7 @@ plot_vaeac_eval_crit(
 )
 ```
 
-![](figure_vaeac/continue-training-3.png)
+![](figure_vaeac/continue-training-3.webp)
 
 ``` r
 # Continue to train the vaeac model some more epochs
@@ -878,7 +878,7 @@ plot_vaeac_eval_crit(
 )
 ```
 
-![](figure_vaeac/continue-training-4.png)
+![](figure_vaeac/continue-training-4.webp)
 
 ``` r
 # Can also see how well vaeac generates data from the full joint distribution
@@ -889,7 +889,7 @@ plot_vaeac_imputed_ggpairs(
 ) + ggplot2::labs(title = NULL)
 ```
 
-![](figure_vaeac/continue-training-5.png)
+![](figure_vaeac/continue-training-5.webp)
 
 We can see that the extra training has decreased the MSEv score. The Shapley value explanations have also
 changed, but they are often comparable.
@@ -902,7 +902,7 @@ plot_MSEv_eval_crit(list(
 ))
 ```
 
-![](figure_vaeac/continue-training-2-1.png)
+![](figure_vaeac/continue-training-2-1.webp)
 
 ``` r
 # We see that the Shapley values have changed, but they are often comparable
@@ -913,7 +913,7 @@ plot_SV_several_approaches(list(
 ))
 ```
 
-![](figure_vaeac/continue-training-2-2.png)
+![](figure_vaeac/continue-training-2-2.webp)
 
 
 
@@ -1016,7 +1016,7 @@ plot_vaeac_eval_crit(
 )
 ```
 
-![](figure_vaeac/early-stopping-1-1.png)
+![](figure_vaeac/early-stopping-1-1.webp)
 
 However, we can train it further for a fixed amount of epochs if desired. This can be in a setting where we are not
 happy with the IWAE curve or we feel that we set `vaeac.epochs_early_stopping` to a too low value or if the max
@@ -1054,7 +1054,7 @@ plot_vaeac_eval_crit(
 )
 ```
 
-![](figure_vaeac/early-stopping-2-1.png)
+![](figure_vaeac/early-stopping-2-1.webp)
 
 We can then use the extra trained version to compute the Shapley value explanations and compare it with the previous
 version that used early stopping. We see a non-significant difference.
@@ -1117,7 +1117,7 @@ plot_MSEv_eval_crit(list(
 ))
 ```
 
-![](figure_vaeac/early-stopping-3-1.png)
+![](figure_vaeac/early-stopping-3-1.webp)
 
 ``` r
 # We see that the Shapley values have changed, but only slightly
@@ -1127,7 +1127,7 @@ plot_SV_several_approaches(list(
 ))
 ```
 
-![](figure_vaeac/early-stopping-3-2.png)
+![](figure_vaeac/early-stopping-3-2.webp)
 
 
 
@@ -1182,7 +1182,7 @@ expl_group <- explain(
 plot(expl_group)
 ```
 
-![](figure_vaeac/vaeac-grouping-of-features-1.png)
+![](figure_vaeac/vaeac-grouping-of-features-1.webp)
 
 
 
@@ -1351,7 +1351,7 @@ plot_vaeac_eval_crit(
 )
 ```
 
-![](figure_vaeac/vaeac-mixed-data-1.png)
+![](figure_vaeac/vaeac-mixed-data-1.webp)
 
 ``` r
 # The `vaeac` model with skip connections has the lowest/best MSE_Frye evaluation criterion score
@@ -1362,7 +1362,7 @@ plot_MSEv_eval_crit(list(
 ))
 ```
 
-![](figure_vaeac/vaeac-mixed-data-2.png)
+![](figure_vaeac/vaeac-mixed-data-2.webp)
 
 ``` r
 # Can compare the Shapley values. Ctree and vaeac with skip connections produce similar explanations.
@@ -1376,4 +1376,4 @@ plot_SV_several_approaches(
 )
 ```
 
-![](figure_vaeac/vaeac-mixed-data-3.png)
+![](figure_vaeac/vaeac-mixed-data-3.webp)

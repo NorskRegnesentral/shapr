@@ -346,7 +346,7 @@ concerning the $\operatorname{MSE}_v$ evaluation criterion.
 plot_MSEv_scores(explanation_list)
 ```
 
-![](figure_regression/lm-emp-msev-1.png)
+![](figure_regression/lm-emp-msev-1.webp)
 
 
 ### Pre-processing {#separate_preproc}
@@ -579,7 +579,7 @@ the other methods.
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
-![](figure_regression/preproc-plot-1.png)
+![](figure_regression/preproc-plot-1.webp)
 
 ``` r
 
@@ -711,7 +711,7 @@ i.e., trees with depth one.
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
-![](figure_regression/decision-tree-plot-1.png)
+![](figure_regression/decision-tree-plot-1.webp)
 
 ``` r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
@@ -1108,7 +1108,7 @@ the `empirical` method for easier comparison.
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
-![](figure_regression/dt-cv-plot-1.png)
+![](figure_regression/dt-cv-plot-1.webp)
 
 Furthermore, we must consider that cross-validation drastically
 increases the elapsed time (seconds) and determine if the
@@ -1700,7 +1700,7 @@ print_MSEv_scores_and_time(explanation_list)
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
-![](figure_regression/surrogate-plot-1.png)
+![](figure_regression/surrogate-plot-1.webp)
 
 
 # Add new regression methods {#new}
@@ -2020,7 +2020,7 @@ print_MSEv_scores_and_time(explanation_list)
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
-![](figure_regression/ppr-plot-1.png)
+![](figure_regression/ppr-plot-1.webp)
 
 
 # Summary figures {#summary_figures}
@@ -2263,7 +2263,7 @@ print_MSEv_scores_and_time(explanation_list)
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ```
 
-![](figure_regression/MSEv-sum-1.png)
+![](figure_regression/MSEv-sum-1.webp)
 
 The `vaeac` approach is the best-performing method according to the
 $\operatorname{MSE}_v$ evaluation criterion, while the `sep_xgboost_cv_2_par`
@@ -2280,7 +2280,7 @@ order <- get_k_best_methods(explanation_list, k = length(explanation_list))
 plot_MSEv_scores(explanation_list[order], method_line = "MC_empirical")
 ```
 
-![](figure_regression/MSEv-sum-2-1.png)
+![](figure_regression/MSEv-sum-2-1.webp)
 
 We can also examine the different Shapley value explanations for the first six
 explicands (two at a time), and we still sort the methods from best to worst.
@@ -2294,19 +2294,19 @@ are often more visible for the methods with poor/larger $\operatorname{MSE}_v$ v
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(1, 2), facet_ncol = 1)
 ```
 
-![](figure_regression/SV-sum-1.png)
+![](figure_regression/SV-sum-1.webp)
 
 ``` r
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(3, 4), facet_ncol = 1)
 ```
 
-![](figure_regression/SV-sum-2.png)
+![](figure_regression/SV-sum-2.webp)
 
 ``` r
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(5, 6), facet_ncol = 1)
 ```
 
-![](figure_regression/SV-sum-3.png)
+![](figure_regression/SV-sum-3.webp)
 
 Here, we focus on the five best methods (and `MC_empirical`) to make it
 easier to analyze the individual Shapley value explanations, and we see
@@ -2320,7 +2320,7 @@ if (!"MC_empirical" %in% best_methods) best_methods <- c(best_methods, "MC_empir
 plot_SV_several_approaches(explanation_list[best_methods], index_explicands = 1:4)
 ```
 
-![](figure_regression/SV-sum-2-1.png)
+![](figure_regression/SV-sum-2-1.webp)
 
 
 # Mixed data {#mixed}
@@ -3085,7 +3085,7 @@ print_MSEv_scores_and_time(explanation_list_mixed)
 plot_MSEv_scores(explanation_list_mixed, method_line = "MC_ctree")
 ```
 
-![](figure_regression/mixed-plot-1.png)
+![](figure_regression/mixed-plot-1.webp)
 
 The best-performing methods are the surrogate random forest
 and XGBoost with cross-validation methods. The Monte Carlo-based
@@ -3101,7 +3101,7 @@ order <- get_k_best_methods(explanation_list_mixed, k = length(explanation_list_
 plot_MSEv_scores(explanation_list_mixed[order], method_line = "MC_ctree")
 ```
 
-![](figure_regression/mixed-plot-2-1.png)
+![](figure_regression/mixed-plot-2-1.webp)
 
 We also look at some of the Shapley value explanations and
 see that many methods produce similar explanations.
@@ -3111,7 +3111,7 @@ see that many methods produce similar explanations.
 plot_SV_several_approaches(explanation_list_mixed[order], index_explicands = c(1, 2), facet_ncol = 1)
 ```
 
-![](figure_regression/mixed-plot-3-1.png)
+![](figure_regression/mixed-plot-3-1.webp)
 
 We can also focus on the Shapley value explanations for the best five
 methods according to the $\operatorname{MSE}_v$ criterion. We also
@@ -3124,7 +3124,7 @@ if (!"MC_ctree" %in% best_methods) best_methods <- c(best_methods, "MC_ctree")
 plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicands = 1:4)
 ```
 
-![](figure_regression/mixed-plot-4-1.png)
+![](figure_regression/mixed-plot-4-1.webp)
 
 
 # Regression arguments as strings

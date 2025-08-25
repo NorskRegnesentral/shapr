@@ -88,7 +88,7 @@ dependencies within chain components are induced by mutual interactions.
 
 
 <div class="figure" style="text-align: center">
-<img src="figure_asymmetric_causal/Asymmetric_ordering.png" alt="Schematic overview of the causal ordering used in this vignette." width="50%" />
+<img src="figure_asymmetric_causal/Asymmetric_ordering.webp" alt="Schematic overview of the causal ordering used in this vignette." width="50%" />
 <p class="caption">Schematic overview of the causal ordering used in this vignette.</p>
 </div>
 
@@ -157,8 +157,8 @@ simplifies to symmetric conditional, asymmetric conditional, and marginal
 Shapley values; see Corollaries 1 to 3 in the supplement of @heskes2020causal.
 
 
-<div class="figure">
-<img src="figure_asymmetric_causal/Causal_ordering.png" alt="Schematic overview of the causal chain graph used in this vignette." width="50%" />
+<div class="figure" style="text-align: center">
+<img src="figure_asymmetric_causal/Causal_ordering.webp" alt="Schematic overview of the causal chain graph used in this vignette." width="50%" />
 <p class="caption">Schematic overview of the causal chain graph used in this vignette.</p>
 </div>
 
@@ -271,7 +271,7 @@ ggplot(bike, aes(x = trend, y = cnt, color = temp)) +
   theme(legend.position = "right", legend.title = element_text(size = 10))
 ```
 
-![](figure_asymmetric_causal/setup_1-1.png)
+![](figure_asymmetric_causal/setup_1-1.webp)
 
 
 ``` r
@@ -292,7 +292,7 @@ y_train <- y_train_nc - mean(y_train_nc)
 GGally::ggpairs(x_train)
 ```
 
-![](figure_asymmetric_causal/setup_2-1.png)
+![](figure_asymmetric_causal/setup_2-1.webp)
 
 
 ``` r
@@ -328,7 +328,7 @@ ggplot(
   geom_point()
 ```
 
-![](figure_asymmetric_causal/setup_3-1.png)
+![](figure_asymmetric_causal/setup_3-1.webp)
 
 
 We are going to use the `causal_ordering` and `confounding` illustrated in the figures above.
@@ -606,7 +606,7 @@ plot_SV_several_approaches(explanation_sym_con, index_x_explain) +
   theme(legend.position = "bottom")
 ```
 
-![](figure_asymmetric_causal/explanation_sym_con_SV-1.png)
+![](figure_asymmetric_causal/explanation_sym_con_SV-1.webp)
 
 
 
@@ -620,7 +620,7 @@ Shapley values around $500$ for the `trend` feature.
 plot_beeswarms(explanation_sym_con, title = "Symmetric conditional Shapley values")
 ```
 
-![](figure_asymmetric_causal/explanation_sym_con_beeswarm-1.png)
+![](figure_asymmetric_causal/explanation_sym_con_beeswarm-1.webp)
 
 
 
@@ -912,7 +912,7 @@ Shapley values have now shrunk closer to zero, especially `temp` and `atemp`.
 plot_beeswarms(explanation_asym_con, title = "Asymmetric conditional Shapley values")
 ```
 
-![](figure_asymmetric_causal/explanation_asym_con_beeswarm-1.png)
+![](figure_asymmetric_causal/explanation_asym_con_beeswarm-1.webp)
 
 
 
@@ -932,7 +932,7 @@ plot_SV_several_approaches(explanation_asym_sym_con, index_x_explain, brewer_pal
   theme(legend.position = "bottom")
 ```
 
-![](figure_asymmetric_causal/sym_and_asym_Shapley_values-1.png)
+![](figure_asymmetric_causal/sym_and_asym_Shapley_values-1.webp)
 
 
 
@@ -1123,7 +1123,7 @@ print_MSEv_scores_and_time(explanation_sym_marg)
 plot_beeswarms(explanation_sym_marg, title = "Symmetric marginal Shapley values")
 ```
 
-![](figure_asymmetric_causal/explanation_sym_mar_beeswarm-1.png)
+![](figure_asymmetric_causal/explanation_sym_mar_beeswarm-1.webp)
 
 
 
@@ -1267,7 +1267,7 @@ print_MSEv_scores_and_time(explanation_sym_cau)
 plot_beeswarms(explanation_sym_cau, title = "Symmetric causal Shapley values")
 ```
 
-![](figure_asymmetric_causal/explanation_sym_cau_beeswarm-1.png)
+![](figure_asymmetric_causal/explanation_sym_cau_beeswarm-1.webp)
 
 
 
@@ -1445,7 +1445,7 @@ We can then plot the beeswarm plots.
 plot_beeswarms(explanation_asym_cau, title = "Asymmetric causal Shapley values")
 ```
 
-![](figure_asymmetric_causal/explanation_asym_cau_beeswarm-1.png)
+![](figure_asymmetric_causal/explanation_asym_cau_beeswarm-1.webp)
 
 
 ``` r
@@ -1454,7 +1454,7 @@ plot_SV_several_approaches(explanation_asym_cau, index_x_explain) +
   theme(legend.position = "bottom")
 ```
 
-![](figure_asymmetric_causal/explanation_asym_cau_SV-1.png)
+![](figure_asymmetric_causal/explanation_asym_cau_SV-1.webp)
 
 We can also use the other Monte Carlo-based approaches (`independence` and `empirical`), too.
 
@@ -1486,7 +1486,7 @@ plot_SV_several_approaches(explanation_gaussian, index_x_explain) +
   guides(color = guide_legend(title = "Framework"))
 ```
 
-![](figure_asymmetric_causal/compare_plots-1.png)
+![](figure_asymmetric_causal/compare_plots-1.webp)
 
 ## Scatter plots: marginal vs. causal Shapley values
 In this section, we produce scatter plots comparing the symmetric marginal
@@ -1627,7 +1627,7 @@ ggpubr::ggarrange(
 )
 ```
 
-![](figure_asymmetric_causal/scatter_plots-1.png)
+![](figure_asymmetric_causal/scatter_plots-1.webp)
 
 ## Investigating two similar days
 
@@ -1713,7 +1713,7 @@ ggplot(dt_all, aes(
   )
 ```
 
-![](figure_asymmetric_causal/two_dates_1-1.png)
+![](figure_asymmetric_causal/two_dates_1-1.webp)
 
 We can also make a similar plot using the `plot_SV_several_approaches` function in `shapr`,
 but then we get each explicand in a separate facet instead of a facet for each framework.
@@ -1729,7 +1729,7 @@ plot_SV_several_approaches(explanations,
 ) + theme(legend.position = "bottom")
 ```
 
-![](figure_asymmetric_causal/two_dates_2-1.png)
+![](figure_asymmetric_causal/two_dates_2-1.webp)
 
 Furthermore, instead of doing as @heskes2020causal and only considering the features
 `cosyear` and `temp`, we can plot all features, too, to get a more complete overview.
@@ -1745,7 +1745,7 @@ plot_SV_several_approaches(explanations,
 ) + theme(legend.position = "bottom")
 ```
 
-![](figure_asymmetric_causal/two_dates_3-1.png)
+![](figure_asymmetric_causal/two_dates_3-1.webp)
 
 
 ## Sampling of coalitions
@@ -1927,7 +1927,7 @@ all the coalitions and those we obtain when we use half of the valid coalitions.
 plot_beeswarms(explanation_n_coal, title = "Shapley values (gaussian) exact vs. approximation")
 ```
 
-![](figure_asymmetric_causal/n_coalitions_plot_beeswarm-1.png)
+![](figure_asymmetric_causal/n_coalitions_plot_beeswarm-1.webp)
 
 
 ``` r
@@ -1936,7 +1936,7 @@ plot_SV_several_approaches(explanation_n_coal, index_x_explain) +
   guides(fill = guide_legend(nrow = 2))
 ```
 
-![](figure_asymmetric_causal/n_coalitions_plot_SV-1.png)
+![](figure_asymmetric_causal/n_coalitions_plot_SV-1.webp)
 
 
 
@@ -1955,7 +1955,7 @@ features `temp` and `atemp` due to their (conceptual) similarity and high correl
 GGally::ggpairs(x_train[, 4:5])
 ```
 
-![](figure_asymmetric_causal/group_cor-1.png)
+![](figure_asymmetric_causal/group_cor-1.webp)
 
 We set up the groups and update the causal ordering to be on the group level.
 
@@ -2241,7 +2241,7 @@ plot_beeswarms(explanation_group_gaussian,
 )
 ```
 
-![](figure_asymmetric_causal/group_gaussian_plot_beeswarm-1.png)
+![](figure_asymmetric_causal/group_gaussian_plot_beeswarm-1.webp)
 
 
 
@@ -2251,7 +2251,7 @@ plot_SV_several_approaches(explanation_group_gaussian, index_x_explain) +
   theme(legend.position = "bottom") + guides(fill = guide_legend(nrow = 2))
 ```
 
-![](figure_asymmetric_causal/group_gaussian_plot_SV-1.png)
+![](figure_asymmetric_causal/group_gaussian_plot_SV-1.webp)
 
 
 
