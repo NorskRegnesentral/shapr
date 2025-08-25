@@ -15,6 +15,7 @@
   ([#465](https://github.com/NorskRegnesentral/shapr/pull/465)).
 * Applied various minor visual improvements ([#460](https://github.com/NorskRegnesentral/shapr/pull/460), 
   [#464](https://github.com/NorskRegnesentral/shapr/pull/464)).
+* Converted vignette figures to WebP format to significantly reduce tarball size ([#468](https://github.com/NorskRegnesentral/shapr/pull/468))
 
 ### Bug fixes
 * Fixed error when handling many features by removing `as.integer()` coercion in the computation of coalitions per 
