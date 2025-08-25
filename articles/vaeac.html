@@ -73,7 +73,7 @@
 Berge Olsen</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/vignettes/vaeac.Rmd" class="external-link"><code>vignettes/vaeac.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.5/vignettes/vaeac.Rmd" class="external-link"><code>vignettes/vaeac.Rmd</code></a></small>
       <div class="d-none name"><code>vaeac.Rmd</code></div>
     </div>
 
@@ -270,7 +270,7 @@ same data as in the general usage</p>
 <span><span class="co">#&gt; 5:          5 43.086  0.22127  -3.05847 -17.9177 -3.62080</span></span>
 <span><span class="co">#&gt; 6:          6 43.086  4.25576  -9.58514 -18.7123  2.62017</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/first-vaeac-plots-1.png"></p>
+<p><img src="figure_vaeac/first-vaeac-plots-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="pretrained_vaeac">Pre-trained vaeac<a class="anchor" aria-label="anchor" href="#pretrained_vaeac"></a>
@@ -477,7 +477,7 @@ way around.</p>
 <span></span>
 <span><span class="co"># Gives different Shapley values as the latter are based only on a subset of coalitions</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Original"</span> <span class="op">=</span> <span class="va">explanation</span>, <span class="st">"Other combi."</span> <span class="op">=</span> <span class="va">expl_batches_combinations</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/check-n_coalitions-1.png"></p>
+<p><img src="figure_vaeac/check-n_coalitions-1.webp"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Can compare that to the situation where we have exact computations (i.e., include all coalitions)</span></span>
@@ -648,7 +648,8 @@ implementation.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:03:41 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -676,10 +677,10 @@ package, respectively.</p>
 <code class="sourceCode R"><span><span class="va">explanation_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Regular samp."</span> <span class="op">=</span> <span class="va">expl_paired_sampling_FALSE</span>,</span>
 <span>                         <span class="st">"Paired samp."</span> <span class="op">=</span> <span class="va">expl_paired_sampling_TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list</span>, plot_type <span class="op">=</span> <span class="st">"criterion"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/paired-sampling-plotting-1.png"></p>
+<p><img src="figure_vaeac/paired-sampling-plotting-1.webp"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/paired-sampling-plotting-2.png"></p>
+<p><img src="figure_vaeac/paired-sampling-plotting-2.webp"></p>
 <p>By looking at the time, we see that the paired version takes (a bit)
 longer time in the <code>setup_computation</code> phase, that is, in the
 training phase.</p>
@@ -887,7 +888,7 @@ grain of salt.</p>
 <span></span>
 <span><span class="co"># Look at the training and validation errors. Not happy and want to train more.</span></span>
 <span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Original"</span> <span class="op">=</span> <span class="va">expl_little_training</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/continue-training-1.png"></p>
+<p><img src="figure_vaeac/continue-training-1.webp"></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Can also see how well vaeac generates data from the full joint distribution. Quite good.</span></span>
 <span><span class="fu"><a href="../reference/plot_vaeac_imputed_ggpairs.html">plot_vaeac_imputed_ggpairs</a></span><span class="op">(</span></span>
@@ -895,7 +896,7 @@ grain of salt.</p>
 <span>  which_vaeac_model <span class="op">=</span> <span class="st">"best"</span>,</span>
 <span>  x_true <span class="op">=</span> <span class="va">x_train</span></span>
 <span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/continue-training-2.png"></p>
+<p><img src="figure_vaeac/continue-training-2.webp"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Make a copy of the explanation object and continue to train the vaeac model some more epochs</span></span>
 <span><span class="va">expl_train_more</span> <span class="op">&lt;-</span> <span class="va">expl_little_training</span></span>
@@ -925,7 +926,7 @@ grain of salt.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Original"</span> <span class="op">=</span> <span class="va">expl_little_training</span>, <span class="st">"More epochs"</span> <span class="op">=</span> <span class="va">expl_train_more</span><span class="op">)</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/continue-training-3.png"></p>
+<p><img src="figure_vaeac/continue-training-3.webp"></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Continue to train the vaeac model some more epochs</span></span>
 <span><span class="va">expl_train_even_more</span> <span class="op">&lt;-</span> <span class="va">expl_train_more</span></span>
@@ -959,7 +960,7 @@ grain of salt.</p>
 <span>  <span class="op">)</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/continue-training-4.png"></p>
+<p><img src="figure_vaeac/continue-training-4.webp"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Can also see how well vaeac generates data from the full joint distribution</span></span>
 <span><span class="fu"><a href="../reference/plot_vaeac_imputed_ggpairs.html">plot_vaeac_imputed_ggpairs</a></span><span class="op">(</span></span>
@@ -967,7 +968,7 @@ grain of salt.</p>
 <span>  which_vaeac_model <span class="op">=</span> <span class="st">"best"</span>,</span>
 <span>  x_true <span class="op">=</span> <span class="va">x_train</span></span>
 <span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/continue-training-5.png"></p>
+<p><img src="figure_vaeac/continue-training-5.webp"></p>
 <p>We can see that the extra training has decreased the MSEv score. The
 Shapley value explanations have also changed, but they are often
 comparable.</p>
@@ -977,7 +978,7 @@ comparable.</p>
 <span>  <span class="st">"More epochs"</span> <span class="op">=</span> <span class="va">expl_train_more_vaeac</span>,</span>
 <span>  <span class="st">"Even more epochs"</span> <span class="op">=</span> <span class="va">expl_train_even_more_vaeac</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/continue-training-2-1.png"></p>
+<p><img src="figure_vaeac/continue-training-2-1.webp"></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We see that the Shapley values have changed, but they are often comparable</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -985,7 +986,7 @@ comparable.</p>
 <span>  <span class="st">"More epochs"</span> <span class="op">=</span> <span class="va">expl_train_more_vaeac</span>,</span>
 <span>  <span class="st">"Even more epochs"</span> <span class="op">=</span> <span class="va">expl_train_even_more_vaeac</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/continue-training-2-2.png"></p>
+<p><img src="figure_vaeac/continue-training-2-2.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="early_stopping">Vaeac with early stopping<a class="anchor" aria-label="anchor" href="#early_stopping"></a>
@@ -1088,7 +1089,7 @@ validation score for <code>5</code> epochs.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">expl_early_stopping</span><span class="op">)</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/early-stopping-1-1.png"></p>
+<p><img src="figure_vaeac/early-stopping-1-1.webp"></p>
 <p>However, we can train it further for a fixed amount of epochs if
 desired. This can be in a setting where we are not happy with the IWAE
 curve or we feel that we set <code>vaeac.epochs_early_stopping</code> to
@@ -1124,7 +1125,7 @@ a too low value or if the max number of epochs
 <span>  <span class="op">)</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/early-stopping-2-1.png"></p>
+<p><img src="figure_vaeac/early-stopping-2-1.webp"></p>
 <p>We can then use the extra trained version to compute the Shapley
 value explanations and compare it with the previous version that used
 early stopping. We see a non-significant difference.</p>
@@ -1184,14 +1185,14 @@ early stopping. We see a non-significant difference.</p>
 <span>  <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">expl_early_stopping</span>,</span>
 <span>  <span class="st">"Vaeac early stopping more epochs"</span> <span class="op">=</span> <span class="va">expl_early_stopping_train_more</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/early-stopping-3-1.png"></p>
+<p><img src="figure_vaeac/early-stopping-3-1.webp"></p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We see that the Shapley values have changed, but only slightly</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">expl_early_stopping</span>,</span>
 <span>  <span class="st">"Vaeac early stopping more epochs"</span> <span class="op">=</span> <span class="va">expl_early_stopping_train_more</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/early-stopping-3-2.png"></p>
+<p><img src="figure_vaeac/early-stopping-3-2.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="grouping_of_features">Grouping of features<a class="anchor" aria-label="anchor" href="#grouping_of_features"></a>
@@ -1245,7 +1246,7 @@ the Shapley value computations.</p>
 <span></span>
 <span><span class="co"># Plot the resulting explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">expl_group</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/vaeac-grouping-of-features-1.png"></p>
+<p><img src="figure_vaeac/vaeac-grouping-of-features-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="mixed_data">Mixed Data<a class="anchor" aria-label="anchor" href="#mixed_data"></a>
@@ -1272,7 +1273,7 @@ model.</p>
 <span><span class="va">x_explain_cat</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">ind_x_explain</span>, <span class="op">]</span><span class="op">[</span>, <span class="va">..x_var_cat</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Fit a random forest model to the training data</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="st">" ~ "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x_var_cat</span>, collapse <span class="op">=</span> <span class="st">" + "</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="st">" ~ "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x_var_cat</span>, collapse <span class="op">=</span> <span class="st">" + "</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">data_train_cat</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -1347,7 +1348,8 @@ default parameters.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:06:46 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1384,7 +1386,8 @@ default parameters.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:07:38 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1410,7 +1413,7 @@ default parameters.</p>
 <span>  <span class="op">)</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"criterion"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/vaeac-mixed-data-1.png"></p>
+<p><img src="figure_vaeac/vaeac-mixed-data-1.webp"></p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The `vaeac` model with skip connections has the lowest/best MSE_Frye evaluation criterion score</span></span>
 <span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1418,7 +1421,7 @@ default parameters.</p>
 <span>  <span class="st">"Vaeac w. skip-con."</span> <span class="op">=</span> <span class="va">expl_vaeac_with</span>,</span>
 <span>  <span class="st">"Ctree"</span> <span class="op">=</span> <span class="va">expl_ctree</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/vaeac-mixed-data-2.png"></p>
+<p><img src="figure_vaeac/vaeac-mixed-data-2.webp"></p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Can compare the Shapley values. Ctree and vaeac with skip connections produce similar explanations.</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span></span>
@@ -1429,7 +1432,7 @@ default parameters.</p>
 <span>  <span class="op">)</span>,</span>
 <span>  index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_vaeac/vaeac-mixed-data-3.png"></p>
+<p><img src="figure_vaeac/vaeac-mixed-data-3.webp"></p>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-torch" class="csl-entry">
 Falbel, Daniel, and Javier Luraschi. 2023. <em>Torch: Tensors and Neural

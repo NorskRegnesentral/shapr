@@ -73,7 +73,7 @@
 Camilla Lingjærde, Lars Henry Berge Olsen &amp; Nikolai Sellereite</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/vignettes/general_usage.Rmd" class="external-link"><code>vignettes/general_usage.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.5/vignettes/general_usage.Rmd" class="external-link"><code>vignettes/general_usage.Rmd</code></a></small>
       <div class="d-none name"><code>general_usage.Rmd</code></div>
     </div>
 
@@ -678,7 +678,8 @@ argument. Allowed values are <code>"gaussian"</code>,
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:01:02 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -710,7 +711,7 @@ argument. Allowed values are <code>"gaussian"</code>,
 <span></span>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/setup-2-1.png"></p>
+<p><img src="figure_general_usage/setup-2-1.webp"></p>
 <p>There are multiple plot options specified by the
 <code>plot_type</code> argument in <code>plot</code>. The
 <code>waterfall</code> option shows the changes in the prediction score
@@ -721,7 +722,7 @@ due to each feature’s contribution (their Shapley values):</p>
 due to each feature’s contribution (their Shapley values):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span>, plot_type <span class="op">=</span> <span class="st">"waterfall"</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/plot-waterfall-1.png"></p>
+<p><img src="figure_general_usage/plot-waterfall-1.webp"></p>
 <p>The other two plot options, <code>"beeswarm"</code> and
 <code>"scatter"</code>, can be useful when you have many observations
 that you want to explain. For the purpose of illustration, we explain
@@ -777,14 +778,14 @@ the points are colored by the feature value of that instance:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_plot</span>, plot_type <span class="op">=</span> <span class="st">"beeswarm"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/plot-beeswarm-1.png"></p>
+<p><img src="figure_general_usage/plot-beeswarm-1.webp"></p>
 <p>The <code>plot_type = "scatter"</code> plots the feature values on
 the x-axis and Shapley values on the y-axis, as well as (optionally) a
 background scatter_hist showing the distribution of the feature
 data:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_plot</span>, plot_type <span class="op">=</span> <span class="st">"scatter"</span>, scatter_hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/plot-scatter-1.png"></p>
+<p><img src="figure_general_usage/plot-scatter-1.webp"></p>
 <p>We can use mixed (i.e., continuous, categorical, ordinal) data with
 <code>ctree</code> or <code>vaeac</code>. Use <code>ctree</code> with
 mixed data in the following manner:</p>
@@ -853,7 +854,7 @@ mixed data in the following manner:</p>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span></span>
 <span><span class="co"># the no-covariate effect</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_lm_cat</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/factor-1.png"></p>
+<p><img src="figure_general_usage/factor-1.webp"></p>
 <p>We can specify parameters used to build the conditional inference
 trees in the following manner. The default values are based on <span class="citation">Hothorn, Hornik, and Zeileis (2006)</span>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -1293,7 +1294,8 @@ combining them into lists.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:01:19 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1325,7 +1327,8 @@ combining them into lists.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:01:23 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1357,7 +1360,8 @@ combining them into lists.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:01:23 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1389,7 +1393,8 @@ combining them into lists.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:01:24 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1440,7 +1445,7 @@ observations or the combinations (both as bar and line plots).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The main plot of the overall MSEv averaged over both the combinations and observations</span></span>
 <span><span class="va">MSEv_plots</span><span class="op">$</span><span class="va">MSEv_bar</span></span></code></pre></div>
-<p><img src="figure_general_usage/MSEv-plot-2-1.png"></p>
+<p><img src="figure_general_usage/MSEv-plot-2-1.webp"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># The MSEv averaged over only the explicands for each combinations</span></span>
@@ -1449,7 +1454,7 @@ observations or the combinations (both as bar and line plots).</p>
 <span></span>
 <span><span class="co"># The MSEv averaged over only the combinations for each observation/explicand</span></span>
 <span><span class="va">MSEv_plots</span><span class="op">$</span><span class="va">MSEv_explicand_bar</span></span></code></pre></div>
-<p><img src="figure_general_usage/MSEv-plot-2-2.png"></p>
+<p><img src="figure_general_usage/MSEv-plot-2-2.webp"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># To see which coalition S each of the `id_combination` corresponds to,</span></span>
@@ -1467,7 +1472,7 @@ observations and combinations, respectively.</p>
 <span>  index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>,</span>
 <span>  CI_level <span class="op">=</span> <span class="fl">0.95</span></span>
 <span><span class="op">)</span><span class="op">$</span><span class="va">MSEv_explicand_bar</span></span></code></pre></div>
-<p><img src="figure_general_usage/MSEv-plot-3-1.png"></p>
+<p><img src="figure_general_usage/MSEv-plot-3-1.webp"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list_named</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"comb"</span>,</span>
@@ -1499,7 +1504,7 @@ below.</p>
 <span>    position <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html" class="external-link">position_dodge</a></span><span class="op">(</span><span class="fl">0.9</span><span class="op">)</span>,</span>
 <span>    size <span class="op">=</span> <span class="fl">4</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/MSEv-plot-4-1.png"></p>
+<p><img src="figure_general_usage/MSEv-plot-4-1.webp"></p>
 </div>
 </div>
 </div>
@@ -2095,7 +2100,7 @@ features.</p>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span></span>
 <span><span class="co"># the no-covariate effect</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/combined-1-1.png"></p>
+<p><img src="figure_general_usage/combined-1-1.webp"></p>
 <p>As a second example using <code>"ctree"</code> to condition on 1 and
 2 features, and <code>"empirical"</code> when conditioning on 3
 features:</p>
@@ -2222,7 +2227,7 @@ easy using <code>shapr</code>:</p>
 <span><span class="co">#&gt; 6:          6  43.1 -20.6  -3.379</span></span>
 <span><span class="co"># Plots the group-wise explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_group</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">TRUE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/group-1.png"></p>
+<p><img src="figure_general_usage/group-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="explain-custom-models">Explain custom models<a class="anchor" aria-label="anchor" href="#explain-custom-models"></a>
@@ -2232,7 +2237,7 @@ predictions from models fitted with the following functions:</p>
 <ul>
 <li><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">stats::lm</a></code></li>
 <li><code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">stats::glm</a></code></li>
-<li><code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger</a></code></li>
+<li><code><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger::ranger</a></code></li>
 <li><code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code></li>
 <li>
 <code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgb.train</a></code>
@@ -2367,7 +2372,7 @@ to the same airquality data set as used above.</p>
 <span></span>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/custom-1.png"></p>
+<p><img src="figure_general_usage/custom-1.webp"></p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span></span>
@@ -2395,7 +2400,8 @@ to the same airquality data set as used above.</p>
 <span><span class="co">#&gt; ℹ You passed a model to `shapr::explain()` which is not natively</span></span>
 <span><span class="co">#&gt;   supported, and did not supply a `get_model_specs` function to</span></span>
 <span><span class="co">#&gt;   `shapr::explain()`.</span></span>
-<span><span class="co">#&gt;   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Consistency checks between model and data are therefore disabled.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2415,7 +2421,7 @@ to the same airquality data set as used above.</p>
 <span></span>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom_minimal</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/custom-2.png"></p>
+<p><img src="figure_general_usage/custom-2.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="workflow_example">Tidymodels and workflows<a class="anchor" aria-label="anchor" href="#workflow_example"></a>
@@ -2591,7 +2597,7 @@ model is learning.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Look at the training and validation errors.</span></span>
 <span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/vaeac-plot-1-1.png"></p>
+<p><img src="figure_general_usage/vaeac-plot-1-1.webp"></p>
 <div class="section level4">
 <h4 id="early-stopping">Early stopping<a class="anchor" aria-label="anchor" href="#early-stopping"></a>
 </h4>
@@ -2669,13 +2675,13 @@ more stable now.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span>, <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">explanation_vaeac_early_stop</span><span class="op">)</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/vaeac-plot-2-1.png"></p>
+<p><img src="figure_general_usage/vaeac-plot-2-1.webp"></p>
 <p>Can also compare the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>S</mi><msub><mi>E</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex">MSE_{v}</annotation></semantics></math>
 evaluation scores.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span>, <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">explanation_vaeac_early_stop</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_general_usage/vaeac-plot-3-1.png"></p>
+<p><img src="figure_general_usage/vaeac-plot-3-1.webp"></p>
 </div>
 </div>
 <div class="section level3">
@@ -2842,7 +2848,8 @@ long-running computations.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:02:35 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 32`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>

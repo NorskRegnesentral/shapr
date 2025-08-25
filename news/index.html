@@ -43,19 +43,29 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.5/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.0.5" id="shapr-105">shapr 1.0.5<a class="anchor" aria-label="anchor" href="#shapr-105"></a></h2>
-<ul><li>Added <code><a href="../reference/get_results.html">get_results()</a></code> function for extracting key components from a <code>shapr</code> object, including Shapley values, model parameters, and iterative computation details (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
-<li>Added <code><a href="../reference/summary.shapr.html">summary.shapr()</a></code> method, which uses <code><a href="../reference/get_results.html">get_results()</a></code> and internal <code>format_xyz()</code> functions to provide a concise overview of the explanation object (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
-<li>Updated <code><a href="../reference/print.shapr.html">print.shapr()</a></code> to support printing of specific components with customizable formatting for digits and decimal precision (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
-<li>Updated vignettes, examples and tests to reflect the new functionality (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
-<li>Refactored <code>cli</code>-based output functions for better reuse across multiple methods (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
-<li>A small range of other minor visual fixes (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
-<li>Fixed error with many features by removing <code><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer()</a></code> coercion when computing number of coalitions per coalition size (<a href="https://github.com/NorskRegnesentral/shapr/pull/462" class="external-link">#462</a>).</li>
+<h2 class="pkg-version" data-toc-text="1.0.5" id="shapr-105">shapr 1.0.5<a class="anchor" aria-label="anchor" href="#shapr-105"></a></h2><p class="text-muted">CRAN release: 2025-08-25</p>
+<div class="section level4">
+<h4 id="new-features-1-0-5">New features<a class="anchor" aria-label="anchor" href="#new-features-1-0-5"></a></h4>
+<ul><li>Added <code><a href="../reference/get_results.html">get_results()</a></code> for extracting key components from a <code>shapr</code> object, including Shapley values, model parameters, and iterative computation details (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
+<li>Added <code><a href="../reference/summary.shapr.html">summary.shapr()</a></code> method, which builds on <code><a href="../reference/get_results.html">get_results()</a></code> and internal <code>format_xyz()</code> functions to provide a concise overview of explanation objects (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
 </ul></div>
+<div class="section level4">
+<h4 id="improvements-1-0-5">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-0-5"></a></h4>
+<ul><li>Enhanced <code><a href="../reference/print.shapr.html">print.shapr()</a></code> to support printing of specific components, with customizable control over digits and decimal precision (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
+<li>Refactored <code>cli</code>-based output functions for improved reuse across multiple methods (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
+<li>Updated vignettes, examples, and tests to reflect the new functionality (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>).</li>
+<li>Fixed spelling, grammar, and other textual inconsistencies in documentation, comments, and vignettes (<a href="https://github.com/NorskRegnesentral/shapr/pull/465" class="external-link">#465</a>).</li>
+<li>Applied various minor visual improvements (<a href="https://github.com/NorskRegnesentral/shapr/pull/460" class="external-link">#460</a>, <a href="https://github.com/NorskRegnesentral/shapr/pull/464" class="external-link">#464</a>).</li>
+</ul></div>
+<div class="section level4">
+<h4 id="bug-fixes-1-0-5">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-0-5"></a></h4>
+<ul><li>Fixed error when handling many features by removing <code><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer()</a></code> coercion in the computation of coalitions per coalition size (<a href="https://github.com/NorskRegnesentral/shapr/pull/462" class="external-link">#462</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.4" id="shapr-104">shapr 1.0.4<a class="anchor" aria-label="anchor" href="#shapr-104"></a></h2><p class="text-muted">CRAN release: 2025-04-28</p>
 <ul><li><p>Implement semi-deterministic sampling of coalitions similar to the default in the <em>shap</em> python library and described and discussed as the PySHAP* strategy in <a href="https://arxiv.org/abs/2410.04883" class="external-link">Olsen &amp; Jullum (2024)</a>. It is disabled by default, but can be set via <code>extra_computation_args = list(semi_deterministic_sampling = TRUE)</code> in <code><a href="../reference/explain.html">explain()</a></code>. The functionality is available when paired coalition sampling (the default) is enabled. See <a href="https://github.com/NorskRegnesentral/shapr/pull/449" class="external-link">#449</a> for details.</p></li>

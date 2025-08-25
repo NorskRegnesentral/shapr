@@ -73,7 +73,7 @@
 Berge Olsen</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/vignettes/asymmetric_causal.Rmd" class="external-link"><code>vignettes/asymmetric_causal.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.5/vignettes/asymmetric_causal.Rmd" class="external-link"><code>vignettes/asymmetric_causal.Rmd</code></a></small>
       <div class="d-none name"><code>asymmetric_causal.Rmd</code></div>
     </div>
 
@@ -176,7 +176,7 @@ use the coalitions respecting the causal ordering and assuming that all
 dependencies within chain components are induced by mutual
 interactions.</p>
 <div class="figure" style="text-align: center">
-<img src="figure_asymmetric_causal/Asymmetric_ordering.png" alt="Schematic overview of the causal ordering used in this vignette." width="50%"><p class="caption">
+<img src="figure_asymmetric_causal/Asymmetric_ordering.webp" alt="Schematic overview of the causal ordering used in this vignette." width="50%"><p class="caption">
 Schematic overview of the causal ordering used in this vignette.
 </p>
 </div>
@@ -250,8 +250,8 @@ distribution instead.</p>
 simplifies to symmetric conditional, asymmetric conditional, and
 marginal Shapley values; see Corollaries 1 to 3 in the supplement of
 <span class="citation">Heskes et al. (2020)</span>.</p>
-<div class="figure">
-<img src="figure_asymmetric_causal/Causal_ordering.png" alt="Schematic overview of the causal chain graph used in this vignette." width="50%"><p class="caption">
+<div class="figure" style="text-align: center">
+<img src="figure_asymmetric_causal/Causal_ordering.webp" alt="Schematic overview of the causal chain graph used in this vignette." width="50%"><p class="caption">
 Schematic overview of the causal chain graph used in this vignette.
 </p>
 </div>
@@ -434,7 +434,7 @@ data, plot the data, and train an <code>xgboost</code> model.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Number of bikes rented"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span>, legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/setup_1-1.png"></p>
+<p><img src="figure_asymmetric_causal/setup_1-1.webp"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the features and the response variable</span></span>
 <span><span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trend"</span>, <span class="st">"cosyear"</span>, <span class="st">"sinyear"</span>, <span class="st">"temp"</span>, <span class="st">"atemp"</span>, <span class="st">"windspeed"</span>, <span class="st">"hum"</span><span class="op">)</span></span>
@@ -451,7 +451,7 @@ data, plot the data, and train an <code>xgboost</code> model.</p>
 <span></span>
 <span><span class="co"># Plot pairs plot</span></span>
 <span><span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/setup_2-1.png"></p>
+<p><img src="figure_asymmetric_causal/setup_2-1.webp"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test/explicand data</span></span>
 <span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">bike</span><span class="op">[</span><span class="op">-</span><span class="va">train_index</span>, <span class="va">x_var</span><span class="op">]</span><span class="op">)</span></span>
@@ -483,7 +483,7 @@ data, plot the data, and train an <code>xgboost</code> model.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">response</span>, <span class="va">predicted_response</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/setup_3-1.png"></p>
+<p><img src="figure_asymmetric_causal/setup_3-1.webp"></p>
 <p>We are going to use the <code>causal_ordering</code> and
 <code>confounding</code> illustrated in the figures above. For
 <code>causal_ordering</code>, we can either provide the index of feature
@@ -648,7 +648,8 @@ used.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:59:03 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
 <span><span class="co">#&gt;   and is therefore set to `2^n_features = 128`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -697,7 +698,8 @@ used.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:59:54 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
 <span><span class="co">#&gt;   and is therefore set to `2^n_features = 128`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -748,7 +750,7 @@ above.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_sym_con</span>, <span class="va">index_x_explain</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/explanation_sym_con_SV-1.png"></p>
+<p><img src="figure_asymmetric_causal/explanation_sym_con_SV-1.webp"></p>
 <p>We can also make beeswarm plots of the Shapley values to look at the
 structure of the Shapley values for all explicands. The figures are
 quite similar, but with minor differences. E.g., the
@@ -757,7 +759,7 @@ quite similar, but with minor differences. E.g., the
 for the <code>trend</code> feature.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plot_beeswarms</span><span class="op">(</span><span class="va">explanation_sym_con</span>, title <span class="op">=</span> <span class="st">"Symmetric conditional Shapley values"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/explanation_sym_con_beeswarm-1.png"></p>
+<p><img src="figure_asymmetric_causal/explanation_sym_con_beeswarm-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="asymmetric-conditional-shapley-values">Asymmetric conditional Shapley values<a class="anchor" aria-label="anchor" href="#asymmetric-conditional-shapley-values"></a>
@@ -847,7 +849,8 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:00:16 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
 <span><span class="co">#&gt;   respecting the causal ordering (20), and is therefore set to 20.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -883,7 +886,8 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:00:18 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
 <span><span class="co">#&gt;   respecting the causal ordering (20), and is therefore set to 20.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -923,7 +927,8 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:00:28 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
 <span><span class="co">#&gt;   respecting the causal ordering (20), and is therefore set to 20.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1038,7 +1043,7 @@ many of the features’ Shapley values have now shrunk closer to zero,
 especially <code>temp</code> and <code>atemp</code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plot_beeswarms</span><span class="op">(</span><span class="va">explanation_asym_con</span>, title <span class="op">=</span> <span class="st">"Asymmetric conditional Shapley values"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/explanation_asym_con_beeswarm-1.png"></p>
+<p><img src="figure_asymmetric_causal/explanation_asym_con_beeswarm-1.webp"></p>
 <p>We can also compare the obtained symmetric and asymmetric conditional
 Shapley values for the 6 explicands. We often see that the asymmetric
 version gives larger Shapley values to the distal/root causes, i.e.,
@@ -1054,7 +1059,7 @@ and Feige (2020)</span>.</p>
 <span><span class="va">explanation_asym_sym_con</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">explanation_sym_con_tmp</span>, <span class="va">explanation_asym_con_tmp</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">3</span>, <span class="fl">6</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_asym_sym_con</span>, <span class="va">index_x_explain</span>, brewer_palette <span class="op">=</span> <span class="st">"Paired"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/sym_and_asym_Shapley_values-1.png"></p>
+<p><img src="figure_asymmetric_causal/sym_and_asym_Shapley_values-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="symmetric-marginal-shapley-values">Symmetric marginal Shapley values<a class="anchor" aria-label="anchor" href="#symmetric-marginal-shapley-values"></a>
@@ -1165,7 +1170,8 @@ due to different sampling setups/orders.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:00:42 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
 <span><span class="co">#&gt;   and is therefore set to `2^n_features = 128`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1207,7 +1213,8 @@ due to different sampling setups/orders.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:00:50 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
 <span><span class="co">#&gt;   and is therefore set to `2^n_features = 128`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1240,7 +1247,7 @@ due to different sampling setups/orders.</p>
 <span><span class="co">#&gt; independence_con  1376651  108870        9.14</span></span>
 <span></span>
 <span><span class="fu">plot_beeswarms</span><span class="op">(</span><span class="va">explanation_sym_marg</span>, title <span class="op">=</span> <span class="st">"Symmetric marginal Shapley values"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/explanation_sym_mar_beeswarm-1.png"></p>
+<p><img src="figure_asymmetric_causal/explanation_sym_mar_beeswarm-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="causal-shapley-values">Causal Shapley values<a class="anchor" aria-label="anchor" href="#causal-shapley-values"></a>
@@ -1355,7 +1362,8 @@ applicable.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:01:24 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`,</span></span>
 <span><span class="co">#&gt;   and is therefore set to `2^n_features = 128`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1388,7 +1396,7 @@ applicable.</p>
 <span><span class="co">#&gt; gaussian 1112304   85462        24.5</span></span>
 <span><span class="co">#&gt; copula   1131125   87179        20.9</span></span>
 <span><span class="fu">plot_beeswarms</span><span class="op">(</span><span class="va">explanation_sym_cau</span>, title <span class="op">=</span> <span class="st">"Symmetric causal Shapley values"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/explanation_sym_cau_beeswarm-1.png"></p>
+<p><img src="figure_asymmetric_causal/explanation_sym_cau_beeswarm-1.webp"></p>
 </div>
 <div class="section level4">
 <h4 id="asymmetric">Asymmetric<a class="anchor" aria-label="anchor" href="#asymmetric"></a>
@@ -1479,7 +1487,8 @@ are faster as the number of coalitions is reduced.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:01:49 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
 <span><span class="co">#&gt;   respecting the causal ordering (20), and is therefore set to 20.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1522,7 +1531,8 @@ are faster as the number of coalitions is reduced.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:01:54 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
 <span><span class="co">#&gt;   respecting the causal ordering (20), and is therefore set to 20.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1553,12 +1563,12 @@ explanation.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot the beeswarm plots</span></span>
 <span><span class="fu">plot_beeswarms</span><span class="op">(</span><span class="va">explanation_asym_cau</span>, title <span class="op">=</span> <span class="st">"Asymmetric causal Shapley values"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/explanation_asym_cau_beeswarm-1.png"></p>
+<p><img src="figure_asymmetric_causal/explanation_asym_cau_beeswarm-1.webp"></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot the Shapley values</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_asym_cau</span>, <span class="va">index_x_explain</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/explanation_asym_cau_SV-1.png"></p>
+<p><img src="figure_asymmetric_causal/explanation_asym_cau_SV-1.webp"></p>
 <p>We can also use the other Monte Carlo-based approaches
 (<code>independence</code> and <code>empirical</code>), too.</p>
 </div>
@@ -1588,7 +1598,7 @@ consider both for a more natural explanation.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Shapley value prediction explanation (approach = 'gaussian')"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>color <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Framework"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/compare_plots-1.png"></p>
+<p><img src="figure_asymmetric_causal/compare_plots-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="scatter-plots-marginal-vs--causal-shapley-values">Scatter plots: marginal vs. causal Shapley values<a class="anchor" aria-label="anchor" href="#scatter-plots-marginal-vs--causal-shapley-values"></a>
@@ -1727,7 +1737,7 @@ Figure 3 in <span class="citation">Heskes et al. (2020)</span>.</p>
 <span>  <span class="op">)</span>,</span>
 <span>  nrow <span class="op">=</span> <span class="fl">2</span>, heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/scatter_plots-1.png"></p>
+<p><img src="figure_asymmetric_causal/scatter_plots-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="investigating-two-similar-days">Investigating two similar days<a class="anchor" aria-label="anchor" href="#investigating-two-similar-days"></a>
@@ -1810,7 +1820,7 @@ consider both for a more natural explanation.</p>
 <span>    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>, axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
 <span>    strip.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/two_dates_1-1.png"></p>
+<p><img src="figure_asymmetric_causal/two_dates_1-1.webp"></p>
 <p>We can also make a similar plot using the
 <code>plot_SV_several_approaches</code> function in <code>shapr</code>,
 but then we get each explicand in a separate facet instead of a facet
@@ -1824,7 +1834,7 @@ for each framework.</p>
 <span>  horizontal_bars <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  axis_labels_n_dodge <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/two_dates_2-1.png"></p>
+<p><img src="figure_asymmetric_causal/two_dates_2-1.webp"></p>
 <p>Furthermore, instead of doing as <span class="citation">Heskes et al.
 (2020)</span> and only considering the features <code>cosyear</code> and
 <code>temp</code>, we can plot all features, too, to get a more complete
@@ -1838,7 +1848,7 @@ overview.</p>
 <span>  axis_labels_rotate_angle <span class="op">=</span> <span class="fl">45</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/two_dates_3-1.png"></p>
+<p><img src="figure_asymmetric_causal/two_dates_3-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="sampling-of-coalitions">Sampling of coalitions<a class="anchor" aria-label="anchor" href="#sampling-of-coalitions"></a>
@@ -2015,12 +2025,12 @@ coalitions and those we obtain when we use half of the valid
 coalitions.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plot_beeswarms</span><span class="op">(</span><span class="va">explanation_n_coal</span>, title <span class="op">=</span> <span class="st">"Shapley values (gaussian) exact vs. approximation"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/n_coalitions_plot_beeswarm-1.png"></p>
+<p><img src="figure_asymmetric_causal/n_coalitions_plot_beeswarm-1.webp"></p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_n_coal</span>, <span class="va">index_x_explain</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/n_coalitions_plot_SV-1.png"></p>
+<p><img src="figure_asymmetric_causal/n_coalitions_plot_SV-1.webp"></p>
 </div>
 <div class="section level3">
 <h3 id="groups-of-features">Groups of features<a class="anchor" aria-label="anchor" href="#groups-of-features"></a>
@@ -2036,7 +2046,7 @@ group the features <code>temp</code> and <code>atemp</code> due to their
 (conceptual) similarity and high correlation.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">[</span>, <span class="fl">4</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/group_cor-1.png"></p>
+<p><img src="figure_asymmetric_causal/group_cor-1.webp"></p>
 <p>We set up the groups and update the causal ordering to be on the
 group level.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
@@ -2137,7 +2147,8 @@ Shapley value frameworks.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:08:13 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_groups = 64`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2176,7 +2187,8 @@ Shapley value frameworks.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:08:15 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
 <span><span class="co">#&gt;   respecting the causal ordering (12), and is therefore set to 12.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2218,7 +2230,8 @@ Shapley value frameworks.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:08:17 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_groups = 64`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2260,7 +2273,8 @@ Shapley value frameworks.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 10:08:28 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions</span></span>
 <span><span class="co">#&gt;   respecting the causal ordering (12), and is therefore set to 12.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2316,12 +2330,12 @@ and
 <span>  title <span class="op">=</span> <span class="st">"Group Shapley values (gaussian)"</span>,</span>
 <span>  include_group_feature_means <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/group_gaussian_plot_beeswarm-1.png"></p>
+<p><img src="figure_asymmetric_causal/group_gaussian_plot_beeswarm-1.webp"></p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_group_gaussian</span>, <span class="va">index_x_explain</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Shapley value prediction explanation (gaussian)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_asymmetric_causal/group_gaussian_plot_SV-1.png"></p>
+<p><img src="figure_asymmetric_causal/group_gaussian_plot_SV-1.webp"></p>
 <p><a id="Implementation_details"></a></p>
 </div>
 <div class="section level3">

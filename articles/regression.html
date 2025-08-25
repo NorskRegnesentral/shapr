@@ -73,7 +73,7 @@
 Berge Olsen</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/vignettes/regression.Rmd" class="external-link"><code>vignettes/regression.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.5/vignettes/regression.Rmd" class="external-link"><code>vignettes/regression.Rmd</code></a></small>
       <div class="d-none name"><code>regression.Rmd</code></div>
     </div>
 
@@ -401,7 +401,7 @@ significantly concerning the
 evaluation criterion.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/lm-emp-msev-1.png"></p>
+<p><img src="figure_regression/lm-emp-msev-1.webp"></p>
 </div>
 <div class="section level4">
 <h4 id="separate_preproc">Pre-processing<a class="anchor" aria-label="anchor" href="#separate_preproc"></a>
@@ -617,7 +617,7 @@ significantly outperforms the other methods.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compare the MSEv criterion of the different explanation methods</span></span>
 <span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/preproc-plot-1.png"></p>
+<p><img src="figure_regression/preproc-plot-1.webp"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
@@ -710,7 +710,8 @@ model are <code>tree_depth = 30</code>, <code>min_n = 2</code>, and
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:49:02 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -737,7 +738,7 @@ obtained a worse method by using stumps, i.e., trees with depth one.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compare the MSEv criterion of the different explanation methods</span></span>
 <span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/decision-tree-plot-1.png"></p>
+<p><img src="figure_regression/decision-tree-plot-1.webp"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the MSEv scores and the elapsed time (in seconds) for the different methods</span></span>
 <span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span>
@@ -883,7 +884,8 @@ values this time.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:49:13 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -978,7 +980,8 @@ the coalition size.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:49:32 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1129,7 +1132,7 @@ below, we include a vertical line at the
 score of the <code>empirical</code> method for easier comparison.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/dt-cv-plot-1.png"></p>
+<p><img src="figure_regression/dt-cv-plot-1.webp"></p>
 <p>Furthermore, we must consider that cross-validation drastically
 increases the elapsed time (seconds) and determine if the increased
 precision is worth the extra computational time. We also see that the
@@ -1236,7 +1239,8 @@ do this in the fourth method.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:49:56 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1270,7 +1274,8 @@ do this in the fourth method.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:50:25 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1308,7 +1313,8 @@ do this in the fourth method.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:50:32 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1454,7 +1460,8 @@ models below. More specifically, we use linear regression, random forest
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:50:39 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1491,7 +1498,8 @@ models below. More specifically, we use linear regression, random forest
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:50:40 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1521,7 +1529,8 @@ models below. More specifically, we use linear regression, random forest
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:50:44 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1559,7 +1568,8 @@ models below. More specifically, we use linear regression, random forest
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:50:45 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1693,7 +1703,7 @@ parallel.</p>
 <span><span class="co"># Compare the MSEv criterion of the different explanation methods.</span></span>
 <span><span class="co"># Include vertical line corresponding to the MSEv of the empirical method.</span></span>
 <span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/surrogate-plot-1.png"></p>
+<p><img src="figure_regression/surrogate-plot-1.webp"></p>
 </div>
 </div>
 </div>
@@ -1731,13 +1741,13 @@ more details and explanations of the code below.</p>
 <span><span class="co"># Step 2: create the model function</span></span>
 <span><span class="va">ppr_reg</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">mode</span> <span class="op">=</span> <span class="st">"regression"</span>, <span class="va">engine</span> <span class="op">=</span> <span class="st">"ppr"</span>, <span class="va">num_terms</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Check for correct mode</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">mode</span> <span class="op">!=</span> <span class="st">"regression"</span><span class="op">)</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/abort.html" class="external-link">abort</a></span><span class="op">(</span><span class="st">"`mode` should be 'regression'"</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">mode</span> <span class="op">!=</span> <span class="st">"regression"</span><span class="op">)</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rlang/man/abort.html" class="external-link">abort</a></span><span class="op">(</span><span class="st">"`mode` should be 'regression'"</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co"># Check for correct engine</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">engine</span> <span class="op">!=</span> <span class="st">"ppr"</span><span class="op">)</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/abort.html" class="external-link">abort</a></span><span class="op">(</span><span class="st">"`engine` should be 'ppr'"</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">engine</span> <span class="op">!=</span> <span class="st">"ppr"</span><span class="op">)</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rlang/man/abort.html" class="external-link">abort</a></span><span class="op">(</span><span class="st">"`engine` should be 'ppr'"</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co"># Capture the arguments in quosures</span></span>
-<span>  <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>num_terms <span class="op">=</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/enquo.html" class="external-link">enquo</a></span><span class="op">(</span><span class="va">num_terms</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>num_terms <span class="op">=</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rlang/man/enquo.html" class="external-link">enquo</a></span><span class="op">(</span><span class="va">num_terms</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co"># Save some empty slots for future parts of the specification</span></span>
 <span>  <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/add_on_exports.html" class="external-link">new_model_spec</a></span><span class="op">(</span></span>
@@ -1806,9 +1816,9 @@ more details and explanations of the code below.</p>
 <span></span>
 <span><span class="co"># Step 6: add updating function (used by tune::finalize_workflow())</span></span>
 <span><span class="va">update.ppr_reg</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">parameters</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">num_terms</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_installed.html" class="external-link">check_installed</a></span><span class="op">(</span><span class="st">"parsnip"</span><span class="op">)</span></span>
+<span>  <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rlang/man/is_installed.html" class="external-link">check_installed</a></span><span class="op">(</span><span class="st">"parsnip"</span><span class="op">)</span></span>
 <span>  <span class="va">eng_args</span> <span class="op">&lt;-</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/add_on_exports.html" class="external-link">update_engine_parameters</a></span><span class="op">(</span><span class="va">object</span><span class="op">$</span><span class="va">eng_args</span>, fresh <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
-<span>  <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>num_terms <span class="op">=</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/enquo.html" class="external-link">enquo</a></span><span class="op">(</span><span class="va">num_terms</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>num_terms <span class="op">=</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rlang/man/enquo.html" class="external-link">enquo</a></span><span class="op">(</span><span class="va">num_terms</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/add_on_exports.html" class="external-link">update_main_parameters</a></span><span class="op">(</span><span class="va">args</span>, <span class="va">parameters</span><span class="op">)</span></span>
 <span>  <span class="fu">parsnip</span><span class="fu">::</span><span class="fu"><a href="https://parsnip.tidymodels.org/reference/add_on_exports.html" class="external-link">new_model_spec</a></span><span class="op">(</span></span>
 <span>    <span class="st">"ppr_reg"</span>,</span>
@@ -1885,7 +1895,8 @@ We do all four combinations below.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:51:23 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1915,7 +1926,8 @@ We do all four combinations below.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:51:31 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1947,7 +1959,8 @@ We do all four combinations below.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:51:32 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2000,7 +2013,7 @@ the running time.</p>
 <span></span>
 <span><span class="co"># Compare the MSEv criterion of the different explanation methods</span></span>
 <span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/ppr-plot-1.png"></p>
+<p><img src="figure_regression/ppr-plot-1.webp"></p>
 </div>
 <div class="section level2">
 <h2 id="summary_figures">Summary figures<a class="anchor" aria-label="anchor" href="#summary_figures"></a>
@@ -2077,7 +2090,8 @@ using the different Monte Carlo-based methods.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:51:35 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2107,7 +2121,8 @@ using the different Monte Carlo-based methods.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:51:36 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2137,7 +2152,8 @@ using the different Monte Carlo-based methods.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:51:36 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2168,7 +2184,8 @@ using the different Monte Carlo-based methods.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:51:38 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -2235,7 +2252,7 @@ easier.</p>
 <span><span class="co"># Compare the MSEv criterion of the different explanation methods</span></span>
 <span><span class="co"># Include vertical line corresponding to the MSEv of the MC_empirical method</span></span>
 <span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/MSEv-sum-1.png"></p>
+<p><img src="figure_regression/MSEv-sum-1.webp"></p>
 <p>The <code>vaeac</code> approach is the best-performing method
 according to the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
@@ -2252,7 +2269,7 @@ criterion.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">order</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list</span>, k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/MSEv-sum-2-1.png"></p>
+<p><img src="figure_regression/MSEv-sum-2-1.webp"></p>
 <p>We can also examine the different Shapley value explanations for the
 first six explicands (two at a time), and we still sort the methods from
 best to worst. Most methods agree in the general directions, especially
@@ -2264,13 +2281,13 @@ methods with poor/larger
 values.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/SV-sum-1.png"></p>
+<p><img src="figure_regression/SV-sum-1.webp"></p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/SV-sum-2.png"></p>
+<p><img src="figure_regression/SV-sum-2.webp"></p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/SV-sum-3.png"></p>
+<p><img src="figure_regression/SV-sum-3.webp"></p>
 <p>Here, we focus on the five best methods (and
 <code>MC_empirical</code>) to make it easier to analyze the individual
 Shapley value explanations, and we see a quite strong agreement between
@@ -2280,7 +2297,7 @@ the different methods.</p>
 <span><span class="va">best_methods</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"MC_empirical"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">best_methods</span><span class="op">)</span> <span class="va">best_methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">best_methods</span>, <span class="st">"MC_empirical"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">best_methods</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/SV-sum-2-1.png"></p>
+<p><img src="figure_regression/SV-sum-2-1.webp"></p>
 </div>
 <div class="section level2">
 <h2 id="mixed">Mixed data<a class="anchor" aria-label="anchor" href="#mixed"></a>
@@ -3031,7 +3048,7 @@ regression methods.</p>
 <span><span class="co"># Compare the MSEv criterion of the different explanation methods</span></span>
 <span><span class="co"># Include vertical line corresponding to the MSEv of the empirical method.</span></span>
 <span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list_mixed</span>, method_line <span class="op">=</span> <span class="st">"MC_ctree"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/mixed-plot-1.png"></p>
+<p><img src="figure_regression/mixed-plot-1.webp"></p>
 <p>The best-performing methods are the surrogate random forest and
 XGBoost with cross-validation methods. The Monte Carlo-based methods
 perform worse, with <code>ctree</code> being the best, with a
@@ -3043,12 +3060,12 @@ criterion.</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">order</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list_mixed</span>, k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, method_line <span class="op">=</span> <span class="st">"MC_ctree"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/mixed-plot-2-1.png"></p>
+<p><img src="figure_regression/mixed-plot-2-1.webp"></p>
 <p>We also look at some of the Shapley value explanations and see that
 many methods produce similar explanations.</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/mixed-plot-3-1.png"></p>
+<p><img src="figure_regression/mixed-plot-3-1.webp"></p>
 <p>We can also focus on the Shapley value explanations for the best five
 methods according to the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
@@ -3058,7 +3075,7 @@ best-performing Monte Carlo-based method.</p>
 <code class="sourceCode R"><span><span class="va">best_methods</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list_mixed</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"MC_ctree"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">best_methods</span><span class="op">)</span> <span class="va">best_methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">best_methods</span>, <span class="st">"MC_ctree"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">[</span><span class="va">best_methods</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figure_regression/mixed-plot-4-1.png"></p>
+<p><img src="figure_regression/mixed-plot-4-1.webp"></p>
 </div>
 </div>
 <div class="section level2">
@@ -3136,7 +3153,8 @@ scores for the string and non-string versions.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:57:32 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3168,7 +3186,8 @@ scores for the string and non-string versions.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:57:33 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3201,7 +3220,8 @@ scores for the string and non-string versions.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:57:34 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3238,7 +3258,8 @@ scores for the string and non-string versions.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:57:42 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -3276,7 +3297,8 @@ scores for the string and non-string versions.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-21 09:58:04 ─────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
+<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and</span></span>
 <span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
