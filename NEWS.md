@@ -1,18 +1,26 @@
 # shapr 1.0.5
 
-* Added `get_results()` function for extracting key components from a `shapr` object, including Shapley values, 
-model parameters, and iterative computation details ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
-* Added `summary.shapr()` method, which uses `get_results()` and internal `format_xyz()` functions to provide a concise
-overview of the explanation object ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
-* Updated `print.shapr()` to support printing of specific components with customizable formatting for digits and 
-decimal precision ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
-* Updated vignettes, examples and tests to reflect the new functionality 
-([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
-* Refactored `cli`-based output functions for better reuse across multiple methods
-([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
-* A small range of other minor visual fixes ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
-* Fixed error with many features by removing `as.integer()` coercion when computing number of coalitions per 
-coalition size ([#462](https://github.com/NorskRegnesentral/shapr/pull/462)).
+### New features
+* Added `get_results()` for extracting key components from a `shapr` object, including Shapley values, 
+  model parameters, and iterative computation details ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
+* Added `summary.shapr()` method, which builds on `get_results()` and internal `format_xyz()` functions to provide a concise
+  overview of explanation objects ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
+
+### Improvements
+* Enhanced `print.shapr()` to support printing of specific components, with customizable control over digits and 
+  decimal precision ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
+* Refactored `cli`-based output functions for improved reuse across multiple methods ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
+* Updated vignettes, examples, and tests to reflect the new functionality ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
+* Fixed spelling, grammar, and other textual inconsistencies in documentation, comments, and vignettes 
+  ([#465](https://github.com/NorskRegnesentral/shapr/pull/465)).
+* Applied various minor visual improvements ([#460](https://github.com/NorskRegnesentral/shapr/pull/460), 
+  [#464](https://github.com/NorskRegnesentral/shapr/pull/464)).
+* Converted vignette figures to WebP format to significantly reduce tarball size ([#468](https://github.com/NorskRegnesentral/shapr/pull/468))
+
+### Bug fixes
+* Fixed error when handling many features by removing `as.integer()` coercion in the computation of coalitions per 
+  coalition size ([#462](https://github.com/NorskRegnesentral/shapr/pull/462)).
+
 
 
 # shapr 1.0.4

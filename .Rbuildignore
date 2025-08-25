@@ -33,5 +33,7 @@
 ^tests/testthat/_snaps/*$ # Uncomment when submitting to CRAN to reduce filesize
 ^inst/code_paper/*$
 ^inst/joss_paper/*$
+^inst/extdata/*$
+^inst/devel/*$
 
 

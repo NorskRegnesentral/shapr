@@ -1,8 +1,11 @@
-# shapr 1.0.4 (Patch release)
+# shapr 1.0.5
 
-* Fix CRAN errors of the noSuggests type by using `testthat::skip_if_not_installed()` for all tests requiring suggested 
-packages to ensure they are skipped gracefully when dependencies are unavailable.
-* Some other new functionality and a few other bug fixes, see NEWS.md for details.
+**Extra re-submission note**: 
+Converted all vignette images to webP format to reduce package size.
+The tarball is now within the size restriction.
+
+This release (v1.0.5) adds new helper methods (`get_results()`, `summary.shapr()`), improves printing, 
+output handling, and documentation, and fixes a bug affecting cases with many features.
 
 ## Test environments
 
@@ -11,13 +14,13 @@ These tests are run locally and remotely with GHA (see below) without errors.
 The win-builder and R-hub tests are run without snapshots tests (to replicate CRAN testing).
 Locally, tests are run both with and without suggested packages.
 
-* Locally (Ubuntu 20.04.6), R-version 4.4.1 (with all packages and in a .libPath without suggested packages)
+* Locally (Windows 11 x64, build 26100), R-version 4.5.1
 
 * GHA (ubuntu-latest), R-versions: devel, release, oldrel-1, oldrel-2
 * GHA (windows-latest), R-version: release
 * GHA (macOS-latest), R-version: release
 * devtools-win-builder, R-versions: devel, release, oldrelease 
-* devools-mac-builder, R-versions: release 
+* devtools-mac-builder, R-versions: release 
 * R-hub (ubuntu-latest): R-version: devel
 * R-hub (windows-latest): R-version: devel
 * R-hub (mac-latest): R-version: devel

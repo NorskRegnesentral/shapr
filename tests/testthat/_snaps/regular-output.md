@@ -439,9 +439,9 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1  42.4        -1.97               12.6          -4.72       -6.38
-      2:          2  42.4        -2.41              -14.4          14.43      -12.47
-      3:          3  42.4         2.76              -14.2           3.22      -10.10
+      1:          1  42.4        -1.65               9.74          -3.29        -5.3
+      2:          2  42.4        -3.29             -19.36          29.93       -22.1
+      3:          3  42.4         4.80             -16.84           6.42       -12.7
 
 # output_lm_categorical_categorical
 
@@ -720,11 +720,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R   Wind    Temp    Day Month_factor
-              <int> <num>   <num>  <num>   <num>  <num>        <num>
-      1:          1  42.4   -5.05   6.86 15.7301 -0.208        -6.75
-      2:          2  42.4    2.60  -4.64 -2.2641 -3.129        -7.95
-      3:          3  42.4    5.14 -17.88 -0.0137  0.585         1.57
+         explain_id  none Solar.R   Wind  Temp    Day Month_factor
+              <int> <num>   <num>  <num> <num>  <num>        <num>
+      1:          1  42.4   -3.47   9.39 15.35 -2.880        -7.80
+      2:          2  42.4    3.06  -3.11 -7.23 -0.382        -7.72
+      3:          3  42.4    6.00 -14.49 -5.74  1.184         2.45
 
 # output_lm_mixed_comb
 
