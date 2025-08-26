@@ -70,6 +70,5 @@ addopts = [
 ]
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-  "integration: marks tests as integration tests",
-  "snapshot: marks tests as snapshot tests",
+  "snapshot: marks tests as snapshot/output tests",
 ]

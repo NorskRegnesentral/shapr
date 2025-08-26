@@ -7,12 +7,13 @@ This directory contains the test suite for shaprpy, organized as follows:
 ```
 tests/
 ├── conftest.py                    # Shared pytest fixtures
-├── unit/                          # Unit tests for individual components
+├── setup/                         # Unit tests for setup and validation
 │   └── test_input_validation.py   # Input validation and error handling tests
-├── integration/                   # Integration tests with real models
-│   ├── test_regression_snapshots.py    # Snapshot tests for regression models
-│   └── test_classification_snapshots.py # Snapshot tests for classification models
-└── snapshots/                     # Syrupy snapshot files (auto-generated)
+├── output/                        # Output tests for explanation results
+│   ├── test_regression_outputs.py    # Output tests for regression models
+│   ├── test_classification_outputs.py # Output tests for classification models
+│   └── __snapshots__/             # Syrupy snapshot files (auto-generated)
+└── README.md                      # This file
 ```
 
 ## Running Tests
@@ -31,11 +32,11 @@ pytest
 
 ### Run specific test categories
 ```bash
-# Run only unit tests
-pytest tests/unit/
+# Run only setup tests
+pytest tests/setup/
 
-# Run only integration tests
-pytest tests/integration/
+# Run only output tests
+pytest tests/output/
 
 # Run only snapshot tests
 pytest -m snapshot
@@ -50,20 +51,20 @@ pytest -m "not slow"
 pytest --snapshot-update
 
 # Update specific test snapshots
-pytest tests/integration/test_regression_snapshots.py --snapshot-update
+pytest tests/output/test_regression_outputs.py --snapshot-update
 ```
 
 ## Test Categories
 
-- **Unit Tests**: Fast tests that check individual components and input validation
-- **Integration Tests**: Tests that run the full explain pipeline with real models
-- **Snapshot Tests**: Tests that use Syrupy to ensure outputs remain consistent
+- **Setup Tests**: Fast tests that check individual components and input validation
+- **Output Tests**: Tests that use Syrupy to ensure explanation outputs remain consistent
+- **Snapshot Tests**: Tests marked with `@pytest.mark.snapshot` (subset of output tests)
 - **Slow Tests**: Tests marked as slow (can be excluded with `-m "not slow"`)
 
 ## Adding New Tests
 
-1. **Unit tests**: Add to `tests/unit/` for testing individual functions and validation
-2. **Integration tests**: Add to `tests/integration/` for end-to-end testing
+1. **Setup tests**: Add to `tests/setup/` for testing individual functions and validation
+2. **Output tests**: Add to `tests/output/` for end-to-end output consistency testing
 3. **Fixtures**: Add shared fixtures to `conftest.py`
 4. **Mark slow tests**: Use `@pytest.mark.slow` for tests that take significant time
 

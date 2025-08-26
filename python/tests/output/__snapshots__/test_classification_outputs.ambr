@@ -1,0 +1,33 @@
+# serializer version: 1
+# name: TestClassificationOutputs.test_rf_classifier_empirical_basic
+  dict({
+    'shapley_values_est': explain_id      none  sepal length (cm)  sepal width (cm)  petal length (cm)  petal width (cm)
+  1           1  0.494737           0.125632          0.127187           0.127187          0.125257
+  2           2  0.494737           0.061942          0.084664           0.179329          0.179329
+  3           3  0.494737           0.158276         -0.045561           0.191433          0.191115
+  4           4  0.494737          -0.167825          0.032064          -0.179700         -0.179275
+  5           5  0.494737          -0.082809         -0.139540          -0.135924         -0.136463,
+    'shapley_values_sd': explain_id  none  sepal length (cm)  sepal width (cm)  petal length (cm)  petal width (cm)
+  1           1   0.0                0.0               0.0                0.0               0.0
+  2           2   0.0                0.0               0.0                0.0               0.0
+  3           3   0.0                0.0              -0.0                0.0               0.0
+  4           4   0.0               -0.0               0.0               -0.0              -0.0
+  5           5   0.0               -0.0              -0.0               -0.0              -0.0,
+  })
+# ---
+# name: TestClassificationOutputs.test_rf_classifier_independence_basic
+  dict({
+    'shapley_values_est': explain_id      none  sepal length (cm)  sepal width (cm)  petal length (cm)  petal width (cm)
+  1           1  0.494737           0.013868          0.015553           0.252868          0.222974
+  2           2  0.494737           0.006816          0.020079           0.255395          0.222974
+  3           3  0.494737           0.021289         -0.001974           0.252974          0.222974
+  4           4  0.494737          -0.026132         -0.000921          -0.247395         -0.220289
+  5           5  0.494737          -0.007079         -0.022605          -0.247289         -0.217763,
+    'shapley_values_sd': explain_id  none  sepal length (cm)  sepal width (cm)  petal length (cm)  petal width (cm)
+  1           1   0.0                0.0               0.0                0.0               0.0
+  2           2   0.0                0.0               0.0                0.0               0.0
+  3           3   0.0                0.0              -0.0                0.0               0.0
+  4           4   0.0               -0.0              -0.0               -0.0              -0.0
+  5           5   0.0               -0.0              -0.0               -0.0              -0.0,
+  })
+# ---
