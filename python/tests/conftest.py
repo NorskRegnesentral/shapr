@@ -88,8 +88,10 @@ def extract_shapley_outputs():
     This is what we'll use for snapshot testing.
     """
     def _extract(explanation):
-        return {
-            "shapley_values_est": explanation["shapley_values_est"],
-            "shapley_values_sd": explanation["shapley_values_sd"]
+        # Convert DataFrames to dictionaries for stable snapshot comparison
+        result = {
+            "shapley_values_est": explanation["shapley_values_est"].to_dict(),
+            "shapley_values_sd": explanation["shapley_values_sd"].to_dict()
         }
+        return result
     return _extract
