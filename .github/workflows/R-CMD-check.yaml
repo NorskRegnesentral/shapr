@@ -23,8 +23,16 @@
 on:
   push:
     branches: [main, master, cranversion, devel, 'shapr-1.0.0']
+    paths-ignore:
+      - 'python/**'
+      - '.github/workflows/python-tests.yaml'
+      - '.github/workflows/quick-python-test.yaml'
   pull_request:
     branches: [main, master, cranversion, devel, 'shapr-1.0.0']
+    paths-ignore:
+      - 'python/**'
+      - '.github/workflows/python-tests.yaml'
+      - '.github/workflows/quick-python-test.yaml'
 
 name: R-CMD-check
 
