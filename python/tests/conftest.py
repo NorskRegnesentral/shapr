@@ -4,9 +4,22 @@ Shared pytest fixtures for shaprpy tests.
 import pytest
 import numpy as np
 import pandas as pd
+import os
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 import xgboost as xgb
 from shaprpy.datasets import load_california_housing, load_binary_iris
+
+
+# Set seeds for reproducibility
+@pytest.fixture(scope="session", autouse=True)
+def set_random_seeds():
+    """Set random seeds for reproducible tests."""
+    np.random.seed(42)
+    # Set environment variables for R reproducibility
+    os.environ['R_SEED'] = '1'
+    os.environ['OMP_NUM_THREADS'] = '1'  # For consistent threading
+    os.environ['OPENBLAS_NUM_THREADS'] = '1'
+    os.environ['MKL_NUM_THREADS'] = '1'
 
 
 @pytest.fixture(scope="session")
@@ -25,7 +38,7 @@ def binary_iris_data():
 def trained_rf_regressor(california_housing_data):
     """Trained RandomForest regressor on California housing data."""
     dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
-    model = RandomForestRegressor(random_state=0)
+    model = RandomForestRegressor(random_state=1, n_estimators=100)
     model.fit(dfx_train, dfy_train.values.flatten())
     return model
 
@@ -34,7 +47,7 @@ def trained_rf_regressor(california_housing_data):
 def trained_rf_classifier(binary_iris_data):
     """Trained RandomForest classifier on binary iris data."""
     dfx_train, dfx_test, dfy_train, dfy_test = binary_iris_data
-    model = RandomForestClassifier(random_state=0)
+    model = RandomForestClassifier(random_state=1, n_estimators=100)
     model.fit(dfx_train, dfy_train.values.flatten())
     return model
 
@@ -43,7 +56,7 @@ def trained_rf_classifier(binary_iris_data):
 def trained_xgb_regressor(california_housing_data):
     """Trained XGBoost regressor on California housing data."""
     dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
-    model = xgb.XGBRegressor(random_state=0)
+    model = xgb.XGBRegressor(random_state=1, n_estimators=100, n_jobs=1)
     model.fit(dfx_train, dfy_train.values.flatten())
     return model
 

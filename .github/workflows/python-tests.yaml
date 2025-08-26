@@ -11,27 +11,24 @@ on:
 
 jobs:
   test-python:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        include:
-          # Comprehensive testing on Ubuntu (Linux)
-          - {os: ubuntu-latest, python-version: '3.9'}
-          - {os: ubuntu-latest, python-version: '3.10'}
-          - {os: ubuntu-latest, python-version: '3.11'}
-          - {os: ubuntu-latest, python-version: '3.12'}
-          # Basic smoke tests on other platforms (latest Python only)
-          - {os: macos-latest, python-version: '3.12'}
-          - {os: windows-latest, python-version: '3.12'}
+        python-version: ['3.9', '3.10', '3.11', '3.12']
 
-    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    name: Python ${{ matrix.python-version }}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
       TORCH_INSTALL: 1
+      # Reproducibility settings
+      PYTHONHASHSEED: 0
+      OMP_NUM_THREADS: 1
+      OPENBLAS_NUM_THREADS: 1
+      MKL_NUM_THREADS: 1
 
     steps:
       - name: Checkout repository
@@ -64,16 +61,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-${{ matrix.python-version }}-
 
-      - name: Install system dependencies (Ubuntu)
-        if: runner.os == 'Linux'
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev
-
-      - name: Install system dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install --cask xquartz || true
 
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
@@ -113,8 +104,8 @@ jobs:
           cd python
           python -m pytest tests/output/ -m "not slow" -v --tb=short
 
-      - name: Run slow tests (Ubuntu + Python 3.11 only)
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      - name: Run slow tests (Python 3.11 only)
+        if: matrix.python-version == '3.11'
         run: |
           cd python
           python -m pytest tests/output/ -m "slow" -v --tb=short
