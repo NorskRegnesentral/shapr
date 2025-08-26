@@ -98,3 +98,9 @@ jobs:
         run: |
           cd python
           python -m pytest tests/test_simple_r_connection.py -v -s --tb=short
+
+      - name: Run re-enabled regression output test
+        run: |
+          cd python
+          python -m pytest tests/output/test_regression_outputs.py::TestRegressionOutputs::test_rf_regressor_empirical_basic -v --tb=short
+        continue-on-error: true  # Allow this to fail since we expect it to fail
