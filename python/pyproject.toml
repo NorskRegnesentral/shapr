@@ -13,7 +13,7 @@ authors = [
   { name = "Lars Henry Berge Olsen" },
   { name = "Didrik Nielsen" }
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.8.1"
 keywords = ["explainable-ai", "shapley-values", "machine-learning", "model-interpretability"]
 classifiers = [
   "Programming Language :: Python :: 3",
@@ -35,6 +35,14 @@ dependencies = [
   "scikit-learn>=1.0.0"
 ]
 
+[project.optional-dependencies]
+# Note: Testing requires Python >3.8.1 for syrupy 4.x.x compatibility
+test = [
+  "pytest>=7.0.0",
+  "syrupy>=4.0.0",
+  "xgboost>=1.5.0"
+]
+
 [project.urls]
 Homepage = "https://github.com/NorskRegnesentral/shapr"
 Documentation = "https://norskregnesentral.github.io/shapr/shaprpy.html"
@@ -49,3 +57,19 @@ include = ["shaprpy*" ]
 
 [tool.setuptools.dynamic]
 # (none needed now)
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+  "--strict-markers",
+  "--strict-config",
+  "-ra",
+]
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "integration: marks tests as integration tests",
+  "snapshot: marks tests as snapshot tests",
+]
