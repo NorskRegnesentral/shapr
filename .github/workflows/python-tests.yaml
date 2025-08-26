@@ -75,11 +75,15 @@ jobs:
         run: |
           brew install --cask xquartz || true
 
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          dependencies: '"hard"'  # Only Depends/Imports, skip Suggests
+          extra-packages: any::remotes
+
       - name: Install R shapr package
         run: |
-          install.packages("remotes")
-          # Install with required dependencies only (skip optional Suggests packages)
-          remotes::install_local(".", dependencies = c("Depends", "Imports"), build_vignettes = FALSE)
+          remotes::install_local(".", dependencies = FALSE, build_vignettes = FALSE)
         shell: Rscript {0}
 
       - name: Install Python shaprpy package
