@@ -16,7 +16,7 @@ using the [`rpy2`](https://rpy2.github.io/) Python library to access R from with
 
 > **Note:** This wrapper is **not** as comprehensively tested as the R package.
 > `rpy2` has limited support on Windows, and the same therefore applies to `shaprpy`.
-> `shaprpy` has only been tested on Linux, and the below instructions assume a Linux environment.
+> `shaprpy` has only been tested on Linux (and WSL - Windows Subsystem for Linux), and the below instructions assume a Linux environment.
 
 ---
 
@@ -44,8 +44,8 @@ Rscript -e 'install.packages("shapr", repos="https://cran.rstudio.com")'
 
 ### 2. Ensure R is discoverable (R_HOME and PATH)
 
-If `shaprpy` cannot find your R installation, ensure that:
-- R is on your system `PATH`, **or**
+Sometimes `shaprpy` cannot automatically locate your R installation. To ensure proper detection, verify that:
+- R is available in your system `PATH`, **or**
 - The `R_HOME` environment variable is set to your R installation directory.
 
 Example:
@@ -70,7 +70,7 @@ pip install shaprpy
 ```
 
 #### Local development install (for contributors)
-If you have cloned the repository and want to install in editable mode:
+If you have cloned the repository and want to install in development mode for local changes, navigate to the `./python` directory and run:
 ```bash
 pip install -e .
 ```
