@@ -132,3 +132,55 @@ class TestSimpleRConnectionAndModels:
         assert isinstance(version, str)
         assert len(version) > 0
         assert 'R version' in version
+
+    def test_explain_simple_case_reproducibility(self, california_housing_data, trained_rf_regressor):
+        """Test that explain function gives reproducible results for a simple case."""
+        from shaprpy import explain
+        
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        
+        # Use only first test sample and simple approach
+        explanation1 = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test.head(1),  # Just 1 sample
+            approach='empirical',
+            phi0=dfy_train.mean().item(),
+            seed=1
+        )
+        
+        # Same call should give same results
+        explanation2 = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train, 
+            x_explain=dfx_test.head(1),
+            approach='empirical',
+            phi0=dfy_train.mean().item(),
+            seed=1
+        )
+        
+        # Check if results are identical
+        np.testing.assert_array_almost_equal(
+            explanation1["shapley_values_est"], 
+            explanation2["shapley_values_est"], 
+            decimal=10
+        )
+        
+        # Also check standard deviations if they exist
+        if "shapley_values_sd" in explanation1:
+            np.testing.assert_array_almost_equal(
+                explanation1["shapley_values_sd"], 
+                explanation2["shapley_values_sd"], 
+                decimal=10
+            )
+        
+        print(f"Shapley values (first explanation): {explanation1['shapley_values_est']}")
+        print(f"Shapley values (second explanation): {explanation2['shapley_values_est']}")
+        print(f"Shapley values are reproducible: {np.allclose(explanation1['shapley_values_est'], explanation2['shapley_values_est'])}")
+        
+        # Basic sanity checks
+        assert "shapley_values_est" in explanation1
+        assert "shapley_values_est" in explanation2
+        shapley_vals = explanation1["shapley_values_est"]
+        assert shapley_vals.shape[0] == 1  # One explanation sample
+        assert all(np.isfinite(shapley_vals.values.flatten()))  # All values should be finite
