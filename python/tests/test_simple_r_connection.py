@@ -184,3 +184,83 @@ class TestSimpleRConnectionAndModels:
         shapley_vals = explanation1["shapley_values_est"]
         assert shapley_vals.shape[0] == 1  # One explanation sample
         assert all(np.isfinite(shapley_vals.values.flatten()))  # All values should be finite
+
+    def test_explain_multiple_samples_reproducibility(self, california_housing_data, trained_rf_regressor):
+        """Test that explain function with multiple samples gives reproducible results."""
+        from shaprpy import explain
+        
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        
+        # Use first 3 test samples 
+        explanation1 = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test.head(3),  # 3 samples
+            approach='empirical',
+            phi0=dfy_train.mean().item(),
+            seed=1
+        )
+        
+        # Same call should give same results
+        explanation2 = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train, 
+            x_explain=dfx_test.head(3),
+            approach='empirical',
+            phi0=dfy_train.mean().item(),
+            seed=1
+        )
+        
+        # Check if results are identical
+        np.testing.assert_array_almost_equal(
+            explanation1["shapley_values_est"], 
+            explanation2["shapley_values_est"], 
+            decimal=10
+        )
+        
+        print(f"Multiple samples Shapley values reproducible: {np.allclose(explanation1['shapley_values_est'], explanation2['shapley_values_est'])}")
+        
+        # Basic sanity checks
+        shapley_vals = explanation1["shapley_values_est"]
+        assert shapley_vals.shape[0] == 3  # Three explanation samples
+        assert all(np.isfinite(shapley_vals.values.flatten()))
+
+    def test_explain_gaussian_approach_reproducibility(self, california_housing_data, trained_rf_regressor):
+        """Test that explain function with gaussian approach gives reproducible results."""
+        from shaprpy import explain
+        
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        
+        # Use gaussian approach (more complex than empirical)
+        explanation1 = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test.head(2),  # 2 samples
+            approach='gaussian',
+            phi0=dfy_train.mean().item(),
+            seed=1
+        )
+        
+        # Same call should give same results
+        explanation2 = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train, 
+            x_explain=dfx_test.head(2),
+            approach='gaussian',
+            phi0=dfy_train.mean().item(),
+            seed=1
+        )
+        
+        # Check if results are identical
+        np.testing.assert_array_almost_equal(
+            explanation1["shapley_values_est"], 
+            explanation2["shapley_values_est"], 
+            decimal=10
+        )
+        
+        print(f"Gaussian approach Shapley values reproducible: {np.allclose(explanation1['shapley_values_est'], explanation2['shapley_values_est'])}")
+        
+        # Basic sanity checks
+        shapley_vals = explanation1["shapley_values_est"]
+        assert shapley_vals.shape[0] == 2  # Two explanation samples
+        assert all(np.isfinite(shapley_vals.values.flatten()))
