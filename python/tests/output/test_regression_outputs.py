@@ -90,3 +90,132 @@ class TestRegressionOutputs:
 
         # Use syrupy for snapshot testing
         assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_regressor_gaussian_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with gaussian approach - basic case."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='gaussian',
+            phi0=dfy_train.mean().item(),
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
+
+    @pytest.mark.slow
+    @pytest.mark.snapshot
+    def test_rf_regressor_ctree_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with ctree approach - basic case."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='ctree',
+            phi0=dfy_train.mean().item(),
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_regressor_gaussian_with_groups(self, california_housing_data, trained_rf_regressor,
+                                              regression_group_config, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with gaussian approach and feature groups."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='gaussian',
+            phi0=dfy_train.mean().item(),
+            group=regression_group_config,
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
+
+    @pytest.mark.slow
+    @pytest.mark.snapshot
+    def test_rf_regressor_empirical_with_causal_ordering(self, california_housing_data, trained_rf_regressor,
+                                                        causal_ordering_config, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with empirical approach and causal ordering."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='empirical',
+            phi0=dfy_train.mean().item(),
+            asymmetric=True,
+            causal_ordering=causal_ordering_config,
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_regressor_regression_separate_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with regression_separate approach - basic linear regression."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='regression_separate',
+            phi0=dfy_train.mean().item(),
+            regression_model='parsnip::linear_reg()',
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_regressor_regression_surrogate_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with regression_surrogate approach - decision tree."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='regression_surrogate',
+            phi0=dfy_train.mean().item(),
+            regression_model="parsnip::decision_tree(engine = 'rpart', mode = 'regression')",
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot

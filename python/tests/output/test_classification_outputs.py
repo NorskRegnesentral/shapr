@@ -49,3 +49,23 @@ class TestClassificationOutputs:
 
         # Use syrupy for snapshot testing
         assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_classifier_gaussian_basic(self, binary_iris_data, trained_rf_classifier, extract_shapley_outputs, snapshot):
+        """Test RandomForest classifier with gaussian approach - basic case."""
+        dfx_train, dfx_test, dfy_train, dfy_test = binary_iris_data
+
+        explanation = explain(
+            model=trained_rf_classifier,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='gaussian',
+            phi0=dfy_train.mean().item(),
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
