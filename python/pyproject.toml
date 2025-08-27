@@ -13,16 +13,15 @@ authors = [
   { name = "Lars Henry Berge Olsen" },
   { name = "Didrik Nielsen" }
 ]
-requires-python = ">=3.8.1"
+requires-python = ">3.10"
 keywords = ["explainable-ai", "shapley-values", "machine-learning", "model-interpretability"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "License :: OSI Approved :: MIT License",
   "Operating System :: POSIX :: Linux",
   "Intended Audience :: Science/Research",
@@ -32,11 +31,11 @@ dependencies = [
   "rpy2>=3.5.1",
   "numpy>=1.22.3",
   "pandas>=1.4.2",
-  "scikit-learn>=1.0.0"
+  "scikit-learn>=1.0.0",
+  "tabulate>=0.8.10",
 ]
 
 [project.optional-dependencies]
-# Note: Testing requires Python >3.8.1 for syrupy 4.x.x compatibility
 test = [
   "pytest>=7.0.0",
   "syrupy>=4.0.0",
