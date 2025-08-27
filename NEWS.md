@@ -1,25 +1,30 @@
+**Note:** For changes to the Python wrapper `shaprpy`, see [python/CHANGELOG.md](python/CHANGELOG.md).
+
 # shapr 1.0.5
 
 ### New features
-* Added `get_results()` for extracting key components from a `shapr` object, including Shapley values, 
+* Added `get_results()` for extracting key components from a `shapr` object, including Shapley values,
   model parameters, and iterative computation details ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
 * Added `summary.shapr()` method, which builds on `get_results()` and internal `format_xyz()` functions to provide a concise
   overview of explanation objects ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
 
 ### Improvements
-* Enhanced `print.shapr()` to support printing of specific components, with customizable control over digits and 
+* Enhanced `print.shapr()` to support printing of specific components, with customizable control over digits and
   decimal precision ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
 * Refactored `cli`-based output functions for improved reuse across multiple methods ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
 * Updated vignettes, examples, and tests to reflect the new functionality ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
-* Fixed spelling, grammar, and other textual inconsistencies in documentation, comments, and vignettes 
+* Fixed spelling, grammar, and other textual inconsistencies in documentation, comments, and vignettes
   ([#465](https://github.com/NorskRegnesentral/shapr/pull/465)).
-* Applied various minor visual improvements ([#460](https://github.com/NorskRegnesentral/shapr/pull/460), 
+* Applied various minor visual improvements ([#460](https://github.com/NorskRegnesentral/shapr/pull/460),
   [#464](https://github.com/NorskRegnesentral/shapr/pull/464)).
 * Converted vignette figures to WebP format to significantly reduce tarball size ([#468](https://github.com/NorskRegnesentral/shapr/pull/468))
 
 ### Bug fixes
-* Fixed error when handling many features by removing `as.integer()` coercion in the computation of coalitions per 
+* Fixed error when handling many features by removing `as.integer()` coercion in the computation of coalitions per
   coalition size ([#462](https://github.com/NorskRegnesentral/shapr/pull/462)).
+
+### Python
+* Publish `shaprpy` on PyPI. See [python/CHANGELOG.md](python/CHANGELOG.md) for details.
 
 
 
@@ -28,13 +33,13 @@
 * Implement semi-deterministic sampling of coalitions similar to the default in the *shap* python library and described
 and discussed as the PySHAP* strategy in [Olsen & Jullum (2024)](https://arxiv.org/abs/2410.04883). It is disabled by
 default, but can be set via `extra_computation_args = list(semi_deterministic_sampling = TRUE)` in `explain()`.
-The functionality is available when paired coalition sampling (the default) is enabled. See 
+The functionality is available when paired coalition sampling (the default) is enabled. See
 [#449](https://github.com/NorskRegnesentral/shapr/pull/449) for details.
-* Deletes the regression-surrogate parsnip object when testing to avoid future conflicts with model object changes. 
+* Deletes the regression-surrogate parsnip object when testing to avoid future conflicts with model object changes.
 (Second last commit in [#447](https://github.com/NorskRegnesentral/shapr/pull/447)).
-* Improve and update the logic and print for setting the number of coalitions in the next iteration for `iterative = TRUE` 
+* Improve and update the logic and print for setting the number of coalitions in the next iteration for `iterative = TRUE`
 ([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
-* Allow passing `vS_batching_method` to `explain()/explain_forecast()` to specify the batch computation method 
+* Allow passing `vS_batching_method` to `explain()/explain_forecast()` to specify the batch computation method
 (default is `"future"` for both, `"forloop"` available mainly for dev purposes)
 ([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
 * Transform to use the `cli` and `rlang` packages to provide all messages/warnings/stops with nicer formatting and layout.
@@ -42,19 +47,19 @@ The functionality is available when paired coalition sampling (the default) is e
 	The header printout also differs between `explain()`/`explain_forecast()` and whether called from Python.
 	This also adds `cli` and `rlang` to imports. ([#453](https://github.com/NorskRegnesentral/shapr/pull/453))
 
-* Now using `testthat::skip_if_not_installed` for all tests requiring suggested packages to ensure they are skipped 
+* Now using `testthat::skip_if_not_installed` for all tests requiring suggested packages to ensure they are skipped
 gracefully when dependencies are unavailable ([#451](https://github.com/NorskRegnesentral/shapr/pull/451))
 
 
 ## Other minor fixes
 * Two minor bugs related to `KernelSHAP_reweighing()` ([#448](https://github.com/NorskRegnesentral/shapr/pull/448))
-* Two minor bugs related to weighting for asymmetric Shapley values 
+* Two minor bugs related to weighting for asymmetric Shapley values
 ([#449](https://github.com/NorskRegnesentral/shapr/pull/449))
-* Check `seed` argument, and only pass to `torch` if not NULL 
+* Check `seed` argument, and only pass to `torch` if not NULL
 ([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
-* Make `explain_forecast()` use `future` for batch computation as well (by default) 
+* Make `explain_forecast()` use `future` for batch computation as well (by default)
 ([#452](https://github.com/NorskRegnesentral/shapr/pull/452))
-* Fix bug for the AICc + independence variants of `approach = 'empirical'` occurring when 
+* Fix bug for the AICc + independence variants of `approach = 'empirical'` occurring when
 `n_features < n_explain` ([#453](https://github.com/NorskRegnesentral/shapr/pull/453))
 
 
@@ -77,11 +82,11 @@ gracefully when dependencies are unavailable ([#451](https://github.com/NorskReg
 
 * Fix CRAN NOTE which turned out to be bug related to returning NULL rather than integer(0) to identify (unconditional)
 asymmetric causal sampling ([#435](https://github.com/NorskRegnesentral/shapr/pull/435))
-* [Py] Get 'shaprpy' up to speed with the latest 'shapr' version and return the internal list properly 
+* [Py] Get 'shaprpy' up to speed with the latest 'shapr' version and return the internal list properly
 ([#436](https://github.com/NorskRegnesentral/shapr/pull/436))
 * Allow manual groups in `explain_forecast()` ([#433](https://github.com/NorskRegnesentral/shapr/pull/433))
-* Minor updates to readme and pkgdown site after CRAN release of shapr 1.0.1 
-([#437](https://github.com/NorskRegnesentral/shapr/pull/437), 
+* Minor updates to readme and pkgdown site after CRAN release of shapr 1.0.1
+([#437](https://github.com/NorskRegnesentral/shapr/pull/437),
 [#438](https://github.com/NorskRegnesentral/shapr/pull/438))
 * Require data.table >= 1.15.0 to allow uniform usage of `by=.I`
 ([#434](https://github.com/NorskRegnesentral/shapr/issues/434))
@@ -89,7 +94,7 @@ asymmetric causal sampling ([#435](https://github.com/NorskRegnesentral/shapr/pu
 
 
 
-# shapr 1.0.1 
+# shapr 1.0.1
 
 * Spelling checking and other minor clean up ([#431](https://github.com/NorskRegnesentral/shapr/pull/431))
 * Add extra_computation_args and output_args to explain_forecast() ([#428](https://github.com/NorskRegnesentral/shapr/pull/428))
@@ -119,7 +124,7 @@ asymmetric causal sampling ([#435](https://github.com/NorskRegnesentral/shapr/pu
 * Prediction and checking functions for custom models are now passed directly as arguments to `explain()` instead of being defined as functions of a specific class in the global env.
 * The previously exported function `make_dummies` used to explain `xgboost` models with categorical data, is removed to simplify the code base. This is rather handled with a custom prediction model.
 * The function `explain.ctree_comb_mincrit`, which allowed combining models with `approch=ctree` with different `mincrit` parameters, has been removed to simplify the code base. It may return in a completely general manner in later version of `shapr`.
-* New argument names: prediction_zero -> phi0, n_combinations -> max_n_coalitions, n_samples -> n_MC_samples, 
+* New argument names: prediction_zero -> phi0, n_combinations -> max_n_coalitions, n_samples -> n_MC_samples,
 
 ### New features
 
@@ -132,36 +137,36 @@ asymmetric causal sampling ([#435](https://github.com/NorskRegnesentral/shapr/pu
 * asymmetric and causal Shapley values
 * Improved KernelSHAP estimation with adjusted weights for reduced variance
 * Release a Python wrapper (`shaprpyr`, [#325](https://github.com/NorskRegnesentral/shapr/pull/325)) for explaining predictions from Python models (from Python) utilizing almost all functionality of `shapr`. The wrapper moves back and forth back and forth between Python and R, doing the prediction in Python, and almost everything else in R. This simplifies maintenance of `shaprpy` significantly. The wrapper is available [here](https://github.com/NorskRegnesentral/shapr/tree/master/python).
-* Introduce batch computation of conditional expectations ([#244](https://github.com/NorskRegnesentral/shapr/issues/244)). 
-This essentially compute $v(S)$ for a portion of the $S$-subsets at a time, to reduce the amount of data needed to be held in memory. 
-The user can control the number of batches herself, but we set a reasonable value by default ([#327](https://github.com/NorskRegnesentral/shapr/pull/327)). 
+* Introduce batch computation of conditional expectations ([#244](https://github.com/NorskRegnesentral/shapr/issues/244)).
+This essentially compute $v(S)$ for a portion of the $S$-subsets at a time, to reduce the amount of data needed to be held in memory.
+The user can control the number of batches herself, but we set a reasonable value by default ([#327](https://github.com/NorskRegnesentral/shapr/pull/327)).
 This allows models with large number of features to be explained with a significantly lower RAM consumption (at the cost of a slight increase in the computation time)
 * Parallelization over batches ([#38](https://github.com/NorskRegnesentral/shapr/issues/38)) using the [future](https://future.futureverse.org/) framework.
 * Progress bar ([#293](https://github.com/NorskRegnesentral/shapr/pull/293)) using the [`progressr`](https://progressr.futureverse.org/) package. Must be activated by the user with `progressr::handlers(global = TRUE)` or wrapping the call to `explain()` around `progressr::with_progress({})`
 * Added `approach = 'categorical'` ([#256](https://github.com/NorskRegnesentral/shapr/issues/256), [#307](https://github.com/NorskRegnesentral/shapr/pull/307)) used to explain models with solely categorical features by directly using/estimating the joint distribution of all feature combinations.
 * Added `approch='timeseries'` ([#314](https://github.com/NorskRegnesentral/shapr/pull/314)) for explaining classifications based on time series data/models with the method described in Sec 4.3 of the [groupShapley paper](https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf).
 * Implemented unique sampling of Shapley value subsets ([#227](https://github.com/NorskRegnesentral/shapr/issues/227))
-* Added new function `explain_forecast` to explain forecasts from time series models, at various prediction horizons ([#328](https://github.com/NorskRegnesentral/shapr/pull/328)). 
-Uses a different set of input argument which is more appropriate for these models. 
-* Re-implementation of `approach = 'independence'` method providing significantly faster computation (no longer as a special case of the `empirical` method). 
+* Added new function `explain_forecast` to explain forecasts from time series models, at various prediction horizons ([#328](https://github.com/NorskRegnesentral/shapr/pull/328)).
+Uses a different set of input argument which is more appropriate for these models.
+* Re-implementation of `approach = 'independence'` method providing significantly faster computation (no longer as a special case of the `empirical` method).
 Also allow the method to be used on models with categorical data  ([#315](https://github.com/NorskRegnesentral/shapr/pull/315)).
 * Added 'beeswarm' and 'waterfall' plots + new coloring scheme for all plots. See the [vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html#ex) for examples.
-* Added timing of the various parts of the explanation process. 
+* Added timing of the various parts of the explanation process.
 
 ### Under the hood
 
-* The test base have been completely rewritten ([#249](https://github.com/NorskRegnesentral/shapr/issues/249)). 
-Now heavily utilizing [snapshots](https://testthat.r-lib.org/articles/snapshotting.html) on a large set of benchmark calls to `explain`, also using [vdiffr](https://vdiffr.r-lib.org/) for plot tests. 
-Test functions are only written for exported core functions. Internal functions are only tested through the exported ones. 
+* The test base have been completely rewritten ([#249](https://github.com/NorskRegnesentral/shapr/issues/249)).
+Now heavily utilizing [snapshots](https://testthat.r-lib.org/articles/snapshotting.html) on a large set of benchmark calls to `explain`, also using [vdiffr](https://vdiffr.r-lib.org/) for plot tests.
+Test functions are only written for exported core functions. Internal functions are only tested through the exported ones.
 * Update GitHub actions ([#335](https://github.com/NorskRegnesentral/shapr/pull/335)).
 * Avoid unnecessary computation of inverse for weight matrix ([#280](https://github.com/NorskRegnesentral/shapr/issues/280))
 
 
 ## Minor improvements and bug fixes
 
-* The vignette/readme/tests now uses the `datasets::airquality` dataset. 
+* The vignette/readme/tests now uses the `datasets::airquality` dataset.
 This avoids including a new package just for the dataset ([#248](https://github.com/NorskRegnesentral/shapr/issues/248)).
-* Allows lm/glm/gam models with interactions ([#303](https://github.com/NorskRegnesentral/shapr/pull/303)). 
+* Allows lm/glm/gam models with interactions ([#303](https://github.com/NorskRegnesentral/shapr/pull/303)).
 Previously, this was not possible with the prediction functions defined internally due to a bug.
 * Sampling of group subsets implemented also for grouping, not only features.
 
@@ -195,10 +200,10 @@ as requested from [data.table developers](https://github.com/NorskRegnesentral/s
   to numerical ones. For more information see our paper https://doi.org/10.1007/978-3-030-57321-8_7
 * Added support to explain models which take as input categorical features for model classes like xgboost
   which originally takes only numeric input. On the user side, an additional call to the new *make_dummies*
-  function is required. See the vignette for details. 
-* Slight change in the user procedure for explaining predictions from custom models. This now requires 
-only a single function *predict_model*. 
-* Introduced a thorough system for extracting and checking the feature information in the model and the data 
+  function is required. See the vignette for details.
+* Slight change in the user procedure for explaining predictions from custom models. This now requires
+only a single function *predict_model*.
+* Introduced a thorough system for extracting and checking the feature information in the model and the data
   passed to *shapr* and *explain*. The features in the data are checked for consistency with what can be extracted
   from the model object. If the model object is missing some of the necessary information, the info from the data
   is used instead. The system checks feature labels, classes, and any factor levels.
@@ -222,18 +227,18 @@ only a single function *predict_model*.
 * Removed several package dependencies
 * Moved automatic check and pkgdown site build from Circle CI to GitHub actions
 * Some minor efficiency fixes
-* Changed stopping threshold from 12 to 13 features for none-sampling version of 
+* Changed stopping threshold from 12 to 13 features for none-sampling version of
   KernelSHAP for consistency with our recommendation
 * Changed package title (shortened)
 * Minor fixes to fulfill CRAN policy
 * Improved documentation
 * Revised internal/external and exported/non-exported functions, leading to far
-  fewer external functions and a cleaner manual. 
+  fewer external functions and a cleaner manual.
 
 # shapr 0.1.1
 
 * Journal of Open Source Software release
-* Improved installation instructions and community guidelines in README 
+* Improved installation instructions and community guidelines in README
 * Improved documentation
 * Some minor bugfixes
 

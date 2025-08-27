@@ -12,8 +12,12 @@
 on:
   push:
     branches: [main, master]
+    paths-ignore:
+      - 'python/**'
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - 'python/**'
   release:
     types: [published]
   workflow_dispatch:
@@ -44,9 +48,10 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
-      - name: Copy shaprpy readme to folder for automatic deployment
+      - name: Copy shaprpy readme and changelog to folder for automatic deployment
         run: |
           file.copy("python/README.md", ".github/shaprpy.md")
+          file.copy("python/CHANGELOG.md", ".github/py_changelog.md")
         shell: Rscript {0}
 
       - name: Build site

@@ -1,0 +1,100 @@
+# GitHub Actions workflow for Python testing
+# Tests the shaprpy package (requires R backend for shapr package)
+
+name: Python Tests
+
+on:
+  push:
+    branches: [main, master, cranversion, devel]
+  pull_request:
+    branches: [main, master, cranversion, devel]
+
+jobs:
+  test-python:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+
+    name: Python ${{ matrix.python-version }}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      TORCH_INSTALL: 1
+      # Reproducibility settings
+      PYTHONHASHSEED: 0
+      OMP_NUM_THREADS: 1
+      OPENBLAS_NUM_THREADS: 1
+      MKL_NUM_THREADS: 1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache R packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-r-release-shapr-${{ hashFiles('DESCRIPTION') }}
+          restore-keys: |
+            ${{ runner.os }}-r-release-shapr-
+
+      - name: Cache Python packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('python/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev
+
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          dependencies: '"hard"'  # Only Depends/Imports, skip Suggests
+          extra-packages: any::remotes
+
+      - name: Install R shapr package
+        run: |
+          remotes::install_local(".", dependencies = FALSE, build_vignettes = FALSE)
+        shell: Rscript {0}
+
+      - name: Install Python shaprpy package for testing
+        run: |
+          python -m pip install --upgrade pip
+          cd python
+          pip install -e ".[test]"
+
+      - name: Verify installation
+        run: |
+          cd python
+          python -c "
+          import rpy2.robjects as ro
+          ro.r('library(shapr)')
+          print('✓ R shapr package loaded')
+          import shaprpy
+          print('✓ Python shaprpy package loaded')
+          "
+
+      - name: Run all Python tests
+        run: |
+          cd python
+          python -m pytest tests/ -v --tb=short

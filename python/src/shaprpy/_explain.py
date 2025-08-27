@@ -27,11 +27,11 @@ def explain(
     iterative: bool | None = None,
     max_n_coalitions: int | None = None,
     group: dict | None = None,
-    n_MC_samples: int = 1e3,
+    n_MC_samples: int = 1000,
     seed: int | None = None,
     verbose: str | list[str] | None = "basic",
-    predict_model: Callable = None,
-    get_model_specs: Callable = None,
+    predict_model: Callable | None = None,
+    get_model_specs: Callable | None = None,
     asymmetric: bool = False,
     causal_ordering: dict | None = None,
     confounding: bool | None = None,
@@ -58,7 +58,7 @@ def explain(
       needed to properly estimate the conditional expectations in the Shapley formula.
     approach: str or list[str]
       The method(s) to estimate the conditional expectation. All elements should,
-      either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"`, `"timeseries"`, `"independence"`, 
+      either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"`, `"timeseries"`, `"independence"`,
       `"regression_separate"`, or `"regression_surrogate"`.
     phi0: float
       The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
@@ -78,19 +78,19 @@ def explain(
     n_MC_samples: int, optional
       Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation.
     seed: int or None, optional
-      Specifies the seed before any randomness based code is being run. 
+      Specifies the seed before any randomness based code is being run.
       If `None` (default) the seed will be inherited from the calling environment.
     verbose: str or list[str] or None, optional
       Specifies the verbosity (printout detail level) through one or more of the strings `"basic"`, `"progress"`,
       `"convergence"`, `"shapley"`  and `"vS_details"`. `None` means no printout.
     predict_model: Callable, optional
-      The prediction function used when `model` is not natively supported. The function must have two arguments, `model` and `newdata` 
+      The prediction function used when `model` is not natively supported. The function must have two arguments, `model` and `newdata`
       which specify, respectively, the model and a pandas.DataFrame to compute predictions for. The function must give the prediction as a numpy.Array.
     get_model_specs: Callable, optional
-      An optional function for checking model/data consistency when `model` is not natively supported. The function takes `model` as argument 
+      An optional function for checking model/data consistency when `model` is not natively supported. The function takes `model` as argument
       and provides a `dict` with 3 elements: `labels`, `classes`, and `factor_levels`.
     asymmetric: bool, optional
-      If `False` (default), `explain` computes regular symmetric Shapley values. If `True`, then `explain` computes asymmetric Shapley values 
+      If `False` (default), `explain` computes regular symmetric Shapley values. If `True`, then `explain` computes asymmetric Shapley values
       based on the (partial) causal ordering given by `causal_ordering`.
     causal_ordering: dict or None, optional
       An unnamed list of vectors specifying the components of the partial causal ordering that the coalitions must respect.
@@ -157,7 +157,7 @@ def explain(
       extra_computation_args = ro.ListVector({})
     else:
       extra_computation_args = ListVector(extra_computation_args)
-      
+
     model_class = f"{type(model).__module__}.{type(model).__name__}"
 
     # Sets up and organizes input parameters
@@ -170,8 +170,8 @@ def explain(
     if isinstance(verbose, str):
       verbose = [verbose]
     if isinstance(verbose, list):
-      verbose = StrVector(verbose) 
-    else: 
+      verbose = StrVector(verbose)
+    else:
       verbose = maybe_null(verbose)
 
 
@@ -187,15 +187,15 @@ def explain(
       feature_specs = rfeature_specs,
       verbose = verbose,
       iterative = maybe_null(iterative),
-      iterative_args = iterative_args, 
+      iterative_args = iterative_args,
       asymmetric = asymmetric,
-      causal_ordering = r_causal_ordering, 
-      confounding = maybe_null(confounding), 
-      output_args = output_args, 
-      extra_computation_args = extra_computation_args, 
+      causal_ordering = r_causal_ordering,
+      confounding = maybe_null(confounding),
+      output_args = output_args,
+      extra_computation_args = extra_computation_args,
       init_time = init_time,
       is_python = True,
-      model_class = model_class
+      model_class = model_class,
       **kwargs
     )
 
@@ -205,10 +205,10 @@ def explain(
     rinternal.rx2['timing_list'].rx2['test_prediction'] = base.Sys_time()
 
     rinternal = additional_regression_setup(
-      rinternal, 
-      model, 
-      predict_model, 
-      x_train, 
+      rinternal,
+      model,
+      predict_model,
+      x_train,
       x_explain)
 
     # Not called for approach %in% c("regression_surrogate","vaeac")
@@ -286,8 +286,8 @@ def explain(
     pred_explain = recurse_r_tree(routput.rx2('pred_explain'))
     MSEv = recurse_r_tree(routput.rx2('MSEv'))
     iterative_results = recurse_r_tree(routput.rx2('iterative_results'))
-    saving_path = recurse_r_tree(routput.rx2('saving_path')) 
-    internal = recurse_r_tree(routput.rx2('internal')) 
+    saving_path = recurse_r_tree(routput.rx2('saving_path'))
+    internal = recurse_r_tree(routput.rx2('internal'))
     timing = recurse_r_tree(routput.rx2('timing'))
 
     return {
@@ -303,25 +303,25 @@ def explain(
 
 
 def compute_vS(rinternal, model, predict_model):
-  
+
   iter = len(rinternal.rx2('iter_list'))
 
   S_batch = rinternal.rx2('iter_list')[iter-1].rx2('S_batch')
-  
+
   # verbose
   shapr.cli_compute_vS(rinternal)
-  
-  stats.rnorm(1) # Perform a single sample to forward the RNG state one step. This is done to ensurie consistency with 
+
+  stats.rnorm(1) # Perform a single sample to forward the RNG state one step. This is done to ensurie consistency with
                 # future.apply::future_lapply in R which does this to to guarantee consistency for parallellization.
                 # See ?future.apply::future_lapply for details
 
   vS_list = ro.ListVector({})
   for i, S in enumerate(S_batch):
     vS_list.rx2[i+1] = batch_compute_vS(S=S, rinternal=rinternal, model=model, predict_model=predict_model)
-    
+
   #### Adds v_S output above to any vS_list already computed ####
   vS_list = shapr.append_vS_list(vS_list,rinternal)
-    
+
   return vS_list
 
 
@@ -341,11 +341,11 @@ def batch_compute_vS(S, rinternal, model, predict_model):
 def batch_prepare_vS_MC_old(S, rinternal, model, predict_model):
   keep_samp_for_vS = rinternal.rx2('parameters').rx2('keep_samp_for_vS')[0]
   feature_names = list(rinternal.rx2('parameters').rx2('feature_names'))
-  
+
   dt = shapr.batch_prepare_vS_MC_auxiliary(S=S, internal=rinternal)
-  
+
   dt = compute_preds(dt=dt, feature_names=feature_names, predict_model=predict_model, model=model)
-  
+
   dt_vS = shapr.compute_MCint(dt)
 
   if keep_samp_for_vS:
@@ -399,7 +399,7 @@ def batch_prepare_vS_MC(S, rinternal, model, predict_model):
     return ro.ListVector({'dt_vS': dt_vS, 'dt_samp_for_vS': dt})
   else:
     return dt_vS
-  
+
 def compute_preds(
   dt,
   feature_names,
@@ -416,7 +416,7 @@ def compute_preds(
   # Predictions
   if type_ == "forecast":
     preds = predict_model(
-      model, 
+      model,
       r2py(dt).loc[:,:n_endo],
       r2py(dt).loc[:,n_endo:],
       horizon,
@@ -428,7 +428,7 @@ def compute_preds(
 
   else:
     preds = predict_model(
-      model, 
+      model,
       r2py(dt).loc[:,feature_names]
       )
 
@@ -544,7 +544,7 @@ def prebuilt_predict_model(model):
   try:
     from sklearn.base import is_classifier, is_regressor
     if is_classifier(model): return lambda m, x: m.predict_proba(x)[:,1]
-    if is_regressor(model): return lambda m, x: m.predict(x)
+    if is_regressor(model): return lambda m, x: m.predict(x).flatten()
   except:
     pass
 
@@ -590,7 +590,7 @@ def additional_regression_setup(rinternal, model, predict_model, x_train, x_expl
   regression = rinternal.rx2("parameters").rx2("regression")[0]
   if regression:
     rinternal = regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain)
-  
+
   return rinternal
 
 

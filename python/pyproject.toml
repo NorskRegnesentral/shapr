@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shaprpy"
+version = "0.3.0"
+description = "Python wrapper for the R package shapr (via rpy2)"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Martin Jullum" },
+  { name = "Lars Henry Berge Olsen" },
+  { name = "Didrik Nielsen" }
+]
+requires-python = ">3.10"
+keywords = ["explainable-ai", "shapley-values", "machine-learning", "model-interpretability"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX :: Linux",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dependencies = [
+  "rpy2>=3.5.1",
+  "numpy>=1.22.3",
+  "pandas>=1.4.2",
+  "scikit-learn>=1.0.0",
+  "tabulate>=0.8.10",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=7.0.0",
+  "syrupy>=4.0.0",
+  "xgboost>=1.5.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/NorskRegnesentral/shapr"
+Documentation = "https://norskregnesentral.github.io/shapr/shaprpy.html"
+Issues = "https://github.com/NorskRegnesentral/shapr/issues"
+Changelog = "https://github.com/NorskRegnesentral/shapr/blob/main/python/CHANGELOG.md"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["shaprpy*" ]
+
+[tool.setuptools.dynamic]
+# (none needed now)
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+  "--strict-markers",
+  "--strict-config",
+  "-ra",
+]
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "snapshot: marks tests as snapshot/output tests",
+]

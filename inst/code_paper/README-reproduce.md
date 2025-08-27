@@ -40,11 +40,18 @@ It also creates the `R_paper_figures` and `R_html_figures` folders.
 
 To run the R code and generate the HTML file with the code and output in the actual paper, run
 ```
+Rscript R_prep_data_and_model.R
+```
+This will prepare the data and model files used by both the R and Python examples, and save them in the `data_and_models` folder.
+It also creates the `R_paper_figures` and `R_html_figures` folders.
+
+To run the R code and generate the HTML file with the code and output in the actual paper, run
+```
 Rscript -e "knitr::spin('code_R.R')"
 ```
 This will generate the file `code_R.html` containing the code from `code_R.R` accompanied with its output, as well as the figures in the `R_paper_figures` and `R_html_figures` folders.
 
-**Note:** 
+**Note:**
 The html file shows the code used in the paper together with its output. Additional code used to mildly customize and save the figures is provided in the `code_R.R` file and executed by `knitr::spin()`, but not shown in the html-file.
 
 ## Python
