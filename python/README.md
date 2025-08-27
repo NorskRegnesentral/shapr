@@ -21,7 +21,7 @@ using the [`rpy2`](https://rpy2.github.io/) Python library to access R from with
 
 ## Changelog
 
-For a list of changes and updates to the `shaprpy` package, see the [CHANGELOG](CHANGELOG.md).
+For a list of changes and updates to the `shaprpy` package, see the [shaprpy CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
 ---
 

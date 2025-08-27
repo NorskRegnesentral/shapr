@@ -5,7 +5,7 @@ name: Python Tests
 
 on:
   push:
-    branches: [main, master, cranversion, devel, restructure-py]
+    branches: [main, master, cranversion, devel]
   pull_request:
     branches: [main, master, cranversion, devel]
 

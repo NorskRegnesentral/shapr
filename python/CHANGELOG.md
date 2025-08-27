@@ -1,6 +1,8 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to the Python `shaprpy` library will be documented in this file.
+Changes to the underlying `shapr` R package is documented in
+[shapr CHANGELOG](https://norskregnesentral.github.io/shapr/news/index.html)
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
