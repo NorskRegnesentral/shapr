@@ -1,5 +1,7 @@
 # shapr 1.0.5
 
+**Note:** For changes to the Python wrapper `shaprpy`, see [python/CHANGELOG.md](python/CHANGELOG.md).
+
 * Added `get_results()` function for extracting key components from a `shapr` object, including Shapley values, 
 model parameters, and iterative computation details ([#460](https://github.com/NorskRegnesentral/shapr/pull/460)).
 * Added `summary.shapr()` method, which uses `get_results()` and internal `format_xyz()` functions to provide a concise

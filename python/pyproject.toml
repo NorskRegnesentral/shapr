@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "shaprpy"
-version = "0.2.1"
+version = "0.3.0"
 description = "Python wrapper for the R package shapr (via rpy2)"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -46,6 +46,7 @@ test = [
 Homepage = "https://github.com/NorskRegnesentral/shapr"
 Documentation = "https://norskregnesentral.github.io/shapr/shaprpy.html"
 Issues = "https://github.com/NorskRegnesentral/shapr/issues"
+Changelog = "https://github.com/NorskRegnesentral/shapr/blob/main/python/CHANGELOG.md"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
