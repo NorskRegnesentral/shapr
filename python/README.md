@@ -19,6 +19,10 @@ using the [`rpy2`](https://rpy2.github.io/) Python library to access R from with
 >
 > **Requirement:** Python 3.10 or later is required to use `shaprpy`.
 
+## Changelog
+
+For a list of changes and updates to the `shaprpy` package, see the [CHANGELOG](CHANGELOG.md).
+
 ---
 
 ## Installation
