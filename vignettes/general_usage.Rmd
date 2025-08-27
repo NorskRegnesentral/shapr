@@ -55,8 +55,7 @@ documentation and see examples with `?function_name`.
 | `plot_MSEv_eval_crit` | Plots the $\operatorname{MSE}_{v}$ criterion to evaluate the performance of the approach. |
 | `print.shapr`      | Prints the Shapley values (default), their standard deviation or estimates of the MSE.    |
 | `get_results`      | Extracts and returns a summary of the Shapley value computation.                          |
-| `summary.shapr`    | Prints a formatted summary of the Shapley value computation,
-                       and returns the output of `get_results()`                                                 |
+| `summary.shapr`    | Prints a formatted summary of the Shapley value computation, and returns the output of `get_results()` |
 : Main functions in the `shapr` package.
 
 The `shapr` package implements Kernel SHAP estimation of dependence-aware Shapley values with
