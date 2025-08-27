@@ -7,7 +7,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -38,7 +38,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -69,7 +69,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -160,7 +160,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Warning:
       ! Using empirical.type = 'independence' for approach = 'empirical' is deprecated.
@@ -180,16 +180,16 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
-      i `empirical.eta` force set to 1 for `empirical.type` = 'independence'.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
+      i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -266,7 +266,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -297,7 +297,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -328,7 +328,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -359,7 +359,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -390,7 +390,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -421,7 +421,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -439,9 +439,9 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1  42.4        -1.97               12.6          -4.72       -6.38
-      2:          2  42.4        -2.41              -14.4          14.43      -12.47
-      3:          3  42.4         2.76              -14.2           3.22      -10.10
+      1:          1  42.4        -1.65               9.74          -3.29        -5.3
+      2:          2  42.4        -3.29             -19.36          29.93       -22.1
+      3:          3  42.4         4.80             -16.84           6.42       -12.7
 
 # output_lm_categorical_categorical
 
@@ -452,7 +452,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -483,7 +483,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -514,7 +514,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_groups = 16`, and is therefore set to `2^n_groups = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 16`, and is therefore set to `2^n_groups = 16`.
       
       -- Explanation overview --
       
@@ -549,7 +549,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -580,7 +580,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -611,7 +611,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -642,7 +642,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -673,7 +673,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -704,7 +704,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -720,11 +720,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R   Wind    Temp    Day Month_factor
-              <int> <num>   <num>  <num>   <num>  <num>        <num>
-      1:          1  42.4   -5.05   6.86 15.7301 -0.208        -6.75
-      2:          2  42.4    2.60  -4.64 -2.2641 -3.129        -7.95
-      3:          3  42.4    5.14 -17.88 -0.0137  0.585         1.57
+         explain_id  none Solar.R   Wind  Temp    Day Month_factor
+              <int> <num>   <num>  <num> <num>  <num>        <num>
+      1:          1  42.4   -3.47   9.39 15.35 -2.880        -7.80
+      2:          2  42.4    3.06  -3.11 -7.23 -0.382        -7.72
+      3:          3  42.4    6.00 -14.49 -5.74  1.184         2.45
 
 # output_lm_mixed_comb
 
@@ -735,7 +735,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -766,7 +766,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -798,8 +798,8 @@
       
       -- Starting `shapr::explain()` -------------------------------------------------
       i You passed a model to `shapr::explain()` which is not natively supported, and did not supply a `get_model_specs` function to `shapr::explain()`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -830,7 +830,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
       
       -- Explanation overview --
       
@@ -861,7 +861,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -892,7 +892,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       

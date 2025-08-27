@@ -8,7 +8,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `check_and_set_sampling_info()`:
       ! `paired_shap_sampling` cannot be FALSE when `semi_deterministic_sampling` is TRUE.
@@ -24,12 +24,12 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i Feature names extracted from the model contains `NA`.
-        Consistency checks between model and data is therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than or `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+      i Feature names extracted from the model contain `NA`.
+        Consistency checks between model and data are therefore disabled.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
     Condition
       Error in `check_and_set_sampling_info()`:
-      ! `semi_deterministic_sampling` is not suppored for explain_forecast().
+      ! `semi_deterministic_sampling` is not supported for explain_forecast().
 
 # semi_deterministic_sampling: not symmetric sampling
 
@@ -42,7 +42,7 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than or number of coalitions respecting the causal ordering 8, and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
     Condition
       Error in `set_extra_comp_params()`:
       ! Set `paired_shap_sampling = FALSE` to compute asymmetric Shapley values. Asymmetric Shapley values do not support paired sampling as the paired coalitions will not necessarily respect the causal ordering.

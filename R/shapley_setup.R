@@ -136,12 +136,12 @@ shapley_setup <- function(internal) {
 #' Contains the approach to be used for estimation of each coalition size. Same as `approach` in [explain()].
 #' @param coal_feature_list List.
 #' A list mapping each coalition to the features it contains.
-#' @param dt_coal_samp_info data.table. The data.table contains information about the which coalitions should be
+#' @param dt_coal_samp_info data.table. The data.table contains information about which coalitions should be
 #' deterministically included and which can be sampled, in addition to the sampling probabilities of each available
 #' coalition size, and the weight given to the sampled and deterministically included coalitions (excluding empty and
 #' grand coalitions which are given the `weight_zero_m` weight).
 #' @param dt_valid_causal_coalitions data.table. Only applicable for asymmetric Shapley
-#' values explanations, and is `NULL` for symmetric Shapley values.
+#' value explanations, and is `NULL` for symmetric Shapley values.
 #' The data.table contains information about the coalitions that respects the causal ordering.
 #' @inheritParams explain
 #' @inheritParams get_extra_comp_args_default
@@ -554,9 +554,9 @@ coal_feature_mapper <- function(x, coal_feature_list) {
 #'
 #' @param X data.table.
 #' Output from [create_coalition_table()].
-#' @param normalize_W_weights Logical. Whether to normalize the weights for the coalitions to sum to 1 for
+#' @param normalize_W_weights Logical. Whether to normalize the coalition weights to sum to 1 for
 #' increased numerical stability before solving the WLS (weighted least squares). Applies to all coalitions
-#' except coalition `1` and `2^m`.
+#' except coalitions `1` and `2^m`.
 #'
 #' @return Numeric matrix. See [weight_matrix_cpp()] for more information.
 #' @keywords internal

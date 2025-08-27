@@ -103,7 +103,7 @@ setup_approach(internal, ...)
 \item{internal}{List.
 Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 
-\item{...}{Arguments passed to specific classes. See below}
+\item{...}{Arguments passed to specific classes. See below.}
 
 \item{categorical.joint_prob_dt}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
@@ -111,9 +111,9 @@ values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
 
 \item{categorical.epsilon}{Numeric value. (Optional)
-If \code{categorical.joint_probability_dt} is not supplied, probabilities/frequencies are
+If \code{categorical.joint_prob_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
-then epsilon is used as the proportion of times that these observations occurs in the training data.
+then epsilon is used as the proportion of times that these observations occur in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
 
 \item{ctree.mincriterion}{Numeric scalar or vector.
@@ -123,11 +123,11 @@ If it is a vector, this indicates which value to use when conditioning on variou
 The default value is 0.95.}
 
 \item{ctree.minsplit}{Numeric scalar.
-Determines minimum value that the sum of the left and right daughter nodes required for a split.
+Determines the minimum value that the sum of the left and right daughter nodes must reach for a split.
 The default value is 20.}
 
 \item{ctree.minbucket}{Numeric scalar.
-Determines the minimum sum of weights in a terminal node required for a split
+Determines the minimum sum of weights in a terminal node required for a split.
 The default value is 7.}
 
 \item{ctree.sample}{Boolean.
@@ -141,8 +141,8 @@ This means that there will always be sampling in the leaf unless
 \code{sample = FALSE} \emph{and} the number of obs in the node is less than \code{n_MC_samples}.}
 
 \item{empirical.type}{Character. (default = \code{"fixed_sigma"})
-Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
-\code{"independence"} is deprecated. Use \code{approach = "independence"} instead.
+Must be one of \code{"independence"}, \code{"fixed_sigma"}, \code{"AICc_each_k"}, or \code{"AICc_full"}.
+Note: \code{"empirical.type = independence"} is deprecated; use \code{approach = "independence"} instead.
 \code{"fixed_sigma"} uses a fixed bandwidth (set through \code{empirical.fixed_sigma}) in the kernel density estimation.
 \code{"AICc_each_k"} and \code{"AICc_full"} optimize the bandwidth using the AICc criterion, with respectively
 one bandwidth per coalition size and one bandwidth for all coalition sizes.}
@@ -151,7 +151,7 @@ one bandwidth per coalition size and one bandwidth for all coalition sizes.}
 Needs to be \verb{0 < eta <= 1}.
 The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
-If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
+For example, if \code{eta = .8}, we choose the \code{K} samples with the largest weights so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of
 \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.}
@@ -164,17 +164,17 @@ Only used when \code{empirical.type = "fixed_sigma"}}
 \item{empirical.n_samples_aicc}{Positive integer.
 Number of samples to consider in AICc optimization.
 The default value is 1000.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+Only used when \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
 \item{empirical.eval_max_aicc}{Positive integer.
 Maximum number of iterations when optimizing the AICc.
 The default value is 20.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+Only used when \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
 \item{empirical.start_aicc}{Numeric.
 Start value of the \code{sigma} parameter when optimizing the AICc.
 The default value is 0.1.
-Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+Only used when \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
 \item{empirical.cov_mat}{Numeric matrix. (Optional)
 The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
@@ -270,10 +270,10 @@ This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the d
 \code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
 }
 \value{
-Updated internal object with the approach set up
+Updated internal object with the approach set up.
 }
 \description{
-The different choices of \code{approach} take different (optional) parameters,
+Different choices of \code{approach} take different (optional) parameters,
 which are forwarded from \code{\link[=explain]{explain()}}.
 See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}
 for more information about the different approaches.

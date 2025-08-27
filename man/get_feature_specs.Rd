@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_feature_specs.R
 \name{get_feature_specs}
 \alias{get_feature_specs}
-\title{Gets the feature specifications form the model}
+\title{Get feature specifications from the model}
 \usage{
 get_feature_specs(get_model_specs, model)
 }
@@ -10,24 +10,24 @@ get_feature_specs(get_model_specs, model)
 \item{get_model_specs}{Function.
 An optional function for checking model/data consistency when \code{model} is not natively supported.
 (Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported models.)
-The function takes \code{model} as argument and provides a list with 3 elements:
+The function takes \code{model} as an argument and provides a list with 3 elements:
 \describe{
 \item{labels}{Character vector with the names of each feature.}
-\item{classes}{Character vector with the classes of each features.}
+\item{classes}{Character vector with the class of each feature.}
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }
-If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
+If \code{NULL} (the default), internal functions are used for natively supported model classes, and checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{model}{Model object.
-Specifies the model whose predictions we want to explain.
+The model whose predictions you want to explain.
 Run \code{\link[=get_supported_models]{get_supported_models()}}
 for a table of which models \code{explain} supports natively. Unsupported models
 can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
 see details for more information.}
 }
 \description{
-Gets the feature specifications form the model
+Get feature specifications from the model
 }
 \keyword{internal}

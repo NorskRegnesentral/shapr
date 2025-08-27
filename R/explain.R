@@ -1,7 +1,7 @@
 #' Explain the output of machine learning models with dependence-aware (conditional/observational) Shapley values
 #'
-#' @description Computes dependence-aware Shapley values for observations in `x_explain` from the specified
-#' `model` by using the method specified in `approach` to estimate the conditional expectation.
+#' @description Compute dependence-aware Shapley values for observations in `x_explain` from the specified
+#' `model` using the method specified in `approach` to estimate the conditional expectation.
 #' See \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
 #' for a thorough introduction to dependence-aware prediction explanation with Shapley values.
 #' For an overview of the methodology and capabilities of the package, see the software paper
@@ -9,66 +9,66 @@
 #' [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/).
 #'
 #' @param x_train Matrix or data.frame/data.table.
-#' Contains the data used to estimate the (conditional) distributions for the features
+#' Data used to estimate the (conditional) feature distributions
 #' needed to properly estimate the conditional expectations in the Shapley formula.
 #'
 #' @param x_explain Matrix or data.frame/data.table.
-#' Contains the the features, whose predictions ought to be explained.
+#' Features for which predictions should be explained.
 #'
 #' @param model Model object.
-#' Specifies the model whose predictions we want to explain.
+#' The model whose predictions you want to explain.
 #' Run [get_supported_models()]
 #' for a table of which models `explain` supports natively. Unsupported models
 #' can still be explained by passing `predict_model` and (optionally) `get_model_specs`,
 #' see details for more information.
 #'
 #' @param approach Character vector of length `1` or one less than the number of features.
-#' All elements should, either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
+#' All elements should either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
 #' `"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, or `"regression_surrogate"`.
-#' The two regression approaches can not be combined with any other approach.
+#' The two regression approaches cannot be combined with any other approach.
 #' See details for more information.
 #'
 #' @param phi0 Numeric.
-#' The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
+#' The prediction value for unseen data, i.e., an estimate of the expected prediction without conditioning on any
 #' features.
-#' Typically we set this value equal to the mean of the response variable in our training data, but other choices
-#' such as the mean of the predictions in the training data are also reasonable.
+#' Typically set this equal to the mean of the response in the training data, but alternatives such as the mean
+#' of the training predictions are also reasonable.
 #'
 #' @param max_n_coalitions Integer.
-#' The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+#' Upper limit on the number of unique feature/group coalitions to use in the iterative procedure
 #' (if `iterative = TRUE`).
-#' If `iterative = FALSE` it represents the number of feature/group coalitions to use directly.
+#' If `iterative = FALSE`, it represents the number of feature/group coalitions to use directly.
 #' The quantity refers to the number of unique feature coalitions if `group = NULL`,
 #' and group coalitions if `group != NULL`.
-#' `max_n_coalitions = NULL` corresponds to `max_n_coalitions=2^n_features`.
+#' `max_n_coalitions = NULL` corresponds to `2^n_features`.
 #'
 #' @param group List.
-#' If `NULL` regular feature wise Shapley values are computed.
-#' If provided, group wise Shapley values are computed.
+#' If `NULL`, regular feature-wise Shapley values are computed.
+#' If provided, group-wise Shapley values are computed.
 #' `group` then has length equal to the number of groups.
-#' The list element contains character vectors with the features included in each of the different groups.
+#' Each list element contains the character vectors with the features included in the corresponding group.
 #' See
 #' \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}
-#' for more information on group wise Shapley values.
+#' for more information on group-wise Shapley values.
 #'
 #' @param n_MC_samples Positive integer.
 #' For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
 #' of every conditional expectation.
 #' For `approach="ctree"`, `n_MC_samples` corresponds to the number of samples
-#' from the leaf node (see an exception related to the `ctree.sample` argument [setup_approach.ctree()]).
-#' For `approach="empirical"`, `n_MC_samples` is  the \eqn{K} parameter in equations (14-15) of
+#' from the leaf node (see an exception related to the `ctree.sample` argument in [setup_approach.ctree()]).
+#' For `approach="empirical"`, `n_MC_samples` is the \eqn{K} parameter in equations (14-15) of
 #' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 #' `empirical.eta` argument [setup_approach.empirical()].
 #'
 #' @param seed Positive integer.
-#' Specifies the seed before any randomness based code is being run.
-#' If `NULL` (default) no seed is set in the calling environment.
+#' Specifies the seed before any code involving randomness is run.
+#' If `NULL` (default), no seed is set in the calling environment.
 #'
 #' @param predict_model Function.
-#' The prediction function used when `model` is not natively supported.
+#' Prediction function to use when `model` is not natively supported.
 #' (Run [get_supported_models()] for a list of natively supported models.)
-#' The function must have two arguments, `model` and `newdata` which specify, respectively, the model
-#' and a data.frame/data.table to compute predictions for.
+#' The function must have two arguments, `model` and `newdata`, which specify the model
+#' and a data.frame/data.table to compute predictions for, respectively.
 #' The function must give the prediction as a numeric vector.
 #' `NULL` (the default) uses functions specified internally.
 #' Can also be used to override the default function for natively supported model classes.
@@ -76,43 +76,37 @@
 #' @param get_model_specs Function.
 #' An optional function for checking model/data consistency when `model` is not natively supported.
 #' (Run [get_supported_models()] for a list of natively supported models.)
-#' The function takes `model` as argument and provides a list with 3 elements:
+#' The function takes `model` as an argument and provides a list with 3 elements:
 #' \describe{
 #'   \item{labels}{Character vector with the names of each feature.}
-#'   \item{classes}{Character vector with the classes of each features.}
+#'   \item{classes}{Character vector with the class of each feature.}
 #'   \item{factor_levels}{Character vector with the levels for any categorical features.}
 #' }
-#' If `NULL` (the default) internal functions are used for natively supported model classes, and the checking is
+#' If `NULL` (the default), internal functions are used for natively supported model classes, and checking is
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
 #' @param verbose String vector or NULL.
-#' Specifies the verbosity (printout detail level) through one or more of strings `"basic"`, `"progress"`,
+#' Controls verbosity (printout detail level) via one or more of `"basic"`, `"progress"`,
 #'  `"convergence"`, `"shapley"` and `"vS_details"`.
-#' `"basic"` (default) displays basic information about the computation which is being performed,
-#' in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-#' `"progress` displays information about where in the calculation process the function currently is.
-#' `"convergence"` displays information on how close to convergence the Shapley value estimates are
-#' (only when `iterative = TRUE`) .
-#' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `iterative = TRUE`)
+#' `"basic"` (default) displays basic information about the computation and messages about parameters/checks.
+#' `"progress"` displays where in the calculation process the function currently is.
+#' `"convergence"` displays how close the Shapley value estimates are to convergence
+#' (only when `iterative = TRUE`).
+#' `"shapley"` displays intermediate Shapley value estimates and standard deviations (only when `iterative = TRUE`),
 #' and the final estimates.
-#' `"vS_details"` displays information about the v_S estimates.
-#' This is most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac"`).
+#' `"vS_details"` displays information about the v(S) estimates,
+#' most relevant for `approach %in% c("regression_separate", "regression_surrogate", "vaeac")`.
 #' `NULL` means no printout.
-#' Note that any combination of four strings can be used.
-#' E.g. `verbose = c("basic", "vS_details")` will display basic information + details about the v(S)-estimation process.
+#' Any combination can be used, e.g., `verbose = c("basic", "vS_details")`.
 #'
-#' @param iterative Logical or NULL
-#' If `NULL` (default), the argument is set to `TRUE` if there are more than 5 features/groups, and `FALSE` otherwise.
-#' If eventually `TRUE`, the Shapley values are estimated iteratively in an iterative manner.
-#' This provides sufficiently accurate Shapley value estimates faster.
-#' First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
-#' values.
-#' A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
-#' If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
-#' coalitions.
-#' The process is repeated until the variances are below the threshold.
-#' Specifics related to the iterative process and convergence criterion are set through `iterative_args`.
+#' @param iterative Logical or NULL.
+#' If `NULL` (default), set to `TRUE` if there are more than 5 features/groups, and `FALSE` otherwise.
+#' If `TRUE`, Shapley values are estimated iteratively for faster, sufficiently accurate results.
+#' First an initial number of coalitions is sampled, then bootstrapping estimates the variance of the Shapley values.
+#' A convergence criterion determines if the variances are sufficiently small. If not, additional samples are added.
+#' The process repeats until the variances are below the threshold.
+#' Specifics for the iterative process and convergence criterion are set via `iterative_args`.
 #'
 #' @param iterative_args Named list.
 #' Specifies the arguments for the iterative procedure.
@@ -125,19 +119,19 @@
 #' See [get_extra_comp_args_default()] for description of the arguments and their default values.
 #'
 #' @param prev_shapr_object `shapr` object or string.
-#' If an object of class `shapr` is provided, or string with a path to where intermediate results are stored,
+#' If an object of class `shapr` is provided, or a string with a path to where intermediate results are stored,
 #' then the function will use the previous object to continue the computation.
 #' This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 #' want to continue the iterative estimation. See the
 #' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette} for examples.
 #'
 #' @param asymmetric Logical.
-#' Not applicable for (regular) non-causal or asymmetric explanations.
-#' If `FALSE` (default), `explain` computes regular symmetric Shapley values,
-#' If `TRUE`, then `explain` compute asymmetric Shapley values based on the (partial) causal ordering
-#' given by `causal_ordering`. That is, `explain` only uses the feature combinations/coalitions that
-#' respect the causal ordering when computing the asymmetric Shapley values. If `asymmetric` is `TRUE` and
-#' `confounding` is `NULL` (default), then `explain` computes asymmetric conditional Shapley values as specified in
+#' Not applicable for (regular) non-causal explanations.
+#' If `FALSE` (default), `explain` computes regular symmetric Shapley values.
+#' If `TRUE`, `explain` computes asymmetric Shapley values based on the (partial) causal ordering
+#' given by `causal_ordering`. That is, `explain` only uses feature coalitions that
+#' respect the causal ordering. If `asymmetric` is `TRUE` and
+#' `confounding` is `NULL` (default), `explain` computes asymmetric conditional Shapley values as specified in
 #' \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
 #' Frye et al. (2020)}. If `confounding` is provided, i.e., not `NULL`, then `explain` computes asymmetric causal
 #' Shapley values as specified in
@@ -156,19 +150,19 @@
 #' Shapley values, respectively. For feature-wise Shapley values and
 #' `causal_ordering = list(c(1, 2), c(3, 4))`, the interpretation is that features 1 and 2
 #' are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
-#' Note: All features/groups must be included in the `causal_ordering` without any duplicates.
+#' Note: All features/groups must be included in `causal_ordering` without duplicates.
 #'
 #' @param confounding Logical vector.
 #' Not applicable for (regular) non-causal or asymmetric explanations.
-#' `confounding` is a vector of logicals specifying whether confounding is assumed or not for each component in the
-#' `causal_ordering`. If `NULL` (default), then no assumption about the confounding structure is made and `explain`
-#' computes asymmetric/symmetric conditional Shapley values, depending on the value of `asymmetric`.
-#' If `confounding` is a single logical, i.e., `FALSE` or `TRUE`, then this assumption is set globally
-#' for all components in the causal ordering. Otherwise, `confounding` must be a vector of logicals of the same
+#' `confounding` is a logical vector specifying whether confounding is assumed for each component in the
+#' `causal_ordering`. If `NULL` (default), no assumption about the confounding structure is made and `explain`
+#' computes asymmetric/symmetric conditional Shapley values, depending on `asymmetric`.
+#' If `confounding` is a single logical (`FALSE` or `TRUE`), the assumption is set globally
+#' for all components in the causal ordering. Otherwise, `confounding` must have the same
 #' length as `causal_ordering`, indicating the confounding assumption for each component. When `confounding` is
-#' specified, then `explain` computes asymmetric/symmetric causal Shapley values, depending on the value of
-#' `asymmetric`. The `approach` cannot be `regression_separate` and `regression_surrogate` as the
-#' regression-based approaches are not applicable to the causal Shapley value methodology.
+#' specified, `explain` computes asymmetric/symmetric causal Shapley values, depending on `asymmetric`.
+#' The `approach` cannot be `regression_separate` or `regression_surrogate`, as the
+#' regression-based approaches are not applicable to the causal Shapley methodology.
 #'
 #' @param ... Further arguments passed to specific approaches, see below.
 #'
@@ -193,7 +187,7 @@
 #' \href{https://arxiv.org/pdf/2504.01842}{Jullum et al. (2025)}.
 #' Moreover,
 #'  \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}
-#' gives a general introduction to dependence-aware Shapley values, and the three approaches `"empirical"`,
+#' gives a general introduction to dependence-aware Shapley values and the approaches `"empirical"`,
 #' `"gaussian"`, `"copula"`, and also discusses `"independence"`.
 #' \href{https://martinjullum.com/publication/redelmeier-2020-explaining/redelmeier-2020-explaining.pdf}{
 #' Redelmeier et al. (2020)} introduces the approach `"ctree"`.
@@ -222,14 +216,14 @@
 #' Heskes et al. (2020)} as a way to explain the total effect of features
 #' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
-#' The package allows for parallelized computation with progress updates through the tightly connected
+#' The package allows parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages.
 #' See the examples below.
-#' For iterative estimation (`iterative=TRUE`), intermediate results may also be printed to the console
+#' For iterative estimation (`iterative=TRUE`), intermediate results may be printed to the console
 #' (according to the `verbose` argument).
 #' Moreover, the intermediate results are written to disk.
-#' This combined batch computing of the v(S) values, enables fast and accurate estimation of the Shapley values
-#' in a memory friendly manner.
+#' This combined batch computation of the v(S) values enables fast and accurate estimation of the Shapley values
+#' in a memory-friendly manner.
 #'
 #' @return Object of class `c("shapr", "list")`. Contains the following items:
 #' \describe{
@@ -238,17 +232,17 @@
 #'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`)}
 #'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 #'   in the coalition sampling part of the kernelSHAP procedure.
-#'   These are therefore by definition 0 when all coalitions is used.
-#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`}
+#'   These are, by definition, 0 when all coalitions are used.
+#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`.}
 #'   \item{`internal`}{List with the different parameters, data, functions and other output used internally.}
-#'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations}
+#'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations.}
 #'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
 #'   \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
 #'   }{MSEv evaluation section in the general usage vignette for details}.}
 #'   \item{`timing`}{List containing timing information for the different parts of the computation.
 #'   `summary` contains the time stamps for the start and end time in addition to the total execution time.
-#'   `overall_timing_secs` gives the time spent on the different parts of the explanation computation.
-#'   `main_computation_timing_secs` further decompose the main computation time into the different parts of the
+#'   `overall_timing_secs` gives the time spent on different parts of the explanation computation.
+#'   `main_computation_timing_secs` further decomposes the main computation time into different parts of the
 #'   computation for each iteration of the iterative estimation routine, if used.}
 #'   }
 #'
@@ -261,7 +255,7 @@
 #' x_var <- c("Solar.R", "Wind", "Temp", "Month")
 #' y_var <- "Ozone"
 #'
-#' # Split data into test- and training data
+#' # Split data into test and training data
 #' data_train <- head(airquality, -3)
 #' data_explain <- tail(airquality, 3)
 #'
@@ -342,7 +336,7 @@
 #' print(explain1) # The Shapley values
 #' print(explain1) # The Shapley values
 #'
-#' # The MSEv criterion (+sd). Smaller values indicates a better approach.
+#' # The MSEv criterion (+sd). Smaller values indicate a better approach.
 #' print(explain1, what = "MSEv")
 #' print(explain2, what = "MSEv")
 #' print(explain3, what = "MSEv")
@@ -401,8 +395,8 @@
 #' }
 #'
 #' # Iterative estimation
-#' # For illustration purposes only. By default not used for such small dimensions as here
-#' # Restricting the initial and maximum number of coalitions as well
+#' # For illustration only. By default not used for such small dimensions as here.
+#' # Restricting the initial and maximum number of coalitions as well.
 #'
 #' explain_iterative <- explain(
 #'   model = model,
@@ -415,19 +409,19 @@
 #'   max_n_coalitions = 12
 #' )
 #'
-#' # When not using all coalitions, we can also get the sd of the Shapley values,
-#' # reflecting the uncertainty in the coalition sampling part of the procedure
+#' # When not using all coalitions, we can also get the SD of the Shapley values,
+#' # reflecting uncertainty in the coalition sampling part of the procedure.
 #' print(explain_iterative, what = "shapley_sd")
 #'
 #' ## Summary
 #' # For iterative estimation, convergence info is also provided
 #' summary_iterative <- summary(explain_iterative)
+#' }
 #'
 #' \dontshow{
-#'   if (requireNamespace("future", quietly = TRUE)) {
-#'     # R CMD check: make sure any open connections are closed afterward
-#'     if (!inherits(future::plan(), "sequential")) future::plan("sequential")
-#'   }
+#' if (requireNamespace("future", quietly = TRUE)) {
+#'   # R CMD check: make sure any open connections are closed afterward
+#'   if (!inherits(future::plan(), "sequential")) future::plan("sequential")
 #' }
 #' }
 #' @export
@@ -502,8 +496,8 @@ explain <- function(model,
   feature_specs <- get_feature_specs(get_model_specs, model)
 
   # Sets up and organizes input parameters
-  # Checks the input parameters and their compatability
-  # Checks data/model compatability
+  # Checks the input parameters and their compatibility
+  # Checks data/model compatibility
   internal <- setup(
     x_train = x_train,
     x_explain = x_explain,
@@ -639,7 +633,7 @@ testing_cleanup <- function(output) {
   output$internal$iter_timing_list <- NULL
   output$internal$timing_list <- NULL
 
-  # Removing paths to non-reproducable vaeac model objects
+  # Removing paths to non-reproducible vaeac model objects
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters[c(
       "vaeac", "vaeac.sampler", "vaeac.model", "vaeac.activation_function", "vaeac.checkpoint"
@@ -648,7 +642,7 @@ testing_cleanup <- function(output) {
       NULL
   }
 
-  # Removing the the model object for regression surrogate models to avoid non-reproducibility
+  # Removing the model object for regression surrogate models to avoid non-reproducibility
   # in both fit-times and model object structure
   if ("regression_surrogate" %in% output$internal$parameters$approach) {
     output$internal$objects$regression.surrogate_model <- NULL

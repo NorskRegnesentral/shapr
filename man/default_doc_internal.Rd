@@ -41,7 +41,7 @@ predictions ought to be explained (test data).}
 \item{n_features}{Positive integer.
 The number of features.}
 
-\item{W_kernel}{Numeric matrix. Contains all nonscaled weights between training and test
+\item{W_kernel}{Numeric matrix. Contains all non-scaled weights between training and test
 observations for all coalitions. The dimension equals \verb{n_train x m}.}
 
 \item{S}{Integer matrix of dimension \verb{n_coalitions x m}, where \code{n_coalitions}

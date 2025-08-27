@@ -46,8 +46,8 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
 
   # Check if we have any categorical features (to then apply a hack for the method to work)
   if (length(non_numeric_features) > 0) {
-    # We have categorical features and we convert them to rather be integers starting
-    # from 1. I.e., a categorical feature which three levels `small`, `medium`, `large`
+    # We have categorical features and we convert them to integers starting
+    # from 1. i.e., a categorical feature with three levels `small`, `medium`, `large`
     # will be encoded as `1`, `2`, and `3`, respectively.
     # Apply this encoding to the training data and data to be explained
     x_train0[, (non_numeric_features) := lapply(.SD, function(x) {
@@ -72,7 +72,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   index_s <- rep(seq_len(nrow(S0)), each = min(n_MC_samples, n_train))
   w0 <- 1 / min(n_MC_samples, n_train) # The inverse of the number of samples being used in practice
 
-  # Creat a list to store the MC samples, where ith entry is associated with ith explicand
+  # Create a list to store the MC samples, where the i-th entry is associated with the i-th explicand
   dt_l <- list()
 
   # Iterate over the explicands
@@ -107,7 +107,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
 
   # Check if we have any categorical features
   if (length(non_numeric_features) > 0) {
-    # We have categorical features and we have go from the integer encoding applied
+    # We have categorical features and we then go from the integer encoding applied
     # above back to the original categories/levels.
 
     # Iterate over the categorical features

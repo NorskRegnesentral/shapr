@@ -34,7 +34,7 @@ to factors. If \code{FALSE}, then the binary masks are numerics.}
 
 \item{augment_include_grand}{Logical (default is \code{FALSE}). If \code{TRUE}, then the grand coalition is included.
 If \code{index_features} are provided, then \code{augment_include_grand} has no effect. Note that if we sample the
-coalitions then the grand coalition is equally likely to be samples as the other coalitions (or weighted if
+coalitions then the grand coalition is equally likely to be sampled as the other coalitions (or weighted if
 \code{augment_comb_prob} is provided).}
 
 \item{augment_add_id_coal}{Logical (default is \code{FALSE}). If \code{TRUE}, an additional column is adding containing
@@ -47,7 +47,7 @@ This is useful if we want to generate more training data for some specific coali
 
 \item{augment_weights}{String (optional). Specifying which type of weights to add to the observations.
 If \code{NULL} (default), then no weights are added. If \code{"Shapley"}, then the Shapley weights for the different
-coalitions are added to corresponding observations where the coalitions was applied. If \code{uniform}, then
+coalitions are added to corresponding observations where the coalition was applied. If \code{uniform}, then
 all observations get an equal weight of one.}
 }
 \value{

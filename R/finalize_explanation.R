@@ -1,8 +1,8 @@
-#' Gathers the final output to create the explanation object
+#' Gather the final output to create the explanation object
 #'
 #' @inheritParams default_doc_export
 #'
-#' @return List of reformatted output information extracted from `internal`
+#' @return List of reformatted output information extracted from `internal`.
 #'
 #' @export
 #' @keywords internal
@@ -11,19 +11,19 @@ finalize_explanation <- function(internal) {
   type <- internal$parameters$type
   dt_vS <- internal$output$dt_vS
 
-  # Extracting iter (and deleting the last temporary empty list of iter_list)
+  # Extract iter (and delete the last temporary empty list of iter_list)
   iter <- length(internal$iter_list) - 1
   internal$iter_list[[iter + 1]] <- NULL
 
   dt_shapley_est <- internal$iter_list[[iter]]$dt_shapley_est
   dt_shapley_sd <- internal$iter_list[[iter]]$dt_shapley_sd
 
-  # Setting parameters and objects used in the end from the last iteration
+  # Set parameters and objects used at the end from the last iteration
   internal$objects$X <- internal$iter_list[[iter]]$X
   internal$objects$S <- internal$iter_list[[iter]]$S
   internal$objects$W <- internal$iter_list[[iter]]$W
 
-  # Clearing out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
+  # Clear the tmp list with model and predict_model (only added for AICc-types of empirical approach)
   internal$tmp <- NULL
 
   # Extract the predictions we are explaining
@@ -107,16 +107,16 @@ get_p <- function(dt_vS, internal) {
 
 
 
-#' Mean Squared Error of the Contribution Function `v(S)`
+#' Mean squared error of the contribution function `v(S)`
 #'
 #' @inheritParams default_doc_internal
 #' @inheritParams get_output_args_default
-#' @param MSEv_skip_empty_full_comb Logical. If `TRUE` (default), we exclude the empty and grand
+#' @param MSEv_skip_empty_full_comb Logical. If `TRUE` (default), exclude the empty and grand
 #' coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
-#' for all methods, i.e., their contribution function is independent of the used method as they are special cases not
-#' effected by the used method. If `FALSE`, we include the empty and grand coalitions. In this situation,
-#' we also recommend setting `MSEv_uniform_comb_weights = TRUE`, as otherwise the large weights for the empty and
-#' grand coalitions will outweigh all other coalitions and make the MSEv criterion uninformative.
+#' for all methods, i.e., their contribution function is independent of the method used (special cases not
+#' affected by the approach). If `FALSE`, include the empty and grand coalitions. In that case,
+#' we recommend setting `MSEv_uniform_comb_weights = TRUE`; otherwise the large weights for the empty and
+#' grand coalitions will outweigh all others and make the MSEv criterion uninformative.
 #'
 #' @return
 #' List containing:
@@ -133,19 +133,19 @@ get_p <- function(dt_vS, internal) {
 #'  each coalition divided by the square root of the number of explicands.}
 #' }
 #'
-#' @description Function that computes the Mean Squared Error (MSEv) of the contribution function
-#' v(s) as proposed by \href{https://arxiv.org/pdf/2006.01272}{Frye et al. (2019)} and used by
+#' @description Compute the mean squared error (MSEv) of the contribution function
+#' v(S) as proposed by \href{https://arxiv.org/pdf/2006.01272}{Frye et al. (2019)} and used by
 #' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #'
 #' @details
-#' The MSEv evaluation criterion does not rely on access to the true contribution functions nor the
-#' true Shapley values to be computed. A lower value indicates better approximations, however, the
-#' scale and magnitude of the MSEv criterion is not directly interpretable in regard to the precision
+#' The MSEv evaluation criterion does not rely on access to the true contribution functions or the
+#' true Shapley values. A lower value indicates better approximations; however, the
+#' scale and magnitude of MSEv are not directly interpretable regarding the precision
 #' of the final estimated Shapley values.
 #' \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{Olsen et al. (2024)}
-#' illustrates in Figure 11 a fairly strong linear relationship between the MSEv criterion and the
-#' MAE between the estimated and true Shapley values in a simulation study. Note that explicands
-#' refer to the observations whose predictions we are to explain.
+#' illustrates (Figure 11) a fairly strong linear relationship between MSEv and the
+#' MAE between the estimated and true Shapley values in a simulation study. Note: explicands
+#' are the observations whose predictions we explain.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen

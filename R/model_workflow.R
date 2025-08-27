@@ -2,7 +2,7 @@
 #' @export
 predict_model.workflow <- function(x, newdata, ...) {
   if (!requireNamespace("workflows", quietly = TRUE)) {
-    cli::cli_abort("The {.pkg workflows} package is required for predicting `workflows`")
+    cli::cli_abort("The {.pkg workflows} package is required for predicting `workflows` models.")
   }
   predict(x, as.data.frame(newdata))$.pred
 }
@@ -26,7 +26,7 @@ get_model_specs.workflow <- function(x) {
 #' @export
 model_checker.workflow <- function(x) {
   if (x$fit$actions$model$spec$mode != "regression") {
-    cli::cli_abort("We only support models with `mode = 'regression'`.")
+    cli::cli_abort("Only models with `mode = 'regression'` are supported.")
   }
   return(NULL)
 }

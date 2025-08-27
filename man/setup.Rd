@@ -42,68 +42,68 @@ setup(
 }
 \arguments{
 \item{x_train}{Matrix or data.frame/data.table.
-Contains the data used to estimate the (conditional) distributions for the features
+Data used to estimate the (conditional) feature distributions
 needed to properly estimate the conditional expectations in the Shapley formula.}
 
 \item{x_explain}{Matrix or data.frame/data.table.
-Contains the the features, whose predictions ought to be explained.}
+Features for which predictions should be explained.}
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
-All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
+All elements should either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
 \code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
-The two regression approaches can not be combined with any other approach.
+The two regression approaches cannot be combined with any other approach.
 See details for more information.}
 
 \item{phi0}{Numeric.
-The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
+The prediction value for unseen data, i.e., an estimate of the expected prediction without conditioning on any
 features.
-Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable.}
+Typically set this equal to the mean of the response in the training data, but alternatives such as the mean
+of the training predictions are also reasonable.}
 
 \item{output_size}{Scalar integer.
 Specifies the dimension of the output from the prediction model for every observation.}
 
 \item{max_n_coalitions}{Integer.
-The upper limit on the number of unique feature/group coalitions to use in the iterative procedure
+Upper limit on the number of unique feature/group coalitions to use in the iterative procedure
 (if \code{iterative = TRUE}).
-If \code{iterative = FALSE} it represents the number of feature/group coalitions to use directly.
+If \code{iterative = FALSE}, it represents the number of feature/group coalitions to use directly.
 The quantity refers to the number of unique feature coalitions if \code{group = NULL},
 and group coalitions if \code{group != NULL}.
-\code{max_n_coalitions = NULL} corresponds to \code{max_n_coalitions=2^n_features}.}
+\code{max_n_coalitions = NULL} corresponds to \code{2^n_features}.}
 
 \item{group}{List.
-If \code{NULL} regular feature wise Shapley values are computed.
-If provided, group wise Shapley values are computed.
+If \code{NULL}, regular feature-wise Shapley values are computed.
+If provided, group-wise Shapley values are computed.
 \code{group} then has length equal to the number of groups.
-The list element contains character vectors with the features included in each of the different groups.
+Each list element contains the character vectors with the features included in the corresponding group.
 See
 \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}
-for more information on group wise Shapley values.}
+for more information on group-wise Shapley values.}
 
 \item{n_MC_samples}{Positive integer.
 For most approaches, it indicates the maximum number of samples to use in the Monte Carlo integration
 of every conditional expectation.
 For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
-from the leaf node (see an exception related to the \code{ctree.sample} argument \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
-For \code{approach="empirical"}, \code{n_MC_samples} is  the \eqn{K} parameter in equations (14-15) of
+from the leaf node (see an exception related to the \code{ctree.sample} argument in \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
+For \code{approach="empirical"}, \code{n_MC_samples} is the \eqn{K} parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{seed}{Positive integer.
-Specifies the seed before any randomness based code is being run.
-If \code{NULL} (default) no seed is set in the calling environment.}
+Specifies the seed before any code involving randomness is run.
+If \code{NULL} (default), no seed is set in the calling environment.}
 
 \item{feature_specs}{List. The output from \code{\link[=get_model_specs]{get_model_specs()}} or \code{\link[=get_data_specs]{get_data_specs()}}.
-Contains the 3 elements:
+Contains the three elements:
 \describe{
 \item{labels}{Character vector with the names of each feature.}
-\item{classes}{Character vector with the classes of each features.}
+\item{classes}{Character vector with the classes of each feature.}
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
 
 \item{type}{Character.
-Either "regular" or "forecast" corresponding to function \code{setup()} is called from,
-correspondingly the type of explanation that should be generated.}
+Either "regular" or "forecast", matching the function the call originated from,
+and thus the type of explanation to generate.}
 
 \item{horizon}{Numeric.
 The forecast horizon to explain. Passed to the \code{predict_model} function.}
@@ -139,32 +139,26 @@ If \code{TRUE} all lags of each variable are grouped together and explained as a
 If \code{FALSE} all lags of each variable are explained individually.}
 
 \item{verbose}{String vector or NULL.
-Specifies the verbosity (printout detail level) through one or more of strings \code{"basic"}, \code{"progress"},
+Controls verbosity (printout detail level) via one or more of \code{"basic"}, \code{"progress"},
 \code{"convergence"}, \code{"shapley"} and \code{"vS_details"}.
-\code{"basic"} (default) displays basic information about the computation which is being performed,
-in addition to some messages about parameters being sets or checks being unavailable due to specific input.
-\verb{"progress} displays information about where in the calculation process the function currently is.
-\code{"convergence"} displays information on how close to convergence the Shapley value estimates are
-(only when \code{iterative = TRUE}) .
-\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE})
+\code{"basic"} (default) displays basic information about the computation and messages about parameters/checks.
+\code{"progress"} displays where in the calculation process the function currently is.
+\code{"convergence"} displays how close the Shapley value estimates are to convergence
+(only when \code{iterative = TRUE}).
+\code{"shapley"} displays intermediate Shapley value estimates and standard deviations (only when \code{iterative = TRUE}),
 and the final estimates.
-\code{"vS_details"} displays information about the v_S estimates.
-This is most relevant for \verb{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac"}).
+\code{"vS_details"} displays information about the v(S) estimates,
+most relevant for \code{approach \%in\% c("regression_separate", "regression_surrogate", "vaeac")}.
 \code{NULL} means no printout.
-Note that any combination of four strings can be used.
-E.g. \code{verbose = c("basic", "vS_details")} will display basic information + details about the v(S)-estimation process.}
+Any combination can be used, e.g., \code{verbose = c("basic", "vS_details")}.}
 
-\item{iterative}{Logical or NULL
-If \code{NULL} (default), the argument is set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
-If eventually \code{TRUE}, the Shapley values are estimated iteratively in an iterative manner.
-This provides sufficiently accurate Shapley value estimates faster.
-First an initial number of coalitions is sampled, then bootsrapping is used to estimate the variance of the Shapley
-values.
-A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
-If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more
-coalitions.
-The process is repeated until the variances are below the threshold.
-Specifics related to the iterative process and convergence criterion are set through \code{iterative_args}.}
+\item{iterative}{Logical or NULL.
+If \code{NULL} (default), set to \code{TRUE} if there are more than 5 features/groups, and \code{FALSE} otherwise.
+If \code{TRUE}, Shapley values are estimated iteratively for faster, sufficiently accurate results.
+First an initial number of coalitions is sampled, then bootstrapping estimates the variance of the Shapley values.
+A convergence criterion determines if the variances are sufficiently small. If not, additional samples are added.
+The process repeats until the variances are below the threshold.
+Specifics for the iterative process and convergence criterion are set via \code{iterative_args}.}
 
 \item{iterative_args}{Named list.
 Specifies the arguments for the iterative procedure.
@@ -172,32 +166,32 @@ See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for 
 
 \item{is_python}{Logical.
 Indicates whether the function is called from the Python wrapper.
-Default is FALSE which is never changed when calling the function via \code{explain()} in R.
-The parameter is later used to disallow running the AICc-versions of the empirical method
-as that requires data based optimization, which is not supported in \code{shaprpy}.}
+Default is FALSE, which is never changed when calling the function via \code{explain()} in R.
+The parameter is later used to disallow running the AICc versions of the empirical method,
+as that requires data-based optimization, which is not supported in \code{shaprpy}.}
 
 \item{testing}{Logical.
-Only use to remove random components like timing from the object output when comparing output with testthat.
+Only used to remove random components, like timing, from the output when comparing with testthat.
 Defaults to \code{FALSE}.}
 
-\item{init_time}{POSIXct object.
-The time when the \code{explain()} function was called, as outputted by \code{Sys.time()}.
-Used to calculate the time it took to run the full \code{explain} call.}
+\item{init_time}{POSIXct.
+The time when the \code{explain()} function was called, as returned by \code{Sys.time()}.
+Used to calculate the total time of the \code{explain()} call.}
 
 \item{prev_shapr_object}{\code{shapr} object or string.
-If an object of class \code{shapr} is provided, or string with a path to where intermediate results are stored,
+If an object of class \code{shapr} is provided, or a string with a path to where intermediate results are stored,
 then the function will use the previous object to continue the computation.
 This is useful if the computation is interrupted or you want higher accuracy than already obtained, and therefore
 want to continue the iterative estimation. See the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette} for examples.}
 
 \item{asymmetric}{Logical.
-Not applicable for (regular) non-causal or asymmetric explanations.
-If \code{FALSE} (default), \code{explain} computes regular symmetric Shapley values,
-If \code{TRUE}, then \code{explain} compute asymmetric Shapley values based on the (partial) causal ordering
-given by \code{causal_ordering}. That is, \code{explain} only uses the feature combinations/coalitions that
-respect the causal ordering when computing the asymmetric Shapley values. If \code{asymmetric} is \code{TRUE} and
-\code{confounding} is \code{NULL} (default), then \code{explain} computes asymmetric conditional Shapley values as specified in
+Not applicable for (regular) non-causal explanations.
+If \code{FALSE} (default), \code{explain} computes regular symmetric Shapley values.
+If \code{TRUE}, \code{explain} computes asymmetric Shapley values based on the (partial) causal ordering
+given by \code{causal_ordering}. That is, \code{explain} only uses feature coalitions that
+respect the causal ordering. If \code{asymmetric} is \code{TRUE} and
+\code{confounding} is \code{NULL} (default), \code{explain} computes asymmetric conditional Shapley values as specified in
 \href{https://proceedings.neurips.cc/paper_files/paper/2020/file/0d770c496aa3da6d2c3f2bd19e7b9d6b-Paper.pdf}{
 Frye et al. (2020)}. If \code{confounding} is provided, i.e., not \code{NULL}, then \code{explain} computes asymmetric causal
 Shapley values as specified in
@@ -216,19 +210,19 @@ equivalent to a causal ordering with a single component that includes all featur
 Shapley values, respectively. For feature-wise Shapley values and
 \code{causal_ordering = list(c(1, 2), c(3, 4))}, the interpretation is that features 1 and 2
 are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
-Note: All features/groups must be included in the \code{causal_ordering} without any duplicates.}
+Note: All features/groups must be included in \code{causal_ordering} without duplicates.}
 
 \item{confounding}{Logical vector.
 Not applicable for (regular) non-causal or asymmetric explanations.
-\code{confounding} is a vector of logicals specifying whether confounding is assumed or not for each component in the
-\code{causal_ordering}. If \code{NULL} (default), then no assumption about the confounding structure is made and \code{explain}
-computes asymmetric/symmetric conditional Shapley values, depending on the value of \code{asymmetric}.
-If \code{confounding} is a single logical, i.e., \code{FALSE} or \code{TRUE}, then this assumption is set globally
-for all components in the causal ordering. Otherwise, \code{confounding} must be a vector of logicals of the same
+\code{confounding} is a logical vector specifying whether confounding is assumed for each component in the
+\code{causal_ordering}. If \code{NULL} (default), no assumption about the confounding structure is made and \code{explain}
+computes asymmetric/symmetric conditional Shapley values, depending on \code{asymmetric}.
+If \code{confounding} is a single logical (\code{FALSE} or \code{TRUE}), the assumption is set globally
+for all components in the causal ordering. Otherwise, \code{confounding} must have the same
 length as \code{causal_ordering}, indicating the confounding assumption for each component. When \code{confounding} is
-specified, then \code{explain} computes asymmetric/symmetric causal Shapley values, depending on the value of
-\code{asymmetric}. The \code{approach} cannot be \code{regression_separate} and \code{regression_surrogate} as the
-regression-based approaches are not applicable to the causal Shapley value methodology.}
+specified, \code{explain} computes asymmetric/symmetric causal Shapley values, depending on \code{asymmetric}.
+The \code{approach} cannot be \code{regression_separate} or \code{regression_surrogate}, as the
+regression-based approaches are not applicable to the causal Shapley methodology.}
 
 \item{output_args}{Named list.
 Specifies certain arguments related to the output of the function.
@@ -244,7 +238,7 @@ The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by \c
 \item{...}{Further arguments passed to specific approaches, see below.}
 }
 \value{
-A internal list, containing parameters, info, data and computations needed for the later computations.
+An internal list containing parameters, info, data, and computations needed for later steps.
 The list is expanded and modified in other functions.
 }
 \description{

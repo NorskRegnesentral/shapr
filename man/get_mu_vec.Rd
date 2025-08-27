@@ -8,7 +8,7 @@ get_mu_vec(x_train)
 }
 \arguments{
 \item{x_train}{Matrix or data.frame/data.table.
-Contains the data used to estimate the (conditional) distributions for the features
+Data used to estimate the (conditional) feature distributions
 needed to properly estimate the conditional expectations in the Shapley formula.}
 }
 \description{

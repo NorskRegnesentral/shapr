@@ -19,8 +19,8 @@ If the entries in the list are named, then the function use these names. Otherwi
 the approach names (with integer suffix for duplicates) for the explanation objects in \code{explanation_list}.}
 
 \item{index_x_explain}{Integer vector.
-Which of the test observations to plot. E.g. if you have
-explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first 5
+Which of the test observations to plot. For example, if you have
+explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first five
 observations by setting \code{index_x_explain = 1:5}.}
 
 \item{id_coalition}{Integer vector. Which of the coalitions to plot.

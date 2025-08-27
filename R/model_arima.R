@@ -3,7 +3,7 @@
 #' @export
 predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explain_lags, y, xreg, ...) {
   if (!requireNamespace("forecast", quietly = TRUE)) {
-    cli::cli_abort("The {.pkg forecast} package is required when explaining Arima models")
+    cli::cli_abort("The {.pkg forecast} package is required when explaining Arima models.")
   }
 
   prediction <- matrix(NA, length(explain_idx), horizon)

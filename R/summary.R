@@ -59,13 +59,13 @@ summary.shapr <- function(object, digits = 2L, ...) {
     cli::cli_alert_success(formatted_convergence_info)
   }
 
-  # Display Shapley value res
+  # Display Shapley value results
   formatted_shapley_info <- format_shapley_info(internal, iter, digits = digits)
 
   if (converged_exact) {
     msg <- "Estimated Shapley values"
   } else {
-    msg <- "Estimated Shapley values (sd in parantheses)"
+    msg <- "Estimated Shapley values (sd in parentheses)"
   }
 
   cli::cli_h3(msg)

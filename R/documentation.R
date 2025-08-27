@@ -21,7 +21,7 @@
 #' @param n_features Positive integer.
 #' The number of features.
 #'
-#' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
+#' @param W_kernel Numeric matrix. Contains all non-scaled weights between training and test
 #' observations for all coalitions. The dimension equals `n_train x m`.
 #'
 #' @param S Integer matrix of dimension `n_coalitions x m`, where `n_coalitions`
