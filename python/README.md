@@ -61,15 +61,8 @@ export PATH=$PATH:$(R RHOME)/bin
 
 ### 3. Install the Python wrapper
 
-To install from **TestPyPI** (for testing the package before the official release), run:
+Install directly from PyPI with:
 
-```bash
-python -m pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple shaprpy
-```
-
-> The `--extra-index-url` flag ensures that dependencies (such as `rpy2`, `numpy`, etc.) are installed from the main PyPI repository.
-
-Once `shaprpy` is available on the official PyPI, you will be able to install it directly with:
 ```bash
 pip install shaprpy
 ```
