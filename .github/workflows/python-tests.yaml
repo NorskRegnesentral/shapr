@@ -69,7 +69,7 @@ jobs:
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          dependencies: true  # Install all dependencies, including Suggests
+          dependencies: '"all"'  # Install all dependencies, including Suggests
           extra-packages: any::remotes
 
       - name: Install R shapr package
