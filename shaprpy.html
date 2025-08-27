@@ -51,49 +51,90 @@
 
 <p>Python wrapper for the R package <a href="https://github.com/NorskRegnesentral/shapr" class="external-link">shapr</a>.</p>
 <p>NOTE: This wrapper is not as comprehensively tested as the <code>R</code>-package.</p>
-<p><code>shaprpy</code> relies heavily on the <code>rpy2</code> Python library for accessing R from within Python. <code>rpy2</code> has limited support on Windows. <code>shaprpy</code> has only been tested on Linux.</p>
-<div class="section level3">
-<h3 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a></h3>
-<p>The below instructions assume you already have <code>pip</code> and <code>R</code> installed and exposed to the python environment where you want to run <code>shaprpy</code>. Official instructions for installing <code>pip</code> can be found <a href="https://pip.pypa.io/en/stable/installation/" class="external-link">here</a>, and for <code>R</code> <a href="https://cran.r-project.org/" class="external-link">here</a>. <code>R</code> can also be installed with pip as follows:</p>
-<pre><code>pip install rbase</code></pre>
-<p>and conda:</p>
-<pre><code>conda install -c r r</code></pre>
-<div class="section level4">
-<h4 id="install-r-package">Install R-package<a class="anchor" aria-label="anchor" href="#install-r-package"></a></h4>
-<p>The <code>shaprpy</code> Python wrapper requires the latest version of the <code>shapr</code> R-package from CRAN. Install it by running the following terminal command from the folder of this readme file (<code>.../shapr/python</code>):</p>
-<pre><code>Rscript -e 'install.packages("shapr", repos="https://cran.rstudio.com")'</code></pre>
-</div>
-</div>
+<p><code>shaprpy</code> relies heavily on the <code>rpy2</code> Python library for accessing R from within Python. <code>rpy2</code> has limited support on Windows. <code>shaprpy</code> has only been tested on Linux. The below instructions assumes a Linux environment.</p>
 </div>
 <div class="section level1">
-<h1 id="install-python-wrapper">Install python wrapper<a class="anchor" aria-label="anchor" href="#install-python-wrapper"></a></h1>
-<p>In the folder of this readme file (<code>.../shapr/python</code>), run</p>
-<pre><code>pip install -e .</code></pre>
+<h1 id="shaprpy-1">shaprpy<a class="anchor" aria-label="anchor" href="#shaprpy-1"></a></h1>
+<p><code>shaprpy</code> is a Python wrapper for the R package <a href="https://github.com/NorskRegnesentral/shapr" class="external-link">shapr</a>, using the <a href="https://rpy2.github.io/" class="external-link"><code>rpy2</code></a> Python library to access R from within Python.</p>
+<blockquote>
+<p><strong>Note:</strong> This wrapper is <strong>not</strong> as comprehensively tested as the R package. <code>rpy2</code> has limited support on Windows, and the same therefore applies to <code>shaprpy</code>. <code>shaprpy</code> has only been tested on Linux (and WSL - Windows Subsystem for Linux), and the below instructions assume a Linux environment.</p>
+<p><strong>Requirement:</strong> Python 3.10 or later is required to use <code>shaprpy</code>.</p>
+</blockquote>
+<div class="section level2">
+<h2 id="changelog">Changelog<a class="anchor" aria-label="anchor" href="#changelog"></a></h2>
+<p>For a list of changes and updates to the <code>shaprpy</code> package, see the <a href="https://norskregnesentral.github.io/shapr/py_changelog.html">shaprpy CHANGELOG</a>.</p>
+<hr></div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a></h2>
+<p>These instructions assume you already have <strong>pip</strong> and <strong>R</strong> installed and available to the Python environment in which you want to run <code>shaprpy</code>.</p>
+<ul><li>Official instructions for installing <code>pip</code> can be found <a href="https://pip.pypa.io/en/stable/installation/" class="external-link">here</a>.</li>
+<li>Official instructions for installing R can be found <a href="https://cran.r-project.org/" class="external-link">here</a>.</li>
+</ul><p>On Debian/Ubuntu-based systems, R can also be installed via:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">sudo</span> apt update</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">sudo</span> apt install r-base r-base-dev <span class="at">-y</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="demo">Demo<a class="anchor" aria-label="anchor" href="#demo"></a></h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="im">from</span> shaprpy <span class="im">import</span> explain</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="im">from</span> shaprpy.datasets <span class="im">import</span> load_california_housing</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>dfx_train, dfx_test, dfy_train, dfy_test <span class="op">=</span> load_california_housing()</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">## Fit model</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>model <span class="op">=</span> RandomForestRegressor()</span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>model.fit(dfx_train, dfy_train.values.flatten())</span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">## Shapr</span></span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>explanation <span class="op">=</span> explain(</span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    model <span class="op">=</span> model,</span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    x_train <span class="op">=</span> dfx_train,</span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    x_explain <span class="op">=</span> dfx_test,</span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>    approach <span class="op">=</span> <span class="st">'empirical'</span>,</span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    phi0 <span class="op">=</span> dfy_train.mean().item(),</span>
-<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    seed <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>)</span>
-<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="bu">print</span>(explanation[<span class="st">"shapley_values_est"</span>])</span></code></pre></div>
-<p><code>shaprpy</code> knows how to explain predictions from models from <code>sklearn</code>, <code>keras</code> (sequential) and <code>xgboost</code>. For other models, one can provide a custom <code>predict_model</code> function (and optionally a custom <code>get_model_specs</code>) to <code>shaprpy.explain</code>.</p>
-<p>See <code>/examples</code> for runnable examples, including an example of a custom PyTorch model.</p>
-<p>Specifically, the <code>/examples/regression_paradigm.py</code> file demonstrates how to use the regression paradigm explained in <a href="https://link.springer.com/article/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a>. We show how to specify the regression model, how to enable automatic cross-validation of the model’s hyperparameters, and applying pre-processing steps to the data before fitting the regression models.</p>
+<h3 id="id_1-install-the-r-package-shapr">1. Install the R package <code>shapr</code>
+<a class="anchor" aria-label="anchor" href="#id_1-install-the-r-package-shapr"></a></h3>
+<p><code>shaprpy</code> requires the R package <code>shapr</code> (version 1.0.5 or newer). In your R environment, install the latest version from CRAN using:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'install.packages("shapr", repos="https://cran.rstudio.com")'</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="id_2-ensure-r-is-discoverable-r_home-and-path">2. Ensure R is discoverable (R_HOME and PATH)<a class="anchor" aria-label="anchor" href="#id_2-ensure-r-is-discoverable-r_home-and-path"></a></h3>
+<p>Sometimes <code>shaprpy</code> cannot automatically locate your R installation. To ensure proper detection, verify that: - R is available in your system <code>PATH</code>, <strong>or</strong> - The <code>R_HOME</code> environment variable is set to your R installation directory.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="bu">export</span> <span class="va">R_HOME</span><span class="op">=</span><span class="va">$(</span><span class="ex">R</span> RHOME<span class="va">)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:<span class="va">$(</span><span class="ex">R</span> RHOME<span class="va">)</span>/bin</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="id_3-install-the-python-wrapper">3. Install the Python wrapper<a class="anchor" aria-label="anchor" href="#id_3-install-the-python-wrapper"></a></h3>
+<p>To install from <strong>TestPyPI</strong> (for testing the package before the official release), run:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-i</span> https://test.pypi.org/simple/ <span class="at">--extra-index-url</span> https://pypi.org/simple shaprpy</span></code></pre></div>
+<blockquote>
+<p>The <code>--extra-index-url</code> flag ensures that dependencies (such as <code>rpy2</code>, <code>numpy</code>, etc.) are installed from the main PyPI repository.</p>
+</blockquote>
+<p>Once <code>shaprpy</code> is available on the official PyPI, you will be able to install it directly with:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">pip</span> install shaprpy</span></code></pre></div>
+<div class="section level4">
+<h4 id="local-development-install-for-contributors">Local development install (for contributors)<a class="anchor" aria-label="anchor" href="#local-development-install-for-contributors"></a></h4>
+<p>If you have cloned the repository and want to install in development mode for local changes, navigate to the <code>./python</code> directory and run:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span></code></pre></div>
+<p>The <code>-e</code> flag installs in editable mode, allowing local code changes to be reflected immediately.</p>
+<hr></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="quick-demo">Quick Demo<a class="anchor" aria-label="anchor" href="#quick-demo"></a></h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="im">from</span> shaprpy <span class="im">import</span> explain</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="im">from</span> shaprpy.datasets <span class="im">import</span> load_california_housing</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co"># Load example data</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>dfx_train, dfx_test, dfy_train, dfy_test <span class="op">=</span> load_california_housing()</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co"># Fit a model</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>model <span class="op">=</span> RandomForestRegressor()</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>model.fit(dfx_train, dfy_train.values.flatten())</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># Explain predictions</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>explanation <span class="op">=</span> explain(</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    x_train<span class="op">=</span>dfx_train,</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    x_explain<span class="op">=</span>dfx_test,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    approach<span class="op">=</span><span class="st">"empirical"</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    phi0<span class="op">=</span>dfy_train.mean().item(),</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>    seed<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>)</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="bu">print</span>(explanation[<span class="st">"shapley_values_est"</span>])</span></code></pre></div>
+<hr></div>
+<div class="section level2">
+<h2 id="supported-models">Supported Models<a class="anchor" aria-label="anchor" href="#supported-models"></a></h2>
+<p><code>shaprpy</code> can explain predictions from models built with: - <a href="https://scikit-learn.org/" class="external-link"><code>scikit-learn</code></a> - <a href="https://keras.io/" class="external-link"><code>keras</code></a> (Sequential API) - <a href="https://xgboost.readthedocs.io/" class="external-link"><code>xgboost</code></a></p>
+<p>For other model types, you can supply: - A custom <code>predict_model</code> function - (Optionally) a custom <code>get_model_specs</code> function to <code>shaprpy.explain</code>.</p>
+<hr></div>
+<div class="section level2">
+<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h2>
+<p>See the <code>/examples</code> folder for runnable examples, including: - A custom PyTorch model - The <strong>regression paradigm</strong> described in <a href="https://link.springer.com/article/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a>, which shows: - How to specify the regression model - How to enable automatic cross-validation of hyperparameters - How to apply pre-processing steps before fitting regression models</p>
 </div>
 </div>
 
