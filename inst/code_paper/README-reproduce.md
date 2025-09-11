@@ -7,7 +7,7 @@ Below we describe how to reproduce the code and figure examples in the paper
 *The instructions assume a Linux-like environment and that the commands are executed from the directory containing this file.*
 *Execution from other locations or on different operating systems requires adjustments.*
 
-*The code has been tested on Ubuntu 20.04.6 LTS with R 4.4.1 and Python 3.12.7 installed.*
+*The code in the paper is run on Ubuntu 24.04.3 LTS with R 4.3.3 and Python 3.12.3 installed.*
 
 ## Folder content
 
@@ -32,13 +32,6 @@ The folder contains the following files:
 To reproduce the R examples and figures, make sure you have installed the `shapr` package, its required packages, in addition to the following packages from CRAN: `xgboost`, `ctree`, `future`, `progressr`, `markdown`, `knitr` and `patchwork`.
 
 Then, from the command line, run
-```
-Rscript R_prep_data_and_model.R
-```
-This will prepare the data and model files used by both the R and Python examples, and save them in the `data_and_models` folder.
-It also creates the `R_paper_figures` and `R_html_figures` folders.
-
-To run the R code and generate the HTML file with the code and output in the actual paper, run
 ```
 Rscript R_prep_data_and_model.R
 ```
