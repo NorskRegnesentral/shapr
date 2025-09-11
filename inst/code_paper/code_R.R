@@ -48,12 +48,12 @@ progressr::handlers(global = TRUE)
 
 #### Example code in Section 3 ####
 
-# 30 indep
-exp_30_indep <- explain(
+# 40 indep
+exp_40_indep <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  max_n_coalitions = 30,
+  max_n_coalitions = 40,
   approach = "independence",
   phi0 = mean(y_train),
   verbose = NULL,
@@ -61,8 +61,8 @@ exp_30_indep <- explain(
 )
 
 
-# 30 ctree
-exp_30_ctree <- explain(
+# 40 ctree
+exp_40_ctree <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -75,12 +75,12 @@ exp_30_ctree <- explain(
 )
 
 
-print(exp_30_indep, what = "MSEv")
-print(exp_30_ctree, what = "MSEv")
+print(exp_40_indep, what = "MSEv")
+print(exp_40_ctree, what = "MSEv")
 
-print(exp_30_ctree)
+print(exp_40_ctree)
 
-summary(exp_30_ctree)
+summary(exp_40_ctree)
 
 ### Continued estimation
 exp_iter_ctree <- explain(
@@ -89,7 +89,7 @@ exp_iter_ctree <- explain(
   x_train = x_train,
   approach = "ctree",
   phi0 = mean(y_train),
-  prev_shapr_object = exp_30_ctree,
+  prev_shapr_object = exp_40_ctree,
   ctree.sample = FALSE,
   verbose = c("basic", "convergence"),
   seed = 1
