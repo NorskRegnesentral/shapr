@@ -4,11 +4,14 @@ library(data.table)
 # Bike sharing data from http://archive.ics.uci.edu/dataset/275/bike+sharing+dataset
 # with license https://creativecommons.org/licenses/by/4.0/
 
-temp <- tempfile()
+zipfile <- tempfile()
 url <- "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip"
-download.file(url, temp)
-bike <- fread(unzip(temp, "day.csv"))
-unlink(temp)
+download.file(url, zipfile)
+csvfile <- unzip(zipfile = zipfile, files = "day.csv", exdir = dirname(zipfile))
+bike <- fread(csvfile)
+unlink(zipfile)
+unlink(csvfile)
+
 
 # Following the data preparation done by
 # Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020).
