@@ -95,7 +95,9 @@ exp_iter_ctree <- explain(model = model,
 library(ggplot2)
 
 #+ fig-scatter_ctree, fig.width=7, fig.height=3
-plot(exp_iter_ctree, plot_type = "scatter", scatter_features = c("atemp", "windspeed"))
+plot(exp_iter_ctree,
+     plot_type = "scatter",
+     scatter_features = c("atemp", "windspeed"))
 
 #+ echo=FALSE
 # Produce the pdf used in Figure 3 in the paper
@@ -103,12 +105,9 @@ ggplot2::ggsave(file.path("R_paper_figures", "scatter_ctree.pdf"), width = 7, he
 
 #+
 ### Grouping
-
-group <- list(
-  temp = c("temp", "atemp"),
-  time = c("trend", "cosyear", "sinyear"),
-  weather = c("hum", "windspeed")
-)
+group <- list(temp = c("temp", "atemp"),
+              time = c("trend", "cosyear", "sinyear"),
+              weather = c("hum", "windspeed"))
 
 exp_g_reg <- explain(model = model,
                      x_explain = x_explain,
@@ -133,7 +132,8 @@ exp_g_reg_tuned <- explain(model = model,
                            regression.model =
                              parsnip::boost_tree(
                                trees = hardhat::tune(),
-                               engine = "xgboost", mode = "regression"
+                               engine = "xgboost",
+                               mode = "regression"
                              ),
                            regression.tune_values = expand.grid(
                              trees = tree_vals
@@ -163,10 +163,9 @@ ggplot2::ggsave(file.path("R_paper_figures", "waterfall_group.pdf"), width = 7, 
 #### Causal and asymmetric Shapley values ####
 
 # Specify the causal ordering and confounding
-causal_order0 <- list(
-  "trend",
-  c("cosyear", "sinyear"),
-  c("temp", "atemp", "windspeed", "hum")
+causal_order0 <- list("trend",
+                      c("cosyear", "sinyear"),
+                      c("temp", "atemp", "windspeed", "hum")
 )
 
 confounding0 <- c(FALSE, TRUE, FALSE)
