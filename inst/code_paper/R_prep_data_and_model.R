@@ -20,9 +20,8 @@ unlink(csvfile)
 # (See supplement: https://proceedings.neurips.cc/paper_files/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Supplemental.zip)
 
 bike[, trend := as.numeric(difftime(dteday,
-  dteday[1],
-  units = "days"
-))]
+                                    dteday[1],
+                                    units = "days"))]
 
 bike[, cosyear := cospi(trend / 365 * 2)]
 bike[, sinyear := sinpi(trend / 365 * 2)]
@@ -33,10 +32,8 @@ bike[, hum := 100 * hum]
 
 
 # We specify the features and the response variable.
-x_var <- c(
-  "trend", "cosyear", "sinyear",
-  "temp", "atemp", "windspeed", "hum"
-)
+x_var <- c("trend", "cosyear", "sinyear",
+           "temp", "atemp", "windspeed", "hum")
 y_var <- "cnt"
 
 # We split the data into a training ($80\%$) and test ($20\%$) data set, and we compute $\phi_0$.
@@ -52,12 +49,10 @@ x_explain <- bike[-train_index, mget(x_var)]
 y_explain <- bike[-train_index, get(y_var)]
 
 # We fit the a basic xgboost model to the training data.
-model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
-  nround = 100,
-  verbose = FALSE
-)
+model <- xgboost::xgboost(data = as.matrix(x_train),
+                          label = y_train,
+                          nround = 100,
+                          verbose = FALSE)
 
 
 # Creates folders
