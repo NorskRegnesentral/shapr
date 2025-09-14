@@ -80,52 +80,47 @@
 </div>
 <div class="section level3">
 <h3 id="id_2-ensure-r-is-discoverable-r_home-and-path">2. Ensure R is discoverable (R_HOME and PATH)<a class="anchor" aria-label="anchor" href="#id_2-ensure-r-is-discoverable-r_home-and-path"></a></h3>
-<p>Sometimes <code>shaprpy</code> cannot automatically locate your R installation. To ensure proper detection, verify that: - R is available in your system <code>PATH</code>, <strong>or</strong> - The <code>R_HOME</code> environment variable is set to your R installation directory.</p>
+<p>Sometimes <code>rpy2</code> (which <code>shaprpy</code> relies on) cannot automatically locate your R installation. To ensure proper detection, verify that: - R is available in your system <code>PATH</code>, <strong>or</strong> - The <code>R_HOME</code> environment variable is set to your R installation directory.</p>
 <p>Example:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="bu">export</span> <span class="va">R_HOME</span><span class="op">=</span><span class="va">$(</span><span class="ex">R</span> RHOME<span class="va">)</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:<span class="va">$(</span><span class="ex">R</span> RHOME<span class="va">)</span>/bin</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="id_3-install-the-python-wrapper">3. Install the Python wrapper<a class="anchor" aria-label="anchor" href="#id_3-install-the-python-wrapper"></a></h3>
-<p>To install from <strong>TestPyPI</strong> (for testing the package before the official release), run:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-i</span> https://test.pypi.org/simple/ <span class="at">--extra-index-url</span> https://pypi.org/simple shaprpy</span></code></pre></div>
-<blockquote>
-<p>The <code>--extra-index-url</code> flag ensures that dependencies (such as <code>rpy2</code>, <code>numpy</code>, etc.) are installed from the main PyPI repository.</p>
-</blockquote>
-<p>Once <code>shaprpy</code> is available on the official PyPI, you will be able to install it directly with:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">pip</span> install shaprpy</span></code></pre></div>
+<p>Install directly from PyPI with:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">pip</span> install shaprpy</span></code></pre></div>
 <div class="section level4">
 <h4 id="local-development-install-for-contributors">Local development install (for contributors)<a class="anchor" aria-label="anchor" href="#local-development-install-for-contributors"></a></h4>
 <p>If you have cloned the repository and want to install in development mode for local changes, navigate to the <code>./python</code> directory and run:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span></code></pre></div>
 <p>The <code>-e</code> flag installs in editable mode, allowing local code changes to be reflected immediately.</p>
 <hr></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="quick-demo">Quick Demo<a class="anchor" aria-label="anchor" href="#quick-demo"></a></h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="im">from</span> shaprpy <span class="im">import</span> explain</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="im">from</span> shaprpy.datasets <span class="im">import</span> load_california_housing</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co"># Load example data</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>dfx_train, dfx_test, dfy_train, dfy_test <span class="op">=</span> load_california_housing()</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co"># Fit a model</span></span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>model <span class="op">=</span> RandomForestRegressor()</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>model.fit(dfx_train, dfy_train.values.flatten())</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># Explain predictions</span></span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>explanation <span class="op">=</span> explain(</span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    x_train<span class="op">=</span>dfx_train,</span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    x_explain<span class="op">=</span>dfx_test,</span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    approach<span class="op">=</span><span class="st">"empirical"</span>,</span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    phi0<span class="op">=</span>dfy_train.mean().item(),</span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>    seed<span class="op">=</span><span class="dv">1</span></span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>)</span>
-<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a></span>
-<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="bu">print</span>(explanation[<span class="st">"shapley_values_est"</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="im">from</span> shaprpy <span class="im">import</span> explain</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="im">from</span> shaprpy.datasets <span class="im">import</span> load_california_housing</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># Load example data</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>dfx_train, dfx_test, dfy_train, dfy_test <span class="op">=</span> load_california_housing()</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co"># Fit a model</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>model <span class="op">=</span> RandomForestRegressor()</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>model.fit(dfx_train, dfy_train.values.flatten())</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># Explain predictions</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>explanation <span class="op">=</span> explain(</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    x_train<span class="op">=</span>dfx_train,</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>    x_explain<span class="op">=</span>dfx_test,</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>    approach<span class="op">=</span><span class="st">"empirical"</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>    phi0<span class="op">=</span>dfy_train.mean().item(),</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    seed<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>)</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="bu">print</span>(explanation[<span class="st">"shapley_values_est"</span>])</span></code></pre></div>
 <hr></div>
 <div class="section level2">
 <h2 id="supported-models">Supported Models<a class="anchor" aria-label="anchor" href="#supported-models"></a></h2>
