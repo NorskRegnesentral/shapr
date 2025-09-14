@@ -37,7 +37,7 @@ in addition to the `shapr` R package and the `shaprpy` Python library and their 
 Install the additional R packages needed for the reproduction scripts:
 
 ```bash
-Rscript -e "install.packages(c('xgboost', 'ctree', 'progressr', 'markdown', 'knitr', 'ggplot2', 'patchwork'))"
+Rscript -e "install.packages(c('xgboost', 'party', 'progressr', 'markdown', 'knitr', 'ggplot2', 'patchwork'))"
 ```
 
 ### Python
@@ -47,8 +47,7 @@ Install the additional Python packages needed for the reproduction scripts:
 ```bash
 pip install xgboost jupytext nbconvert session_info
 ```
-*Note: The jupytext nbconvert session_info packages are only needed to run the `code_py_to_html.sh` bash
-script that generates the HTML file from the Python code, the python code itself does not require these packages.*
+*Note: The `jupytext`, `nbconvert` and `session_info` packages are only needed to run the `code_py_to_html.sh` bash script that generates the HTML file from the Python code, the python code itself does not require these packages.*
 
 ## Commands to reproduce the examples
 
