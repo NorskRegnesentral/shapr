@@ -47,20 +47,23 @@ Install the additional Python packages needed for the reproduction scripts:
 ```bash
 pip install xgboost jupytext nbconvert ipykernel session_info
 ```
-*Note: The `jupytext`, `nbconvert`, `ipykernel` and `session_info` packages are only needed to run the `code_py_to_html.sh` bash script that generates the HTML file from the Python code, the python code itself does not require these packages.*
+**Note:**
+The `jupytext`, `nbconvert`, `ipykernel` and `session_info` packages are only needed to run the `code_py_to_html.sh` bash script that generates the HTML file from the Python code. The Python code itself does not require these packages.
 
 ## Commands to reproduce the examples
 
 ### R
+**Preparation (optional):**
 
-From the command line, run
+The script `R_prep_data_and_model.R` prepares the data and models used in the examples.
+Running this script is optional, since the prepared data and models are already included in the `data_and_models` folder.
+
+To run the preparation script from the command line, use
 ```bash
 Rscript R_prep_data_and_model.R
 ```
 
-This preparation script will create the folders `data_and_models`, `R_paper_figures`, and `R_html_figures`,
-and prepare the data and model files used by both the R and Python examples, and save them in the `data_and_models` folder.
-
+**Run the R code:**
 To run the R code and generate the HTML file with the code and output in the actual paper, run
 ```bash
 Rscript -e "knitr::spin('code_R.R')"
