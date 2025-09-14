@@ -37,7 +37,7 @@ in addition to the `shapr` R package and the `shaprpy` Python library and their 
 Install the additional R packages needed for the reproduction scripts:
 
 ```bash
-Rscript -e "install.packages(c('xgboost', 'party', 'progressr', 'markdown', 'knitr', 'ggplot2', 'patchwork'))"
+Rscript -e "install.packages(c('xgboost', 'party', 'parsnip', 'recipes', 'workflows', 'tune', 'progressr', 'forecast', 'markdown', 'knitr', 'ggplot2', 'ggbeeswarm', 'patchwork'))"
 ```
 
 ### Python
@@ -45,9 +45,9 @@ Rscript -e "install.packages(c('xgboost', 'party', 'progressr', 'markdown', 'kni
 Install the additional Python packages needed for the reproduction scripts:
 
 ```bash
-pip install xgboost jupytext nbconvert session_info
+pip install xgboost jupytext nbconvert ipykernel session_info
 ```
-*Note: The `jupytext`, `nbconvert` and `session_info` packages are only needed to run the `code_py_to_html.sh` bash script that generates the HTML file from the Python code, the python code itself does not require these packages.*
+*Note: The `jupytext`, `nbconvert`, `ipykernel` and `session_info` packages are only needed to run the `code_py_to_html.sh` bash script that generates the HTML file from the Python code, the python code itself does not require these packages.*
 
 ## Commands to reproduce the examples
 
@@ -73,7 +73,7 @@ The html file shows the code used in the paper together with its output. Additio
 ### Python
 
 To simplify the reproducability, we have created a simple bash script executing the Python code in a manner similar to how the `knitr::spin()` function operates for the `R` code.
-The bash script requires the `jupytext` `nbconvert` and `session_info` libraries to run, which can be installed from pip as described above.
+The bash script requires the `jupytext`, `nbconvert`, `ipykernel` and `session_info` libraries to run, which can be installed from pip as described above.
 
 To run the Python code and generate the HTML file with the code and output in the actual paper, run
 ```bash
