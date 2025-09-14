@@ -165,16 +165,13 @@ ggplot2::ggsave(file.path("R_paper_figures", "waterfall_group.pdf"), width = 7, 
 # Specify the causal ordering and confounding
 causal_order0 <- list("trend",
                       c("cosyear", "sinyear"),
-                      c("temp", "atemp", "windspeed", "hum")
-)
+                      c("temp", "atemp", "windspeed", "hum"))
 
 confounding0 <- c(FALSE, TRUE, FALSE)
 
 # Specify the parameters of four different Shapley value variations
-exp_names <- c(
-  "Asymmetric causal", "Asymmetric conditional",
-  "Symmetric conditional", "Symmetric marginal"
-)
+exp_names <- c("Asymmetric causal", "Asymmetric conditional",
+               "Symmetric conditional", "Symmetric marginal")
 
 causal_ordering_list <- list(causal_order0, causal_order0, NULL, NULL)
 confounding_list <- list(confounding0, NULL, NULL, TRUE)
@@ -195,7 +192,7 @@ for (i in seq_along(exp_names)) {
                      verbose = NULL)
 
   plot_list[[i]] <- plot(exp_tmp, plot_type = "beeswarm") +
-    ggplot2::ggtitle(exp_names[i]) + ggplot2::ylim(-3050, 4100)
+    ggplot2::ggtitle(exp_names[i]) + ggplot2::ylim(-3700, 3700)
 }
 
 #+ fig-beeswarm_caus_asym, fig.width=14, fig.height=4, fig.scale=0.9
@@ -234,7 +231,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
                               seed = 1)
 
 # Summary of Shapley value computation
-summary(exp_fc_ar)
+print(exp_fc_ar)
 
 # Fit ARIMA(2,0,0)-model
 model_arimax <- arima(data_fit$temp,

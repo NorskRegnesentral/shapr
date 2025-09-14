@@ -18,30 +18,26 @@ progressr::handlers(global = TRUE)
 #### Example code in Section 3 ####
 
 # 40 indep
-exp_40_indep <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  max_n_coalitions = 40,
-  approach = "independence",
-  phi0 = mean(y_train),
-  verbose = NULL,
-  seed = 1
-)
+exp_40_indep <- explain(model = model,
+                        x_explain = x_explain,
+                        x_train = x_train,
+                        max_n_coalitions = 40,
+                        approach = "independence",
+                        phi0 = mean(y_train),
+                        verbose = NULL,
+                        seed = 1)
 
 
 # 40 ctree
-exp_40_ctree <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  max_n_coalitions = 40,
-  approach = "ctree",
-  phi0 = mean(y_train),
-  verbose = NULL,
-  ctree.sample = FALSE,
-  seed = 1
-)
+exp_40_ctree <- explain(model = model,
+                        x_explain = x_explain,
+                        x_train = x_train,
+                        max_n_coalitions = 40,
+                        approach = "ctree",
+                        phi0 = mean(y_train),
+                        verbose = NULL,
+                        ctree.sample = FALSE,
+                        seed = 1)
 
 
 print(exp_40_indep, what = "MSEv")
@@ -92,11 +88,11 @@ summary(exp_40_ctree)
 ```
 
 ```
-## ── Summary of Shapley value explanation ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Summary of Shapley value explanation ─────────────────────────────────────────────────────
 ```
 
 ```
-## • Computed with`shapr::explain()` in 7.9 seconds, started 2025-09-11 22:23:35
+## • Computed with`shapr::explain()` in 9.2 seconds, started 2025-09-12 23:10:42
 ```
 
 ```
@@ -132,7 +128,7 @@ summary(exp_40_ctree)
 ```
 
 ```
-## • Computations (temporary) saved at: '/tmp/RtmpMaUDXe/shapr_obj_a5231866656c.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp0vPjB1/shapr_obj_522e62d2c7033.rds'
 ```
 
 ```
@@ -192,24 +188,23 @@ summary(exp_40_ctree)
 
 ``` r
 ### Continued estimation
-exp_iter_ctree <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "ctree",
-  phi0 = mean(y_train),
-  prev_shapr_object = exp_40_ctree,
-  ctree.sample = FALSE,
-  verbose = c("basic", "convergence"),
-  seed = 1
-)
+exp_iter_ctree <- explain(model = model,
+                          x_explain = x_explain,
+                          x_train = x_train,
+                          approach = "ctree",
+                          phi0 = mean(y_train),
+                          prev_shapr_object = exp_40_ctree,
+                          ctree.sample = FALSE,
+                          verbose = c("basic", "convergence"),
+                          seed = 1)
 ```
 
 ```
 ## 
-## ── Starting `shapr::explain()` at 2025-09-11 22:23:43 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain()` at 2025-09-12 23:10:51 ───────────────────────────────────────
 ## ℹ Feature classes extracted from the model contain `NA`.
-##   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+##   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to
+##   `2^n_features = 128`.
 ## ── Explanation overview ──
 ## 
 ## • Model class: <xgb.Booster>
@@ -219,11 +214,11 @@ exp_iter_ctree <- explain(
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
-## • Computations (temporary) saved at: '/tmp/RtmpMaUDXe/shapr_obj_a52339eff90a.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp0vPjB1/shapr_obj_522e613232db7.rds'
 ## 
 ## ── Iterative computation started ──
 ## 
-## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────
 ## ℹ Using 66 of 128 coalitions, 26 new. 
 ## 
 ## ── Convergence info 
@@ -232,7 +227,7 @@ exp_iter_ctree <- explain(
 ## Estimated remaining coalitions: 62
 ## (Conservatively) adding about 40% of that (24 coalitions) in the next iteration.
 ## 
-## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────
 ## ℹ Using 90 of 128 coalitions, 24 new. 
 ## 
 ## ── Convergence info 
@@ -247,7 +242,9 @@ library(ggplot2)
 ```
 
 ``` r
-plot(exp_iter_ctree, plot_type = "scatter", scatter_features = c("atemp", "windspeed"))
+plot(exp_iter_ctree,
+     plot_type = "scatter",
+     scatter_features = c("atemp", "windspeed"))
 ```
 
 ![plot of chunk fig-scatter_ctree](R_html_figures/fig-scatter_ctree-1.png)
@@ -255,48 +252,42 @@ plot(exp_iter_ctree, plot_type = "scatter", scatter_features = c("atemp", "winds
 
 ``` r
 ### Grouping
+group <- list(temp = c("temp", "atemp"),
+              time = c("trend", "cosyear", "sinyear"),
+              weather = c("hum", "windspeed"))
 
-group <- list(
-  temp = c("temp", "atemp"),
-  time = c("trend", "cosyear", "sinyear"),
-  weather = c("hum", "windspeed")
-)
-
-exp_g_reg <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  phi0 = mean(y_train),
-  group = group,
-  approach = "regression_separate",
-  regression.model = parsnip::boost_tree(
-    engine = "xgboost",
-    mode = "regression"
-  ),
-  verbose = NULL,
-  seed = 1
-)
+exp_g_reg <- explain(model = model,
+                     x_explain = x_explain,
+                     x_train = x_train,
+                     phi0 = mean(y_train),
+                     group = group,
+                     approach = "regression_separate",
+                     regression.model = parsnip::boost_tree(
+                       engine = "xgboost",
+                       mode = "regression"
+                     ),
+                     verbose = NULL,
+                     seed = 1)
 
 tree_vals <- c(10, 15, 25, 50, 100, 500)
-exp_g_reg_tuned <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  phi0 = mean(y_train),
-  group = group,
-  approach = "regression_separate",
-  regression.model =
-    parsnip::boost_tree(
-      trees = hardhat::tune(),
-      engine = "xgboost", mode = "regression"
-    ),
-  regression.tune_values = expand.grid(
-    trees = tree_vals
-  ),
-  regression.vfold_cv_para = list(v = 5),
-  verbose = NULL,
-  seed = 1
-)
+exp_g_reg_tuned <- explain(model = model,
+                           x_explain = x_explain,
+                           x_train = x_train,
+                           phi0 = mean(y_train),
+                           group = group,
+                           approach = "regression_separate",
+                           regression.model =
+                             parsnip::boost_tree(
+                               trees = hardhat::tune(),
+                               engine = "xgboost",
+                               mode = "regression"
+                             ),
+                           regression.tune_values = expand.grid(
+                             trees = tree_vals
+                           ),
+                           regression.vfold_cv_para = list(v = 5),
+                           verbose = NULL,
+                           seed = 1)
 
 print(exp_g_reg, what = "MSEv")
 ```
@@ -324,7 +315,7 @@ print(exp_g_reg, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2025-09-11 22:23:52 2025-09-11 22:23:53            1.83     1.8 second
+## 1: 2025-09-12 23:10:58 2025-09-12 23:11:00            1.97      2 seconds
 ```
 
 ``` r
@@ -334,15 +325,14 @@ print(exp_g_reg_tuned, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2025-09-11 22:23:53 2025-09-11 22:23:56            2.78    2.8 seconds
+## 1: 2025-09-12 23:11:00 2025-09-12 23:11:04            4.37    4.4 seconds
 ```
 
 ``` r
 # Waterfall plot for the best one
 plot(exp_g_reg_tuned,
-  index_x_explain = 6,
-  plot_type = "waterfall"
-)
+     index_x_explain = 6,
+     plot_type = "waterfall")
 ```
 
 ![plot of chunk fig-waterfall_group](R_html_figures/fig-waterfall_group-1.png)
@@ -352,19 +342,15 @@ plot(exp_g_reg_tuned,
 #### Causal and asymmetric Shapley values ####
 
 # Specify the causal ordering and confounding
-causal_order0 <- list(
-  "trend",
-  c("cosyear", "sinyear"),
-  c("temp", "atemp", "windspeed", "hum")
-)
+causal_order0 <- list("trend",
+                      c("cosyear", "sinyear"),
+                      c("temp", "atemp", "windspeed", "hum"))
 
 confounding0 <- c(FALSE, TRUE, FALSE)
 
 # Specify the parameters of four different Shapley value variations
-exp_names <- c(
-  "Asymmetric causal", "Asymmetric conditional",
-  "Symmetric conditional", "Symmetric marginal"
-)
+exp_names <- c("Asymmetric causal", "Asymmetric conditional",
+               "Symmetric conditional", "Symmetric marginal")
 
 causal_ordering_list <- list(causal_order0, causal_order0, NULL, NULL)
 confounding_list <- list(confounding0, NULL, NULL, TRUE)
@@ -373,21 +359,19 @@ asymmetric_list <- list(TRUE, TRUE, FALSE, FALSE)
 # Explain the four variations and create beeswarm plots
 plot_list <- list()
 for (i in seq_along(exp_names)) {
-  exp_tmp <- explain(
-    model = model,
-    x_train = x_train,
-    x_explain = x_explain,
-    approach = "gaussian",
-    phi0 = mean(y_train),
-    asymmetric = asymmetric_list[[i]],
-    causal_ordering = causal_ordering_list[[i]],
-    confounding = confounding_list[[i]],
-    seed = 1,
-    verbose = NULL
-  )
+  exp_tmp <- explain(model = model,
+                     x_train = x_train,
+                     x_explain = x_explain,
+                     approach = "gaussian",
+                     phi0 = mean(y_train),
+                     asymmetric = asymmetric_list[[i]],
+                     causal_ordering = causal_ordering_list[[i]],
+                     confounding = confounding_list[[i]],
+                     seed = 1,
+                     verbose = NULL)
 
   plot_list[[i]] <- plot(exp_tmp, plot_type = "beeswarm") +
-    ggplot2::ggtitle(exp_names[i]) + ggplot2::ylim(-3050, 4100)
+    ggplot2::ggtitle(exp_names[i]) + ggplot2::ylim(-3700, 3700)
 }
 ```
 
@@ -398,17 +382,8 @@ patchwork::wrap_plots(plot_list, nrow = 1) +
   patchwork::plot_layout(guides = "collect")
 ```
 
-```
-## Warning: Removed 1 row containing missing values or values outside the scale range (`geom_point()`).
-## Removed 1 row containing missing values or values outside the scale range (`geom_point()`).
-```
-
 ![plot of chunk fig-beeswarm_caus_asym](R_html_figures/fig-beeswarm_caus_asym-1.png)
 
-```
-## Warning: Removed 1 row containing missing values or values outside the scale range (`geom_point()`).
-## Removed 1 row containing missing values or values outside the scale range (`geom_point()`).
-```
 
 ``` r
 #### Example code in Section 6 ####
@@ -422,17 +397,15 @@ model_ar <- ar(data_fit$temp, order = 2)
 
 phi0_ar <- rep(mean(data_fit$temp), 3)
 
-exp_fc_ar <- explain_forecast(
-  model = model_ar,
-  y = x_full[, "temp"],
-  explain_idx = 730:731,
-  explain_y_lags = 2,
-  horizon = 3,
-  approach = "empirical",
-  phi0 = phi0_ar,
-  group_lags = FALSE,
-  seed = 1
-)
+exp_fc_ar <- explain_forecast(model = model_ar,
+                              y = x_full[, "temp"],
+                              explain_idx = 730:731,
+                              explain_y_lags = 2,
+                              horizon = 3,
+                              approach = "empirical",
+                              phi0 = phi0_ar,
+                              group_lags = FALSE,
+                              seed = 1)
 ```
 
 ```
@@ -440,13 +413,14 @@ exp_fc_ar <- explain_forecast(
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2025-09-11 22:24:24 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-09-12 23:11:32 ──────────────────────────────
 ```
 
 ```
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to
+##   `2^n_features = 4`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -467,7 +441,7 @@ exp_fc_ar <- explain_forecast(
 ## 
 ## • Number of observations to explain: 2
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpMaUDXe/shapr_obj_a5236a6bdb03.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp0vPjB1/shapr_obj_522e62ce07f20.rds'
 ## 
 ## 
 ## 
@@ -480,63 +454,47 @@ exp_fc_ar <- explain_forecast(
 
 ``` r
 # Summary of Shapley value computation
-summary(exp_fc_ar)
+print(exp_fc_ar)
 ```
 
 ```
-## 
-## ── Summary of Shapley value explanation ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## • Computed with`shapr::explain_forecast()` in 0.5 seconds, started 2025-09-11 22:24:24
-## • Model class: <ar>
-## • v(S) estimation class: Monte Carlo integration
-## • Approach: empirical
-## • Procedure: Non-iterative
-## • Number of Monte Carlo integration samples: 1000
-## • Number of feature-wise Shapley values: 2
-## • Number of observations to explain: 2
-## • Number of coalitions used: 4 (of total 4)
-## • Computations (temporary) saved at: '/tmp/RtmpMaUDXe/shapr_obj_a5236a6bdb03.rds'
-## 
-## ── Estimated Shapley values 
-##    explain_idx horizon   none temp.1 temp.2
-##          <int>   <int> <char> <char> <char>
-## 1:         730       1  15.32  -5.96  -4.68
-## 2:         731       1  15.32  -7.80  -4.76
-## 3:         730       2  15.32  -5.61  -4.39
-## 4:         731       2  15.32  -7.34  -4.47
-## 5:         730       3  15.32  -5.26  -4.12
-## 6:         731       3  15.32  -6.89  -4.20
+##    explain_idx horizon  none temp.1 temp.2
+##          <int>   <int> <num>  <num>  <num>
+## 1:         730       1  15.3  -5.96  -4.68
+## 2:         731       1  15.3  -7.80  -4.76
+## 3:         730       2  15.3  -5.61  -4.39
+## 4:         731       2  15.3  -7.34  -4.47
+## 5:         730       3  15.3  -5.26  -4.12
+## 6:         731       3  15.3  -6.89  -4.20
 ```
 
 ``` r
 # Fit ARIMA(2,0,0)-model
 model_arimax <- arima(data_fit$temp,
-  order = c(2, 0, 0),
-  xreg = data_fit$windspeed
-)
+                      order = c(2, 0, 0),
+                      xreg = data_fit$windspeed)
 phi0_arimax <- rep(mean(data_fit$temp), 2)
 
-exp_fc_arimax <- explain_forecast(
-  model = model_arimax,
-  y = x_full[, "temp"],
-  xreg = x_full[, "windspeed"],
-  train_idx = 2:728,
-  explain_idx = 729,
-  explain_y_lags = 2,
-  explain_xreg_lags = 1,
-  horizon = 2,
-  approach = "empirical",
-  phi0 = phi0_arimax,
-  group_lags = TRUE,
-  seed = 1
-)
+exp_fc_arimax <- explain_forecast(model = model_arimax,
+                                  y = x_full[, "temp"],
+                                  xreg = x_full[, "windspeed"],
+                                  train_idx = 2:728,
+                                  explain_idx = 729,
+                                  explain_y_lags = 2,
+                                  explain_xreg_lags = 1,
+                                  horizon = 2,
+                                  approach = "empirical",
+                                  phi0 = phi0_arimax,
+                                  group_lags = TRUE,
+                                  seed = 1)
 ```
 
 ```
 ## 
-## ── Starting `shapr::explain_forecast()` at 2025-09-11 22:24:24 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-09-12 23:11:33 ──────────────────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
-##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
+##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to
+##   `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
 ##   method            from
 ##   as.zoo.data.frame zoo 
 ## 
@@ -549,7 +507,7 @@ exp_fc_arimax <- explain_forecast(
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpMaUDXe/shapr_obj_a5237d83db85.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp0vPjB1/shapr_obj_522e61381a620.rds'
 ## 
 ## ── Main computation started ──
 ## 
