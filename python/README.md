@@ -49,7 +49,7 @@ Rscript -e 'install.packages("shapr", repos="https://cran.rstudio.com")'
 
 ### 2. Ensure R is discoverable (R_HOME and PATH)
 
-Sometimes `shaprpy` cannot automatically locate your R installation. To ensure proper detection, verify that:
+Sometimes `rpy2` (which `shaprpy` relies on) cannot automatically locate your R installation. To ensure proper detection, verify that:
 - R is available in your system `PATH`, **or**
 - The `R_HOME` environment variable is set to your R installation directory.
 
