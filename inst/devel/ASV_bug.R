@@ -35,9 +35,9 @@ library(GGally)
 #' @export
 #'
 #' @examples
-#' causal_ordering <- list(c(1,2),c(3,4))
+#' causal_ordering <- list(c(1, 2), c(3, 4))
 #' weight_matrix_permutation(causal_ordering = causal_ordering)
-weight_matrix_permutation = function(causal_ordering, coalitions_str = NULL, m = NULL, w_perm = NULL) {
+weight_matrix_permutation <- function(causal_ordering, coalitions_str = NULL, m = NULL, w_perm = NULL) {
   # Get the valid coalitions as strings if not provided
   if (is.null(coalitions_str)) {
     coalitions_str <-
@@ -48,22 +48,22 @@ weight_matrix_permutation = function(causal_ordering, coalitions_str = NULL, m =
   if (class(coalitions_str) != "character") coalitions_str <- unname(sapply(coalitions_str, paste, collapse = " "))
 
   # Get the number of Shapley values (excluding phi0) if not provided
-  if (is.null(m)) m = max(unlist(causal_ordering))
+  if (is.null(m)) m <- max(unlist(causal_ordering))
 
   # Get the valid permutations that satisfy the causal ordering
   perms <- get_valid_permutations(causal_ordering = causal_ordering)
 
   # Get the number of permutations and the weight if not provided
   n_perms <- length(perms)
-  if (is.null(w_perm)) w_perm <- 1/n_perms
+  if (is.null(w_perm)) w_perm <- 1 / n_perms
 
   # Initialize weight matrix: rows = null + features, columns = coalitions_str
   W_perms <- matrix(0, nrow = m + 1, ncol = length(coalitions_str))
-  W_perms[1, 1] <- 1  # Null coalition gets weight 1
+  W_perms[1, 1] <- 1 # Null coalition gets weight 1
 
   # Loop over all valid permutations
   for (i in seq_len(n_perms)) {
-    perm = perms[[i]]
+    perm <- perms[[i]]
 
     # Loop over each feature/Shapley value
     for (j in seq_len(m)) {
@@ -72,8 +72,8 @@ weight_matrix_permutation = function(causal_ordering, coalitions_str = NULL, m =
       S_with_j <- sort(unique(c(S_without_j, j)))
 
       # Convert to string for faster comparison
-      S_without_j_str = paste(S_without_j, collapse = " ")
-      S_with_j_str = paste(S_with_j, collapse = " ")
+      S_without_j_str <- paste(S_without_j, collapse = " ")
+      S_with_j_str <- paste(S_with_j, collapse = " ")
 
       # Find matching coalition indices
       id_S_without_j <- which(S_without_j_str == coalitions_str)
@@ -103,7 +103,7 @@ weight_matrix_permutation = function(causal_ordering, coalitions_str = NULL, m =
 #' @author Lars Henry Berge Olsen
 #'
 #' @examples
-#' get_valid_permutations(list(c(1,2,3))) # Return all 3! = 6 possible permutations
+#' get_valid_permutations(list(c(1, 2, 3))) # Return all 3! = 6 possible permutations
 #' get_valid_permutations(list(c(3), c(1, 4), c(2)))
 get_valid_permutations <- function(causal_ordering) {
   # Load required package
@@ -157,7 +157,7 @@ get_valid_permutations_slow <- function(causal_ordering = list(seq_len(m))) {
   }
 
   # Get the number of features
-  m = max(unlist(causal_ordering))
+  m <- max(unlist(causal_ordering))
 
   # Generate all permutations of 1:m
   perms <- gtools::permutations(n = m, r = m, v = seq_len(m))
@@ -328,12 +328,12 @@ explanation_list[["gaussian_non_iterative"]] <- explain(
 
 ## Results ---------------------------------------------------------------------------------------------------------
 ### KernelSHAP -----------------------------------------------------------------------------------------------------
-phi = explanation_list$gaussian_non_iterative$shapley_values_est
+phi <- explanation_list$gaussian_non_iterative$shapley_values_est
 
 ### KernelSHAP manual ----------------------------------------------------------------------------------------------
-dt_vS = explanation_list$gaussian_non_iterative$internal$output$dt_vS
-W = explanation_list$gaussian_non_iterative$internal$objects$W
-shap_names = explanation_list$gaussian_non_iterative$internal$parameters$shap_names
+dt_vS <- explanation_list$gaussian_non_iterative$internal$output$dt_vS
+W <- explanation_list$gaussian_non_iterative$internal$objects$W
+shap_names <- explanation_list$gaussian_non_iterative$internal$parameters$shap_names
 kshap <- t(W %*% as.matrix(dt_vS[, -"id_coalition"]))
 dt_kshap <- data.table::as.data.table(kshap)
 colnames(dt_kshap) <- c("none", shap_names)
@@ -344,8 +344,8 @@ dt_kshap
 all.equal(dt_kshap, phi)
 
 ### PermutationSHAP manual -----------------------------------------------------------------------------------------
-causal_ordering = explanation_list$gaussian_non_iterative$internal$parameters$causal_ordering
-W_perm = weight_matrix_permutation(causal_ordering = causal_ordering)
+causal_ordering <- explanation_list$gaussian_non_iterative$internal$parameters$causal_ordering
+W_perm <- weight_matrix_permutation(causal_ordering = causal_ordering)
 
 kshap_perm <- t(W_perm %*% as.matrix(dt_vS[, -"id_coalition"]))
 dt_kshap_perm <- data.table::as.data.table(kshap_perm)
@@ -364,15 +364,15 @@ round(W_perm, 4)
 
 ## Plots -----------------------------------------------------------------------------------------------------------
 # Add the perm based Shapley values to the explanation list by copying and modifying the previous result
-explanation_list[["gaussian_non_iterative_perm"]] = explanation_list[["gaussian_non_iterative"]]
-explanation_list[["gaussian_non_iterative_perm"]]$shapley_values_est = dt_kshap_perm
+explanation_list[["gaussian_non_iterative_perm"]] <- explanation_list[["gaussian_non_iterative"]]
+explanation_list[["gaussian_non_iterative_perm"]]$shapley_values_est <- dt_kshap_perm
 
 # See some very small differences, but difficult to see
 plot_beeswarms(explanation_list, title = "Asymmetric conditional Shapley values")
 
 # Plot them against each other, we see that their are some minor differences
 # But they are not huge, and would most likely not change the conclusions motivated by the explanations.
-dt_plot_against = merge(
+dt_plot_against <- merge(
   data.table::melt(dt_kshap, id.vars = "explain_id", value.name = "asym"),
   data.table::melt(dt_kshap_perm, id.vars = "explain_id", value.name = "asym_perm"),
   by = c("explain_id", "variable")
@@ -386,7 +386,7 @@ ggplot(dt_plot_against, aes(x = asym, y = asym_perm)) +
 
 
 # Plot them with explain_id on the x-axis
-dt_plot = rbind(
+dt_plot <- rbind(
   data.table::melt(dt_kshap, id.vars = "explain_id")[, method := "asym"],
   data.table::melt(dt_kshap_perm, id.vars = "explain_id")[, method := "asym_perm"]
 )
@@ -403,9 +403,9 @@ ggplot(dt_plot, aes(x = explain_id, y = value, col = method)) +
 
 # Symmetric ------------------------------------------------------------------------------------------------------
 causal_ordering <- list(c(1, 2, 3))
-m = max(unlist(causal_ordering))
+m <- max(unlist(causal_ordering))
 
-dt_valid_causal_coalitions =
+dt_valid_causal_coalitions <-
   data.table(coalitions = shapr:::get_valid_causal_coalitions(causal_ordering = causal_ordering))
 
 X <- shapr:::create_coalition_table(dt_valid_causal_coalitions = dt_valid_causal_coalitions, m = m)
@@ -427,9 +427,9 @@ all.equal(W, W_perm)
 # Asymmetric ------------------------------------------------------------------------------------------------------
 ## Case 1 ---------------------------------------------------------------------------------------------------------
 causal_ordering <- list(c(1), c(2, 3))
-m = max(unlist(causal_ordering))
+m <- max(unlist(causal_ordering))
 
-dt_valid_causal_coalitions =
+dt_valid_causal_coalitions <-
   data.table(coalitions = shapr:::get_valid_causal_coalitions(causal_ordering = causal_ordering))
 
 X <- shapr:::create_coalition_table(dt_valid_causal_coalitions = dt_valid_causal_coalitions, m = m)
@@ -445,8 +445,8 @@ W_perm
 ### Coincidence? ----------------------------------------------------------------------------------------------------
 # Only use the first row. Yes, coincidence based on us setting 10^(-6). No longer true for other values.
 X
-X[id_coalition %in% c(3,4), shapley_weight:=10^(-6)]
-W_coindicence = round(shapr:::weight_matrix(X = X, normalize_W_weights = TRUE), 8)
+X[id_coalition %in% c(3, 4), shapley_weight := 10^(-6)]
+W_coindicence <- round(shapr:::weight_matrix(X = X, normalize_W_weights = TRUE), 8)
 
 W_coindicence
 W_perm
@@ -456,11 +456,11 @@ all.equal(W_coindicence, W_perm)
 
 
 ## Case 2 ---------------------------------------------------------------------------------------------------------
-causal_ordering <- list(c(4,5), c(2, 3), c(1,6))
-causal_ordering <- list(c(1,2), c(3, 4), c(5,6))
-m = max(unlist(causal_ordering))
+causal_ordering <- list(c(4, 5), c(2, 3), c(1, 6))
+causal_ordering <- list(c(1, 2), c(3, 4), c(5, 6))
+m <- max(unlist(causal_ordering))
 
-dt_valid_causal_coalitions =
+dt_valid_causal_coalitions <-
   data.table(coalitions = shapr:::get_valid_causal_coalitions(causal_ordering = causal_ordering))
 
 X <- shapr:::create_coalition_table(dt_valid_causal_coalitions = dt_valid_causal_coalitions, m = m)
@@ -475,9 +475,9 @@ W_perm
 
 ## Case 3 ---------------------------------------------------------------------------------------------------------
 causal_ordering <- list(c(1), c(2, 3, 4))
-m = max(unlist(causal_ordering))
+m <- max(unlist(causal_ordering))
 
-dt_valid_causal_coalitions =
+dt_valid_causal_coalitions <-
   data.table(coalitions = shapr:::get_valid_causal_coalitions(causal_ordering = causal_ordering))
 
 X <- shapr:::create_coalition_table(dt_valid_causal_coalitions = dt_valid_causal_coalitions, m = m)
@@ -494,8 +494,8 @@ W_perm
 
 # Seems to be a coincidence. changes based on the Shapley weight we set below.
 X
-X[id_coalition %in% seq(3, 8), shapley_weight:=10^(-10)]
-W_coindicence = round(shapr:::weight_matrix(X = X, normalize_W_weights = TRUE), 8)
+X[id_coalition %in% seq(3, 8), shapley_weight := 10^(-10)]
+W_coindicence <- round(shapr:::weight_matrix(X = X, normalize_W_weights = TRUE), 8)
 
 W_perm
 W_coindicence
@@ -508,19 +508,19 @@ all.equal(W_perm, W_coindicence)
 m <- 4
 weight_zero_m <- 10^6
 
-causal_ordering <- list(c(1,2),3,4)
-causal_ordering <- list(c(1,2,3,4))
-causal_ordering <- list(c(1,2), c(3,4))
-causal_ordering <- list(c(1), c(2,3,4))
-causal_ordering <- list(c(2,3,4),c(1))
+causal_ordering <- list(c(1, 2), 3, 4)
+causal_ordering <- list(c(1, 2, 3, 4))
+causal_ordering <- list(c(1, 2), c(3, 4))
+causal_ordering <- list(c(1), c(2, 3, 4))
+causal_ordering <- list(c(2, 3, 4), c(1))
 
 
 
-dt_valid_causal_coalitions =
+dt_valid_causal_coalitions <-
   data.table(coalitions = shapr:::get_valid_causal_coalitions(causal_ordering = causal_ordering))
 
 
-aa<-shapr:::exact_coalition_table(dt_valid_causal_coalitions = dt_valid_causal_coalitions,m = m)[]
+aa <- shapr:::exact_coalition_table(dt_valid_causal_coalitions = dt_valid_causal_coalitions, m = m)[]
 
 
 coalitions0 <- dt_valid_causal_coalitions[, coalitions]
@@ -531,26 +531,26 @@ dt[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
 dt[, coalition_size := lengths(coalitions)]
 dt[, N := .N, coalition_size]
 dt[, shapley_weight := shapr:::shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m)]
-#dt[, sample_freq := NA]
+# dt[, sample_freq := NA]
 
-dt[-c(1,.N),shapley_weight0:=shapley_weight/sum(shapley_weight)]
-dt[-c(1,.N)]
+dt[-c(1, .N), shapley_weight0 := shapley_weight / sum(shapley_weight)]
+dt[-c(1, .N)]
 
 
 
 ##
 m <- 3
 weight_zero_m <- 10^6
-causal_ordering <- list(c(1,2,3))
-causal_ordering <- list(c(1), c(2,3))
+causal_ordering <- list(c(1, 2, 3))
+causal_ordering <- list(c(1), c(2, 3))
 
-dt_valid_causal_coalitions =
+dt_valid_causal_coalitions <-
   data.table(coalitions = shapr:::get_valid_causal_coalitions(causal_ordering = causal_ordering))
 dt_valid_causal_coalitions
 
-n_valid_causal_coalitions = nrow(dt_valid_causal_coalitions)
+n_valid_causal_coalitions <- nrow(dt_valid_causal_coalitions)
 
-aa<-shapr:::exact_coalition_table(dt_valid_causal_coalitions = dt_valid_causal_coalitions,m = m)[]
+aa <- shapr:::exact_coalition_table(dt_valid_causal_coalitions = dt_valid_causal_coalitions, m = m)[]
 aa
 
 coalitions0 <- dt_valid_causal_coalitions[, coalitions]
@@ -563,29 +563,29 @@ dt[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
 dt[, coalition_size := lengths(coalitions)]
 dt[, N := .N, coalition_size]
 dt[, shapley_weight := shapr:::shapley_weights(m = m, N = N, n_components = coalition_size, weight_zero_m)]
-#dt[, sample_freq := NA]
-dt[-c(1,.N),shapley_weight0:=shapley_weight/sum(shapley_weight)]
-dt[-c(1,.N)]
+# dt[, sample_freq := NA]
+dt[-c(1, .N), shapley_weight0 := shapley_weight / sum(shapley_weight)]
+dt[-c(1, .N)]
 
 X <- shapr:::create_coalition_table(dt_valid_causal_coalitions = dt_valid_causal_coalitions, m = m)
 X[]
 
 dt[, `:=`(coalitions_str, sapply(coalitions, paste, collapse = " "))]
 
-X[id_coalition %in% c(3,4,7), shapley_weight:=10^(-6)]
-X[-c(1,.N)]
+X[id_coalition %in% c(3, 4, 7), shapley_weight := 10^(-6)]
+X[-c(1, .N)]
 
 # Get weighted matrix
 W <- round(shapr:::weight_matrix(
   X = X,
   normalize_W_weights = TRUE
-),5)
+), 5)
 W
 t(W)
 
 W_perm <- round(weight_matrix_permutation(
   causal_ordering = causal_ordering,
-),5)
+), 5)
 W_perm
 
 all.equal(W, W_perm)
@@ -596,5 +596,3 @@ S <- coalition_matrix_cpp(
   m = m
 )
 S
-
-
