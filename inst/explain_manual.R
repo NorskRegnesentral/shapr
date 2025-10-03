@@ -1,7 +1,8 @@
 
-# Manual implementation of the explain function in shapr, allowing to pass
+# Manual implementation of the explain function in shapr, using a range of internal functions from the shapr package.
+# This manual implementation allows us to pass
 # coalition_list: A list of the coalitions to evaluate
-# R_D: The weight matrix, which we multiply by the v(S) vector/matrix to compute the Shapley values (i.e. R_D[i,j] is the weight for coalition j for feature i)
+# R_D: The weight matrix, which we multiply by the v(S) vector/matrix to compute the Shapley values (i.e. R_D[i+1,j] is the weight for coalition j for feature i)
 explain_manual <- function(
     model,
     x_explain,
@@ -91,6 +92,7 @@ explain_manual <- function(
 
 library(xgboost)
 library(data.table)
+library(shapr)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -118,47 +120,7 @@ model <- xgboost(
 # Specifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
-
-causal_ordering = list("Solar.R","Wind")#list("A", "B") # C is free
-
-exp_gaussian_causal <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "gaussian",
-  causal_ordering = causal_ordering,
-  asymmetric = TRUE,
-  phi0 = p0
-)
-
-print(exp_gaussian_causal)
-
-
-### Manual calculation
-
-# Assume we are given X, S and W
-
-X <- exp_gaussian_causla$internal$objects$X
-S <- exp_gaussian$internal$objects$S
-W <- exp_gaussian$internal$objects$W
-
 # Settings
-
-
-approach <- "gaussian"
-coalition_list <- list(numeric(0), c(1,3), c(1,3,4), c(1,2,4), c(4), c(3), c(1,2,3,4)) #exp_gaussian$internal$objects$X$coalitions[c(1,(c(6,8,11,3,2)),12)]
-R_D <- W[,c(1,(c(6,8,11,3,2)),12)]
-phi0  = p0
-
-
-explain_manual(model = model,
-               x_explain = x_explain,
-               x_train = x_train,
-               approach = approach,
-               phi0 = p0,
-               coalition_list = coalition_list,
-               R_D = R_D
-)
 
 # Sanity check using all coaltions
 
@@ -169,26 +131,33 @@ exp_ctree_full <- explain(
   x_train = x_train,
   approach = "ctree",
   ctree.sample = FALSE,
-  phi0 = p0
+  phi0 = p0,
 )
 
 
 coalition_list <- list(numeric(0), c(1), c(2), c(3), c(4), c(1,2), c(1,3), c(1,4), c(2,3), c(2,4), c(3,4), c(1,2,3), c(1,2,4), c(1,3,4), c(2,3,4), c(1,2,3,4))
 R_D <- exp_ctree_full$internal$objects$W
 
-explain_manual(model = model,
-               x_explain = x_explain,
-               x_train = x_train,
-               approach = "ctree",
-               phi0 = p0,
-               coalition_list = coalition_list,
-               R_D = R_D,
-               ctree.sample = FALSE
+exp_ctree_full_man <- explain_manual(model = model,
+                                     x_explain = x_explain,
+                                     x_train = x_train,
+                                     approach = "ctree",
+                                     phi0 = p0,
+                                     coalition_list = coalition_list,
+                                     R_D = R_D,
+                                     ctree.sample = FALSE
 )
 
-print(exp_ctree_full)
+exp_ctree_full_man
+
+# Checking equality
+all.equal(exp_ctree_full_man,
+          exp_ctree_full$shapley_values_est[,-1])
 
 # Yes, identical
+
+### Doing the same for groups:
+
 
 #### So what if consider groups of features
 
@@ -206,21 +175,116 @@ exp_ctree_full_group <- explain(
   phi0 = p0
 )
 
-coalition_list <- exp_ctree_full_group$internal$objects$X$coalitions #list(numeric(0), c(1), c(2), c(3), c(4), c(1,2), c(1,3), c(1,4), c(2,3), c(2,4), c(3,4), c(1,2,3), c(1,2,4), c(1,3,4), c(2,3,4), c(1,2,3,4))
+# Note that coalitions group now refer to coaltions of the groups (where A=1, B=2, C=3 in the above example)
+coalition_list <- exp_ctree_full_group$internal$objects$X$coalitions
 R_D <- exp_ctree_full_group$internal$objects$W
+
+exp_ctree_full_group_man <- explain_manual(model = model,
+                                           x_explain = x_explain,
+                                           x_train = x_train,
+                                           approach = "ctree",
+                                           phi0 = p0,
+                                           coalition_list = coalition_list,
+                                           R_D = R_D,
+                                           ctree.sample = FALSE,
+                                           group = group
+)
+
+exp_ctree_full_group_man
+
+# Checking equality
+all.equal(exp_ctree_full_group_man,
+          exp_ctree_full_group$shapley_values_est[,-1])
+
+
+### Let also check using just a few of the coalitions
+
+exp_ctree_samp_group <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "ctree",
+  ctree.sample = FALSE,
+  group = group,
+  phi0 = p0,
+  max_n_coalitions = 4
+)
+
+coalition_list <- exp_ctree_samp_group$internal$objects$X$coalitions
+R_D <- exp_ctree_samp_group$internal$objects$W
+
+exp_ctree_samp_group_man <- explain_manual(model = model,
+                                           x_explain = x_explain,
+                                           x_train = x_train,
+                                           approach = "ctree",
+                                           phi0 = p0,
+                                           coalition_list = coalition_list,
+                                           R_D = R_D,
+                                           ctree.sample = FALSE,
+                                           group = group
+)
+
+exp_ctree_samp_group_man
+
+# Checking equality
+all.equal(exp_ctree_samp_group_man,
+          exp_ctree_samp_group$shapley_values_est[,-1])
+
+# Still identical
+
+# Also checking that the order we provide the coalitons in does not matter (except that the empty and full set are first and last)
+
+exp_ctree_samp_group$internal$objects$X$coalitions
+
+coalition_list <- exp_ctree_samp_group$internal$objects$X$coalitions[c(1,3,2,4)]
+R_D <- exp_ctree_samp_group$internal$objects$W[,c(1,3,2,4)]
+
+exp_ctree_samp_group_man2 <- explain_manual(model = model,
+                                           x_explain = x_explain,
+                                           x_train = x_train,
+                                           approach = "ctree",
+                                           phi0 = p0,
+                                           coalition_list = coalition_list,
+                                           R_D = R_D,
+                                           ctree.sample = FALSE,
+                                           group = group
+)
+
+exp_ctree_samp_group_man2
+
+# Checking equality
+all.equal(exp_ctree_samp_group_man,
+          exp_ctree_samp_group_man2)
+
+# TRUE
+
+
+### And finally a manual example
+
+set.seed(123)
+
+
+# Note that parallelization and progress bar are still supported
+future::plan("multisession", workers = 2) # Increase the number of workers for increased performance with many features
+progressr::handlers(global = TRUE)
+progressr::handlers("cli") # Using the cli package as backend (recommended for the estimates of the remaining time)
+
+
+coalition_list <- list(numeric(0), c(1,3), c(1,3,4), c(1,2,4), c(4), c(3), c(1,2,3,4))
+R_D <- exp_ctree_full$internal$objects$W[,c(1,sample(2:15,5,replace = FALSE),16)]
+phi0  = p0
+
 
 explain_manual(model = model,
                x_explain = x_explain,
                x_train = x_train,
-               approach = "ctree",
+               approach = "gaussian",
                phi0 = p0,
                coalition_list = coalition_list,
-               R_D = R_D,
-               ctree.sample = FALSE,
-               group = group
+               R_D = R_D
 )
 
-print(exp_ctree_full_group)
+
 
 
 
