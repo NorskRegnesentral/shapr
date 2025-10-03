@@ -1,5 +1,6 @@
 library(xgboost)
 library(shapr)
+library(data.table)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
