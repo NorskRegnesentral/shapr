@@ -329,7 +329,7 @@ get_S_causal_steps <- function(S, causal_ordering, confounding, as_string = FALS
 }
 
 # Prepare data function -------------------------------------------------------------------------------------------
-#' Generate data used for predictions and Monte Carlo integration for causal Shapley values
+#' Generate Data Used for Predictions and Monte Carlo Integration for Causal Shapley Values
 #'
 #' This function loops over the given coalitions, and for each coalition it extracts the
 #' chain of relevant sampling steps provided in `internal$object$S_causal`. This chain

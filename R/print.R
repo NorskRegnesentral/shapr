@@ -1,4 +1,4 @@
-#' Print method for shapr objects
+#' Print Method for Shapr Objects
 #'
 #' @param x A shapr object
 #' @param what Character. Which component to print.

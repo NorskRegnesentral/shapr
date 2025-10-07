@@ -1,4 +1,4 @@
-#' Prepares the next iteration of the iterative sampling algorithm
+#' Prepare the Next Iteration of the Iterative Sampling Algorithm
 #'
 #' @inheritParams default_doc_export
 #'

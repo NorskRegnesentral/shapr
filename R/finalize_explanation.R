@@ -1,4 +1,4 @@
-#' Gather the final output to create the explanation object
+#' Gather the Final Output to Create the Explanation Object
 #'
 #' @inheritParams default_doc_export
 #'

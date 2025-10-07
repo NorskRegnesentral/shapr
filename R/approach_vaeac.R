@@ -832,7 +832,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   return(return_list)
 }
 
-#' Continue to Train the vaeac Model
+#' Continue to Train the Vaeac Model
 #'
 #' @description Function that loads a previously trained vaeac model and continue the training, either
 #' on new data or on the same dataset as it was trained on before. If we are given a new dataset, then
@@ -1647,7 +1647,7 @@ vaeac_check_parameters <- function(x_train,
 }
 
 # Get functions ========================================================================================================
-#' Function to specify the extra parameters in the `vaeac` model
+#' Specify the Extra Parameters in the `vaeac` Model
 #'
 #' @description In this function, we specify the default values for the extra parameters used in [shapr::explain()]
 #' for `approach = "vaeac"`.
@@ -2057,7 +2057,7 @@ vaeac_get_x_explain_extended <- function(x_explain, S, index_features) {
   return(x_explain_extended)
 }
 
-#' Extract the Training VLB and Validation IWAE from a list of explanations objects using the vaeac approach
+#' Extract the Training VLB and Validation IWAE from a List of Explanations Objects Using the Vaeac Approach
 #'
 #' @param explanation_list A list of [explain()] objects applied to the same data, model, and
 #' `vaeac` must be the used approach. If the entries in the list is named, then the function use

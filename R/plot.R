@@ -1,4 +1,4 @@
-#' Plot of the Shapley value explanations
+#' Plot of the Shapley Value Explanations
 #'
 #' @description Plots the individual prediction explanations.
 #'
@@ -1406,7 +1406,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
   ))
 }
 
-#' Shapley value bar plots for several explanation objects
+#' Shapley Value Bar Plots for Several Explanation Objects
 #'
 #' @description
 #' Make plots to visualize and compare the estimated Shapley values for a list of

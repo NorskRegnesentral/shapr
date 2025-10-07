@@ -1,4 +1,4 @@
-#' Summary method for shapr objects
+#' Summary Method for Shapr Objects
 #'
 #' @param object A shapr object.
 #' @param ... Currently unused.

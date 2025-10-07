@@ -1,4 +1,4 @@
-#' Set up the kernelSHAP framework
+#' Set Up the KernelSHAP Framework
 #'
 #' @inheritParams default_doc_export
 #'
@@ -550,7 +550,7 @@ coal_feature_mapper <- function(x, coal_feature_list) {
   }
 }
 
-#' Calculate weighted matrix
+#' Calculate Weighted Matrix
 #'
 #' @param X data.table.
 #' Output from [create_coalition_table()].

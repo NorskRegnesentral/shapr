@@ -1,4 +1,4 @@
-#' Extract components from a shapr object
+#' Extract Components from a Shapr Object
 #'
 #' @param x A `shapr` object
 #' @param what Character vector specifying one or more components to extract.
