@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_results.R
 \name{get_results}
 \alias{get_results}
-\title{Extract components from a shapr object}
+\title{Extract Components from a Shapr Object}
 \usage{
 get_results(
   x,
@@ -36,7 +36,7 @@ If a single component is requested, returns that object.
 If multiple are requested, returns a named list.
 }
 \description{
-Extract components from a shapr object
+Extract Components from a Shapr Object
 }
 \details{
 The function extracts a full suite of information related to the computation of the Shapley values from

@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup.R
 \name{get_supported_approaches}
 \alias{get_supported_approaches}
-\title{Gets the implemented approaches}
+\title{Get the Implemented Approaches}
 \usage{
 get_supported_approaches()
 }
@@ -11,5 +11,5 @@ Character vector.
 The names of the implemented approaches that can be passed to argument \code{approach} in \code{\link[=explain]{explain()}}.
 }
 \description{
-Gets the implemented approaches
+Get the Implemented Approaches
 }

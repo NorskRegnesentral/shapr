@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.R
 \name{summary.shapr}
 \alias{summary.shapr}
-\title{Summary method for shapr objects}
+\title{Summary Method for Shapr Objects}
 \usage{
 \method{summary}{shapr}(object, digits = 2L, ...)
 }
@@ -21,5 +21,5 @@ and invisibly returns a named list of summary components.
 See the details section of \code{\link[=get_results]{get_results()}} for details about each component.
 }
 \description{
-Summary method for shapr objects
+Summary Method for Shapr Objects
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.R
 \name{print.shapr}
 \alias{print.shapr}
-\title{Print method for shapr objects}
+\title{Print Method for Shapr Objects}
 \usage{
 \method{print}{shapr}(
   x,
@@ -31,5 +31,5 @@ Defaults to 3.}
 The object is returned invisibly after printing selected output.
 }
 \description{
-Print method for shapr objects
+Print Method for Shapr Objects
 }

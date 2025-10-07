@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_SV_several_approaches}
 \alias{plot_SV_several_approaches}
-\title{Shapley value bar plots for several explanation objects}
+\title{Shapley Value Bar Plots for Several Explanation Objects}
 \usage{
 plot_SV_several_approaches(
   explanation_list,

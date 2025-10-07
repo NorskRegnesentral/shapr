@@ -279,7 +279,7 @@ weight_matrix_cpp <- function(coalitions, m, n, w) {
     .Call(`_shapr_weight_matrix_cpp`, coalitions, m, n, w)
 }
 
-#' Get Coalition Matrix
+#' Get coalition matrix
 #'
 #' @inheritParams weight_matrix_cpp
 #'
