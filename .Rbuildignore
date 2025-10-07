@@ -35,5 +35,6 @@
 ^inst/joss_paper/*$
 ^inst/extdata/*$
 ^inst/devel/*$
+^\.venv$
 
 
