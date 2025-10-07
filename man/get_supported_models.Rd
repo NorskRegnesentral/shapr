@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{get_supported_models}
 \alias{get_supported_models}
-\title{Provide a Data.table with the Supported Models}
+\title{Provide a \code{data.table} with the Supported Models}
 \usage{
 get_supported_models()
 }
@@ -10,5 +10,5 @@ get_supported_models()
 A data.table with the supported models.
 }
 \description{
-Provide a Data.table with the Supported Models
+Provide a \code{data.table} with the Supported Models
 }
