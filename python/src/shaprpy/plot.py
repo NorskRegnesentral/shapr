@@ -14,9 +14,7 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, idx
         internal parameters and explanation data.
     plot_type : str, optional
         The type of plot to generate. Defaults to "bar".
-        Supported plot types depend on the 'sage' paramter within 'shaprpy_obj':
-          - If 'sage' is True: "bar", "waterfall"
-          - If 'sage' is False: "bar", "beeswarm", "heatmap", "scatter", "violin", "waterfall"
+        Supported plot types are: "bar", "beeswarm", "heatmap", "scatter", "violin", "waterfall"
     plot_mean : bool, optional
         Wether the plot should SHAP values for the individual predictions or plot the mean.
         Defaults to False.
@@ -81,7 +79,7 @@ def plot(shaprpy_obj: dict, plot_type: str = "bar", plot_mean: bool = False, idx
 
 
 # Helper function to convert data from a shapr object to a SHAP object
-def prep_data(shaprpy_obj: dict, idx = None, includeTestData: bool = True):
+def prep_data(shaprpy_obj: dict, idx = None):
     shap_values_df = shaprpy_obj['shapley_values_est']
     feature_names = shap_values_df.columns.drop(['explain_id', 'none'])
     data = shaprpy_obj["internal"]["data"]["x_explain"]
