@@ -68,11 +68,17 @@ class Shapr:
         Parameters
         ----------
         what : str or list of str, optional
-            Component(s) to extract. Options: "calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info", "iterative_shapley_est", "iterative_shapley_sd", "saving_path", "timing_summary", "timing_details", "parameters", "x_train", "x_explain", "dt_vS", "dt_samp_for_vS", "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info". The default is to return all components. See details for what each component contains.
+            Component(s) to extract. Options: "calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
+            "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
+              "saving_path", "timing_summary", "timing_details", "parameters", "x_train", "x_explain", "dt_vS",
+                "dt_samp_for_vS", "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info".
+                The default is to return all components.
+                See details for what each component contains.
 
         Details
         -------
-        The function extracts a full suite of information related to the computation of the Shapley values from a shapr object. The allowed characters in what provides information as follows:
+        The function extracts a full suite of information related to the computation of the Shapley values from a shapr object.
+        The allowed characters in what provides information as follows:
 
         calling_function
             Name of function called to create the shapr object, (explain() or explain_forecast()).
@@ -90,7 +96,9 @@ class Shapr:
             Numeric vector with the predictions for the explained observations.
 
         MSEv/MSEv_explicand/MSEv_coalition
-            Dataframes with MSEv evaluation criterion values overall/ per explicand/per coalition. Smaller values indicate better estimates of v(S). See the MSEv evaluation section in the general usage vignette for details.
+            Dataframes with MSEv evaluation criterion values overall/ per explicand/per coalition.
+            Smaller values indicate better estimates of v(S).
+            See the MSEv evaluation section in the general usage vignette for details.
 
         iterative_info
             Dataframe with information about the iterative estimation procedure.
@@ -105,7 +113,9 @@ class Shapr:
             Dataframe with one row and three columns: init_time and end_time give the time stamps for the start and end of the computation, respectively, while total_time_secs gives the total time in seconds for the full computation.
 
         timing_details
-            Dict containing timing information for the different parts of the computation. summary contains the information from timing_summary. overall_timing_secs gives the time spent on the different parts of the explanation computation. main_computation_timing_secs further decomposes the main computation time into the different parts of the computation for each iteration of the iterative estimation routine, if used.
+            Dict containing timing information for the different parts of the computation. summary contains the information from timing_summary.
+            overall_timing_secs gives the time spent on the different parts of the explanation computation.
+              main_computation_timing_secs further decomposes the main computation time into the different parts of the computation for each iteration of the iterative estimation routine, if used.
 
         parameters
             Dict with the parameters used in the computation.
@@ -117,7 +127,8 @@ class Shapr:
             Dataframe with the contribution function (v(S)) estimates for each coalition.
 
         dt_samp_for_vS
-            Dataframe with the samples used in the Monte Carlo estimation of the contribution function (v(S)). This is only available if output_args_default$keep_samp_for_vS = TRUE (defaults to FALSE) in explain().
+            Dataframe with the samples used in the Monte Carlo estimation of the contribution function (v(S)).
+            This is only available if output_args_default$keep_samp_for_vS = TRUE (defaults to FALSE) in explain().
 
         dt_used_coalitions
             Dataframe with an overview of the coalitions used in the computation.
