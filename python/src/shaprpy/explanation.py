@@ -1,7 +1,8 @@
 """
-Shapr explanation class for better exploration of results.
+Shapr explanation class for exploring Shapley value results.
 """
-from shap import Explanation
+from encodings.punycode import digits
+from rpy2 import robjects
 
 
 class Shapr:
@@ -15,9 +16,9 @@ class Shapr:
     Parameters
     ----------
     explanation_dict : dict
-        The explanation dictionary returned by explain()
+        The explanation dictionary returned by explain().
     r_object : R object
-        The original R shapr object used for all R function calls
+        The original R shapr object used for all R function calls.
     """
 
     def __init__(self, explanation_dict, r_object):
@@ -27,35 +28,45 @@ class Shapr:
         Parameters
         ----------
         explanation_dict : dict
-            The explanation dictionary containing Shapley values and metadata
+            The explanation dictionary containing Shapley values and metadata.
         r_object : R object
-            The original R shapr object for accessing R-specific functionality
+            The original R shapr object for accessing R-specific functionality.
         """
-        self._data = explanation_dict
+        self._explanation_dict = explanation_dict
         self._r_object = r_object
 
-    def get_data(self):
-        """
-        Get the raw explanation dictionary.
+    def get_explanation_dict(self):
+        """Get the explanation dictionary.
+
+        Returns the original Python dictionary that was returned by explain()
+        before being wrapped in this class. This provides direct access to
+        all the Python-converted components of the explanation.
 
         Returns
         -------
         dict
-            The raw explanation dictionary
+            The explanation dictionary containing keys like 'shapley_values_est',
+            'internal', 'timing', etc.
+
+        Examples
+        --------
+        >>> explanation = shaprpy.explain(model, X_test, X_train)
+        >>> exp_dict = explanation.get_explanation_dict()
+        >>> shapley_values = exp_dict['shapley_values_est']
         """
-        return self._data
+        return self._explanation_dict
 
     def get_r_object(self):
         """
         Get the original R shapr object.
 
-        This allows direct access to R functions like print.shapr,
-        plot functions, etc.
+        This allows direct access to R functions like print.shapr(),
+        plotting functions, etc.
 
         Returns
         -------
-        R object or None
-            The original R shapr object if available
+        R object
+            The original R shapr object.
         """
         return self._r_object
 
@@ -68,76 +79,37 @@ class Shapr:
         Parameters
         ----------
         what : str or list of str, optional
-            Component(s) to extract. Options: "calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
-            "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
-              "saving_path", "timing_summary", "timing_details", "parameters", "x_train", "x_explain", "dt_vS",
-                "dt_samp_for_vS", "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info".
-                The default is to return all components.
-                See details for what each component contains.
+            Component(s) to extract. Available options include:
+            "calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
+            "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info", "iterative_shapley_est",
+            "iterative_shapley_sd", "saving_path", "timing_summary", "timing_details", "parameters",
+            "x_train", "x_explain", "dt_vS", "dt_samp_for_vS", "dt_used_coalitions",
+            "dt_valid_causal_coalitions", "dt_coal_samp_info".
+            The default is to return all components. See Notes section for component descriptions.
 
-        Details
-        -------
-        The function extracts a full suite of information related to the computation of the Shapley values from a shapr object.
-        The allowed characters in what provides information as follows:
+        Notes
+        -----
+        This function extracts information related to the computation of Shapley values.
+        Available components:
 
-        calling_function
-            Name of function called to create the shapr object, (explain() or explain_forecast()).
-
-        approach
-            Approach used to estimate the conditional expectations.
-
-        shapley_est
-            dataframe with the estimated Shapley values.
-
-        shapley_sd
-            dataframe with the standard deviation of the Shapley values reflecting the uncertainty in the coalition sampling part of the kernelSHAP procedure.
-
-        pred_explain
-            Numeric vector with the predictions for the explained observations.
-
-        MSEv/MSEv_explicand/MSEv_coalition
-            Dataframes with MSEv evaluation criterion values overall/ per explicand/per coalition.
-            Smaller values indicate better estimates of v(S).
-            See the MSEv evaluation section in the general usage vignette for details.
-
-        iterative_info
-            Dataframe with information about the iterative estimation procedure.
-
-        iterative_shapley_est/iterative_shapley_sd
-            Dataframes with the estimated Shapley values/their standard deviation for each iteration (when using the iterative estimation procedure).
-
-        saving_path
-            Character string with the path where the (temporary) results are saved.
-
-        timing_summary
-            Dataframe with one row and three columns: init_time and end_time give the time stamps for the start and end of the computation, respectively, while total_time_secs gives the total time in seconds for the full computation.
-
-        timing_details
-            Dict containing timing information for the different parts of the computation. summary contains the information from timing_summary.
-            overall_timing_secs gives the time spent on the different parts of the explanation computation.
-              main_computation_timing_secs further decomposes the main computation time into the different parts of the computation for each iteration of the iterative estimation routine, if used.
-
-        parameters
-            Dict with the parameters used in the computation.
-
-        x_train/x_explain
-            Dataframe with the training data used in the computation/observations to explain.
-
-        dt_vS
-            Dataframe with the contribution function (v(S)) estimates for each coalition.
-
-        dt_samp_for_vS
-            Dataframe with the samples used in the Monte Carlo estimation of the contribution function (v(S)).
-            This is only available if output_args_default$keep_samp_for_vS = TRUE (defaults to FALSE) in explain().
-
-        dt_used_coalitions
-            Dataframe with an overview of the coalitions used in the computation.
-
-        dt_valid_causal_coalitions
-            Dataframe with the valid causal coalitions used in the computation.
-
-        dt_coal_samp_info
-            Dataframe with information related to the coalition sampling procedure being used.
+        - **calling_function** : Name of function used to create the shapr object (explain() or explain_forecast())
+        - **approach** : Approach used to estimate the conditional expectations
+        - **shapley_est** : DataFrame with the estimated Shapley values
+        - **shapley_sd** : DataFrame with standard deviations of Shapley values
+        - **pred_explain** : Predictions for the explained observations
+        - **MSEv/MSEv_explicand/MSEv_coalition** : MSEv evaluation criterion values
+        - **iterative_info** : Information about the iterative estimation procedure
+        - **iterative_shapley_est/iterative_shapley_sd** : Shapley values/std devs for each iteration
+        - **saving_path** : Path where temporary results are saved
+        - **timing_summary** : Summary timing information (init_time, end_time, total_time_secs)
+        - **timing_details** : Detailed timing information for different computation parts
+        - **parameters** : Parameters used in the computation
+        - **x_train/x_explain** : Training data and observations to explain
+        - **dt_vS** : Contribution function v(S) estimates for each coalition
+        - **dt_samp_for_vS** : Samples used in Monte Carlo estimation of v(S)
+        - **dt_used_coalitions** : Overview of coalitions used in computation
+        - **dt_valid_causal_coalitions** : Valid causal coalitions used
+        - **dt_coal_samp_info** : Information about coalition sampling procedure
 
         Returns
         -------
@@ -209,11 +181,11 @@ class Shapr:
         base.print(self._r_object, what=what, digits=digits)
 
     def to_shap(self, idx=None):
-        """
-        Convert the Shapr explanation to a SHAP Explanation object.
+        """Convert the Shapr explanation to a SHAP Explanation object.
 
-        This method converts the Shapley values and data to the format expected
-        by the SHAP library, allowing us to utilize their plotting infrastructure.
+        This method transforms the Shapley values and associated data into
+        a SHAP library compatible format, enabling the use of SHAP's
+        visualization functions for plotting and analysis.
 
         Parameters
         ----------
@@ -224,11 +196,22 @@ class Shapr:
         Returns
         -------
         shap.Explanation
-            SHAP Explanation object suitable for SHAP plotting functions
+            A SHAP Explanation object containing the Shapley values and
+            base values, ready for use with SHAP plotting functions.
+
+        Examples
+        --------
+        >>> import shap
+        >>> explanation = shaprpy.explain(model, X_test, X_train)
+        >>> shap_exp = explanation.to_shap()
+        >>> shap.plots.waterfall(shap_exp[0])  # Plot first observation
         """
-        shap_values_df = self._data['shapley_values_est']
+
+        from shap import Explanation
+
+        shap_values_df = self._explanation_dict['shapley_values_est']
         feature_names = shap_values_df.columns.drop(['explain_id', 'none'])
-        data = self._data["internal"]["data"]["x_explain"]
+        data = self._explanation_dict["internal"]["data"]["x_explain"]
 
         if isinstance(idx, int):
             shap_values_df = shap_values_df.iloc[[idx]]
