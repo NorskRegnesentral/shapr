@@ -6,6 +6,7 @@
 \usage{
 get_valid_causal_coalitions(
   causal_ordering,
+  free_causal_values = NULL,
   sort_features_in_coalitions = TRUE
 )
 }
@@ -23,6 +24,9 @@ Shapley values, respectively. For feature-wise Shapley values and
 \code{causal_ordering = list(c(1, 2), c(3, 4))}, the interpretation is that features 1 and 2
 are the ancestors of features 3 and 4, while features 3 and 4 are on the same level.
 Note: All features/groups must be included in the \code{causal_ordering} without any duplicates.}
+
+\item{free_causal_values}{Vector of integers containing the indices of the features that are not
+in the causal ordering. These features are free to be in any coalition.}
 
 \item{sort_features_in_coalitions}{Boolean. If \code{TRUE}, then the feature indices in the
 coalitions are sorted in increasing order. If \code{FALSE}, then the function maintains the

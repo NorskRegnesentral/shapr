@@ -4,7 +4,7 @@
 \alias{get_max_n_coalitions_causal}
 \title{Get the number of coalitions that respects the causal ordering}
 \usage{
-get_max_n_coalitions_causal(causal_ordering)
+get_max_n_coalitions_causal(causal_ordering, free_causal_values)
 }
 \arguments{
 \item{causal_ordering}{List.
