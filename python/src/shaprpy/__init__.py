@@ -4,7 +4,7 @@ from importlib import import_module
 # Lightweight public re-export (no R dependency)
 from . import datasets  # noqa: F401
 
-__all__ = ["explain", "datasets", "ensure_r_ready"]
+__all__ = ["explain", "datasets", "ensure_r_ready", "Shapr"]
 
 try:
     __version__ = version("shaprpy")
@@ -49,3 +49,16 @@ def explain(*args, **kwargs):
     """Lazily initialize R/shapr then call the real explain()."""
     ensure_r_ready()
     return _explain_impl(*args, **kwargs)
+
+
+# Import the Shapr class (lazy import to avoid R dependency issues)
+def _import_shapr():
+    from .explanation import Shapr
+    return Shapr
+
+# Make Shapr available when the module is imported
+Shapr = None
+try:
+    Shapr = _import_shapr()
+except ImportError:
+    pass
