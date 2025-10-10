@@ -92,7 +92,7 @@ class Shapr:
         This function extracts information related to the computation of Shapley values.
         Available components:
 
-        - **calling_function** : Name of function used to create the shapr object (explain() or explain_forecast())
+        - **calling_function** : Name of function used to create the shapr object (always explain() in Python)
         - **approach** : Approach used to estimate the conditional expectations
         - **shapley_est** : DataFrame with the estimated Shapley values
         - **shapley_sd** : DataFrame with standard deviations of Shapley values
@@ -154,7 +154,7 @@ class Shapr:
         base = importr('base')
 
         # Call R summary function just for the printing
-        tmp = base.summary(self._r_object, digits=digits)
+        base.summary(self._r_object, digits=digits)
 
         # Return None explicitly
         return None
@@ -168,11 +168,16 @@ class Shapr:
         what : str, optional
             Which component to print.
             Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition", and
-              "timing_summary". Defaults to "shapley_est".
-              Only one component can be printed at a time.
-               See the details section of get_results() for details about each component.
+            "timing_summary". Defaults to "shapley_est".
+            Only one component can be printed at a time.
+            See the details section of get_results() for details about each component.
         digits : int, optional
             Number of significant digits to display. Defaults to 3.
+
+        Returns
+        -------
+        None
+            Prints output from R's print.shapr() but returns nothing.
         """
         from rpy2.robjects.packages import importr
         base = importr('base')

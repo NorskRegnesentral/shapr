@@ -19,32 +19,49 @@ explanation = explain(
 )
 
 
-from shaprpy import plot
-import shap
+# Summary and object extraction
 
-# Our function
-expl = plot.prep_data(explanation)
+explanation.summary()
+explanation.print()
 
+explanation.print("MSEv",digits=5)
 
-# From plots in shap
+explanation.print("MSEv")
+
+explanation.get_results("MSEv")
+ttt=explanation.get_results(["MSEv","approach","shapley_est"])
+ttt["approach"]
+ttt["shapley_est"]
+
+# Plotting
+
+shapExpl = explanation.to_shap()
+
+from shap import plots
+
+plots.bar(shapExpl[3])
 
 # Plots of individual predictions
-shap.plots.bar(expl[3])
+plots.bar(shapExpl[3])
 
-shap.plots.waterfall(expl[3])
+plots.waterfall(shapExpl[3])
+
+plots.force(shapExpl[3])
+
 
 # Plots of several predictions similtaneously
-shap.plots.beeswarm(expl)
+plots.beeswarm(shapExpl)
 
-shap.plots.heatmap(expl)
+plots.heatmap(shapExpl)
 
-shap.plots.scatter(expl)
+plots.scatter(shapExpl)
 
-shap.plots.violin(expl)
+plots.violin(shapExpl)
 
-# Maybe skip decision_plot since it uses a different format. In any case, if we only provide the
-# conversion function, the user can use the SHAP plotting functions directly.
-shap.decision_plot(expl[0].base_values, expl.values)
+# Decison plot with a slightly differnet style
+plots.decision(shapExpl[0].base_values, shapExpl.values,feature_names = shapExpl.feature_names)
+
+
 
 
 ### Just checking also with shap object directly
