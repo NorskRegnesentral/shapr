@@ -68,17 +68,75 @@ class Shapr:
         Parameters
         ----------
         what : str or list of str, optional
-            Component(s) to extract. Uses same options as R get_results().
+            Component(s) to extract. Options: "calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info", "iterative_shapley_est", "iterative_shapley_sd", "saving_path", "timing_summary", "timing_details", "parameters", "x_train", "x_explain", "dt_vS", "dt_samp_for_vS", "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info". The default is to return all components. See details for what each component contains.
+
+        Details
+        -------
+        The function extracts a full suite of information related to the computation of the Shapley values from a shapr object. The allowed characters in what provides information as follows:
+
+        calling_function
+            Name of function called to create the shapr object, (explain() or explain_forecast()).
+
+        approach
+            Approach used to estimate the conditional expectations.
+
+        shapley_est
+            dataframe with the estimated Shapley values.
+
+        shapley_sd
+            dataframe with the standard deviation of the Shapley values reflecting the uncertainty in the coalition sampling part of the kernelSHAP procedure.
+
+        pred_explain
+            Numeric vector with the predictions for the explained observations.
+
+        MSEv/MSEv_explicand/MSEv_coalition
+            Dataframes with MSEv evaluation criterion values overall/ per explicand/per coalition. Smaller values indicate better estimates of v(S). See the MSEv evaluation section in the general usage vignette for details.
+
+        iterative_info
+            Dataframe with information about the iterative estimation procedure.
+
+        iterative_shapley_est/iterative_shapley_sd
+            Dataframes with the estimated Shapley values/their standard deviation for each iteration (when using the iterative estimation procedure).
+
+        saving_path
+            Character string with the path where the (temporary) results are saved.
+
+        timing_summary
+            Dataframe with one row and three columns: init_time and end_time give the time stamps for the start and end of the computation, respectively, while total_time_secs gives the total time in seconds for the full computation.
+
+        timing_details
+            Dict containing timing information for the different parts of the computation. summary contains the information from timing_summary. overall_timing_secs gives the time spent on the different parts of the explanation computation. main_computation_timing_secs further decomposes the main computation time into the different parts of the computation for each iteration of the iterative estimation routine, if used.
+
+        parameters
+            Dict with the parameters used in the computation.
+
+        x_train/x_explain
+            Dataframe with the training data used in the computation/observations to explain.
+
+        dt_vS
+            Dataframe with the contribution function (v(S)) estimates for each coalition.
+
+        dt_samp_for_vS
+            Dataframe with the samples used in the Monte Carlo estimation of the contribution function (v(S)). This is only available if output_args_default$keep_samp_for_vS = TRUE (defaults to FALSE) in explain().
+
+        dt_used_coalitions
+            Dataframe with an overview of the coalitions used in the computation.
+
+        dt_valid_causal_coalitions
+            Dataframe with the valid causal coalitions used in the computation.
+
+        dt_coal_samp_info
+            Dataframe with information related to the coalition sampling procedure being used.
 
         Returns
         -------
         object
-            Results from R get_results function, converted to Python objects.
+            Results from R's shapr.get_results function, converted to Python objects.
+            If a single component is requested, returns that object. If multiple are requested, returns a named dict.
         """
-        from shaprpy.utils import recurse_r_tree
-        import rpy2.robjects as ro
         from rpy2.robjects.packages import importr
-        from rpy2.robjects.vectors import StrVector
+        from rpy2.robjects import StrVector
+        from shaprpy.utils import recurse_r_tree
 
         shapr = importr('shapr')
 
@@ -136,7 +194,7 @@ class Shapr:
         from rpy2.robjects.packages import importr
         base = importr('base')
 
-        # Call R print.shapr function
+        # Call R's print.shapr function
         base.print(self._r_object, what=what, digits=digits)
 
     def to_shap(self, idx=None):
@@ -144,7 +202,7 @@ class Shapr:
         Convert the Shapr explanation to a SHAP Explanation object.
 
         This method converts the Shapley values and data to the format expected
-        by the SHAP library for plotting and further analysis.
+        by the SHAP library, allowing us to utilize their plotting infrastructure.
 
         Parameters
         ----------
