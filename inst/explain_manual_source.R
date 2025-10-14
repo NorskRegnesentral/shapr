@@ -11,6 +11,7 @@ explain_manual <- function(
     phi0,
     group = NULL,
     n_MC_samples = 1e3,
+    predict_model = NULL,
     seed = 1,
     coalition_list,
     R_D, # R_D in (7) of Aas et al. (2021)
@@ -33,7 +34,7 @@ explain_manual <- function(
     ...
   )
 
-  predict_model <- shapr:::get_predict_model(predict_model = NULL, model = model)
+  predict_model <- shapr:::get_predict_model(predict_model = predict_model, model = model)
 
   # Overwrite internals
 
