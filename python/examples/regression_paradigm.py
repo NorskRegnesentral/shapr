@@ -171,7 +171,7 @@ sur_rf_cv 0.975 693.178
 """
 
 
-print(explanation_list["sep_xgboost"]["shapley_values_est"])
+explanation_list["sep_xgboost"].print()
 
 """
    explain_id      none    MedInc  HouseAge  AveRooms  AveBedrms  Population  \
