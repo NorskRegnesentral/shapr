@@ -9,12 +9,21 @@ from rpy2.rinterface import NULL, NA
 from shaprpy.utils import r2py, py2r, recurse_r_tree
 from rpy2.robjects.vectors import StrVector, ListVector
 from shaprpy.explanation import Shapr
+from shaprpy._rutils import get_package_lib_loc
 
-data_table = importr('data.table')
-shapr = importr('shapr')
-utils = importr('utils')
-base = importr('base')
-stats = importr('stats')
+
+def _importr(package: str):
+  lib_loc = get_package_lib_loc(ro, package)
+  if lib_loc:
+    return importr(package, lib_loc=lib_loc)
+  return importr(package)
+
+
+data_table = _importr('data.table')
+shapr = _importr('shapr')
+utils = _importr('utils')
+base = _importr('base')
+stats = _importr('stats')
 
 def maybe_null(val):
   return val if val is not None else NULL
@@ -631,4 +640,3 @@ def change_first_underscore_to_dot(kwargs):
   for k, v in kwargs.items():
     kwargs_tmp[k.replace('_', '.', 1)] = v
   return kwargs_tmp
-

@@ -3,6 +3,7 @@ from importlib import import_module
 
 # Lightweight public re-export (no R dependency)
 from . import datasets  # noqa: F401
+from ._rutils import get_package_lib_loc
 
 __all__ = ["explain", "datasets", "ensure_r_ready", "Shapr"]
 
@@ -31,7 +32,11 @@ def ensure_r_ready() -> bool:
         ) from e
 
     try:
-        importr("shapr")
+        lib_loc = get_package_lib_loc(_ro, "shapr")
+        if lib_loc:
+            importr("shapr", lib_loc=lib_loc)
+        else:
+            importr("shapr")
     except Exception as e:
         raise ImportError(
             "The R package 'shapr' is not installed or not found.\n"
