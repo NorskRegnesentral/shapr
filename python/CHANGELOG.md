@@ -7,6 +7,28 @@ Changes to the underlying `shapr` R package is documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-10-20
+
+### Added
+- **NEW**: `Shapr` class for exploration and analysis of explanation results
+  - Object-oriented interface for working with Shapley value explanations
+  - Methods for extracting results: `get_results()`, `get_explanation_dict()`, `get_r_object()`
+  - Summary and printing functionality: `summary()`, `print()`
+  - Integration with SHAP library via `to_shap()` method for plotting
+- Enhanced example scripts demonstrating new class-based functionality
+- Improved R package import handling with better path management
+
+### Changed
+- **BREAKING**: `explain()` function now returns a `Shapr` object instead of a plain dictionary
+- Restructured internal module organization with private `_explain.py` and `_rutils.py` modules
+- Updated all example scripts, tests and README to demonstrate new class-based API
+- Improved lazy loading for R package dependencies
+
+### Fixed
+- Enhanced R package import reliability by removing empty paths from library locations,
+effectively resolving confusing warnings from R on package load
+
+
 ## [0.3.0] - 2025-08-27
 
 ### Added
