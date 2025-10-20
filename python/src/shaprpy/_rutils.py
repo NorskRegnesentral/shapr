@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Optional, Sequence
-import rpy2.robjects as ro
-from rpy2.robjects.packages import importr
 
 
 def get_non_empty_libpaths(robjects_module) -> Optional[list[str]]:
@@ -47,8 +45,14 @@ def get_package_lib_loc(robjects_module, package: str) -> Optional[str]:
     return lib_paths[0]
 
 
-def _importr(package: str):
-  lib_loc = get_package_lib_loc(ro, package)
+def _importr(package: str, robjects_module=None, importr_func=None):
+  if robjects_module is None:
+    import rpy2.robjects as robjects_module
+
+  if importr_func is None:
+    from rpy2.robjects.packages import importr as importr_func
+
+  lib_loc = get_package_lib_loc(robjects_module, package)
   if lib_loc:
-    return importr(package, lib_loc=lib_loc)
-  return importr(package)
+    return importr_func(package, lib_loc=lib_loc)
+  return importr_func(package)
