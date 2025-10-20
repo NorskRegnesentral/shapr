@@ -59,6 +59,6 @@ plots.scatter(shapExpl)
 
 plots.violin(shapExpl)
 
-# Decison plot with a slightly differnet style
-plots.decision(shapExpl[0].base_values, shapExpl.values,feature_names = shapExpl.feature_names)
+# Decision plot with a slightly different style
+plots.decision(shapExpl[0].base_values, shapExpl.values, feature_names = shapExpl.feature_names)
 
