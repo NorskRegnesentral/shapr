@@ -10,14 +10,6 @@ from shaprpy.utils import r2py, py2r, recurse_r_tree
 from rpy2.robjects.vectors import StrVector, ListVector
 from shaprpy.explanation import Shapr
 from shaprpy._rutils import _importr
-#from shaprpy._rutils import get_package_lib_loc
-
-#def _importr(package: str):
-#  lib_loc = get_package_lib_loc(ro, package)
-#  if lib_loc:
-#    return importr(package, lib_loc=lib_loc)
-#  return importr(package)
-
 
 data_table = _importr('data.table')
 shapr = _importr('shapr')
