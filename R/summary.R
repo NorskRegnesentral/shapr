@@ -22,7 +22,7 @@ summary.shapr <- function(object, digits = 2L, ...) {
   # Retrieve all needed results
   results <- get_results(object)
 
-  if(results$proglang=="R"){
+  if (results$proglang == "R") {
     func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
   } else { # Python
     func_txt <- ifelse(results$calling_function == "explain", "{.fn shaprpy.explain}", "{.fn shaprpy.explain_forecast}")
