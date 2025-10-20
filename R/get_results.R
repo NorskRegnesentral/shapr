@@ -61,7 +61,7 @@
 #'
 #' @export
 get_results <- function(x, what = c(
-                          "calling_function", "approach",
+                          "calling_function", "proglang", "approach",
                           "shapley_est", "shapley_sd",
                           "pred_explain",
                           "MSEv", "MSEv_explicand", "MSEv_coalition",
@@ -75,7 +75,7 @@ get_results <- function(x, what = c(
   stopifnot(inherits(x, "shapr"))
 
   allowed <- c(
-    "calling_function", "approach",
+    "calling_function", "proglang", "approach",
     "shapley_est", "shapley_sd",
     "pred_explain",
     "MSEv", "MSEv_explicand", "MSEv_coalition",
@@ -98,6 +98,7 @@ get_results <- function(x, what = c(
   res <- lapply(what, function(w) {
     switch(w,
       calling_function = ifelse(x$internal$parameters$type == "regular", "explain", "explain_forecast"),
+      proglang = ifelse(x$internal$parameters$is_python, "Python", "R"),
       approach = x$internal$parameters$approach,
       shapley_est = x$shapley_values_est,
       shapley_sd = x$shapley_values_sd,

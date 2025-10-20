@@ -22,7 +22,12 @@ summary.shapr <- function(object, digits = 2L, ...) {
   # Retrieve all needed results
   results <- get_results(object)
 
-  func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
+  if(results$proglang=="R"){
+    func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
+  } else { # Python
+    func_txt <- ifelse(results$calling_function == "explain", "{.fn shaprpy.explain}", "{.fn shaprpy.explain_forecast}")
+  }
+
   init_time <- results$timing_summary$init_time
   total_time_str <- results$timing_summary$total_time_str
   if (is.null(init_time)) init_time <- 0
