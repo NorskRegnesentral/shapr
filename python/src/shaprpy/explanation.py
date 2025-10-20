@@ -3,6 +3,7 @@ Shapr explanation class for exploring Shapley value results.
 """
 from encodings.punycode import digits
 from rpy2 import robjects
+from shaprpy._rutils import _importr
 
 
 class Shapr:
@@ -117,11 +118,10 @@ class Shapr:
             Results from R's shapr.get_results function, converted to Python objects.
             If a single component is requested, returns that object. If multiple are requested, returns a named dict.
         """
-        from rpy2.robjects.packages import importr
         from rpy2.robjects import StrVector
         from shaprpy.utils import recurse_r_tree
 
-        shapr = importr('shapr')
+        shapr = _importr('shapr')
 
         if what is None:
             # Call R get_results with default arguments
@@ -150,8 +150,7 @@ class Shapr:
         None
             Prints summary (from R's summary.shapr() but returns nothing
         """
-        from rpy2.robjects.packages import importr
-        base = importr('base')
+        base = _importr('base')
 
         # Call R summary function just for the printing
         base.summary(self._r_object, digits=digits)
@@ -179,8 +178,7 @@ class Shapr:
         None
             Prints output from R's print.shapr() but returns nothing.
         """
-        from rpy2.robjects.packages import importr
-        base = importr('base')
+        base = _importr('base')
 
         # Call R's print.shapr function
         base.print(self._r_object, what=what, digits=digits)
