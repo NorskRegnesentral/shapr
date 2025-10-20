@@ -8,6 +8,7 @@
   x,
   plot_type = "bar",
   digits = 3,
+  show = TRUE,
   index_x_explain = NULL,
   top_k_features = NULL,
   col = NULL,
@@ -38,6 +39,11 @@ of that instance.}
 \item{digits}{Integer.
 Number of significant digits to use in the feature description.
 Applicable for \code{plot_type} \code{"bar"} and \code{"waterfall"}}
+
+\item{show}{Logical.
+Whether to forcefully display the plot in addition to returning the ggplot object.
+If FALSE, the ggplot object is returned and therefore only displayed if called on the top level.
+Defaults to TRUE. See also \code{\link[ggplot2:print.ggplot]{ggplot2::print.ggplot()}}.}
 
 \item{index_x_explain}{Integer vector.
 Which of the test observations to plot. For example, if you have

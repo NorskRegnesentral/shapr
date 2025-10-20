@@ -36,9 +36,9 @@ summary.shapr <- function(object, digits = 2L, ...) {
 
   cli::cli_h1("Summary of Shapley value explanation")
   if (isFALSE(testing)) {
-    cli::cli_ul(paste0("Computed with", func_txt, " in {.field {total_time_str}}, started {.val {round(init_time)}}"))
+    cli::cli_ul(paste0("Computed with ", func_txt, " in {.field {total_time_str}}, started {.val {round(init_time)}}"))
   } else {
-    cli::cli_ul(paste0("Computed with", func_txt))
+    cli::cli_ul(paste0("Computed with ", func_txt))
   }
 
   # Display basic shapr info

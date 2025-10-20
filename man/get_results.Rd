@@ -6,8 +6,8 @@
 \usage{
 get_results(
   x,
-  what = c("calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
-    "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info",
+  what = c("calling_function", "proglang", "approach", "shapley_est", "shapley_sd",
+    "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info",
     "iterative_shapley_est", "iterative_shapley_sd", "saving_path", "timing_summary",
     "timing_details", "parameters", "x_train", "x_explain", "dt_vS", "dt_samp_for_vS",
     "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"),
