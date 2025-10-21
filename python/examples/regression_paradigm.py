@@ -154,37 +154,38 @@ explanation_list["sur_rf_cv"] = explain(
 # Print the MSEv evaluation criterion scores
 print("Method", "MSEv", "Elapsed time (seconds)")
 for i, (method, explanation) in enumerate(explanation_list.items()):
-    print(method, round(explanation["MSEv"]["MSEv"].iloc[0].iloc[0], 3), round(explanation["timing"]["summary"]["total_time_secs"].iloc[0], 3))
+    print(method, round(explanation.get_results("MSEv")["MSEv"].iloc[0], 3), round(explanation.get_results("timing_summary")["total_time_secs"].iloc[0], 3))
 
 """
 Method MSEv Elapsed time (seconds)
-empirical 0.826 5.238
-sep_lm 1.619 10.242
-sep_pca 1.6 9.77
-sep_splines 1.6 10.245
-sep_tree_cv 1.435 231.503
-sep_xgboost 0.765 58.948
-sep_xgboost_cv 0.805 54613.817
-sur_lm 1.772 0.54
-sur_rf 0.865 26.759
-sur_rf_cv 0.975 693.178
+empirical 0.826 4.921
+sep_lm 1.619 7.438
+sep_pca 1.6 7.486
+sep_splines 1.6 7.707
+sep_tree_cv 1.435 286.691
+sep_xgboost 0.765 31.646
+sep_xgboost_cv 0.805 705.618
+sur_lm 1.772 0.474
+sur_rf 0.865 26.951
+sur_rf_cv 0.971 688.114
 """
 
 
 explanation_list["sep_xgboost"].print()
 
 """
-   explain_id      none    MedInc  HouseAge  AveRooms  AveBedrms  Population  \
-1           1  2.205937 -0.497444  0.190998 -0.076956   0.015962   -0.220396
-2           2  2.205938 -0.162954  0.012904 -0.418309  -0.111319    0.076074
-3           3  2.205938  0.587087  0.262129  0.100346  -0.666143    0.348501
-4           4  2.205938  0.315756 -0.108360  0.209570   0.040982   -0.180546
-5           5  2.205938  0.080827 -0.153198 -0.118224   0.103920   -0.104418
-
-   AveOccup  Latitude  Longitude
-1 -0.313245 -0.439860  -0.359420
-2  0.150190 -0.482375  -0.321474
-3  0.865160  0.262089   0.956384
-4 -0.059770  0.026272   0.043815
-5  0.427907 -0.255125   0.007613
+   explain_id  none  MedInc HouseAge AveRooms AveBedrms Population AveOccup
+        <int> <num>   <num>    <num>    <num>     <num>      <num>    <num>
+1:          1  2.21 -0.4974   0.1910   -0.077     0.016    -0.2204  -0.3132
+2:          2  2.21 -0.1630   0.0129   -0.418    -0.111     0.0761   0.1502
+3:          3  2.21  0.5871   0.2621    0.100    -0.666     0.3485   0.8652
+4:          4  2.21  0.3158  -0.1084    0.210     0.041    -0.1805  -0.0598
+5:          5  2.21  0.0808  -0.1532   -0.118     0.104    -0.1044   0.4279
+   Latitude Longitude
+      <num>     <num>
+1:  -0.4399  -0.35942
+2:  -0.4824  -0.32147
+3:   0.2621   0.95638
+4:   0.0263   0.04382
+5:  -0.2551   0.00761
 """
