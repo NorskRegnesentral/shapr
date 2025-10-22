@@ -20,7 +20,7 @@ explanation = explain(
 )
 
 
-# Summary and object extraction
+#### Summary and object extraction ####
 
 explanation.summary()
 explanation.print()
@@ -34,13 +34,11 @@ res=explanation.get_results(["MSEv","approach","shapley_est"])
 res["approach"]
 res["shapley_est"]
 
-# Plotting
+#### Plotting through the SHAP package ####
 
 shapExpl = explanation.to_shap()
 
 from shap import plots
-
-plots.bar(shapExpl[3])
 
 # Plots of individual predictions
 plots.bar(shapExpl[3])
