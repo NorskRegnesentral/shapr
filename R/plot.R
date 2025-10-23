@@ -184,7 +184,7 @@
 plot.shapr <- function(x,
                        plot_type = "bar",
                        digits = 3,
-                       return = FALSE,
+                       print_ggplot = TRUE,
                        index_x_explain = NULL,
                        top_k_features = NULL,
                        col = NULL,
@@ -365,7 +365,7 @@ plot.shapr <- function(x,
     }
   }
 
-  if(isFALSE(return)){
+  if(isTRUE(print_ggplot)){
     return(print(gg))
   } else {
     return(gg)
