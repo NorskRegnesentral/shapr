@@ -374,7 +374,7 @@ plot.shapr <- function(x,
     }
   }
 
-  if(isTRUE(print_ggplot)){
+  if (isTRUE(print_ggplot)) {
     return(print(gg)) # Return the figure with force display
   } else {
     return(gg) # Return the figure without force display
@@ -1757,7 +1757,7 @@ plot_SV_several_approaches <- function(explanation_list,
   }
   if (horizontal_bars) figure <- figure + ggplot2::coord_flip()
 
-  if(isTRUE(print_ggplot)){
+  if (isTRUE(print_ggplot)) {
     return(print(figure))   # Return the figure with force display
   } else {
     return(figure) # Return the figure without force display
