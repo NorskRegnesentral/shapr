@@ -224,7 +224,7 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
   return(dt_mat)
 }
 
-#' Append the New vS_list to the Previous vS_list
+#' Append the New `vS_list` to the Previous `vS_list`
 #'
 #' @inheritParams compute_estimates
 #'

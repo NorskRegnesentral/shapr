@@ -255,7 +255,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 
 
 # Train functions ======================================================================================================
-#' Train the Vaeac Model
+#' Train the `vaeac` Model
 #'
 #' @description Function that fits a vaeac model to the given dataset based on the provided parameters,
 #' as described in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}. Note that
@@ -832,7 +832,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   return(return_list)
 }
 
-#' Continue to Train the Vaeac Model
+#' Continue to Train the `vaeac` Model
 #'
 #' @description Function that loads a previously trained vaeac model and continue the training, either
 #' on new data or on the same dataset as it was trained on before. If we are given a new dataset, then
@@ -1030,7 +1030,7 @@ vaeac_train_model_continue <- function(explanation,
 
 
 # Imputation functions =================================================================================================
-#' Impute Missing Values Using Vaeac
+#' Impute Missing Values Using `vaeac`
 #'
 #' @details  Function that imputes the missing values in 2D matrix where each row constitute an individual.
 #' The values are sampled from the conditional distribution estimated by a vaeac model.
@@ -2057,7 +2057,7 @@ vaeac_get_x_explain_extended <- function(x_explain, S, index_features) {
   return(x_explain_extended)
 }
 
-#' Extract the Training VLB and Validation IWAE from a List of Explanations Objects Using the Vaeac Approach
+#' Extract the Training VLB and Validation IWAE from a List of Explanations Objects Using the `vaeac` Approach
 #'
 #' @param explanation_list A list of [explain()] objects applied to the same data, model, and
 #' `vaeac` must be the used approach. If the entries in the list is named, then the function use
