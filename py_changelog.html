@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,9 +51,38 @@
 <p>All notable changes to the Python <code>shaprpy</code> library will be documented in this file. Changes to the underlying <code>shapr</code> R package is documented in <a href="https://norskregnesentral.github.io/shapr/news/index.html">shapr CHANGELOG</a></p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
 <div class="section level2">
-<h2 id="id_030---2025-08-27">[0.3.0] - 2025-08-27<a class="anchor" aria-label="anchor" href="#id_030---2025-08-27"></a></h2>
+<h2 id="id_040---2025-10-20">[0.4.0] - 2025-10-20<a class="anchor" aria-label="anchor" href="#id_040---2025-10-20"></a></h2>
 <div class="section level3">
 <h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
+<ul><li>
+<strong>NEW</strong>: <code>Shapr</code> class for exploration and analysis of explanation results
+<ul><li>Object-oriented interface for working with Shapley value explanations</li>
+<li>Methods for extracting results: <code><a href="reference/get_results.html">get_results()</a></code>, <code>get_explanation_dict()</code>, <code>get_r_object()</code>
+</li>
+<li>Summary and printing functionality: <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>
+</li>
+<li>Integration with SHAP library via <code>to_shap()</code> method for plotting</li>
+</ul></li>
+<li>Enhanced example scripts demonstrating new class-based functionality</li>
+<li>Improved R package import handling with better path management</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<ul><li>
+<strong>BREAKING</strong>: <code><a href="reference/explain.html">explain()</a></code> function now returns a <code>Shapr</code> object instead of a plain dictionary</li>
+<li>Restructured internal module organization with private <code>_explain.py</code> and <code>_rutils.py</code> modules</li>
+<li>Updated all example scripts, tests and README to demonstrate new class-based API</li>
+<li>Improved lazy loading for R package dependencies</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<ul><li>Enhanced R package import reliability by removing empty paths from library locations, effectively resolving confusing warnings from R on package load</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="id_030---2025-08-27">[0.3.0] - 2025-08-27<a class="anchor" aria-label="anchor" href="#id_030---2025-08-27"></a></h2>
+<div class="section level3">
+<h3 id="added-1">Added<a class="anchor" aria-label="anchor" href="#added-1"></a></h3>
 <ul><li>Publish <code>shaprpy</code> on PyPI</li>
 <li>Restructured the <code>shaprpy</code> package for improved modularity and maintainability</li>
 <li>Test suite with snapshot testing for output validation using syrupy</li>
@@ -61,7 +90,7 @@
 <li>Input validation tests for error handling</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
 <ul><li>
 <strong>BREAKING</strong>: Minimum Python version requirement increased from 3.8+ to 3.10+</li>
 <li>Updated package classifiers to reflect Python 3.10+ requirement</li>

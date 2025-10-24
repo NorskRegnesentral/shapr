@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -120,7 +120,9 @@
 <span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    seed<span class="op">=</span><span class="dv">1</span></span>
 <span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>)</span>
 <span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a></span>
-<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="bu">print</span>(explanation[<span class="st">"shapley_values_est"</span>])</span></code></pre></div>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>explanation.<span class="bu">print</span>() <span class="co"># Print the Shapley values</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>explanation.summary() <span class="co"># Gives a nicely formatted summary of the computation of the explanations</span></span></code></pre></div>
 <hr></div>
 <div class="section level2">
 <h2 id="supported-models">Supported Models<a class="anchor" aria-label="anchor" href="#supported-models"></a></h2>
@@ -129,7 +131,7 @@
 <hr></div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h2>
-<p>See the <code>/examples</code> folder for runnable examples, including: - A custom PyTorch model - The <strong>regression paradigm</strong> described in <a href="https://link.springer.com/article/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a>, which shows: - How to specify the regression model - How to enable automatic cross-validation of hyperparameters - How to apply pre-processing steps before fitting regression models</p>
+<p>See the <code>/examples</code> folder for runnable examples, including: - Basic usage with <code>scikit-learn</code> models - Usage with <code>xgboost</code> models - Usage with <code>keras</code> models - A custom PyTorch model - Usage of the <code>Shapr</code> class for exploration of explanation results and plotting through the <code>shap</code> package - The <strong>regression paradigm</strong> described in <a href="https://link.springer.com/article/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a>, which shows: - How to specify the regression model - How to enable automatic cross-validation of hyperparameters - How to apply pre-processing steps before fitting regression models</p>
 </div>
 </div>
 
