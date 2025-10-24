@@ -1,4 +1,4 @@
-#' Compute the Shapley values and their standard deviation given `v(S)`
+#' Compute the Shapley Values and Their Standard Deviation Given `v(S)`
 #'
 #' @inheritParams default_doc_export
 #' @param vS_list List.
@@ -116,7 +116,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 }
 
 
-#' Compute Shapley values
+#' Compute Shapley Values
 #' @param dt_vS The contribution matrix.
 #'
 #' @inheritParams default_doc_internal

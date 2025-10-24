@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup.R
 \name{additional_regression_setup}
 \alias{additional_regression_setup}
-\title{Additional setup for regression-based methods}
+\title{Additional Setup for Regression-Based Methods}
 \usage{
 additional_regression_setup(internal, model, predict_model)
 }
@@ -14,6 +14,6 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 The (updated) internal list
 }
 \description{
-Additional setup for regression-based methods
+Additional Setup for Regression-Based Methods
 }
 \keyword{internal}

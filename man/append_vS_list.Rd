@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_vS.R
 \name{append_vS_list}
 \alias{append_vS_list}
-\title{Appends the new vS_list to the prev vS_list}
+\title{Append the New \code{vS_list} to the Previous \code{vS_list}}
 \usage{
 append_vS_list(vS_list, internal)
 }
@@ -17,6 +17,6 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 The vS_list after being merged with previously computed vS_lists (stored in internal)
 }
 \description{
-Appends the new vS_list to the prev vS_list
+Append the New \code{vS_list} to the Previous \code{vS_list}
 }
 \keyword{internal}

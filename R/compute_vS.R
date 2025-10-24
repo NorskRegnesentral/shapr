@@ -1,4 +1,4 @@
-#' Computes `v(S)` for all feature subsets `S`.
+#' Compute `v(S)` for All Feature Subsets `S`
 #'
 #' @inheritParams default_doc_export
 #'
@@ -224,7 +224,7 @@ compute_MCint <- function(dt, pred_cols = "p_hat") {
   return(dt_mat)
 }
 
-#' Appends the new vS_list to the prev vS_list
+#' Append the New `vS_list` to the Previous `vS_list`
 #'
 #' @inheritParams compute_estimates
 #'

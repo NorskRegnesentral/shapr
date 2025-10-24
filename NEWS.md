@@ -1,5 +1,11 @@
 **Note:** For changes to the Python wrapper `shaprpy`, see [python/CHANGELOG.md](python/CHANGELOG.md).
 
+# shapr 1.0.5.9001
+
+### Improvements
+* Added "proglang" to the `what` argument in `get_results()` to extract the programming language used (R or Python) ([#477](https://github.com/NorskRegnesentral/shapr/pull/477)),
+to ease reuse of the `R` methods in the `shaprpy` Python wrapper.
+
 # shapr 1.0.5
 
 ### New features

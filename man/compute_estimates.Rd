@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_estimates.R
 \name{compute_estimates}
 \alias{compute_estimates}
-\title{Compute the Shapley values and their standard deviation given \code{v(S)}}
+\title{Compute the Shapley Values and Their Standard Deviation Given \code{v(S)}}
 \usage{
 compute_estimates(internal, vS_list)
 }
@@ -17,6 +17,6 @@ Output from \code{\link[=compute_vS]{compute_vS()}}.}
 The (updated) internal list
 }
 \description{
-Compute the Shapley values and their standard deviation given \code{v(S)}
+Compute the Shapley Values and Their Standard Deviation Given \code{v(S)}
 }
 \keyword{internal}

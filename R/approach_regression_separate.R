@@ -122,7 +122,7 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 }
 
 # Train functions ======================================================================================================
-#' Train a tidymodels model via workflows
+#' Train a Tidymodels Model via Workflows
 #'
 #' Function that trains a `tidymodels` model via `workflows` based on the provided input parameters.
 #' This function allows for cross validating the hyperparameters of the model.

@@ -48,7 +48,7 @@ Install the additional Python packages needed for the reproduction scripts:
 pip install xgboost jupytext nbconvert ipykernel session_info
 ```
 **Note:**
-The `jupytext`, `nbconvert`, `ipykernel` and `session_info` packages are only needed to run the `code_py_to_html.sh` bash script that generates the HTML file from the Python code. The Python code itself does not require these packages.
+The `jupytext`, `nbconvert` and `ipykernel` packages are only needed to run the `code_py_to_html.sh` bash script that generates the HTML file from the Python code. The Python code itself does not require these packages.
 
 ## Commands to reproduce the examples
 
@@ -76,7 +76,7 @@ The html file shows the code used in the paper together with its output. Additio
 ### Python
 
 To simplify the reproducability, we have created a simple bash script executing the Python code in a manner similar to how the `knitr::spin()` function operates for the `R` code.
-The bash script requires the `jupytext`, `nbconvert`, `ipykernel` and `session_info` libraries to run, which can be installed from pip as described above.
+The bash script requires the `jupytext`, `nbconvert` and `ipykernel` libraries to run, which can be installed from pip as described above.
 
 To run the Python code and generate the HTML file with the code and output in the actual paper, run
 ```bash

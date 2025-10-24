@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain_forecast.R
 \name{explain_forecast}
 \alias{explain_forecast}
-\title{Explain a forecast from time series models with dependence-aware (conditional/observational) Shapley values}
+\title{Explain a Forecast from Time Series Models with Dependence-Aware (Conditional/Observational) Shapley Values}
 \usage{
 explain_forecast(
   model,

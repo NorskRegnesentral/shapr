@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain.R
 \name{explain}
 \alias{explain}
-\title{Explain the output of machine learning models with dependence-aware (conditional/observational) Shapley values}
+\title{Explain the Output of Machine Learning Models with Dependence-Aware (Conditional/Observational) Shapley Values}
 \usage{
 explain(
   model,

@@ -16,7 +16,7 @@ cli_topline <- function(verbose, testing, init_time, type, is_python) {
 }
 
 
-#' Printing startup messages with cli
+#' Print Startup Messages with CLI
 #'
 #' @inheritParams default_doc_export
 #' @inheritParams explain
@@ -143,7 +143,7 @@ format_info_extra <- function(internal) {
   return(formatted_msg)
 }
 
-#' Printing messages in compute_vS with cli
+#' Print Messages in Compute_vS with CLI
 #'
 #' @inheritParams default_doc_export
 #' @inheritParams explain
@@ -169,7 +169,7 @@ cli_compute_vS <- function(internal) {
   }
 }
 
-#' Printing messages in iterative procedure with cli
+#' Print Messages in Iterative Procedure with CLI
 #'
 #' @inheritParams default_doc_export
 #' @inheritParams explain
@@ -323,7 +323,7 @@ format_shapley_info <- function(internal, iter, digits = 2L) {
   return(ret)
 }
 
-#' Prints iterative information
+#' Print Iterative Information
 #'
 #' @inheritParams default_doc_export
 #'

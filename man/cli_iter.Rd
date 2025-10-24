@@ -2,7 +2,7 @@
 % Please edit documentation in R/cli.R
 \name{cli_iter}
 \alias{cli_iter}
-\title{Printing messages in iterative procedure with cli}
+\title{Print Messages in Iterative Procedure with CLI}
 \usage{
 cli_iter(verbose, internal, iter)
 }
@@ -31,6 +31,6 @@ The iteration number. Only used internally.}
 No return value (but prints iterative messages with cli)
 }
 \description{
-Printing messages in iterative procedure with cli
+Print Messages in Iterative Procedure with CLI
 }
 \keyword{internal}

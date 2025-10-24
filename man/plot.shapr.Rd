@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.shapr}
 \alias{plot.shapr}
-\title{Plot of the Shapley value explanations}
+\title{Plot of the Shapley Value Explanations}
 \usage{
 \method{plot}{shapr}(
   x,

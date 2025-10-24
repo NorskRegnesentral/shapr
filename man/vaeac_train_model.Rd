@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac.R
 \name{vaeac_train_model}
 \alias{vaeac_train_model}
-\title{Train the Vaeac Model}
+\title{Train the \code{vaeac} Model}
 \usage{
 vaeac_train_model(
   x_train,

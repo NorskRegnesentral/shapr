@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain.R
 \name{testing_cleanup}
 \alias{testing_cleanup}
-\title{Cleans out certain output arguments to allow perfect reproducibility of the output}
+\title{Clean Out Certain Output Arguments to Allow Perfect Reproducibility of the Output}
 \usage{
 testing_cleanup(output)
 }
@@ -10,7 +10,7 @@ testing_cleanup(output)
 Cleaned up version of the output list used for testthat testing
 }
 \description{
-Cleans out certain output arguments to allow perfect reproducibility of the output
+Clean Out Certain Output Arguments to Allow Perfect Reproducibility of the Output
 }
 \author{
 Lars Henry Berge Olsen, Martin Jullum
