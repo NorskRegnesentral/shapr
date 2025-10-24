@@ -19,7 +19,7 @@ get_results(
 
 \item{what}{Character vector specifying one or more components to extract.
 Options:
-"calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
+"calling_function", "proglang", "approach", "shapley_est", "shapley_sd", "pred_explain",
 "MSEv", "MSEv_explicand", "MSEv_coalition",
 "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
 "saving_path",
@@ -45,6 +45,7 @@ The allowed characters in \code{what} provides information as follows:
 \describe{
 \item{\code{calling_function}}{Name of function called to create the \code{shapr} object,
 (\code{explain()} or \code{explain_forecast()}).}
+\item{\code{proglang}}{Programming language used to initiate the computations (\code{R} or \code{Python}).}
 \item{\code{approach}}{Approach used to estimate the conditional expectations.}
 \item{\code{shapley_est}}{data.table with the estimated Shapley values.}
 \item{\code{shapley_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty

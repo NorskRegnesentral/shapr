@@ -81,7 +81,7 @@ class Shapr:
         ----------
         what : str or list of str, optional
             Component(s) to extract. Available options include:
-            "calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
+            "calling_function", "approach", "proglang", "shapley_est", "shapley_sd", "pred_explain",
             "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info", "iterative_shapley_est",
             "iterative_shapley_sd", "saving_path", "timing_summary", "timing_details", "parameters",
             "x_train", "x_explain", "dt_vS", "dt_samp_for_vS", "dt_used_coalitions",
@@ -94,6 +94,7 @@ class Shapr:
         Available components:
 
         - **calling_function** : Name of function used to create the shapr object (always explain() in Python)
+        - **proglang** : Programming language used to initiate the computations (R or Python).
         - **approach** : Approach used to estimate the conditional expectations
         - **shapley_est** : DataFrame with the estimated Shapley values
         - **shapley_sd** : DataFrame with standard deviations of Shapley values
