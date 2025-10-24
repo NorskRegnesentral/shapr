@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_regression_separate.R
 \name{regression.train_model}
 \alias{regression.train_model}
-\title{Train a tidymodels model via workflows}
+\title{Train a Tidymodels Model via Workflows}
 \usage{
 regression.train_model(
   x,

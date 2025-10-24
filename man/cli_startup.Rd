@@ -2,7 +2,7 @@
 % Please edit documentation in R/cli.R
 \name{cli_startup}
 \alias{cli_startup}
-\title{Printing startup messages with cli}
+\title{Print Startup Messages with CLI}
 \usage{
 cli_startup(internal, verbose)
 }
@@ -28,6 +28,6 @@ Any combination can be used, e.g., \code{verbose = c("basic", "vS_details")}.}
 No return value (but prints startup messages with cli)
 }
 \description{
-Printing startup messages with cli
+Print Startup Messages with CLI
 }
 \keyword{internal}

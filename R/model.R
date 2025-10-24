@@ -151,7 +151,7 @@ get_model_specs.default <- function(x) {
 }
 
 
-#' Provides a data.table with the supported models
+#' Provide a `data.table` with the Supported Models
 #'
 #' @return A data.table with the supported models.
 #' @export

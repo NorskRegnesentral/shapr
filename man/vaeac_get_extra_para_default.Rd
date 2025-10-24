@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac.R
 \name{vaeac_get_extra_para_default}
 \alias{vaeac_get_extra_para_default}
-\title{Function to specify the extra parameters in the \code{vaeac} model}
+\title{Specify the Extra Parameters in the \code{vaeac} Model}
 \usage{
 vaeac_get_extra_para_default(
   vaeac.model_description = make.names(Sys.time()),

@@ -2,7 +2,7 @@
 % Please edit documentation in R/asymmetric_and_causal_Shapley.R
 \name{prepare_data_causal}
 \alias{prepare_data_causal}
-\title{Generate data used for predictions and Monte Carlo integration for causal Shapley values}
+\title{Generate Data Used for Predictions and Monte Carlo Integration for Causal Shapley Values}
 \usage{
 prepare_data_causal(internal, index_features = NULL, ...)
 }

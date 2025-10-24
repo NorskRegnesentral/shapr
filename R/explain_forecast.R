@@ -1,4 +1,4 @@
-#' Explain a forecast from time series models with dependence-aware (conditional/observational) Shapley values
+#' Explain a Forecast from Time Series Models with Dependence-Aware (Conditional/Observational) Shapley Values
 #'
 #' @description Computes dependence-aware Shapley values for observations in `explain_idx` from the specified
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.

@@ -91,8 +91,8 @@ def extract_shapley_outputs():
         # Convert DataFrames to markdown format for stable snapshot comparison
         # Round to 6 decimal places to avoid numerical precision issues across environments
         result = {
-            "shapley_values_est": explanation["shapley_values_est"].round(6).to_markdown(),
-            "shapley_values_sd": explanation["shapley_values_sd"].round(6).to_markdown()
+            "shapley_values_est": explanation.get_results("shapley_est").round(6).to_markdown(),
+            "shapley_values_sd": explanation.get_results("shapley_sd").round(6).to_markdown()
         }
         return result
     return _extract

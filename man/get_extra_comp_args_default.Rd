@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup.R
 \name{get_extra_comp_args_default}
 \alias{get_extra_comp_args_default}
-\title{Gets the default values for the extra computation arguments}
+\title{Get the Default Values for the Extra Computation Arguments}
 \usage{
 get_extra_comp_args_default(
   internal,
@@ -70,7 +70,7 @@ than the number of parallel workers.}
 A list with the default values for the extra computation arguments.
 }
 \description{
-Gets the default values for the extra computation arguments
+Get the Default Values for the Extra Computation Arguments
 }
 \references{
 \itemize{

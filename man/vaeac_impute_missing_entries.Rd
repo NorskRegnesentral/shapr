@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac.R
 \name{vaeac_impute_missing_entries}
 \alias{vaeac_impute_missing_entries}
-\title{Impute Missing Values Using Vaeac}
+\title{Impute Missing Values Using \code{vaeac}}
 \usage{
 vaeac_impute_missing_entries(
   x_explain_with_NaNs,
@@ -58,7 +58,7 @@ times.
 The data table will contain extra id columns if \code{index_features} and \code{n_explain} are provided.
 }
 \description{
-Impute Missing Values Using Vaeac
+Impute Missing Values Using \code{vaeac}
 }
 \details{
 Function that imputes the missing values in 2D matrix where each row constitute an individual.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapley_setup.R
 \name{weight_matrix}
 \alias{weight_matrix}
-\title{Calculate weighted matrix}
+\title{Calculate Weighted Matrix}
 \usage{
 weight_matrix(X, normalize_W_weights = TRUE)
 }
@@ -18,7 +18,7 @@ except coalitions \code{1} and \code{2^m}.}
 Numeric matrix. See \code{\link[=weight_matrix_cpp]{weight_matrix_cpp()}} for more information.
 }
 \description{
-Calculate weighted matrix
+Calculate Weighted Matrix
 }
 \author{
 Nikolai Sellereite, Martin Jullum
