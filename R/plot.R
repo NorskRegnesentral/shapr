@@ -17,14 +17,13 @@
 #' @param digits Integer.
 #' Number of significant digits to use in the feature description.
 #' Applicable for `plot_type` `"bar"` and `"waterfall"`
-#' @param return Logical.
-#' Whether to return the created `ggplot` object without forcefully displaying the plot,
-#' or display the plot without returning  plot (i.e. call [ggplot2::print.ggplot()] to force display the plot).
-#' The default is `FALSE`.
-#' The argument only change the behavior if you are sourcing the a script calling [shapr::print.shapr()],
-#' call it inside a for loop, or similar, see [ggplot2::print.ggplot()].
-#' If you want to do further modifications to the `ggplot` object, you should use `return=TRUE`.
-#' TODO: Improve this argument description
+#' @param print_ggplot Logical.
+#' Whether to print the created `ggplot` object once it is returned.
+#' The default is `TRUE` which ensures the plot is always displayed, also when
+#' assigning the output to a variable like `p <- plot.shapr(...)`, in loops, functions etc.
+#' See [ggplot2::print.ggplot()] for more details.
+#' If you wish further modify the returned `ggplot` object outside of `plot.shapr`,
+#' we recommend setting `print_ggplot = FALSE` to avoid force printing. See examples.
 #' @param bar_plot_phi0 Logical.
 #' Whether to include `phi0` in the plot for  `plot_type = "bar"`.
 #' @param index_x_explain Integer vector.
@@ -177,6 +176,16 @@
 #'     plot(x, plot_type = "scatter")
 #'     plot(x, plot_type = "beeswarm")
 #'   }
+#'
+#'   # Example of further modification of the output from plot.shapr
+#'   plt = plot(x, print_ggplot = FALSE) # Stores the ggplot object, without displaying it
+#'
+#'   # Displays the modified ggplot object
+#'   plt +
+#'     ggplot2::ggtitle("My custom title") +
+#'     ggplot2::ylab("Variable influence") +
+#'     ggplot2::xlab("Variable")
+#'
 #' }
 #' }
 #'
@@ -366,9 +375,9 @@ plot.shapr <- function(x,
   }
 
   if(isTRUE(print_ggplot)){
-    return(print(gg))
+    return(print(gg)) # Return the figure with force display
   } else {
-    return(gg)
+    return(gg) # Return the figure without force display
   }
 }
 
@@ -908,8 +917,12 @@ make_waterfall_plot <- function(dt_plot,
 #' If `plot_type` is a vector of one or several of "overall", "comb", and "explicand", then the associated plots are
 #' created.
 #'
+#' @details Note that in contrast to [plot.shapr()], [plot_MSEv_eval_crit()] always just returns the ggplot objects,
+#' i.e. no force displaying through [ggplot2::print.ggplot()].
+#'
 #' @return Either a single [ggplot2::ggplot()] object of the MSEv criterion when `plot_type = "overall"`, or a list
 #' of [ggplot2::ggplot()] objects based on the `plot_type` parameter.
+#'
 #'
 #' @export
 #' @examples
@@ -1560,16 +1573,20 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   plot_SV_several_approaches(explanation_list)
 #'
 #'   # We can change the number of columns in the grid of plots and add other visual alterations
+#'   # Remember to set print_ggplot = FALSE to avoid force displaying the ggplot object before the modifications
+#'   # outside plot_SV_several_approaches()
+#'
 #'   plot_SV_several_approaches(explanation_list,
 #'     facet_ncol = 3,
 #'     facet_scales = "free_y",
 #'     add_zero_line = TRUE,
 #'     digits = 2,
 #'     brewer_palette = "Paired",
-#'     geom_col_width = 0.6
+#'     geom_col_width = 0.6,
+#'     print_ggplot = FALSE
 #'   ) +
 #'     ggplot2::theme_minimal() +
-#'     ggplot2::theme(legend.position = "bottom", plot.title = ggplot2::element_text(size = 0))
+#'     ggplot2::theme(legend.position = "bottom", plot.title = ggplot2::element_text(size = 10))
 #'
 #'
 #'   # We can specify which explicands to plot to get less chaotic plots and make the bars vertical
@@ -1594,6 +1611,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'     only_these_features = c("Temp", "Solar.R"),
 #'     plot_phi0 = TRUE
 #'   )
+#'
 #' }
 #' }
 #'
@@ -1604,6 +1622,7 @@ plot_SV_several_approaches <- function(explanation_list,
                                        only_these_features = NULL,
                                        plot_phi0 = FALSE,
                                        digits = 4,
+                                       print_ggplot = TRUE,
                                        add_zero_line = FALSE,
                                        axis_labels_n_dodge = NULL,
                                        axis_labels_rotate_angle = NULL,
@@ -1738,8 +1757,11 @@ plot_SV_several_approaches <- function(explanation_list,
   }
   if (horizontal_bars) figure <- figure + ggplot2::coord_flip()
 
-  # Return the figure
-  return(figure)
+  if(isTRUE(print_ggplot)){
+    return(print(figure))   # Return the figure with force display
+  } else {
+    return(figure) # Return the figure without force display
+  }
 }
 
 

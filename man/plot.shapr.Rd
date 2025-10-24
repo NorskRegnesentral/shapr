@@ -2,12 +2,13 @@
 % Please edit documentation in R/plot.R
 \name{plot.shapr}
 \alias{plot.shapr}
-\title{Plot of the Shapley value explanations}
+\title{Plot of the Shapley Value Explanations}
 \usage{
 \method{plot}{shapr}(
   x,
   plot_type = "bar",
   digits = 3,
+  print_ggplot = TRUE,
   index_x_explain = NULL,
   top_k_features = NULL,
   col = NULL,
@@ -38,6 +39,14 @@ of that instance.}
 \item{digits}{Integer.
 Number of significant digits to use in the feature description.
 Applicable for \code{plot_type} \code{"bar"} and \code{"waterfall"}}
+
+\item{print_ggplot}{Logical.
+Whether to print the created \code{ggplot} object once it is returned.
+The default is \code{TRUE} which ensures the plot is always displayed, also when
+assigning the output to a variable like \code{p <- plot.shapr(...)}, in loops, functions etc.
+See \code{\link[ggplot2:print.ggplot]{ggplot2::print.ggplot()}} for more details.
+If you wish further modify the returned \code{ggplot} object outside of \code{plot.shapr},
+we recommend setting \code{print_ggplot = FALSE} to avoid force printing. See examples.}
 
 \item{index_x_explain}{Integer vector.
 Which of the test observations to plot. For example, if you have
@@ -204,6 +213,16 @@ if (requireNamespace("party", quietly = TRUE)) {
     plot(x, plot_type = "scatter")
     plot(x, plot_type = "beeswarm")
   }
+
+  # Example of further modification of the output from plot.shapr
+  plt = plot(x, print_ggplot = FALSE) # Stores the ggplot object, without displaying it
+
+  # Displays the modified ggplot object
+  plt +
+    ggplot2::ggtitle("My custom title") +
+    ggplot2::ylab("Variable influence") +
+    ggplot2::xlab("Variable")
+
 }
 }
 

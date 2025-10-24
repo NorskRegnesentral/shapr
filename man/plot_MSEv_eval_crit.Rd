@@ -60,6 +60,10 @@ bar plots and line plots with points to illustrate the overall MSEv evaluation
 criterion, but also for each observation/explicand and coalition by only averaging over
 the coalitions and observations/explicands, respectively.
 }
+\details{
+Note that in contrast to \code{\link[=plot.shapr]{plot.shapr()}}, \code{\link[=plot_MSEv_eval_crit]{plot_MSEv_eval_crit()}} always just returns the ggplot objects,
+i.e. no force displaying through \code{\link[ggplot2:print.ggplot]{ggplot2::print.ggplot()}}.
+}
 \examples{
 \donttest{
 if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)) {
