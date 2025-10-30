@@ -2,12 +2,12 @@
 % Please edit documentation in R/get_results.R
 \name{get_results}
 \alias{get_results}
-\title{Extract components from a shapr object}
+\title{Extract Components from a Shapr Object}
 \usage{
 get_results(
   x,
-  what = c("calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
-    "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info",
+  what = c("calling_function", "proglang", "approach", "shapley_est", "shapley_sd",
+    "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info",
     "iterative_shapley_est", "iterative_shapley_sd", "saving_path", "timing_summary",
     "timing_details", "parameters", "x_train", "x_explain", "dt_vS", "dt_samp_for_vS",
     "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"),
@@ -19,7 +19,7 @@ get_results(
 
 \item{what}{Character vector specifying one or more components to extract.
 Options:
-"calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
+"calling_function", "proglang", "approach", "shapley_est", "shapley_sd", "pred_explain",
 "MSEv", "MSEv_explicand", "MSEv_coalition",
 "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
 "saving_path",
@@ -36,7 +36,7 @@ If a single component is requested, returns that object.
 If multiple are requested, returns a named list.
 }
 \description{
-Extract components from a shapr object
+Extract Components from a Shapr Object
 }
 \details{
 The function extracts a full suite of information related to the computation of the Shapley values from
@@ -45,6 +45,7 @@ The allowed characters in \code{what} provides information as follows:
 \describe{
 \item{\code{calling_function}}{Name of function called to create the \code{shapr} object,
 (\code{explain()} or \code{explain_forecast()}).}
+\item{\code{proglang}}{Programming language used to initiate the computations (\code{R} or \code{Python}).}
 \item{\code{approach}}{Approach used to estimate the conditional expectations.}
 \item{\code{shapley_est}}{data.table with the estimated Shapley values.}
 \item{\code{shapley_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty

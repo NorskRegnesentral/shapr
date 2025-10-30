@@ -1,4 +1,4 @@
-#' check_setup
+#' Check Setup
 #' @inheritParams explain
 #' @inheritParams explain_forecast
 #' @inheritParams default_doc_internal
@@ -1022,7 +1022,7 @@ set_output_parameters <- function(internal) {
   return(internal)
 }
 
-#' Gets the default values for the output arguments
+#' Get the Default Values for the Output Arguments
 #'
 #' @param keep_samp_for_vS Logical.
 #' Indicates whether the samples used in the Monte Carlo estimation of `v(S)` should be returned (in `internal$output`).
@@ -1149,7 +1149,7 @@ check_and_set_sampling_info <- function(internal) {
   return(internal)
 }
 
-#' Gets the default values for the extra computation arguments
+#' Get the Default Values for the Extra Computation Arguments
 #'
 #' @param paired_shap_sampling Logical.
 #' If `TRUE` paired versions of all sampled coalitions are also included in the computation.
@@ -1501,7 +1501,7 @@ check_approach <- function(internal) {
   }
 }
 
-#' Gets the implemented approaches
+#' Get the Implemented Approaches
 #'
 #' @return Character vector.
 #' The names of the implemented approaches that can be passed to argument `approach` in [explain()].
@@ -1833,7 +1833,7 @@ get_iterative_args_default <- function(internal,
   return(ret_list)
 }
 
-#' Additional setup for regression-based methods
+#' Additional Setup for Regression-Based Methods
 #'
 #' @inheritParams default_doc_export
 #'

@@ -11,18 +11,18 @@ utils.set_random_seed(1)
 
 ## Build model
 model = Sequential([
-    layers.Dense(units=8, activation='relu'), 
-    layers.Dense(units=16, activation='relu'), 
-    layers.Dense(units=8, activation='relu'), 
+    layers.Dense(units=8, activation='relu'),
+    layers.Dense(units=16, activation='relu'),
+    layers.Dense(units=8, activation='relu'),
     layers.Dense(units=1, activation='sigmoid')
 ])
-model.compile(optimizer="adam", 
-              loss ="binary_crossentropy", 
+model.compile(optimizer="adam",
+              loss ="binary_crossentropy",
               metrics=["accuracy"])
 
 ## Fit Model
-model.fit(dfx_train, dfy_train, 
-          epochs=10, 
+model.fit(dfx_train, dfy_train,
+          epochs=10,
           validation_data=(dfx_test, dfy_test))
 ## Shapr
 explanation = explain(
@@ -33,28 +33,31 @@ explanation = explain(
     phi0 = dfy_train.mean().item(),
     seed = 1
 )
-print(explanation["shapley_values_est"])
 
-""" 
-   explain_id      none  sepal length (cm)  sepal width (cm)  \
-1           1  0.494737           0.041518          0.037129   
-2           2  0.494737           0.033541          0.028414   
-3           3  0.494737           0.045033          0.031092   
-4           4  0.494737           0.014281          0.031831   
-5           5  0.494737           0.022155          0.025154   
+explanation.print()
 
-   petal length (cm)  petal width (cm)  
-1           0.058252          0.057664  
-2           0.044242          0.052839  
-3           0.057368          0.069891  
-4           0.013667          0.018016  
-5           0.026672          0.026181  
+"""
+   explain_id  none sepal length (cm) sepal width (cm) petal length (cm)
+        <int> <num>             <num>            <num>             <num>
+1:          1 0.495            0.0415           0.0371            0.0583
+2:          2 0.495            0.0335           0.0284            0.0442
+3:          3 0.495            0.0450           0.0311            0.0574
+4:          4 0.495            0.0143           0.0318            0.0137
+5:          5 0.495            0.0222           0.0252            0.0267
+   petal width (cm)
+              <num>
+1:           0.0577
+2:           0.0528
+3:           0.0699
+4:           0.0180
+5:           0.0262
  """
 
 # Look at the (overall) MSEv
-print(explanation["MSEv"]["MSEv"])
+explanation.print("MSEv")
 
 """
-	MSEv	MSEv_sd
-1	0.000312	0.00014
+       MSEv MSEv_sd
+      <num>   <num>
+1: 0.000312 0.00014
 """

@@ -1,4 +1,4 @@
-#' Explain the output of machine learning models with dependence-aware (conditional/observational) Shapley values
+#' Explain the Output of Machine Learning Models with Dependence-Aware (Conditional/Observational) Shapley Values
 #'
 #' @description Compute dependence-aware Shapley values for observations in `x_explain` from the specified
 #' `model` using the method specified in `approach` to estimate the conditional expectation.
@@ -615,7 +615,7 @@ explain <- function(model,
   return(output)
 }
 
-#' Cleans out certain output arguments to allow perfect reproducibility of the output
+#' Clean Out Certain Output Arguments to Allow Perfect Reproducibility of the Output
 #'
 #' @inheritParams default_doc_export
 #'

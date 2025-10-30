@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac.R
 \name{vaeac_get_evaluation_criteria}
 \alias{vaeac_get_evaluation_criteria}
-\title{Extract the Training VLB and Validation IWAE from a list of explanations objects using the vaeac approach}
+\title{Extract the Training VLB and Validation IWAE from a List of Explanations Objects Using the \code{vaeac} Approach}
 \usage{
 vaeac_get_evaluation_criteria(explanation_list)
 }
@@ -17,7 +17,7 @@ A data.table containing the training VLB, validation IWAE, and running validatio
 each vaeac model.
 }
 \description{
-Extract the Training VLB and Validation IWAE from a list of explanations objects using the vaeac approach
+Extract the Training VLB and Validation IWAE from a List of Explanations Objects Using the \code{vaeac} Approach
 }
 \author{
 Lars Henry Berge Olsen

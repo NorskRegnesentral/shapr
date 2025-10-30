@@ -80,14 +80,17 @@ class TestBasicFunctionality:
         )
 
         # Check that the explanation contains expected keys
-        expected_keys = ['shapley_values_est', 'shapley_values_sd']
+        expected_keys = ['shapley_est', 'shapley_sd']
+
+        res = explanation.get_results(expected_keys)
+
         for key in expected_keys:
-            assert key in explanation, f"Expected key '{key}' not found in explanation"
+            assert key in res, f"Expected key '{key}' not found in explanation"
 
         # Check that shapley values are DataFrames with expected structure
-        assert isinstance(explanation['shapley_values_est'], pd.DataFrame)
-        assert isinstance(explanation['shapley_values_sd'], pd.DataFrame)
+        assert isinstance(res['shapley_est'], pd.DataFrame)
+        assert isinstance(res['shapley_sd'], pd.DataFrame)
 
         # Check that we have the right number of rows (should match x_explain)
-        assert len(explanation['shapley_values_est']) == 1
-        assert len(explanation['shapley_values_sd']) == 1
+        assert len(res['shapley_est']) == 1
+        assert len(res['shapley_sd']) == 1

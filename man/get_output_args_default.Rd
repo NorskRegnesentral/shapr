@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup.R
 \name{get_output_args_default}
 \alias{get_output_args_default}
-\title{Gets the default values for the output arguments}
+\title{Get the Default Values for the Output Arguments}
 \usage{
 get_output_args_default(
   keep_samp_for_vS = FALSE,
@@ -29,7 +29,7 @@ Defaults to a temporary directory.}
 A list of default output arguments.
 }
 \description{
-Gets the default values for the output arguments
+Get the Default Values for the Output Arguments
 }
 \author{
 Martin Jullum

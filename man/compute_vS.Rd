@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_vS.R
 \name{compute_vS}
 \alias{compute_vS}
-\title{Computes \code{v(S)} for all feature subsets \code{S}.}
+\title{Compute \code{v(S)} for All Feature Subsets \code{S}}
 \usage{
 compute_vS(internal, model, predict_model)
 }
@@ -14,6 +14,6 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 List of \code{v(S)} for different coalitions \code{S}, optionally including the samples used to estimate \code{v(S)}.
 }
 \description{
-Computes \code{v(S)} for all feature subsets \code{S}.
+Compute \code{v(S)} for All Feature Subsets \code{S}
 }
 \keyword{internal}

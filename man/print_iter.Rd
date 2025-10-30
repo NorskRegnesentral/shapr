@@ -2,7 +2,7 @@
 % Please edit documentation in R/cli.R
 \name{print_iter}
 \alias{print_iter}
-\title{Prints iterative information}
+\title{Print Iterative Information}
 \usage{
 print_iter(internal)
 }
@@ -14,6 +14,6 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 No return value (but prints iterative information)
 }
 \description{
-Prints iterative information
+Print Iterative Information
 }
 \keyword{internal}

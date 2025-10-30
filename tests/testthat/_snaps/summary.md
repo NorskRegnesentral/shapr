@@ -7,7 +7,7 @@
     Message
       
       -- Summary of Shapley value explanation ----------------------------------------
-      * Computed with`shapr::explain()`
+      * Computed with `shapr::explain()`
       * Model class: <lm>
       * v(S) estimation class: Monte Carlo integration
       * Approach: independence
@@ -29,6 +29,9 @@
     Output
       $calling_function
       [1] "explain"
+      
+      $proglang
+      [1] "R"
       
       $approach
       [1] "independence"
@@ -445,7 +448,7 @@
     Message
       
       -- Summary of Shapley value explanation ----------------------------------------
-      * Computed with`shapr::explain_forecast()`
+      * Computed with `shapr::explain_forecast()`
       * Model class: <ar>
       * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
@@ -467,6 +470,9 @@
     Output
       $calling_function
       [1] "explain_forecast"
+      
+      $proglang
+      [1] "R"
       
       $approach
       [1] "empirical"

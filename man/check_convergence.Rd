@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_convergence.R
 \name{check_convergence}
 \alias{check_convergence}
-\title{Checks the convergence according to the convergence threshold}
+\title{Check the Convergence According to the Convergence Threshold}
 \usage{
 check_convergence(internal)
 }
@@ -14,6 +14,6 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 The (updated) internal list
 }
 \description{
-Checks the convergence according to the convergence threshold
+Check the Convergence According to the Convergence Threshold
 }
 \keyword{internal}

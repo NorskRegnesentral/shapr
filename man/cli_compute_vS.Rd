@@ -2,7 +2,7 @@
 % Please edit documentation in R/cli.R
 \name{cli_compute_vS}
 \alias{cli_compute_vS}
-\title{Printing messages in compute_vS with cli}
+\title{Print Messages in Compute_vS with CLI}
 \usage{
 cli_compute_vS(internal)
 }
@@ -14,6 +14,6 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 No return value (but prints compute_vS messages with cli)
 }
 \description{
-Printing messages in compute_vS with cli
+Print Messages in Compute_vS with CLI
 }
 \keyword{internal}

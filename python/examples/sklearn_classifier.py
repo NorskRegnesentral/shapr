@@ -17,21 +17,23 @@ explanation = explain(
     phi0 = dfy_train.mean().item(),
     seed = 1
 )
-print(explanation["shapley_values_est"])
+
+explanation.print()
+
 
 """
-   explain_id      none  sepal length (cm)  sepal width (cm)  \
-1           1  0.494737           0.125632          0.127187
-2           2  0.494737           0.061942          0.084664
-3           3  0.494737           0.158276         -0.045561
-4           4  0.494737          -0.167825          0.032064
-5           5  0.494737          -0.082809         -0.139540
-
-   petal length (cm)  petal width (cm)
-1           0.127187          0.125257
-2           0.179329          0.179329
-3           0.191433          0.191115
-4          -0.179700         -0.179275
-5          -0.135924         -0.136463
-
+   explain_id  none sepal length (cm) sepal width (cm) petal length (cm)
+        <int> <num>             <num>            <num>             <num>
+1:          1 0.495            0.1256           0.1272             0.127
+2:          2 0.495            0.0619           0.0847             0.179
+3:          3 0.495            0.1583          -0.0456             0.191
+4:          4 0.495           -0.1678           0.0321            -0.180
+5:          5 0.495           -0.0828          -0.1395            -0.136
+   petal width (cm)
+              <num>
+1:            0.125
+2:            0.179
+3:            0.191
+4:           -0.179
+5:           -0.136
  """

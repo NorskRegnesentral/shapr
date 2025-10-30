@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup.R
 \name{setup}
 \alias{setup}
-\title{check_setup}
+\title{Check Setup}
 \usage{
 setup(
   x_train,
@@ -242,6 +242,6 @@ An internal list containing parameters, info, data, and computations needed for 
 The list is expanded and modified in other functions.
 }
 \description{
-check_setup
+Check Setup
 }
 \keyword{internal}

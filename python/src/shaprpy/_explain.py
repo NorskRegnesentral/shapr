@@ -8,12 +8,14 @@ from rpy2.robjects.packages import importr
 from rpy2.rinterface import NULL, NA
 from shaprpy.utils import r2py, py2r, recurse_r_tree
 from rpy2.robjects.vectors import StrVector, ListVector
+from shaprpy.explanation import Shapr
+from shaprpy._rutils import _importr
 
-data_table = importr('data.table')
-shapr = importr('shapr')
-utils = importr('utils')
-base = importr('base')
-stats = importr('stats')
+data_table = _importr('data.table')
+shapr = _importr('shapr')
+utils = _importr('utils')
+base = _importr('base')
+stats = _importr('stats')
 
 def maybe_null(val):
   return val if val is not None else NULL
@@ -290,7 +292,7 @@ def explain(
     internal = recurse_r_tree(routput.rx2('internal'))
     timing = recurse_r_tree(routput.rx2('timing'))
 
-    return {
+    explanation_dict = {
       "shapley_values_est": shapley_values_est,
       "shapley_values_sd": shapley_values_sd,
       "pred_explain": pred_explain,
@@ -300,6 +302,9 @@ def explain(
       "internal": internal,
       "timing": timing,
     }
+
+    # Return the new Shapr class instance with both Python dict and R object
+    return Shapr(explanation_dict, r_object=routput)
 
 
 def compute_vS(rinternal, model, predict_model):
@@ -627,4 +632,3 @@ def change_first_underscore_to_dot(kwargs):
   for k, v in kwargs.items():
     kwargs_tmp[k.replace('_', '.', 1)] = v
   return kwargs_tmp
-

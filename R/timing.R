@@ -1,4 +1,4 @@
-#' Gather and compute the timing of the different parts of the explain function.
+#' Gather and Compute the Timing of the Different Parts of the Explain Function
 #'
 #' @inheritParams default_doc_export
 #'

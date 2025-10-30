@@ -1,9 +1,9 @@
-#' Extract components from a shapr object
+#' Extract Components from a Shapr Object
 #'
 #' @param x A `shapr` object
 #' @param what Character vector specifying one or more components to extract.
 #' Options:
-#' "calling_function", "approach", "shapley_est", "shapley_sd", "pred_explain",
+#' "calling_function", "proglang", "approach", "shapley_est", "shapley_sd", "pred_explain",
 #' "MSEv", "MSEv_explicand", "MSEv_coalition",
 #' "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
 #' "saving_path",
@@ -19,6 +19,7 @@
 #' \describe{
 #'   \item{`calling_function`}{Name of function called to create the `shapr` object,
 #'   (`explain()` or `explain_forecast()`).}
+#'   \item{`proglang`}{Programming language used to initiate the computations (`R` or `Python`).}
 #'   \item{`approach`}{Approach used to estimate the conditional expectations.}
 #'   \item{`shapley_est`}{data.table with the estimated Shapley values.}
 #'   \item{`shapley_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
@@ -61,7 +62,7 @@
 #'
 #' @export
 get_results <- function(x, what = c(
-                          "calling_function", "approach",
+                          "calling_function", "proglang", "approach",
                           "shapley_est", "shapley_sd",
                           "pred_explain",
                           "MSEv", "MSEv_explicand", "MSEv_coalition",
@@ -75,7 +76,7 @@ get_results <- function(x, what = c(
   stopifnot(inherits(x, "shapr"))
 
   allowed <- c(
-    "calling_function", "approach",
+    "calling_function", "proglang", "approach",
     "shapley_est", "shapley_sd",
     "pred_explain",
     "MSEv", "MSEv_explicand", "MSEv_coalition",
@@ -98,6 +99,7 @@ get_results <- function(x, what = c(
   res <- lapply(what, function(w) {
     switch(w,
       calling_function = ifelse(x$internal$parameters$type == "regular", "explain", "explain_forecast"),
+      proglang = ifelse(x$internal$parameters$is_python, "Python", "R"),
       approach = x$internal$parameters$approach,
       shapley_est = x$shapley_values_est,
       shapley_sd = x$shapley_values_sd,

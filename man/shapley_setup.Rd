@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapley_setup.R
 \name{shapley_setup}
 \alias{shapley_setup}
-\title{Set up the kernelSHAP framework}
+\title{Set Up the KernelSHAP Framework}
 \usage{
 shapley_setup(internal)
 }
@@ -14,6 +14,6 @@ Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
 The internal list updated with the coalitions to be estimated
 }
 \description{
-Set up the kernelSHAP framework
+Set Up the KernelSHAP Framework
 }
 \keyword{internal}

@@ -1,4 +1,4 @@
-#' Checks the convergence according to the convergence threshold
+#' Check the Convergence According to the Convergence Threshold
 #'
 #' @inheritParams default_doc_export
 #'

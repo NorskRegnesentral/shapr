@@ -1,4 +1,4 @@
-#' Summary method for shapr objects
+#' Summary Method for Shapr Objects
 #'
 #' @param object A shapr object.
 #' @param ... Currently unused.
@@ -22,7 +22,12 @@ summary.shapr <- function(object, digits = 2L, ...) {
   # Retrieve all needed results
   results <- get_results(object)
 
-  func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
+  if (results$proglang == "R") {
+    func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
+  } else { # Python
+    func_txt <- ifelse(results$calling_function == "explain", "{.fn shaprpy.explain}", "{.fn shaprpy.explain_forecast}")
+  }
+
   init_time <- results$timing_summary$init_time
   total_time_str <- results$timing_summary$total_time_str
   if (is.null(init_time)) init_time <- 0
@@ -31,9 +36,9 @@ summary.shapr <- function(object, digits = 2L, ...) {
 
   cli::cli_h1("Summary of Shapley value explanation")
   if (isFALSE(testing)) {
-    cli::cli_ul(paste0("Computed with", func_txt, " in {.field {total_time_str}}, started {.val {round(init_time)}}"))
+    cli::cli_ul(paste0("Computed with ", func_txt, " in {.field {total_time_str}}, started {.val {round(init_time)}}"))
   } else {
-    cli::cli_ul(paste0("Computed with", func_txt))
+    cli::cli_ul(paste0("Computed with ", func_txt))
   }
 
   # Display basic shapr info
