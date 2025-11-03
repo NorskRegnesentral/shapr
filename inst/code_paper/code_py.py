@@ -1,6 +1,11 @@
+import os
 import xgboost as xgb
 import pandas as pd
 from shaprpy import explain
+from shap import plots as shap_plt
+import matplotlib.pyplot as plt
+
+
 
 # Read data
 x_train = pd.read_csv("data_and_models/" + "x_train.csv")
@@ -25,10 +30,27 @@ exp_40_ctree = explain(model = model,
 
 
 # Print the Shapley values
-print(exp_40_ctree["shapley_values_est"].iloc[:, 1:].round(2))
+exp_40_ctree.print()
+
+# Print the MSE of the v(S)
+exp_40_ctree.print(what = "MSEv")
+
+# Display a "force plot" of the eight observation using the shap package ##
+
+exp_40_ctree_shap = exp_40_ctree.to_shap() # Convert to shap class
+
+shap_plt.force(exp_40_ctree_shap[8-1], matplotlib = True,show = True)
+
+# Generate another one for saving to disk
+plt.figure(figsize=(16, 4), dpi=300)
+shap_plt.force(exp_40_ctree_shap[8-1], matplotlib = True,show = False)
+plt.tight_layout()
+os.makedirs("Py_paper_figures", exist_ok=True)
+plt.savefig(fname="Py_paper_figures/py_force_plot.pdf")
+plt.close()
+
 
 
 # Print the session information
 import session_info
-import os
 session_info.show(html=False)
