@@ -179,10 +179,17 @@ class Shapr:
         None
             Prints output from R's print.shapr() but returns nothing.
         """
+        import io
+        from contextlib import redirect_stdout
         base = _importr('base')
 
-        # Call R's print.shapr function
-        base.print(self._r_object, what=what, digits=digits)
+        # Capture and re-print
+        f = io.StringIO()
+        with redirect_stdout(f):
+            base.print(self._r_object, what=what, digits=digits)
+        captured_output = f.getvalue()
+        print(captured_output)
+
 
     def to_shap(self, idx=None):
         """Convert the Shapr explanation to a SHAP Explanation object.
