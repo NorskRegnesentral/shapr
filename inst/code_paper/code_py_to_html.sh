@@ -35,7 +35,9 @@ jupyter nbconvert --to notebook --execute "$NOTEBOOK" --output "$EXECUTED_NOTEBO
 
 # Step 3: Convert executed notebook to HTML
 echo "Exporting to HTML..."
-jupyter nbconvert --to html "$EXECUTED_NOTEBOOK" --output "$HTMLFILE"
+jupyter nbconvert --to html "$EXECUTED_NOTEBOOK" --output "$HTMLFILE" \
+  --TagRemovePreprocessor.enabled=True \
+  --TagRemovePreprocessor.remove_input_tags="['hide_input']"
 
 # Step 4: Cleanup intermediate files
 echo "Cleaning up..."
