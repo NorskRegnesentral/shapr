@@ -1125,8 +1125,8 @@ plot_beeswarms(explanation_n_coal, title = "Shapley values (gaussian) exact vs. 
 ```
 
 ```{r n_coalitions_plot_SV, cache = TRUE, fig.height = 8, cache = TRUE}
-plot_SV_several_approaches(explanation_n_coal, index_x_explain) +
-  theme(legend.position = "bottom", print_ggplot = FALSE) +
+plot_SV_several_approaches(explanation_n_coal, index_x_explain, print_ggplot = FALSE) +
+  theme(legend.position = "bottom") +
   guides(fill = guide_legend(nrow = 2))
 ```
 
