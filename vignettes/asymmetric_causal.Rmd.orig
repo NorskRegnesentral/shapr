@@ -100,7 +100,7 @@ dependencies within chain components are induced by mutual interactions.
 
 
 ```{r asymmetric_ordering, echo=FALSE, fig.cap="Schematic overview of the causal ordering used in this vignette.", fig.align='center', out.width = '50%'}
-knitr::include_graphics("figure_asymmetric_causal/Asymmetric_ordering.png")
+knitr::include_graphics("figure_asymmetric_causal/Asymmetric_ordering.webp")
 ```
 
 
@@ -169,7 +169,7 @@ Shapley values; see Corollaries 1 to 3 in the supplement of @heskes2020causal.
 
 
 ```{r pressure, echo=FALSE, fig.cap="Schematic overview of the causal chain graph used in this vignette.", fig.align='center', out.width = '50%'}
-knitr::include_graphics("figure_asymmetric_causal/Causal_ordering.png")
+knitr::include_graphics("figure_asymmetric_causal/Causal_ordering.webp")
 ```
 
 
