@@ -87,10 +87,10 @@ use the coalitions respecting the causal ordering and assuming that all
 dependencies within chain components are induced by mutual interactions.
 
 
-
-```
-#> Error in knitr::include_graphics("figure_asymmetric_causal/Asymmetric_ordering.webp"): Cannot find the file(s): "figure_asymmetric_causal/Asymmetric_ordering.webp"
-```
+<div class="figure" style="text-align: center">
+<img src="figure_asymmetric_causal/Asymmetric_ordering.webp" alt="Schematic overview of the causal ordering used in this vignette." width="50%" />
+<p class="caption">Schematic overview of the causal ordering used in this vignette.</p>
+</div>
 
 
 # Causal Shapley values {#CausSV}
@@ -157,10 +157,10 @@ simplifies to symmetric conditional, asymmetric conditional, and marginal
 Shapley values; see Corollaries 1 to 3 in the supplement of @heskes2020causal.
 
 
-
-```
-#> Error in knitr::include_graphics("figure_asymmetric_causal/Causal_ordering.webp"): Cannot find the file(s): "figure_asymmetric_causal/Causal_ordering.webp"
-```
+<div class="figure" style="text-align: center">
+<img src="figure_asymmetric_causal/Causal_ordering.webp" alt="Schematic overview of the causal chain graph used in this vignette." width="50%" />
+<p class="caption">Schematic overview of the causal chain graph used in this vignette.</p>
+</div>
 
 
 # Marginal Shapley values {#MarginaSV}
