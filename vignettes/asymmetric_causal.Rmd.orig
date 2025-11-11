@@ -373,7 +373,7 @@ print_time <- function(explanation_list) {
 plot_beeswarms <- function(explanation_list, title = "", ...) {
   # Make the beeswarm plots
   grobs <- lapply(seq(length(explanation_list)), function(explanation_idx) {
-    gg <- plot(explanation_list[[explanation_idx]], plot_type = "beeswarm", ...) +
+    gg <- plot(explanation_list[[explanation_idx]], plot_type = "beeswarm", print_ggplot = FALSE, ...) +
       ggplot2::ggtitle(tools::toTitleCase(gsub("_", " ", names(explanation_list)[[explanation_idx]])))
 
   # Flip the order such that the features come in the right order
@@ -459,7 +459,7 @@ print_MSEv_scores_and_time(explanation_sym_con)
 We can then plot the Shapley values for the six explicands chosen above.
 
 ```{r explanation_sym_con_SV, fig.height = 7, cache = TRUE}
-plot_SV_several_approaches(explanation_sym_con, index_x_explain) +
+plot_SV_several_approaches(explanation_sym_con, index_x_explain, print_ggplot = FALSE) +
   theme(legend.position = "bottom")
 ```
 
@@ -580,7 +580,7 @@ names(explanation_sym_con_tmp) <- paste0(names(explanation_sym_con_tmp), "_sym")
 explanation_asym_con_tmp <- copy(explanation_asym_con)
 names(explanation_asym_con_tmp) <- paste0(names(explanation_asym_con_tmp), "_asym")
 explanation_asym_sym_con <- c(explanation_sym_con_tmp, explanation_asym_con_tmp)[c(1, 4, 2, 5, 3, 6)]
-plot_SV_several_approaches(explanation_asym_sym_con, index_x_explain, brewer_palette = "Paired") +
+plot_SV_several_approaches(explanation_asym_sym_con, index_x_explain, brewer_palette = "Paired", print_ggplot = FALSE) +
   theme(legend.position = "bottom")
 ```
 
@@ -783,7 +783,7 @@ plot_beeswarms(explanation_asym_cau, title = "Asymmetric causal Shapley values")
 
 ```{r explanation_asym_cau_SV, fig.height = 8, cache = TRUE}
 # Plot the Shapley values
-plot_SV_several_approaches(explanation_asym_cau, index_x_explain) +
+plot_SV_several_approaches(explanation_asym_cau, index_x_explain, print_ggplot = FALSE) +
   theme(legend.position = "bottom")
 ```
 
@@ -809,7 +809,7 @@ explanation_gaussian <- list(
   asymmetric_causal = explanation_asym_cau$gaussian
 )
 
-plot_SV_several_approaches(explanation_gaussian, index_x_explain) +
+plot_SV_several_approaches(explanation_gaussian, index_x_explain, print_ggplot = FALSE) +
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(nrow = 2)) +
   ggtitle("Shapley value prediction explanation (approach = 'gaussian')") +
@@ -1046,7 +1046,8 @@ plot_SV_several_approaches(explanations,
   only_these_features = features, # Can include more features.
   facet_scales = "free_x",
   horizontal_bars = FALSE,
-  axis_labels_n_dodge = 1
+  axis_labels_n_dodge = 1,
+  print_ggplot = FALSE
 ) + theme(legend.position = "bottom")
 ```
 
@@ -1059,7 +1060,8 @@ plot_SV_several_approaches(explanations,
   facet_scales = "free_x",
   horizontal_bars = FALSE,
   axis_labels_rotate_angle = 45,
-  digits = 2
+  digits = 2,
+  print_ggplot = FALSE
 ) + theme(legend.position = "bottom")
 ```
 
@@ -1124,7 +1126,7 @@ plot_beeswarms(explanation_n_coal, title = "Shapley values (gaussian) exact vs. 
 
 ```{r n_coalitions_plot_SV, cache = TRUE, fig.height = 8, cache = TRUE}
 plot_SV_several_approaches(explanation_n_coal, index_x_explain) +
-  theme(legend.position = "bottom") +
+  theme(legend.position = "bottom", print_ggplot = FALSE) +
   guides(fill = guide_legend(nrow = 2))
 ```
 
@@ -1271,7 +1273,7 @@ plot_beeswarms(explanation_group_gaussian,
 
 
 ```{r group_gaussian_plot_SV, fig.height = 8, fig.width = 7.2, cache = TRUE}
-plot_SV_several_approaches(explanation_group_gaussian, index_x_explain) +
+plot_SV_several_approaches(explanation_group_gaussian, index_x_explain, print_ggplot = FALSE) +
   ggtitle("Shapley value prediction explanation (gaussian)") +
   theme(legend.position = "bottom") + guides(fill = guide_legend(nrow = 2))
 ```
