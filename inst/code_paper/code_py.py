@@ -25,12 +25,15 @@ exp_40_ctree = explain(model = model,
                        seed = 1)
 
 
+# %%
 # Print the Shapley values
 exp_40_ctree.print()
 
+# %%
 # Print the MSE of the v(S)
 exp_40_ctree.print(what = "MSEv")
 
+# %%
 # Display a "force plot" of observation eight using the shap package
 from shap import plots as shap_plt
 import matplotlib.pyplot as plt
