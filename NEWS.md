@@ -1,4 +1,5 @@
-**Note:** For changes to the Python wrapper `shaprpy`, see [python/CHANGELOG.md](python/CHANGELOG.md).
+**Note:** For changes to the Python wrapper `shaprpy`, see 
+[python/CHANGELOG.md](https://github.com/NorskRegnesentral/shapr/blob/master/python/CHANGELOG.md).
 
 # shapr 1.0.6
 
