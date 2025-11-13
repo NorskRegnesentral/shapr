@@ -1,11 +1,9 @@
-# shapr 1.0.5
+# shapr 1.0.6
 
-**Extra re-submission note**: 
-Converted all vignette images to webP format to reduce package size.
-The tarball is now within the size restriction.
+This release (v1.0.6) adds support for extracting the programming language via `get_results(what = "proglang")` and 
+introduces a new print_ggplot argument to ensure `plot.shapr()` and related plot functions reliably display ggplots 
+when sourced or called inside functions/loops.
 
-This release (v1.0.5) adds new helper methods (`get_results()`, `summary.shapr()`), improves printing, 
-output handling, and documentation, and fixes a bug affecting cases with many features.
 
 ## Test environments
 
@@ -27,6 +25,19 @@ Locally, tests are run both with and without suggested packages.
 * R-hub (clang-asan): R-version: devel
 
 
-## R CMD check results
+## Current R CMD check results
 
 There were no ERRORs, WARNINGs or NOTEs
+
+## R CMD check results on CRAN servers:
+
+* NOTE on package size on r-oldrel: The installed package is ~9.7 MB. 
+  This does not occur during testing of the new release and on newer R versions.
+
+* On r-release-macos-x86_64, the CRAN check log shows  
+  `Error writing to connection: No space left on device`,  
+  which causes spurious Rd “\title/\name must exist” warnings. 
+  These do **not** appear on any other platform and do not occur locally or on CI. 
+  This appears to be an issue with the check machine itself.
+
+
