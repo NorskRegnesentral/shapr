@@ -43,13 +43,13 @@ predict the contribution function for all coalitions.
 
 The `shapr` package supports any regression model from the
 popular `tidymodels` package developed by @tidymodels. The
-[`tidymodels`](https://www.tidymodels.org/) framework is a
+[`tidymodels`](https://tidymodels.org/) framework is a
 collection of packages for modeling and machine learning
-using [`tidyverse`](https://www.tidyverse.org/) principles.
+using [`tidyverse`](https://tidyverse.org/) principles.
 Some packages included in the `tidymodels` framework are
 `parsnip`, `recipes`, `workflows`, `tune`, and `rsample`;
 see the [setup](#setup) section below for more examples.
-Furthermore, click [here](https://www.tidymodels.org/find/parsnip/)
+Furthermore, click [here](https://tidymodels.org/find/parsnip/)
 to access the complete list of supported regression models
 in the `tidymodels` package. There are currently 80 supported
 models, but the framework also allows adding regression models not
