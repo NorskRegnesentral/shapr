@@ -189,7 +189,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
   plot_SV_several_approaches(explanation_list)
 
   # We can change the number of columns in the grid of plots and add other visual alterations
-  # Remember to set `print_ggplot = FALSE` to avoid force displaying the ggplot object before the modifications
+  # Set `print_ggplot = FALSE` to avoid force displaying the ggplot object before the modifications
   # outside plot_SV_several_approaches()
 
   plot_SV_several_approaches(explanation_list,
