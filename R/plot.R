@@ -19,11 +19,12 @@
 #' Applicable for `plot_type` `"bar"` and `"waterfall"`
 #' @param print_ggplot Logical.
 #' Whether to print the created `ggplot` object once it is returned.
-#' The default is `TRUE` which ensures the plot is always displayed, also when
-#' assigning the output to a variable like `p <- plot.shapr(...)`, in loops, functions etc.
+#' The default is `TRUE` which ensures the plot is always displayed also in loops, functions, when sourcing a script,
+#' and when assigning the output to a variable like `p <- plot.shapr(...)`.
 #' See [ggplot2::print.ggplot()] for more details.
-#' If you wish further modify the returned `ggplot` object outside of `plot.shapr`,
-#' we recommend setting `print_ggplot = FALSE` to avoid force printing. See examples.
+#' If you wish to further modify the returned `ggplot` object outside of `plot.shapr`,
+#' we recommend setting `print_ggplot = FALSE` to avoid force printing.
+#' See the examples for a practical use case.
 #' @param bar_plot_phi0 Logical.
 #' Whether to include `phi0` in the plot for  `plot_type = "bar"`.
 #' @param index_x_explain Integer vector.
@@ -1573,7 +1574,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   plot_SV_several_approaches(explanation_list)
 #'
 #'   # We can change the number of columns in the grid of plots and add other visual alterations
-#'   # Remember to set print_ggplot = FALSE to avoid force displaying the ggplot object before the modifications
+#'   # Remember to set `print_ggplot = FALSE` to avoid force displaying the ggplot object before the modifications
 #'   # outside plot_SV_several_approaches()
 #'
 #'   plot_SV_several_approaches(explanation_list,
