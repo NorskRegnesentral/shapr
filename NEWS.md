@@ -1,10 +1,13 @@
 **Note:** For changes to the Python wrapper `shaprpy`, see [python/CHANGELOG.md](python/CHANGELOG.md).
 
-# shapr 1.0.5.9001
+# shapr 1.0.6
 
 ### Improvements
 * Added "proglang" to the `what` argument in `get_results()` to extract the programming language used (R or Python) ([#477](https://github.com/NorskRegnesentral/shapr/pull/477)),
 to ease reuse of the `R` methods in the `shaprpy` Python wrapper.
+* Added `print_ggplot` argument to `plot.shapr()` (default `TRUE`) to ensure ggplots are displayed when sourced, in functions, loops etc. 
+Applied the same fix to `plot_SV_several_approaches()`. ([#478](https://github.com/NorskRegnesentral/shapr/pull/478))
+
 
 # shapr 1.0.5
 
