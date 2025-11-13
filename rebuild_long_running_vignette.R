@@ -21,31 +21,41 @@ knitr::knit("asymmetric_causal.Rmd.orig", output = "asymmetric_causal.Rmd")
 
 # Additional processing of images to reduce size using WebP format
 
-library(webp)
+if (interactive() &&
+    utils::askYesNo("Do you want to convert PNG images to WebP format to reduce vignette size? (Requires 'webp' and 'png' packages)")) {
 
-vignettes <- c("general_usage", "vaeac", "regression", "asymmetric_causal")
-for (v in vignettes){
-  ### Converting png files to WebP
-  pngs <- list.files(paste0("figure_",v), "\\.png$", full.names = TRUE)
-  for (f in pngs) {
-    # read PNG into array
-    arr <- png::readPNG(f)
-
-    # output filename with .webp extension
-    out <- sub("\\.png$", ".webp", f)
-
-    # write WebP with desired quality
-    write_webp(arr, out, quality = 80)
-
-    # remove the original PNG
-    unlink(f)
+  if (!requireNamespace("webp", quietly = TRUE)) {
+    install.packages("webp")
   }
+  if (!requireNamespace("png", quietly = TRUE)) {
+    install.packages("png")
+  }
+  library(png)
+  library(webp)
 
-  ### Replace .png with .webp in the Rmd file
-  rmd <- readLines(paste0(v,".Rmd"))
-  rmd <- gsub("\\.png", ".webp", rmd)
-  writeLines(rmd, paste0(v,".Rmd"))
+  vignettes <- c("general_usage", "vaeac", "regression", "asymmetric_causal")
+  for (v in vignettes){
+    ### Converting png files to WebP
+    pngs <- list.files(paste0("figure_",v), "\\.png$", full.names = TRUE)
+    for (f in pngs) {
+      # read PNG into array
+      arr <- png::readPNG(f)
 
+      # output filename with .webp extension
+      out <- sub("\\.png$", ".webp", f)
+
+      # write WebP with desired quality
+      write_webp(arr, out, quality = 80)
+
+      # remove the original PNG
+      unlink(f)
+    }
+
+    ### Replace .png with .webp in the Rmd file
+    rmd <- readLines(paste0(v,".Rmd"))
+    rmd <- gsub("\\.png", ".webp", rmd)
+    writeLines(rmd, paste0(v,".Rmd"))
+  }
 }
 
 
