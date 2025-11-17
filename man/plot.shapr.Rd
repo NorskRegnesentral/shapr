@@ -216,14 +216,13 @@ if (requireNamespace("party", quietly = TRUE)) {
   }
 
   # Example of further modification of the output from plot.shapr
-  plt = plot(x, print_ggplot = FALSE) # Stores the ggplot object, without displaying it
+  plt = plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Stores ggplot object without printing
 
   # Displays the modified ggplot object
   plt +
     ggplot2::ggtitle("My custom title") +
     ggplot2::ylab("Variable influence") +
     ggplot2::xlab("Variable")
-
 }
 }
 

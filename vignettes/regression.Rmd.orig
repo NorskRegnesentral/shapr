@@ -57,7 +57,7 @@ The `shapr` package supports any regression model from the
 popular `tidymodels` package developed by @tidymodels. The
 [`tidymodels`](https://www.tidymodels.org/) framework is a
 collection of packages for modeling and machine learning
-using [`tidyverse`](https://www.tidyverse.org/) principles.
+using [`tidyverse`](https://tidyverse.org/) principles.
 Some packages included in the `tidymodels` framework are
 `parsnip`, `recipes`, `workflows`, `tune`, and `rsample`;
 see the [setup](#setup) section below for more examples.
