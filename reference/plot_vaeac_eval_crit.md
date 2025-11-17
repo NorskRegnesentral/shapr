@@ -198,5 +198,48 @@ if (requireNamespace("xgboost", quietly = TRUE) &&
     ggplot2::scale_color_brewer(palette = "Set1") +
     ggplot2::theme_minimal()
 }
+#> 
+#> ── Starting `shapr::explain()` at 2025-11-17 17:39:57 ──────────────────────────
+#> ℹ Feature classes extracted from the model contain `NA`.
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+#>   therefore set to `2^n_features = 16`.
+#> 
+#> ── Explanation overview ──
+#> 
+#> • Model class: <xgb.Booster>
+#> • v(S) estimation class: Monte Carlo integration
+#> • Approach: vaeac
+#> • Procedure: Non-iterative
+#> • Number of Monte Carlo integration samples: 1
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: /tmp/Rtmp16upey/shapr_obj_239a7bd8aee7.rds
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions. 
+#> 
+#> ── Starting `shapr::explain()` at 2025-11-17 17:40:09 ──────────────────────────
+#> ℹ Feature classes extracted from the model contain `NA`.
+#>   Assuming feature classes from the data are correct.
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+#>   therefore set to `2^n_features = 16`.
+#> 
+#> ── Explanation overview ──
+#> 
+#> • Model class: <xgb.Booster>
+#> • v(S) estimation class: Monte Carlo integration
+#> • Approach: vaeac
+#> • Procedure: Non-iterative
+#> • Number of Monte Carlo integration samples: 1
+#> • Number of feature-wise Shapley values: 4
+#> • Number of observations to explain: 6
+#> • Computations (temporary) saved at: /tmp/Rtmp16upey/shapr_obj_239a7c0ebf00.rds
+#> 
+#> ── Main computation started ──
+#> 
+#> ℹ Using 16 of 16 coalitions. 
+
 # }
 ```

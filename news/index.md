@@ -1,6 +1,8 @@
 # Changelog
 
-## shapr 1.0.5.9001
+## shapr 1.0.6
+
+CRAN release: 2025-11-17
 
 #### Improvements
 
@@ -9,6 +11,12 @@
   to extract the programming language used (R or Python)
   ([\#477](https://github.com/NorskRegnesentral/shapr/pull/477)), to
   ease reuse of the `R` methods in the `shaprpy` Python wrapper.
+- Added `print_ggplot` argument to
+  [`plot.shapr()`](https://norskregnesentral.github.io/shapr/reference/plot.shapr.md)
+  (default `TRUE`) to ensure ggplots are displayed when sourced, in
+  functions, loops etc. Applied the same fix to
+  [`plot_SV_several_approaches()`](https://norskregnesentral.github.io/shapr/reference/plot_SV_several_approaches.md).
+  ([\#478](https://github.com/NorskRegnesentral/shapr/pull/478))
 
 ## shapr 1.0.5
 
@@ -61,8 +69,8 @@ CRAN release: 2025-08-25
 
 #### Python
 
-- Publish `shaprpy` on PyPI. See
-  [python/CHANGELOG.md](https://norskregnesentral.github.io/shapr/news/python/CHANGELOG.md)
+- Publish `shaprpy` on PyPI. See the [shaprpy
+  CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html)
   for details.
 
 ## shapr 1.0.4

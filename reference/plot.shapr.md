@@ -262,17 +262,16 @@ if (requireNamespace("party", quietly = TRUE)) {
   }
 
   # Example of further modification of the output from plot.shapr
-  plt = plot(x, print_ggplot = FALSE) # Stores the ggplot object, without displaying it
+  plt = plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Stores ggplot object without printing
 
   # Displays the modified ggplot object
   plt +
     ggplot2::ggtitle("My custom title") +
     ggplot2::ylab("Variable influence") +
     ggplot2::xlab("Variable")
-
 }
 #> 
-#> ── Starting `shapr::explain()` at 2025-11-13 08:19:24 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-11-17 17:39:36 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -285,7 +284,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpmhshYK/shapr_obj_72fb7174f5f1.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp16upey/shapr_obj_239a64fa2d0.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -299,7 +298,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 
 
 #> 
-#> ── Starting `shapr::explain()` at 2025-11-13 08:19:33 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-11-17 17:39:46 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -312,15 +311,13 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpmhshYK/shapr_obj_72fb3cbdb086.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp16upey/shapr_obj_239a25273d78.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 
 
-#> Error in plot(x, print_ggplot = FALSE): Too many observations to plot together!
-#> Try for instance setting index_x_explain = 1:10 so that the max.is not
-#> exceeded.
+
 # }
 ```

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,14 +43,15 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.6/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.0.5.9001" id="shapr-1059001">shapr 1.0.5.9001<a class="anchor" aria-label="anchor" href="#shapr-1059001"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.0.6" id="shapr-106">shapr 1.0.6<a class="anchor" aria-label="anchor" href="#shapr-106"></a></h2><p class="text-muted">CRAN release: 2025-11-17</p>
 <div class="section level4">
-<h4 id="improvements-1-0-5-9001">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-0-5-9001"></a></h4>
+<h4 id="improvements-1-0-6">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-0-6"></a></h4>
 <ul><li>Added “proglang” to the <code>what</code> argument in <code><a href="../reference/get_results.html">get_results()</a></code> to extract the programming language used (R or Python) (<a href="https://github.com/NorskRegnesentral/shapr/pull/477" class="external-link">#477</a>), to ease reuse of the <code>R</code> methods in the <code>shaprpy</code> Python wrapper.</li>
+<li>Added <code>print_ggplot</code> argument to <code><a href="../reference/plot.shapr.html">plot.shapr()</a></code> (default <code>TRUE</code>) to ensure ggplots are displayed when sourced, in functions, loops etc. Applied the same fix to <code><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches()</a></code>. (<a href="https://github.com/NorskRegnesentral/shapr/pull/478" class="external-link">#478</a>)</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -75,7 +76,7 @@
 </ul></div>
 <div class="section level4">
 <h4 id="python-1-0-5">Python<a class="anchor" aria-label="anchor" href="#python-1-0-5"></a></h4>
-<ul><li>Publish <code>shaprpy</code> on PyPI. See <a href="python/CHANGELOG.html">python/CHANGELOG.md</a> for details.</li>
+<ul><li>Publish <code>shaprpy</code> on PyPI. See the <a href="https://norskregnesentral.github.io/shapr/py_changelog.html">shaprpy CHANGELOG</a> for details.</li>
 </ul></div>
 </div>
     <div class="section level2">

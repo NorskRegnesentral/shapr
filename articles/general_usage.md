@@ -1744,7 +1744,7 @@ progressbar of the flexible `cli` package, is also available
 
 For a full list of all progression handlers and the customization
 options available with `progressr`, see the `progressr`
-[vignette](https://progressr.futureverse.org/articles/progressr-intro.html).
+[vignette](https://progressr.futureverse.org/articles/progressr-01-intro.html).
 A full code example of using `progressr` with `shapr` is shown below:
 
 ``` r

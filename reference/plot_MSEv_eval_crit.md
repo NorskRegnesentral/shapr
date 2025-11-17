@@ -255,7 +255,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
     )
 }
 #> 
-#> ── Starting `shapr::explain()` at 2025-11-13 08:19:38 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-11-17 17:39:52 ──────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
@@ -270,13 +270,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpmhshYK/shapr_obj_72fb51e1499b.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp16upey/shapr_obj_239a7641be1f.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2025-11-13 08:19:39 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-11-17 17:39:53 ──────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
@@ -291,13 +291,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 10
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpmhshYK/shapr_obj_72fb5666aa1.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp16upey/shapr_obj_239a6a3be60e.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2025-11-13 08:19:40 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-11-17 17:39:53 ──────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
@@ -312,13 +312,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpmhshYK/shapr_obj_72fb640ecf4.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp16upey/shapr_obj_239a82f607f.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2025-11-13 08:19:40 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-11-17 17:39:54 ──────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
@@ -333,13 +333,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpmhshYK/shapr_obj_72fb33e60b7e.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp16upey/shapr_obj_239a786cdad9.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2025-11-13 08:19:41 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-11-17 17:39:55 ──────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
@@ -354,7 +354,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpmhshYK/shapr_obj_72fb9c0e337.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp16upey/shapr_obj_239a677255c0.rds
 #> 
 #> ── Main computation started ──
 #> 
