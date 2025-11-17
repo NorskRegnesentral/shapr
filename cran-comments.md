@@ -27,7 +27,14 @@ Locally, tests are run both with and without suggested packages.
 
 ## Current R CMD check results
 
-There were no ERRORs, WARNINGs or NOTEs
+There were no ERRORs or WARNINGs, and 1 NOTEs:
+
+* NOTE (on devtools-win-builder-oldrelease)
+Author field differs from that derived from Authors@R
+  Author:    'Martin Jullum [cre, aut] (ORCID: <https://orcid.org/0000-0003-3908-5155>), Lars Henry Berge Olsen [aut] (ORCID: <https://orcid.org/0009-0006-9360-6993>), Annabelle Redelmeier [aut], Jon Lachmann [aut] (ORCID: <https://orcid.org/0000-0001-8396-5673>), Nikolai Sellereite [aut] (ORCID: <https://orcid.org/0000-0002-4671-0337>), Anders Løland [ctb], Jens Christian Wahl [ctb], Camilla Lingjærde [ctb], Norsk Regnesentral [cph, fnd]'
+  Authors@R: 'Martin Jullum [cre, aut] (<https://orcid.org/0000-0003-3908-5155>), Lars Henry Berge Olsen [aut] (<https://orcid.org/0009-0006-9360-6993>), Annabelle Redelmeier [aut], Jon Lachmann [aut] (<https://orcid.org/0000-0001-8396-5673>), Nikolai Sellereite [aut] (<https://orcid.org/0000-0002-4671-0337>), Anders Løland [ctb], Jens Christian Wahl [ctb], Camilla Lingjærde [ctb], Norsk Regnesentral [cph, fnd]'
+
+> We believe this is a false-positive, as no changes was made to this file, and there is no Author field in the DESCRIPTION file (only the Authors@R is present)
 
 ## R CMD check results on CRAN servers:
 
@@ -37,7 +44,14 @@ There were no ERRORs, WARNINGs or NOTEs
 * On r-release-macos-x86_64, the CRAN check log shows  
   `Error writing to connection: No space left on device`,  
   which causes spurious Rd “\title/\name must exist” warnings. 
+  
   These do **not** appear on any other platform and do not occur locally or on CI. 
   This appears to be an issue with the check machine itself.
 
+## Reverse dependencies
+We checked 1 reverse dependencies (0 from CRAN + 1 from Bioconductor), 
+comparing R CMD check results across CRAN and dev versions of this package.
+
+ * We saw 0 new problems
+ * We failed to check 0 packages
 

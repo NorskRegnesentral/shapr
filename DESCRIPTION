@@ -14,8 +14,8 @@ Authors@R: c(
     person("Annabelle", "Redelmeier", email = "ardelmeier@gmail.com", role = "aut"),
     person("Jon", "Lachmann", email = "Jon@lachmann.nu", role = "aut", comment = c(ORCID = "0000-0001-8396-5673")),
     person("Nikolai", "Sellereite", email = "nikolaisellereite@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-4671-0337")),
-    person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
-    person("Jens Christian", "Wahl", email = "jens.c.wahl@gmail.com", role = "ctb"), 
+    person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"),
+    person("Jens Christian", "Wahl", email = "jens.c.wahl@gmail.com", role = "ctb"),
     person("Camilla", "Lingjærde", role = "ctb"),
     person("Norsk Regnesentral", role =  c("cph", "fnd"))
     )

@@ -1,5 +1,5 @@
-**Note:** For changes to the Python wrapper `shaprpy`, see 
-[python/CHANGELOG.md](https://github.com/NorskRegnesentral/shapr/blob/master/python/CHANGELOG.md).
+**Note:** For changes to the Python wrapper `shaprpy`, see the
+[shaprpy CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
 # shapr 1.0.6
 
@@ -34,7 +34,8 @@ Applied the same fix to `plot_SV_several_approaches()`. ([#478](https://github.c
   coalition size ([#462](https://github.com/NorskRegnesentral/shapr/pull/462)).
 
 ### Python
-* Publish `shaprpy` on PyPI. See [python/CHANGELOG.md](python/CHANGELOG.md) for details.
+* Publish `shaprpy` on PyPI. See 
+the [shaprpy CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html) for details.
 
 
 
