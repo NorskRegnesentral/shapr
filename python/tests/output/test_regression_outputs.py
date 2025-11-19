@@ -219,3 +219,45 @@ class TestRegressionOutputs:
 
         # Use syrupy for snapshot testing
         assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_regressor_gaussian_iterative_low_coalitions(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with gaussian approach - iterative with low n_coalitions."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='gaussian',
+            phi0=dfy_train.mean().item(),
+            iterative=True,
+            max_n_coalitions=20,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_regressor_empirical_iterative(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with empirical approach - explicit iterative mode."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='empirical',
+            phi0=dfy_train.mean().item(),
+            iterative=True,
+            max_n_coalitions=100,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
