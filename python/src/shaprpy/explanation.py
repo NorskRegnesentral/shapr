@@ -52,6 +52,10 @@ class Shapr:
         """
         return self._capture_print_output()
 
+    def __repr__(self):
+        """Provide same output when object is inspected in console."""
+        return self.__str__()
+
     def print(self, what="shapley_est", digits=3):
         """
         Print specific components using R's print.shapr function.
