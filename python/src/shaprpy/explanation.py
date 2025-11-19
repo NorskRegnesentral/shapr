@@ -21,17 +21,6 @@ class Shapr:
         The original R shapr object used for all R function calls.
     """
 
-    def _capture_print_output(self, what="shapley_est", digits=3):
-        """Capture the output from R's print.shapr without printing twice."""
-        import io
-        from contextlib import redirect_stdout
-        base = _importr('base')
-
-        buffer = io.StringIO()
-        with redirect_stdout(buffer):
-            base.print(self._r_object, what=what, digits=digits)
-        return buffer.getvalue().rstrip()
-
     def __init__(self, explanation_dict, r_object):
         """
         Initialize the Shapr explanation object.
@@ -48,13 +37,28 @@ class Shapr:
 
     def __str__(self):
         """
-        Mirror the R print.shapr() output (shapley_est by default).
+        Return the default print output of the object.
+        Mirrors the R print.shapr() output (shapley_est by default).
         """
-        return self._capture_print_output()
+        return self._get_print_output()
 
     def __repr__(self):
-        """Provide same output when object is inspected in console."""
-        return self.__str__()
+        """
+        Return the default print output of the object.
+        Mirrors the R print.shapr() output (shapley_est by default).
+        """
+        return self._get_print_output()
+
+    def _get_print_output(self, what="shapley_est", digits=3):
+        import io
+        from contextlib import redirect_stdout
+        base = _importr('base')
+
+        f = io.StringIO()
+        with redirect_stdout(f):
+            base.print(self._r_object, what=what, digits=digits)
+        captured_output = f.getvalue().rstrip()
+        return captured_output
 
     def print(self, what="shapley_est", digits=3):
         """
@@ -76,8 +80,7 @@ class Shapr:
         None
             Prints output from R's print.shapr() but returns nothing.
         """
-        captured_output = self._capture_print_output(what=what, digits=digits)
-        print(captured_output)
+        print(self._get_print_output(what=what, digits=digits))
 
     def get_explanation_dict(self):
         """Get the explanation dictionary.
