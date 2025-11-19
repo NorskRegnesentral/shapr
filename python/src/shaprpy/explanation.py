@@ -1,7 +1,6 @@
 """
 Shapr explanation class for exploring Shapley value results.
 """
-from encodings.punycode import digits
 from rpy2 import robjects
 from shaprpy._rutils import _importr
 
@@ -22,6 +21,17 @@ class Shapr:
         The original R shapr object used for all R function calls.
     """
 
+    def _capture_print_output(self, what="shapley_est", digits=3):
+        """Capture the output from R's print.shapr without printing twice."""
+        import io
+        from contextlib import redirect_stdout
+        base = _importr('base')
+
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            base.print(self._r_object, what=what, digits=digits)
+        return buffer.getvalue().rstrip()
+
     def __init__(self, explanation_dict, r_object):
         """
         Initialize the Shapr explanation object.
@@ -35,6 +45,35 @@ class Shapr:
         """
         self._explanation_dict = explanation_dict
         self._r_object = r_object
+
+    def __str__(self):
+        """
+        Mirror the R print.shapr() output (shapley_est by default).
+        """
+        return self._capture_print_output()
+
+    def print(self, what="shapley_est", digits=3):
+        """
+        Print specific components using R's print.shapr function.
+
+        Parameters
+        ----------
+        what : str, optional
+            Which component to print.
+            Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition", and
+            "timing_summary". Defaults to "shapley_est".
+            Only one component can be printed at a time.
+            See the details section of get_results() for details about each component.
+        digits : int, optional
+            Number of significant digits to display. Defaults to 3.
+
+        Returns
+        -------
+        None
+            Prints output from R's print.shapr() but returns nothing.
+        """
+        captured_output = self._capture_print_output(what=what, digits=digits)
+        print(captured_output)
 
     def get_explanation_dict(self):
         """Get the explanation dictionary.
@@ -158,38 +197,6 @@ class Shapr:
 
         # Return None explicitly
         return None
-
-    def print(self, what="shapley_est", digits=3):
-        """
-        Print specific components using R's print.shapr function.
-
-        Parameters
-        ----------
-        what : str, optional
-            Which component to print.
-            Options are "shapley_est", "shapley_sd", "MSEv", "MSEv_explicand", "MSEv_coalition", and
-            "timing_summary". Defaults to "shapley_est".
-            Only one component can be printed at a time.
-            See the details section of get_results() for details about each component.
-        digits : int, optional
-            Number of significant digits to display. Defaults to 3.
-
-        Returns
-        -------
-        None
-            Prints output from R's print.shapr() but returns nothing.
-        """
-        import io
-        from contextlib import redirect_stdout
-        base = _importr('base')
-
-        # Capture and re-print
-        f = io.StringIO()
-        with redirect_stdout(f):
-            base.print(self._r_object, what=what, digits=digits)
-        captured_output = f.getvalue()
-        print(captured_output)
-
 
     def to_shap(self, idx=None):
         """Convert the Shapr explanation to a SHAP Explanation object.
