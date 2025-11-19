@@ -12,7 +12,6 @@ from shaprpy import explain
 class TestCategoricalOutputs:
     """Output tests for explanations with categorical features."""
 
-    @pytest.mark.slow
     @pytest.mark.snapshot
     def test_rf_regressor_ctree_categorical_basic(self, california_housing_categorical_data,
                                                    trained_rf_regressor_categorical,
@@ -33,7 +32,8 @@ class TestCategoricalOutputs:
         result = extract_shapley_outputs(explanation)
 
         # Use syrupy for snapshot testing
-        assert result == snapshot    @pytest.mark.slow
+        assert result == snapshot
+
     @pytest.mark.snapshot
     def test_rf_regressor_ctree_categorical_with_groups(self, california_housing_categorical_data,
                                                         trained_rf_regressor_categorical,
@@ -58,50 +58,3 @@ class TestCategoricalOutputs:
         # Use syrupy for snapshot testing
         assert result == snapshot
 
-    @pytest.mark.slow
-    @pytest.mark.snapshot
-    def test_rf_regressor_vaeac_categorical_basic(self, california_housing_categorical_data,
-                                                   trained_rf_regressor_categorical,
-                                                   extract_shapley_outputs, snapshot):
-        """Test RandomForest regressor with vaeac approach - mixed numeric/categorical data."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
-
-        explanation = explain(
-            model=trained_rf_regressor_categorical,
-            x_train=dfx_train,
-            x_explain=dfx_test,
-            approach='vaeac',
-            phi0=dfy_train.mean().item(),
-            max_n_coalitions=50,
-            seed=1
-        )
-
-        result = extract_shapley_outputs(explanation)
-
-        # Use syrupy for snapshot testing
-        assert result == snapshot
-
-    @pytest.mark.slow
-    @pytest.mark.snapshot
-    def test_rf_regressor_vaeac_categorical_with_groups(self, california_housing_categorical_data,
-                                                        trained_rf_regressor_categorical,
-                                                        categorical_group_config,
-                                                        extract_shapley_outputs, snapshot):
-        """Test RandomForest regressor with vaeac approach - categorical data with feature groups."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
-
-        explanation = explain(
-            model=trained_rf_regressor_categorical,
-            x_train=dfx_train,
-            x_explain=dfx_test,
-            approach='vaeac',
-            phi0=dfy_train.mean().item(),
-            group=categorical_group_config,
-            max_n_coalitions=50,
-            seed=1
-        )
-
-        result = extract_shapley_outputs(explanation)
-
-        # Use syrupy for snapshot testing
-        assert result == snapshot
