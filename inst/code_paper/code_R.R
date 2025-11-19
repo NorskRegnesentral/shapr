@@ -15,7 +15,7 @@
 # */
 
 #+ echo=FALSE
-knitr::opts_chunk$set(fig.path = "R_html_figures/")
+knitr::opts_chunk$set(fig.path = "html_figures/")
 #
 
 #### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
@@ -101,7 +101,7 @@ plot(exp_iter_ctree,
 
 #+ echo=FALSE
 # Produce the pdf used in Figure 3 in the paper
-ggplot2::ggsave(file.path("R_paper_figures", "scatter_ctree.pdf"), width = 7, height = 3)
+ggplot2::ggsave(file.path("paper_figures", "scatter_ctree.pdf"), width = 7, height = 3)
 
 #+
 ### Grouping
@@ -157,7 +157,7 @@ plot(exp_g_reg_tuned,
 
 #+ echo=FALSE
 # Produce the pdf used in Figure 3 in the paper
-ggplot2::ggsave(file.path("R_paper_figures", "waterfall_group.pdf"), width = 7, height = 4)
+ggplot2::ggsave(file.path("paper_figures", "waterfall_group.pdf"), width = 7, height = 4)
 
 #+
 #### Causal and asymmetric Shapley values ####
@@ -191,7 +191,7 @@ for (i in seq_along(exp_names)) {
                      seed = 1,
                      verbose = NULL)
 
-  plot_list[[i]] <- plot(exp_tmp, plot_type = "beeswarm") +
+  plot_list[[i]] <- plot(exp_tmp, plot_type = "beeswarm", print_ggplot = FALSE) +
     ggplot2::ggtitle(exp_names[i]) + ggplot2::ylim(-3700, 3700)
 }
 
@@ -203,7 +203,7 @@ patchwork::wrap_plots(plot_list, nrow = 1) +
 
 #+ echo=FALSE
 # Produce the pdf used in Figure 6 in the paper
-ggplot2::ggsave(file.path("R_paper_figures", "beeswarm_caus_asym.pdf"),
+ggplot2::ggsave(file.path("paper_figures", "beeswarm_caus_asym.pdf"),
                 scale = 0.9,
                 width = 14,
                 height = 4)

@@ -46,8 +46,7 @@ shap_plt.force(exp_40_ctree_shap[8-1], matplotlib = True) # Display plot
 plt.figure(figsize=(16, 4), dpi=300)
 shap_plt.force(exp_40_ctree_shap[8-1], matplotlib = True, show = False)
 plt.tight_layout()
-os.makedirs("Py_paper_figures", exist_ok=True)
-plt.savefig(fname="Py_paper_figures/py_force_plot.pdf")
+plt.savefig(fname="paper_figures/py_force_plot.pdf")
 plt.close()
 
 # %%

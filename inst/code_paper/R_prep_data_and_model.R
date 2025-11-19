@@ -57,8 +57,8 @@ model <- xgboost::xgboost(data = as.matrix(x_train),
 
 # Creates folders
 dir.create("data_and_models", showWarnings = FALSE) # Directory for data and model
-dir.create("R_html_figures", showWarnings = FALSE) # Directory for html figures from R
-dir.create("R_paper_figures", showWarnings = FALSE) # Directory for paper figures in R
+dir.create("html_figures", showWarnings = FALSE) # Directory for html figures from R
+dir.create("paper_figures", showWarnings = FALSE) # Directory for paper figures in R
 
 # Creating a directory to store the data and model
 
