@@ -179,14 +179,13 @@
 #'   }
 #'
 #'   # Example of further modification of the output from plot.shapr
-#'   plt = plot(x, print_ggplot = FALSE) # Stores the ggplot object, without displaying it
+#'   plt = plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Stores ggplot object without printing
 #'
 #'   # Displays the modified ggplot object
 #'   plt +
 #'     ggplot2::ggtitle("My custom title") +
 #'     ggplot2::ylab("Variable influence") +
 #'     ggplot2::xlab("Variable")
-#'
 #' }
 #' }
 #'
@@ -1574,7 +1573,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'   plot_SV_several_approaches(explanation_list)
 #'
 #'   # We can change the number of columns in the grid of plots and add other visual alterations
-#'   # Remember to set `print_ggplot = FALSE` to avoid force displaying the ggplot object before the modifications
+#'   # Set `print_ggplot = FALSE` to avoid force displaying the ggplot object before the modifications
 #'   # outside plot_SV_several_approaches()
 #'
 #'   plot_SV_several_approaches(explanation_list,
