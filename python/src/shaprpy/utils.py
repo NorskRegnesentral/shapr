@@ -22,10 +22,65 @@ def py2r(obj):
   return robj
 
 
-def r2py(robj):
+def _convert_dataframe_with_factors(robj):
+  """
+  Convert R DataFrame to pandas DataFrame, preserving factor columns as categorical.
+
+  This function efficiently handles DataFrames with factors by:
+  1. Identifying which columns are factors
+  2. Bulk-converting non-factor columns (fast, no warnings)
+  3. Individually converting factor columns to pandas Categorical
+  4. Combining and reordering to match original
+  """
+  # Identify factor and non-factor columns
+  factor_cols = []
+  non_factor_cols = []
+
+  for col_name in robj.names:
+    col_data = robj.rx2(col_name)
+    if isinstance(col_data, FactorVector):
+      factor_cols.append(col_name)
+    else:
+      non_factor_cols.append(col_name)
+
+  # Converter for standard columns
   converter = default_converter + np_converter + pd_converter
-  obj = converter.rpy2py(robj)
-  return obj
+
+  # Convert non-factor columns using standard (fast) method
+  if non_factor_cols:
+    non_factor_df = robj.rx(True, StrVector(non_factor_cols))
+    result_df = converter.rpy2py(non_factor_df)
+  else:
+    result_df = pd.DataFrame(index=robj.rownames)
+
+  # Convert factor columns individually to preserve as categorical
+  for col_name in factor_cols:
+    col_data = robj.rx2(col_name)
+    result_df[col_name] = _to_pandas_factor(col_data)
+
+  # Reorder columns to match original order
+  result_df = result_df[list(robj.names)]
+
+  return result_df
+
+
+def r2py(robj):
+  # Special handling for DataFrames with factor columns to preserve them as categorical
+  if isinstance(robj, DataFrame):
+    # Check if any columns are factors
+    has_factors = any(isinstance(robj.rx2(col_name), FactorVector) for col_name in robj.names)
+
+    if has_factors:
+      return _convert_dataframe_with_factors(robj)
+    else:
+      # No factors, use standard DataFrame conversion (faster, no warnings)
+      converter = default_converter + np_converter + pd_converter
+      return converter.rpy2py(robj)
+  else:
+    # Not a DataFrame, use standard conversion
+    converter = default_converter + np_converter + pd_converter
+    obj = converter.rpy2py(robj)
+    return obj
 
 
 def recurse_r_tree(data):
@@ -56,7 +111,7 @@ def recurse_r_tree(data):
   elif type(data) == SignatureTranslatedFunction:
       return str(data)
   elif type(data) == Formula:
-      return str(data)  
+      return str(data)
   elif type(data) == ListVector:
       if type(data.names) == type(NULL):
           data.names = [f"element_{i+1}" for i in range(len(data))]
