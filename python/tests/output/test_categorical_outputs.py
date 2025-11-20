@@ -58,7 +58,7 @@ class TestCategoricalOutputs:
         # Use syrupy for snapshot testing
         assert result == snapshot
 
-    @pytest.mark.local
+    @pytest.mark.localonly
     @pytest.mark.snapshot
     def test_rf_regressor_vaeac_categorical_basic(self, california_housing_categorical_data,
                                                    trained_rf_regressor_categorical,
@@ -82,7 +82,7 @@ class TestCategoricalOutputs:
         # Use syrupy for snapshot testing
         assert result == snapshot
 
-    @pytest.mark.local
+    @pytest.mark.localonly
     @pytest.mark.snapshot
     def test_rf_regressor_vaeac_categorical_with_groups(self, california_housing_categorical_data,
                                                         trained_rf_regressor_categorical,
