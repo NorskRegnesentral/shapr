@@ -72,5 +72,6 @@ addopts = [
 ]
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "local: marks tests that require local dependencies like vaeac (deselect with '-m \"not local\"')",
   "snapshot: marks tests as snapshot/output tests",
 ]

@@ -261,3 +261,45 @@ class TestRegressionOutputs:
 
         # Use syrupy for snapshot testing
         assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_regressor_copula_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with copula approach - basic case."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='copula',
+            phi0=dfy_train.mean().item(),
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
+
+    @pytest.mark.local
+    @pytest.mark.snapshot
+    def test_rf_regressor_vaeac_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with vaeac approach - basic case with short runtime."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='vaeac',
+            phi0=dfy_train.mean().item(),
+            max_n_coalitions=20,
+            extra_computation_args={'vaeac.epochs': 10, 'vaeac.width': 16, 'vaeac.depth': 2},
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
