@@ -415,3 +415,46 @@ class TestRegressionOutputs:
 
         # Use syrupy for snapshot testing
         assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_regressor_combined_approach_1(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with combined approach - gaussian, empirical, independence, gaussian."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        # Combined approach with 8 features needs 7 approaches (one for each feature pair)
+        # Using a mix of gaussian, empirical, and independence
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach=['gaussian', 'empirical', 'independence', 'gaussian', 'empirical', 'gaussian', 'independence'],
+            phi0=dfy_train.mean().item(),
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_regressor_combined_approach_2(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with combined approach - independence, empirical, copula, gaussian."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        # Another combination mixing independence, empirical, copula, and gaussian
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach=['independence', 'empirical', 'copula', 'gaussian', 'empirical', 'copula', 'gaussian'],
+            phi0=dfy_train.mean().item(),
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
