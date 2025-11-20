@@ -372,7 +372,7 @@ class TestRegressionOutputs:
         # Use syrupy for snapshot testing
         assert result == snapshot
 
-    @pytest.mark.local
+    @pytest.mark.localonly
     @pytest.mark.snapshot
     def test_rf_regressor_vaeac_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with vaeac approach - basic case with short runtime."""
@@ -395,7 +395,7 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_custom_model_with_predict_model(self, california_housing_data, trained_custom_regressor, 
+    def test_custom_model_with_predict_model(self, california_housing_data, trained_custom_regressor,
                                             custom_predict_model, extract_shapley_outputs, snapshot):
         """Test custom model with user-provided predict_model function."""
         dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
