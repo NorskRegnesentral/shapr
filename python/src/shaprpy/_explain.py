@@ -7,7 +7,7 @@ import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 from rpy2.rinterface import NULL, NA
 from shaprpy.utils import r2py, py2r, recurse_r_tree
-from rpy2.robjects.vectors import StrVector, ListVector
+from rpy2.robjects.vectors import StrVector, ListVector, BoolVector
 from shaprpy.explanation import Shapr
 from shaprpy._rutils import _importr
 
@@ -135,6 +135,8 @@ def explain(
     # Fixes the conversion from dict to a named list of vectors in R
     r_causal_ordering = NULL if causal_ordering is None else ListVector({key: StrVector(value) for key, value in causal_ordering.items()})
 
+    # Convert confounding list to R logical vector
+    r_confounding = NULL if confounding is None else BoolVector(confounding)
 
     # Fixes method specific argument names by replacing first occurrence of "_" with "."
     if len(kwargs) > 0:
@@ -192,7 +194,7 @@ def explain(
       iterative_args = iterative_args,
       asymmetric = asymmetric,
       causal_ordering = r_causal_ordering,
-      confounding = maybe_null(confounding),
+      confounding = r_confounding,
       output_args = output_args,
       extra_computation_args = extra_computation_args,
       init_time = init_time,
