@@ -393,3 +393,25 @@ class TestRegressionOutputs:
 
         # Use syrupy for snapshot testing
         assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_custom_model_with_predict_model(self, california_housing_data, trained_custom_regressor, 
+                                            custom_predict_model, extract_shapley_outputs, snapshot):
+        """Test custom model with user-provided predict_model function."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_custom_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='empirical',
+            predict_model=custom_predict_model,
+            phi0=dfy_train.mean().item(),
+            max_n_coalitions=50,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot

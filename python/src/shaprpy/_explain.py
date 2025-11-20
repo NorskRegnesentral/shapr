@@ -458,7 +458,7 @@ def get_feature_specs(get_model_specs, model):
   if get_model_specs is None:
     get_model_specs = prebuilt_get_model_specs(model)
     if get_model_specs is None:
-      warnings.warn(f'No pre-built get_model_specs for model of type {type(model)}, disabling checks.')
+      # R will issue a warning about this.
       return NULL
 
   if callable(get_model_specs):
