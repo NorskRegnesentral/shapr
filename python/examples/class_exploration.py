@@ -22,12 +22,18 @@ explanation = explain(
 
 #### Summary and object extraction ####
 
-explanation.summary()
-explanation.print()
+# By default printing the Shapley values from the explanation object (all give the same output)
+explanation.print() # default print method
+print(explanation)  # __str__ method
+explanation # __repr__ method
 
+# More sophisticated printing options
 explanation.print("MSEv",digits=5)
 
 explanation.print("MSEv")
+
+explanation.summary()
+
 
 explanation.get_results("MSEv")
 res=explanation.get_results(["MSEv","approach","shapley_est"])

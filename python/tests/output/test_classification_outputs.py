@@ -69,3 +69,24 @@ class TestClassificationOutputs:
 
         # Use syrupy for snapshot testing
         assert result == snapshot
+
+    @pytest.mark.snapshot
+    def test_rf_classifier_independence_iterative(self, binary_iris_data, trained_rf_classifier, extract_shapley_outputs, snapshot):
+        """Test RandomForest classifier with independence approach - explicit iterative mode."""
+        dfx_train, dfx_test, dfy_train, dfy_test = binary_iris_data
+
+        explanation = explain(
+            model=trained_rf_classifier,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='independence',
+            phi0=dfy_train.mean().item(),
+            iterative=True,
+            max_n_coalitions=10,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot

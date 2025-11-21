@@ -94,7 +94,7 @@ jobs:
           print('✓ Python shaprpy package loaded')
           "
 
-      - name: Run all Python tests
+      - name: Run Python tests (excluding local-only tests)
         run: |
           cd python
-          python -m pytest tests/ -v --tb=short
+          python -m pytest tests/ -v --tb=short -m "not localonly"

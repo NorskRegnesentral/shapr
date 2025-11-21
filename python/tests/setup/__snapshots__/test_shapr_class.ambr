@@ -1,0 +1,76 @@
+# serializer version: 1
+# name: TestShaprClassMethods.test_get_results_single_component
+  '''
+  |    |   explain_id |    none |    MedInc |   HouseAge |   AveRooms |   AveBedrms |   Population |   AveOccup |   Latitude |   Longitude |
+  |---:|-------------:|--------:|----------:|-----------:|-----------:|------------:|-------------:|-----------:|-----------:|------------:|
+  |  1 |            1 | 2.20594 | -0.673447 |   0.214932 |  -0.196356 |    0.157765 |     0.025273 |  -0.371022 |  -0.389152 |   -0.285791 |
+  |  2 |            2 | 2.20594 | -0.493952 |   0.056917 |  -0.506488 |   -0.184789 |     0.001291 |   0.127002 |  -0.140373 |   -0.088717 |
+  |  3 |            3 | 2.20594 |  0.287223 |   0.722988 |  -0.090669 |   -0.277878 |     0.084749 |   0.746186 |   0.210033 |    0.264538 |
+  '''
+# ---
+# name: TestShaprClassMethods.test_print_msev
+  '''
+      MSEv MSEv_sd
+     <num>   <num>
+  1: 0.889   0.396
+  
+  '''
+# ---
+# name: TestShaprClassMethods.test_print_shapley_est
+  '''
+     explain_id  none MedInc HouseAge AveRooms AveBedrms Population AveOccup
+          <int> <num>  <num>    <num>    <num>     <num>      <num>    <num>
+  1:          1  2.21 -0.673   0.2149  -0.1964     0.158    0.02527   -0.371
+  2:          2  2.21 -0.494   0.0569  -0.5065    -0.185    0.00129    0.127
+  3:          3  2.21  0.287   0.7230  -0.0907    -0.278    0.08475    0.746
+     Latitude Longitude
+        <num>     <num>
+  1:   -0.389   -0.2858
+  2:   -0.140   -0.0887
+  3:    0.210    0.2645
+  
+  '''
+# ---
+# name: TestShaprClassMethods.test_print_shapley_sd
+  '''
+     explain_id  none MedInc HouseAge AveRooms AveBedrms Population AveOccup
+          <int> <num>  <num>    <num>    <num>     <num>      <num>    <num>
+  1:          1     0 0.0515   0.0484   0.0258    0.0257     0.0374   0.0320
+  2:          2     0 0.0820   0.0712   0.0530    0.0612     0.0476   0.0552
+  3:          3     0 0.0746   0.0864   0.0566    0.0727     0.0637   0.0674
+     Latitude Longitude
+        <num>     <num>
+  1:   0.0585    0.0433
+  2:   0.1079    0.1033
+  3:   0.1091    0.0574
+  
+  '''
+# ---
+# name: TestShaprClassMethods.test_repr_representation
+  '''
+     explain_id  none MedInc HouseAge AveRooms AveBedrms Population AveOccup
+          <int> <num>  <num>    <num>    <num>     <num>      <num>    <num>
+  1:          1  2.21 -0.673   0.2149  -0.1964     0.158    0.02527   -0.371
+  2:          2  2.21 -0.494   0.0569  -0.5065    -0.185    0.00129    0.127
+  3:          3  2.21  0.287   0.7230  -0.0907    -0.278    0.08475    0.746
+     Latitude Longitude
+        <num>     <num>
+  1:   -0.389   -0.2858
+  2:   -0.140   -0.0887
+  3:    0.210    0.2645
+  '''
+# ---
+# name: TestShaprClassMethods.test_str_representation
+  '''
+     explain_id  none MedInc HouseAge AveRooms AveBedrms Population AveOccup
+          <int> <num>  <num>    <num>    <num>     <num>      <num>    <num>
+  1:          1  2.21 -0.673   0.2149  -0.1964     0.158    0.02527   -0.371
+  2:          2  2.21 -0.494   0.0569  -0.5065    -0.185    0.00129    0.127
+  3:          3  2.21  0.287   0.7230  -0.0907    -0.278    0.08475    0.746
+     Latitude Longitude
+        <num>     <num>
+  1:   -0.389   -0.2858
+  2:   -0.140   -0.0887
+  3:    0.210    0.2645
+  '''
+# ---
