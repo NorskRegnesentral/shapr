@@ -3,6 +3,8 @@ import xgboost as xgb
 import pandas as pd
 from shaprpy import explain
 
+
+
 # Read data
 x_train = pd.read_csv("data_and_models/" + "x_train.csv")
 x_explain = pd.read_csv("data_and_models/" + "x_explain.csv")
@@ -27,7 +29,7 @@ exp_40_ctree = explain(model = model,
 
 # %%
 # Print the Shapley values
-exp_40_ctree.print()
+exp_40_ctree.print() # Same as print(exp_40_ctree) (and just exp_40_ctree interactively)
 
 # %%
 # Print the MSE of the v(S)
