@@ -1,7 +1,8 @@
 """
 Shapr explanation class for exploring Shapley value results.
 """
-from rpy2 import robjects
+from typing import Any
+
 from shaprpy._rutils import _importr
 
 
@@ -21,7 +22,7 @@ class Shapr:
         The original R shapr object used for all R function calls.
     """
 
-    def __init__(self, explanation_dict, r_object):
+    def __init__(self, explanation_dict: dict, r_object: Any) -> None:
         """
         Initialize the Shapr explanation object.
 
@@ -35,21 +36,21 @@ class Shapr:
         self._explanation_dict = explanation_dict
         self._r_object = r_object
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Return the default print output of the object.
         Mirrors the R print.shapr() output (shapley_est by default).
         """
         return self._get_print_output()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Return the default print output of the object.
         Mirrors the R print.shapr() output (shapley_est by default).
         """
         return self._get_print_output()
 
-    def _get_print_output(self, what="shapley_est", digits=3):
+    def _get_print_output(self, what: str = "shapley_est", digits: int = 3) -> str:
         import io
         from contextlib import redirect_stdout
         base = _importr('base')
@@ -60,7 +61,7 @@ class Shapr:
         captured_output = f.getvalue().rstrip()
         return captured_output
 
-    def print(self, what="shapley_est", digits=3):
+    def print(self, what: str = "shapley_est", digits: int = 3) -> None:
         """
         Print specific components using R's print.shapr function.
 
@@ -82,7 +83,7 @@ class Shapr:
         """
         print(self._get_print_output(what=what, digits=digits))
 
-    def get_explanation_dict(self):
+    def get_explanation_dict(self) -> dict[str, Any]:
         """Get the explanation dictionary.
 
         Returns the original Python dictionary that was returned by explain()
@@ -103,7 +104,7 @@ class Shapr:
         """
         return self._explanation_dict
 
-    def get_r_object(self):
+    def get_r_object(self) -> Any:
         """
         Get the original R shapr object.
 
@@ -119,7 +120,7 @@ class Shapr:
 
 
 
-    def get_results(self, what=None):
+    def get_results(self, what: str | list[str] | None = None) -> Any:
         """
         Extract components from the Shapr explanation object using R's get_results function.
 
@@ -166,6 +167,7 @@ class Shapr:
             If a single component is requested, returns that object. If multiple are requested, returns a named dict.
         """
         from rpy2.robjects import StrVector
+
         from shaprpy.utils import recurse_r_tree
 
         shapr = _importr('shapr')
@@ -183,7 +185,7 @@ class Shapr:
         # Convert R results to Python objects
         return recurse_r_tree(r_results)
 
-    def summary(self, digits=2):
+    def summary(self, digits: int = 2) -> None:
         """
         Print a formatted summary of the Shapr explanation object using R's summary.shapr function.
 
@@ -205,7 +207,7 @@ class Shapr:
         # Return None explicitly
         return None
 
-    def to_shap(self, idx=None):
+    def to_shap(self, idx: int | slice | None = None) -> Any:
         """Convert the Shapr explanation to a SHAP Explanation object.
 
         This method transforms the Shapley values and associated data into

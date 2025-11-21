@@ -1,28 +1,41 @@
+import warnings
+from typing import Any
+
 import numpy as np
 import pandas as pd
+from rpy2.rinterface import NULL
+from rpy2.robjects import Formula, default_converter
 from rpy2.robjects.conversion import localconverter
-from rpy2.robjects import default_converter, Formula
 from rpy2.robjects.functions import SignatureTranslatedFunction
 from rpy2.robjects.numpy2ri import converter as np_converter
-from rpy2.robjects.pandas2ri import converter as pd_converter
 from rpy2.robjects.pandas2ri import _to_pandas_factor
-from rpy2.rinterface import NULL, NA
-from rpy2.robjects.vectors import DataFrame, FloatVector, IntVector, BoolVector, StrVector, ListVector, FactorVector, FloatMatrix, Matrix, POSIXct
-import warnings
+from rpy2.robjects.pandas2ri import converter as pd_converter
+from rpy2.robjects.vectors import (
+    BoolVector,
+    DataFrame,
+    FactorVector,
+    FloatMatrix,
+    FloatVector,
+    IntVector,
+    ListVector,
+    Matrix,
+    POSIXct,
+    StrVector,
+)
 
 
 @pd_converter.rpy2py.register(FactorVector)
-def rpt2py_factorvector(obj):
+def rpt2py_factorvector(obj: FactorVector) -> pd.Categorical:
     return _to_pandas_factor(obj)
 
 
-def py2r(obj):
+def py2r(obj: Any) -> Any:
   with localconverter(default_converter + np_converter + pd_converter) as converter:
     robj = converter.py2rpy(obj)
   return robj
 
 
-def _convert_dataframe_with_factors(robj):
+def _convert_dataframe_with_factors(robj: DataFrame) -> pd.DataFrame:
   """
   Convert R DataFrame to pandas DataFrame, preserving factor columns as categorical.
 
@@ -64,7 +77,7 @@ def _convert_dataframe_with_factors(robj):
   return result_df
 
 
-def r2py(robj):
+def r2py(robj: Any) -> Any:
   # Special handling for DataFrames with factor columns to preserve them as categorical
   if isinstance(robj, DataFrame):
     # Check if any columns are factors
@@ -83,13 +96,13 @@ def r2py(robj):
     return obj
 
 
-def recurse_r_tree(data):
+def recurse_r_tree(data: Any) -> Any:
   if data == NULL:
       return None
   elif type(data) == DataFrame:
       try:
           return r2py(data)
-      except Exception as e:
+      except Exception:
           # The column "features" in internal$objects$X is known to cause problems
           d = {}
           for col in data.names:
@@ -108,9 +121,7 @@ def recurse_r_tree(data):
         warnings.simplefilter("ignore")
         tmp = r2py(data).strftime("%Y-%m-%d %H:%M:%S")[0]
       return tmp
-  elif type(data) == SignatureTranslatedFunction:
-      return str(data)
-  elif type(data) == Formula:
+  elif type(data) == SignatureTranslatedFunction or type(data) == Formula:
       return str(data)
   elif type(data) == ListVector:
       if type(data.names) == type(NULL):

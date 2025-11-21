@@ -1,15 +1,16 @@
-import warnings
+from collections.abc import Callable
+from datetime import datetime
+from typing import Any
+
 import numpy as np
 import pandas as pd
-from typing import Callable
-from datetime import datetime
 import rpy2.robjects as ro
-from rpy2.robjects.packages import importr
-from rpy2.rinterface import NULL, NA
-from shaprpy.utils import r2py, py2r, recurse_r_tree
-from rpy2.robjects.vectors import StrVector, ListVector, BoolVector
-from shaprpy.explanation import Shapr
+from rpy2.rinterface import NA, NULL
+from rpy2.robjects.vectors import BoolVector, ListVector, StrVector
+
 from shaprpy._rutils import _importr
+from shaprpy.explanation import Shapr
+from shaprpy.utils import py2r, r2py, recurse_r_tree
 
 data_table = _importr('data.table')
 shapr = _importr('shapr')
@@ -17,31 +18,32 @@ utils = _importr('utils')
 base = _importr('base')
 stats = _importr('stats')
 
-def maybe_null(val):
+def maybe_null(val: Any) -> Any:
+  """Convert Python None to R NULL, otherwise return value as-is."""
   return val if val is not None else NULL
 
 def explain(
-    model,
+    model: Any,
     x_explain: pd.DataFrame,
     x_train: pd.DataFrame,
     approach: str | list[str],
     phi0: float,
     iterative: bool | None = None,
     max_n_coalitions: int | None = None,
-    group: dict | None = None,
+    group: dict[str, list[str]] | None = None,
     n_MC_samples: int = 1000,
     seed: int | None = None,
     verbose: str | list[str] | None = "basic",
     predict_model: Callable | None = None,
     get_model_specs: Callable | None = None,
     asymmetric: bool = False,
-    causal_ordering: dict | None = None,
-    confounding: bool | None = None,
-    extra_computation_args: dict | None = None,
-    iterative_args: dict | None = None,
-    output_args: dict | None = None,
-    **kwargs,
-  ):
+    causal_ordering: dict[str, list[str]] | None = None,
+    confounding: list[bool] | None = None,
+    extra_computation_args: dict[str, Any] | None = None,
+    iterative_args: dict[str, Any] | None = None,
+    output_args: dict[str, Any] | None = None,
+    **kwargs: Any,
+) -> Shapr:
     """
     Explain the output of machine learning models with more accurately estimated Shapley values.
 
@@ -108,8 +110,8 @@ def explain(
 
     Returns
     -------
-    dict
-      A dictionary containing the following items:
+    Shapr
+      A Shapr object containing the explanation with the following accessible components:
       - "shapley_values_est": pd.DataFrame with the estimated Shapley values.
       - "shapley_values_sd": pd.DataFrame with the standard deviation of the Shapley values.
       - "pred_explain": numpy.Array with the predictions for the explained observations.
@@ -309,7 +311,7 @@ def explain(
     return Shapr(explanation_dict, r_object=routput)
 
 
-def compute_vS(rinternal, model, predict_model):
+def compute_vS(rinternal: Any, model: Any, predict_model: Callable) -> Any:
 
   iter = len(rinternal.rx2('iter_list'))
 
@@ -332,7 +334,7 @@ def compute_vS(rinternal, model, predict_model):
   return vS_list
 
 
-def batch_compute_vS(S, rinternal, model, predict_model):
+def batch_compute_vS(S: Any, rinternal: Any, model: Any, predict_model: Callable) -> Any:
   regression = rinternal.rx2('parameters').rx2('regression')[0]
 
   # Check if we are to use regression or Monte Carlo integration to compute the contribution function values
@@ -345,22 +347,7 @@ def batch_compute_vS(S, rinternal, model, predict_model):
   return dt_vS
 
 
-def batch_prepare_vS_MC_old(S, rinternal, model, predict_model):
-  keep_samp_for_vS = rinternal.rx2('parameters').rx2('keep_samp_for_vS')[0]
-  feature_names = list(rinternal.rx2('parameters').rx2('feature_names'))
-
-  dt = shapr.batch_prepare_vS_MC_auxiliary(S=S, internal=rinternal)
-
-  dt = compute_preds(dt=dt, feature_names=feature_names, predict_model=predict_model, model=model)
-
-  dt_vS = shapr.compute_MCint(dt)
-
-  if keep_samp_for_vS:
-    return ro.ListVector({'dt_vS':dt_vS, 'dt_samp_for_vS':dt})
-  else:
-    return dt_vS
-
-def batch_prepare_vS_MC(S, rinternal, model, predict_model):
+def batch_prepare_vS_MC(S: Any, rinternal: Any, model: Any, predict_model: Callable) -> Any:
   feature_names = list(rinternal.rx2('parameters').rx2('feature_names'))
   keep_samp_for_vS = rinternal.rx2('parameters').rx2('output_args').rx2('keep_samp_for_vS')[0]
   causal_sampling = rinternal.rx2('parameters').rx2('causal_sampling')[0]
@@ -408,18 +395,18 @@ def batch_prepare_vS_MC(S, rinternal, model, predict_model):
     return dt_vS
 
 def compute_preds(
-  dt,
-  feature_names,
-  predict_model,
-  model,
-  type_,
-  horizon=None,
-  n_endo=None,
-  explain_idx=None,
-  explain_lags=None,
-  y=None,
-  xreg=None
-):
+  dt: Any,
+  feature_names: list[str],
+  predict_model: Callable,
+  model: Any,
+  type_: str,
+  horizon: int | None = None,
+  n_endo: int | None = None,
+  explain_idx: Any | None = None,
+  explain_lags: Any | None = None,
+  y: Any | None = None,
+  xreg: Any | None = None,
+) -> Any:
   # Predictions
   if type_ == "forecast":
     preds = predict_model(
@@ -442,14 +429,7 @@ def compute_preds(
   return ro.r.cbind(dt, p_hat=ro.FloatVector(preds.tolist()))
 
 
-
-def compute_preds_old(dt, feature_names, predict_model, model):
-  preds = predict_model(model, r2py(dt).loc[:,feature_names])
-  return ro.r.cbind(dt, p_hat=ro.FloatVector(preds.tolist()))
-
-
-
-def get_feature_specs(get_model_specs, model):
+def get_feature_specs(get_model_specs: Callable | None, model: Any) -> Any:
   model_class0 = type(model)
 
   if (get_model_specs is not None) and (not callable(get_model_specs)):
@@ -493,7 +473,7 @@ def get_feature_specs(get_model_specs, model):
   return rfeature_specs
 
 
-def get_predict_model(x_test, predict_model, model):
+def get_predict_model(x_test: pd.DataFrame, predict_model: Callable | None, model: Any) -> Callable:
 
   model_class0 = type(model)
 
@@ -516,7 +496,7 @@ def get_predict_model(x_test, predict_model, model):
   return predict_model
 
 
-def prebuilt_get_model_specs(model):
+def prebuilt_get_model_specs(model: Any) -> Callable | None:
 
   # Look for sklearn
   try:
@@ -545,7 +525,7 @@ def prebuilt_get_model_specs(model):
   return None
 
 
-def prebuilt_predict_model(model):
+def prebuilt_predict_model(model: Any) -> Callable | None:
 
   # Look for sklearn
   try:
@@ -577,7 +557,7 @@ def prebuilt_predict_model(model):
   return None
 
 
-def compute_time(timing_list):
+def compute_time(timing_list: dict[str, datetime]) -> dict[str, Any]:
 
   timing_secs = {
       f'{key}': (timing_list[key] - timing_list[prev_key]).total_seconds()
@@ -592,7 +572,13 @@ def compute_time(timing_list):
   return timing_output
 
 
-def additional_regression_setup(rinternal, model, predict_model, x_train, x_explain):
+def additional_regression_setup(
+    rinternal: Any,
+    model: Any,
+    predict_model: Callable,
+    x_train: pd.DataFrame,
+    x_explain: pd.DataFrame,
+) -> Any:
   # Add the predicted response of the training and explain data to the internal list for regression-based methods
   regression = rinternal.rx2("parameters").rx2("regression")[0]
   if regression:
@@ -601,7 +587,13 @@ def additional_regression_setup(rinternal, model, predict_model, x_train, x_expl
   return rinternal
 
 
-def regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain):
+def regression_get_y_hat(
+    rinternal: Any,
+    model: Any,
+    predict_model: Callable,
+    x_train: pd.DataFrame,
+    x_explain: pd.DataFrame,
+) -> Any:
   x_train_y_hat = predict_model(model, x_train)
   x_explain_y_hat = predict_model(model, x_explain)
 
@@ -614,7 +606,7 @@ def regression_get_y_hat(rinternal, model, predict_model, x_train, x_explain):
   return rinternal
 
 
-def regression_remove_objects(routput):
+def regression_remove_objects(routput: Any) -> Any:
   tmp_internal = routput.rx2("internal")
   tmp_parameters = tmp_internal.rx2("parameters")
   objects = StrVector(("regression", "regression.model", "regression.tune_values", "regression.vfold_cv_para",
@@ -629,7 +621,7 @@ def regression_remove_objects(routput):
   return routput
 
 
-def change_first_underscore_to_dot(kwargs):
+def change_first_underscore_to_dot(kwargs: dict[str, Any]) -> dict[str, Any]:
   kwargs_tmp = {}
   for k, v in kwargs.items():
     kwargs_tmp[k.replace('_', '.', 1)] = v

@@ -1,11 +1,11 @@
-from importlib.metadata import version, PackageNotFoundError
 from importlib import import_module
+from importlib.metadata import PackageNotFoundError, version
 
 # Lightweight public re-export (no R dependency)
-from . import datasets  # noqa: F401
+from . import datasets
 from ._rutils import get_package_lib_loc
 
-__all__ = ["explain", "datasets", "ensure_r_ready", "Shapr"]
+__all__ = ["Shapr", "datasets", "ensure_r_ready", "explain"]
 
 try:
     __version__ = version("shaprpy")
@@ -23,7 +23,7 @@ def ensure_r_ready() -> bool:
         return True
 
     try:
-        import rpy2.robjects as _ro  # noqa: F401
+        import rpy2.robjects as _ro
         from rpy2.robjects.packages import importr
     except Exception as e:
         raise ImportError(
