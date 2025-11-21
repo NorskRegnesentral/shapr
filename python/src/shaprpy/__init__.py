@@ -65,7 +65,8 @@ def _import_shapr():
 
 # Make Shapr available when the module is imported
 Shapr = None
-try:
-    Shapr = _import_shapr()
-except ImportError:
-    pass
+if True:  # Keep simple for compatibility
+    try:
+        Shapr = _import_shapr()
+    except ImportError:
+        pass

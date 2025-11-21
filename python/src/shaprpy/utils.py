@@ -99,7 +99,7 @@ def r2py(robj: Any) -> Any:
 def recurse_r_tree(data: Any) -> Any:
     if data == NULL:
         return None
-    elif type(data) == DataFrame:
+    elif isinstance(data, DataFrame):
         try:
             return r2py(data)
         except Exception:
@@ -108,26 +108,26 @@ def recurse_r_tree(data: Any) -> Any:
             for col in data.names:
                 try:
                     d[col] = r2py(data.rx2(col))
-                except:
+                except Exception:
                     # We manually convert the elements of the column "features" in internal$objects$X
                     d[col] = [r2py(d) for d in data.rx2(col)]
             return pd.DataFrame(d, index=data.rownames)
-    elif type(data) in [FloatVector, IntVector, BoolVector, FloatMatrix, Matrix]:
+    elif isinstance(data, (FloatVector, IntVector, BoolVector, FloatMatrix, Matrix)):
         return np.array(data)
-    elif type(data) == FactorVector:
+    elif isinstance(data, FactorVector):
         return _to_pandas_factor(data)
-    elif type(data) == POSIXct:
+    elif isinstance(data, POSIXct):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             tmp = r2py(data).strftime("%Y-%m-%d %H:%M:%S")[0]
         return tmp
-    elif type(data) == SignatureTranslatedFunction or type(data) == Formula:
+    elif isinstance(data, (SignatureTranslatedFunction, Formula)):
         return str(data)
-    elif type(data) == ListVector:
+    elif isinstance(data, ListVector):
         if type(data.names) == type(NULL):
             data.names = [f"element_{i + 1}" for i in range(len(data))]
         return dict(zip(data.names, [recurse_r_tree(d) for d in data]))
-    elif type(data) == StrVector:
+    elif isinstance(data, StrVector):
         return [recurse_r_tree(d) for d in data]
     else:
         return data  # We reached the end of recursion (if not converted below, return the object as is)

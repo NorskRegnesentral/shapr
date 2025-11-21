@@ -379,7 +379,6 @@ def batch_prepare_vS_MC(S: Any, rinternal: Any, model: Any, predict_model: Calla
         S=S, internal=rinternal, causal_sampling=causal_sampling
     )
 
-    pred_cols = [f"p_hat{i + 1}" for i in range(output_size)]
     type_ = rinternal.rx2("parameters").rx2("type")[0]
 
     if type_ == "forecast":
@@ -469,13 +468,13 @@ def get_feature_specs(get_model_specs: Callable | None, model: Any) -> Any:
         except Exception as e:
             raise RuntimeError(
                 f"The get_model_specs function of class `{model_class0}` is invalid.\nA basic function test threw the following error:\n{e}"
-            )
+            ) from e
 
     if not isinstance(feature_specs, dict):
         raise ValueError(
             f"`get_model_specs` returned an object of type `{type(feature_specs)}`, but it should be of type `dict`"
         )
-    if set(feature_specs.keys()) != set(["labels", "classes", "factor_levels"]):
+    if set(feature_specs.keys()) != {"labels", "classes", "factor_levels"}:
         raise ValueError(
             f'`get_model_specs` should return a `dict` with keys ["labels","classes","factor_levels"], but found keys {list(feature_specs.keys())}'
         )
@@ -483,7 +482,9 @@ def get_feature_specs(get_model_specs: Callable | None, model: Any) -> Any:
     if feature_specs is None:
         rfeature_specs = NULL
     else:
-        py2r_or_na = lambda v: py2r(v) if v is not None else NA
+
+        def py2r_or_na(v):
+            return py2r(v) if v is not None else NA
 
         def strvec_or_na(v):
             if v is None:
@@ -511,9 +512,7 @@ def get_predict_model(x_test: pd.DataFrame, predict_model: Callable | None, mode
     model_class0 = type(model)
 
     if (predict_model is not None) and (not callable(predict_model)):
-        raise RuntimeError(
-            f"The predict_model function of class `{model}` is invalid.\nA basic function test threw the following error:\n{e}"
-        )
+        raise ValueError(f"predict_model must be callable, got {type(predict_model)}")
 
     if predict_model is None:
         predict_model = prebuilt_predict_model(model)
@@ -527,7 +526,7 @@ def get_predict_model(x_test: pd.DataFrame, predict_model: Callable | None, mode
     except Exception as e:
         raise RuntimeError(
             f"The predict_model function of class `{model_class0}` is invalid.\nA basic function test threw the following error:\n{e}"
-        )
+        ) from e
     if not all(base.is_numeric(tmp)):
         raise RuntimeError("The output of predict_model is expected to be numeric.")
     if not (len(tmp) == 2):
@@ -546,7 +545,7 @@ def prebuilt_get_model_specs(model: Any) -> Callable | None:
                 "classes": None,  # Not available from model object
                 "factor_levels": None,  # Not available from model object
             }
-    except:
+    except (ImportError, AttributeError):
         pass
 
     # Look for xgboost.core.Booster
@@ -559,7 +558,7 @@ def prebuilt_get_model_specs(model: Any) -> Callable | None:
                 "classes": None,  # Not available from model object
                 "factor_levels": None,  # Not available from model object
             }
-    except:
+    except (ImportError, AttributeError):
         pass
 
     return None
@@ -574,7 +573,7 @@ def prebuilt_predict_model(model: Any) -> Callable | None:
             return lambda m, x: m.predict_proba(x)[:, 1]
         if is_regressor(model):
             return lambda m, x: m.predict(x).flatten()
-    except:
+    except (ImportError, AttributeError):
         pass
 
     # Look for xgboost.core.Booster
@@ -583,7 +582,7 @@ def prebuilt_predict_model(model: Any) -> Callable | None:
 
         if isinstance(model, xgb.core.Booster):
             return lambda m, x: m.predict(xgb.DMatrix(x))
-    except:
+    except (ImportError, AttributeError):
         pass
 
     # Look for keras
