@@ -46,13 +46,13 @@ def get_package_lib_loc(robjects_module, package: str) -> str | None:
 
 
 def _importr(package: str, robjects_module=None, importr_func=None):
-  if robjects_module is None:
-    import rpy2.robjects as robjects_module
+    if robjects_module is None:
+        import rpy2.robjects as robjects_module
 
-  if importr_func is None:
-    from rpy2.robjects.packages import importr as importr_func
+    if importr_func is None:
+        from rpy2.robjects.packages import importr as importr_func
 
-  lib_loc = get_package_lib_loc(robjects_module, package)
-  if lib_loc:
-    return importr_func(package, lib_loc=lib_loc)
-  return importr_func(package)
+    lib_loc = get_package_lib_loc(robjects_module, package)
+    if lib_loc:
+        return importr_func(package, lib_loc=lib_loc)
+    return importr_func(package)

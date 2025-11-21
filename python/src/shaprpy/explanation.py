@@ -1,6 +1,7 @@
 """
 Shapr explanation class for exploring Shapley value results.
 """
+
 from typing import Any
 
 from shaprpy._rutils import _importr
@@ -53,7 +54,8 @@ class Shapr:
     def _get_print_output(self, what: str = "shapley_est", digits: int = 3) -> str:
         import io
         from contextlib import redirect_stdout
-        base = _importr('base')
+
+        base = _importr("base")
 
         f = io.StringIO()
         with redirect_stdout(f):
@@ -118,8 +120,6 @@ class Shapr:
         """
         return self._r_object
 
-
-
     def get_results(self, what: str | list[str] | None = None) -> Any:
         """
         Extract components from the Shapr explanation object using R's get_results function.
@@ -170,7 +170,7 @@ class Shapr:
 
         from shaprpy.utils import recurse_r_tree
 
-        shapr = _importr('shapr')
+        shapr = _importr("shapr")
 
         if what is None:
             # Call R get_results with default arguments
@@ -199,7 +199,7 @@ class Shapr:
         None
             Prints summary (from R's summary.shapr() but returns nothing
         """
-        base = _importr('base')
+        base = _importr("base")
 
         # Call R summary function just for the printing
         base.summary(self._r_object, digits=digits)
@@ -236,8 +236,8 @@ class Shapr:
 
         from shap import Explanation
 
-        shap_values_df = self._explanation_dict['shapley_values_est']
-        feature_names = shap_values_df.columns.drop(['explain_id', 'none'])
+        shap_values_df = self._explanation_dict["shapley_values_est"]
+        feature_names = shap_values_df.columns.drop(["explain_id", "none"])
         data = self._explanation_dict["internal"]["data"]["x_explain"]
 
         if isinstance(idx, int):
@@ -260,7 +260,7 @@ class Shapr:
             values=shap_vals,
             base_values=base_values,
             data=data,
-            feature_names=feature_names.tolist()
+            feature_names=feature_names.tolist(),
         )
 
         return explanation

@@ -59,7 +59,9 @@ def explain(*args, **kwargs):
 # Import the Shapr class (lazy import to avoid R dependency issues)
 def _import_shapr():
     from .explanation import Shapr
+
     return Shapr
+
 
 # Make Shapr available when the module is imported
 Shapr = None
