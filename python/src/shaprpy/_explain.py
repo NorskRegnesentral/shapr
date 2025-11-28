@@ -652,30 +652,6 @@ def regression_get_y_hat(
     return rinternal
 
 
-def regression_remove_objects(routput: Any) -> Any:
-    tmp_internal = routput.rx2("internal")
-    tmp_parameters = tmp_internal.rx2("parameters")
-    objects = StrVector(
-        (
-            "regression",
-            "regression.model",
-            "regression.tune_values",
-            "regression.vfold_cv_para",
-            "regression.recipe_func",
-            "regression.tune",
-            "regression.surrogate_n_comb",
-        )
-    )
-    tmp_parameters.rx[objects] = NULL
-    tmp_internal.rx2["parameters"] = tmp_parameters
-    if tmp_parameters.rx2("approach")[0] == "regression_surrogate":
-        tmp_objects = tmp_internal.rx2("objects")
-        tmp_objects.rx["regression.surrogate_model"] = NULL
-        tmp_internal.rx2["objects"] = tmp_objects
-    routput.rx2["internal"] = tmp_internal
-    return routput
-
-
 def change_first_underscore_to_dot(kwargs: dict[str, Any]) -> dict[str, Any]:
     kwargs_tmp = {}
     for k, v in kwargs.items():

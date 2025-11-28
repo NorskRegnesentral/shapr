@@ -1,4 +1,3 @@
 include LICENSE
 include README.md
 recursive-include src/shaprpy *.py
-prune shaprpy

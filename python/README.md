@@ -1,15 +1,5 @@
 # shaprpy
 
-Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/shapr).
-
-NOTE: This wrapper is not as comprehensively tested as the `R`-package.
-
-`shaprpy` relies heavily on the `rpy2` Python library for accessing R from within Python.
-`rpy2` has limited support on Windows. `shaprpy` has only been tested on Linux.
-The below instructions assumes a Linux environment.
-
-# shaprpy
-
 `shaprpy` is a Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/shapr),
 using the [`rpy2`](https://rpy2.github.io/) Python library to access R from within Python.
 
