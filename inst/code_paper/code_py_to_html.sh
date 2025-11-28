@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## This bash script requires jupytext and nbconvert to be installed. They can be installed using:
-# pip install jupytext nbconvert
+# pip install jupyter jupytext nbconvert
 
 ## The code_py.py script ends by listing session information, provided by the session_info package, which needs
 ## to be installed alongside shaprpy. session_info can be installed by running:
@@ -17,7 +17,7 @@ EXECUTED_NOTEBOOK="code_py_executed.ipynb"
 HTMLFILE="code_py.html"
 
 # Step 0: Check for required packages and provide installation commands if missing
-REQUIRED_PACKAGES=("jupytext" "nbconvert")
+REQUIRED_PACKAGES=("jupyter" "jupytext" "nbconvert")
 for PACKAGE in "${REQUIRED_PACKAGES[@]}"; do
     if ! python3 -m pip show "$PACKAGE" > /dev/null 2>&1; then
         echo "Package '$PACKAGE' is not installed. You can install it by running:"

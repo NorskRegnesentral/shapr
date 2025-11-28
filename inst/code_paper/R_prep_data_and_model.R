@@ -70,5 +70,5 @@ fwrite(x_explain, file = file.path("data_and_models", "x_explain.csv"))
 fwrite(as.data.table(y_explain), file = file.path("data_and_models", "y_explain.csv"))
 
 # We save the xgboost model object
-xgboost::xgb.save(model, file.path("data_and_models", "xgb.model"))
+xgboost::xgb.save(model, file.path("data_and_models", "model.ubj"))
 saveRDS(model, file.path("data_and_models", "model.rds"))

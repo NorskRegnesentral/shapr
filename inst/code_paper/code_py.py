@@ -1,4 +1,3 @@
-import os
 import xgboost as xgb
 import pandas as pd
 from shaprpy import explain
@@ -12,7 +11,7 @@ y_train = pd.read_csv("data_and_models/" + "y_train.csv")
 
 # Load the XGBoost model from the raw format and add feature names
 model = xgb.Booster()
-model.load_model("data_and_models/" + "xgb.model")
+model.load_model("data_and_models/" + "model.ubj")
 model.feature_names = x_train.columns.tolist()
 
 # Predict x_explain using the XGBoost model
@@ -21,7 +20,6 @@ exp_40_ctree = explain(model = model,
                        x_explain = x_explain,
                        approach = "ctree",
                        phi0 = y_train.mean().item(),
-                       verbose = None,
                        max_n_coalitions=40,
                        ctree_sample = False,
                        seed = 1)
