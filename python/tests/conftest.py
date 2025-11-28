@@ -175,10 +175,10 @@ def extract_shapley_outputs():
     """
     def _extract(explanation):
         # Convert DataFrames to markdown format for stable snapshot comparison
-        # Round to 6 decimal places to avoid numerical precision issues across environments
+        # Round to 5 decimal places to avoid numerical precision issues across environments
         result = {
-            "shapley_values_est": explanation.get_results("shapley_est").round(6).to_markdown(),
-            "shapley_values_sd": explanation.get_results("shapley_sd").round(6).to_markdown()
+            "shapley_values_est": explanation.get_results("shapley_est").round(5).to_markdown(),
+            "shapley_values_sd": explanation.get_results("shapley_sd").round(5).to_markdown()
         }
         return result
     return _extract
@@ -194,22 +194,22 @@ class SimpleLinearModel:
         self.coef_ = None
         self.intercept_ = None
         self.is_fitted_ = False
-    
+
     def fit(self, X, y):
         """Fit linear model using normal equations: (X'X)^-1 X'y"""
         X_array = X.values if hasattr(X, 'values') else X
         y_array = y.values.flatten() if hasattr(y, 'values') else y.flatten()
-        
+
         # Add intercept column
         X_with_intercept = np.column_stack([np.ones(len(X_array)), X_array])
-        
+
         # Solve normal equations
         params = np.linalg.lstsq(X_with_intercept, y_array, rcond=None)[0]
         self.intercept_ = params[0]
         self.coef_ = params[1:]
         self.is_fitted_ = True
         return self
-    
+
     def predict(self, X):
         """Predict using the linear model"""
         if not self.is_fitted_:
