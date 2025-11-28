@@ -88,11 +88,11 @@ summary(exp_40_ctree)
 ```
 
 ```
-## ── Summary of Shapley value explanation ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Summary of Shapley value explanation ─────────────────────────────────────────────────
 ```
 
 ```
-## • Computed with `shapr::explain()` in 9.2 seconds, started 2025-11-19 15:09:44
+## • Computed with `shapr::explain()` in 7.6 seconds, started 2025-11-28 11:34:03
 ```
 
 ```
@@ -128,7 +128,7 @@ summary(exp_40_ctree)
 ```
 
 ```
-## • Computations (temporary) saved at: '/tmp/RtmpKua5NW/shapr_obj_5d8b28e52ce2.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmpj4J0nn/shapr_obj_9c2c30732da7.rds'
 ```
 
 ```
@@ -201,9 +201,10 @@ exp_iter_ctree <- explain(model = model,
 
 ```
 ## 
-## ── Starting `shapr::explain()` at 2025-11-19 15:09:54 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain()` at 2025-11-28 11:34:11 ───────────────────────────────────
 ## ℹ Feature classes extracted from the model contain `NA`.
-##   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+##   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set
+##   to `2^n_features = 128`.
 ## ── Explanation overview ──
 ## 
 ## • Model class: <xgb.Booster>
@@ -213,11 +214,11 @@ exp_iter_ctree <- explain(model = model,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
-## • Computations (temporary) saved at: '/tmp/RtmpKua5NW/shapr_obj_5d8b691b782f.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmpj4J0nn/shapr_obj_9c2c2df11a35.rds'
 ## 
 ## ── Iterative computation started ──
 ## 
-## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 4 ──────────────────────────────────────────────────────────────────────────
 ## ℹ Using 66 of 128 coalitions, 26 new. 
 ## 
 ## ── Convergence info 
@@ -226,7 +227,7 @@ exp_iter_ctree <- explain(model = model,
 ## Estimated remaining coalitions: 62
 ## (Conservatively) adding about 40% of that (24 coalitions) in the next iteration.
 ## 
-## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 5 ──────────────────────────────────────────────────────────────────────────
 ## ℹ Using 90 of 128 coalitions, 24 new. 
 ## 
 ## ── Convergence info 
@@ -314,7 +315,7 @@ print(exp_g_reg, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2025-11-19 15:10:03 2025-11-19 15:10:05             2.1    2.1 seconds
+## 1: 2025-11-28 11:34:18 2025-11-28 11:34:20             1.9     1.9 second
 ```
 
 ``` r
@@ -324,7 +325,7 @@ print(exp_g_reg_tuned, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2025-11-19 15:10:05 2025-11-19 15:10:12            7.05    7.1 seconds
+## 1: 2025-11-28 11:34:20 2025-11-28 11:34:26            6.42    6.4 seconds
 ```
 
 ``` r
@@ -412,13 +413,14 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2025-11-19 15:10:41 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-11-28 11:34:54 ──────────────────────────
 ```
 
 ```
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set
+##   to `2^n_features = 4`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -439,7 +441,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ## 
 ## • Number of observations to explain: 2
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpKua5NW/shapr_obj_5d8b3d86592.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmpj4J0nn/shapr_obj_9c2c311fac9f.rds'
 ## 
 ## 
 ## 
@@ -489,9 +491,10 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 
 ```
 ## 
-## ── Starting `shapr::explain_forecast()` at 2025-11-19 15:10:41 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2025-11-28 11:34:55 ──────────────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
-##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
+##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to
+##   `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
 ##   method            from
 ##   as.zoo.data.frame zoo 
 ## 
@@ -504,7 +507,7 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpKua5NW/shapr_obj_5d8b33b6f911.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmpj4J0nn/shapr_obj_9c2c72a9d75e.rds'
 ## 
 ## ── Main computation started ──
 ## 
