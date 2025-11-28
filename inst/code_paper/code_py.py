@@ -27,7 +27,7 @@ exp_40_ctree = explain(model = model,
 
 # %%
 # Print the Shapley values
-exp_40_ctree.print() # Same as print(exp_40_ctree) (and just exp_40_ctree interactively)
+exp_40_ctree.print() # Alt: print(exp_40_ctree) (or exp_40_ctree interactively)
 
 # %%
 # Print the MSE of the v(S)
