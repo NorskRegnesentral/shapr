@@ -8,7 +8,7 @@ Previously known methods for estimating the Shapley values do, however,
 assume feature independence. This package implements methods which
 accounts for any feature dependence, and thereby produces more accurate
 estimates of the true Shapley values. An accompanying 'Python' wrapper
-('shaprpy') is available through the GitHub repository.
+('shaprpy') is available through PyPI.
 
 ## See also
 

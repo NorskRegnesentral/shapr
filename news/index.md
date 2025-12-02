@@ -18,6 +18,12 @@ CRAN release: 2025-11-17
   [`plot_SV_several_approaches()`](https://norskregnesentral.github.io/shapr/reference/plot_SV_several_approaches.md).
   ([\#478](https://github.com/NorskRegnesentral/shapr/pull/478))
 
+#### Minor fixes
+
+- Converted all exported function titles to Title Case in the
+  documentation
+  ([\#477](https://github.com/NorskRegnesentral/shapr/pull/477))
+
 ## shapr 1.0.5
 
 CRAN release: 2025-08-25

@@ -46,15 +46,8 @@
       <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/.github/shaprpy.md" class="external-link"><code>.github/shaprpy.md</code></a></small>
     </div>
 
-
 <div id="shaprpy" class="section level1">
 
-<p>Python wrapper for the R package <a href="https://github.com/NorskRegnesentral/shapr" class="external-link">shapr</a>.</p>
-<p>NOTE: This wrapper is not as comprehensively tested as the <code>R</code>-package.</p>
-<p><code>shaprpy</code> relies heavily on the <code>rpy2</code> Python library for accessing R from within Python. <code>rpy2</code> has limited support on Windows. <code>shaprpy</code> has only been tested on Linux. The below instructions assumes a Linux environment.</p>
-</div>
-<div class="section level1">
-<h1 id="shaprpy-1">shaprpy<a class="anchor" aria-label="anchor" href="#shaprpy-1"></a></h1>
 <p><code>shaprpy</code> is a Python wrapper for the R package <a href="https://github.com/NorskRegnesentral/shapr" class="external-link">shapr</a>, using the <a href="https://rpy2.github.io/" class="external-link"><code>rpy2</code></a> Python library to access R from within Python.</p>
 <blockquote>
 <p><strong>Note:</strong> This wrapper is <strong>not</strong> as comprehensively tested as the R package. <code>rpy2</code> has limited support on Windows, and the same therefore applies to <code>shaprpy</code>. <code>shaprpy</code> has only been tested on Linux (and WSL - Windows Subsystem for Linux), and the below instructions assume a Linux environment.</p>
@@ -80,8 +73,11 @@
 </div>
 <div class="section level3">
 <h3 id="id_2-ensure-r-is-discoverable-r_home-and-path">2. Ensure R is discoverable (R_HOME and PATH)<a class="anchor" aria-label="anchor" href="#id_2-ensure-r-is-discoverable-r_home-and-path"></a></h3>
-<p>Sometimes <code>rpy2</code> (which <code>shaprpy</code> relies on) cannot automatically locate your R installation. To ensure proper detection, verify that: - R is available in your system <code>PATH</code>, <strong>or</strong> - The <code>R_HOME</code> environment variable is set to your R installation directory.</p>
-<p>Example:</p>
+<p>Sometimes <code>rpy2</code> (which <code>shaprpy</code> relies on) cannot automatically locate your R installation. To ensure proper detection, verify that:</p>
+<ul><li>R is available in your system <code>PATH</code>, <strong>or</strong>
+</li>
+<li>The <code>R_HOME</code> environment variable is set to your R installation directory.</li>
+</ul><p>Example:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="bu">export</span> <span class="va">R_HOME</span><span class="op">=</span><span class="va">$(</span><span class="ex">R</span> RHOME<span class="va">)</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:<span class="va">$(</span><span class="ex">R</span> RHOME<span class="va">)</span>/bin</span></code></pre></div>
 </div>
@@ -122,19 +118,45 @@
 <span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a></span>
 <span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>explanation.<span class="bu">print</span>() <span class="co"># Print the Shapley values</span></span>
 <span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a></span>
-<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>explanation.summary() <span class="co"># Gives a nicely formatted summary of the computation of the explanations</span></span></code></pre></div>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>explanation.summary() <span class="co"># Gives a nicely formatted summary of the computation of the explanations</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co"># Extract results as a dictionary</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>results <span class="op">=</span> explanation.get_results()</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>shapley_values <span class="op">=</span> results[<span class="st">"shapley_est"</span>]</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co"># Plotting (requires the 'shap' library)</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co"># Convert to a SHAP Explanation object</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>shap_exp <span class="op">=</span> explanation.to_shap()</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>shap.plots.waterfall(shap_exp[<span class="dv">0</span>]) <span class="co"># Plot the first observation</span></span></code></pre></div>
 <hr></div>
 <div class="section level2">
 <h2 id="supported-models">Supported Models<a class="anchor" aria-label="anchor" href="#supported-models"></a></h2>
-<p><code>shaprpy</code> can explain predictions from models built with: - <a href="https://scikit-learn.org/" class="external-link"><code>scikit-learn</code></a> - <a href="https://keras.io/" class="external-link"><code>keras</code></a> (Sequential API) - <a href="https://xgboost.readthedocs.io/" class="external-link"><code>xgboost</code></a></p>
-<p>For other model types, you can supply: - A custom <code>predict_model</code> function - (Optionally) a custom <code>get_model_specs</code> function to <code>shaprpy.explain</code>.</p>
-<hr></div>
+<p><code>shaprpy</code> can explain predictions from models built with:</p>
+<ul><li><a href="https://scikit-learn.org/" class="external-link"><code>scikit-learn</code></a></li>
+<li>
+<a href="https://keras.io/" class="external-link"><code>keras</code></a> (Sequential API)</li>
+<li><a href="https://xgboost.readthedocs.io/" class="external-link"><code>xgboost</code></a></li>
+</ul><p>For other model types, you can supply:</p>
+<ul><li>A custom <code>predict_model</code> function</li>
+<li>(Optionally) a custom <code>get_model_specs</code> function to <code>shaprpy.explain</code>.</li>
+</ul><hr></div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h2>
-<p>See the <code>/examples</code> folder for runnable examples, including: - Basic usage with <code>scikit-learn</code> models - Usage with <code>xgboost</code> models - Usage with <code>keras</code> models - A custom PyTorch model - Usage of the <code>Shapr</code> class for exploration of explanation results and plotting through the <code>shap</code> package - The <strong>regression paradigm</strong> described in <a href="https://link.springer.com/article/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a>, which shows: - How to specify the regression model - How to enable automatic cross-validation of hyperparameters - How to apply pre-processing steps before fitting regression models</p>
+<p>See the <code>/examples</code> folder for runnable examples, including:</p>
+<ul><li>Basic usage with <code>scikit-learn</code> models</li>
+<li>Usage with <code>xgboost</code> models</li>
+<li>Usage with <code>keras</code> models</li>
+<li>A custom PyTorch model</li>
+<li>Usage of the <code>Shapr</code> class for exploration of explanation results and plotting through the <code>shap</code> package</li>
+<li>The <strong>regression paradigm</strong> described in <a href="https://link.springer.com/article/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a>, which shows:
+<ul><li>How to specify the regression model</li>
+<li>How to enable automatic cross-validation of hyperparameters</li>
+<li>How to apply pre-processing steps before fitting regression models</li>
+</ul></li>
+</ul></div>
 </div>
-</div>
-
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

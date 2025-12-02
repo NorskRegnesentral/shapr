@@ -51,7 +51,7 @@
 <p>All notable changes to the Python <code>shaprpy</code> library will be documented in this file. Changes to the underlying <code>shapr</code> R package is documented in <a href="https://norskregnesentral.github.io/shapr/news/index.html">shapr CHANGELOG</a></p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
 <div class="section level2">
-<h2 id="id_040---2025-10-20">[0.4.0] - 2025-10-20<a class="anchor" aria-label="anchor" href="#id_040---2025-10-20"></a></h2>
+<h2 id="id_040---2025-11-28">[0.4.0] - 2025-11-28<a class="anchor" aria-label="anchor" href="#id_040---2025-11-28"></a></h2>
 <div class="section level3">
 <h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
 <ul><li>
@@ -64,7 +64,7 @@
 <li>Integration with SHAP library via <code>to_shap()</code> method for plotting</li>
 </ul></li>
 <li>Enhanced example scripts demonstrating new class-based functionality</li>
-<li>Improved R package import handling with better path management</li>
+<li>Added comprehensive unit and snapshot tests covering all approaches and full functionality, including categorical features and causal ordering</li>
 </ul></div>
 <div class="section level3">
 <h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
@@ -73,10 +73,13 @@
 <li>Restructured internal module organization with private <code>_explain.py</code> and <code>_rutils.py</code> modules</li>
 <li>Updated all example scripts, tests and README to demonstrate new class-based API</li>
 <li>Improved lazy loading for R package dependencies</li>
+<li>Cleaned up unused library components</li>
 </ul></div>
 <div class="section level3">
 <h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
 <ul><li>Enhanced R package import reliability by removing empty paths from library locations, effectively resolving confusing warnings from R on package load</li>
+<li>Fixed a bug in handling categorical features (R factors) during conversion to Python</li>
+<li>Fixed an issue with passing boolean vectors for the <code>confounding</code> argument</li>
 </ul></div>
 </div>
 <div class="section level2">
