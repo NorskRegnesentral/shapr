@@ -57,8 +57,8 @@ model <- xgboost::xgboost(data = as.matrix(x_train),
 
 # Creates folders
 dir.create("data_and_models", showWarnings = FALSE) # Directory for data and model
-dir.create("R_html_figures", showWarnings = FALSE) # Directory for html figures from R
-dir.create("R_paper_figures", showWarnings = FALSE) # Directory for paper figures in R
+dir.create("html_figures", showWarnings = FALSE) # Directory for html figures from R
+dir.create("paper_figures", showWarnings = FALSE) # Directory for paper figures in R
 
 # Creating a directory to store the data and model
 
@@ -70,5 +70,5 @@ fwrite(x_explain, file = file.path("data_and_models", "x_explain.csv"))
 fwrite(as.data.table(y_explain), file = file.path("data_and_models", "y_explain.csv"))
 
 # We save the xgboost model object
-xgboost::xgb.save(model, file.path("data_and_models", "xgb.model"))
+xgboost::xgb.save(model, file.path("data_and_models", "model.ubj"))
 saveRDS(model, file.path("data_and_models", "model.rds"))

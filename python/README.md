@@ -1,15 +1,5 @@
 # shaprpy
 
-Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/shapr).
-
-NOTE: This wrapper is not as comprehensively tested as the `R`-package.
-
-`shaprpy` relies heavily on the `rpy2` Python library for accessing R from within Python.
-`rpy2` has limited support on Windows. `shaprpy` has only been tested on Linux.
-The below instructions assumes a Linux environment.
-
-# shaprpy
-
 `shaprpy` is a Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/shapr),
 using the [`rpy2`](https://rpy2.github.io/) Python library to access R from within Python.
 
@@ -50,6 +40,7 @@ Rscript -e 'install.packages("shapr", repos="https://cran.rstudio.com")'
 ### 2. Ensure R is discoverable (R_HOME and PATH)
 
 Sometimes `rpy2` (which `shaprpy` relies on) cannot automatically locate your R installation. To ensure proper detection, verify that:
+
 - R is available in your system `PATH`, **or**
 - The `R_HOME` environment variable is set to your R installation directory.
 
@@ -104,6 +95,17 @@ explanation.print() # Print the Shapley values
 
 explanation.summary() # Gives a nicely formatted summary of the computation of the explanations
 
+# Extract results as a dictionary
+results = explanation.get_results()
+shapley_values = results["shapley_est"]
+
+# Plotting (requires the 'shap' library)
+# Convert to a SHAP Explanation object
+shap_exp = explanation.to_shap()
+
+import shap
+shap.plots.waterfall(shap_exp[0]) # Plot the first observation
+
 ```
 
 ---
@@ -111,11 +113,13 @@ explanation.summary() # Gives a nicely formatted summary of the computation of t
 ## Supported Models
 
 `shaprpy` can explain predictions from models built with:
+
 - [`scikit-learn`](https://scikit-learn.org/)
 - [`keras`](https://keras.io/) (Sequential API)
 - [`xgboost`](https://xgboost.readthedocs.io/)
 
 For other model types, you can supply:
+
 - A custom `predict_model` function
 - (Optionally) a custom `get_model_specs` function
 to `shaprpy.explain`.
@@ -125,6 +129,7 @@ to `shaprpy.explain`.
 ## Examples
 
 See the `/examples` folder for runnable examples, including:
+
 - Basic usage with `scikit-learn` models
 - Usage with `xgboost` models
 - Usage with `keras` models

@@ -6,7 +6,7 @@
 \alias{shapr-package}
 \title{shapr: Prediction Explanation with Dependence-Aware Shapley Values}
 \description{
-Complex machine learning models are often hard to interpret. However, in many situations it is crucial to understand and explain why a model made a specific prediction. Shapley values is the only method for such prediction explanation framework with a solid theoretical foundation. Previously known methods for estimating the Shapley values do, however, assume feature independence. This package implements methods which accounts for any feature dependence, and thereby produces more accurate estimates of the true Shapley values. An accompanying 'Python' wrapper ('shaprpy') is available through the GitHub repository.
+Complex machine learning models are often hard to interpret. However, in many situations it is crucial to understand and explain why a model made a specific prediction. Shapley values is the only method for such prediction explanation framework with a solid theoretical foundation. Previously known methods for estimating the Shapley values do, however, assume feature independence. This package implements methods which accounts for any feature dependence, and thereby produces more accurate estimates of the true Shapley values. An accompanying 'Python' wrapper ('shaprpy') is available through PyPI.
 }
 \seealso{
 Useful links:

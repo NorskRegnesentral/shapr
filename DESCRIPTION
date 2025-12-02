@@ -1,13 +1,13 @@
 Package: shapr
 Version: 1.0.6
 Title: Prediction Explanation with Dependence-Aware Shapley Values
-Description: Complex machine learning models are often hard to interpret. However, in 
-  many situations it is crucial to understand and explain why a model made a specific 
-  prediction. Shapley values is the only method for such prediction explanation framework 
-  with a solid theoretical foundation. Previously known methods for estimating the Shapley 
-  values do, however, assume feature independence. This package implements methods which accounts for any feature 
+Description: Complex machine learning models are often hard to interpret. However, in
+  many situations it is crucial to understand and explain why a model made a specific
+  prediction. Shapley values is the only method for such prediction explanation framework
+  with a solid theoretical foundation. Previously known methods for estimating the Shapley
+  values do, however, assume feature independence. This package implements methods which accounts for any feature
   dependence, and thereby produces more accurate estimates of the true Shapley values.
-  An accompanying 'Python' wrapper ('shaprpy') is available through the GitHub repository.
+  An accompanying 'Python' wrapper ('shaprpy') is available through PyPI.
 Authors@R: c(
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = c("cre", "aut"), comment = c(ORCID = "0000-0003-3908-5155")),
     person("Lars Henry Berge", "Olsen", email = "lhbolsen@nr.no", role = "aut", comment = c(ORCID = "0009-0006-9360-6993")),
@@ -28,7 +28,7 @@ ByteCompile: true
 Language: en-US
 RoxygenNote: 7.3.2
 Depends: R (>= 3.5.0)
-Imports: 
+Imports:
     stats,
     data.table (>= 1.15.0),
     Rcpp (>= 0.12.15),
@@ -37,7 +37,7 @@ Imports:
     methods,
     cli,
     rlang
-Suggests: 
+Suggests:
     ranger,
     xgboost,
     mgcv,
@@ -66,7 +66,7 @@ Suggests:
     yardstick,
     hardhat,
     rsample
-LinkingTo: 
+LinkingTo:
     RcppArmadillo,
     Rcpp
 VignetteBuilder: knitr
