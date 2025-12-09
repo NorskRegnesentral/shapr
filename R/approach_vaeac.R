@@ -2539,10 +2539,10 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     data = as.matrix(x_train),
-#'     label = y_train,
+#'     x = as.matrix(x_train),
+#'     y = y_train,
 #'     nround = 100,
-#'     verbose = FALSE
+#'     verbosity = 0
 #'   )
 #'
 #'   # Specifying the phi_0, i.e. the expected prediction without any features
@@ -2782,10 +2782,10 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     data = as.matrix(x_train),
-#'     label = y_train,
+#'     x = as.matrix(x_train),
+#'     y = y_train,
 #'     nround = 100,
-#'     verbose = FALSE
+#'     verbosity = 0
 #'   )
 #'
 #'   explanation <- shapr::explain(

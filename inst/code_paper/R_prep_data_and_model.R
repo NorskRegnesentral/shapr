@@ -49,10 +49,10 @@ x_explain <- bike[-train_index, mget(x_var)]
 y_explain <- bike[-train_index, get(y_var)]
 
 # We fit the a basic xgboost model to the training data.
-model <- xgboost::xgboost(data = as.matrix(x_train),
-                          label = y_train,
+model <- xgboost::xgboost(x = as.matrix(x_train),
+                          y = y_train,
                           nround = 100,
-                          verbose = FALSE)
+                          verbosity = 0)
 
 
 # Creates folders

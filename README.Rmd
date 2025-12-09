@@ -152,10 +152,10 @@ cor(x_train)
 
 # Fit a basic xgboost model to the training data
 model <- xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
+  x = as.matrix(x_train),
+  y = y_train,
   nround = 20,
-  verbose = FALSE
+  verbosity = 0
 )
 
 # Specify phi_0, i.e., the expected prediction without any features

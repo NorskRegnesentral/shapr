@@ -497,10 +497,10 @@ test_that("output_custom_xgboost_mixed_dummy_ctree", {
 
   # Fitting a basic xgboost model to the training data
   model_xgboost_mixed_dummy <- xgboost::xgboost(
-    data = x_train_mixed_dummy,
-    label = y_train,
+    x = x_train_mixed_dummy,
+    y = y_train,
     nround = 20,
-    verbose = FALSE
+    verbosity = 0
   )
 
   predict_model.xgboost_dummy <- function(x, newdata) {

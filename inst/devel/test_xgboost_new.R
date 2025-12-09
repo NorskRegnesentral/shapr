@@ -9,6 +9,24 @@ library(data.table)
 
 message("Using xgboost version: ", packageVersion("xgboost"))
 
+# Helper to handle xgboost version differences
+safe_xgboost <- function(data, label, verbose = 0, ...) {
+  if (packageVersion("xgboost") >= "2.0") {
+    xgboost::xgboost(x = data, y = label, verbosity = verbose, ...)
+  } else {
+    xgboost::xgboost(data = data, label = label, verbose = verbose, ...)
+  }
+}
+
+safe_xgb_train <- function(data, verbose = 0, ...) {
+  if (packageVersion("xgboost") >= "2.0") {
+    # For xgb.train, verbosity should be in params
+    xgb.train(data = data, params = list(verbosity = verbose), ...)
+  } else {
+    xgb.train(data = data, verbose = verbose, ...)
+  }
+}
+
 # Set seed for reproducibility
 set.seed(123)
 
@@ -38,7 +56,7 @@ X_explain_num <- X_num[-train_idx, ][1:5, ] # Explain 5 observations
 message("\n--- A. xgboost::xgboost with data.table ---")
 tryCatch({
   set.seed(123)
-  model_num_dt <- xgboost(
+  model_num_dt <- safe_xgboost(
     data = X_train_num,
     label = y_train_num,
     nrounds = 10,
@@ -68,7 +86,7 @@ tryCatch({
 message("\n--- B. xgboost::xgboost with matrix ---")
 tryCatch({
   set.seed(123)
-  model_num_mat <- xgboost(
+  model_num_mat <- safe_xgboost(
     data = as.matrix(X_train_num),
     label = y_train_num,
     nrounds = 10,
@@ -97,7 +115,7 @@ message("\n--- C. xgboost::xgb.train with xgb.DMatrix ---")
 tryCatch({
   dtrain_num <- xgb.DMatrix(data = as.matrix(X_train_num), label = y_train_num)
   set.seed(123)
-  model_num_dmat <- xgb.train(
+  model_num_dmat <- safe_xgb_train(
     data = dtrain_num,
     nrounds = 10,
     verbose = 0
@@ -124,7 +142,7 @@ tryCatch({
 message("\n--- C2. xgboost::xgb.train with xgb.DMatrix (from data.table) ---")
 tryCatch({
     dtrain_num_dt <- xgb.DMatrix(data = X_train_num, label = y_train_num)
-    model_num_dmat_dt <- xgb.train(
+    model_num_dmat_dt <- safe_xgb_train(
         data = dtrain_num_dt,
         nrounds = 10,
         verbose = 0
@@ -172,7 +190,7 @@ message("\n--- D. xgboost::xgboost with data.table (Factors) ---")
 # xgboost() function usually converts to DMatrix.
 tryCatch({
   set.seed(123)
-  model_cat_dt <- xgboost(
+  model_cat_dt <- safe_xgboost(
     data = X_train_cat,
     label = y_train_cat,
     nrounds = 10,
@@ -209,7 +227,7 @@ tryCatch({
   X_explain_cat_num[, cat2 := as.numeric(cat2)]
 
   set.seed(123)
-  model_cat_mat <- xgboost(
+  model_cat_mat <- safe_xgboost(
     data = as.matrix(X_train_cat_num),
     label = y_train_cat,
     nrounds = 10,
@@ -242,7 +260,7 @@ tryCatch({
   dtrain_cat <- xgb.DMatrix(data = X_train_cat, label = y_train_cat, enable_categorical = TRUE)
 
   set.seed(123)
-  model_cat_dmat <- xgb.train(
+  model_cat_dmat <- safe_xgb_train(
     data = dtrain_cat,
     nrounds = 10,
     verbose = 0

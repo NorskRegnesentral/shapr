@@ -945,10 +945,10 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     data = as.matrix(x_train),
-#'     label = y_train,
+#'     x = as.matrix(x_train),
+#'     y = y_train,
 #'     nround = 20,
-#'     verbose = FALSE
+#'     verbosity = 0
 #'   )
 #'
 #'   # Specifying the phi_0, i.e. the expected prediction without any features
@@ -1501,10 +1501,10 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     data = as.matrix(x_train),
-#'     label = y_train,
+#'     x = as.matrix(x_train),
+#'     y = y_train,
 #'     nround = 20,
-#'     verbose = FALSE
+#'     verbosity = 0
 #'   )
 #'
 #'   # Specifying the phi_0, i.e. the expected prediction without any features
