@@ -14,7 +14,8 @@ test_that("lm model works with explain", {
     x_train = x_train_reg,
     approach = "independence",
     phi0 = phi0_reg,
-    seed = 123
+    seed = 123,
+    verbose = NULL
   )
 
   # Basic checks
@@ -37,7 +38,8 @@ test_that("glm model works with explain (gaussian)", {
     x_train = x_train_reg,
     approach = "independence",
     phi0 = phi0_reg,
-    seed = 123
+    seed = 123,
+    verbose = NULL
   )
 
   # Basic checks
@@ -60,7 +62,8 @@ test_that("glm model works with explain (binomial)", {
     x_train = x_train_class,
     approach = "independence",
     phi0 = phi0_class,
-    seed = 123
+    seed = 123,
+    verbose = NULL
   )
 
   # Basic checks
@@ -89,7 +92,8 @@ test_that("ar model works with explain_forecast", {
     approach = "independence",
     phi0 = phi0_ts,
     seed = 123,
-    group_lags = FALSE
+    group_lags = FALSE,
+    verbose = NULL
   )
 
   # Basic checks
@@ -113,7 +117,8 @@ test_that("ranger model works with explain (regression)", {
     x_train = x_train_reg,
     approach = "independence",
     phi0 = phi0_reg,
-    seed = 123
+    seed = 123,
+    verbose = NULL
   )
 
   # Basic checks
@@ -138,7 +143,8 @@ test_that("ranger model works with explain (probability)", {
     x_train = x_train_class,
     approach = "independence",
     phi0 = phi0_class,
-    seed = 123
+    seed = 123,
+    verbose = NULL
   )
 
   # Basic checks
@@ -168,7 +174,8 @@ test_that("xgboost model works with explain (regression)", {
     x_train = x_train_reg,
     approach = "independence",
     phi0 = phi0_reg,
-    seed = 123
+    seed = 123,
+    verbose = NULL
   )
 
   # Basic checks
@@ -198,7 +205,8 @@ test_that("xgboost model works with explain (binary classification)", {
     x_train = x_train_class,
     approach = "independence",
     phi0 = phi0_class,
-    seed = 123
+    seed = 123,
+    verbose = NULL
   )
 
   # Basic checks
@@ -223,7 +231,8 @@ test_that("mgcv gam model works with explain", {
     x_train = x_train_reg,
     approach = "independence",
     phi0 = phi0_reg,
-    seed = 123
+    seed = 123,
+    verbose = NULL
   )
 
   # Basic checks
@@ -258,7 +267,8 @@ test_that("workflows model works with explain", {
     x_train = x_train_reg,
     approach = "independence",
     phi0 = phi0_reg,
-    seed = 123
+    seed = 123,
+    verbose = NULL
   )
 
   # Basic checks
@@ -286,7 +296,8 @@ test_that("forecast Arima model works with explain_forecast", {
     approach = "independence",
     phi0 = phi0_ts,
     seed = 123,
-    group_lags = FALSE
+    group_lags = FALSE,
+    verbose = NULL
   )
 
   # Basic checks
