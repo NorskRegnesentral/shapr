@@ -29,6 +29,6 @@ phi0_class <- mean(as.numeric(y_train_class) - 1)
 # Data for time series models (ar, Arima)
 # Reuse data from helper-ar-arima
 y_ts <- data_arima$Temp
-train_idx_ts <- 3:50  # Start from 3 to accommodate max lag of 2
+train_idx_ts <- 3:50 # Start from 3 to accommodate max lag of 2
 explain_idx_ts <- 51:52
 phi0_ts <- mean(y_ts[train_idx_ts])

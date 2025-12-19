@@ -28,7 +28,6 @@ setup_approach.regression_surrogate <- function(internal,
   regression.check_namespaces()
 
 
-
   # Add the default parameter values for the non-user specified parameters for the separate regression approach
   defaults <- mget(c(
     "regression.model", "regression.tune_values", "regression.vfold_cv_para",

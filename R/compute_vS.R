@@ -179,18 +179,19 @@ batch_prepare_vS_MC_auxiliary <- function(S, internal, causal_sampling) {
 
 #' @keywords internal
 compute_preds <- function(
-    dt,
-    feature_names,
-    predict_model,
-    model,
-    pred_cols,
-    type,
-    horizon = NULL,
-    n_endo = NULL,
-    explain_idx = NULL,
-    explain_lags = NULL,
-    y = NULL,
-    xreg = NULL) {
+  dt,
+  feature_names,
+  predict_model,
+  model,
+  pred_cols,
+  type,
+  horizon = NULL,
+  n_endo = NULL,
+  explain_idx = NULL,
+  explain_lags = NULL,
+  y = NULL,
+  xreg = NULL
+) {
   # Predictions
 
   if (type == "forecast") {

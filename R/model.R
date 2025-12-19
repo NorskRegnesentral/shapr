@@ -67,10 +67,6 @@ predict_model.default <- function(x, newdata, ...) {
 }
 
 
-
-
-
-
 #' Check that the type of model is supported by the native implementation of the model class
 #'
 #' @description The function checks whether the model given by `x` is supported.
@@ -93,10 +89,6 @@ model_checker <- function(x) {
 model_checker.default <- function(x) {
   cli::cli_abort("The model class you passed to shapr is currently not supported.")
 }
-
-
-
-
 
 
 #' Fetches feature information from natively supported models

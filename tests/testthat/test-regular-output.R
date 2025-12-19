@@ -457,7 +457,6 @@ test_that("output_lm_mixed_comb", {
 })
 
 
-
 ### Custom model by passing predict_model
 test_that("output_custom_lm_numeric_independence_1", {
   set.seed(123)

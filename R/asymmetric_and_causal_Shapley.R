@@ -191,11 +191,6 @@ create_marginal_data_cat <- function(n_MC_samples,
 }
 
 
-
-
-
-
-
 # Get functions ---------------------------------------------------------------------------------------------------
 #' Get all coalitions satisfying the causal ordering
 #'
