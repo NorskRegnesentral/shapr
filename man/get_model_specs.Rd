@@ -13,6 +13,7 @@
 \alias{get_model_specs.gam}
 \alias{get_model_specs.ranger}
 \alias{get_model_specs.workflow}
+\alias{get_model_specs.xgboost}
 \alias{get_model_specs.xgb.Booster}
 \title{Fetches feature information from natively supported models}
 \usage{
@@ -35,6 +36,8 @@ get_model_specs(x)
 \method{get_model_specs}{ranger}(x)
 
 \method{get_model_specs}{workflow}(x)
+
+\method{get_model_specs}{xgboost}(x)
 
 \method{get_model_specs}{xgb.Booster}(x)
 }

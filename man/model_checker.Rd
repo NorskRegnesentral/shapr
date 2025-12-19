@@ -13,6 +13,7 @@
 \alias{model_checker.gam}
 \alias{model_checker.ranger}
 \alias{model_checker.workflow}
+\alias{model_checker.xgboost}
 \alias{model_checker.xgb.Booster}
 \title{Check that the type of model is supported by the native implementation of the model class}
 \usage{
@@ -35,6 +36,8 @@ model_checker(x)
 \method{model_checker}{ranger}(x)
 
 \method{model_checker}{workflow}(x)
+
+\method{model_checker}{xgboost}(x)
 
 \method{model_checker}{xgb.Booster}(x)
 }

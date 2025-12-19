@@ -13,6 +13,7 @@
 \alias{predict_model.gam}
 \alias{predict_model.ranger}
 \alias{predict_model.workflow}
+\alias{predict_model.xgboost}
 \alias{predict_model.xgb.Booster}
 \title{Generate predictions for input data with specified model}
 \usage{
@@ -45,6 +46,8 @@ predict_model(x, newdata, ...)
 \method{predict_model}{ranger}(x, newdata, ...)
 
 \method{predict_model}{workflow}(x, newdata, ...)
+
+\method{predict_model}{xgboost}(x, newdata, ...)
 
 \method{predict_model}{xgb.Booster}(x, newdata, ...)
 }
