@@ -945,7 +945,7 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     x = as.matrix(x_train),
+#'     x = x_train,
 #'     y = y_train,
 #'     nround = 20,
 #'     verbosity = 0
@@ -1501,7 +1501,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     x = as.matrix(x_train),
+#'     x = x_train,
 #'     y = y_train,
 #'     nround = 20,
 #'     verbosity = 0

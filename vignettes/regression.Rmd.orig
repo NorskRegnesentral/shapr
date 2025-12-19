@@ -185,7 +185,7 @@ x_explain <- data[ind_x_explain, ..x_var]
 # Fitting a basic xgboost model to the training data
 set.seed(123) # Set seed for reproducibility
 model <- xgboost::xgboost(
-  data = as.matrix(x_train),
+  data = x_train,
   label = y_train,
   nround = 20,
   verbose = FALSE

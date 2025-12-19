@@ -440,7 +440,7 @@ set.seed(123)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  x = as.matrix(x_train),
+  x = x_train,
   y = y_train,
   nround = 20,
   verbosity = 0
@@ -980,7 +980,7 @@ x_explain <- data[ind_x_explain_many, ..x_var]
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  x = as.matrix(x_train),
+  x = x_train,
   y = y_train,
   nround = 20,
   verbosity = 0
@@ -1332,7 +1332,7 @@ set.seed(123)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  x = as.matrix(x_train),
+  x = x_train,
   y = y_train,
   nround = 20,
   verbosity = 0
@@ -1801,7 +1801,7 @@ set.seed(123)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  x = as.matrix(x_train),
+  x = x_train,
   y = y_train,
   nround = 20,
   verbosity = 0
@@ -2478,7 +2478,7 @@ set.seed(123)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  x = as.matrix(x_train),
+  x = x_train,
   y = y_train,
   nround = 20,
   verbosity = 0
