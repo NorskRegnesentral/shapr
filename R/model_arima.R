@@ -42,6 +42,10 @@ predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explai
     }
   }
 
+  if (horizon == 1) {
+    prediction <- matrix(prediction, ncol = 1)
+  }
+  colnames(prediction) <- paste0("p_hat", seq_len(horizon))
   as.data.frame(prediction)
 }
 

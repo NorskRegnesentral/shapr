@@ -5,7 +5,12 @@ predict_model.ar <- function(x, newdata, newreg, horizon, ...) {
     cli::cli_abort("The {.pkg stats} package is required for predicting stats models.")
   }
 
-  as.data.frame(t(apply(newdata, 1, function(n) predict(x, rev(n), n.ahead = horizon, se.fit = FALSE))))
+  pred_matrix <- t(apply(as.matrix(newdata), 1, function(n) predict(x, rev(n), n.ahead = horizon, se.fit = FALSE)))
+  if (horizon == 1) {
+    pred_matrix <- matrix(pred_matrix, ncol = 1)
+  }
+  colnames(pred_matrix) <- paste0("p_hat", seq_len(horizon))
+  as.data.frame(pred_matrix)
 }
 
 #' @rdname get_model_specs

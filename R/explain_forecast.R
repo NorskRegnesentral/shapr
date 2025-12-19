@@ -321,7 +321,7 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
       cli::cli_abort("`xreg` must have at least as many observations as the data + the forecast horizon.")
     }
   } else {
-    xreg <- matrix(NA, max(c(train_idx, explain_idx)) + horizon, 0)
+    xreg <- matrix(NA, max(nrow(y), max(c(train_idx, explain_idx)) + horizon), 0)
   }
 
   max_lag <- max(c(explain_y_lags, explain_xreg_lags))
