@@ -98,7 +98,7 @@ if (requireNamespace("xgboost", quietly = TRUE) &&
 
   # Fitting a basic xgboost model to the training data
   model <- xgboost::xgboost(
-    x = as.matrix(x_train),
+    x = x_train,
     y = y_train,
     nround = 100,
     verbosity = 0

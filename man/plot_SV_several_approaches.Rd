@@ -117,7 +117,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 
   # Fitting a basic xgboost model to the training data
   model <- xgboost::xgboost(
-    x = as.matrix(x_train),
+    x = x_train,
     y = y_train,
     nround = 20,
     verbosity = 0
