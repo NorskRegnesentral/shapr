@@ -53,16 +53,6 @@ model_checker.xgboost <- function(x) {
       )
     )
   }
-
-  if (!is.null(objective) && objective == "reg:logistic") {
-    cli::cli_abort(
-      paste0(
-        "We currently do not support standard classification, which predicts the class directly. ",
-        "To train an `xgboost` model that predicts class probabilities, change ",
-        "the objective to `binary:logistic`."
-      )
-    )
-  }
   return(NULL)
 }
 

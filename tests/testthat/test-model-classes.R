@@ -155,7 +155,7 @@ test_that("ranger model works with explain (probability)", {
 
 
 # xgboost model - regression (conditional)
-test_that("xgboost model works with explain (regression)", {
+test_that("xgb.train model works with explain (regression)", {
   skip_if_not_installed("xgboost")
 
   # Fit model
@@ -164,7 +164,10 @@ test_that("xgboost model works with explain (regression)", {
     data = dtrain,
     nrounds = 10,
     verbose = 0,
-    params = list(objective = "reg:squarederror")
+    params = list(
+      objective = "reg:squarederror",
+      verbosity = 0
+    )
   )
 
   # Run explain
@@ -186,7 +189,7 @@ test_that("xgboost model works with explain (regression)", {
 
 
 # xgboost model - classification (conditional)
-test_that("xgboost model works with explain (binary classification)", {
+test_that("xgb.train model works with explain (binary classification)", {
   skip_if_not_installed("xgboost")
 
   # Fit model
@@ -194,8 +197,72 @@ test_that("xgboost model works with explain (binary classification)", {
   model <- xgboost::xgb.train(
     data = dtrain,
     nrounds = 10,
-    verbose = 0,
-    params = list(objective = "binary:logistic")
+    params = list(
+      objective = "binary:logistic", # equivalent to "binary:logistic"
+      verbosity = 0
+    )
+  )
+
+  # Run explain
+  explanation <- explain(
+    model = model,
+    x_explain = x_explain_class,
+    x_train = x_train_class,
+    approach = "independence",
+    phi0 = phi0_class,
+    seed = 123,
+    verbose = NULL
+  )
+
+  # Basic checks
+  expect_s3_class(explanation, "shapr")
+  expect_equal(nrow(explanation$shapley_values_est), 2)
+  expect_equal(ncol(explanation$shapley_values_est), 4)
+})
+
+
+# xgboost wrapper - regression (conditional)
+test_that("xgboost wrapper works with explain (regression)", {
+  skip_if_not_installed("xgboost")
+
+  # Fit model using xgboost() wrapper
+  model <- xgboost::xgboost(
+    x = x_train_reg,
+    y = y_train_reg,
+    nrounds = 10,
+    verbosity = 0,
+    objective = "reg:squarederror"
+  )
+
+  # Run explain
+  explanation <- explain(
+    model = model,
+    x_explain = x_explain_reg,
+    x_train = x_train_reg,
+    approach = "independence",
+    phi0 = phi0_reg,
+    seed = 123,
+    verbose = NULL
+  )
+
+  # Basic checks
+  expect_s3_class(explanation, "shapr")
+  expect_equal(nrow(explanation$shapley_values_est), 2)
+  expect_equal(ncol(explanation$shapley_values_est), 4)
+})
+
+
+# xgboost wrapper - classification (conditional)
+test_that("xgboost wrapper works with explain (binary classification)", {
+  skip_if_not_installed("xgboost")
+
+  # Fit model using xgboost() wrapper
+  model <- xgboost::xgboost(
+    x = x_train_class,
+    y = y_train_class,
+    nrounds = 10,
+    verbosity = 0,
+    objective = "binary:logistic"
   )
 
   # Run explain
