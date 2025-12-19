@@ -189,10 +189,10 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 
   # Fitting a basic xgboost model to the training data
   model <- xgboost::xgboost(
-    data = as.matrix(x_train),
-    label = y_train,
+    x = x_train,
+    y = y_train,
     nround = 20,
-    verbose = FALSE
+    verbosity = 0
   )
 
   # Specifying the phi_0, i.e. the expected prediction without any features
@@ -299,7 +299,6 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
     only_these_features = c("Temp", "Solar.R"),
     plot_phi0 = TRUE
   )
-
 }
 } # }
 ```

@@ -37,6 +37,9 @@ model_checker(x)
 # S3 method for class 'workflow'
 model_checker(x)
 
+# S3 method for class 'xgboost'
+model_checker(x)
+
 # S3 method for class 'xgb.Booster'
 model_checker(x)
 ```

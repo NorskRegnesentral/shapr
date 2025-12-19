@@ -144,10 +144,10 @@ x_explain <- data[ind_x_explain, ..x_var]
 # Fitting a basic xgboost model to the training data
 set.seed(123) # Set seed for reproducibility
 model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
+  x = as.matrix(x_train),
+  y = y_train,
   nround = 20,
-  verbose = FALSE
+  verbosity = 0
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features

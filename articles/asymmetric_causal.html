@@ -465,11 +465,11 @@ data, plot the data, and train an <code>xgboost</code> model.</p>
 <span><span class="co">#&gt; [1] -3900.03 -1872.03  -377.03   411.97  1690.97  3889.97</span></span>
 <span></span>
 <span><span class="co"># Fit an XGBoost model to the training data</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">x_train</span>,</span>
-<span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">y_train</span>,</span>
 <span>  nround <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbosity <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Save the phi0</span></span>

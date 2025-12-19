@@ -7,8 +7,12 @@ Performs prediction of response
 [`mgcv::gam()`](https://rdrr.io/pkg/mgcv/man/gam.html),
 [`workflows::workflow()`](https://workflows.tidymodels.org/reference/workflow.html)
 (i.e., `tidymodels` models), and
-[`xgboost::xgb.train()`](https://rdrr.io/pkg/xgboost/man/xgb.train.html)
-with binary or continuous response. See details for more information.
+[`xgboost::xgb.train()`](https://rdrr.io/pkg/xgboost/man/xgb.train.html)/[`xgboost::xgboost()`](https://rdrr.io/pkg/xgboost/man/xgboost.html)
+with binary or continuous response. For time series models
+[`explain_forecast()`](https://norskregnesentral.github.io/shapr/reference/explain_forecast.md),
+supports [`stats::ar()`](https://rdrr.io/r/stats/ar.html) and
+[`forecast::Arima()`](https://pkg.robjhyndman.com/forecast/reference/Arima.html).
+See details for more information.
 
 ## Usage
 
@@ -50,6 +54,9 @@ predict_model(x, newdata, ...)
 predict_model(x, newdata, ...)
 
 # S3 method for class 'workflow'
+predict_model(x, newdata, ...)
+
+# S3 method for class 'xgboost'
 predict_model(x, newdata, ...)
 
 # S3 method for class 'xgb.Booster'
@@ -116,6 +123,15 @@ The following models are currently supported:
 - [`workflows::workflow()`](https://workflows.tidymodels.org/reference/workflow.html)
 
 - [`xgboost::xgb.train()`](https://rdrr.io/pkg/xgboost/man/xgb.train.html)
+
+- [`xgboost::xgboost()`](https://rdrr.io/pkg/xgboost/man/xgboost.html)
+
+- [`stats::ar()`](https://rdrr.io/r/stats/ar.html) (for
+  [`explain_forecast()`](https://norskregnesentral.github.io/shapr/reference/explain_forecast.md))
+
+- [`forecast::Arima()`](https://pkg.robjhyndman.com/forecast/reference/Arima.html)
+  (for
+  [`explain_forecast()`](https://norskregnesentral.github.io/shapr/reference/explain_forecast.md))
 
 If you have a binary classification model we'll always return the
 probability prediction for a single class.

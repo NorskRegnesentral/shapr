@@ -161,11 +161,11 @@ i.e. no force displaying through <code><a href="https://ggplot2.tidyverse.org/re
 <span class="r-in"><span>  <span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">ind_x_explain</span>, <span class="va">..x_var</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># Fitting a basic xgboost model to the training data</span></span></span>
-<span class="r-in"><span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="va">y_train</span>,</span></span>
+<span class="r-in"><span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    x <span class="op">=</span> <span class="va">x_train</span>,</span></span>
+<span class="r-in"><span>    y <span class="op">=</span> <span class="va">y_train</span>,</span></span>
 <span class="r-in"><span>    nround <span class="op">=</span> <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>    verbosity <span class="op">=</span> <span class="fl">0</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span></span>
@@ -284,106 +284,96 @@ i.e. no force displaying through <code><a href="https://ggplot2.tidyverse.org/re
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-02 21:29:05</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature classes extracted from the model contain `NA`.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   Assuming feature classes from the data are correct.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-19 21:26:58</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgboost&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • v(S) estimation class: <span style="color: #0000BB;">Monte Carlo integration</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="color: #0000BB;">independence</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">25</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpgZefzZ/shapr_obj_6e8c5e42f078.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp1To82Z/shapr_obj_2dc5433dfcda.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">16</span> of <span style="color: #0000BB;">16</span> coalitions. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-02 21:29:06</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature classes extracted from the model contain `NA`.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   Assuming feature classes from the data are correct.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-19 21:26:59</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgboost&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • v(S) estimation class: <span style="color: #0000BB;">Monte Carlo integration</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="color: #0000BB;">gaussian</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">10</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">25</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpgZefzZ/shapr_obj_6e8c16452e1e.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp1To82Z/shapr_obj_2dc5a86f73e.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">16</span> of <span style="color: #0000BB;">16</span> coalitions. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-02 21:29:06</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature classes extracted from the model contain `NA`.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   Assuming feature classes from the data are correct.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-19 21:26:59</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgboost&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • v(S) estimation class: <span style="color: #0000BB;">Monte Carlo integration</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="color: #0000BB;">gaussian</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">25</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpgZefzZ/shapr_obj_6e8c32a8ce97.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp1To82Z/shapr_obj_2dc51c377c5a.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">16</span> of <span style="color: #0000BB;">16</span> coalitions. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-02 21:29:07</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature classes extracted from the model contain `NA`.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   Assuming feature classes from the data are correct.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-19 21:27:00</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgboost&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • v(S) estimation class: <span style="color: #0000BB;">Monte Carlo integration</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="color: #0000BB;">ctree</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">25</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpgZefzZ/shapr_obj_6e8c3f11bb8a.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp1To82Z/shapr_obj_2dc51993362d.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">16</span> of <span style="color: #0000BB;">16</span> coalitions. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-02 21:29:08</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature classes extracted from the model contain `NA`.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   Assuming feature classes from the data are correct.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-19 21:27:01</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgb.Booster&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;xgboost&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • v(S) estimation class: <span style="color: #0000BB;">Monte Carlo integration</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="color: #0000BB;">gaussian</span>, <span style="color: #0000BB;">independence</span>, and <span style="color: #0000BB;">ctree</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">25</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpgZefzZ/shapr_obj_6e8c2f4ea0e0.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp1To82Z/shapr_obj_2dc52cf5b29c.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>

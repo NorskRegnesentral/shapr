@@ -40,6 +40,9 @@ get_model_specs(x)
 # S3 method for class 'workflow'
 get_model_specs(x)
 
+# S3 method for class 'xgboost'
+get_model_specs(x)
+
 # S3 method for class 'xgb.Booster'
 get_model_specs(x)
 ```

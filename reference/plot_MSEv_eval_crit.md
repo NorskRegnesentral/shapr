@@ -133,10 +133,10 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 
   # Fitting a basic xgboost model to the training data
   model <- xgboost::xgboost(
-    data = as.matrix(x_train),
-    label = y_train,
+    x = x_train,
+    y = y_train,
     nround = 20,
-    verbose = FALSE
+    verbosity = 0
   )
 
   # Specifying the phi_0, i.e. the expected prediction without any features
@@ -255,106 +255,96 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
     )
 }
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-02 21:29:05 ──────────────────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-19 21:26:58 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
 #> ── Explanation overview ──
 #> 
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: independence
 #> • Procedure: Non-iterative
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpgZefzZ/shapr_obj_6e8c5e42f078.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp1To82Z/shapr_obj_2dc5433dfcda.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-02 21:29:06 ──────────────────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-19 21:26:59 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
 #> ── Explanation overview ──
 #> 
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
 #> • Procedure: Non-iterative
 #> • Number of Monte Carlo integration samples: 10
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpgZefzZ/shapr_obj_6e8c16452e1e.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp1To82Z/shapr_obj_2dc5a86f73e.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-02 21:29:06 ──────────────────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-19 21:26:59 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
 #> ── Explanation overview ──
 #> 
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
 #> • Procedure: Non-iterative
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpgZefzZ/shapr_obj_6e8c32a8ce97.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp1To82Z/shapr_obj_2dc51c377c5a.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-02 21:29:07 ──────────────────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-19 21:27:00 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
 #> ── Explanation overview ──
 #> 
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: ctree
 #> • Procedure: Non-iterative
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpgZefzZ/shapr_obj_6e8c3f11bb8a.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp1To82Z/shapr_obj_2dc51993362d.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-02 21:29:08 ──────────────────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-19 21:27:01 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
 #> ── Explanation overview ──
 #> 
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian, independence, and ctree
 #> • Procedure: Non-iterative
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpgZefzZ/shapr_obj_6e8c2f4ea0e0.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp1To82Z/shapr_obj_2dc52cf5b29c.rds
 #> 
 #> ── Main computation started ──
 #> 

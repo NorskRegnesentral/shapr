@@ -262,7 +262,7 @@ if (requireNamespace("party", quietly = TRUE)) {
   }
 
   # Example of further modification of the output from plot.shapr
-  plt = plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Stores ggplot object without printing
+  plt <- plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Stores ggplot object without printing
 
   # Displays the modified ggplot object
   plt +
@@ -271,7 +271,7 @@ if (requireNamespace("party", quietly = TRUE)) {
     ggplot2::xlab("Variable")
 }
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-02 21:28:50 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-12-19 21:26:42 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -284,7 +284,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpgZefzZ/shapr_obj_6e8c6c8f6706.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp1To82Z/shapr_obj_2dc54bcdb41.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -298,7 +298,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 
 
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-02 21:28:59 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-12-19 21:26:52 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -311,7 +311,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpgZefzZ/shapr_obj_6e8c52cc12a3.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp1To82Z/shapr_obj_2dc528e36fab.rds
 #> 
 #> ── Main computation started ──
 #> 

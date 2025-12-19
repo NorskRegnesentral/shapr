@@ -438,10 +438,10 @@ set.seed(123)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
+  x = x_train,
+  y = y_train,
   nround = 20,
-  verbose = FALSE
+  verbosity = 0
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
@@ -991,10 +991,10 @@ x_explain <- data[ind_x_explain_many, ..x_var]
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
+  x = x_train,
+  y = y_train,
   nround = 20,
-  verbose = FALSE
+  verbosity = 0
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
@@ -1341,10 +1341,10 @@ set.seed(123)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
+  x = x_train,
+  y = y_train,
   nround = 20,
-  verbose = FALSE
+  verbosity = 0
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
@@ -1823,10 +1823,10 @@ set.seed(123)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
+  x = x_train,
+  y = y_train,
   nround = 20,
-  verbose = FALSE
+  verbosity = 0
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
@@ -2024,7 +2024,7 @@ models fitted with the following functions:
 - [`stats::glm`](https://rdrr.io/r/stats/glm.html)
 - [`ranger::ranger`](http://imbs-hl.github.io/ranger/reference/ranger.md)
 - [`mgcv::gam`](https://rdrr.io/pkg/mgcv/man/gam.html)
-- [`xgboost::xgboost`](https://rdrr.io/pkg/xgboost/man/xgb.train.html)/[`xgboost::xgb.train`](https://rdrr.io/pkg/xgboost/man/xgb.train.html)
+- [`xgboost::xgboost`](https://rdrr.io/pkg/xgboost/man/xgboost.html)/[`xgboost::xgb.train`](https://rdrr.io/pkg/xgboost/man/xgb.train.html)
 - [`workflows::workflow`](https://workflows.tidymodels.org/reference/workflow.html)
 
 Any continuous response regression model or binary classification model
@@ -2522,10 +2522,10 @@ set.seed(123)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
+  x = x_train,
+  y = y_train,
   nround = 20,
-  verbose = FALSE
+  verbosity = 0
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features

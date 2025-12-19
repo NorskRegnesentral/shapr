@@ -158,11 +158,11 @@
 <span><span class="co">#&gt; Month   -0.0710397 -0.2013740  0.3400084  1.0000000</span></span>
 <span></span>
 <span><span class="co"># Fit a basic xgboost model to the training data</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span>
-<span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">y_train</span>,</span>
 <span>  nround <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbosity <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specify phi_0, i.e., the expected prediction without any features</span></span>
@@ -179,18 +179,16 @@
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-08-20 15:08:39 ─────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Feature classes extracted from the model contains `NA`.</span></span>
-<span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and</span></span>
-<span><span class="co">#&gt;   is therefore set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2025-12-19 20:36:39 ──────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span></span>
+<span><span class="co">#&gt;   therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -205,7 +203,7 @@
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/RtmpnBYv2R/shapr_obj_2aa833a1e2267.rds'</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\Rtmp4Wl2F1\shapr_obj_c8e47af5392e.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -217,22 +215,21 @@
 <span></span>
 <span><span class="co"># Print the Shapley values for the observations to explain.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    explain_id  none Solar.R  Wind  Temp  Month</span></span>
-<span><span class="co">#&gt;         &lt;int&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt;  &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:          1  43.1  13.212  4.79 -25.6  -5.60</span></span>
-<span><span class="co">#&gt; 2:          2  43.1  -9.973  5.83 -11.0  -7.83</span></span>
-<span><span class="co">#&gt; 3:          3  43.1  -2.292 -7.05 -10.2  -4.45</span></span>
-<span><span class="co">#&gt; 4:          4  43.1   3.325 -3.24 -10.2  -6.66</span></span>
-<span><span class="co">#&gt; 5:          5  43.1   4.304 -2.63 -14.2 -12.27</span></span>
-<span><span class="co">#&gt; 6:          6  43.1   0.479 -5.25 -12.6  -6.65</span></span>
+<span><span class="co">#&gt;    explain_id  none Solar.R   Wind   Temp  Month</span></span>
+<span><span class="co">#&gt;         &lt;int&gt; &lt;num&gt;   &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:          1  43.1  12.315   2.78 -27.98  -2.07</span></span>
+<span><span class="co">#&gt; 2:          2  43.1  -8.514   4.69 -13.96  -7.85</span></span>
+<span><span class="co">#&gt; 3:          3  43.1  -2.767 -10.27  -9.95  -3.87</span></span>
+<span><span class="co">#&gt; 4:          4  43.1  -0.945  -4.18 -14.06  -6.80</span></span>
+<span><span class="co">#&gt; 5:          5  43.1   4.058  -2.07 -11.94 -12.02</span></span>
+<span><span class="co">#&gt; 6:          6  43.1  -0.290  -7.28 -13.46  -6.50</span></span>
 <span></span>
 <span><span class="co"># Provide a formatted summary of the shapr object</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Summary of Shapley value explanation ───────────────────────────────────</span></span>
-<span><span class="co">#&gt; • Computed with`shapr::explain()` in 2.2 seconds, started 2025-08-20</span></span>
-<span><span class="co">#&gt; 15:08:39</span></span>
-<span><span class="co">#&gt; • Model class: &lt;xgb.Booster&gt;</span></span>
+<span><span class="co">#&gt; ── Summary of Shapley value explanation ────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Computed with `shapr::explain()` in 3.3 seconds, started 2025-12-19 20:36:39</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
@@ -241,19 +238,19 @@
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; • Number of coalitions used: 16 (of total 16)</span></span>
 <span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/RtmpnBYv2R/shapr_obj_2aa833a1e2267.rds'</span></span>
+<span><span class="co">#&gt; 'C:\Users\jullum\AppData\Local\Temp\Rtmp4Wl2F1\shapr_obj_c8e47af5392e.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Estimated Shapley values </span></span>
 <span><span class="co">#&gt;    explain_id   none Solar.R   Wind   Temp  Month</span></span>
 <span><span class="co">#&gt;         &lt;int&gt; &lt;char&gt;  &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:          1  43.09   13.21   4.79 -25.57  -5.60</span></span>
-<span><span class="co">#&gt; 2:          2  43.09   -9.97   5.83 -11.04  -7.83</span></span>
-<span><span class="co">#&gt; 3:          3  43.09   -2.29  -7.05 -10.15  -4.45</span></span>
-<span><span class="co">#&gt; 4:          4  43.09    3.33  -3.24 -10.22  -6.66</span></span>
-<span><span class="co">#&gt; 5:          5  43.09    4.30  -2.63 -14.15 -12.27</span></span>
-<span><span class="co">#&gt; 6:          6  43.09    0.48  -5.25 -12.55  -6.65</span></span>
+<span><span class="co">#&gt; 1:          1  43.09   12.31   2.78 -27.98  -2.07</span></span>
+<span><span class="co">#&gt; 2:          2  43.09   -8.51   4.69 -13.96  -7.85</span></span>
+<span><span class="co">#&gt; 3:          3  43.09   -2.77 -10.27  -9.95  -3.87</span></span>
+<span><span class="co">#&gt; 4:          4  43.09   -0.95  -4.18 -14.06  -6.80</span></span>
+<span><span class="co">#&gt; 5:          5  43.09    4.06  -2.07 -11.94 -12.02</span></span>
+<span><span class="co">#&gt; 6:          6  43.09   -0.29  -7.28 -13.46  -6.50</span></span>
 <span><span class="co">#&gt; ── Estimated MSEv </span></span>
-<span><span class="co">#&gt; Estimated MSE of v(S) = 144 (with sd = 64)</span></span>
+<span><span class="co">#&gt; Estimated MSE of v(S) = 208 (with sd = 116)</span></span>
 <span></span>
 <span><span class="co"># Finally, we plot the resulting explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
@@ -269,7 +266,7 @@
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-aas2019explaining" class="csl-entry">
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298. <a href="https://doi.org/10.1016/j.artint.2021.103502" class="external-link uri">https://doi.org/10.1016/j.artint.2021.103502</a>.
 </div>

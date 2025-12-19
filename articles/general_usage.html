@@ -650,11 +650,11 @@ argument. Allowed values are <code>"gaussian"</code>,
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span>
-<span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">y_train</span>,</span>
 <span>  nround <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbosity <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span>
@@ -1217,11 +1217,11 @@ combining them into lists.</p>
 <span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">ind_x_explain_many</span>, <span class="va">..x_var</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span>
-<span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">y_train</span>,</span>
 <span>  nround <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbosity <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span>
@@ -1563,11 +1563,11 @@ estimation procedure.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span>
-<span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">y_train</span>,</span>
 <span>  nround <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbosity <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span>
@@ -2036,11 +2036,11 @@ features.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span>
-<span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">y_train</span>,</span>
 <span>  nround <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbosity <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span>
@@ -2235,7 +2235,7 @@ predictions from models fitted with the following functions:</p>
 <li><code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger</a></code></li>
 <li><code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code></li>
 <li>
-<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgb.train</a></code>
+<code><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgb.train</a></code>
 </li>
 <li><code><a href="https://workflows.tidymodels.org/reference/workflow.html" class="external-link">workflows::workflow</a></code></li>
 </ul>
@@ -2712,11 +2712,11 @@ long-running computations.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span>
-<span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">y_train</span>,</span>
 <span>  nround <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbosity <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span>
