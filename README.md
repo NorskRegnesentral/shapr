@@ -160,11 +160,11 @@ x_explain <- data[ind_x_explain, ..x_var]
 
 # Look at the dependence between the features
 cor(x_train)
-#>          Solar.R     Wind     Temp    Month
-#> Solar.R  1.00000 -0.12438  0.33336 -0.07104
-#> Wind    -0.12438  1.00000 -0.51521 -0.20137
-#> Temp     0.33336 -0.51521  1.00000  0.34001
-#> Month   -0.07104 -0.20137  0.34001  1.00000
+#>            Solar.R       Wind       Temp      Month
+#> Solar.R  1.0000000 -0.1243826  0.3333554 -0.0710397
+#> Wind    -0.1243826  1.0000000 -0.5152133 -0.2013740
+#> Temp     0.3333554 -0.5152133  1.0000000  0.3400084
+#> Month   -0.0710397 -0.2013740  0.3400084  1.0000000
 
 # Fit a basic xgboost model to the training data
 model <- xgboost(
@@ -188,8 +188,9 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-19 20:23:45 ────────────────────────────────────────────────────────────────────────────────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+#> ── Starting `shapr::explain()` at 2025-12-19 20:36:39 ──────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+#>   therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
@@ -210,7 +211,8 @@ explanation <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at: '/tmp/RtmpoBlul8/shapr_obj_3ba1e1ff6f71d.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\Rtmp4Wl2F1\shapr_obj_c8e47af5392e.rds'
 #> 
 #> 
 #> 
@@ -234,8 +236,8 @@ print(explanation)
 # Provide a formatted summary of the shapr object
 summary(explanation)
 #> 
-#> ── Summary of Shapley value explanation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 5.1 seconds, started 2025-12-19 20:23:45
+#> ── Summary of Shapley value explanation ────────────────────────────────────────
+#> • Computed with `shapr::explain()` in 3.3 seconds, started 2025-12-19 20:36:39
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -244,7 +246,8 @@ summary(explanation)
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
 #> • Number of coalitions used: 16 (of total 16)
-#> • Computations (temporary) saved at: '/tmp/RtmpoBlul8/shapr_obj_3ba1e1ff6f71d.rds'
+#> • Computations (temporary) saved at:
+#> 'C:\Users\jullum\AppData\Local\Temp\Rtmp4Wl2F1\shapr_obj_c8e47af5392e.rds'
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -296,7 +299,8 @@ By contributing to this project, you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-aas2019explaining" class="csl-entry">
 

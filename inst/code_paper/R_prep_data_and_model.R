@@ -49,7 +49,7 @@ x_explain <- bike[-train_index, mget(x_var)]
 y_explain <- bike[-train_index, get(y_var)]
 
 # We fit the a basic xgboost model to the training data.
-model <- xgboost::xgboost(x = as.matrix(x_train),
+model <- xgboost::xgboost(x = x_train,
                           y = y_train,
                           nround = 100,
                           verbosity = 0)
