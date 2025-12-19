@@ -4,13 +4,42 @@
 #' @param ... Currently unused.
 #' @inheritParams default_doc_export
 #'
-#' @return Prints a formatted summary of the shapr object,
-#' and invisibly returns a named list of summary components.
-#' See the details section of [get_results()] for details about each component.
+#' @return An object of class \code{summary.shapr} containing the summary results.
+#' This is a named list with the same components as returned by [get_results()],
+#' plus metadata needed for printing. See the details section of [get_results()]
+#' for details about each component.
 #'
 #' @export
 summary.shapr <- function(object, digits = 2L, ...) {
   stopifnot(inherits(object, "shapr"))
+
+  # Retrieve all needed results
+  results <- get_results(object)
+
+  # Add metadata for printing
+  results$shapr_object <- object
+  results$digits <- digits
+
+  # Assign class
+  class(results) <- c("summary.shapr", class(results))
+
+  results
+}
+
+#' Print Method for summary.shapr Objects
+#'
+#' @param x A summary.shapr object.
+#' @param ... Currently unused.
+#'
+#' @return Invisibly returns the summary object.
+#'
+#' @export
+print.summary.shapr <- function(x, ...) {
+  stopifnot(inherits(x, "summary.shapr"))
+
+  # Extract stored components
+  object <- x$shapr_object
+  digits <- x$digits
 
   internal <- object$internal
   testing <- internal$parameters$testing
@@ -19,17 +48,14 @@ summary.shapr <- function(object, digits = 2L, ...) {
   iterative <- internal$parameters$iterative
   converged_exact <- internal$iter_list[[iter]]$converged_exact
 
-  # Retrieve all needed results
-  results <- get_results(object)
-
-  if (results$proglang == "R") {
-    func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
+  if (x$proglang == "R") {
+    func_txt <- ifelse(x$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
   } else { # Python
-    func_txt <- ifelse(results$calling_function == "explain", "{.fn shaprpy.explain}", "{.fn shaprpy.explain_forecast}")
+    func_txt <- ifelse(x$calling_function == "explain", "{.fn shaprpy.explain}", "{.fn shaprpy.explain_forecast}")
   }
 
-  init_time <- results$timing_summary$init_time
-  total_time_str <- results$timing_summary$total_time_str
+  init_time <- x$timing_summary$init_time
+  total_time_str <- x$timing_summary$total_time_str
   if (is.null(init_time)) init_time <- 0
   if (is.null(total_time_str)) total_time_str <- ""
 
@@ -80,9 +106,9 @@ summary.shapr <- function(object, digits = 2L, ...) {
   rlang::inform(formatted_shapley_info)
 
   # MSEv info (only when using explain())
-  if (results$calling_function == "explain") {
-    MSEv_nice <- num_str(format(results$MSEv$MSEv, digits = digits))
-    MSEv_sd_nice <- num_str(format(results$MSEv$MSEv_sd, digits = digits))
+  if (x$calling_function == "explain") {
+    MSEv_nice <- num_str(format(x$MSEv$MSEv, digits = digits))
+    MSEv_sd_nice <- num_str(format(x$MSEv$MSEv_sd, digits = digits))
 
     cli::cli_h3("Estimated MSEv")
     cli::cli_text(
@@ -90,5 +116,5 @@ summary.shapr <- function(object, digits = 2L, ...) {
     )
   }
 
-  invisible(results)
+  invisible(x)
 }
