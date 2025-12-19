@@ -6,8 +6,11 @@
 #' [ranger::ranger()],
 #' [mgcv::gam()],
 #' [workflows::workflow()] (i.e., `tidymodels` models), and
-#' [xgboost::xgb.train()] with binary or continuous
-#' response. See details for more information.
+#' [xgboost::xgb.train()]/[xgboost::xgboost()] with binary or continuous
+#' response.
+#' For time series models [explain_forecast()], supports
+#' [stats::ar()] and [forecast::Arima()].
+#' See details for more information.
 #'
 #' @param x Model object for the model to be explained.
 #' @param newdata A data.frame/data.table with the features to predict from.
@@ -21,6 +24,9 @@
 #' \item [mgcv::gam()]
 #' \item [workflows::workflow()]
 #' \item [xgboost::xgb.train()]
+#' \item [xgboost::xgboost()]
+#' \item [stats::ar()] (for [explain_forecast()])
+#' \item [forecast::Arima()] (for [explain_forecast()])
 #' }
 #'
 #' If you have a binary classification model we'll always return the probability prediction
