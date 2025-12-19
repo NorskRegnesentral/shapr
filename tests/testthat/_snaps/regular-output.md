@@ -803,7 +803,7 @@
       
       -- Explanation overview --
       
-      * Model class: <xgb.Booster>
+      * Model class: <xgboost>
       * v(S) estimation class: Monte Carlo integration
       * Approach: ctree
       * Procedure: Non-iterative
@@ -817,9 +817,9 @@
     Output
          explain_id  none Solar.R   Wind   Temp     Day Month_factor
               <int> <num>   <num>  <num>  <num>   <num>        <num>
-      1:          1 42.44  -5.639  13.31  20.93 -0.4716       -0.425
-      2:          2 42.44   5.709 -13.30 -16.52  1.4006       -2.738
-      3:          3 42.44   6.319 -14.07 -19.77  1.0831        5.870
+      1:          1 42.44  -3.998  14.70  24.36  2.3636      -0.2875
+      2:          2 42.44   4.837 -13.28 -15.55  0.2421      -2.8505
+      3:          3 42.44   6.373 -14.57 -19.18 -0.3397       5.8488
 
 # output_lm_numeric_interaction
 
