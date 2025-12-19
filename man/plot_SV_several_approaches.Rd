@@ -227,7 +227,6 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
     only_these_features = c("Temp", "Solar.R"),
     plot_phi0 = TRUE
   )
-
 }
 }
 

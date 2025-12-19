@@ -160,15 +160,15 @@ x_explain <- data[ind_x_explain, ..x_var]
 
 # Look at the dependence between the features
 cor(x_train)
-#>            Solar.R       Wind       Temp      Month
-#> Solar.R  1.0000000 -0.1243826  0.3333554 -0.0710397
-#> Wind    -0.1243826  1.0000000 -0.5152133 -0.2013740
-#> Temp     0.3333554 -0.5152133  1.0000000  0.3400084
-#> Month   -0.0710397 -0.2013740  0.3400084  1.0000000
+#>          Solar.R     Wind     Temp    Month
+#> Solar.R  1.00000 -0.12438  0.33336 -0.07104
+#> Wind    -0.12438  1.00000 -0.51521 -0.20137
+#> Temp     0.33336 -0.51521  1.00000  0.34001
+#> Month   -0.07104 -0.20137  0.34001  1.00000
 
 # Fit a basic xgboost model to the training data
 model <- xgboost(
-  x = as.matrix(x_train),
+  x = x_train,
   y = y_train,
   nround = 20,
   verbosity = 0
@@ -188,18 +188,15 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-08-20 15:08:39 ─────────────────────
-#> ℹ Feature classes extracted from the model contains `NA`.
-#>   Assuming feature classes from the data are correct.
-#> ℹ `max_n_coalitions` is `NULL` or larger than or `2^n_features = 16`, and
-#>   is therefore set to `2^n_features = 16`.
+#> ── Starting `shapr::explain()` at 2025-12-19 20:23:45 ────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
 #> 
 #> 
 #> ── Explanation overview ──
 #> 
 #> 
 #> 
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> 
 #> • v(S) estimation class: Monte Carlo integration
 #> 
@@ -213,8 +210,7 @@ explanation <- explain(
 #> 
 #> • Number of observations to explain: 6
 #> 
-#> • Computations (temporary) saved at:
-#> '/tmp/RtmpnBYv2R/shapr_obj_2aa833a1e2267.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmpoBlul8/shapr_obj_3ba1e1ff6f71d.rds'
 #> 
 #> 
 #> 
@@ -226,22 +222,21 @@ explanation <- explain(
 
 # Print the Shapley values for the observations to explain.
 print(explanation)
-#>    explain_id  none Solar.R  Wind  Temp  Month
-#>         <int> <num>   <num> <num> <num>  <num>
-#> 1:          1  43.1  13.212  4.79 -25.6  -5.60
-#> 2:          2  43.1  -9.973  5.83 -11.0  -7.83
-#> 3:          3  43.1  -2.292 -7.05 -10.2  -4.45
-#> 4:          4  43.1   3.325 -3.24 -10.2  -6.66
-#> 5:          5  43.1   4.304 -2.63 -14.2 -12.27
-#> 6:          6  43.1   0.479 -5.25 -12.6  -6.65
+#>    explain_id  none Solar.R   Wind   Temp  Month
+#>         <int> <num>   <num>  <num>  <num>  <num>
+#> 1:          1  43.1  12.315   2.78 -27.98  -2.07
+#> 2:          2  43.1  -8.514   4.69 -13.96  -7.85
+#> 3:          3  43.1  -2.767 -10.27  -9.95  -3.87
+#> 4:          4  43.1  -0.945  -4.18 -14.06  -6.80
+#> 5:          5  43.1   4.058  -2.07 -11.94 -12.02
+#> 6:          6  43.1  -0.290  -7.28 -13.46  -6.50
 
 # Provide a formatted summary of the shapr object
 summary(explanation)
 #> 
-#> ── Summary of Shapley value explanation ───────────────────────────────────
-#> • Computed with`shapr::explain()` in 2.2 seconds, started 2025-08-20
-#> 15:08:39
-#> • Model class: <xgb.Booster>
+#> ── Summary of Shapley value explanation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • Computed with `shapr::explain()` in 5.1 seconds, started 2025-12-19 20:23:45
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
 #> • Procedure: Non-iterative
@@ -249,20 +244,19 @@ summary(explanation)
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
 #> • Number of coalitions used: 16 (of total 16)
-#> • Computations (temporary) saved at:
-#> '/tmp/RtmpnBYv2R/shapr_obj_2aa833a1e2267.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmpoBlul8/shapr_obj_3ba1e1ff6f71d.rds'
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
 #>         <int> <char>  <char> <char> <char> <char>
-#> 1:          1  43.09   13.21   4.79 -25.57  -5.60
-#> 2:          2  43.09   -9.97   5.83 -11.04  -7.83
-#> 3:          3  43.09   -2.29  -7.05 -10.15  -4.45
-#> 4:          4  43.09    3.33  -3.24 -10.22  -6.66
-#> 5:          5  43.09    4.30  -2.63 -14.15 -12.27
-#> 6:          6  43.09    0.48  -5.25 -12.55  -6.65
+#> 1:          1  43.09   12.31   2.78 -27.98  -2.07
+#> 2:          2  43.09   -8.51   4.69 -13.96  -7.85
+#> 3:          3  43.09   -2.77 -10.27  -9.95  -3.87
+#> 4:          4  43.09   -0.95  -4.18 -14.06  -6.80
+#> 5:          5  43.09    4.06  -2.07 -11.94 -12.02
+#> 6:          6  43.09   -0.29  -7.28 -13.46  -6.50
 #> ── Estimated MSEv 
-#> Estimated MSE of v(S) = 144 (with sd = 64)
+#> Estimated MSE of v(S) = 208 (with sd = 116)
 
 # Finally, we plot the resulting explanations
 plot(explanation)
