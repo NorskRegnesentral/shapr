@@ -179,7 +179,7 @@
 #'   }
 #'
 #'   # Example of further modification of the output from plot.shapr
-#'   plt = plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Stores ggplot object without printing
+#'   plt <- plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Stores ggplot object without printing
 #'
 #'   # Displays the modified ggplot object
 #'   plt +
@@ -228,8 +228,8 @@ plot.shapr <- function(x,
   # For group-wise Shapley values, we check if we are to take the mean over grouped features
   if (is_groupwise) {
     if (is.na(include_group_feature_means) ||
-        !is.logical(include_group_feature_means) ||
-        length(include_group_feature_means) > 1) {
+      !is.logical(include_group_feature_means) ||
+      length(include_group_feature_means) > 1) {
       cli::cli_abort("`include_group_feature_means` must be single logical.")
     }
     if (!include_group_feature_means && plot_type %in% c("scatter", "beeswarm")) {
@@ -303,8 +303,8 @@ plot.shapr <- function(x,
     factor_features <- shap_names[factor_features]
 
     dt_feature_vals_long <- suppressWarnings(data.table::melt(dt_feature_vals,
-                                                              id.vars = "id",
-                                                              value.name = "feature_value"
+      id.vars = "id",
+      value.name = "feature_value"
     ))
     # this gives a warning because none-values are NA...
     dt_plot <- merge(dt_plot, dt_feature_vals_long, by = c("id", "variable"))
@@ -316,12 +316,12 @@ plot.shapr <- function(x,
     gg <- make_scatter_plot(dt_plot, scatter_features, scatter_hist, col, factor_features)
   } else if (plot_type == "beeswarm") {
     gg <- make_beeswarm_plot(dt_plot,
-                             col,
-                             index_x_explain,
-                             x,
-                             factor_features,
-                             beeswarm_cex = beeswarm_cex,
-                             ...
+      col,
+      index_x_explain,
+      x,
+      factor_features,
+      beeswarm_cex = beeswarm_cex,
+      ...
     )
   } else { # if bar or waterfall plot
     # Only plot the desired observations
@@ -642,8 +642,8 @@ make_beeswarm_plot <- function(dt_plot,
   # of obs. feature value.
   # The feature values are scaled wrt the training data
   dt_plot[feature_value <= max & feature_value >= min,
-          feature_value_scaled := (feature_value - min) / (max - min),
-          by = variable
+    feature_value_scaled := (feature_value - min) / (max - min),
+    by = variable
   ]
   dt_plot[feature_value > max, feature_value_scaled := 1]
   dt_plot[feature_value < min, feature_value_scaled := 0]
@@ -719,7 +719,7 @@ make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
   dt_plot[positive == FALSE & y_text_bar == 0, y_text_bar := ifelse(phi < 0, phi, 0)]
 
   dt_plot[, text_color_bar := ifelse(abs(phi) > max(abs(phi)) / 8, "white", ifelse(sign == "Increases",
-                                                                                   col[1], col[2]
+    col[1], col[2]
   )), by = id]
   if (bar_plot_phi0) {
     text_color_bar <- dt_plot[, text_color_bar]
@@ -775,33 +775,33 @@ make_waterfall_plot <- function(dt_plot,
   # waterfall plotting helpers
   if (bar_plot_order == "largest_first" || bar_plot_order == "original") {
     dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                               ifelse(expected < pred, ifelse(end > start, end, start),
-                                      ifelse(end < start, end, start)
-                               ),
-                               start + (end - start) / 2
+      ifelse(expected < pred, ifelse(end > start, end, start),
+        ifelse(end < start, end, start)
+      ),
+      start + (end - start) / 2
     ), by = id]
   } else if (bar_plot_order == "smallest_first") {
     dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                               ifelse(expected > pred, ifelse(end > start, end, start),
-                                      ifelse(end < start, end, start)
-                               ),
-                               start + (end - start) / 2
+      ifelse(expected > pred, ifelse(end > start, end, start),
+        ifelse(end < start, end, start)
+      ),
+      start + (end - start) / 2
     ), by = id]
   }
 
   dt_plot[, text_color := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                                 ifelse(sign == "Increases", col[1], col[2]),
-                                 "white"
+    ifelse(sign == "Increases", col[1], col[2]),
+    "white"
   ), by = id]
   text_color <- dt_plot[variable != "none", text_color]
 
   if (bar_plot_order == "largest_first" || bar_plot_order == "original") {
     dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                                   ifelse(expected > pred, 1, 0), 0.5
+      ifelse(expected > pred, 1, 0), 0.5
     ), by = id]
   } else if (bar_plot_order == "smallest_first") {
     dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                                   ifelse(expected > pred, 0, 1), 0.5
+      ifelse(expected > pred, 0, 1), 0.5
     ), by = id]
   }
 
@@ -824,11 +824,11 @@ make_waterfall_plot <- function(dt_plot,
     ggplot2::scale_fill_manual(values = col, drop = TRUE) +
     ggplot2::scale_x_discrete(breaks = breaks, labels = desc_labels) +
     ggplot2::geom_segment(ggplot2::aes(x = -Inf, xend = max(rank_waterfall) + 0.8, y = pred, yend = pred),
-                          linetype = "dotted", col = "grey30", linewidth = 0.25
+      linetype = "dotted", col = "grey30", linewidth = 0.25
     ) +
     ggplot2::coord_flip(clip = "off", xlim = c(0.5, ifelse(N_features + N_features * 0.11 < N_features + 0.5,
-                                                           N_features + 0.5,
-                                                           N_features + N_features * 0.11
+      N_features + 0.5,
+      N_features + N_features * 0.11
     ))) +
     ggplot2::labs(
       y = "Prediction",
@@ -837,7 +837,7 @@ make_waterfall_plot <- function(dt_plot,
       title = "Shapley value prediction explanation"
     ) +
     ggplot2::geom_rect(ggplot2::aes(xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
-                       show.legend = NA
+      show.legend = NA
     ) +
     ggplot2::geom_segment(
       x = -Inf, xend = 1.3, y = expected, yend = expected,
@@ -945,10 +945,10 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     data = as.matrix(x_train),
-#'     label = y_train,
+#'     x = x_train,
+#'     y = y_train,
 #'     nround = 20,
-#'     verbose = FALSE
+#'     verbosity = 0
 #'   )
 #'
 #'   # Specifying the phi_0, i.e. the expected prediction without any features
@@ -1275,20 +1275,20 @@ MSEv_extract_MSEv_values <- function(explanation_list,
 
   # The overall MSEv criterion
   MSEv <- rbindlist(lapply(explanation_list, function(explanation) explanation$MSEv$MSEv),
-                    use.names = TRUE, idcol = "Method"
+    use.names = TRUE, idcol = "Method"
   )
   MSEv$Method <- factor(MSEv$Method, levels = names(explanation_list))
 
   # The MSEv evaluation criterion for each explicand.
   MSEv_explicand <- rbindlist(lapply(explanation_list, function(explanation) explanation$MSEv$MSEv_explicand),
-                              use.names = TRUE, idcol = "Method"
+    use.names = TRUE, idcol = "Method"
   )
   MSEv_explicand$id <- factor(MSEv_explicand$id)
   MSEv_explicand$Method <- factor(MSEv_explicand$Method, levels = names(explanation_list))
 
   # The MSEv evaluation criterion for each coalition.
   MSEv_coalition <- rbindlist(lapply(explanation_list, function(explanation) explanation$MSEv$MSEv_coalition),
-                              use.names = TRUE, idcol = "Method"
+    use.names = TRUE, idcol = "Method"
   )
   MSEv_coalition$id_coalition <- factor(MSEv_coalition$id_coalition)
   MSEv_coalition$Method <- factor(MSEv_coalition$Method, levels = names(explanation_list))
@@ -1320,7 +1320,7 @@ make_MSEv_bar_plot <- function(MSEv_dt,
       x = "Method",
       y = bquote(MSE[v]),
       title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_coalitions) ~
-                       "coalitions and" ~ .(n_explain) ~ "explicands")
+        "coalitions and" ~ .(n_explain) ~ "explicands")
     )
 
   if (!is.null(tfrac)) {
@@ -1328,8 +1328,8 @@ make_MSEv_bar_plot <- function(MSEv_dt,
 
     MSEv_bar <- MSEv_bar +
       ggplot2::labs(title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_coalitions) ~
-                                     "coalitions and" ~ .(n_explain) ~ "explicands with" ~
-                                     .(CI_level * 100) * "% CI")) +
+        "coalitions and" ~ .(n_explain) ~ "explicands with" ~
+        .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
         width = 0.25,
@@ -1355,7 +1355,7 @@ make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
       x = "index_x_explain",
       y = bquote(MSE[v] ~ "(explicand)"),
       title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_coalitions) ~
-                       "coalitions for each explicand")
+        "coalitions for each explicand")
     )
 
   MSEv_explicand_bar <-
@@ -1391,7 +1391,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
       x = "id_coalition",
       y = bquote(MSE[v] ~ "(coalition)"),
       title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_explain) ~
-                       "explicands for each coalition")
+        "explicands for each coalition")
     )
 
   MSEv_coalition_bar <-
@@ -1408,7 +1408,7 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
     MSEv_coalition_bar <-
       MSEv_coalition_bar +
       ggplot2::labs(title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_explain) ~
-                                     "explicands for each coalition with" ~ .(CI_level * 100) * "% CI")) +
+        "explicands for each coalition with" ~ .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
         width = 0.25,
@@ -1501,10 +1501,10 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     data = as.matrix(x_train),
-#'     label = y_train,
+#'     x = x_train,
+#'     y = y_train,
 #'     nround = 20,
-#'     verbose = FALSE
+#'     verbosity = 0
 #'   )
 #'
 #'   # Specifying the phi_0, i.e. the expected prediction without any features
@@ -1611,7 +1611,6 @@ make_MSEv_coalition_plots <- function(MSEv_coalition_dt,
 #'     only_these_features = c("Temp", "Solar.R"),
 #'     plot_phi0 = TRUE
 #'   )
-#'
 #' }
 #' }
 #'
@@ -1758,7 +1757,7 @@ plot_SV_several_approaches <- function(explanation_list,
   if (horizontal_bars) figure <- figure + ggplot2::coord_flip()
 
   if (isTRUE(print_ggplot)) {
-    return(print(figure))   # Return the figure with force display
+    return(print(figure)) # Return the figure with force display
   } else {
     return(figure) # Return the figure without force display
   }
@@ -1951,9 +1950,9 @@ create_feature_descriptions_dt <- function(explanation_list,
   # Converting and melting the explicands
   dt_desc <- data.table::as.data.table(cbind(none = "None", desc_mat))
   dt_desc_long <- data.table::melt(dt_desc[, .id := index_explicands],
-                                   id.vars = ".id",
-                                   variable.name = ".feature",
-                                   value.name = ".description"
+    id.vars = ".id",
+    variable.name = ".feature",
+    value.name = ".description"
   )
 
   # Make the description into an ordered factor such that the features in the
@@ -1975,9 +1974,9 @@ create_Shapley_value_figure_dt <- function(dt_Shapley_values,
 
   # Melt the data.table from a wide to long format
   dt_Shapley_values_long <- data.table::melt(dt_Shapley_values,
-                                             id.vars = c(".id", ".pred", ".method"),
-                                             variable.name = ".feature",
-                                             value.name = ".phi"
+    id.vars = c(".id", ".pred", ".method"),
+    variable.name = ".feature",
+    value.name = ".phi"
   )
   dt_Shapley_values_long$.feature <- as.ordered(dt_Shapley_values_long$.feature)
 
@@ -1987,23 +1986,23 @@ create_Shapley_value_figure_dt <- function(dt_Shapley_values,
 
   # Make the .id column into an ordered column
   dt_Shapley_values_long$.id <- factor(dt_Shapley_values_long$.id,
-                                       levels = unique(dt_Shapley_values_long$.id),
-                                       ordered = TRUE
+    levels = unique(dt_Shapley_values_long$.id),
+    ordered = TRUE
   )
 
   # Adding header for each individual plot
   dt_Shapley_values_long[, .header := paste0("id: ", .id, ", pred = ", format(.pred, digits = digits))]
   dt_Shapley_values_long$.header <- factor(dt_Shapley_values_long$.header,
-                                           levels = unique(dt_Shapley_values_long$.header),
-                                           ordered = TRUE
+    levels = unique(dt_Shapley_values_long$.header),
+    ordered = TRUE
   )
 
   # If flip coordinates, then we need to change the order of the levels such that the order
   # of the bars in the figure match the order in the legend.
   if (horizontal_bars) {
     dt_Shapley_values_long$.method <- factor(dt_Shapley_values_long$.method,
-                                             levels = rev(levels(dt_Shapley_values_long$.method)),
-                                             ordered = TRUE
+      levels = rev(levels(dt_Shapley_values_long$.method)),
+      ordered = TRUE
     )
     breaks <- rev(levels(dt_Shapley_values_long$.method))
   } else {

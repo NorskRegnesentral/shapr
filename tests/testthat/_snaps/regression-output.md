@@ -274,11 +274,11 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind    Temp    Day Month_factor
-              <int> <num>   <num>   <num>   <num>  <num>        <num>
-      1:          1 42.44 -13.991  14.352  16.490   1.82       -8.088
-      2:          2 42.44   8.183  -1.463 -16.499   3.63       -9.233
-      3:          3 42.44   3.364 -14.946   0.401 -11.32       11.905
+         explain_id  none  Solar.R    Wind    Temp    Day Month_factor
+              <int> <num>    <num>   <num>   <num>  <num>        <num>
+      1:          1 42.44 -14.1953   9.381  20.535  2.480       -7.617
+      2:          2 42.44   7.6719  -1.624 -14.085  3.126      -10.472
+      3:          3 42.44  -0.4555 -13.801  -3.414 -5.871       12.941
 
 # output_lm_numeric_lm_surrogate_iterative
 
@@ -516,9 +516,9 @@
       
       i Using 32 of 32 coalitions. 
     Output
-         explain_id  none Solar.R    Wind    Temp    Day Month_factor
-              <int> <num>   <num>   <num>   <num>  <num>        <num>
-      1:          1 42.44 -16.407  10.197  18.183  2.884       -4.273
-      2:          2 42.44   4.681  -3.793 -12.439  2.704       -6.536
-      3:          3 42.44   4.517 -17.537  -3.886 -1.690        7.996
+         explain_id  none Solar.R   Wind   Temp     Day Month_factor
+              <int> <num>   <num>  <num>  <num>   <num>        <num>
+      1:          1 42.44 -15.551  11.85 14.524  4.3014       -4.540
+      2:          2 42.44   5.513  -4.57 -9.402  2.1304       -9.055
+      3:          3 42.44   2.492 -17.29 -2.532 -0.6971        7.422
 

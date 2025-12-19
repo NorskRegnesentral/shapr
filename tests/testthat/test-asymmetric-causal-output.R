@@ -379,9 +379,6 @@ test_that("output_sym_caus_conf_mix_group_iterative", {
 })
 
 
-
-
-
 # Mixed data ------------------------------------------------------------------------------------------------------
 test_that("output_mixed_sym_caus_conf_TRUE", {
   skip_if_not_installed("party")
@@ -494,7 +491,6 @@ test_that("output_mixed_asym_cond_reg", {
 })
 
 
-
 # Categorical data ------------------------------------------------------------------------------------------------
 test_that("output_categorical_asym_causal_mixed_cat", {
   expect_snapshot_rds(
@@ -515,7 +511,6 @@ test_that("output_categorical_asym_causal_mixed_cat", {
     "output_categorical_asym_causal_mixed_cat"
   )
 })
-
 
 
 test_that("output_cat_asym_causal_mixed_cat_ad", {

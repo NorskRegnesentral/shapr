@@ -916,7 +916,7 @@ vaeac_train_model_continue <- function(explanation,
       val_ratio = checkpoint$val_ratio,
       batch_size = checkpoint$batch_size,
       paired_sampling = checkpoint$paired_sampling,
-      model_description = checkpoint$ model_description,
+      model_description = checkpoint$model_description,
       depth = checkpoint$depth,
       width = checkpoint$width,
       latent_dim = checkpoint$latent_dim,
@@ -1216,7 +1216,7 @@ vaeac_check_extra_named_list <- function(vaeac.extra_parameters) {
 #' @author Lars Henry Berge Olsen
 vaeac_check_positive_integers <- function(named_list_positive_integers) {
   param_names <- names(named_list_positive_integers)
-  for (idx in seq_len(length(named_list_positive_integers))) {
+  for (idx in seq_along(named_list_positive_integers)) {
     param_name <- param_names[idx]
     value <- named_list_positive_integers[[param_name]]
     if (!is.numeric(value) || length(value) != 1 || value <= 0 || !is.finite(value) || value %% 1 != 0) {
@@ -1235,7 +1235,7 @@ vaeac_check_positive_integers <- function(named_list_positive_integers) {
 #' @author Lars Henry Berge Olsen
 vaeac_check_positive_numerics <- function(named_list_positive_numerics) {
   param_names <- names(named_list_positive_numerics)
-  for (idx in seq_len(length(named_list_positive_numerics))) {
+  for (idx in seq_along(named_list_positive_numerics)) {
     param_name <- param_names[idx]
     value <- named_list_positive_numerics[[param_name]]
     if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value <= 0) {
@@ -1256,7 +1256,7 @@ vaeac_check_probabilities <- function(named_list_probabilities) {
   # Trick needed for entries that can be vectors (i.e., `vaeac.masking_ratio`)
   named_list_probabilities_tmp <- as.list(unlist(named_list_probabilities))
   param_names <- names(named_list_probabilities_tmp)
-  for (idx in seq_len(length(named_list_probabilities_tmp))) {
+  for (idx in seq_along(named_list_probabilities_tmp)) {
     param_name <- param_names[idx]
     value <- named_list_probabilities_tmp[[param_name]]
     if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value < 0 || value > 1) {
@@ -1275,7 +1275,7 @@ vaeac_check_probabilities <- function(named_list_probabilities) {
 #' @author Lars Henry Berge Olsen
 vaeac_check_logicals <- function(named_list_logicals) {
   param_names <- names(named_list_logicals)
-  for (idx in seq_len(length(named_list_logicals))) {
+  for (idx in seq_along(named_list_logicals)) {
     param_name <- param_names[idx]
     value <- named_list_logicals[[param_name]]
     if (!is.logical(value) || length(value) != 1) {
@@ -1969,7 +1969,6 @@ vaeac_get_optimizer <- function(vaeac_model, lr, optimizer_name = "adam") {
 }
 
 
-
 #' Function that extracts additional objects from the environment into the state list
 #'
 #' @description
@@ -2032,7 +2031,6 @@ vaeac_get_full_state_list <- function(environment) {
   objects <- utils::modifyList(objects, environment[["x_train_preprocessed"]], keep.null = TRUE) # Flatten this list
   return(objects)
 }
-
 
 
 #' Function to extend the explicands and apply all relevant masks/coalitions
@@ -2539,10 +2537,10 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     data = as.matrix(x_train),
-#'     label = y_train,
+#'     x = x_train,
+#'     y = y_train,
 #'     nround = 100,
-#'     verbose = FALSE
+#'     verbosity = 0
 #'   )
 #'
 #'   # Specifying the phi_0, i.e. the expected prediction without any features
@@ -2782,10 +2780,10 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #'
 #'   # Fitting a basic xgboost model to the training data
 #'   model <- xgboost::xgboost(
-#'     data = as.matrix(x_train),
-#'     label = y_train,
+#'     x = x_train,
+#'     y = y_train,
 #'     nround = 100,
-#'     verbose = FALSE
+#'     verbosity = 0
 #'   )
 #'
 #'   explanation <- shapr::explain(
@@ -2815,20 +2813,21 @@ plot_vaeac_eval_crit <- function(explanation_list,
 #' }
 #' }
 plot_vaeac_imputed_ggpairs <- function(
-    explanation,
-    which_vaeac_model = "best",
-    x_true = NULL,
-    add_title = TRUE,
-    alpha = 0.5,
-    upper_cont = c("cor", "points", "smooth", "smooth_loess", "density", "blank"),
-    upper_cat = c("count", "cross", "ratio", "facetbar", "blank"),
-    upper_mix = c("box", "box_no_facet", "dot", "dot_no_facet", "facethist", "facetdensity", "denstrip", "blank"),
-    lower_cont = c("points", "smooth", "smooth_loess", "density", "cor", "blank"),
-    lower_cat = c("facetbar", "ratio", "count", "cross", "blank"),
-    lower_mix = c("facetdensity", "box", "box_no_facet", "dot", "dot_no_facet", "facethist", "denstrip", "blank"),
-    diag_cont = c("densityDiag", "barDiag", "blankDiag"),
-    diag_cat = c("barDiag", "blankDiag"),
-    cor_method = c("pearson", "kendall", "spearman")) {
+  explanation,
+  which_vaeac_model = "best",
+  x_true = NULL,
+  add_title = TRUE,
+  alpha = 0.5,
+  upper_cont = c("cor", "points", "smooth", "smooth_loess", "density", "blank"),
+  upper_cat = c("count", "cross", "ratio", "facetbar", "blank"),
+  upper_mix = c("box", "box_no_facet", "dot", "dot_no_facet", "facethist", "facetdensity", "denstrip", "blank"),
+  lower_cont = c("points", "smooth", "smooth_loess", "density", "cor", "blank"),
+  lower_cat = c("facetbar", "ratio", "count", "cross", "blank"),
+  lower_mix = c("facetdensity", "box", "box_no_facet", "dot", "dot_no_facet", "facethist", "denstrip", "blank"),
+  diag_cont = c("densityDiag", "barDiag", "blankDiag"),
+  diag_cat = c("barDiag", "blankDiag"),
+  cor_method = c("pearson", "kendall", "spearman")
+) {
   # Check that ggplot2 and GGally are installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}.")

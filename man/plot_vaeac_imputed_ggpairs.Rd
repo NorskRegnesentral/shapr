@@ -98,10 +98,10 @@ if (requireNamespace("xgboost", quietly = TRUE) &&
 
   # Fitting a basic xgboost model to the training data
   model <- xgboost::xgboost(
-    data = as.matrix(x_train),
-    label = y_train,
+    x = x_train,
+    y = y_train,
     nround = 100,
-    verbose = FALSE
+    verbosity = 0
   )
 
   explanation <- shapr::explain(

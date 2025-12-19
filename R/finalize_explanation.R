@@ -80,8 +80,6 @@ iter_list_to_dt <- function(iter_list, what = c(
 }
 
 
-
-
 #' @keywords internal
 get_p <- function(dt_vS, internal) {
   id_coalition <- NULL # due to NSE
@@ -98,13 +96,6 @@ get_p <- function(dt_vS, internal) {
 
   return(p)
 }
-
-
-
-
-
-
-
 
 
 #' Mean squared error of the contribution function `v(S)`

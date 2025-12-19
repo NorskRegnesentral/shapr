@@ -13,6 +13,7 @@
 \alias{predict_model.gam}
 \alias{predict_model.ranger}
 \alias{predict_model.workflow}
+\alias{predict_model.xgboost}
 \alias{predict_model.xgb.Booster}
 \title{Generate predictions for input data with specified model}
 \usage{
@@ -45,6 +46,8 @@ predict_model(x, newdata, ...)
 \method{predict_model}{ranger}(x, newdata, ...)
 
 \method{predict_model}{workflow}(x, newdata, ...)
+
+\method{predict_model}{xgboost}(x, newdata, ...)
 
 \method{predict_model}{xgb.Booster}(x, newdata, ...)
 }
@@ -83,8 +86,11 @@ Performs prediction of response
 \code{\link[ranger:ranger]{ranger::ranger()}},
 \code{\link[mgcv:gam]{mgcv::gam()}},
 \code{\link[workflows:workflow]{workflows::workflow()}} (i.e., \code{tidymodels} models), and
-\code{\link[xgboost:xgb.train]{xgboost::xgb.train()}} with binary or continuous
-response. See details for more information.
+\code{\link[xgboost:xgb.train]{xgboost::xgb.train()}}/\code{\link[xgboost:xgboost]{xgboost::xgboost()}} with binary or continuous
+response.
+For time series models \code{\link[=explain_forecast]{explain_forecast()}}, supports
+\code{\link[stats:ar]{stats::ar()}} and \code{\link[forecast:Arima]{forecast::Arima()}}.
+See details for more information.
 }
 \details{
 The following models are currently supported:
@@ -95,6 +101,9 @@ The following models are currently supported:
 \item \code{\link[mgcv:gam]{mgcv::gam()}}
 \item \code{\link[workflows:workflow]{workflows::workflow()}}
 \item \code{\link[xgboost:xgb.train]{xgboost::xgb.train()}}
+\item \code{\link[xgboost:xgboost]{xgboost::xgboost()}}
+\item \code{\link[stats:ar]{stats::ar()}} (for \code{\link[=explain_forecast]{explain_forecast()}})
+\item \code{\link[forecast:Arima]{forecast::Arima()}} (for \code{\link[=explain_forecast]{explain_forecast()}})
 }
 
 If you have a binary classification model we'll always return the probability prediction

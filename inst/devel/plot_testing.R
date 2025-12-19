@@ -18,7 +18,7 @@ cor(x_train)
 
 # Fit a basic xgboost model to the training data
 model <- xgboost(
-  data = as.matrix(x_train),
+  data = x_train,
   label = y_train,
   nround = 20,
   verbose = FALSE

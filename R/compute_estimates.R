@@ -50,7 +50,6 @@ compute_estimates <- function(internal, vS_list) {
   }
 
 
-
   # Add explain_id to the output tables
   if (type != "forecast") {
     dt_shapley_est[, explain_id := .I]

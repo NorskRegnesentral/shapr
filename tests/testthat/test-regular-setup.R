@@ -453,7 +453,6 @@ test_that("erroneous input: `max_n_coalitions`", {
   )
 
 
-
   expect_snapshot(
     {
       # length > 1
@@ -1621,7 +1620,6 @@ test_that("counting the number of unique approaches", {
   expect_equal(explanation_combined_5$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_5$internal$parameters$n_unique_approaches, 2)
 })
-
 
 
 test_that("vaeac_set_seed_works", {

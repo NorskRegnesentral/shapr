@@ -309,10 +309,10 @@ y_explain[index_x_explain]
 
 # Fit an XGBoost model to the training data
 model <- xgboost::xgboost(
-  data = x_train,
-  label = y_train,
+  x = x_train,
+  y = y_train,
   nround = 100,
-  verbose = FALSE
+  verbosity = 0
 )
 
 # Save the phi0

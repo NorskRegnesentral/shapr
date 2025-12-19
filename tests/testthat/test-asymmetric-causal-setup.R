@@ -360,7 +360,6 @@ test_that("asymmetric erroneous input: `confounding`", {
 })
 
 
-
 test_that("cond_sym_as_NULLconfounding", {
   ex_condsym <- explain(
     testing = TRUE,

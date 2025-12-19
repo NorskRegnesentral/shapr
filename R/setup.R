@@ -217,7 +217,6 @@ get_parameters <- function(approach,
   }
 
 
-
   # max_n_coalitions
   if (!is.null(max_n_coalitions) &&
     !(is.wholenumber(max_n_coalitions) &&
@@ -308,8 +307,6 @@ get_parameters <- function(approach,
       paste0(output_size, collapse = ", "), ")."
     ))
   }
-
-
 
 
   # Getting basic input parameters
@@ -824,9 +821,7 @@ check_and_set_asymmetric <- function(internal) {
 
     # Convert the coalitions to strings. Needed when sampling the coalitions in `sample_coalition_table()`.
     internal$objects$dt_valid_causal_coalitions[, coalitions_str := sapply(coalitions, paste, collapse = " ")]
-  } else {
-
-  }
+  } else {}
 
   return(internal)
 }
@@ -1510,8 +1505,6 @@ check_approach <- function(internal) {
 get_supported_approaches <- function() {
   substring(rownames(attr(methods(prepare_data), "info")), first = 14)
 }
-
-
 
 
 #' @keywords internal

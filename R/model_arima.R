@@ -14,7 +14,7 @@ predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explai
 
 
   exp_idx <- -1
-  for (i in seq_len(length(explain_idx))) {
+  for (i in seq_along(explain_idx)) {
     if (explain_idx[i] != exp_idx) {
       exp_idx <- explain_idx[i]
       y_hist <- y[seq_len(exp_idx)]
@@ -42,6 +42,10 @@ predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explai
     }
   }
 
+  if (horizon == 1) {
+    prediction <- matrix(prediction, ncol = 1)
+  }
+  colnames(prediction) <- paste0("p_hat", seq_len(horizon))
   as.data.frame(prediction)
 }
 
