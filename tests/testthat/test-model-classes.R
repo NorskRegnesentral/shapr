@@ -1,7 +1,7 @@
 # Test that all supported model classes work with explain/explain_forecast
 # These are simple smoke tests to ensure upstream package changes don't break shapr
 
-# lm model (stats - always available) ================================================
+# lm model (stats - always available)
 test_that("lm model works with explain", {
   # Fit model
   data_train <- cbind(Ozone = y_train_reg, x_train_reg)
@@ -24,7 +24,7 @@ test_that("lm model works with explain", {
 })
 
 
-# glm model - regression (stats - always available) ==================================
+# glm model - regression (stats - always available)
 test_that("glm model works with explain (gaussian)", {
   # Fit model
   data_train <- cbind(Ozone = y_train_reg, x_train_reg)
@@ -47,7 +47,7 @@ test_that("glm model works with explain (gaussian)", {
 })
 
 
-# glm model - classification (stats - always available) ==============================
+# glm model - classification (stats - always available)
 test_that("glm model works with explain (binomial)", {
   # Fit model
   data_train <- cbind(Ozone_binary = y_train_class, x_train_class)
@@ -70,7 +70,7 @@ test_that("glm model works with explain (binomial)", {
 })
 
 
-# ar model (stats - always available) ================================================
+# ar model (stats - always available)
 test_that("ar model works with explain_forecast", {
   skip_if_not_installed("forecast")
 
@@ -98,7 +98,7 @@ test_that("ar model works with explain_forecast", {
 })
 
 
-# ranger model - regression (conditional) ============================================
+# ranger model - regression (conditional)
 test_that("ranger model works with explain (regression)", {
   skip_if_not_installed("ranger")
 
@@ -123,7 +123,7 @@ test_that("ranger model works with explain (regression)", {
 })
 
 
-# ranger model - classification (conditional) ========================================
+# ranger model - classification (conditional)
 test_that("ranger model works with explain (probability)", {
   skip_if_not_installed("ranger")
 
@@ -148,12 +148,12 @@ test_that("ranger model works with explain (probability)", {
 })
 
 
-# xgboost model - regression (conditional) ===========================================
+# xgboost model - regression (conditional)
 test_that("xgboost model works with explain (regression)", {
   skip_if_not_installed("xgboost")
 
   # Fit model
-  dtrain <- xgboost::xgb.DMatrix(as.matrix(x_train_reg), label = y_train_reg)
+  dtrain <- xgboost::xgb.DMatrix(x_train_reg, label = y_train_reg)
   model <- xgboost::xgb.train(
     data = dtrain,
     nrounds = 10,
@@ -178,12 +178,12 @@ test_that("xgboost model works with explain (regression)", {
 })
 
 
-# xgboost model - classification (conditional) =======================================
+# xgboost model - classification (conditional)
 test_that("xgboost model works with explain (binary classification)", {
   skip_if_not_installed("xgboost")
 
   # Fit model
-  dtrain <- xgboost::xgb.DMatrix(as.matrix(x_train_class), label = as.numeric(y_train_class) - 1)
+  dtrain <- xgboost::xgb.DMatrix(x_train_class, label = as.numeric(y_train_class) - 1)
   model <- xgboost::xgb.train(
     data = dtrain,
     nrounds = 10,
@@ -208,7 +208,7 @@ test_that("xgboost model works with explain (binary classification)", {
 })
 
 
-# mgcv gam model (conditional) =======================================================
+# mgcv gam model (conditional)
 test_that("mgcv gam model works with explain", {
   skip_if_not_installed("mgcv")
 
@@ -233,7 +233,7 @@ test_that("mgcv gam model works with explain", {
 })
 
 
-# workflows (tidymodels) model (conditional) =========================================
+# workflows (tidymodels) model (conditional)
 test_that("workflows model works with explain", {
   skip_if_not_installed("workflows")
   skip_if_not_installed("parsnip")
@@ -242,13 +242,13 @@ test_that("workflows model works with explain", {
   # Build workflow
   data_train <- cbind(Ozone = y_train_reg, x_train_reg)
   recipe <- recipes::recipe(Ozone ~ ., data = data_train)
-  lm_model <- parsnip::linear_reg() %>%
-    parsnip::set_engine("lm") %>%
+  lm_model <- parsnip::linear_reg() |>
+    parsnip::set_engine("lm") |>
     parsnip::set_mode("regression")
 
-  model <- workflows::workflow() %>%
-    workflows::add_recipe(recipe) %>%
-    workflows::add_model(lm_model) %>%
+  model <- workflows::workflow() |>
+    workflows::add_recipe(recipe) |>
+    workflows::add_model(lm_model) |>
     parsnip::fit(data = data_train)
 
   # Run explain
@@ -268,7 +268,7 @@ test_that("workflows model works with explain", {
 })
 
 
-# forecast Arima model (conditional) =================================================
+# forecast Arima model (conditional)
 test_that("forecast Arima model works with explain_forecast", {
   skip_if_not_installed("forecast")
 

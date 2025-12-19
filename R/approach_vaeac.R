@@ -1216,7 +1216,7 @@ vaeac_check_extra_named_list <- function(vaeac.extra_parameters) {
 #' @author Lars Henry Berge Olsen
 vaeac_check_positive_integers <- function(named_list_positive_integers) {
   param_names <- names(named_list_positive_integers)
-  for (idx in seq_len(length(named_list_positive_integers))) {
+  for (idx in seq_along(named_list_positive_integers)) {
     param_name <- param_names[idx]
     value <- named_list_positive_integers[[param_name]]
     if (!is.numeric(value) || length(value) != 1 || value <= 0 || !is.finite(value) || value %% 1 != 0) {
@@ -1235,7 +1235,7 @@ vaeac_check_positive_integers <- function(named_list_positive_integers) {
 #' @author Lars Henry Berge Olsen
 vaeac_check_positive_numerics <- function(named_list_positive_numerics) {
   param_names <- names(named_list_positive_numerics)
-  for (idx in seq_len(length(named_list_positive_numerics))) {
+  for (idx in seq_along(named_list_positive_numerics)) {
     param_name <- param_names[idx]
     value <- named_list_positive_numerics[[param_name]]
     if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value <= 0) {
@@ -1256,7 +1256,7 @@ vaeac_check_probabilities <- function(named_list_probabilities) {
   # Trick needed for entries that can be vectors (i.e., `vaeac.masking_ratio`)
   named_list_probabilities_tmp <- as.list(unlist(named_list_probabilities))
   param_names <- names(named_list_probabilities_tmp)
-  for (idx in seq_len(length(named_list_probabilities_tmp))) {
+  for (idx in seq_along(named_list_probabilities_tmp)) {
     param_name <- param_names[idx]
     value <- named_list_probabilities_tmp[[param_name]]
     if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value < 0 || value > 1) {
@@ -1275,7 +1275,7 @@ vaeac_check_probabilities <- function(named_list_probabilities) {
 #' @author Lars Henry Berge Olsen
 vaeac_check_logicals <- function(named_list_logicals) {
   param_names <- names(named_list_logicals)
-  for (idx in seq_len(length(named_list_logicals))) {
+  for (idx in seq_along(named_list_logicals)) {
     param_name <- param_names[idx]
     value <- named_list_logicals[[param_name]]
     if (!is.logical(value) || length(value) != 1) {
