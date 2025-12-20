@@ -58,17 +58,17 @@ summary.shapr <- function(object, digits = 2L, ...) {
 
   # Store all formatted components as an attribute (hidden from names())
   attr(results, "print_data") <- list2env(list(
-      func_txt = func_txt,
-      init_time = init_time,
-      total_time_str = total_time_str,
-      testing = testing,
-      formatted_info_basic = formatted_info_basic,
-      formatted_convergence_info = formatted_convergence_info,
-      formatted_shapley_info = formatted_shapley_info,
-      iterative = iterative,
-      converged_exact = converged_exact,
-      digits = digits
-    ), parent = emptyenv())
+    func_txt = func_txt,
+    init_time = init_time,
+    total_time_str = total_time_str,
+    testing = testing,
+    formatted_info_basic = formatted_info_basic,
+    formatted_convergence_info = formatted_convergence_info,
+    formatted_shapley_info = formatted_shapley_info,
+    iterative = iterative,
+    converged_exact = converged_exact,
+    digits = digits
+  ), parent = emptyenv())
   # Assign class
   class(results) <- c("summary.shapr", "list")
 
@@ -92,7 +92,10 @@ print.summary.shapr <- function(x, ...) {
   # Display header
   cli::cli_h1("Summary of Shapley value explanation")
   if (isFALSE(pd$testing)) {
-    cli::cli_ul(paste0("Computed with ", pd$func_txt, " in {.field {pd$total_time_str}}, started {.val {round(pd$init_time)}}"))
+    cli::cli_ul(paste0(
+      "Computed with ", pd$func_txt,
+      " in {.field {pd$total_time_str}}, started {.val {round(pd$init_time)}}"
+    ))
   } else {
     cli::cli_ul(paste0("Computed with ", pd$func_txt))
   }
