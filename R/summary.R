@@ -1,13 +1,15 @@
 #' Summary Method for Shapr Objects
 #'
+#' Provides a formatted summary of a shapr object and returns an object of class
+#' \code{summary.shapr} containing the same information as returned by [get_results()].
+#'
 #' @param object A shapr object.
 #' @param ... Currently unused.
 #' @inheritParams default_doc_export
 #'
-#' @return An object of class \code{summary.shapr} containing the summary results.
-#' This is a named list with the same components as returned by [get_results()],
-#' plus metadata needed for printing. See the details section of [get_results()]
-#' for details about each component.
+#' @return An object of class \code{summary.shapr}, which is a named list
+#' with the same accessible components as returned by [get_results()].
+#' See [get_results()] for details about each component.
 #'
 #' @export
 summary.shapr <- function(object, digits = 2L, ...) {
@@ -55,19 +57,18 @@ summary.shapr <- function(object, digits = 2L, ...) {
   formatted_shapley_info <- format_shapley_info(internal, iter, digits = digits)
 
   # Store all formatted components as an attribute (hidden from names())
-  attr(results, "print_data") <- list(
-    func_txt = func_txt,
-    init_time = init_time,
-    total_time_str = total_time_str,
-    testing = testing,
-    formatted_info_basic = formatted_info_basic,
-    formatted_convergence_info = formatted_convergence_info,
-    formatted_shapley_info = formatted_shapley_info,
-    iterative = iterative,
-    converged_exact = converged_exact,
-    digits = digits
-  )
-
+  attr(results, "print_data") <- list2env(list(
+      func_txt = func_txt,
+      init_time = init_time,
+      total_time_str = total_time_str,
+      testing = testing,
+      formatted_info_basic = formatted_info_basic,
+      formatted_convergence_info = formatted_convergence_info,
+      formatted_shapley_info = formatted_shapley_info,
+      iterative = iterative,
+      converged_exact = converged_exact,
+      digits = digits
+    ), parent = emptyenv())
   # Assign class
   class(results) <- c("summary.shapr", "list")
 
