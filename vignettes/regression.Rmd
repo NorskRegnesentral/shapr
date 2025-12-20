@@ -246,39 +246,39 @@ explanation_list$MC_empirical <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:40:52 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db488cb3ff.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -297,37 +297,37 @@ explanation_list$sep_lm <- explain(
   approach = "regression_separate",
   regression.model = parsnip::linear_reg()
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:01 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db677c0f7f.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -390,37 +390,37 @@ explanation_list$sep_pcr <- explain(
     return(recipes::step_pca(regression_recipe, recipes::all_numeric_predictors(), num_comp = 2))
   }
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:02 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db692d1aa7.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -441,37 +441,37 @@ explanation_list$sep_splines <- explain(
     return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 2))
   }
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:03 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db20d31c42.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -526,37 +526,37 @@ explanation_list$sep_recipe_example <- explain(
   regression.model = parsnip::linear_reg(),
   regression.recipe_func = regression.recipe_func
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:04 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db4ebf3f2c.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -621,37 +621,37 @@ explanation_list$sep_tree_stump <- explain(
     mode = "regression"
   )
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:06 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db7741619a.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Decision tree with default parameters
@@ -664,12 +664,12 @@ explanation_list$sep_tree_default <- explain(
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:07 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -678,9 +678,9 @@ explanation_list$sep_tree_default <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db56ceba9e.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -788,37 +788,37 @@ explanation_list$sep_tree_cv <- explain(
   regression.tune_values = dials::grid_regular(dials::tree_depth(), levels = 4),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:08 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db5ea91e8d.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Use trees with cross-validation on the depth and cost complexity. Manually set the values.
@@ -839,12 +839,12 @@ explanation_list$sep_tree_cv_2 <- explain(
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:26 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -853,9 +853,9 @@ explanation_list$sep_tree_cv_2 <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db4147ed30.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -881,37 +881,37 @@ explanation_list$sep_rf <- explain(
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:56 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db9d4a12f.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with parameters tuned by cross-validation
@@ -932,12 +932,12 @@ explanation_list$sep_rf_cv <- explain(
     },
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:41:57 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -946,89 +946,89 @@ explanation_list$sep_rf_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db568ab929.rds'
-#> 
-#> ── Additional details about the regression model 
+#>
+#> ── Additional details about the regression model
 #> Random Forest Model Specification (regression)
-#> 
+#>
 #> Main Arguments: mtry = hardhat::tune() trees = hardhat::tune()
-#> 
+#>
 #> Computational engine: ranger
-#> 
+#>
 #> ── Main computation started ──
-#> 
-#> ℹ Using 16 of 16 coalitions. 
-#> 
+#>
+#> ℹ Using 16 of 16 coalitions.
+#>
 #> ── Extra info about the tuning of the regression model ──
-#> 
-#> ── Top 6 best configs for  v(1 4) (using 5-fold CV) 
+#>
+#> ── Top 6 best configs for  v(1 4) (using 5-fold CV)
 #> #1: mtry = 1 trees = 750 rmse = 28.79 rmse_std_err = 2.62
 #> #2: mtry = 1 trees = 400 rmse = 28.95 rmse_std_err = 2.52
 #> #3: mtry = 2 trees = 50 rmse = 29.00 rmse_std_err = 2.20
 #> #4: mtry = 1 trees = 50 rmse = 29.07 rmse_std_err = 2.67
 #> #5: mtry = 2 trees = 400 rmse = 29.44 rmse_std_err = 2.38
 #> #6: mtry = 2 trees = 750 rmse = 29.47 rmse_std_err = 2.37
-#> 
-#> ── Top 6 best configs for  v(2 4) (using 5-fold CV) 
+#>
+#> ── Top 6 best configs for  v(2 4) (using 5-fold CV)
 #> #1: mtry = 2 trees = 50 rmse = 21.43 rmse_std_err = 0.93
 #> #2: mtry = 1 trees = 750 rmse = 21.49 rmse_std_err = 0.54
 #> #3: mtry = 2 trees = 400 rmse = 21.55 rmse_std_err = 1.03
 #> #4: mtry = 1 trees = 400 rmse = 21.60 rmse_std_err = 0.57
 #> #5: mtry = 2 trees = 750 rmse = 21.62 rmse_std_err = 1.05
 #> #6: mtry = 1 trees = 50 rmse = 21.70 rmse_std_err = 0.57
-#> 
-#> ── Top 6 best configs for  v(1 3) (using 5-fold CV) 
+#>
+#> ── Top 6 best configs for  v(1 3) (using 5-fold CV)
 #> #1: mtry = 1 trees = 750 rmse = 22.10 rmse_std_err = 3.09
 #> #2: mtry = 1 trees = 400 rmse = 22.12 rmse_std_err = 3.10
 #> #3: mtry = 2 trees = 50 rmse = 22.20 rmse_std_err = 2.88
 #> #4: mtry = 2 trees = 750 rmse = 22.28 rmse_std_err = 2.86
 #> #5: mtry = 2 trees = 400 rmse = 22.36 rmse_std_err = 2.95
 #> #6: mtry = 1 trees = 50 rmse = 22.40 rmse_std_err = 3.09
-#> 
-#> ── Top 6 best configs for  v(3 4) (using 5-fold CV) 
+#>
+#> ── Top 6 best configs for  v(3 4) (using 5-fold CV)
 #> #1: mtry = 1 trees = 50 rmse = 22.54 rmse_std_err = 4.16
 #> #2: mtry = 1 trees = 400 rmse = 22.61 rmse_std_err = 4.27
 #> #3: mtry = 1 trees = 750 rmse = 22.63 rmse_std_err = 4.28
 #> #4: mtry = 2 trees = 400 rmse = 23.90 rmse_std_err = 4.12
 #> #5: mtry = 2 trees = 750 rmse = 24.03 rmse_std_err = 4.10
 #> #6: mtry = 2 trees = 50 rmse = 24.74 rmse_std_err = 4.04
-#> 
-#> ── Top 6 best configs for  v(2 3) (using 5-fold CV) 
+#>
+#> ── Top 6 best configs for  v(2 3) (using 5-fold CV)
 #> #1: mtry = 1 trees = 50 rmse = 17.91 rmse_std_err = 2.19
 #> #2: mtry = 2 trees = 750 rmse = 17.94 rmse_std_err = 2.37
 #> #3: mtry = 1 trees = 400 rmse = 17.98 rmse_std_err = 2.02
 #> #4: mtry = 2 trees = 50 rmse = 18.10 rmse_std_err = 2.46
 #> #5: mtry = 1 trees = 750 rmse = 18.21 rmse_std_err = 2.07
 #> #6: mtry = 2 trees = 400 rmse = 18.25 rmse_std_err = 2.47
-#> 
-#> ── Top 3 best configs for  v(3) (using 5-fold CV) 
+#>
+#> ── Top 3 best configs for  v(3) (using 5-fold CV)
 #> #1: mtry = 1 trees = 50 rmse = 22.88 rmse_std_err = 4.69
 #> #2: mtry = 1 trees = 400 rmse = 22.94 rmse_std_err = 4.72
 #> #3: mtry = 1 trees = 750 rmse = 23.01 rmse_std_err = 4.70
-#> 
-#> ── Top 6 best configs for  v(1 2) (using 5-fold CV) 
+#>
+#> ── Top 6 best configs for  v(1 2) (using 5-fold CV)
 #> #1: mtry = 1 trees = 400 rmse = 22.40 rmse_std_err = 2.54
 #> #2: mtry = 1 trees = 750 rmse = 22.64 rmse_std_err = 2.65
 #> #3: mtry = 1 trees = 50 rmse = 22.95 rmse_std_err = 2.46
 #> #4: mtry = 2 trees = 50 rmse = 23.38 rmse_std_err = 2.26
 #> #5: mtry = 2 trees = 750 rmse = 23.41 rmse_std_err = 2.53
 #> #6: mtry = 2 trees = 400 rmse = 23.41 rmse_std_err = 2.47
-#> 
-#> ── Top 3 best configs for  v(4) (using 5-fold CV) 
+#>
+#> ── Top 3 best configs for  v(4) (using 5-fold CV)
 #> #1: mtry = 1 trees = 400 rmse = 32.32 rmse_std_err = 4.28
 #> #2: mtry = 1 trees = 750 rmse = 32.39 rmse_std_err = 4.26
 #> #3: mtry = 1 trees = 50 rmse = 32.52 rmse_std_err = 4.35
-#> 
-#> ── Top 3 best configs for  v(1) (using 5-fold CV) 
+#>
+#> ── Top 3 best configs for  v(1) (using 5-fold CV)
 #> #1: mtry = 1 trees = 400 rmse = 30.45 rmse_std_err = 3.36
 #> #2: mtry = 1 trees = 50 rmse = 30.62 rmse_std_err = 3.51
 #> #3: mtry = 1 trees = 750 rmse = 30.64 rmse_std_err = 3.41
-#> 
-#> ── Top 3 best configs for  v(2) (using 5-fold CV) 
+#>
+#> ── Top 3 best configs for  v(2) (using 5-fold CV)
 #> #1: mtry = 1 trees = 750 rmse = 27.04 rmse_std_err = 2.20
 #> #2: mtry = 1 trees = 400 rmse = 27.25 rmse_std_err = 2.17
 #> #3: mtry = 1 trees = 50 rmse = 27.35 rmse_std_err = 2.06
-#> 
-#> ── Top 9 best configs for  v(1 2 4) (using 5-fold CV) 
+#>
+#> ── Top 9 best configs for  v(1 2 4) (using 5-fold CV)
 #> #1: mtry = 2 trees = 750 rmse = 20.57 rmse_std_err = 2.48
 #> #2: mtry = 2 trees = 400 rmse = 20.66 rmse_std_err = 2.52
 #> #3: mtry = 1 trees = 750 rmse = 20.68 rmse_std_err = 2.90
@@ -1038,8 +1038,8 @@ explanation_list$sep_rf_cv <- explain(
 #> #7: mtry = 3 trees = 50 rmse = 21.17 rmse_std_err = 2.46
 #> #8: mtry = 3 trees = 400 rmse = 21.18 rmse_std_err = 2.41
 #> #9: mtry = 3 trees = 750 rmse = 21.37 rmse_std_err = 2.51
-#> 
-#> ── Top 9 best configs for  v(1 2 3) (using 5-fold CV) 
+#>
+#> ── Top 9 best configs for  v(1 2 3) (using 5-fold CV)
 #> #1: mtry = 2 trees = 400 rmse = 16.72 rmse_std_err = 2.67
 #> #2: mtry = 2 trees = 750 rmse = 16.75 rmse_std_err = 2.64
 #> #3: mtry = 3 trees = 750 rmse = 16.78 rmse_std_err = 2.76
@@ -1049,8 +1049,8 @@ explanation_list$sep_rf_cv <- explain(
 #> #7: mtry = 2 trees = 50 rmse = 17.37 rmse_std_err = 2.81
 #> #8: mtry = 3 trees = 50 rmse = 17.56 rmse_std_err = 2.73
 #> #9: mtry = 1 trees = 50 rmse = 17.65 rmse_std_err = 3.20
-#> 
-#> ── Top 9 best configs for  v(1 3 4) (using 5-fold CV) 
+#>
+#> ── Top 9 best configs for  v(1 3 4) (using 5-fold CV)
 #> #1: mtry = 1 trees = 50 rmse = 21.96 rmse_std_err = 4.30
 #> #2: mtry = 1 trees = 750 rmse = 22.21 rmse_std_err = 4.43
 #> #3: mtry = 1 trees = 400 rmse = 22.32 rmse_std_err = 4.22
@@ -1060,8 +1060,8 @@ explanation_list$sep_rf_cv <- explain(
 #> #7: mtry = 3 trees = 750 rmse = 23.71 rmse_std_err = 3.88
 #> #8: mtry = 3 trees = 400 rmse = 23.79 rmse_std_err = 3.87
 #> #9: mtry = 3 trees = 50 rmse = 23.90 rmse_std_err = 3.85
-#> 
-#> ── Top 9 best configs for  v(2 3 4) (using 5-fold CV) 
+#>
+#> ── Top 9 best configs for  v(2 3 4) (using 5-fold CV)
 #> #1: mtry = 1 trees = 50 rmse = 18.14 rmse_std_err = 3.39
 #> #2: mtry = 3 trees = 400 rmse = 18.24 rmse_std_err = 3.47
 #> #3: mtry = 3 trees = 750 rmse = 18.28 rmse_std_err = 3.44
@@ -1156,37 +1156,37 @@ explanation_list$sep_xgboost <- explain(
   approach = "regression_separate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:42:30 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db70c1ad39.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Cross validate the number of trees
@@ -1202,12 +1202,12 @@ explanation_list$sep_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(10, 15, 25, 50, 100, 500)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:42:32 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -1216,10 +1216,10 @@ explanation_list$sep_xgboost_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781dbfc0e769.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
-#> ℹ Using 16 of 16 coalitions. 
+#>
+#> ℹ Using 16 of 16 coalitions.
 #> → A | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:42:32] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -1233,7 +1233,7 @@ explanation_list$sep_xgboost_cv <- explain(
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -1303,7 +1303,7 @@ There were issues with some computations   A: x1   B: x1   C: x2   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 There were issues with some computations   A: x2[K
@@ -1358,7 +1358,7 @@ There were issues with some computations   A: x2   B: x2   C: x1[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 There were issues with some computations   A: x2[K
@@ -1413,7 +1413,7 @@ There were issues with some computations   A: x2   B: x1   C: x2[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -1468,7 +1468,7 @@ There were issues with some computations   A: x1   B: x2   C: x2[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -1538,7 +1538,7 @@ There were issues with some computations   A: x1   B: x2   C: x1   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -1608,7 +1608,7 @@ There were issues with some computations   A: x1   B: x1   C: x2   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -1678,7 +1678,7 @@ There were issues with some computations   A: x1   B: x1   C: x2   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -1748,7 +1748,7 @@ There were issues with some computations   A: x1   B: x1   C: x2   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 There were issues with some computations   A: x2[K
@@ -1803,7 +1803,7 @@ There were issues with some computations   A: x2   B: x1   C: x2[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -1873,7 +1873,7 @@ There were issues with some computations   A: x1   B: x2   C: x1   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -1943,7 +1943,7 @@ There were issues with some computations   A: x1   B: x2   C: x1   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 There were issues with some computations   A: x2[K
@@ -1998,7 +1998,7 @@ There were issues with some computations   A: x2   B: x2   C: x1[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 There were issues with some computations   A: x2[K
@@ -2053,7 +2053,7 @@ There were issues with some computations   A: x2   B: x1   C: x2[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -2110,12 +2110,12 @@ explanation_list$sep_xgboost_cv_par <- explain(
   regression.tune_values = expand.grid(trees = c(10, 15, 25, 50, 100, 500)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:43:17 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -2124,10 +2124,10 @@ explanation_list$sep_xgboost_cv_par <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db269c3c8a.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
-#> ℹ Using 16 of 16 coalitions. 
+#>
+#> ℹ Using 16 of 16 coalitions.
 #> → A | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:20] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2141,12 +2141,12 @@ explanation_list$sep_xgboost_cv_par <- explain(
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x2
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:21] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2182,14 +2182,14 @@ There were issues with some computations   A: x2   B: x3
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x2
 
 There were issues with some computations   A: x3
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:23] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2223,10 +2223,10 @@ There were issues with some computations   A: x3   B: x2
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:24] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2248,7 +2248,7 @@ There were issues with some computations   A: x1   B: x2
 
 There were issues with some computations   A: x1   B: x3
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:25] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2280,12 +2280,12 @@ There were issues with some computations   A: x1   B: x3   C: x1
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x2
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:26] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2321,14 +2321,14 @@ There were issues with some computations   A: x2   B: x3
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x2
 
 There were issues with some computations   A: x3
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:28] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2362,7 +2362,7 @@ There were issues with some computations   A: x3   B: x2
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x2
@@ -2371,7 +2371,7 @@ There were issues with some computations   A: x3
 
 There were issues with some computations   A: x4
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:30] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2403,10 +2403,10 @@ There were issues with some computations   A: x4   B: x1
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:31] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2428,7 +2428,7 @@ There were issues with some computations   A: x1   B: x2
 
 There were issues with some computations   A: x1   B: x3
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:32] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2460,14 +2460,14 @@ There were issues with some computations   A: x1   B: x3   C: x1
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x2
 
 There were issues with some computations   A: x3
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:21] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2501,10 +2501,10 @@ There were issues with some computations   A: x3   B: x2
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:22] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2526,7 +2526,7 @@ There were issues with some computations   A: x1   B: x2
 
 There were issues with some computations   A: x1   B: x3
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:23] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2558,10 +2558,10 @@ There were issues with some computations   A: x1   B: x3   C: x1
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:24] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2599,12 +2599,12 @@ There were issues with some computations   A: x1   B: x4
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x2
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:26] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2640,14 +2640,14 @@ There were issues with some computations   A: x2   B: x3
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x2
 
 There were issues with some computations   A: x3
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:28] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2681,10 +2681,10 @@ There were issues with some computations   A: x3   B: x2
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:29] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2706,7 +2706,7 @@ There were issues with some computations   A: x1   B: x2
 
 There were issues with some computations   A: x1   B: x3
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:30] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2738,10 +2738,10 @@ There were issues with some computations   A: x1   B: x3   C: x1
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:31] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2763,7 +2763,7 @@ There were issues with some computations   A: x1   B: x2
 
 There were issues with some computations   A: x1   B: x3
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:32] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
@@ -2801,12 +2801,12 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
   regression.tune_values = expand.grid(trees = c(8, 10, 12, 15), tree_depth = c(4, 6, 8)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:43:33 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -2815,10 +2815,10 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db7b5c972a.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
-#> ℹ Using 16 of 16 coalitions. 
+#>
+#> ℹ Using 16 of 16 coalitions.
 #> → A | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:36] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -2832,7 +2832,7 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
@@ -2841,7 +2841,7 @@ There were issues with some computations   A: x6
 
 There were issues with some computations   A: x7
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -2867,7 +2867,7 @@ There were issues with some computations   A: x9   B: x6
 
 There were issues with some computations   A: x9   B: x9
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -2891,7 +2891,7 @@ There were issues with some computations   A: x9   B: x9   C: x6
 
 There were issues with some computations   A: x9   B: x9   C: x7
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -2925,12 +2925,12 @@ There were issues with some computations   A: x9   B: x9   C: x9   …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -2956,7 +2956,7 @@ There were issues with some computations   A: x5   B: x7
 
 There were issues with some computations   A: x5   B: x8
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -2980,7 +2980,7 @@ There were issues with some computations   A: x5   B: x10   C: x6
 
 There were issues with some computations   A: x5   B: x10   C: x9
 
-                                                                 
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3016,10 +3016,10 @@ There were issues with some computations   A: x5   B: x10   C: x9  …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:43] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3043,7 +3043,7 @@ There were issues with some computations   A: x3   B: x4
 
 There were issues with some computations   A: x3   B: x6
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3069,7 +3069,7 @@ There were issues with some computations   A: x3   B: x8   C: x7
 
 There were issues with some computations   A: x3   B: x8   C: x8
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:45] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3105,7 +3105,7 @@ There were issues with some computations   A: x3   B: x8   C: x10  …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
@@ -3114,7 +3114,7 @@ There were issues with some computations   A: x6
 
 There were issues with some computations   A: x7
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:47] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3138,7 +3138,7 @@ There were issues with some computations   A: x9   B: x4
 
 There were issues with some computations   A: x9   B: x6
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:48] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3164,7 +3164,7 @@ There were issues with some computations   A: x9   B: x8   C: x7
 
 There were issues with some computations   A: x9   B: x8   C: x8
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:49] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3198,14 +3198,14 @@ There were issues with some computations   A: x9   B: x8   C: x10  …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
 
 There were issues with some computations   A: x6
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3231,7 +3231,7 @@ There were issues with some computations   A: x6   B: x7
 
 There were issues with some computations   A: x6   B: x9
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3255,7 +3255,7 @@ There were issues with some computations   A: x6   B: x11   C: x4
 
 There were issues with some computations   A: x6   B: x11   C: x7
 
-                                                                 
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3291,10 +3291,10 @@ There were issues with some computations   A: x6   B: x11   C: x7  …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3318,7 +3318,7 @@ There were issues with some computations   A: x5   B: x7
 
 There were issues with some computations   A: x5   B: x8
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3342,7 +3342,7 @@ There were issues with some computations   A: x5   B: x10   C: x6
 
 There were issues with some computations   A: x5   B: x10   C: x9
 
-                                                                 
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3378,10 +3378,10 @@ There were issues with some computations   A: x5   B: x10   C: x9  …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:43] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3403,7 +3403,7 @@ There were issues with some computations   A: x3   B: x4
 
 There were issues with some computations   A: x3   B: x6
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3429,7 +3429,7 @@ There were issues with some computations   A: x3   B: x8   C: x7
 
 There were issues with some computations   A: x3   B: x8   C: x8
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:45] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3469,7 +3469,7 @@ There were issues with some computations   A: x3   B: x8   C: x10  …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
@@ -3478,7 +3478,7 @@ There were issues with some computations   A: x6
 
 There were issues with some computations   A: x7
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3502,7 +3502,7 @@ There were issues with some computations   A: x9   B: x4
 
 There were issues with some computations   A: x9   B: x6
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3528,7 +3528,7 @@ There were issues with some computations   A: x9   B: x8   C: x7
 
 There were issues with some computations   A: x9   B: x8   C: x8
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3560,12 +3560,12 @@ There were issues with some computations   A: x9   B: x8   C: x10  …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3587,7 +3587,7 @@ There were issues with some computations   A: x5   B: x2
 
 There were issues with some computations   A: x5   B: x7
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3611,7 +3611,7 @@ There were issues with some computations   A: x5   B: x7   C: x7
 
 There were issues with some computations   A: x5   B: x7   C: x9
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3647,14 +3647,14 @@ There were issues with some computations   A: x5   B: x7   C: x12  …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
 
 There were issues with some computations   A: x6
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3678,7 +3678,7 @@ There were issues with some computations   A: x6   B: x6
 
 There were issues with some computations   A: x6   B: x7
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3704,7 +3704,7 @@ There were issues with some computations   A: x6   B: x9   C: x6
 
 There were issues with some computations   A: x6   B: x9   C: x9
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3740,10 +3740,10 @@ There were issues with some computations   A: x6   B: x9   C: x9   …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
-#> 
+#>
 There were issues with some computations   A: x1
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3769,7 +3769,7 @@ There were issues with some computations   A: x3   B: x6
 
 There were issues with some computations   A: x3   B: x9
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3795,7 +3795,7 @@ There were issues with some computations   A: x3   B: x9   C: x7
 
 There were issues with some computations   A: x3   B: x9   C: x9
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3833,7 +3833,7 @@ There were issues with some computations   A: x3   B: x9   C: x11  …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
@@ -3842,7 +3842,7 @@ There were issues with some computations   A: x6
 
 There were issues with some computations   A: x7
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3868,7 +3868,7 @@ There were issues with some computations   A: x9   B: x6
 
 There were issues with some computations   A: x9   B: x9
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:45] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3892,7 +3892,7 @@ There were issues with some computations   A: x9   B: x9   C: x6
 
 There were issues with some computations   A: x9   B: x9   C: x7
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:46] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3924,14 +3924,14 @@ There were issues with some computations   A: x9   B: x9   C: x9   …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
 
 There were issues with some computations   A: x6
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:47] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3955,7 +3955,7 @@ There were issues with some computations   A: x6   B: x6
 
 There were issues with some computations   A: x6   B: x7
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:48] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -3981,7 +3981,7 @@ There were issues with some computations   A: x6   B: x9   C: x6
 
 There were issues with some computations   A: x6   B: x9   C: x9
 
-                                                                
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:49] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -4015,12 +4015,12 @@ There were issues with some computations   A: x6   B: x9   C: x9   …
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
-#> 
+#>
 There were issues with some computations   A: x1
 
 There were issues with some computations   A: x3
 
-                                                
+
 → B | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:50] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -4046,7 +4046,7 @@ There were issues with some computations   A: x5   B: x7
 
 There were issues with some computations   A: x5   B: x8
 
-                                                        
+
 → C | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:51] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -4068,7 +4068,7 @@ There were issues with some computations   A: x5   B: x10   C: x4
 
 There were issues with some computations   A: x5   B: x10   C: x9
 
-                                                                 
+
 → D | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:52] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
@@ -4173,37 +4173,37 @@ explanation_list$sur_lm <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:43:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_surrogate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db5cc41cea.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Using xgboost with default parameters as the surrogate model
@@ -4216,12 +4216,12 @@ explanation_list$sur_xgboost <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:43:54 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -4230,9 +4230,9 @@ explanation_list$sur_xgboost <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db30a0036c.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Using xgboost with parameters tuned by cross-validation as the surrogate model
@@ -4252,12 +4252,12 @@ explanation_list$sur_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:43:55 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -4266,10 +4266,10 @@ explanation_list$sur_xgboost_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db7acdce77.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
-#> ℹ Using 16 of 16 coalitions. 
+#>
+#> ℹ Using 16 of 16 coalitions.
 #> → A | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:43:55] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
@@ -4283,7 +4283,7 @@ explanation_list$sur_xgboost_cv <- explain(
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 There were issues with some computations   A: x3[K
@@ -4401,12 +4401,12 @@ explanation_list$sur_rf <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:01 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -4415,9 +4415,9 @@ explanation_list$sur_rf <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db5f91fdba.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with parameters tuned by cross-validation as the surrogate model
@@ -4438,12 +4438,12 @@ explanation_list$sur_rf_cv <- explain(
   ),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:02 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -4452,9 +4452,9 @@ explanation_list$sur_rf_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db1c4f0b47.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -4497,37 +4497,37 @@ explanation_list$sur_rf_cv_par <- explain(
   ),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:26 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_surrogate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db56c85521.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 future::plan(future::sequential) # To return to non-parallel computation
 
@@ -4730,37 +4730,37 @@ explanation_list$sep_ppr <- explain(
   approach = "regression_separate",
   regression.model = ppr_reg(num_terms = 2)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:40 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db71a648f6.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # PPR separate with cross-validated number of terms
@@ -4775,12 +4775,12 @@ explanation_list$sep_ppr_cv <- explain(
   regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 4)), levels = 3),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:40 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -4789,9 +4789,9 @@ explanation_list$sep_ppr_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db6b5b96aa.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # PPR surrogate with specified number of terms
@@ -4804,12 +4804,12 @@ explanation_list$sur_ppr <- explain(
   approach = "regression_surrogate",
   regression.model = ppr_reg(num_terms = 3)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -4818,9 +4818,9 @@ explanation_list$sur_ppr <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db60b35e67.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # PPR surrogate with cross-validated number of terms
@@ -4835,12 +4835,12 @@ explanation_list$sur_ppr_cv <- explain(
   regression.tune_values = dials::grid_regular(dials::num_terms(c(1, 8)), levels = 4),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -4849,9 +4849,9 @@ explanation_list$sur_ppr_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db18428580.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -4922,39 +4922,39 @@ explanation_list_MC$MC_independence <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:56 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: independence
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db3c63fe38.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Copy the Shapley value explanations for the empirical method
@@ -4969,12 +4969,12 @@ explanation_list_MC$MC_gaussian <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:57 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -4984,9 +4984,9 @@ explanation_list_MC$MC_gaussian <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db3289b8a0.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Compute the Shapley value explanations using the copula method
@@ -4998,12 +4998,12 @@ explanation_list_MC$MC_copula <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:58 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: copula
@@ -5013,9 +5013,9 @@ explanation_list_MC$MC_copula <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db9d18596.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Compute the Shapley value explanations using the ctree method
@@ -5027,12 +5027,12 @@ explanation_list_MC$MC_ctree <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:44:58 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: ctree
@@ -5042,9 +5042,9 @@ explanation_list_MC$MC_ctree <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781dbe8f5000.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Compute the Shapley value explanations using the vaeac method
@@ -5057,12 +5057,12 @@ explanation_list_MC$MC_vaeac <- explain(
   seed = 1,
   vaeac.epochs = 10
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:45:00 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: vaeac
@@ -5072,9 +5072,9 @@ explanation_list_MC$MC_vaeac <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db13011f85.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Combine the two explanations lists
@@ -5248,39 +5248,39 @@ explanation_list_mixed$MC_independence <- explain(
   seed = 1,
   approach = "independence"
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:46:50 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <lm>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: independence
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db2daf5408.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 explanation_list_mixed$MC_ctree <- explain(
@@ -5291,12 +5291,12 @@ explanation_list_mixed$MC_ctree <- explain(
   seed = 1,
   approach = "ctree"
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:46:51 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: ctree
@@ -5306,9 +5306,9 @@ explanation_list_mixed$MC_ctree <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db7364a33f.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 explanation_list_mixed$MC_vaeac <- explain(
@@ -5319,12 +5319,12 @@ explanation_list_mixed$MC_vaeac <- explain(
   seed = 1,
   approach = "vaeac"
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:46:52 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: vaeac
@@ -5334,9 +5334,9 @@ explanation_list_mixed$MC_vaeac <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db60af4fce.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -5359,37 +5359,37 @@ explanation_list_mixed$sep_lm <- explain(
   approach = "regression_separate",
   regression.model = parsnip::linear_reg()
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:49:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <lm>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db2fcde4ba.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Linear regression where we have added splines to the numerical features
@@ -5405,12 +5405,12 @@ explanation_list_mixed$sep_splines <- explain(
     return(step_ns(regression_recipe, all_numeric_predictors(), deg_free = 2))
   }
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:49:54 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -5419,9 +5419,9 @@ explanation_list_mixed$sep_splines <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db13afe8b.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Decision tree with default parameters
@@ -5434,12 +5434,12 @@ explanation_list_mixed$sep_tree <- explain(
   approach = "regression_separate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:49:55 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -5448,9 +5448,9 @@ explanation_list_mixed$sep_tree <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db7ad1fffd.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Use trees with cross-validation on the depth and cost complexity. Manually set the values.
@@ -5471,12 +5471,12 @@ explanation_list_mixed$sep_tree_cv <- explain(
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:49:57 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -5485,9 +5485,9 @@ explanation_list_mixed$sep_tree_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db10814321.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Random forest with default hyperparameters. Do NOT need to use dummy features.
@@ -5500,12 +5500,12 @@ explanation_list_mixed$sep_rf <- explain(
   approach = "regression_separate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:50:28 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -5514,9 +5514,9 @@ explanation_list_mixed$sep_rf <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db197d840b.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Random forest with cross-validated hyperparameters.
@@ -5536,12 +5536,12 @@ explanation_list_mixed$sep_rf_cv <- explain(
     },
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:50:29 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -5550,9 +5550,9 @@ explanation_list_mixed$sep_rf_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db4b88257c.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # XGBoost with default hyperparameters, but we have to dummy encode the factors
@@ -5568,12 +5568,12 @@ explanation_list_mixed$sep_xgboost <- explain(
     return(step_dummy(regression_recipe, all_factor_predictors()))
   }
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:51:13 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -5582,9 +5582,9 @@ explanation_list_mixed$sep_xgboost <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db5188aa30.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # XGBoost with cross-validated hyperparameters and we dummy encode the factors
@@ -5607,12 +5607,12 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:51:14 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -5621,10 +5621,10 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db5c147b18.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
-#> ℹ Using 16 of 16 coalitions. 
+#>
+#> ℹ Using 16 of 16 coalitions.
 #> → A | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:51:14] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
@@ -5638,7 +5638,7 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -5758,7 +5758,7 @@ There were issues with some computations   A: x3   B: x6   C: x8   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -5878,7 +5878,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -5998,7 +5998,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -6118,7 +6118,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -6238,7 +6238,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -6358,7 +6358,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -6478,7 +6478,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -6598,7 +6598,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -6718,7 +6718,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -6838,7 +6838,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 There were issues with some computations   A: x3[K
@@ -6943,7 +6943,7 @@ There were issues with some computations   A: x6   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 There were issues with some computations   A: x3[K
@@ -7063,7 +7063,7 @@ There were issues with some computations   A: x5   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -7183,7 +7183,7 @@ There were issues with some computations   A: x3   B: x6   C: x6   …[K
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 There were issues with some computations   A: x3[K
@@ -7296,37 +7296,37 @@ explanation_list_mixed$sur_lm <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::linear_reg()
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:27 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <lm>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_surrogate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781dbe9e33b8.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Linear regression where we have added splines to the numerical features
@@ -7343,12 +7343,12 @@ explanation_list_mixed$sur_splines <- explain(
     return(step_ns(recipe, all_numeric_predictors(), -starts_with("mask_"), deg_free = 2))
   }
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:27 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -7357,9 +7357,9 @@ explanation_list_mixed$sur_splines <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db46fccfd1.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Decision tree with default parameters
@@ -7372,12 +7372,12 @@ explanation_list_mixed$sur_tree <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:28 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -7386,9 +7386,9 @@ explanation_list_mixed$sur_tree <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db1c7bf869.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Use trees with cross-validation on the depth and cost complexity. Manually set the values.
@@ -7409,12 +7409,12 @@ explanation_list_mixed$sur_tree_cv <- explain(
     expand.grid(tree_depth = c(1, 3, 5), cost_complexity = c(0.001, 0.01, 0.1)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:29 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -7423,9 +7423,9 @@ explanation_list_mixed$sur_tree_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db219f533d.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Random forest with default hyperparameters. Do NOT need to use dummy features.
@@ -7438,12 +7438,12 @@ explanation_list_mixed$sur_rf <- explain(
   approach = "regression_surrogate",
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:32 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -7452,9 +7452,9 @@ explanation_list_mixed$sur_rf <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db2d927251.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Random forest with cross-validated hyperparameters.
@@ -7471,12 +7471,12 @@ explanation_list_mixed$sur_rf_cv <- explain(
   regression.tune_values = expand.grid(mtry = c(1, 2, 4), trees = c(50, 250, 500, 750)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:32 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -7485,9 +7485,9 @@ explanation_list_mixed$sur_rf_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db5bab4bd6.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # XGBoost with default hyperparameters, but we have to dummy encode the factors
@@ -7503,12 +7503,12 @@ explanation_list_mixed$sur_xgboost <- explain(
     return(step_dummy(regression_recipe, all_factor_predictors()))
   }
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:43 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -7517,9 +7517,9 @@ explanation_list_mixed$sur_xgboost <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db2f6e413a.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # XGBoost with cross-validated hyperparameters and we dummy encode the factors
@@ -7542,12 +7542,12 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
   regression.tune_values = expand.grid(trees = c(5, 15, 25), tree_depth = c(2, 6, 10)),
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:44 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <lm>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -7556,10 +7556,10 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db73ba128c.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
-#> ℹ Using 16 of 16 coalitions. 
+#>
+#> ℹ Using 16 of 16 coalitions.
 #> → A | error:   ℹ In index: 1.
 #>                Caused by error in `predict.xgb.Booster()`:
 #>                ! [11:52:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
@@ -7573,7 +7573,7 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
 #>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
 #>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
 #>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
-#> 
+#>
 There were issues with some computations   A: x1[K
 
 [K→ B | error:   ℹ In index: 1.
@@ -7791,37 +7791,37 @@ explanation_list_str$sep_lm <- explain(
   approach = "regression_separate",
   regression.model = "parsnip::linear_reg()"
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:52 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Regression
-#> 
+#>
 #> • Approach: regression_separate
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 20
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db253fe71f.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 explanation_list_str$sep_pcr <- explain(
@@ -7836,12 +7836,12 @@ explanation_list_str$sep_pcr <- explain(
     return(recipes::step_pca(regression_recipe, recipes::all_numeric_predictors(), num_comp = 2))
   }"
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -7850,9 +7850,9 @@ explanation_list_str$sep_pcr <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db29afbe8f.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 explanation_list_str$sep_splines <- explain(
@@ -7867,12 +7867,12 @@ explanation_list_str$sep_splines <- explain(
     return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 2))
   }"
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:54 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -7881,9 +7881,9 @@ explanation_list_str$sep_splines <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db7c10c9d4.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 explanation_list_str$sep_tree_cv <- explain(
@@ -7899,12 +7899,12 @@ explanation_list_str$sep_tree_cv <- explain(
   regression.tune_values = "dials::grid_regular(dials::tree_depth(), levels = 4)",
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:52:55 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -7913,9 +7913,9 @@ explanation_list_str$sep_tree_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db550dcbd9.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with parameters tuned by cross-validation
@@ -7935,12 +7935,12 @@ explanation_list_str$sep_rf_cv <- explain(
     }",
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:53:11 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -7949,9 +7949,9 @@ explanation_list_str$sep_rf_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db2aeabd1a.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Using random forest with parameters tuned by cross-validation as the surrogate model
@@ -7972,12 +7972,12 @@ explanation_list_str$sur_rf_cv <- explain(
   )",
   regression.vfold_cv_para = list(v = 5)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2025-12-20 11:53:44 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
@@ -7986,9 +7986,9 @@ explanation_list_str$sur_rf_cv <- explain(
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpP6cesG/shapr_obj_781db76e2c9d1.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # See that the evaluation scores match the non-string versions.
